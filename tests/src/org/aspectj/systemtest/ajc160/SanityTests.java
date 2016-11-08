@@ -94,6 +94,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// }
 
 	/* For the specified class, check that each method has a stackmap attribute */
+	@SuppressWarnings("unused")
 	private void checkStackMapExistence(String classname, String toIgnore) throws ClassNotFoundException {
 		toIgnore = "_" + (toIgnore == null ? "" : toIgnore) + "_";
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);

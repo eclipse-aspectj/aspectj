@@ -15,6 +15,7 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembers;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -75,12 +76,12 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 				.equals(sig));
 	}
 
-	public List /* BcelTypeMunger */getTypeMunger(String classname) {
+	public List<ConcreteTypeMunger> getTypeMunger(String classname) {
 		ClassPath cp = new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
 		recentWorld = new BcelWorld(cp.toString());
 		ReferenceType resolvedType = (ReferenceType) recentWorld.resolve(classname);
 		CrosscuttingMembers cmembers = resolvedType.collectCrosscuttingMembers(true);
-		List tmungers = cmembers.getTypeMungers();
+		List<ConcreteTypeMunger> tmungers = cmembers.getTypeMungers();
 		return tmungers;
 	}
 
@@ -100,9 +101,9 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		return null;
 	}
 
-	public Hashtable getMeTheFields(String classname) {
+	public Hashtable<String,Field> getMeTheFields(String classname) {
 		JavaClass theClass = getClassFromDisk(ajc, classname);
-		Hashtable retval = new Hashtable();
+		Hashtable<String,Field> retval = new Hashtable<>();
 		org.aspectj.apache.bcel.classfile.Field[] fs = theClass.getFields();
 		for (int i = 0; i < fs.length; i++) {
 			Field field = fs[i];
@@ -206,7 +207,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	// Verifying what gets into a class targetted with a field ITD
 	public void testDesignF() {
 		runTest("generic itds - design F");
-		Hashtable fields = getMeTheFields("C");
+		Hashtable<String,Field> fields = getMeTheFields("C");
 
 		// Declared in src as: List C.list1; and List<Z> C<Z>.list2;
 		Field list1 = (Field) fields.get("list1");// ajc$interField$$list1");
@@ -229,7 +230,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	// Verifying what gets into a class when an interface it implements was targetted with a field ITD
 	public void testDesignG() {
 		runTest("generic itds - design G");
-		Hashtable fields = getMeTheFields("C");
+		Hashtable<String,Field> fields = getMeTheFields("C");
 
 		// The ITDs are targetting an interface. That interface is generic and is parameterized with
 		// 'String' when implemented in the class C. This means the fields that make it into C should

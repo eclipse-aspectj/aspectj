@@ -31,6 +31,7 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void testMakeSJPOptimizationCollapsedSJPYes14() {
 		this.runTest("makeSJP optimization - Collapsed SJP - Yes 1.4");
 		try {

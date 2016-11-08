@@ -875,11 +875,11 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * bridge methods have been created.
 	 */
 	public void checkMethodsExist(String classname,String[] methods) {
-		Set methodsFound = new HashSet();
+		Set<String> methodsFound = new HashSet<>();
 		StringBuffer debugString = new StringBuffer();
 		try {
 			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURL()});
-			Class clz = Class.forName(classname,false,cl);
+			Class<?> clz = Class.forName(classname,false,cl);
 			java.lang.reflect.Method[] ms = clz.getDeclaredMethods();
 			if (ms!=null) {
 				for (int i =0;i<ms.length;i++) {
@@ -905,8 +905,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		StringBuffer unexpectedMethods = new StringBuffer();
 		if (!methodsFound.isEmpty()) {
-			for (Iterator iter = methodsFound.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
+			for (String element: methodsFound) {
 				unexpectedMethods.append("[").append(element).append("]");
 			}
 			fail("These methods weren't expected: "+unexpectedMethods);
@@ -924,7 +923,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
             return false;
         }
         try {
-            final Class[] noparms = new Class[0];
+            final Class<?>[] noparms = new Class[0];
             java.lang.reflect.Method isBridge 
                 = java.lang.reflect.Method.class.getMethod("isBridge", noparms);
             Boolean result = (Boolean) isBridge.invoke(m, new Object[0]);
@@ -959,7 +958,6 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	
 	public static void checkOneSignatureAttribute(Ajc ajc,String classname) {
 		JavaClass clazz = getClass(ajc,classname);
-		Signature sigAttr = null;
 		Attribute[] attrs = clazz.getAttributes();
 		int signatureCount = 0;
 		StringBuffer sb = new StringBuffer();
@@ -981,7 +979,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				sigAttr.getSignature().equals(sig));		
 	}
 		
-	private static String stringify(Class[] clazzes) {
+	private static String stringify(Class<?>[] clazzes) {
 		if (clazzes==null) return "";
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < clazzes.length; i++) {

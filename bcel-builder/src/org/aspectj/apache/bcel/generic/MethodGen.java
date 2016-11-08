@@ -880,9 +880,19 @@ public class MethodGen extends FieldGenOrMethodGen {
 	}
 
 	/**
-	 * Compute maximum number of local variables.
+	 * Compute maximum number of local variables based on the parameter count and bytecode usage of variables.
 	 */
 	public void setMaxLocals() {
+		setMaxLocals(false);
+	}
+	
+	/**
+	 * Compute maximum number of local variables.
+	 * 
+	 * @param respectLocalVariableTable if true and the local variable table indicates more are in use
+	 * than the code suggests, respect the higher value from the local variable table data.
+	 */
+	public void setMaxLocals(boolean respectLocalVariableTable) {
 		if (il != null) {
 			int max = isStatic() ? 0 : 1;
 
@@ -903,10 +913,13 @@ public class MethodGen extends FieldGenOrMethodGen {
 					}
 				}
 			}
-
-			maxLocals = max;
+			if (!respectLocalVariableTable || max > maxLocals) {
+				maxLocals = max;
+			}
 		} else {
-			maxLocals = 0;
+			if (!respectLocalVariableTable) {
+				maxLocals = 0;
+			}
 		}
 	}
 

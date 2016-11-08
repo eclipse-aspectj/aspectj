@@ -1020,7 +1020,8 @@ public final class LazyMethodGen implements Traceable {
 			} else {
 				packBody(gen);
 			}
-			gen.setMaxLocals();
+			
+			gen.setMaxLocals(true); 
 			gen.setMaxStack();
 		} else {
 			gen.setInstructionList(null);

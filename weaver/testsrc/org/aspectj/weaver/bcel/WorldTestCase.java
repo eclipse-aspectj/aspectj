@@ -13,8 +13,6 @@
 package org.aspectj.weaver.bcel;
 
 import java.lang.reflect.Modifier;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.BcweaverTests;

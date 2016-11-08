@@ -71,10 +71,10 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 	}
 
 	public void writeUnchangedBytes() throws IOException {
-		writeWovenBytes(getBytes(), Collections.EMPTY_LIST);
+		writeWovenBytes(getBytes(), Collections.<ChildClass>emptyList());
 	}
 
-	public void writeWovenBytes(byte[] bytes, List childClasses) throws IOException {
+	public void writeWovenBytes(byte[] bytes, List<ChildClass> childClasses) throws IOException {
 		writeChildClasses(childClasses);
 
 		// System.err.println("should write: " + getClassName());
