@@ -60,6 +60,9 @@ public class InterTypeFieldBinding extends FieldBinding {
 		// System.out.println("receiver: " + receiverType + ", " + invocationType);
 		ReferenceBinding declaringType = declaringClass;
 
+		if (invocationType == null) // static import call
+			return !isPrivate() && scope.getCurrentPackage() == receiverType.getPackage();
+
 		// FIXME asc what about parameterized types and private ITD generic fields on interfaces?
 
 		// Don't work with a raw type, work with the generic type
