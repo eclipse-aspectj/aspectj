@@ -335,9 +335,8 @@ public class AjdeInteractionTestbed extends TestCase {
 		MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
 		if (handler.hasErrorMessages()) {
 			System.err.println("Build errors:");
-			for (Iterator<IMessage> iter = handler.getErrorMessages().iterator(); iter.hasNext();) {
-				IMessage element = iter.next();
-				System.err.println(element);
+			for (IMessage message: handler.getErrorMessages()) {
+				System.err.println(message);
 			}
 			System.err.println("---------");
 		}
@@ -358,7 +357,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWeavingMessages();
 	}
 
-	public List<IMessage> getCompilerErrorMessages(String projectName) {
+	public List<String> getCompilerErrorMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getCompilerErrors();
 	}

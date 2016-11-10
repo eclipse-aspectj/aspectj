@@ -32,15 +32,15 @@ public class MultiProjTestMessageHandler implements IBuildMessageHandler {
 	private List<IMessage> errorMessages;
 	private List<IMessage> warningMessages;
 	private List<IMessage> weavingMessages;
-	private List compilerErrors;
-	private List ignoring;
+	private List<String> compilerErrors;
+	private List<Kind> ignoring;
 
 	public MultiProjTestMessageHandler() {
-		ignoring = new ArrayList();
+		ignoring = new ArrayList<>();
 		errorMessages = new ArrayList<IMessage>();
 		warningMessages = new ArrayList<IMessage>();
 		weavingMessages = new ArrayList<IMessage>();
-		compilerErrors = new ArrayList();
+		compilerErrors = new ArrayList<>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);
 	}
@@ -112,7 +112,7 @@ public class MultiProjTestMessageHandler implements IBuildMessageHandler {
 		return weavingMessages;
 	}
 
-	public List<IMessage> getCompilerErrors() {
+	public List<String> getCompilerErrors() {
 		return compilerErrors;
 	}
 
