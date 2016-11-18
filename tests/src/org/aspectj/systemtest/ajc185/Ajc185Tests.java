@@ -10,16 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc185;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
-import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Andy Clement

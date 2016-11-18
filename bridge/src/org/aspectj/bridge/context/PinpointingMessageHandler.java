@@ -102,15 +102,14 @@ public class PinpointingMessageHandler implements IMessageHandler {
 		public Throwable getThrown() { return delegate.getThrown();}
 		public ISourceLocation getSourceLocation() { return delegate.getSourceLocation();}
 		public String getDetails() { return delegate.getDetails();}
-		public List getExtraSourceLocations() { return delegate.getExtraSourceLocations();}
+		public List<ISourceLocation> getExtraSourceLocations() { return delegate.getExtraSourceLocations();}
 	}
-	
-   private static class MessageIssued extends RuntimeException {
- 	private static final long serialVersionUID = 1L;
+
+	private static class MessageIssued extends RuntimeException {
+		private static final long serialVersionUID = 1L;
 
 		public String getMessage() {
-    		return "message issued...";
-    	}
-    }
-
+			return "message issued...";
+		}
+	}
 }

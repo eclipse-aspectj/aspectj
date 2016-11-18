@@ -85,7 +85,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 	private static java.lang.ClassLoader bootClassLoader = null;
 
 	private final ClassLoaderReference loaderRef;
-	private final Map<String, JavaClass> loadedClasses = new SoftHashMap(); // CLASSNAME X JAVACLASS
+	private final Map<String, JavaClass> loadedClasses = new SoftHashMap();
 
 	public static class SoftHashMap extends AbstractMap {
 		private Map<Object, SpecialValue> map;
@@ -96,10 +96,10 @@ public class NonCachingClassLoaderRepository implements Repository {
 		}
 
 		public SoftHashMap() {
-			this(new HashMap());
+			this(new HashMap<Object,SpecialValue>());
 		}
 
-		public SoftHashMap(Map map, boolean b) {
+		public SoftHashMap(Map<Object,SpecialValue> map, boolean b) {
 			this(map);
 		}
 

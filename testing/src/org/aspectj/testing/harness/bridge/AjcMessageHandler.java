@@ -135,8 +135,8 @@ public class AjcMessageHandler extends MessageHandler {
 	/** Generate differences between expected and actual errors and warnings */
 	public CompilerDiffs getCompilerDiffs() {
 		if (null == diffs) {
-			final List expected;
-			final List actual;
+			final List<IMessage> expected;
+			final List<IMessage> actual;
 			if (!ignoreWarnings) {
 				expected = expectedMessages.getUnmodifiableListView();
 				actual = this.getUnmodifiableListView();
@@ -269,7 +269,7 @@ public class AjcMessageHandler extends MessageHandler {
 	private IMessage[] getMessagesWithoutExpectedFails() {
 		IMessage[] result = super.getMessages(null, true);
 		// remove all expected fail+ (COSTLY)
-		ArrayList list = new ArrayList();
+		ArrayList<IMessage> list = new ArrayList<>();
 		int leftToFilter = numExpectedFailed;
 		for (int i = 0; i < result.length; i++) {
 			if ((0 == leftToFilter)

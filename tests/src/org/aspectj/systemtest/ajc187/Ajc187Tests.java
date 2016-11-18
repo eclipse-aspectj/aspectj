@@ -11,13 +11,10 @@
 package org.aspectj.systemtest.ajc187;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-
-import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement

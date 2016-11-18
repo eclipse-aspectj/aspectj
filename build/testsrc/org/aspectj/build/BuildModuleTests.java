@@ -196,7 +196,7 @@ public class BuildModuleTests extends TestCase {
         
         // separate check to verify all file types (suffixes) are known
         if (!"testsrc".equals(srcDir.getName())) {
-            ArrayList unknownFiles = new ArrayList();
+            ArrayList<File> unknownFiles = new ArrayList<>();
             UnknownFileCheck.SINGLETON.unknownFiles(srcDir, unknownFiles);
             if (!unknownFiles.isEmpty()) {
                 String s = "unknown files (see readme-build-module.html to "

@@ -2586,11 +2586,11 @@ public class BcelShadow extends Shadow {
 						ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
 						ret.append(Utility.createConversion(fact, Type.OBJECT, callbackMethod.getArgumentTypes()[0]));
 					} else {
-						int position = (hasThis()/* && pointcutBindsThis */? 1 : 0);
+						int position = (hasThis() && pointcutBindsThis)? 1 : 0;
 						ret.append(InstructionFactory.createLoad(objectArrayType, theObjectArrayLocalNumber));
 						ret.append(Utility.createConstant(fact, position));
 						ret.append(InstructionFactory.createArrayLoad(Type.OBJECT));
-						ret.append(Utility.createConversion(fact, Type.OBJECT, callbackMethod.getArgumentTypes()[position]));
+						ret.append(Utility.createConversion(fact, Type.OBJECT, callbackMethod.getArgumentTypes()[nextArgumentToProvideForCallback]));
 					}
 					nextArgumentToProvideForCallback++;
 				} else {
@@ -3049,12 +3049,9 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * 
-	 * 
 	 * @param callbackMethod the method we will call back to when our run method gets called.
-	 * 
 	 * @param proceedMap A map from state position to proceed argument position. May be non covering on state position.
 	 */
-
 	private LazyMethodGen makeClosureClassAndReturnConstructor(String closureClassName, LazyMethodGen callbackMethod,
 			IntMap proceedMap) {
 		String superClassName = "org.aspectj.runtime.internal.AroundClosure";
@@ -3076,7 +3073,7 @@ public class BcelShadow extends Shadow {
 
 		closureClass.addMethodGen(constructor);
 
-		// method
+		// Create the 'Object run(Object[])' method
 		LazyMethodGen runMethod = new LazyMethodGen(Modifier.PUBLIC, Type.OBJECT, "run", new Type[] { objectArrayType },
 				new String[] {}, closureClass);
 		InstructionList mbody = runMethod.getBody();
@@ -3092,12 +3089,11 @@ public class BcelShadow extends Shadow {
 		Type[] stateTypes = callbackMethod.getArgumentTypes();
 
 		for (int i = 0, len = stateTypes.length; i < len; i++) {
-			Type stateType = stateTypes[i];
-			ResolvedType stateTypeX = BcelWorld.fromBcel(stateType).resolve(world);
+			ResolvedType resolvedStateType = BcelWorld.fromBcel(stateTypes[i]).resolve(world);
 			if (proceedMap.hasKey(i)) {
-				mbody.append(proceedVar.createConvertableArrayLoad(fact, proceedMap.get(i), stateTypeX));
+				mbody.append(proceedVar.createConvertableArrayLoad(fact, proceedMap.get(i), resolvedStateType));
 			} else {
-				mbody.append(stateVar.createConvertableArrayLoad(fact, i, stateTypeX));
+				mbody.append(stateVar.createConvertableArrayLoad(fact, i, resolvedStateType));
 			}
 		}
 

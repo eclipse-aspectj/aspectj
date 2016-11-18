@@ -181,9 +181,8 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 	private LazyMethodGen getMethod(String typename, String methodname) {
 		BcelObjectType type = getBcelObjectFor(typename);
 		LazyClassGen lcg = type.getLazyClassGen();
-		List /* LazyMethodGen */methods = lcg.getMethodGens();
-		for (Iterator iter = methods.iterator(); iter.hasNext();) {
-			LazyMethodGen element = (LazyMethodGen) iter.next();
+		List<LazyMethodGen> methods = lcg.getMethodGens();
+		for (LazyMethodGen element: methods) {
 			if (element.getName().equals(methodname)) {
 				return element;
 			}
@@ -234,7 +233,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 			// Load the file in
 			fr = new BufferedReader(new FileReader(f));
 			String line = null;
-			List originalFileContents = new ArrayList();
+			List<String> originalFileContents = new ArrayList<>();
 			while ((line = fr.readLine()) != null)
 				originalFileContents.add(line);
 			String[] fileContents = (String[]) originalFileContents.toArray(new String[] {});
@@ -256,10 +255,10 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 		}
 	}
 
-	private String stringify(List l) {
+	private String stringify(List<String> l) {
 		StringBuffer result = new StringBuffer();
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			String str = (String) iter.next();
+		for (Iterator<String> iter = l.iterator(); iter.hasNext();) {
+			String str = iter.next();
 			result.append(str);
 			result.append("\n");
 		}

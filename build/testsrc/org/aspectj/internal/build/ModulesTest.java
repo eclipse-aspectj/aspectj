@@ -72,7 +72,7 @@ public class ModulesTest extends TestCase {
         }
     }
 
-    ArrayList tempFiles = new ArrayList();
+    ArrayList<File> tempFiles = new ArrayList<>();
      
 	public ModulesTest(String name) {
 		super(name);

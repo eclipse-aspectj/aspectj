@@ -319,9 +319,9 @@ public class DeclareParents extends Declare {
 		}
 
 		ResolvedType newParentGenericType = newParent.getGenericType();
-		Iterator iter = typeToVerify.getDirectSupertypes();
+		Iterator<ResolvedType> iter = typeToVerify.getDirectSupertypes();
 		while (iter.hasNext()) {
-			ResolvedType supertype = (ResolvedType) iter.next();
+			ResolvedType supertype = iter.next();
 			if (((supertype.isRawType() && newParent.isParameterizedType()) || (supertype.isParameterizedType() && newParent
 					.isRawType()))
 					&& newParentGenericType.equals(supertype.getGenericType())) {

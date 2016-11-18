@@ -343,7 +343,7 @@ public class BuildModuleTest extends TestCase {
         try {
             zipFile = new ZipFile(weaverAllJar);
             Enumeration e = zipFile.entries();
-            ArrayList entryNames = new ArrayList();
+            ArrayList<String> entryNames = new ArrayList<>();
             while (e.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
                 String name = entry.getName();

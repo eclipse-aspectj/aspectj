@@ -101,7 +101,7 @@ public class Ajde {
 			INSTANCE.compilerConfig = compilerConfig;
 			INSTANCE.uiBuildMsgHandler = uiBuildMessageHandler;
 			INSTANCE.buildProgressMonitor = monitor;
-			INSTANCE.asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
+			INSTANCE.asm = AsmManager.createNewStructureModel(Collections.<File,String>emptyMap());
 
 			INSTANCE.iconRegistry = iconRegistry;
 			INSTANCE.ideUIAdapter = ideUIAdapter;

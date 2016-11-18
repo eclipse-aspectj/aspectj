@@ -5,10 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-
-import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -18,6 +15,8 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.Test;
 
 public class GenericsTests extends XMLBasedAjcTestCase {
 

@@ -1233,7 +1233,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter(p, "inc2"); // whitespace change on affected file
 		build(p);
 		checkWasntFullBuild();
-		List l = getCompilerErrorMessages(p);
+		List<String> l = getCompilerErrorMessages(p);
 		assertEquals("Unexpected compiler error", 0, l.size());
 	}
 
@@ -2646,7 +2646,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		configureShowWeaveInfoMessages("PR157054", true);
 		build("PR157054");
 		checkWasFullBuild();
-		List weaveMessages = getWeavingMessages("PR157054");
+		List<IMessage> weaveMessages = getWeavingMessages("PR157054");
 		assertTrue("Should be two weaving messages but there are " + weaveMessages.size(), weaveMessages.size() == 2);
 		alter("PR157054", "inc1");
 		build("PR157054");
@@ -2827,7 +2827,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR152257");
 		configureNonStandardCompileOptions("PR152257", "-XnoInline");
 		build("PR152257");
-		List errors = getErrorMessages("PR152257");
+		List<IMessage> errors = getErrorMessages("PR152257");
 		assertTrue("Should be no warnings, but there are #" + errors.size(), errors.size() == 0);
 		checkWasFullBuild();
 		alter("PR152257", "inc1");
@@ -2965,10 +2965,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private void checkCompiled(String projectName, String typeNameSubstring) {
-		List files = getCompiledFiles(projectName);
+		List<String> files = getCompiledFiles(projectName);
 		boolean found = false;
-		for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-			String object = (String) iterator.next();
+		for (String object: files) {
 			if (object.indexOf(typeNameSubstring) != -1) {
 				found = true;
 			}
@@ -3302,7 +3301,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			// Step2. Quick check that the advice points to something...
 			IProgramElement nodeForTypeA = checkForNode(model, "pkg", "A", true);
 			IProgramElement nodeForAdvice = findAdvice(nodeForTypeA);
-			List relatedElements = getRelatedElements(model, nodeForAdvice, 1);
+			List<String> relatedElements = getRelatedElements(model, nodeForAdvice, 1);
 
 			// Step3. Check the advice applying at the first 'code' join point
 			// in pkg.C is from aspect pkg.A, line 7

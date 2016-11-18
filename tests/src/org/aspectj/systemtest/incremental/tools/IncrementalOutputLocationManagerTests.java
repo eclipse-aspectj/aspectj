@@ -40,7 +40,7 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 
 		private String projectDir;
 		private int numberOfSrcDirs;
-		private List allOutputDirs;
+		private List<File> allOutputDirs;
 
 		public MyOutputLocationManager(String projectName, int numberOfSrcDirs) {
 			projectDir = getWorkingDir() + File.separator + projectName;
@@ -53,8 +53,8 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 		public void reportFileRemove(String outputfile, int filetype) {
 		}
 		
-		public Map getInpathMap() {
-			return Collections.EMPTY_MAP;
+		public Map<File,String> getInpathMap() {
+			return Collections.emptyMap();
 		}
 
 		public File getOutputLocationForClass(File compilationUnit) {
@@ -72,9 +72,9 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 			return getOutputLocationForClass(resource);
 		}
 
-		public List getAllOutputLocations() {
+		public List<File> getAllOutputLocations() {
 			if (allOutputDirs == null) {
-				allOutputDirs = new ArrayList();
+				allOutputDirs = new ArrayList<>();
 				for (int i = 0; i < numberOfSrcDirs + 1; i++) {
 					File f = null;
 					if (i == 0) {

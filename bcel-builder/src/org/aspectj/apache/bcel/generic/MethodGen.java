@@ -1082,7 +1082,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	/**
 	 * Return a list of AnnotationGen objects representing parameter annotations
 	 */
-	public List getAnnotationsOnParameter(int i) {
+	public List<AnnotationGen> getAnnotationsOnParameter(int i) {
 		ensureExistingParameterAnnotationsUnpacked();
 		if (!hasParameterAnnotations || i > parameterTypes.length) {
 			return null;

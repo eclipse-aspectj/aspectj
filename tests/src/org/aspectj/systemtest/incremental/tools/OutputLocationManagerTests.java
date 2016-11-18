@@ -50,7 +50,7 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 	}
 
 	public void testResourceCopying() {
-		Map resourceMap = new HashMap();
+		Map<String,File> resourceMap = new HashMap<>();
 		resourceMap.put("resourceOne.txt", new File(getFile(PROJECT_NAME, "srcRootOne/resourceOne.txt")));
 		resourceMap.put("resourceTwo.txt", new File(getFile(PROJECT_NAME, "srcRootTwo/resourceTwo.txt")));
 		configureResourceMap(PROJECT_NAME, resourceMap);
@@ -93,7 +93,7 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 	private static class MyOutputLocationManager implements IOutputLocationManager {
 
 		private File projectHome;
-		private List allOutputDirs;
+		private List<File> allOutputDirs;
 
 		public MyOutputLocationManager(File projectHome) {
 			this.projectHome = projectHome;
@@ -106,8 +106,8 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public void reportFileRemove(String outputfile, int filetype) {
 		}
 		
-		public Map getInpathMap() {
-			return Collections.EMPTY_MAP;
+		public Map<File,String> getInpathMap() {
+			return Collections.emptyMap();
 		}
 
 
@@ -132,9 +132,9 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 			return getOutputLocationForClass(resource);
 		}
 
-		public List getAllOutputLocations() {
+		public List<File> getAllOutputLocations() {
 			if (allOutputDirs == null) {
-				allOutputDirs = new ArrayList();
+				allOutputDirs = new ArrayList<>();
 				allOutputDirs.add(new File(projectHome, "target/main/classes"));
 				allOutputDirs.add(new File(projectHome, "target/test/classes"));
 				allOutputDirs.add(new File(projectHome, "target/anotherTest/classes"));

@@ -2,6 +2,74 @@
 
 <suite>
 
+	<ajc-test dir="bugs1810/500035" title="ataspectj binding">
+		<compile options="-1.8" files="Code.java"/>
+		<run class="Code">
+		<stdout>
+		<line text="targetObject = hello"/>
+		<line text="regex = l"/>
+		<line text="replacement = 7"/>
+		<line text="he7lo"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1810/500035" title="ataspectj binding 2">
+		<compile options="-1.8" files="Code2.java"/>
+		<run class="Code2">
+		<stdout>
+		<line text="targetObject = hello"/>
+		<line text="regex = l"/>
+		<line text="replacement = 8"/>
+		<line text="he8lo"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1810/500035" title="ataspectj binding 3 -XnoInline">
+		<compile options="-1.8 -XnoInline" files="Code3.java"/>
+		<run class="Code3">
+		<stdout>
+		<line text="first: binding target, just passing everything through: target=Foo(1)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="second: binding this and target, just passing everything through: this=Foo(0) target=Foo(1)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="third: binding this, just passing everything through: this=Foo(0)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="fourth: binding this, switching from Foo(0) to Foo(3)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="fifth: binding target, switching from Foo(1) to Foo(4)"/>
+		<line text="Executing run(abc) on Foo(i=4)"/>
+		<line text="sixth: binding this and target, switching them around (before this=Foo(0) target=Foo(1))"/>
+		<line text="Executing run(abc) on Foo(i=0)"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1810/500035" title="ataspectj binding 4">
+		<compile options="-1.8" files="Code3.java"/>
+		<run class="Code3">
+		<stdout>
+		<line text="first: binding target, just passing everything through: target=Foo(1)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="second: binding this and target, just passing everything through: this=Foo(0) target=Foo(1)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="third: binding this, just passing everything through: this=Foo(0)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="fourth: binding this, switching from Foo(0) to Foo(3)"/>
+		<line text="Executing run(abc) on Foo(i=1)"/>
+		<line text="fifth: binding target, switching from Foo(1) to Foo(4)"/>
+		<line text="Executing run(abc) on Foo(i=4)"/>
+		<line text="sixth: binding this and target, switching them around (before this=Foo(0) target=Foo(1))"/>
+		<line text="Executing run(abc) on Foo(i=0)"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1810/501656" title="generics exception">
+		<compile options="-1.8 -parameters" files="ApplicationException.java ApplicationExceptionHandler.java"/>
+	</ajc-test>
+
 	<ajc-test dir="bugs1810/490315" title="indy">
 		<compile options="-1.8" files="FailingAspect.java SomeAnno.java SomeContext.java SomeCriteria.java SomeDTO.java SomeEnum.java SomePiece.java SomePropertyDTO.java SomeService.java SomeServiceImpl.java"/>
 	</ajc-test>
