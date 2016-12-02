@@ -78,6 +78,8 @@ public interface Member extends Comparable<Member> {
 	 */
 	public boolean canBeParameterized();
 
+	public AnnotationAJ[][] getParameterAnnotations();
+	
 	public AnnotationAJ[] getAnnotations();
 
 	public Collection<ResolvedType> getDeclaringTypes(World world);

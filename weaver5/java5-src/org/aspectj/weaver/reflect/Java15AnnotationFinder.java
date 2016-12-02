@@ -26,6 +26,7 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
 import org.aspectj.weaver.AnnotationAJ;
@@ -321,8 +322,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// here we really want both the runtime visible AND the class visible
 		// annotations
 		// so we bail out to Bcel and then chuck away the JavaClass so that we
-		// don't hog
-		// memory.
+		// don't hog memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
 			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[][] anns = null;
@@ -385,6 +385,73 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			}
 		}
 		return result;
+	}
+	
+	public Object getParamAnnotation(Member onMember, int argsIndex, int paramAnnoIndex) {
+		if (!(onMember instanceof AccessibleObject))
+			return null;
+		// here we really want both the runtime visible AND the class visible
+		// annotations so we bail out to Bcel and then chuck away the JavaClass so that we
+		// don't hog memory.
+//		try {
+//			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
+//			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[][] anns = null;
+//			if (onMember instanceof Method) {
+//				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method) onMember);
+//				if (bcelMethod == null) {
+//					// pr220430
+//					// System.err.println(
+//					// "Unexpected problem in Java15AnnotationFinder: cannot retrieve annotations on method '"
+//					// + onMember.getName()+"' in class '"+jc.getClassName()+"'");
+//				} else {
+//					anns = bcelMethod.getParameterAnnotations();
+//				}
+//			} else if (onMember instanceof Constructor) {
+//				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor) onMember);
+//				anns = bcelCons.getParameterAnnotations();
+//			} else if (onMember instanceof Field) {
+//				// anns = null;
+//			}
+//			// the answer is cached and we don't want to hold on to memory
+//			bcelRepository.clear();
+//			if (anns == null)
+//				return null;
+//			
+//			if (argsIndex>=anns.length) {
+//				return null;
+//			}
+//			AnnotationGen[] parameterAnnotationsOnParticularArg = anns[argsIndex];
+//			if (parameterAnnotationsOnParticularArg==null || paramAnnoIndex>=parameterAnnotationsOnParticularArg.length) {
+//				return null;
+//			}
+//			AnnotationGen parameterAnnotation = parameterAnnotationsOnParticularArg[paramAnnoIndex];
+////			if (parameterAnnotation.getTypeSignature().equals(ofType.getSignature())) {
+//				return new BcelAnnotation(parameterAnnotation, world);
+////			} else {
+////				return null;
+////			}
+//		} catch (ClassNotFoundException cnfEx) {
+//			// just use reflection then
+//		}
+
+		// reflection...
+		AccessibleObject ao = (AccessibleObject) onMember;
+		Annotation[][] anns = null;
+		if (onMember instanceof Method) {
+			anns = ((Method) ao).getParameterAnnotations();
+		} else if (onMember instanceof Constructor) {
+			anns = ((Constructor) ao).getParameterAnnotations();
+		} else if (onMember instanceof Field) {
+			// anns = null;
+		}
+		if (anns == null || argsIndex>=anns.length) {
+			return null;
+		}
+		Annotation[] parameterAnnotationsOnParticularArg = anns[argsIndex];
+		if (parameterAnnotationsOnParticularArg==null || paramAnnoIndex>=parameterAnnotationsOnParticularArg.length) {
+			return null;
+		}
+		return parameterAnnotationsOnParticularArg[paramAnnoIndex];
 	}
 
 }

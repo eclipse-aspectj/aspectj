@@ -30,6 +30,7 @@ public final class ReflectionVar extends Var {
 	static final int AT_WITHIN_VAR = 6;
 	static final int AT_WITHINCODE_VAR = 7;
 	static final int AT_ANNOTATION_VAR = 8;
+	static final int AT_ARGS_PARAM_ANNO_VAR = 9;
 	
 	private AnnotationFinder annotationFinder = null;
 	
@@ -48,6 +49,7 @@ public final class ReflectionVar extends Var {
 //	}
 	
 	private int argsIndex = 0;
+	private int paramAnnoIndex;
 	private int varType;
 	
 	public static ReflectionVar createThisVar(ResolvedType type,AnnotationFinder finder) {
@@ -87,6 +89,14 @@ public final class ReflectionVar extends Var {
 		ret.argsIndex = index;
 		return ret;		
 	}
+
+	public static ReflectionVar createArgsParamAnnotationVar(ResolvedType type, int index, int paramAnnoIndex, AnnotationFinder finder) {
+		ReflectionVar ret = new ReflectionVar(type,finder);
+		ret.varType = AT_ARGS_PARAM_ANNO_VAR;
+		ret.argsIndex = index;
+		ret.paramAnnoIndex = paramAnnoIndex;
+		return ret;		
+	}
 	
 	public static ReflectionVar createWithinAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(annType,finder);
@@ -106,7 +116,7 @@ public final class ReflectionVar extends Var {
 		return ret;
 	}
 
-	private ReflectionVar(ResolvedType type,AnnotationFinder finder) {
+	private ReflectionVar(ResolvedType type, AnnotationFinder finder) {
 		super(type);
 		this.annotationFinder = finder;
 	}
@@ -115,9 +125,11 @@ public final class ReflectionVar extends Var {
 	public Object getBindingAtJoinPoint(Object thisObject, Object targetObject, Object[] args) {
 		return getBindingAtJoinPoint(thisObject,targetObject,args,null,null,null);
 	}
+	
 	/**
 	 * At a join point with the given this, target, and args, return the object to which this
 	 * var is bound.
+	 * 
 	 * @param thisObject
 	 * @param targetObject
 	 * @param args
@@ -148,6 +160,11 @@ public final class ReflectionVar extends Var {
 			if (this.argsIndex > (args.length - 1)) return null;
 			if (annotationFinder != null) {
 				return annotationFinder.getAnnotation(getType(), args[argsIndex]);
+			} else return null;
+		case AT_ARGS_PARAM_ANNO_VAR:
+			if (this.argsIndex > (args.length - 1)) return null;
+			if (annotationFinder != null) {
+				return annotationFinder.getParamAnnotation(subject, argsIndex, paramAnnoIndex);
 			} else return null;
 		case AT_WITHIN_VAR:
 			if (annotationFinder != null) {

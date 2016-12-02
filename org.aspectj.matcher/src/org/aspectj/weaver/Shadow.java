@@ -236,6 +236,8 @@ public abstract class Shadow {
 
 	public abstract Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType);
 
+	public abstract Var getArgParamAnnotationVar(int i, UnresolvedType forAnnotationType);
+
 	public abstract Member getEnclosingCodeSignature();
 
 	/**

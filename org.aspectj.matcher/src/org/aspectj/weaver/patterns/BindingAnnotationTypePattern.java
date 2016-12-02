@@ -29,9 +29,6 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 
 	protected int formalIndex;
 
-	/**
-	 * @param annotationType
-	 */
 	public BindingAnnotationTypePattern(UnresolvedType annotationType, int index) {
 		super(annotationType, null);
 		this.formalIndex = index;
@@ -107,12 +104,17 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 	}
 
 	public AnnotationTypePattern remapAdviceFormals(IntMap bindings) {
+		AnnotationTypePattern atp;
 		if (!bindings.hasKey(formalIndex)) {
-			return new ExactAnnotationTypePattern(annotationType, null);
+			atp = new ExactAnnotationTypePattern(annotationType, null);
 		} else {
 			int newFormalIndex = bindings.get(formalIndex);
-			return new BindingAnnotationTypePattern(annotationType, newFormalIndex);
+			atp = new BindingAnnotationTypePattern(annotationType, newFormalIndex);
+			if (this.isForParameterAnnotationMatch()) {
+				atp.setForParameterAnnotationMatch();
+			}
 		}
+		return atp;
 	}
 
 	private static final byte VERSION = 1; // rev if serialised form changed
@@ -124,6 +126,7 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		annotationType.write(s);
 		s.writeShort((short) formalIndex);
 		writeLocation(s);
+		s.writeBoolean(isForParameterAnnotationMatch());
 	}
 
 	public static AnnotationTypePattern read(VersionedDataInputStream s, ISourceContext context) throws IOException {
@@ -133,6 +136,8 @@ public class BindingAnnotationTypePattern extends ExactAnnotationTypePattern imp
 		}
 		AnnotationTypePattern ret = new BindingAnnotationTypePattern(UnresolvedType.read(s), s.readShort());
 		ret.readLocation(context, s);
+		if (s.readBoolean()) 
+			ret.setForParameterAnnotationMatch();
 		return ret;
 	}
 }

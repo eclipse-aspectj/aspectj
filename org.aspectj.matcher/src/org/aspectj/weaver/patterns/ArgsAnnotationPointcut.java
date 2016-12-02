@@ -76,15 +76,11 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		return FuzzyBoolean.MAYBE;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
-	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		arguments.resolve(shadow.getIWorld());
-		FuzzyBoolean ret = arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()));
-		return ret;
+		FuzzyBoolean ret1 = arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()),shadow);
+//		FuzzyBoolean ret2 = arguments.matches(shadow.getIWorld().resolve(shadow.getArgTypes()));
+		return ret1;
 	}
 
 	/*
@@ -166,12 +162,22 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 				ResolvedType rAnnType = ap.getAnnotationType().resolve(shadow.getIWorld());
 				if (ap instanceof BindingAnnotationTypePattern) {
 					BindingAnnotationTypePattern btp = (BindingAnnotationTypePattern) ap;
-					Var annvar = shadow.getArgAnnotationVar(argsIndex, rAnnType);
-					state.set(btp.getFormalIndex(), annvar);
+					Var v = btp.isForParameterAnnotationMatch() ?
+							shadow.getArgParamAnnotationVar(argsIndex, rAnnType) :
+							shadow.getArgAnnotationVar(argsIndex, rAnnType);
+					state.set(btp.getFormalIndex(), v);
 				}
-				if (!ap.matches(rArgType).alwaysTrue()) {
-					// we need a test...
-					ret = Test.makeAnd(ret, Test.makeHasAnnotation(shadow.getArgVar(argsIndex), rAnnType));
+				if (ap.isForParameterAnnotationMatch()) {
+					if (!ap.matches(null,new ResolvedType[] {rAnnType}).alwaysTrue()) {
+						if (true) throw new IllegalStateException();
+						// need something intelligent here...
+						ret = Test.makeAnd(ret, Test.makeHasAnnotation(shadow.getArgVar(argsIndex), rAnnType));
+					}
+				} else {
+					if (!ap.matches(rAnnType).alwaysTrue()) {
+						// we need a test...
+						ret = Test.makeAnd(ret, Test.makeHasAnnotation(shadow.getArgVar(argsIndex), rAnnType));
+					}
 				}
 				argsIndex++;
 			}

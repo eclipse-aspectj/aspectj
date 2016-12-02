@@ -28,8 +28,8 @@ import org.aspectj.weaver.ast.Var;
 import org.aspectj.weaver.tools.MatchingContext;
 
 /**
- * @author colyer
- * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class ReflectionShadow extends Shadow {
 
@@ -42,10 +42,11 @@ public class ReflectionShadow extends Shadow {
 	private Var[] argsVars = null;
 	private Var atThisVar = null;
 	private Var atTargetVar = null;
-	private Map atArgsVars = new HashMap();
-	private Map withinAnnotationVar = new HashMap();
-	private Map withinCodeAnnotationVar = new HashMap();
-	private Map annotationVar = new HashMap();
+	private Map<ResolvedType,Var[]> atArgsVars = new HashMap<>();
+	private Map<ResolvedType,Var[]> atArgParamVars = new HashMap<>();
+	private Map<ResolvedType,Var> withinAnnotationVar = new HashMap<>();
+	private Map<ResolvedType,Var> withinCodeAnnotationVar = new HashMap<>();
+	private Map<ResolvedType,Var> annotationVar = new HashMap<>();
 	private AnnotationFinder annotationFinder;
 
 	public static Shadow makeExecutionShadow(World inWorld, java.lang.reflect.Member forMethod, MatchingContext withContext) {
@@ -311,11 +312,6 @@ public class ReflectionShadow extends Shadow {
 		return atTargetVar;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int, org.aspectj.weaver.UnresolvedType)
-	 */
 	public Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType) {
 		ResolvedType annType = forAnnotationType.resolve(world);
 		if (atArgsVars.get(annType) == null) {
@@ -327,6 +323,27 @@ public class ReflectionShadow extends Shadow {
 			return null;
 		if (vars[i] == null) {
 			vars[i] = ReflectionVar.createArgsAnnotationVar(annType, i, this.annotationFinder);
+		}
+		return vars[i];
+	}
+	
+	public Var getArgParamAnnotationVar(int i, UnresolvedType forAnnotationType) {
+		ResolvedType resolvedAnnotationType = forAnnotationType.resolve(world);
+		if (atArgParamVars.get(resolvedAnnotationType) == null) {
+			Var[] vars = new Var[getArgCount()];
+			atArgParamVars.put(resolvedAnnotationType, vars);
+		}
+		Var[] vars = (Var[]) atArgParamVars.get(resolvedAnnotationType);
+		if (i > (vars.length - 1))
+			return null;
+		if (vars[i] == null) {
+			ResolvedMember rm = getSignature().resolve(world);
+			ResolvedType[] paramAnnos = rm.getParameterAnnotationTypes()[i];
+			for (int j=0;j<paramAnnos.length;j++) {
+				if (paramAnnos[j].equals(resolvedAnnotationType)) {
+					vars[i] = ReflectionVar.createArgsParamAnnotationVar(resolvedAnnotationType, i, j, this.annotationFinder); 
+				}
+			}
 		}
 		return vars[i];
 	}

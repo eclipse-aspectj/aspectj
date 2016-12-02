@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.tools;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -63,6 +64,9 @@ public class Java15PointcutExpressionTest extends TestCase {
 	private Method b;
 	private Method c;
 	private Method d;
+	private Method e;
+	private Method f;
+	
 	
 	/**
 	 * Parse some expressions and ensure we capture the parameter annotations and parameter type annotations correctly.
@@ -508,6 +512,43 @@ public class Java15PointcutExpressionTest extends TestCase {
 		assertEquals("annotation on B",bAnnotation,jp2.getParameterBindings()[1].getBinding());		
 	}
 	
+	public void testAtArgsWithParamBinding() throws Exception {
+		// B class contains: public void e(@MyAnnotation A anA, B aB) {}
+		PointcutParameter pp = parser.createPointcutParameter("a", MyAnnotation.class);
+		PointcutExpression atArgs = parser.parsePointcutExpression("@args(a (*),..)",A.class,new PointcutParameter[] {pp});
+		ShadowMatch shadowMatch = atArgs.matchesMethodExecution(e);
+		assertTrue(shadowMatch.alwaysMatches());
+		JoinPointMatch jpm = shadowMatch.matchesJoinPoint(new B(), new B(), new Object[] {new A(), new B()});
+		assertEquals(1,jpm.getParameterBindings().length);
+		MyAnnotation expectedAnnotation = (MyAnnotation)B.class.getDeclaredMethod("e", A.class,B.class).getParameterAnnotations()[0][0];
+		Object boundAnnotation = jpm.getParameterBindings()[0].getBinding();
+		assertEquals(expectedAnnotation,boundAnnotation);
+		
+		pp = parser.createPointcutParameter("a", MyAnnotationWithValue.class);
+		PointcutParameter pp2 = parser.createPointcutParameter("b", MyAnnotationWithValue.class);
+		atArgs = parser.parsePointcutExpression("@args(a,b)",A.class,new PointcutParameter[] {pp,pp2});
+		shadowMatch = atArgs.matchesMethodExecution(f);
+		assertTrue(shadowMatch.alwaysMatches());
+		jpm = shadowMatch.matchesJoinPoint(new B(), new B(), new Object[] {new A(), new B()});
+		assertEquals(2,jpm.getParameterBindings().length);
+		MyAnnotationWithValue expectedAnnotation1 = (MyAnnotationWithValue)B.class.getDeclaredMethod("e", A.class,B.class).getParameterAnnotations()[0][0];
+		MyAnnotationWithValue expectedAnnotation2 = (MyAnnotationWithValue)B.class.getDeclaredMethod("e", A.class,B.class).getParameterAnnotations()[1][0];
+		Object boundAnnotation1 = jpm.getParameterBindings()[0].getBinding();
+		assertEquals(expectedAnnotation1,boundAnnotation1);
+		Object boundAnnotation2 = jpm.getParameterBindings()[1].getBinding();
+		assertEquals(expectedAnnotation2,boundAnnotation1);
+		
+//		
+//		atArgs = parser.parsePointcutExpression("@args(a,b)",A.class,new PointcutParameter[] {p1,p2});
+//		sMatch2 = atArgs.matchesMethodExecution(c);
+//		assertTrue("maybe matches C",sMatch2.maybeMatches());
+//		jp2 = sMatch2.matchesJoinPoint(new B(), new B(), new Object[] {new B(),new B()});
+//		assertTrue("matches",jp2.matches());							
+//		assertEquals(2,jp2.getParameterBindings().length);
+//		assertEquals("annotation on B",bAnnotation,jp2.getParameterBindings()[0].getBinding());
+//		assertEquals("annotation on B",bAnnotation,jp2.getParameterBindings()[1].getBinding());		
+	}
+	
 	public void testAtWithin() {
 		PointcutExpression atWithin = parser.parsePointcutExpression("@within(org.aspectj.weaver.tools.Java15PointcutExpressionTest.MyAnnotation)");
 		ShadowMatch sMatch1 = atWithin.matchesMethodExecution(a);
@@ -670,11 +711,18 @@ public class Java15PointcutExpressionTest extends TestCase {
 		b = B.class.getMethod("b");
 		c = B.class.getMethod("c",new Class[] {A.class,B.class});
 		d = B.class.getMethod("d",new Class[] {A.class,A.class});
+		e = B.class.getMethod("e", new Class[] {A.class, B.class});
+		f = B.class.getMethod("f", A.class, B.class);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	private @interface MyAnnotation {}
-	
+
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface MyAnnotationWithValue {
+		String value();
+	}
+
 	private @interface MyClassFileRetentionAnnotation {}
 	
 	private static class A {
@@ -687,6 +735,10 @@ public class Java15PointcutExpressionTest extends TestCase {
 		public void c(A anA, B aB) {}
 		
 		public void d(A anA, A anotherA) {}
+		
+		public void e(@MyAnnotation A anA, B aB) {}
+		
+		public void f(@MyAnnotationWithValue("abc") A anA, @MyAnnotationWithValue("def") B aB) {}
 	}
 	
 	private static class C {

@@ -875,6 +875,7 @@ public class BcelShadow extends Shadow {
 	private BcelVar targetVar = null;
 	private BcelVar[] argVars = null;
 	private Map<ResolvedType, AnnotationAccessVar> kindedAnnotationVars = null;
+	private Map<ResolvedType,AnnotationAccessVar>[] paramAnnoVars = null;
 	private Map<ResolvedType, TypeAnnotationAccessVar> thisAnnotationVars = null;
 	private Map<ResolvedType, TypeAnnotationAccessVar> targetAnnotationVars = null;
 	// private Map/* <UnresolvedType,BcelVar> */[] argAnnotationVars = null;
@@ -950,6 +951,12 @@ public class BcelShadow extends Shadow {
 	public Var getKindedAnnotationVar(UnresolvedType forAnnotationType) {
 		initializeKindedAnnotationVars();
 		return kindedAnnotationVars.get(forAnnotationType);
+	}
+
+	@Override
+	public Var getArgParamAnnotationVar(int parameterIndex, UnresolvedType forAnnotationType) {
+		initializeKindedAnnotationVars();
+		return paramAnnoVars[parameterIndex].get(forAnnotationType);
 	}
 
 	@Override
@@ -1538,6 +1545,41 @@ public class BcelShadow extends Shadow {
 		}
 		return foundMember.getAnnotationTypes();
 	}
+	
+	protected ResolvedType[][] getParameterAnnotations(ResolvedMember foundMember, Member relevantMember, ResolvedType relevantType) {
+		if (foundMember == null) {
+			// check the ITD'd dooberries
+			List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
+			for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
+				Object munger = iter.next();
+				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
+				if (typeMunger.getMunger() instanceof NewMethodTypeMunger
+						|| typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
+					ResolvedMember fakerm = typeMunger.getSignature();
+					// if (fakerm.hasAnnotations())
+
+					ResolvedMember ajcMethod = (getSignature().getKind() == ResolvedMember.CONSTRUCTOR ? AjcMemberMaker
+							.postIntroducedConstructor(typeMunger.getAspectType(), fakerm.getDeclaringType(),
+									fakerm.getParameterTypes()) : AjcMemberMaker.interMethodDispatcher(fakerm,
+							typeMunger.getAspectType()));
+					// AjcMemberMaker.interMethodBody(fakerm,typeMunger.getAspectType()));
+					ResolvedMember rmm = findMethod(typeMunger.getAspectType(), ajcMethod);
+					if (fakerm.getName().equals(getSignature().getName())
+							&& fakerm.getParameterSignature().equals(getSignature().getParameterSignature())) {
+						relevantType = typeMunger.getAspectType();
+						foundMember = rmm;
+						return foundMember.getParameterAnnotationTypes();
+					}
+				}
+			}
+			// didn't find in ITDs, look in supers
+			foundMember = relevantType.lookupMemberWithSupersAndITDs(relevantMember);
+			if (foundMember == null) {
+				throw new IllegalStateException("Couldn't find member " + relevantMember + " for type " + relevantType);
+			}
+		}
+		return foundMember.getParameterAnnotationTypes();
+	}
 
 	/**
 	 * By determining what "kind" of shadow we are, we can find out the annotations on the appropriate element (method, field,
@@ -1550,6 +1592,7 @@ public class BcelShadow extends Shadow {
 		kindedAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		ResolvedType[] annotations = null;
+		ResolvedType[][] paramAnnotations = null;
 		Member shadowSignature = getSignature();
 		Member annotationHolder = getSignature();
 		ResolvedType relevantType = shadowSignature.getDeclaringType().resolve(world);
@@ -1564,6 +1607,7 @@ public class BcelShadow extends Shadow {
 		} else if (getKind() == Shadow.MethodCall || getKind() == Shadow.ConstructorCall) {
 			ResolvedMember foundMember = findMethod2(relevantType.resolve(world).getDeclaredMethods(), getSignature());
 			annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+			paramAnnotations = getParameterAnnotations(foundMember, shadowSignature, relevantType);
 			annotationHolder = getRelevantMember(foundMember, shadowSignature, relevantType);
 			relevantType = annotationHolder.getDeclaringType().resolve(world);
 		} else if (getKind() == Shadow.FieldSet || getKind() == Shadow.FieldGet) {
@@ -1589,17 +1633,15 @@ public class BcelShadow extends Shadow {
 
 		} else if (getKind() == Shadow.MethodExecution || getKind() == Shadow.ConstructorExecution
 				|| getKind() == Shadow.AdviceExecution) {
-
 			ResolvedMember foundMember = findMethod2(relevantType.getDeclaredMethods(), getSignature());
 			annotations = getAnnotations(foundMember, shadowSignature, relevantType);
+			paramAnnotations = getParameterAnnotations(foundMember, shadowSignature, relevantType);
 			annotationHolder = getRelevantMember(foundMember, annotationHolder, relevantType);
 			UnresolvedType ut = annotationHolder.getDeclaringType();
 			relevantType = ut.resolve(world);
-
 		} else if (getKind() == Shadow.ExceptionHandler) {
 			relevantType = getSignature().getParameterTypes()[0].resolve(world);
 			annotations = relevantType.getAnnotationTypes();
-
 		} else if (getKind() == Shadow.PreInitialization || getKind() == Shadow.Initialization) {
 			ResolvedMember found = findMethod2(relevantType.getDeclaredMethods(), getSignature());
 			annotations = found.getAnnotationTypes();
@@ -1614,6 +1656,22 @@ public class BcelShadow extends Shadow {
 			AnnotationAccessVar accessVar = new AnnotationAccessVar(this, getKind(), annotationType.resolve(world), relevantType,
 					annotationHolder, false);
 			kindedAnnotationVars.put(annotationType, accessVar);
+		}
+		
+		if (paramAnnotations != null) {
+			int max = paramAnnotations.length;
+			paramAnnoVars = new HashMap[max];
+			for (int p=0;p<max;p++) {
+				ResolvedType[] annotationsOnParticularParam = paramAnnotations[p];
+				paramAnnoVars[p] = new HashMap<ResolvedType,AnnotationAccessVar>();
+				for (int i=0;i<annotationsOnParticularParam.length;i++) {
+//				for (ResolvedType annotationOnParticularParam: annotationsOnParticularParam) {
+					ResolvedType annotationOnParticularParam = annotationsOnParticularParam[i];
+					ParamAnnotationAccessVar paramAccessVar = new ParamAnnotationAccessVar(this, getKind(), annotationOnParticularParam, relevantType,
+							annotationHolder, false, p, i);
+					paramAnnoVars[p].put(annotationOnParticularParam, paramAccessVar);
+				}
+			}
 		}
 	}
 

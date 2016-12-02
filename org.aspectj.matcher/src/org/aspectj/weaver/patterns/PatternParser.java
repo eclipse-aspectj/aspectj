@@ -1174,9 +1174,15 @@ public class PatternParser {
 		p.setLocation(sourceContext, startPos, endPos);
 		// For optimized syntax that allows binding directly to annotation values (pr234943)
 		if (maybeEat("(")) {
-			String formalName = parseIdentifier();
-			p = new ExactAnnotationFieldTypePattern(p, formalName);
-			eat(")");
+			if (maybeEat("*")) {
+				// Attempt to bind parameter annotation:   @args(@SomeParamAnnotation (*),..)
+				p.setForParameterAnnotationMatch();
+				eat(")");
+			} else {
+				String formalName = parseIdentifier();
+				p = new ExactAnnotationFieldTypePattern(p, formalName);
+				eat(")");
+			}
 		}
 		return p;
 	}

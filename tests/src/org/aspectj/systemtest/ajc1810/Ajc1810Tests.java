@@ -24,6 +24,42 @@ import junit.framework.Test;
  */
 public class Ajc1810Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	// Basic with execution(* *(@Foo (*))) && @args(ca (*))
+	public void testParamAnnoBinding_259416_1() {
+		runTest("param anno binding");
+	}
+
+	// Basic with execution(* *(..)) && args(ca (*))
+	public void testParamAnnoBinding_259416_2() {
+		runTest("param anno binding 2");
+	}
+
+	// Basic with execution(* *(..)) && args(*,ca (*))
+	public void testParamAnnoBinding_259416_3() {
+		runTest("param anno binding 3");
+	}
+
+	// Basic with execution(* *(..)) && args(*,ca (*)) where target has two parameter annotations and we match the 2nd one
+	public void testParamAnnoBinding_259416_4() {
+		runTest("param anno binding 4");
+	}
+	
+	// execution(* *(..)) && args(f *,ca (*))
+	
+	// args(ca1 (*),ca2 (*))
+	
+	// args(ca(*))
+	
+	// args(ca1 (f))
+	
+	// args(ca1 ba1 (*))
+	
+	// args(ca1 ba1 (f1 f2))
+	
+	// args(ca1 (*), .., ca2 (*))
+	
+	
+	
 	public void testBinding_500035() {
 		runTest("ataspectj binding");
 	}

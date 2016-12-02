@@ -43,6 +43,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	protected boolean resolved = false;
 	protected boolean bindingPattern = false;
 	private Map<String, String> annotationValues;
+	private int annotationNumber;
 
 	// OPTIMIZE is annotationtype really unresolved???? surely it is resolved by
 	// now...
@@ -232,6 +233,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 												.error("Compiler limitation: annotation value matching for parameter annotations not yet supported"));
 						return FuzzyBoolean.NO;
 					}
+					this.annotationNumber= i;
 					return FuzzyBoolean.YES;
 				}
 			}

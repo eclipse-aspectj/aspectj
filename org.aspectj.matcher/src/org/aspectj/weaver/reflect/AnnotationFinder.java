@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2016 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -20,7 +20,10 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
- * @author colyer Used in 1.4 code to access annotations safely
+ * Used in 1.4 code to access annotations safely.
+ * 
+ * @author Adrian Colyer 
+ * @author Andy Clement
  */
 public interface AnnotationFinder {
 
@@ -32,14 +35,15 @@ public interface AnnotationFinder {
 
 	Object getAnnotationFromMember(ResolvedType annotationType, Member aMember);
 
-	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType,
-			Member onMember);
+	AnnotationAJ getAnnotationOfType(UnresolvedType ofType, Member onMember);
 
-	public String getAnnotationDefaultValue(Member onMember);
+	String getAnnotationDefaultValue(Member onMember);
 
-	Object getAnnotationFromClass(ResolvedType annotationType, Class aClass);
+	Object getAnnotationFromClass(ResolvedType annotationType, Class<?> aClass);
 
-	Set/* ResolvedType */getAnnotations(Member onMember);
+	Set<ResolvedType> getAnnotations(Member onMember);
 
 	ResolvedType[][] getParameterAnnotationTypes(Member onMember);
+
+	Object getParamAnnotation(Member subject, int argsIndex, int paramAnnoIndex);
 }

@@ -14,10 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
@@ -72,6 +74,56 @@ public class AnnotationPatternList extends PatternNode {
 			typePatterns[i].resolve(inWorld);
 		}
 	}
+	
+	public FuzzyBoolean matches(ResolvedType[] parameterTypes, Shadow shadow) {
+		ResolvedType[][] paramAnnotationTypes = null;
+		// do some quick length tests first
+		int numArgsMatchedByEllipsis = (parameterTypes.length + ellipsisCount) - typePatterns.length;
+		if (numArgsMatchedByEllipsis < 0) {
+			return FuzzyBoolean.NO;
+		}
+		if ((numArgsMatchedByEllipsis > 0) && (ellipsisCount == 0)) {
+			return FuzzyBoolean.NO;
+		}
+		// now work through the args and the patterns, skipping at ellipsis
+		FuzzyBoolean ret = FuzzyBoolean.YES;
+		int argsIndex = 0;
+		for (int i = 0; i < typePatterns.length; i++) {
+			if (typePatterns[i] == AnnotationTypePattern.ELLIPSIS) {
+				// match ellipsisMatchCount args
+				argsIndex += numArgsMatchedByEllipsis;
+			} else if (typePatterns[i] == AnnotationTypePattern.ANY) {
+				argsIndex++;
+			} else if (typePatterns[i].isForParameterAnnotationMatch()) {
+				if (paramAnnotationTypes == null) {
+					paramAnnotationTypes = shadow.getResolvedSignature().getParameterAnnotationTypes();
+				}
+				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern) typePatterns[i];
+				FuzzyBoolean matches = ap.matches(null, paramAnnotationTypes.length==0?ResolvedType.NONE:paramAnnotationTypes[argsIndex]);
+				if (matches == FuzzyBoolean.NO) {
+					return FuzzyBoolean.NO;
+				} else {
+					argsIndex++;
+					ret = ret.and(matches);
+				}
+			} else {
+				// match the argument type at argsIndex with the ExactAnnotationTypePattern
+				// we know it is exact because nothing else is allowed in args
+				if (parameterTypes[argsIndex].isPrimitiveType()) {
+					return FuzzyBoolean.NO; // can never match
+				}
+				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern) typePatterns[i];
+				FuzzyBoolean matches = ap.matchesRuntimeType(parameterTypes[argsIndex]);
+				if (matches == FuzzyBoolean.NO) {
+					return FuzzyBoolean.MAYBE; // could still match at runtime
+				} else {
+					argsIndex++;
+					ret = ret.and(matches);
+				}
+			}
+		}
+		return ret;
+	}
 
 	public FuzzyBoolean matches(ResolvedType[] someArgs) {
 		// do some quick length tests first
@@ -98,13 +150,17 @@ public class AnnotationPatternList extends PatternNode {
 					return FuzzyBoolean.NO; // can never match
 				}
 				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern) typePatterns[i];
-				FuzzyBoolean matches = ap.matchesRuntimeType(someArgs[argsIndex]);
-				if (matches == FuzzyBoolean.NO) {
-					return FuzzyBoolean.MAYBE; // could still match at runtime
-				} else {
-					argsIndex++;
-					ret = ret.and(matches);
-				}
+//				if (ap.isForParameterAnnotationMatch()) {
+//					ap.matches(null,)
+//				} else {
+					FuzzyBoolean matches = ap.matchesRuntimeType(someArgs[argsIndex]);
+					if (matches == FuzzyBoolean.NO) {
+						return FuzzyBoolean.MAYBE; // could still match at runtime
+					} else {
+						argsIndex++;
+						ret = ret.and(matches);
+					}
+//				}
 			}
 		}
 		return ret;

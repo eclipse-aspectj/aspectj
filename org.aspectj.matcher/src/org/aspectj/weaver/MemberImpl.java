@@ -506,6 +506,11 @@ public class MemberImpl implements Member {
 		}
 		return resolved.getParameterNames();
 	}
+	
+	public AnnotationAJ[][] getParameterAnnotations() {
+		throw new UnsupportedOperationException("You should resolve this member '" + this
+				+ "' and call getParameterAnnotations() on the result...");
+	}
 
 	/**
 	 * All the signatures that a join point with this member as its signature has.
