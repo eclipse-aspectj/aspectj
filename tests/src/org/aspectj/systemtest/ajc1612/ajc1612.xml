@@ -655,7 +655,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr335810" title="rawtype warning">
-<compile files="One.java" options="-1.5 -warn:+raw -warn:+warningToken">
+<compile files="One.java" options="-1.5 -warn:+raw -warn:+unchecked -warn:+warningToken">
 </compile>
 </ajc-test>
 
