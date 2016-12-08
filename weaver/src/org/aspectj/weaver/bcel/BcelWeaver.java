@@ -215,12 +215,15 @@ public class BcelWeaver {
 			}
 			return type;
 		} else {
-			// FIXME AV - better warning upon no such aspect from aop.xml
-			RuntimeException ex = new RuntimeException("Cannot register non aspect: " + type.getName() + " , " + aspectName);
-			if (trace.isTraceEnabled()) {
-				trace.exit("addLibraryAspect", ex);
-			}
-			throw ex;
+			if (type.isMissing()) {
+				// May not be found if not visible to the classloader that can see the aop.xml during LTW
+				IMessage message = new Message("The specified aspect '"+aspectName+"' cannot be found", null, true);
+				world.getMessageHandler().handleMessage(message);
+			} else {
+				IMessage message = new Message("Cannot register '"+aspectName+"' because the type found with that name is not an aspect", null, true);
+				world.getMessageHandler().handleMessage(message);
+			}				
+			return null;
 		}
 	}
 
