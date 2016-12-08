@@ -269,8 +269,8 @@ public class AntBuilder extends Builder {
 			javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
 			javac.setSource("1.3");
 		} else {
-			javac.setSource("1.8");
-			javac.setTarget("1.8");
+			javac.setSource("1.7");
+			javac.setTarget("1.7");
 		}
 		// compile
 		boolean passed = false;

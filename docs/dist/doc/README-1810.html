@@ -29,10 +29,14 @@ All rights reserved.
 
 <h2>Notable changes</h2>
 
+<h4>JDT Upgrade</h4>
 <p>The JDT compiler inside AspectJ has been upgraded to the Eclipse Neon.2 level (JDT commit #75dbfad0).</p>
 
-<br>
-<p><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=500035">Bug 500035</a>
+<h4>Java8</h4>
+<p>The Eclipse JDT compiler embedded inside AspectJ now requires Java 8, so that is the minimum required level to compile sources with AspectJ. 
+However, if only doing weaving and no compilation then it is possible to use Java 7.
+
+<h4>Annotation style around advice and proceed (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=500035">Bug 500035</a>)</h4>
 <p>A long standing issue that has been lurking in the handling of arguments passed to proceed for annotation style
 aspects has been fixed. If, at a joinpoint where 'this'/'target' differ (for example at some call joinpoints), the pointcut
 bound either 'this' or 'target' (but not both), then the system would still expect the advice to pass both 'this' and 'target' into the proceed
