@@ -818,8 +818,8 @@ public class Ajctest extends Task implements PropertyChangeListener {
             testsetToArgcombo.put(testset, argcombo);
         }
         while (!testsetToArgcombo.isEmpty()) {
-            int _ = 1;
-            for (Iterator<Testset> iter = testsets.iterator(); iter.hasNext(); _++) {
+            int testsetCounter = 1;
+            for (Iterator<Testset> iter = testsets.iterator(); iter.hasNext(); testsetCounter++) {
                 Testset testset = iter.next();
                 List<List<Arg>> argcombo = testsetToArgcombo.get(testset);
                 if (argcombo.size() == 0) {
@@ -827,8 +827,8 @@ public class Ajctest extends Task implements PropertyChangeListener {
                     continue;
                 }
                 List<Arg> args = argcombo.remove(0);
-                final String startStr = "Testset " + _ + " of " + testsets.size();
-                String str = startStr + " / Combo " + _ + " of " + argcombos.size();
+                final String startStr = "Testset " + testsetCounter + " of " + testsets.size();
+                String str = startStr + " / Combo " + testsetCounter + " of " + argcombos.size();
                 log("---------- " + str + " ----------");
                 execute(testset, args);
             }

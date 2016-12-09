@@ -105,11 +105,11 @@ public class Java15PointcutExpressionTest extends TestCase {
 		PointcutExpression pexpr = null;
 		ShadowMatch match = null;
 
-		Method n = test.AnnoValues.class.getMethod("none",null);          
-		Method r = test.AnnoValues.class.getMethod("redMethod",null);           
-		Method g = test.AnnoValues.class.getMethod("greenMethod",null);     
-		Method b = test.AnnoValues.class.getMethod("blueMethod",null);
-		Method d = test.AnnoValues.class.getMethod("defaultMethod",null);
+		Method n = test.AnnoValues.class.getMethod("none");          
+		Method r = test.AnnoValues.class.getMethod("redMethod");           
+		Method g = test.AnnoValues.class.getMethod("greenMethod");     
+		Method b = test.AnnoValues.class.getMethod("blueMethod");
+		Method d = test.AnnoValues.class.getMethod("defaultMethod");
 
 		pexpr = p.parsePointcutExpression("execution(@test.A3(test.Color.RED) public void *(..))");
 		assertTrue("Should match", pexpr.matchesMethodExecution(n).neverMatches()); // default value RED

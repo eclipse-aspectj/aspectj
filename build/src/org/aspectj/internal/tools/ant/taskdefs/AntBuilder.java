@@ -224,14 +224,19 @@ public class AntBuilder extends Builder {
 		Path path = new Path(project);
 		boolean hasSourceDirectories = false;
 		boolean isJava5Compile = false;
+		boolean isJava8Compile = false;
 		for (File file: result.getSrcDirs()) {
 //		for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
 //			File file = (File) iter.next();
 			path.createPathElement().setLocation(file);
 			if (!isJava5Compile
-					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) || Util.Constants.JAVA5_TESTSRC.equals(file.getName()) || new File(
-							file.getParent(), ".isJava5").exists())) {
+					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) || 
+						Util.Constants.JAVA5_TESTSRC.equals(file.getName()) ||
+						new File(file.getParent(), ".isJava5").exists())) {
 				isJava5Compile = true;
+			}
+			if (new File(file.getParent(),".isJava8").exists()) {
+				isJava8Compile = true;
 			}
 			if (!hasSourceDirectories) {
 				hasSourceDirectories = true;
@@ -269,8 +274,13 @@ public class AntBuilder extends Builder {
 			javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
 			javac.setSource("1.3");
 		} else {
-			javac.setSource("1.7");
-			javac.setTarget("1.7");
+			if (isJava8Compile) {
+				javac.setSource("1.8");
+				javac.setTarget("1.8");				
+			} else {
+				javac.setSource("1.7");
+				javac.setTarget("1.7");
+			}
 		}
 		// compile
 		boolean passed = false;
