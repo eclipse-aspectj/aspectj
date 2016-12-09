@@ -24,6 +24,10 @@ import junit.framework.Test;
  */
 public class Ajc1810Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testBinding_508661() {
+		runTest("various ltw");
+	}
+	
 	public void testBinding_500035() {
 		runTest("ataspectj binding");
 	}

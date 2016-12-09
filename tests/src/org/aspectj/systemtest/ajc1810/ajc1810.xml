@@ -2,6 +2,20 @@
 
 <suite>
 
+	<ajc-test dir="bugs1810/508661" title="various ltw">
+		<compile options="-1.8" files="CacheMethodResult.java A_yes.java B_no.java Run.java" outjar="classes.jar"/>
+		<compile options="-1.8 -Xlint:ignore" files="CacheMethodResultAspect.java" outjar="aspects.jar"/>
+		<run class="Run" ltw="aop.xml">
+			<stdout>
+				<line text="around: void A_yes.m()"/>
+				<line text="A_yes.m()"/>
+				<line text="A_yes has interface? CacheMethodResultAspect$ajcMightHaveAspect"/>
+				<line text="B_no.m()"/>
+				<line text="B_no has interface? no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 	<ajc-test dir="bugs1810/500035" title="ataspectj binding">
 		<compile options="-1.8" files="Code.java"/>
 		<run class="Code">

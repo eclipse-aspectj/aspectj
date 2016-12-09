@@ -1,0 +1,10 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+	<weaver>
+	</weaver>
+
+	<aspects>
+		<aspect name="CacheMethodResultAspect" />
+	</aspects>
+
+</aspectj>
