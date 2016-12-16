@@ -697,8 +697,7 @@ public class BcelWeaver {
 	// if numFormals > 0 then every branch of a disjunction must bind each
 	// formal once and only once.
 	// in addition, the left and right branches of a disjunction must hold on
-	// join point kinds in
-	// common.
+	// join point kinds in common.
 	private void validateBindings(Pointcut dnfPointcut, Pointcut userPointcut, int numFormals, String[] names) {
 		if (numFormals == 0) {
 			return; // nothing to check
@@ -740,8 +739,7 @@ public class BcelWeaver {
 		int kindsInCommon = left.couldMatchKinds() & right.couldMatchKinds();
 		if (kindsInCommon != Shadow.NO_SHADOW_KINDS_BITS && couldEverMatchSameJoinPoints(left, right)) {
 			// we know that every branch binds every formal, so there is no
-			// ambiguity
-			// if each branch binds it in exactly the same way...
+			// ambiguity if each branch binds it in exactly the same way...
 			List<String> ambiguousNames = new ArrayList<String>();
 			for (int i = 0; i < numFormals; i++) {
 				if (leftBindings[i] == null) {
@@ -802,10 +800,9 @@ public class BcelWeaver {
 			validateSingleBranchRecursion(and.getLeft(), userPointcut, foundFormals, names, bindings);
 			validateSingleBranchRecursion(and.getRight(), userPointcut, foundFormals, names, bindings);
 		} else if (pc instanceof NameBindingPointcut) {
-			List/* BindingTypePattern */btps = ((NameBindingPointcut) pc).getBindingTypePatterns();
-			for (Iterator iter = btps.iterator(); iter.hasNext();) {
-				BindingTypePattern btp = (BindingTypePattern) iter.next();
-				int index = btp.getFormalIndex();
+			List<BindingTypePattern> bindingTypePatterns = ((NameBindingPointcut) pc).getBindingTypePatterns();
+			for (BindingTypePattern bindingTypePattern: bindingTypePatterns) {
+				int index = bindingTypePattern.getFormalIndex();
 				bindings[index] = pc;
 				if (foundFormals[index]) {
 					raiseAmbiguousBindingError(names[index], userPointcut);
@@ -813,10 +810,9 @@ public class BcelWeaver {
 					foundFormals[index] = true;
 				}
 			}
-			List/* BindingPattern */baps = ((NameBindingPointcut) pc).getBindingAnnotationTypePatterns();
-			for (Iterator iter = baps.iterator(); iter.hasNext();) {
-				BindingPattern bap = (BindingPattern) iter.next();
-				int index = bap.getFormalIndex();
+			List<BindingPattern> bindingAnnotationTypePatterns = ((NameBindingPointcut) pc).getBindingAnnotationTypePatterns();
+			for (BindingPattern bindingAnnotationTypePattern: bindingAnnotationTypePatterns) {
+				int index = bindingAnnotationTypePattern.getFormalIndex();
 				bindings[index] = pc;
 				if (foundFormals[index]) {
 					raiseAmbiguousBindingError(names[index], userPointcut);
@@ -912,13 +908,9 @@ public class BcelWeaver {
 				.getSourceContext().makeSourceLocation(userPointcut), null);
 	}
 
-	/**
-	 * @param name
-	 * @param userPointcut
-	 */
-	private void raiseAmbiguousBindingError(String name, Pointcut userPointcut) {
-		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.AMBIGUOUS_BINDING, name), userPointcut
-				.getSourceContext().makeSourceLocation(userPointcut), null);
+	private void raiseAmbiguousBindingError(String name, Pointcut pointcut) {
+		world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.AMBIGUOUS_BINDING, name), pointcut
+				.getSourceContext().makeSourceLocation(pointcut), null);
 	}
 
 	/**
