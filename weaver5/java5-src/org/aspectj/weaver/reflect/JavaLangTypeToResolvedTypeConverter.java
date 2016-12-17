@@ -68,11 +68,11 @@ public class JavaLangTypeToResolvedTypeConverter {
 		} else if (type instanceof ParameterizedType) {
 			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=509327
 			// TODO should deal with the ownerType if it set, indicating this is possibly an inner type of a parameterized type
-//			Type ownerType = ((ParameterizedType) type).getOwnerType();
+			Type ownerType = ((ParameterizedType) type).getOwnerType();
 			ParameterizedType parameterizedType = (ParameterizedType) type;
 			ResolvedType baseType = fromType(parameterizedType.getRawType());
 			Type[] typeArguments = parameterizedType.getActualTypeArguments();
-			if (baseType.isSimpleType() && typeArguments.length == 0) {
+			if (baseType.isSimpleType() && typeArguments.length == 0 && ownerType != null) {
 				// 'type' is an inner type of some outer parameterized type
 				// For now just return the base type - in future create the parameterized form of the outer
 				// and use it with the inner. We return the base type to be compatible with what the
