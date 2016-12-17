@@ -933,7 +933,7 @@ public class LangUtil {
 		if ((null == array) || (1 > array.length)) {
 			return Collections.emptyList();
 		}
-		ArrayList<T> list = new ArrayList<>();
+		ArrayList<T> list = new ArrayList<T>();
 		list.addAll(Arrays.asList(array));
 		return list;
 	}

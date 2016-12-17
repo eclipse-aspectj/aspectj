@@ -278,8 +278,9 @@ public class AntBuilder extends Builder {
 				javac.setSource("1.8");
 				javac.setTarget("1.8");				
 			} else {
-				javac.setSource("1.7");
-				javac.setTarget("1.7");
+				// min
+				javac.setSource("1.6");
+				javac.setTarget("1.6");
 			}
 		}
 		// compile
