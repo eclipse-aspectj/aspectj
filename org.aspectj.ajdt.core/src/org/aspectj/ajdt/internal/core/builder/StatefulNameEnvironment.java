@@ -26,7 +26,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModuleLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
@@ -94,26 +93,26 @@ public class StatefulNameEnvironment implements INameEnvironment {
 	}
 	
 	@Override
-	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName, char[] client) {
+	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(packageName, typeName, '.')));
 		if (ret != null) {
 			return ret;
 		}
-		return baseEnvironment.findType(typeName, packageName, client);
+		return baseEnvironment.findType(typeName, packageName);
 	}
 
 	@Override
-	public NameEnvironmentAnswer findType(char[][] compoundName, char[] client) {
+	public NameEnvironmentAnswer findType(char[][] compoundName) {
 		NameEnvironmentAnswer ret = findType(new String(CharOperation.concatWith(compoundName, '.')));
 		if (ret != null) {
 			return ret;
 		}
-		return baseEnvironment.findType(compoundName, client);
+		return baseEnvironment.findType(compoundName);
 	}
 
 	@Override
-	public boolean isPackage(char[][] parentPackageName, char[] packageName, char[] client) {
-		if (baseEnvironment.isPackage(parentPackageName, packageName, client)) {
+	public boolean isPackage(char[][] parentPackageName, char[] packageName) {
+		if (baseEnvironment.isPackage(parentPackageName, packageName)) {
 			return true;
 		}
 		String fullPackageName = new String(CharOperation.concatWith(parentPackageName, packageName, '.'));
@@ -129,30 +128,6 @@ public class StatefulNameEnvironment implements INameEnvironment {
 			addAllPackageNames(className);
 		}
 		this.classesFromName = classNameToFileMap;
-	}
-
-	@Override
-	public void acceptModule(IModule module, IModuleLocation location) {
-		// TODO [j9]
-		baseEnvironment.acceptModule(module, location);
-	}
-
-	@Override
-	public boolean isPackageVisible(char[] pack, char[] source, char[] client) {
-		// TODO [j9]
-		return baseEnvironment.isPackageVisible(pack, source, client);
-	}
-
-	@Override
-	public IModule getModule(char[] name) {
-		// TODO [j9]
-		return baseEnvironment.getModule(name);
-	}
-
-	@Override
-	public IModule getModule(IModuleLocation location) {
-		// TODO [j9]
-		return baseEnvironment.getModule(location);
 	}
 
 }
