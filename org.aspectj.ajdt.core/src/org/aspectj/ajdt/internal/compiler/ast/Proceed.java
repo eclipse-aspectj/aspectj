@@ -157,13 +157,15 @@ public class Proceed extends MessageSend {
 
 
 	//	checkInvocationArguments(scope, this.receiver, this.actualReceiverType, this.binding, this.arguments, argumentTypes, argsContainCast, this);
-		for (int i=0, len=arguments.length; i < len; i++) {
+		int len = arguments.length;
+		this.argumentTypes = (len == 0? TypeBinding.NO_TYPES:new TypeBinding[len]);
+		for (int i=0; i < len; i++) {
 			Expression arg = arguments[i];
-			TypeBinding argType = arg.resolveType(scope);
-			if (argType != null) {
+			argumentTypes[i] = arg.resolveType(scope);
+			if (argumentTypes[i] != null) {
 				TypeBinding paramType = binding.parameters[i];
-				if (!argType.isCompatibleWith(paramType)) {
-					scope.problemReporter().typeMismatchError(argType, paramType, arg,null);
+				if (!argumentTypes[i].isCompatibleWith(paramType)) {
+					scope.problemReporter().typeMismatchError(argumentTypes[i], paramType, arg, null);
 				}
 			}
 		}
