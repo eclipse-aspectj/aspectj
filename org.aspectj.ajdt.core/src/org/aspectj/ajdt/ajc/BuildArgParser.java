@@ -157,8 +157,8 @@ public class BuildArgParser extends Main {
 			// TODO fix org.eclipse.jdt.internal.compiler.batch.Main so this hack isn't needed
 			javaArgList.add("-classpath");
 			javaArgList.add(parser.classpath == null ? System.getProperty("user.dir") : parser.classpath);
-			javaArgList.add("-bootclasspath");
-			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
+//			javaArgList.add("-bootclasspath");
+//			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
 			javaArgList.addAll(parser.getUnparsedArgs());
 			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
 

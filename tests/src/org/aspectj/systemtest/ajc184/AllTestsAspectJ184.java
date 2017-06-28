@@ -12,7 +12,6 @@ package org.aspectj.systemtest.ajc184;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.aspectj.systemtest.apt.AptTests;
 
 public class AllTestsAspectJ184 {
 
@@ -20,7 +19,6 @@ public class AllTestsAspectJ184 {
 		TestSuite suite = new TestSuite("AspectJ 1.8.4 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc184Tests.suite());
-		suite.addTest(AptTests.suite());
 		// $JUnit-END$
 		return suite;
 	}

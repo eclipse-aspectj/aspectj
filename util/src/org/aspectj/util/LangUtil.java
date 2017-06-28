@@ -1460,7 +1460,7 @@ public class LangUtil {
 	}
 	
 	public static String getJrtFsFilePath() {
-		return getJavaHome()+File.separator+JRT_FS;
+		return getJavaHome() + File.separator + "lib" + File.separator + JRT_FS;
 	}
 		
 	public static String getJavaHome() {
