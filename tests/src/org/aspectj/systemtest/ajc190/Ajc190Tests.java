@@ -21,6 +21,10 @@ import junit.framework.Test;
  */
 public class Ajc190Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testFunnySignature() {
+		runTest("funny signature with method reference");
+	}
+	
 	// Weave a module with code that isn't in a module
 	public void testWeaveModule() throws Exception {
 		runTest("weave module");

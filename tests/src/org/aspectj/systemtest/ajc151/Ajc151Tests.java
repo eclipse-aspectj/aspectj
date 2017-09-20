@@ -12,17 +12,14 @@ package org.aspectj.systemtest.ajc151;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import junit.framework.Test;
-
-import org.aspectj.ajdt.internal.core.builder.AsmHierarchyBuilder;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.weaver.UnresolvedType.TypeKind;
+
+import junit.framework.Test;
 
 public class Ajc151Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

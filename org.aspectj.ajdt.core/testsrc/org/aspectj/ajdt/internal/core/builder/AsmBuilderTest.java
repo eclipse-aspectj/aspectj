@@ -59,11 +59,6 @@ public class AsmBuilderTest extends TestCase {
 			public boolean ignoreOptionalProblems() {
 				return false;
 			}
-
-			@Override
-			public char[] module() {
-				return null;
-			}
 			
 		};
 		TypeDeclaration local = new TypeDeclaration(new CompilationResult(cu, 0, 0, 0));

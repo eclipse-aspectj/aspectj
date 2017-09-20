@@ -2,6 +2,10 @@
 
 <suite>
 
+  <ajc-test dir="bugs190/520135" title="funny signature with method reference">
+    <compile files="FailsApectJ.java" options="-1.8"/>
+  </ajc-test>
+
   <ajc-test dir="bugs190/modules" title="weave module">
     <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
     <java classpath="runner.jar" class="a.b.c.Code"/>
