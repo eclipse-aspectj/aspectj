@@ -114,10 +114,19 @@ public interface Constants {
 	public final static short ACC_BRIDGE = 0x0040;
 	public final static short ACC_VARARGS = 0x0080;
 
-	// module related
-	public final static int MODULE_ACC_PUBLIC    = 0x0020;
-	public final static int MODULE_ACC_SYNTHETIC = 0x1000;
-	public final static int MODULE_ACC_MANDATED  = 0x8000;
+	// Module related
+	// Indicates that any module which depends on the current module,
+	// implicitly declares a dependence on the module indicated by this entry.
+	public final static int MODULE_ACC_TRANSITIVE   = 0x0020;
+	// Indicates that this dependence is mandatory in the static phase, i.e., at
+	// compile time, but is optional in the dynamic phase, i.e., at run time.
+	public final static int MODULE_ACC_STATIC_PHASE = 0x0040;
+	// Indicates that this dependence was not explicitly or implicitly declared
+	// in the source of the module declaration.
+	public final static int MODULE_ACC_SYNTHETIC    = 0x1000;
+	// Indicates that this dependence was implicitly declared in the source of
+	// the module declaration
+	public final static int MODULE_ACC_MANDATED     = 0x8000;
 	
 	// Applies to classes compiled by new compilers only
 	public final static short ACC_SUPER = 0x0020;
@@ -143,6 +152,11 @@ public interface Constants {
 	public final static byte CONSTANT_MethodHandle = 15;
 	public final static byte CONSTANT_MethodType = 16;
 	public final static byte CONSTANT_InvokeDynamic = 18;
+	
+	// Java 9
+	public final static byte CONSTANT_Module = 19;
+	public final static byte CONSTANT_Package = 20;
+	
 
 	public final static String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
@@ -624,8 +638,13 @@ public interface Constants {
 	public static final byte ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS = 20;
 	public static final byte ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS = 21;
 	public static final byte ATTR_METHOD_PARAMETERS = 22;
-
-	public static final short KNOWN_ATTRIBUTES = 23;
+	
+	// J9:
+	public static final byte ATTR_MODULE = 23;
+	public static final byte ATTR_MODULE_PACKAGES = 24;
+	public static final byte ATTR_MODULE_MAIN_CLASS = 25;
+	
+	public static final short KNOWN_ATTRIBUTES = 26;
 
 	public static final String[] ATTRIBUTE_NAMES = { 
 		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
@@ -633,7 +652,7 @@ public interface Constants {
 		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
 		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", 
 		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
-		"MethodParameters"
+		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass"
 		};
 
 	/**

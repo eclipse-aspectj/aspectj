@@ -1,13 +1,10 @@
 /* *******************************************************************
- * Copyright (c) 2016 Contributors
+ * Copyright (c) 2016-2017 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
  * ******************************************************************/
 
 package org.aspectj.apache.bcel.classfile.tests;
@@ -21,11 +18,11 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.aspectj.apache.bcel.classfile.Module.Export;
+import org.aspectj.apache.bcel.classfile.Module.Open;
 import org.aspectj.apache.bcel.classfile.Module.Provide;
 import org.aspectj.apache.bcel.classfile.Module.Require;
 import org.aspectj.apache.bcel.classfile.Module.Uses;
 import org.aspectj.apache.bcel.classfile.SourceFile;
-import org.aspectj.apache.bcel.classfile.Unknown;
 
 /**
  * http://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
@@ -49,7 +46,7 @@ public class ModuleTest extends BcelTestCase {
 		Attribute[] attrs = javaClass.getAttributes();
 		assertEquals(2,attrs.length);
 		SourceFile sourceFile = (SourceFile) getAttribute(attrs,Constants.ATTR_SOURCE_FILE);
-		Module moduleAttr = new Module((Unknown)getAttribute(attrs,Constants.ATTR_UNKNOWN));
+		Module moduleAttr = (Module) getAttribute(attrs, Constants.ATTR_MODULE);
 		byte[] originalData = moduleAttr.getBytes();
 		String[] requiredModuleNames = moduleAttr.getRequiredModuleNames();
 		assertEquals(1,requiredModuleNames.length);
@@ -73,28 +70,39 @@ public class ModuleTest extends BcelTestCase {
 	public void testRequires() throws Exception {
 		Module moduleAttr = getModuleAttribute("testdata/modules/two/d/module-info.class");
 		Require[] requires = moduleAttr.getRequires();
-		assertEquals(3,requires.length);
-		assertEquals("requires mandated java.base",requires[0].toString());
+		assertEquals(4, requires.length);
+		assertEquals("requires mandated java.base 9",requires[0].toString());
 		assertEquals("requires a.b.c",requires[1].toString());
-		assertEquals("requires public b.c.d",requires[2].toString());
+		assertEquals("requires static b.c.d",requires[2].toString());
+		assertEquals("requires transitive c.d.e",requires[3].toString());
 		assertEquals("java.base",requires[0].getModuleName());
 		assertEquals("a.b.c",requires[1].getModuleName());
 		assertEquals("b.c.d",requires[2].getModuleName());
+		assertEquals("c.d.e",requires[3].getModuleName());
 	}
 	
 	public void testExports() throws Exception {
 		Module moduleAttr = getModuleAttribute("testdata/modules/two/e/module-info.class");
 		Export[] exports = moduleAttr.getExports();
-		assertEquals(3,exports.length);
-		assertEquals("exports com.foo1",exports[0].toString());
+		assertEquals(3, exports.length);
+		assertEquals("exports com.foo1", exports[0].toString());
 		assertEquals("exports com.foo2 to a.b.c",exports[1].toString());
-		assertEquals("exports com.foo3 to b.c.d, a.b.c",exports[2].toString());
-		assertEquals("com/foo1",exports[0].getExportedPackage());
-		assertEquals("com/foo2",exports[1].getExportedPackage());
-		assertEquals("com/foo3",exports[2].getExportedPackage());
+		assertEquals("exports com.foo3 to a.b.c, b.c.d",exports[2].toString());
+		assertEquals("com/foo1",exports[0].getPackage());
+		assertEquals("com/foo2",exports[1].getPackage());
+		assertEquals("com/foo3",exports[2].getPackage());
 		assertEquals("a.b.c",exports[1].getToModuleNames()[0]);
-		assertEquals("b.c.d",exports[2].getToModuleNames()[0]);
-		assertEquals("a.b.c",exports[2].getToModuleNames()[1]);
+		assertEquals("a.b.c",exports[2].getToModuleNames()[0]);
+		assertEquals("b.c.d",exports[2].getToModuleNames()[1]);
+	}
+	
+	public void testOpens() throws Exception {
+		Module moduleAttr = getModuleAttribute("testdata/modules/two/h/module-info.class");
+		Open[] opens = moduleAttr.getOpens();
+		assertEquals(3, opens.length);
+		assertEquals("opens com.foo1", opens[0].toString());
+		assertEquals("opens com.foo2 to a.b.c", opens[1].toString());
+		assertEquals("opens com.foo3 to a.b.c, b.c.d", opens[2].toString());
 	}
 	
 	public void testUses() throws Exception {
@@ -112,9 +120,9 @@ public class ModuleTest extends BcelTestCase {
 		assertEquals("provides com.foo1.I1 with com.foo1.C1",provides[0].toString());
 		assertEquals("provides com.foo2.I2 with com.foo2.C2",provides[1].toString());
 		assertEquals("com/foo1/I1",provides[0].getProvidedType());
-		assertEquals("com/foo1/C1",provides[0].getWithType());
+		assertEquals("com/foo1/C1",provides[0].getWithTypeStrings()[0]);
 		assertEquals("com/foo2/I2",provides[1].getProvidedType());
-		assertEquals("com/foo2/C2",provides[1].getWithType());
+		assertEquals("com/foo2/C2",provides[1].getWithTypeStrings()[0]);
 	}
 
 	// ---
@@ -122,8 +130,7 @@ public class ModuleTest extends BcelTestCase {
 	private Module getModuleAttribute(String moduleInfoClass) throws Exception {
 		ClassParser classParser = new ClassParser(moduleInfoClass);
 		JavaClass javaClass = classParser.parse();
-		Module moduleAttr = new Module((Unknown)getAttribute(javaClass.getAttributes(),Constants.ATTR_UNKNOWN));
-		return moduleAttr;
+		return (Module)getAttribute(javaClass.getAttributes(), Constants.ATTR_MODULE);
 	}
 	
 }

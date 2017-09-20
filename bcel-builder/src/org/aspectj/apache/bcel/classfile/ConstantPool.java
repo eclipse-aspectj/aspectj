@@ -275,6 +275,20 @@ public class ConstantPool implements Node {
 		assert c.tag == Constants.CONSTANT_Utf8;
 		return (ConstantUtf8) c;
 	}
+	
+	public ConstantModule getConstantModule(int index) {
+		Constant c = getConstant(index);
+		assert c != null;
+		assert c.tag == Constants.CONSTANT_Module;
+		return (ConstantModule)c;
+	}
+
+	public ConstantPackage getConstantPackage(int index) {
+		Constant c = getConstant(index);
+		assert c != null;
+		assert c.tag == Constants.CONSTANT_Package;
+		return (ConstantPackage)c;
+	}
 
 	public String getConstantString_CONSTANTClass(int index) {
 		ConstantClass c = (ConstantClass) getConstant(index, Constants.CONSTANT_Class);
@@ -769,5 +783,13 @@ public class ConstantPool implements Node {
 		Constant[] cs = new Constant[poolSize]; // create it the exact size we need
 		System.arraycopy(pool, 0, cs, 0, poolSize);
 		return new ConstantPool(cs);
+	}
+
+	public String getModuleName(int moduleIndex) {
+		return getConstantModule(moduleIndex).getModuleName(this);
+	}
+
+	public String getPackageName(int packageIndex) {
+		return getConstantPackage(packageIndex).getPackageName(this);
 	}
 }

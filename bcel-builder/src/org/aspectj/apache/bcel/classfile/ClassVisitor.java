@@ -103,6 +103,10 @@ public interface ClassVisitor {
 
 	public void visitConstantString(ConstantString obj);
 
+	public void visitConstantModule(ConstantModule obj);
+
+	public void visitConstantPackage(ConstantPackage obj);
+
 	public void visitConstantUtf8(ConstantUtf8 obj);
 
 	public void visitConstantValue(ConstantValue obj);
@@ -163,5 +167,8 @@ public interface ClassVisitor {
 
 	public void visitMethodParameters(MethodParameters methodParameters);
 	
-	public void visitModule(Module m);
+	// J9:
+	public void visitModule(Module module);
+	public void visitModulePackages(ModulePackages modulePackage);
+	public void visitModuleMainClass(ModuleMainClass moduleMainClass);
 }

@@ -167,6 +167,12 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new RuntimeInvisTypeAnnos(idx, len, file, cpool);
 		case Constants.ATTR_METHOD_PARAMETERS:
 			return new MethodParameters(idx, len, file, cpool);
+		case Constants.ATTR_MODULE:
+			return new Module(idx, len, file, cpool);
+		case Constants.ATTR_MODULE_PACKAGES:
+			return new ModulePackages(idx, len, file, cpool);
+		case Constants.ATTR_MODULE_MAIN_CLASS:
+			return new ModuleMainClass(idx, len, file, cpool);
 		default:
 			throw new IllegalStateException();
 		}

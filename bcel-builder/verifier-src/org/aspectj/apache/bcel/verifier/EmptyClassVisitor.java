@@ -68,7 +68,9 @@ import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantMethodHandle;
 import org.aspectj.apache.bcel.classfile.ConstantMethodType;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantModule;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPackage;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
@@ -88,6 +90,8 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Module;
+import org.aspectj.apache.bcel.classfile.ModuleMainClass;
+import org.aspectj.apache.bcel.classfile.ModulePackages;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
@@ -131,6 +135,8 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitConstantNameAndType(ConstantNameAndType obj) {}
   public void visitConstantPool(ConstantPool obj) {}
   public void visitConstantString(ConstantString obj) {}
+  public void visitConstantModule(ConstantModule obj) {}
+  public void visitConstantPackage(ConstantPackage obj) {}
   public void visitConstantUtf8(ConstantUtf8 obj) {}
   public void visitConstantValue(ConstantValue obj) {}
   public void visitDeprecated(Deprecated obj) {}
@@ -151,9 +157,8 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitUnknown(Unknown obj) {}
   public void visitStackMap(StackMap obj) {}
   public void visitStackMapEntry(StackMapEntry obj) {}
-  public void visitModule(Module obj) {}
-  
-  // J5SUPPORT:
+
+  // J5:
   public void visitEnclosingMethod(EnclosingMethod obj) {}
   public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {}
   public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {}
@@ -162,9 +167,14 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitAnnotationDefault(AnnotationDefault attribute) {}
   public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
   	 
-  // J8SUPPORT:
+  // J8:
   public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {}
   public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {}
   public void visitMethodParameters(MethodParameters attribute) {}
 
+  // J9:
+  public void visitModule(Module attribute) {}
+  public void visitModulePackages(ModulePackages attribute) {}
+  public void visitModuleMainClass(ModuleMainClass attribute) {}
+ 
 }

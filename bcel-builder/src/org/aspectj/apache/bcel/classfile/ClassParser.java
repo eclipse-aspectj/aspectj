@@ -180,7 +180,6 @@ public final class ClassParser {
     superclassnameIndex = file.readUnsignedShort();
   }
   
-  /** Read constant pool entries */
   private final void readConstantPool() throws IOException {
     try {
 		cpool = new ConstantPool(file);

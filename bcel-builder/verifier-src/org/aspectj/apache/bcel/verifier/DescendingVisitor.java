@@ -73,7 +73,9 @@ import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantMethodHandle;
 import org.aspectj.apache.bcel.classfile.ConstantMethodType;
 import org.aspectj.apache.bcel.classfile.ConstantMethodref;
+import org.aspectj.apache.bcel.classfile.ConstantModule;
 import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
+import org.aspectj.apache.bcel.classfile.ConstantPackage;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantUtf8;
@@ -93,6 +95,8 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTypeTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Module;
+import org.aspectj.apache.bcel.classfile.ModuleMainClass;
+import org.aspectj.apache.bcel.classfile.ModulePackages;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
@@ -369,6 +373,18 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	public void visitConstantModule(ConstantModule constant) {
+		stack.push(constant);
+		constant.accept(visitor);
+		stack.pop();
+	}
+
+	public void visitConstantPackage(ConstantPackage constant) {
+		stack.push(constant);
+		constant.accept(visitor);
+		stack.pop();
+	}
+
 	public void visitConstantUtf8(ConstantUtf8 constant) {
 		stack.push(constant);
 		constant.accept(visitor);
@@ -487,6 +503,18 @@ public class DescendingVisitor implements ClassVisitor {
 	}
 
 	public void visitModule(Module attribute) {
+		stack.push(attribute);
+		attribute.accept(visitor);
+		stack.pop();
+	}
+
+	public void visitModulePackages(ModulePackages attribute) {
+		stack.push(attribute);
+		attribute.accept(visitor);
+		stack.pop();
+	}
+
+	public void visitModuleMainClass(ModuleMainClass attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();

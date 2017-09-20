@@ -1,9 +1,7 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2017 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +51,7 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.classfile;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -61,85 +60,47 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 
 /**
- * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
- * closely to the JVM specification.
+ * Indicates the main class of a module.
+ * http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.26
  * 
- * @version $Id: Constant.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author Andy Clement
  */
-public abstract class Constant implements Cloneable, Node {
+public final class ModuleMainClass extends Attribute {
 
-	protected byte tag;
+	private int mainClassIndex;
 
-	Constant(byte tag) {
-		this.tag = tag;
+	public ModuleMainClass(ModuleMainClass c) {
+		this(c.getNameIndex(), c.getLength(), c.getMainClassIndex(), c.getConstantPool());
 	}
 
-	public final byte getTag() {
-		return tag;
+	public ModuleMainClass(int nameIndex, int length, int mainClassIndex, ConstantPool cp) {
+		super(Constants.ATTR_MODULE_MAIN_CLASS, nameIndex, length, cp);
+		this.mainClassIndex = mainClassIndex;
 	}
 
-	@Override
-	public String toString() {
-		return Constants.CONSTANT_NAMES[tag] + "[" + tag + "]";
-	}
-
-	public abstract void accept(ClassVisitor v);
-
-	public abstract void dump(DataOutputStream dataOutputStream) throws IOException;
-
-	public abstract Object getValue();
-
-	public Constant copy() {
-		try {
-			return (Constant) super.clone();
-		} catch (CloneNotSupportedException e) {
-		}
-
-		return null;
+	ModuleMainClass(int nameIndex, int length, DataInputStream stream, ConstantPool cp) throws IOException {
+		this(nameIndex, length, 0, cp);
+		this.mainClassIndex = stream.readUnsignedShort();
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public void accept(ClassVisitor v) {
+		v.visitModuleMainClass(this);
 	}
 
-	static final Constant readConstant(DataInputStream dis) throws IOException, ClassFormatException {
-		byte b = dis.readByte();
-		switch (b) {
-		case Constants.CONSTANT_Class:
-			return new ConstantClass(dis);
-		case Constants.CONSTANT_NameAndType:
-			return new ConstantNameAndType(dis);
-		case Constants.CONSTANT_Utf8:
-			return new ConstantUtf8(dis);
-		case Constants.CONSTANT_Fieldref:
-			return new ConstantFieldref(dis);
-		case Constants.CONSTANT_Methodref:
-			return new ConstantMethodref(dis);
-		case Constants.CONSTANT_InterfaceMethodref:
-			return new ConstantInterfaceMethodref(dis);
-		case Constants.CONSTANT_String:
-			return new ConstantString(dis);
-		case Constants.CONSTANT_Integer:
-			return new ConstantInteger(dis);
-		case Constants.CONSTANT_Float:
-			return new ConstantFloat(dis);
-		case Constants.CONSTANT_Long:
-			return new ConstantLong(dis);
-		case Constants.CONSTANT_Double:
-			return new ConstantDouble(dis);
-		case Constants.CONSTANT_MethodHandle:
-			return new ConstantMethodHandle(dis);
-		case Constants.CONSTANT_MethodType:
-			return new ConstantMethodType(dis);
-		case Constants.CONSTANT_InvokeDynamic:
-			return new ConstantInvokeDynamic(dis);
-		case Constants.CONSTANT_Module: return new ConstantModule(dis);
-		case Constants.CONSTANT_Package: return new ConstantPackage(dis);
-		default:
-			throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
-		}
+	@Override
+	public final void dump(DataOutputStream stream) throws IOException {
+		super.dump(stream);
+		stream.writeShort(mainClassIndex);
+	}
+
+	public final int getMainClassIndex() {
+		return mainClassIndex;
+	}
+
+	@Override
+	public final String toString() {
+		return cpool.getConstantString_CONSTANTClass(mainClassIndex);
 	}
 
 }
