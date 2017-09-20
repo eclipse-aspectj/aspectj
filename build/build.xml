@@ -840,7 +840,7 @@ ant -propertyfile XXX publishtomaven
 
 
   <target name="publishtomaven_milestone" depends="maven.init">
-    <property name="suffix" value="1.9.0.BETA-5"/>
+    <property name="suffix" value="1.9.0.BETA-6"/>
 
     <property name="build.root" value="/Users/aclement/gits/org.aspectj/aj-build"/>
     <property name="adjusted.release.type" value="milestone"/>
