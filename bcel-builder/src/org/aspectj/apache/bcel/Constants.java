@@ -155,14 +155,16 @@ public interface Constants {
 	public final static byte CONSTANT_MethodType = 16;
 	public final static byte CONSTANT_InvokeDynamic = 18;
 	
-	// Java 9
+	// J9:
 	public final static byte CONSTANT_Module = 19;
 	public final static byte CONSTANT_Package = 20;
 	
 
 	public final static String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
-			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic" };
+			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic",
+			// J9:
+			"CONSTANT_Module", "CONSTANT_Package"};
 
 	/**
 	 * The name of the static initializer, also called &quot;class initialization method&quot; or &quot;interface initialization
