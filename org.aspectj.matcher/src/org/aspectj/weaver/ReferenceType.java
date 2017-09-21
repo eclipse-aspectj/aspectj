@@ -1161,6 +1161,7 @@ public class ReferenceType extends ResolvedType {
 		annotations = null;
 		annotationTypes = null;
 		newSuperclass = null;
+		bits = 0; // clears the hierarchy complete tag (amongst other things)
 		newInterfaces = null;
 		typeVariables = null;
 		parameterizedInterfaces.clear();
@@ -1168,7 +1169,7 @@ public class ReferenceType extends ResolvedType {
 		if (getDelegate() != null) {
 			delegate.ensureConsistent();
 		}
-		if (isRawType()) {
+		if (isParameterizedOrRawType()) {
 			ReferenceType genericType = getGenericType();
 			if (genericType != null) {
 				genericType.ensureConsistent();

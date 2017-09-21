@@ -38,7 +38,7 @@ public class MethodParameters extends Attribute {
 	public MethodParameters(int index, int length, DataInputStream dis, ConstantPool cpool) throws IOException {
 		super(Constants.ATTR_METHOD_PARAMETERS,index,length,cpool);
 		data = new byte[length];
-		dis.read(data,0,length);
+		dis.readFully(data,0,length);
 		isInPackedState = true;
 	}
 	

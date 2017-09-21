@@ -254,7 +254,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns = jc.getAnnotations();
 			bcelRepository.clear();
 			if (anns == null)
-				return new ResolvedType[0];
+				return ResolvedType.NONE;
 			ResolvedType[] ret = new ResolvedType[anns.length];
 			for (int i = 0; i < ret.length; i++) {
 				ret[i] = inWorld.resolve(UnresolvedType.forSignature(anns[i].getTypeSignature()));

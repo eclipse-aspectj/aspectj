@@ -50,10 +50,10 @@ import org.aspectj.util.FileUtil;
  */
 public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
-	private static Map testMap = new HashMap();
+	private static Map<String,AjcTest> testMap = new HashMap<String,AjcTest>();
 	private static boolean suiteLoaded = false;
 	private AjcTest currentTest = null;
-	private Stack clearTestAfterRun = new Stack();
+	private Stack<Boolean> clearTestAfterRun = new Stack<Boolean>();
 
 	public XMLBasedAjcTestCase() {
 	}
@@ -71,7 +71,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * @param testCaseClass
 	 * @return
 	 */
-	public static Test loadSuite(Class testCaseClass) {
+	public static Test loadSuite(Class<?> testCaseClass) {
 		TestSuite suite = new TestSuite(testCaseClass.getName());
 		suite.addTestSuite(testCaseClass);
 		TestSetup wrapper = new TestSetup(suite) {
@@ -106,7 +106,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	/*
 	 * Return a map from (String) test title -> AjcTest
 	 */
-	protected Map getSuiteTests() {
+	protected Map<String,AjcTest> getSuiteTests() {
 		return testMap;
 	}
 
@@ -174,7 +174,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		if (clearTestAfterRun.isEmpty()) {
 			return false;
 		}
-		boolean result = ((Boolean) clearTestAfterRun.peek()).booleanValue();
+		boolean result = clearTestAfterRun.peek().booleanValue();
 		if (pop) {
 			clearTestAfterRun.pop();
 		}
@@ -241,7 +241,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		if (!suiteLoaded) {
-			testMap = new HashMap();
+			testMap = new HashMap<String,AjcTest>();
 			System.out.println("LOADING SUITE: " + getSpecFile().getPath());
 			Digester d = getDigester();
 			try {

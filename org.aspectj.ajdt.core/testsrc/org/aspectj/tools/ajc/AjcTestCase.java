@@ -245,9 +245,8 @@ public class AjcTestCase extends TestCase {
 			return true;
 		}
 
-		private boolean hasAMatch(List srcLocations, ISourceLocation sLoc) {
-			for (Iterator iter = srcLocations.iterator(); iter.hasNext();) {
-				ISourceLocation thisLoc = (ISourceLocation) iter.next();
+		private boolean hasAMatch(List<ISourceLocation> srcLocations, ISourceLocation sLoc) {
+			for (ISourceLocation thisLoc: srcLocations) {
 				if (thisLoc.getLine() == sLoc.getLine()) {
 					if (thisLoc.getSourceFile().getPath().equals(sLoc.getSourceFile().getPath())) {
 						return true;

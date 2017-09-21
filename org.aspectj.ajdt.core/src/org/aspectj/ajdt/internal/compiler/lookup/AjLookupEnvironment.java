@@ -1167,6 +1167,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			System.arraycopy(abefore, 0, newset, toAdd.length, abefore.length);
 		}
 		sourceType.scope.referenceContext.annotations = newset;
+		if ((sourceType.tagBits & TagBits.AnnotationResolved)!=0) {
+			sourceType.tagBits = sourceType.tagBits - TagBits.AnnotationResolved;
+		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 		if (factory.pushinCollector != null) {
 			factory.pushinCollector.tagAsMunged(sourceType, new CommonPrinter((methodDecl == null ? null : methodDecl.scope))
@@ -1314,6 +1317,28 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// methods against in the verifier rather than compareTo(Object)
 		if (!factory.getWorld().isInJava5Mode()) {
 			parentBinding = (ReferenceBinding)convertToRawType(parentBinding, false /*do not force conversion of enclosing types*/);
+		} else if (sourceType.isGenericType()) {
+			RawTypeBinding rawTargetType = (RawTypeBinding)convertToRawType(sourceType, false);
+			if (rawTargetType != null) {
+				// assert: don't need to 'rememberTypeHierarchy' because the class file is constructed based on the generic type
+				if (parentBinding.isClass()) {
+					rawTargetType.superclass = parentBinding;
+				} else {
+					ReferenceBinding[] oldI = rawTargetType.superInterfaces;
+					ReferenceBinding[] newI;
+					if (oldI == null) {
+						newI = new ReferenceBinding[1];
+						newI[0] = parentBinding;
+					} else {
+						int n = oldI.length;
+						newI = new ReferenceBinding[n + 1];
+						System.arraycopy(oldI, 0, newI, 0, n);
+						newI[n] = parentBinding;
+					}
+					rawTargetType.superInterfaces = newI;
+				}
+			}
+			// TODO what about parameterized types?
 		}
 		sourceType.rememberTypeHierarchy();
 		if (parentBinding.isClass()) {

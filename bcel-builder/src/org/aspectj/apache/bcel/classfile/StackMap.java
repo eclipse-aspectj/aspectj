@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class represents a stack map attribute used for preverification of Java classes for the <a href="http://java.sun.com/j2me/">
  * Java 2 Micro Edition</a> (J2ME). This attribute is used by the <a href="http://java.sun.com/products/cldc/">KVM</a> and contained
- * within the Code attribute of a method. See CLDC specification §5.3.1.2
+ * within the Code attribute of a method. See CLDC specification 5.3.1.2
  * 
  * @version $Id: StackMap.java,v 1.6 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>

@@ -14,6 +14,7 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import org.aspectj.apache.bcel.classfile.annotation.ElementValue;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
@@ -33,6 +34,7 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationNameValuePair;
 import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.ArrayAnnotationValue;
+import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.SimpleAnnotationValue;
@@ -218,24 +220,14 @@ public class EclipseAnnotationConvertor {
 				}
 			} else {
 				// class type
+				if (defaultValue instanceof ClassLiteralAccess) {
+					ClassLiteralAccess cla = (ClassLiteralAccess)defaultValue;
+					ClassAnnotationValue cav = new ClassAnnotationValue(new String(cla.targetType.signature()));
+					return cav;					
+				}
 				throw new MissingImplementationException(
 						"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation value [" + defaultValue
 								+ "]");
-				// if (contentsOffset + 3 >= this.contents.length) {
-				// resizeContents(3);
-				// }
-				// contents[contentsOffset++] = (byte) 'c';
-				// if (defaultValue instanceof ClassLiteralAccess) {
-				// ClassLiteralAccess classLiteralAccess = (ClassLiteralAccess)
-				// defaultValue;
-				// final int classInfoIndex =
-				// constantPool.literalIndex(classLiteralAccess
-				// .targetType.signature());
-				// contents[contentsOffset++] = (byte) (classInfoIndex >> 8);
-				// contents[contentsOffset++] = (byte) classInfoIndex;
-				// } else {
-				// contentsOffset = attributeOffset;
-				// }
 			}
 		} else {
 			throw new MissingImplementationException(

@@ -56,7 +56,7 @@ public abstract class RuntimeAnnos extends Attribute {
 
 	protected void readAnnotations(DataInputStream dis, ConstantPool cpool) throws IOException {
 		annotation_data = new byte[length];
-		dis.read(annotation_data, 0, length);
+		dis.readFully(annotation_data, 0, length);
 	}
 
 	protected void writeAnnotations(DataOutputStream dos) throws IOException {
@@ -71,12 +71,17 @@ public abstract class RuntimeAnnos extends Attribute {
 		}
 	}
 
+	
 	private void inflate() {
 		try {
 			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(annotation_data));
 			int numberOfAnnotations = dis.readUnsignedShort();
-			for (int i = 0; i < numberOfAnnotations; i++) {
-				annotations.add(AnnotationGen.read(dis, getConstantPool(), visible));
+			if (numberOfAnnotations > 0) {
+				List<AnnotationGen> inflatedAnnotations = new ArrayList<AnnotationGen>();
+				for (int i = 0; i < numberOfAnnotations; i++) {
+					inflatedAnnotations.add(AnnotationGen.read(dis, getConstantPool(), visible));
+				}
+				annotations = inflatedAnnotations;
 			}
 			dis.close();
 			inflated = true;

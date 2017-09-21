@@ -121,7 +121,7 @@ public class WorldTestCase extends CommonWorldTests {
 				});
 		ResolvedMember remove = iter.lookupMethod(MemberImpl.method(iter, 0, "remove", "()V"));
 		assertNotNull("iterator doesn't have remove", remove);
-		modifiersTest(remove, Modifier.PUBLIC | Modifier.INTERFACE); // no longer abstract in Java8 (default instead)
+		modifiersTest(remove, Modifier.PUBLIC); // no longer abstract in Java8 (default instead)
 		exceptionsTest(remove, UnresolvedType.NONE);
 
 		ResolvedMember clone = iter.lookupMethod(MemberImpl.method(UnresolvedType.OBJECT, 0, "clone", "()Ljava/lang/Object;"));

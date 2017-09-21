@@ -69,6 +69,10 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		this.classLoaderReference = new WeakClassLoaderReference((aClassLoader != null) ? aClassLoader : bootClassLoader);
 	}
 
+	public Class<?> getClazz() {
+		return this.myClass;
+	}
+	
 	protected Class getBaseClass() {
 		return this.myClass;
 	}

@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.7 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2015 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.7 Readme</h1>
+
+<p>The full list of resolved issues in 1.8.7 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.7;">here</a></h2>.</p>
+
+<ul>
+<li>1.8.7 available 9-Sep-2015
+</ul>
+
+
+<h2>Notable changes</h2>
+
+<h3>ajdoc</h3>
+<p>The ajdoc tool has been fixed! It is now working again if run on a 1.7 JDK.</p>
+
+<h3>Dynamic weaver attachment</h3>
+<p>The AspectJ loadtime weaving agent can now be dynamically attached to a JVM after it has started 
+(you don't need to use -javaagent). This offers extra flexibility but obviously any
+classes loaded before attachment will not be woven.</p>
+
+<p>Here is a simple aspect:</p>
+<code><pre>
+public aspect Azpect {
+  before(): execution(* *(..)) {
+    System.out.println(thisJoinPointStaticPart);
+  }
+}
+</pre></code>
+
+<p>Compiled via:</p>
+
+<code><pre>ajc -1.8 Azpect.java -outxml</pre></code>
+
+<p>This produces a compiled class <tt>Azpect.class</tt> and a file <tt>META-INF/aop-ajc.xml</tt>.</p>
+
+<p>I then have this sample application (same directory):</p>
+
+<code><pre>
+import java.lang.management.ManagementFactory;
+import org.aspectj.weaver.loadtime.Agent;
+import com.sun.tools.attach.VirtualMachine;
+
+public class Application {
+
+  public static void main(String[] args) {
+    if (!isAspectJAgentLoaded())
+      System.err.println("WARNING: AspectJ weaving agent not loaded");
+    new Sample().doSomething();
+  }
+
+  public static boolean isAspectJAgentLoaded() {
+    try {
+      Agent.getInstrumentation();
+    } catch (NoClassDefFoundError e) {
+      System.out.println(e);
+      return false;
+    } catch (UnsupportedOperationException e) {
+      System.out.println(e);
+      return dynamicallyLoadAspectJAgent();
+    }
+    return true;
+  }
+
+  public static boolean dynamicallyLoadAspectJAgent() {
+    String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
+    int p = nameOfRunningVM.indexOf('@');
+    String pid = nameOfRunningVM.substring(0, p);
+    try {
+      VirtualMachine vm = VirtualMachine.attach(pid);
+      String jarFilePath = System.getProperty("AGENT_PATH");
+      vm.loadAgent(jarFilePath);
+      vm.detach();
+    } catch (Exception e) {
+      System.out.println(e);
+      return false;
+    }
+    return true;
+  }
+}
+</pre></code>
+
+<p>And this Sample class:</p>
+<code><pre>
+public class Sample {
+	public void doSomething() {
+		System.out.println("Do something");
+		System.out.println("Square of 7 = " + square(7));
+	}
+
+	private int square(int i) {
+		return i * i;
+	}
+}
+</pre></code>
+
+<p>Compile these with javac, <b>but you must have the aspectjweaver and the JDK tools.jar on your classpath</b>.</p>
+
+<p>Once compiled we can run it:</p>
+
+<code><pre>java -DAGENT_PATH=&lt;path-to&gt;/aspectjweaver.jar Application</pre></code>
+
+<p>What does it do? The main method calls the function that detects whether the agent is attached, if it is not then
+it programmatically attaches it using the <tt>VirtualMachine</tt> class. Then the main method accesses the
+Sample class. At this point in program execution the Sample class is loaded and because the agent has been
+attached it gets woven. Notice that the <tt>Application</tt> class itself is not woven because it was loaded prior
+to agent attachment.</p>
+
+<p>Thanks to Alexander Kriegisch for the sample code and the patch to add this behaviour to AspectJ.</p>
+
+
+<!-- ============================== -->  
+</body>
+</html>

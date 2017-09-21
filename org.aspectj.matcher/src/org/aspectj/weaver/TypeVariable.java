@@ -151,9 +151,9 @@ public class TypeVariable {
 
 		if (superclass != null) {
 			ResolvedType rt = superclass.resolve(world);
-			// if (!superclass.isTypeVariableReference() && rt.isInterface()) {
-			// throw new IllegalStateException("Why is the type an interface? " + rt);
-			// }
+//			 if (!superclass.isTypeVariableReference() && rt.isInterface()) {
+//				 throw new IllegalStateException("Why is the type an interface? " + rt);
+//			 }
 			superclass = rt;
 		}
 		firstbound = getFirstBound().resolve(world);
@@ -254,7 +254,9 @@ public class TypeVariable {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		sb.append(":");
-		sb.append(superclass.getSignature());
+		if (superInterfaces.length == 0 || !superclass.getSignature().equals(UnresolvedType.OBJECT.getSignature())) {
+			sb.append(superclass.getSignature());
+		}
 		if (superInterfaces.length != 0) {
 			for (int i = 0; i < superInterfaces.length; i++) {
 				sb.append(":");
@@ -272,8 +274,8 @@ public class TypeVariable {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		sb.append(":");
-		if (superInterfaces.length == 0) {
-			sb.append(((ResolvedType) superclass).getSignatureForAttribute());
+		if (superInterfaces.length == 0 || !superclass.getSignature().equals(UnresolvedType.OBJECT.getSignature())) {
+			sb.append(((ReferenceType)superclass).getSignatureForAttribute());
 		}
 		if (superInterfaces.length != 0) {
 			for (int i = 0; i < superInterfaces.length; i++) {

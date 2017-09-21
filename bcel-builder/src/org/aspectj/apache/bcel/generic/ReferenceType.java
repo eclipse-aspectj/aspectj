@@ -137,7 +137,7 @@ public abstract class ReferenceType extends Type {
 		 */
 		if (this instanceof ObjectType && ((ObjectType) this).referencesInterface()) {
 			/*
-			 * If T is a class type, then T must be Object (§2.4.7).
+			 * If T is a class type, then T must be Object (2.4.7).
 			 */
 			if (T instanceof ObjectType && ((ObjectType) T).referencesClass()) {
 				if (T.equals(Type.OBJECT)) {
@@ -146,7 +146,7 @@ public abstract class ReferenceType extends Type {
 			}
 
 			/*
-			 * If T is an interface type, then T must be the same interface as this or a superinterface of this (§2.13.2).
+			 * If T is an interface type, then T must be the same interface as this or a superinterface of this (2.13.2).
 			 */
 			if (T instanceof ObjectType && ((ObjectType) T).referencesInterface()) {
 				if (this.equals(T)) {
@@ -163,7 +163,7 @@ public abstract class ReferenceType extends Type {
 		 */
 		if (this instanceof ArrayType) {
 			/*
-			 * If T is a class type, then T must be Object (§2.4.7).
+			 * If T is a class type, then T must be Object (2.4.7).
 			 */
 			if (T instanceof ObjectType && ((ObjectType) T).referencesClass()) {
 				if (T.equals(Type.OBJECT)) {
@@ -176,7 +176,7 @@ public abstract class ReferenceType extends Type {
 			 */
 			if (T instanceof ArrayType) {
 				/*
-				 * TC and SC are the same primitive type (§2.4.1).
+				 * TC and SC are the same primitive type (2.4.1).
 				 */
 				Type sc = ((ArrayType) this).getElementType();
 				Type tc = ((ArrayType) this).getElementType();
@@ -186,7 +186,7 @@ public abstract class ReferenceType extends Type {
 				}
 
 				/*
-				 * TC and SC are reference types (§2.4.6), and type SC is assignable to TC by these runtime rules.
+				 * TC and SC are reference types (2.4.6), and type SC is assignable to TC by these runtime rules.
 				 */
 				if (tc instanceof ReferenceType && sc instanceof ReferenceType
 						&& ((ReferenceType) sc).isAssignmentCompatibleWith(tc)) {
@@ -194,7 +194,7 @@ public abstract class ReferenceType extends Type {
 				}
 			}
 
-			/* If T is an interface type, T must be one of the interfaces implemented by arrays (§2.15). */
+			/* If T is an interface type, T must be one of the interfaces implemented by arrays (2.15). */
 			// TODO: Check if this is still valid or find a way to dynamically find out which
 			// interfaces arrays implement. However, as of the JVM specification edition 2, there
 			// are at least two different pages where assignment compatibility is defined and
@@ -218,7 +218,7 @@ public abstract class ReferenceType extends Type {
 	 * t is an ArrayType, then Type.OBJECT is returned; unless their dimensions match. Then an ArrayType of the same number of
 	 * dimensions is returned, with its basic type being the first common super class of the basic types of "this" and t. If "this"
 	 * or t is a ReferenceType referencing an interface, then Type.OBJECT is returned. If not all of the two classes' superclasses
-	 * cannot be found, "null" is returned. See the JVM specification edition 2, "§4.9.2 The Bytecode Verifier".
+	 * cannot be found, "null" is returned. See the JVM specification edition 2, "4.9.2 The Bytecode Verifier".
 	 */
 	public ReferenceType getFirstCommonSuperclass(ReferenceType t) {
 		if (this.equals(Type.NULL)) {
@@ -300,7 +300,7 @@ public abstract class ReferenceType extends Type {
 	// * t is an ArrayType, then Type.OBJECT is returned. If "this" or t is a ReferenceType referencing an interface, then
 	// Type.OBJECT
 	// * is returned. If not all of the two classes' superclasses cannot be found, "null" is returned. See the JVM specification
-	// * edition 2, "§4.9.2 The Bytecode Verifier".
+	// * edition 2, "4.9.2 The Bytecode Verifier".
 	// *
 	// * @deprecated use getFirstCommonSuperclass(ReferenceType t) which has slightly changed semantics.
 	// */

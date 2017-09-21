@@ -434,12 +434,13 @@ public class BcelWorld extends World implements Repository {
 			if (file == null) {
 				return null;
 			}
-
 			ClassParser parser = new ClassParser(file.getInputStream(), file.getPath());
-
 			JavaClass jc = parser.parse();
 			return jc;
 		} catch (IOException ioe) {
+			if (trace.isTraceEnabled()) {
+				trace.error("IOException whilst processing class",ioe);
+			}
 			return null;
 		} finally {
 			if (file != null) {
@@ -447,10 +448,6 @@ public class BcelWorld extends World implements Repository {
 			}
 		}
 	}
-
-	// public BcelObjectType addSourceObjectType(JavaClass jc) {
-	// return addSourceObjectType(jc.getClassName(), jc, -1);
-	// }
 
 	public BcelObjectType addSourceObjectType(JavaClass jc, boolean artificial) {
 		return addSourceObjectType(jc.getClassName(), jc, artificial);
@@ -463,19 +460,19 @@ public class BcelWorld extends World implements Repository {
 		}
 		String signature = UnresolvedType.forName(jc.getClassName()).getSignature();
 
-		ResolvedType fromTheMap = typeMap.get(signature);
+		ResolvedType resolvedTypeFromTypeMap = typeMap.get(signature);
 
-		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
+		if (resolvedTypeFromTypeMap != null && !(resolvedTypeFromTypeMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
 			StringBuffer exceptionText = new StringBuffer();
 			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
-			exceptionText.append("Signature=[" + signature + "] Found=[" + fromTheMap + "] Class=[" + fromTheMap.getClass() + "]");
+			exceptionText.append("Signature=[" + signature + "] Found=[" + resolvedTypeFromTypeMap + "] Class=[" + resolvedTypeFromTypeMap.getClass() + "]");
 			throw new BCException(exceptionText.toString());
 		}
 
-		ReferenceType nameTypeX = (ReferenceType) fromTheMap;
+		ReferenceType referenceTypeFromTypeMap = (ReferenceType) resolvedTypeFromTypeMap;
 
-		if (nameTypeX == null) {
+		if (referenceTypeFromTypeMap == null) {
 			if (jc.isGeneric() && isInJava5Mode()) {
 				ReferenceType rawType = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
 				ret = buildBcelDelegate(rawType, jc, artificial, true);
@@ -486,67 +483,64 @@ public class BcelWorld extends World implements Repository {
 				rawType.setGenericType(genericRefType);
 				typeMap.put(signature, rawType);
 			} else {
-				nameTypeX = new ReferenceType(signature, this);
-				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
-				typeMap.put(signature, nameTypeX);
+				referenceTypeFromTypeMap = new ReferenceType(signature, this);
+				ret = buildBcelDelegate(referenceTypeFromTypeMap, jc, artificial, true);
+				typeMap.put(signature, referenceTypeFromTypeMap);
 			}
 		} else {
-			ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+			ret = buildBcelDelegate(referenceTypeFromTypeMap, jc, artificial, true);
 		}
 		return ret;
 	}
 
 	public BcelObjectType addSourceObjectType(String classname, byte[] bytes, boolean artificial) {
-		BcelObjectType ret = null;
+		BcelObjectType retval = null;
 		String signature = UnresolvedType.forName(classname).getSignature();
-		ResolvedType fromTheMap = typeMap.get(signature);
+		ResolvedType resolvedTypeFromTypeMap = typeMap.get(signature);
 
-		if (fromTheMap != null && !(fromTheMap instanceof ReferenceType)) {
+		if (resolvedTypeFromTypeMap != null && !(resolvedTypeFromTypeMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
 			StringBuffer exceptionText = new StringBuffer();
 			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
-			exceptionText.append("Signature=[" + signature + "] Found=[" + fromTheMap + "] Class=[" + fromTheMap.getClass() + "]");
+			exceptionText.append("Signature=[" + signature + "] Found=[" + resolvedTypeFromTypeMap + "] Class=[" + resolvedTypeFromTypeMap.getClass() + "]");
 			throw new BCException(exceptionText.toString());
 		}
 
-		ReferenceType nameTypeX = (ReferenceType) fromTheMap;
+		ReferenceType referenceTypeFromTypeMap = (ReferenceType) resolvedTypeFromTypeMap;
 
-		if (nameTypeX == null) {
+		if (referenceTypeFromTypeMap == null) {
 			JavaClass jc = Utility.makeJavaClass(classname, bytes);
 			if (jc.isGeneric() && isInJava5Mode()) {
-				nameTypeX = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
-				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
+				referenceTypeFromTypeMap = ReferenceType.fromTypeX(UnresolvedType.forRawTypeName(jc.getClassName()), this);
+				retval = buildBcelDelegate(referenceTypeFromTypeMap, jc, artificial, true);
 				ReferenceType genericRefType = new ReferenceType(UnresolvedType.forGenericTypeSignature(signature,
-						ret.getDeclaredGenericSignature()), this);
-				nameTypeX.setDelegate(ret);
-				genericRefType.setDelegate(ret);
-				nameTypeX.setGenericType(genericRefType);
-				typeMap.put(signature, nameTypeX);
+						retval.getDeclaredGenericSignature()), this);
+				referenceTypeFromTypeMap.setDelegate(retval);
+				genericRefType.setDelegate(retval);
+				referenceTypeFromTypeMap.setGenericType(genericRefType);
+				typeMap.put(signature, referenceTypeFromTypeMap);
 			} else {
-				nameTypeX = new ReferenceType(signature, this);
-				ret = buildBcelDelegate(nameTypeX, jc, artificial, true);
-				typeMap.put(signature, nameTypeX);
+				referenceTypeFromTypeMap = new ReferenceType(signature, this);
+				retval = buildBcelDelegate(referenceTypeFromTypeMap, jc, artificial, true);
+				typeMap.put(signature, referenceTypeFromTypeMap);
 			}
 		} else {
-			Object o = nameTypeX.getDelegate();
-			if (!(o instanceof BcelObjectType)) {
-				throw new IllegalStateException("For " + classname + " should be BcelObjectType, but is " + o.getClass());
+			ReferenceTypeDelegate existingDelegate = referenceTypeFromTypeMap.getDelegate();
+			if (!(existingDelegate instanceof BcelObjectType)) {
+				throw new IllegalStateException("For " + classname + " should be BcelObjectType, but is " + existingDelegate.getClass());
 			}
-			ret = (BcelObjectType) o;
-			// byte[] bs = ret.javaClass.getBytes();
-			// if (bs.length != bytes.length) {
-			// throw new RuntimeException("");
-			// }
-			// If the type is already exposed to the weaver (ret.isExposedToWeaver()) then this is likely
-			// to be a hotswap reweave so build a new delegate, dont accidentally use the old data
-			if (ret.isArtificial() || ret.isExposedToWeaver()) {
-				// System.out.println("Rebuilding " + nameTypeX.getName());
-				ret = buildBcelDelegate(nameTypeX, Utility.makeJavaClass(classname, bytes), artificial, true);
-			} else {
-				ret.setExposedToWeaver(true);
-			}
+			retval = (BcelObjectType) existingDelegate;
+			// Note1: If the type is already exposed to the weaver (retval.isExposedToWeaver()) then this is likely
+			// to be a hotswap reweave so build a new delegate, don't accidentally use the old data.
+			// Note2: Also seen when LTW and another agent precedes the AspectJ agent.  Earlier in LTW
+			// a type is resolved (and ends up in the typemap but not exposed to the weaver at that time)
+			// then later LTW actually is attempted on this type. We end up here with different
+			// bytes to the current delegate if the earlier agent has modified them. See PR488216
+//			if (retval.isArtificial() || retval.isExposedToWeaver()) {
+			retval = buildBcelDelegate(referenceTypeFromTypeMap, Utility.makeJavaClass(classname, bytes), artificial, true);
+//			}
 		}
-		return ret;
+		return retval;
 	}
 
 	void deleteSourceObjectType(UnresolvedType ty) {
@@ -630,6 +624,32 @@ public class BcelWorld extends World implements Repository {
 		UnresolvedType declaringType = null;
 
 		String signature = ii.getSignature(cpg);
+		
+		// 307147
+		if (name.startsWith("ajc$privMethod$")) {
+			// The invoke is on a privileged accessor. These may be created for different
+			// kinds of target, not necessarily just private methods. In bug 307147 it is
+			// for a private method. This code is identifying the particular case in 307147
+			try {
+				declaringType = UnresolvedType.forName(declaring);
+				String typeNameAsFoundInAccessorName = declaringType.getName().replace('.', '_');
+				int indexInAccessorName = name.lastIndexOf(typeNameAsFoundInAccessorName);
+				if (indexInAccessorName != -1) {
+					String methodName = name.substring(indexInAccessorName+typeNameAsFoundInAccessorName.length()+1);
+					ResolvedType resolvedDeclaringType = declaringType.resolve(this);
+					ResolvedMember[] methods = resolvedDeclaringType.getDeclaredMethods();
+					for (ResolvedMember method: methods) {
+						if (method.getName().equals(methodName) && method.getSignature().equals(signature) && Modifier.isPrivate(method.getModifiers())) {
+							return method;
+						}
+					}
+				}
+			} catch (Exception e) {
+				// Remove this once confident above code isn't having unexpected side effects
+				// Added 1.8.7
+				e.printStackTrace();
+			}
+		}
 
 		int modifier = (ii instanceof INVOKEINTERFACE) ? Modifier.INTERFACE
 				: (ii.opcode == Constants.INVOKESTATIC) ? Modifier.STATIC : (ii.opcode == Constants.INVOKESPECIAL && !name

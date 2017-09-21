@@ -18,7 +18,8 @@ import java.lang.instrument.ClassFileTransformer;
  * Java 1.5 preMain agent to hook in the class pre processor
  * Can be used with -javaagent:aspectjweaver.jar
  *
- * @author <a href="mailto:alex@gnilux.com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
+ * @author Alexander Kriegisch
  */
 public class Agent { 
 

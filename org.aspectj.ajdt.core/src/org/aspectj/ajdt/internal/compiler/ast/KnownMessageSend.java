@@ -28,7 +28,11 @@ public class KnownMessageSend extends MessageSend {
 		this.receiver = receiver;
 		this.actualReceiverType = binding.declaringClass;
 		this.selector = binding.selector;
-		// constant = Constant.NotAConstant;
+		// 1.8.7 change:
+		// If we don't set this to NotAConstant then we run the code in MessageSend.resolveType that sorts
+		// out this.argumentTypes - which we need set because further down MessageSend.resolveType it will
+		// attempt to use it.
+//		constant = Constant.NotAConstant;
 	}
 
 	public void manageSyntheticAccessIfNecessary(BlockScope currentScope) {
@@ -38,8 +42,7 @@ public class KnownMessageSend extends MessageSend {
 	protected void resolveMethodBinding(
 		BlockScope scope,
 		TypeBinding[] argumentTypes) {
-			// we've already resolved this
-		
+		// we've already resolved this
 	}
 	
 	public String toStringExpression() {

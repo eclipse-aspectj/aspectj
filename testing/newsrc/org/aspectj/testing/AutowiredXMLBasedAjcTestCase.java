@@ -36,7 +36,7 @@ import org.aspectj.tools.ajc.Ajc;
  */
 public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
 
-    private Map testMap = new HashMap();
+    private Map<String,AjcTest> testMap = new HashMap<String,AjcTest>();
 
     public void addTest(AjcTest test) {
         testMap.put(test.getTitle(), test);
@@ -45,11 +45,11 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
     /*
 	 * Return a map from (String) test title -> AjcTest
 	 */
-    protected Map getSuiteTests() {
+    protected Map<String,AjcTest> getSuiteTests() {
         return testMap;
     }
 
-    public static Test loadSuite(Class testCaseClass) {
+    public static Test loadSuite(Class<?> testCaseClass) {
         TestSuite suite = new TestSuite(testCaseClass.getName());
         //suite.addTestSuite(testCaseClass);
 
@@ -66,20 +66,20 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
             }
             wired.ajc = new Ajc();
 
-            Map ajTests = wired.getSuiteTests();
+            Map<String,AjcTest> ajTests = wired.getSuiteTests();
 
-            for (Iterator iterator = ajTests.entrySet().iterator(); iterator.hasNext();) {
-                final Map.Entry entry = (Map.Entry) iterator.next();
+            for (Iterator<Map.Entry<String,AjcTest>> iterator = ajTests.entrySet().iterator(); iterator.hasNext();) {
+                final Map.Entry<String,AjcTest> entry = iterator.next();
 
                 suite.addTest(
                         new TestCase(entry.getKey().toString()) {
 
                             protected void runTest() {
-                                ((AjcTest) entry.getValue()).runTest(wired);
+                                entry.getValue().runTest(wired);
                             }
 
                             public String getName() {
-                                return (String) entry.getKey();
+                                return entry.getKey();
                             }
                         }
                 );

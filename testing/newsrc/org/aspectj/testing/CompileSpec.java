@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004 IBM Corporation
+ * Copyright (c) 2004,2016 IBM Corporation
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -13,7 +13,6 @@ package org.aspectj.testing;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -21,14 +20,12 @@ import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 
 /**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class CompileSpec implements ITestStep {
 
-	private List expected = new ArrayList();
+	private List<ExpectedMessageSpec> expected = new ArrayList<ExpectedMessageSpec>();
 	
 	private String files;
 	private boolean includeClassesDir;
@@ -254,8 +251,8 @@ public class CompileSpec implements ITestStep {
 			args.append(getExtdirs());
 			args.append(" ");
 		}
-		List fileList = new ArrayList();
-		List jarList = new ArrayList();
+		List<String> fileList = new ArrayList<String>();
+		List<String> jarList = new ArrayList<String>();
 		// convention that any jar on file list should be added to inpath
 		String files = getFiles();
 	    if (files == null) files = "";
@@ -271,15 +268,13 @@ public class CompileSpec implements ITestStep {
 		if ((getInpath() != null) || !jarList.isEmpty()) {
 			args.append("-inpath ");
 			if (getInpath() != null) args.append(getInpath());
-			for (Iterator iter = jarList.iterator(); iter.hasNext();) {
-				String jar = (String) iter.next();
+			for (String jar: jarList) {
 				args.append(File.pathSeparator);
 				args.append(jar);
 			}
 			args.append(" ");
 		}
-		for (Iterator iter = fileList.iterator(); iter.hasNext();) {
-			String file = (String) iter.next();
+		for (String file: fileList) {
 			args.append(file);
 			args.append(" ");
 		}
@@ -298,8 +293,7 @@ public class CompileSpec implements ITestStep {
 		List<AjcTestCase.Message> errors = new ArrayList<AjcTestCase.Message>();
 		List<AjcTestCase.Message> fails = new ArrayList<AjcTestCase.Message>();
 		List<AjcTestCase.Message> weaveInfos = new ArrayList<AjcTestCase.Message>();
-		for (Iterator iter = expected.iterator(); iter.hasNext();) {
-			ExpectedMessageSpec exMsg = (ExpectedMessageSpec) iter.next();
+		for (ExpectedMessageSpec exMsg: expected) {
 			String kind = exMsg.getKind();
 			if (kind.equals("info")) {
 				if (infos == null) infos = new ArrayList<AjcTestCase.Message>();

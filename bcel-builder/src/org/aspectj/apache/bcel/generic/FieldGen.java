@@ -66,6 +66,7 @@ import org.aspectj.apache.bcel.classfile.ConstantInteger;
 import org.aspectj.apache.bcel.classfile.ConstantLong;
 import org.aspectj.apache.bcel.classfile.ConstantObject;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
+import org.aspectj.apache.bcel.classfile.ConstantString;
 import org.aspectj.apache.bcel.classfile.ConstantValue;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.Utility;
@@ -126,7 +127,6 @@ public class FieldGen extends FieldGenOrMethodGen {
 		}
 	}
 
-	// TODO setting the constant value is a mess...
 	public void setValue(int index) {
 		ConstantPool cp = this.cp;
 		Constant c = cp.getConstant(index);
@@ -138,6 +138,8 @@ public class FieldGen extends FieldGenOrMethodGen {
 			value = ((ConstantDouble) c).getValue();
 		} else if (c instanceof ConstantLong) {
 			value = ((ConstantLong) c).getValue();
+		} else if (c instanceof ConstantString) {
+			value = ((ConstantString)c).getString(cp);
 		} else {
 			value = ((ConstantObject) c).getConstantValue(cp);
 		}

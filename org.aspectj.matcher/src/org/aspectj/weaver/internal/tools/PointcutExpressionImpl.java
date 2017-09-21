@@ -35,6 +35,7 @@ import org.aspectj.weaver.patterns.WithinAnnotationPointcut;
 import org.aspectj.weaver.patterns.WithinCodeAnnotationPointcut;
 import org.aspectj.weaver.reflect.ReflectionFastMatchInfo;
 import org.aspectj.weaver.reflect.ReflectionShadow;
+import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
 import org.aspectj.weaver.tools.DefaultMatchingContext;
 import org.aspectj.weaver.tools.MatchingContext;
@@ -80,6 +81,12 @@ public class PointcutExpressionImpl implements PointcutExpression {
 
 	public boolean couldMatchJoinPointsInType(Class aClass) {
 		ResolvedType matchType = world.resolve(aClass.getName());
+		if (matchType.isMissing() && (world instanceof ReflectionWorld)) {
+			// Class is a generated class that cannot be 'looked up' via getResource.
+			// For example a proxy or lambda.
+			// Use the class itself in this case
+			matchType = ((ReflectionWorld)world).resolveUsingClass(aClass);
+		}
 		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType, null, this.matchContext, world);
 		boolean couldMatch = pointcut.fastMatch(info).maybeTrue();
 		if (MATCH_INFO) {

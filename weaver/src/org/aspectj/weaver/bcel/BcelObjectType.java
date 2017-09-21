@@ -484,6 +484,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		return javaClass;
 	}
 
+	/**
+	 * @return true if built from bytes obtained from somewhere. False if built from bytes retrieved from disk.
+	 */
 	public boolean isArtificial() {
 		return artificial;
 	}
@@ -901,6 +904,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 		// try finding outer class name by assuming standard class name mangling convention of javac for this class
 		int lastDollar = className.lastIndexOf('$');
+		if (lastDollar == -1) {
+			// Is this class damaged/obfuscated? Why did we think it was nested but couldn't find the parent using
+			// the attributes above. For now just ignore it... I wonder when ignoring this will come back to bite!
+			return null;
+		}
 		String superClassName = className.substring(0, lastDollar);
 		UnresolvedType outer = UnresolvedType.forName(superClassName);
 		return outer.resolve(getResolvedTypeX().getWorld());

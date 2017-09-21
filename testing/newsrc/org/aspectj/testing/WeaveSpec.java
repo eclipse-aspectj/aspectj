@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -37,7 +36,7 @@ public class WeaveSpec extends CompileSpec {
 
 	private String classesFiles;
 	private String aspectsFiles;
-	private List classFilesFromClasses;
+	private List<File> classFilesFromClasses;
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.testing.ITestStep#execute(org.aspectj.tools.ajc.AjcTestCase)
@@ -46,7 +45,7 @@ public class WeaveSpec extends CompileSpec {
 		String failMessage = "test \"" + getTest().getTitle() + "\" failed";
 		try {
 			File base = new File(getBaseDir());
-			classFilesFromClasses = new ArrayList();
+			classFilesFromClasses = new ArrayList<File>();
 			setFiles(classesFiles);
 			String[] args = buildArgs();
 			CompilationResult result = inTestCase.ajc(base,args);
@@ -95,13 +94,12 @@ public class WeaveSpec extends CompileSpec {
 		File outJar = new File(inDir,name);
 		FileOutputStream fos = new FileOutputStream(outJar);
 		JarOutputStream jarOut = new JarOutputStream(fos);
-		List classFiles = new ArrayList();
-		List toExclude = isClasses ? Collections.EMPTY_LIST : classFilesFromClasses;
+		List<File> classFiles = new ArrayList<File>();
+		List<File> toExclude = isClasses ? Collections.<File>emptyList() : classFilesFromClasses;
 		collectClassFiles(inDir,classFiles,toExclude);
 		if (isClasses) classFilesFromClasses = classFiles;
 		String prefix = inDir.getPath() + File.separator;
-		for (Iterator iter = classFiles.iterator(); iter.hasNext();) {
-			File f = (File) iter.next();
+		for (File f: classFiles) {
 			String thisPath = f.getPath();
 			if (thisPath.startsWith(prefix)) {
 				thisPath = thisPath.substring(prefix.length());
@@ -115,7 +113,7 @@ public class WeaveSpec extends CompileSpec {
 		jarOut.close();
 	}
 	
-	private void collectClassFiles(File inDir, List inList, List toExclude) {
+	private void collectClassFiles(File inDir, List<File> inList, List<File> toExclude) {
 		File[] contents = inDir.listFiles();
 		for (int i = 0; i < contents.length; i++) {
 			if (contents[i].getName().endsWith(".class")) {
@@ -135,6 +133,7 @@ public class WeaveSpec extends CompileSpec {
 		while((read = fis.read(buf)) != -1) {
 			dest.write(buf,0,read);
 		}
+		fis.close();
 	}
 	
 	private String[] buildWeaveArgs() {

@@ -1,0 +1,156 @@
+---- AspectJ Properties ---
+AspectJ Compiler 1.8.7 built on Wednesday Sep 9, 2015 at 21:19:30 GMT
+---- Dump Properties ---
+Dump file: ajcore.20160105.151522.218.txt
+Dump reason: java.lang.ClassCastException
+Dump on exception: true
+Dump at exit condition: abort
+---- Exception Information ---
+java.lang.ClassCastException: org.aspectj.apache.bcel.classfile.ConstantString cannot be cast to org.aspectj.apache.bcel.classfile.ConstantObject
+	at org.aspectj.apache.bcel.generic.FieldGen.setValue(FieldGen.java:142)
+	at org.aspectj.apache.bcel.generic.FieldGen.<init>(FieldGen.java:115)
+	at org.aspectj.weaver.bcel.BcelField.getField(BcelField.java:233)
+	at org.aspectj.weaver.bcel.LazyClassGen.writeBack(LazyClassGen.java:522)
+	at org.aspectj.weaver.bcel.LazyClassGen.getJavaClassBytesIncludingReweavable(LazyClassGen.java:697)
+	at org.aspectj.weaver.bcel.BcelWeaver.getClassFilesFor(BcelWeaver.java:1440)
+	at org.aspectj.weaver.bcel.BcelWeaver.weaveAndNotify(BcelWeaver.java:1402)
+	at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:1155)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.weaveQueuedEntries(AjPipeliningCompilerAdapter.java:514)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.queueForWeaving(AjPipeliningCompilerAdapter.java:447)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.afterProcessing(AjPipeliningCompilerAdapter.java:432)
+	at org.aspectj.ajdt.internal.compiler.CompilerAdapter.ajc$after$org_aspectj_ajdt_internal_compiler_CompilerAdapter$5$6b855184(CompilerAdapter.aj:103)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.process(Compiler.java:902)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.processCompiledUnits(Compiler.java:545)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:458)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:114)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.aspectj.tools.ajc.Main.main(Main.java:84)
+---- System Properties ---
+java.runtime.name=Java(TM) SE Runtime Environment
+sun.boot.library.path=/Users/aclement/jvms/jdk180u60/Home/jre/lib
+java.vm.version=25.60-b23
+gopherProxySet=false
+java.vm.vendor=Oracle Corporation
+java.vendor.url=http://java.oracle.com/
+path.separator=:
+java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+file.encoding.pkg=sun.io
+user.country=US
+sun.java.launcher=SUN_STANDARD
+sun.os.patch.level=unknown
+java.vm.specification.name=Java Virtual Machine Specification
+user.dir=/Users/aclement/gits/org.aspectj/tests/bugs188/485055
+java.runtime.version=1.8.0_60-b27
+java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+java.endorsed.dirs=/Users/aclement/jvms/jdk180u60/Home/jre/lib/endorsed
+os.arch=x86_64
+java.io.tmpdir=/var/folders/cn/p3n4rh_n6z7gm6zwk53mtfc80000gp/T/
+line.separator=
+
+java.vm.specification.vendor=Oracle Corporation
+os.name=Mac OS X
+sun.jnu.encoding=UTF-8
+java.library.path=/Users/aclement/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+os.version=10.11.1
+http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+user.home=/Users/aclement
+user.timezone=America/Vancouver
+java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+file.encoding=UTF-8
+java.specification.version=1.8
+java.class.path=/Users/aclement/installs/aspectj187/lib/aspectjtools.jar:/Users/aclement/jvms/jdk180u60/Home/lib/tools.jar:.:/Users/aclement/.m2/repository/org/springframework/spring-test/4.2.3.RELEASE/spring-test-4.2.3.RELEASE.jar:/Users/aclement/.m2/repository/org/springframework/spring-context/4.2.3.RELEASE/spring-context-4.2.3.RELEASE.jar:/Users/aclement/installs/aspectj187/lib/aspectjrt.jar
+user.name=aclement
+java.vm.specification.version=1.8
+sun.java.command=org.aspectj.tools.ajc.Main -1.5 AspectWithConstant.aj
+java.home=/Users/aclement/jvms/jdk180u60/Home/jre
+sun.arch.data.model=64
+user.language=en
+java.specification.vendor=Oracle Corporation
+awt.toolkit=sun.lwawt.macosx.LWCToolkit
+java.vm.info=mixed mode
+java.version=1.8.0_60
+java.ext.dirs=/Users/aclement/Library/Java/Extensions:/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+sun.boot.class.path=/Users/aclement/jvms/jdk180u60/Home/jre/lib/resources.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/rt.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/sunrsasign.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/jsse.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/jce.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/charsets.jar:/Users/aclement/jvms/jdk180u60/Home/jre/lib/jfr.jar:/Users/aclement/jvms/jdk180u60/Home/jre/classes
+java.vendor=Oracle Corporation
+file.separator=/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+sun.io.unicode.encoding=UnicodeBig
+sun.cpu.endian=little
+socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+sun.cpu.isalist=
+---- Command Line ---
+-1.5
+AspectWithConstant.aj
+---- Full Classpath ---
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/resources.jar(3501583 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/rt.jar(66555254 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/sunrsasign.jar(missing)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/jsse.jar(625764 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/jce.jar(114730 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/charsets.jar(3133473 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/jfr.jar(555268 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/classes(missing)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/cldrdata.jar(3860522 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/dnsns.jar(8286 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/jaccess.jar(44516 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/jfxrt.jar(18570861 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/localedata.jar(1178935 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/nashorn.jar(2014239 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/sunec.jar(39771 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/sunjce_provider.jar(278680 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/sunpkcs11.jar(250826 bytes)
+/Users/aclement/jvms/jdk180u60/Home/jre/lib/ext/zipfs.jar(68848 bytes)
+/System/Library/Java/Extensions/AppleScriptEngine.jar(6476 bytes)
+/System/Library/Java/Extensions/dns_sd.jar(17780 bytes)
+/System/Library/Java/Extensions/j3daudio.jar(1223496 bytes)
+/System/Library/Java/Extensions/j3dcore.jar(1157355 bytes)
+/System/Library/Java/Extensions/j3dutils.jar(685308 bytes)
+/System/Library/Java/Extensions/jai_codec.jar(275499 bytes)
+/System/Library/Java/Extensions/jai_core.jar(1544542 bytes)
+/System/Library/Java/Extensions/mlibwrapper_jai.jar(41239 bytes)
+/System/Library/Java/Extensions/MRJToolkit.jar(12847 bytes)
+/System/Library/Java/Extensions/vecmath.jar(127640 bytes)
+/Users/aclement/jvms/jdk180u60/Home/lib/tools.jar(18194868 bytes)
+/Users/aclement/gits/org.aspectj/tests/bugs188/485055/.(2 entries)
+/Users/aclement/.m2/repository/org/springframework/spring-test/4.2.3.RELEASE/spring-test-4.2.3.RELEASE.jar(562284 bytes)
+/Users/aclement/.m2/repository/org/springframework/spring-context/4.2.3.RELEASE/spring-context-4.2.3.RELEASE.jar(1088916 bytes)
+/Users/aclement/installs/aspectj187/lib/aspectjrt.jar(116927 bytes)
+---- Compiler Messages ---
+error at (no source information available)
+/Users/aclement/gits/org.aspectj/tests/bugs188/485055/AspectWithConstant.aj:0::0 Internal compiler error: java.lang.ClassCastException: org.aspectj.apache.bcel.classfile.ConstantString cannot be cast to org.aspectj.apache.bcel.classfile.ConstantObject at org.aspectj.apache.bcel.generic.FieldGen.setValue(FieldGen.java:142)
+abort ABORT -- (ClassCastException) org.aspectj.apache.bcel.classfile.ConstantString cannot be cast to org.aspectj.apache.bcel.classfile.ConstantObject
+org.aspectj.apache.bcel.classfile.ConstantString cannot be cast to org.aspectj.apache.bcel.classfile.ConstantObject
+java.lang.ClassCastException: org.aspectj.apache.bcel.classfile.ConstantString cannot be cast to org.aspectj.apache.bcel.classfile.ConstantObject
+	at org.aspectj.apache.bcel.generic.FieldGen.setValue(FieldGen.java:142)
+	at org.aspectj.apache.bcel.generic.FieldGen.<init>(FieldGen.java:115)
+	at org.aspectj.weaver.bcel.BcelField.getField(BcelField.java:233)
+	at org.aspectj.weaver.bcel.LazyClassGen.writeBack(LazyClassGen.java:522)
+	at org.aspectj.weaver.bcel.LazyClassGen.getJavaClassBytesIncludingReweavable(LazyClassGen.java:697)
+	at org.aspectj.weaver.bcel.BcelWeaver.getClassFilesFor(BcelWeaver.java:1440)
+	at org.aspectj.weaver.bcel.BcelWeaver.weaveAndNotify(BcelWeaver.java:1402)
+	at org.aspectj.weaver.bcel.BcelWeaver.weave(BcelWeaver.java:1155)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.weaveQueuedEntries(AjPipeliningCompilerAdapter.java:514)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.queueForWeaving(AjPipeliningCompilerAdapter.java:447)
+	at org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter.afterProcessing(AjPipeliningCompilerAdapter.java:432)
+	at org.aspectj.ajdt.internal.compiler.CompilerAdapter.ajc$after$org_aspectj_ajdt_internal_compiler_CompilerAdapter$5$6b855184(CompilerAdapter.aj:103)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.process(Compiler.java:902)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.processCompiledUnits(Compiler.java:545)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:458)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:114)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.aspectj.tools.ajc.Main.main(Main.java:84)
+

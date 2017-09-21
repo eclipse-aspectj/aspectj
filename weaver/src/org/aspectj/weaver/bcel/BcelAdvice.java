@@ -241,12 +241,28 @@ class BcelAdvice extends Advice {
 		if (boType.javaClass.getMajor() == Constants.MAJOR_1_8) {
 			if (containsInvokedynamic == 0) {
 				containsInvokedynamic = 1;
-				LazyMethodGen lmg = boType.getLazyClassGen().getLazyMethodGen(this.signature);
-				InstructionList ilist = lmg.getBody();
-				for (InstructionHandle src = ilist.getStart(); src != null; src = src.getNext()) {
-					if (src.getInstruction().opcode == Constants.INVOKEDYNAMIC) {
-						containsInvokedynamic = 2;
-						break;
+				LazyMethodGen lmg = boType.getLazyClassGen().getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
+				// Check Java8 supertypes
+				ResolvedType searchType = concreteAspect;
+				while (lmg == null) {
+					searchType = searchType.getSuperclass();
+					if (searchType == null) break;
+					ReferenceTypeDelegate rtd = ((ReferenceType)searchType).getDelegate();
+					if (rtd instanceof BcelObjectType) {
+						BcelObjectType bot = (BcelObjectType)rtd;
+						if (bot.javaClass.getMajor() < Constants.MAJOR_1_8) {
+							break;
+						}
+						lmg = bot.getLazyClassGen().getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
+					}
+				}
+				if (lmg != null) {
+					InstructionList ilist = lmg.getBody();
+					for (InstructionHandle src = ilist.getStart(); src != null; src = src.getNext()) {
+						if (src.getInstruction().opcode == Constants.INVOKEDYNAMIC) {
+							containsInvokedynamic = 2;
+							break;
+						}
 					}
 				}
 			}

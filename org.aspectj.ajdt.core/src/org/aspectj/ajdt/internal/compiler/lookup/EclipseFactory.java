@@ -922,7 +922,7 @@ public class EclipseFactory {
 	 * to being a generic ITD. Any aliases are put into the typeVariableToBinding map so that they will be substituted as
 	 * appropriate in the returned methodbinding
 	 */
-	public MethodBinding internalMakeMethodBinding(ResolvedMember member, List aliases, UnresolvedType aliasTargetType) {
+	public MethodBinding internalMakeMethodBinding(ResolvedMember member, List<String> aliases, UnresolvedType aliasTargetType) {
 		typeVariableToTypeBinding.clear();
 		TypeVariableBinding[] tvbs = null;
 
@@ -945,9 +945,8 @@ public class EclipseFactory {
 			if (aliasTarget.isRawType()) {
 				aliasTarget = ((RawTypeBinding) aliasTarget).genericType();
 			}
-			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
-				typeVariableToTypeBinding.put(element, aliasTarget.typeVariables()[i++]);
+			for (String alias: aliases) {
+				typeVariableToTypeBinding.put(alias, aliasTarget.typeVariables()[i++]);
 			}
 		}
 

@@ -142,6 +142,7 @@ public abstract class World implements Dump.INode {
 	public boolean forDEBUG_structuralChangesCode = false;
 	public boolean forDEBUG_bridgingCode = false;
 	public boolean optimizedMatching = true;
+	public boolean generateNewLvts = true;
 	protected long timersPerJoinpoint = 25000;
 	protected long timersPerType = 250;
 
@@ -959,6 +960,12 @@ public abstract class World implements Dump.INode {
 	public final static String xsetITD_VERSION_DEFAULT = xsetITD_VERSION_2NDGEN;
 	public final static String xsetMINIMAL_MODEL = "minimalModel";
 	public final static String xsetTARGETING_RUNTIME_1610 = "targetRuntime1_6_10";
+	
+	// This option allows you to prevent AspectJ adding local variable tables - some tools (e.g. dex) may
+	// not like what gets created because even though it is valid, the bytecode they are processing has
+	// unexpected quirks that mean the table entries are violated in the code. See issue:
+	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=470658
+	public final static String xsetGENERATE_NEW_LVTS="generateNewLocalVariableTables";
 
 	public boolean isInJava5Mode() {
 		return behaveInJava5Way;
@@ -1230,11 +1237,12 @@ public abstract class World implements Dump.INode {
 			}
 
 			// TODO should this be in as a permanent assertion?
-			/*
-			 * if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode() && (((ReferenceType) type).getDelegate() !=
-			 * null) && type.isGenericType()) { throw new BCException("Attempt to add generic type to typemap " + type.toString() +
-			 * " (should be raw)"); }
-			 */
+			
+			if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode()
+					&& (((ReferenceType) type).getDelegate() != null) && type.isGenericType()) {
+				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
+			}
+			
 
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {
@@ -1621,6 +1629,12 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetDEBUG_BRIDGING, "false");
 				forDEBUG_bridgingCode = s.equalsIgnoreCase("true");
 
+				s = p.getProperty(xsetGENERATE_NEW_LVTS,"true");
+				generateNewLvts = s.equalsIgnoreCase("true");
+				if (!generateNewLvts) {
+					getMessageHandler().handleMessage(MessageUtil.info("[generateNewLvts=false] for methods without an incoming local variable table, do not generate one"));					
+				}
+				
 				s = p.getProperty(xsetOPTIMIZED_MATCHING, "true");
 				optimizedMatching = s.equalsIgnoreCase("true");
 				if (!optimizedMatching) {

@@ -26,9 +26,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclarat
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -89,17 +91,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		// }
 
 		if (Modifier.isAbstract(this.declaredModifiers)) {
-			if (!(typeDec instanceof AspectDeclaration)) {
-				// check for @Aspect
-				if (isAtAspectJ(typeDec)) {
-					// no need to check abstract class as JDT does that
-				} else {
-					typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
-							"The abstract pointcut " + new String(declaredName) + " can only be defined in an aspect");
-					ignoreFurtherInvestigation = true;
-					return;
-				}
-			} else if (!Modifier.isAbstract(typeDec.modifiers)) {
+			if ((typeDec instanceof AspectDeclaration) && !Modifier.isAbstract(typeDec.modifiers)) {
 				typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
 						"The abstract pointcut " + new String(declaredName) + " can only be defined in an abstract aspect");
 
@@ -116,10 +108,9 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	private boolean isAtAspectJ(TypeDeclaration typeDec) {
 		if (typeDec.annotations == null)
 			return false;
-
 		for (int i = 0; i < typeDec.annotations.length; i++) {
 			Annotation annotation = typeDec.annotations[i];
-			if ("Lorg/aspectj/lang/annotation/Aspect;".equals(new String(annotation.resolvedType.signature()))) {
+			if (CharOperation.equals(annotation.resolvedType.signature(),ASPECT_CHARS)) {
 				return true;
 			}
 		}
@@ -174,6 +165,8 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		generateSyntheticPointcutMethod = true;
 		// mangleSelector = false;
 	}
+	
+	private static char[] ASPECT_CHARS = "Lorg/aspectj/lang/annotation/Aspect;".toCharArray();
 
 	public void resolve(ClassScope upperScope) {
 		// we attempted to resolve annotations below, but that was too early, so we do it again
@@ -181,6 +174,18 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		if (binding != null) {
 			binding.tagBits -= TagBits.AnnotationResolved;
 			resolveAnnotations(scope, this.annotations, this.binding);
+			
+			TypeDeclaration typeDec = upperScope.referenceContext;
+			if (Modifier.isAbstract(this.declaredModifiers)) {
+				if (!(typeDec instanceof AspectDeclaration)) {
+					if (!isAtAspectJ(typeDec)) {
+						typeDec.scope.problemReporter().signalError(sourceStart, sourceEnd,
+								"The abstract pointcut " + new String(declaredName) + " can only be defined in an aspect");
+						ignoreFurtherInvestigation = true;
+						return;					
+					}
+				}
+			}
 		}
 		// for the rest of the resolution process, this method should do nothing, use the entry point below...
 	}

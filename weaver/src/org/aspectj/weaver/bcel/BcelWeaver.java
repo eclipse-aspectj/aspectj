@@ -503,7 +503,11 @@ public class BcelWeaver {
 			UnwovenClassFile jc = i.next();
 			String name = jc.getClassName();
 			ResolvedType type = world.resolve(name);
-			if (type.isAspect() && !world.isOverWeaving()) {
+			// No overweaving guard. If you have one then when overweaving is on the
+			// addOrReplaceAspect will not be called when the aspect delegate changes from
+			// EclipseSourceType to BcelObjectType. This will mean the mungers
+			// are not picked up.
+			if (type.isAspect()) {
 				needToReweaveWorld |= xcutSet.addOrReplaceAspect(type);
 			}
 		}
@@ -1319,7 +1323,11 @@ public class BcelWeaver {
 		}
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
 				resolvedTypeToWeave.getName());
-		weaveParentTypeMungers(resolvedTypeToWeave);
+		// If A was processed before B (and was declared 'class A implements B') then there is no need to complete B again, it 
+		// will have been done whilst processing A.
+		if (!resolvedTypeToWeave.isTypeHierarchyComplete()) {
+			weaveParentTypeMungers(resolvedTypeToWeave);
+		}
 		CompilationAndWeavingContext.leavingPhase(tok);
 		typesForWeaving.remove(typeToWeave);
 		resolvedTypeToWeave.tagAsTypeHierarchyComplete();

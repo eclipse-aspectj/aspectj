@@ -95,7 +95,7 @@ public final class BootstrapMethods extends Attribute {
 	BootstrapMethods(int name_index, int length, DataInputStream file, ConstantPool constant_pool) throws IOException {
 		this(name_index, length, (BootstrapMethod[])null, constant_pool);
 		data = new byte[length];
-		file.read(data);
+		file.readFully(data);
 		isInPackedState = true;
 	}
 	

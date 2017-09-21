@@ -95,6 +95,27 @@ public class GenericSignatureParserTest extends TestCase {
 		assertEquals("Ljava/util/Comparable<-TE;>;", sig.superInterfaceSignatures[0].toString());
 	}
 
+	public void testFunky_406167() {
+		ClassSignature sig = parser
+				.parseAsClassSignature("Lcom/google/android/gms/internal/hb<TT;>.com/google/android/gms/internal/hb$b<Ljava/lang/Boolean;>;");
+		// Note the package prefix on the nested types has been dropped
+		assertEquals("Lcom/google/android/gms/internal/hb<TT;>.hb$b<Ljava/lang/Boolean;>;",sig.superclassSignature.toString());
+		sig = parser
+				.parseAsClassSignature("Lcom/a/a/b/t<TK;TV;>.com/a/a/b/af.com/a/a/b/ag;Ljava/util/ListIterator<TV;>;");
+		// Note the package prefix on the nested types has been dropped
+		assertEquals("Lcom/a/a/b/t<TK;TV;>.af.ag;",sig.superclassSignature.toString());
+		assertEquals("Ljava/util/ListIterator<TV;>;",sig.superInterfaceSignatures[0].toString());
+		sig = parser.parseAsClassSignature("Lcom/google/android/gms/internal/hb.com/google/android/gms/internal/hb$b<Ljava/lang/Boolean;>;");
+		// Note the package prefix on the nested types has been dropped
+		assertEquals("Lcom/google/android/gms/internal/hb.hb$b<Ljava/lang/Boolean;>;",sig.superclassSignature.toString());
+		sig = parser
+				.parseAsClassSignature("Lcom/a/a/b/t.com/a/a/b/af.com/a/a/b/ag;Ljava/util/ListIterator<TV;>;");
+		// Note the package prefix on the nested types has been dropped
+		assertEquals("Lcom/a/a/b/t.af.ag;",sig.superclassSignature.toString());
+		assertEquals("Ljava/util/ListIterator<TV;>;",sig.superInterfaceSignatures[0].toString());
+	}
+
+
 	public void testFieldSignatureParsingClassType() {
 		FieldTypeSignature fsig = parser.parseAsFieldSignature("Ljava/lang/String;");
 		assertTrue("ClassTypeSignature", fsig instanceof ClassTypeSignature);
@@ -155,7 +176,7 @@ public class GenericSignatureParserTest extends TestCase {
 		assertEquals("Ljava/lang/Exception;", mSig.throwsSignatures[0].toString());
 		assertEquals("Ljava/lang/RuntimeException;", mSig.throwsSignatures[1].toString());
 	}
-
+	
 	public void testMethodSignaturePrimitiveParams() {
 		GenericSignature.MethodTypeSignature mSig = parser.parseAsMethodSignature("(ILjava/lang/Object;)V");
 		assertEquals("2 parameters", 2, mSig.parameters.length);

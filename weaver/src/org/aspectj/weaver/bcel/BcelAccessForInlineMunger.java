@@ -27,6 +27,7 @@ import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
+import org.aspectj.apache.bcel.generic.InvokeDynamic;
 import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.AjAttribute;
@@ -138,6 +139,10 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 			// open-up method call
 			if ((inst instanceof InvokeInstruction)) {
 				InvokeInstruction invoke = (InvokeInstruction) inst;
+				if (invoke instanceof InvokeDynamic) {
+					realizedCannotInline = true;
+					break;
+				}
 				ResolvedType callee = aspectGen.getWorld().resolve(UnresolvedType.forName(invoke.getClassName(cpg)));
 
 				// look in the whole method list and not just declared for super calls and alike
