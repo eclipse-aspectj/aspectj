@@ -51,10 +51,10 @@ public class Tester {
     private static Set notes;
     
     /** <code>List</code> to hold events submitted. */
-    private static List actualEvents = new ArrayList();
+    private static List<String> actualEvents = new ArrayList<>();
     
     /** <code>List</code> to hold events we expect. */
-    private static List expectedEvents = new ArrayList();
+    private static List<String> expectedEvents = new ArrayList<>();
 
     static {
         setBASEDIR(new File("."));
@@ -103,8 +103,8 @@ public class Tester {
 
     /** XXX deprecated #clear() */
     public static void clearEvents() { 
-        actualEvents = new ArrayList(); 
-        expectedEvents = new ArrayList();     
+        actualEvents = new ArrayList<>(); 
+        expectedEvents = new ArrayList<>();     
     }
     
 
@@ -707,10 +707,10 @@ public class Tester {
     }
     
     /** @return String[] of differences '{un}expected msg "..." {not} found' */
-    private static String[] diffIgnoreDups(Collection set, String[] expected, String msg, 
+    private static String[] diffIgnoreDups(Collection<String> set, String[] expected, String msg, 
         boolean ignoreDups) {
-        ArrayList result = new ArrayList();
-        ArrayList actual = new ArrayList(set);
+        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> actual = new ArrayList<>(set);
         BitSet hits = new BitSet();
         for (int i = 0; i < expected.length; i++) {
             if (!actual.remove(expected[i])) {
@@ -722,8 +722,7 @@ public class Tester {
                 }
             }
         }
-        for (Iterator iter = actual.iterator(); iter.hasNext();) {
-			String act = (String) iter.next();
+        for (String act: actual) {
             result.add(" unexpected " + msg + " \"" + act + "\" found");			
 		}
         return (String[]) result.toArray(new String[0]);

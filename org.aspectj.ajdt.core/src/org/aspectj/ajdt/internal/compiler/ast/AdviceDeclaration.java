@@ -65,7 +65,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	public int adviceSequenceNumberInType;
 
 	public MethodBinding proceedMethodBinding; // set during this.resolveStaments, referenced by Proceed
-	public List proceedCalls = new ArrayList(2); // populated during Proceed.findEnclosingAround
+	public List<Proceed> proceedCalls = new ArrayList<Proceed>(2); // populated during Proceed.findEnclosingAround
 
 	private boolean proceedInInners;
 	private ResolvedMember[] proceedCallSignatures;

@@ -197,9 +197,17 @@ class JoinPointImpl implements ProceedingJoinPoint {
 					} else {
 						// need to replace the target, and it is different to this, whether
 						// that means replacing state[0] or state[1] depends on whether
-						// the join point has a this
-						firstArgumentIndexIntoAdviceBindings = (hasThis ? 1 : 0) + 1;
-						state[hasThis ? 1 : 0] = adviceBindings[hasThis ? 1 : 0];
+						// the join point has a this 
+						
+						// This previous variant doesn't seem to cope with only binding target at a joinpoint
+						// which has both this and target. It forces you to supply this even if you didn't bind
+						// it.
+//						firstArgumentIndexIntoAdviceBindings = (hasThis ? 1 : 0) + 1;
+//						state[hasThis ? 1 : 0] = adviceBindings[hasThis ? 1 : 0];
+						
+						int targetPositionInAdviceBindings = (hasThis && bindsThis) ? 1 : 0;
+						firstArgumentIndexIntoAdviceBindings = ((hasThis&&bindsThis)?1:0)+((hasTarget&&bindsTarget&&!thisTargetTheSame)?1:0);
+						state[hasThis ? 1 : 0] = adviceBindings[targetPositionInAdviceBindings];
 					}
 				} else {
 					// leave state[0]/state[1] alone, they are OK

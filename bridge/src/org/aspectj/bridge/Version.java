@@ -37,13 +37,13 @@ public class Version {
       * Time text set by build script using SIMPLE_DATE_FORMAT.
       * (if DEVELOPMENT version, invalid)
       */
-    public static final String time_text = "";
+    public static final String time_text = "Friday Nov 18, 2016 at 16:34:52 GMT";
 
     /** 
       * time in seconds-since-... format, used by programmatic clients.
       * (if DEVELOPMENT version, NOTIME)
       */
-    private static long time = -1; // -1 = uninitialized
+    private static long time = -1; // -1 == uninitialized
     
 	/** format used by build script to set time_text */
     public static final String SIMPLE_DATE_FORMAT = "EEEE MMM d, yyyy 'at' HH:mm:ss z";

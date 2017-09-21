@@ -11,7 +11,6 @@
 package org.aspectj.systemtest.ajc163;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
@@ -174,9 +173,8 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
 			return whereToLook;
 		}
-		List kids = whereToLook.getChildren();
-		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement object = (IProgramElement) iterator.next();
+		List<IProgramElement> kids = whereToLook.getChildren();
+		for (IProgramElement object: kids) {
 			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
 				return object;
 			}

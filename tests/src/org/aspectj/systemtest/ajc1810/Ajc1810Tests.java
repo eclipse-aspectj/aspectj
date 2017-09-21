@@ -12,26 +12,56 @@ package org.aspectj.systemtest.ajc1810;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.Constant;
-import org.aspectj.apache.bcel.classfile.ConstantClass;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
-import org.aspectj.apache.bcel.classfile.ConstantUtf8;
-import org.aspectj.apache.bcel.classfile.InnerClass;
-import org.aspectj.apache.bcel.classfile.InnerClasses;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement
  */
 public class Ajc1810Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testBinding_508661() {
+		runTest("various ltw");
+	}
+	
+	public void testBinding_500035() {
+		runTest("ataspectj binding");
+	}
+
+	public void testBinding_500035_2() {
+		runTest("ataspectj binding 2");
+	}
+
+	public void testBinding_500035_3() {
+		runTest("ataspectj binding 3 -XnoInline");
+	}
+
+	public void testBinding_500035_4() {
+		runTest("ataspectj binding 4");
+	}
+
+	public void testGenericsException_501656() {
+		runTest("generics exception");
+	}
+	
+	public void testAIOOBE_502807() {
+		runTest("unexpected aioobe");
+	}
+	
 	public void testInvokeDynamic_490315() {
 		runTest("indy");
+	}
+
+	public void testAmbigMessage17() throws Exception {
+		runTest("ambiguous message - 17");
+	}
+
+	public void testAmbigMessage18() throws Exception {
+		runTest("ambiguous message - 18");
 	}
 
 	// http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.6

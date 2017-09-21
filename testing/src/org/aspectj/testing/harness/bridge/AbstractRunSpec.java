@@ -257,7 +257,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	// --------------- (String) paths
 	/** @return ArrayList of String paths */
-	public ArrayList getPathsList() {
+	public ArrayList<String> getPathsList() {
 		return makeList(paths);
 	}
 
@@ -572,7 +572,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	 */
 	protected void writeChildren(XMLWriter out) {
 		if (0 < children.size()) {
-			for (Iterator iter = children.iterator(); iter.hasNext();) {
+			for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
 				IXmlWritable self = (IXmlWritable) iter.next();
 				self.writeXml(out);
 			}
@@ -583,7 +583,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void printAll(PrintStream out, String prefix) {
 		out.println(prefix + toString());
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
+		for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
 			AbstractRunSpec child = (AbstractRunSpec) iter.next(); // IRunSpec
 			child.printAll(out, prefix + "    ");
 		}
@@ -614,7 +614,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		addListCount("options", options, result);
 		addListCount("paths", paths, result);
 		// XXXXXunused addListCount("sourceLocations", sourceLocations, result);
-		List messagesList = messages.getUnmodifiableListView();
+		List<IMessage> messagesList = messages.getUnmodifiableListView();
 		addListCount("messages", messagesList, result);
 
 		return result.toString().trim();
@@ -634,7 +634,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		addListEntries("options", options, result);
 		addListEntries("paths", paths, result);
 		// XXXXXunused addListEntries("sourceLocations", sourceLocations, result);
-		List messagesList = messages.getUnmodifiableListView();
+		List<IMessage> messagesList = messages.getUnmodifiableListView();
 		addListEntries("messages", messagesList, result);
 
 		return result.toString();
@@ -683,7 +683,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		spec.xmlNames = ((AbstractRunSpec.XMLNames) xmlNames.clone());
 	}
 
-	private static void addListCount(String name, List list, StringBuffer sink) {
+	private static void addListCount(String name, List<?> list, StringBuffer sink) {
 		int size = list.size();
 		if ((null != list) && (0 < size)) {
 			sink.append(" " + size + " ");
@@ -691,7 +691,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		}
 	}
 
-	private static void addListEntries(String name, List list, StringBuffer sink) {
+	private static void addListEntries(String name, List<?> list, StringBuffer sink) {
 		if ((null != list) && (0 < list.size())) {
 			sink.append(" " + list.size() + " ");
 			sink.append(name);

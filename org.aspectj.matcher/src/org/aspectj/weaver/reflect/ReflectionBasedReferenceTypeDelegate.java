@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
+import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -34,6 +35,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
 
 /**
@@ -62,7 +64,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ReflectionBasedReferenceTypeDelegate() {
 	}
 
-	public void initialize(ReferenceType aType, Class aClass, ClassLoader aClassLoader, World aWorld) {
+	public void initialize(ReferenceType aType, Class<?> aClass, ClassLoader aClassLoader, World aWorld) {
 		this.myClass = aClass;
 		this.resolvedType = aType;
 		this.world = aWorld;
@@ -302,22 +304,12 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getDeclares()
-	 */
-	public Collection getDeclares() {
-		// no declares
-		return Collections.EMPTY_SET;
+	public Collection<Declare> getDeclares() {
+		return Collections.emptySet();
 	}
 
-	/* 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getTypeMungers()
-	 */
-	public Collection getTypeMungers() {
-		// no type mungers
-		return Collections.EMPTY_SET;
+	public Collection<ConcreteTypeMunger> getTypeMungers() {
+		return Collections.emptySet();
 	}
 
 	/*
@@ -363,29 +355,14 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getResolvedTypeX()
-	 */
 	public ReferenceType getResolvedTypeX() {
 		return this.resolvedType;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#doesNotExposeShadowMungers()
-	 */
 	public boolean doesNotExposeShadowMungers() {
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getDeclaredGenericSignature()
-	 */
 	public String getDeclaredGenericSignature() {
 		// no generic sig in 1.4
 		return null;

@@ -1,0 +1,29 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs1811/parameterizedWithInner" title="parameterized with inner">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1811/509235" title="multiargs">
+		<compile options="-1.8" files="Code.java"/>
+		<run class="Code">
+			<stdout>
+				<line text="username = fooname"/>
+				<line text="username = barname"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs1811/509235" title="multiargs - no ellipsis">
+		<compile options="-1.8" files="Code2.java"/>
+		<run class="Code2">
+			<stdout>
+				<line text="username = fooname"/>
+				<line text="username = barname"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+</suite>

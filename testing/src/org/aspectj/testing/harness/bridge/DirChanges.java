@@ -469,25 +469,25 @@ public class DirChanges {
         boolean fastFail;
         
         /** relative paths (String) of expected files added */
-        final ArrayList added;
+        final ArrayList<String> added;
 
         /** relative paths (String) of expected files removed/deleted */
-        final ArrayList removed;
+        final ArrayList<String> removed;
 
         /** relative paths (String) of expected files updated/changed */
-        final ArrayList updated;
+        final ArrayList<String> updated;
 
         /** relative paths (String) of expected files NOT 
          * added, removed, or changed 
          * XXX unchanged unimplemented
          */
-        final ArrayList unchanged;
+        final ArrayList<String> unchanged;
     
         public Spec() {
-            added = new ArrayList();
-            removed = new ArrayList();
-            updated = new ArrayList();
-            unchanged = new ArrayList();
+            added = new ArrayList<>();
+            removed = new ArrayList<>();
+            updated = new ArrayList<>();
+            unchanged = new ArrayList<>();
         }
         
         /**
@@ -595,13 +595,13 @@ public class DirChanges {
 		 * @param out XMLWriter output sink
 		 * @param dirChanges List of DirChanges.Spec to write
 		 */
-		public static void writeXml(XMLWriter out, List dirChanges) {
+		public static void writeXml(XMLWriter out, List<DirChanges.Spec> dirChanges) {
             if (LangUtil.isEmpty(dirChanges)) {
                 return;
             }
             LangUtil.throwIaxIfNull(out, "out");
-            for (Iterator iter = dirChanges.iterator(); iter.hasNext();) {
-				DirChanges.Spec spec = (DirChanges.Spec) iter.next();
+            for (Iterator<DirChanges.Spec> iter = dirChanges.iterator(); iter.hasNext();) {
+				DirChanges.Spec spec = iter.next();
 				if (null == spec) {
                     continue;
                 }

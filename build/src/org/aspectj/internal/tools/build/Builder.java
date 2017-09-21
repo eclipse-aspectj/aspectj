@@ -104,14 +104,14 @@ public abstract class Builder {
     private static final String SKIP_LIBRARIES_KEY = "skip.libraries";
 
     /** List (String) names of libraries to skip during assembly */
-    private static final List SKIP_LIBRARIES;
+    private static final List<String> SKIP_LIBRARIES;
 
     private static final String ERROR_KEY = "error loading properties";
 
     private static final Properties PROPS;
     static {
         PROPS = new Properties();
-        List skips = Collections.EMPTY_LIST;
+        List<String> skips = Collections.emptyList();
         String resourcePattern = "**/*.txt,**/*.rsc,**/*.gif,**/*.properties";
         String allPattern = "**/*";
         String binarySourcePattern = "**/*.rsc,**/*.gif,**/*.jar,**/*.zip";
@@ -149,7 +149,7 @@ public abstract class Builder {
         if ((null == text) || (0 == text.length())) {
             return Collections.EMPTY_LIST;
         }
-        List strings = new ArrayList();
+        List<String> strings = new ArrayList<>();
         StringTokenizer tok = new StringTokenizer(text, ",");
         while (tok.hasMoreTokens()) {
             String token = tok.nextToken().trim();
@@ -275,13 +275,13 @@ public abstract class Builder {
             return buildProduct(buildSpec);
         }
         Result result = specifyResultFor(buildSpec);
-        ArrayList errors = new ArrayList();
+        ArrayList<String> errors = new ArrayList<>();
         try {
             return buildAll(result, errors);
         } finally {
             if (0 < errors.size()) {
                 String label = "error building " + buildSpec + ": ";
-                for (Iterator iter = errors.iterator(); iter.hasNext();) {
+                for (Iterator<String> iter = errors.iterator(); iter.hasNext();) {
                     String m = label + iter.next();
                     handler.error(m);
                 }
@@ -340,7 +340,7 @@ public abstract class Builder {
      */
     protected final boolean buildAll(Result result, List errors) {
         Result[] buildList = skipUptodate(getAntecedantResults(result));
-        ArrayList doneList = new ArrayList();
+        ArrayList<String> doneList = new ArrayList<>();
         if ((null != buildList) && (0 < buildList.length)) {
             if (isLogging()) {
                 handler.log("modules to build: " + Arrays.asList(buildList));
@@ -371,7 +371,7 @@ public abstract class Builder {
      *            the List sink for errors, if any
      * @return false after successful build, when module jar should exist
      */
-    protected final boolean buildOnly(Result result, List errors) {
+    protected final boolean buildOnly(Result result, List<String> errors) {
         if (!result.outOfDate()) {
             return true;
         }
@@ -545,7 +545,7 @@ public abstract class Builder {
      * deliverables.
      */
     protected ProductModule[] discoverModules(File productDir, Modules modules) {
-        final ArrayList found = new ArrayList();
+        final ArrayList<File> found = new ArrayList<>();
         FileFilter filter = new FileFilter() {// empty jar files
             public boolean accept(File file) {
                 if ((null != file) && file.canRead()
@@ -557,9 +557,8 @@ public abstract class Builder {
             }
         };
         Util.visitFiles(productDir, filter);
-        ArrayList results = new ArrayList();
-        for (Iterator iter = found.iterator(); iter.hasNext();) {
-            File file = (File) iter.next();
+        ArrayList<ProductModule> results = new ArrayList<>();
+        for (File file: found) {
             String jarName = moduleAliasFor(file.getName().toLowerCase());
             if (jarName.endsWith(".jar") || jarName.endsWith(".zip")) { // XXXFileLiteral
                 jarName = jarName.substring(0, jarName.length() - 4);
@@ -625,7 +624,7 @@ public abstract class Builder {
      *            the List to add error messages to
      */
     abstract protected boolean compile(Result result, File classesDir,
-            boolean useExistingClasses, List errors);
+            boolean useExistingClasses, List<String> errors);
 
     /**
      * Assemble the module distribution from the classesDir, saving String
@@ -634,7 +633,7 @@ public abstract class Builder {
      * @see #removeLibraryFilesToSkip(Module, File)
      */
     abstract protected boolean assemble(Result result, File classesDir,
-            List errors);
+            List<String> errors);
 
     /**
      * Assemble the module distribution from the classesDir and all

@@ -64,12 +64,12 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		build("inpathTesting");
 		AjState state = getState();
 
-		Map classNameToFileMap = state.getClassNameToFileMap();
+		Map<String,File> classNameToFileMap = state.getClassNameToFileMap();
 		assertFalse("expected there to be classes ", classNameToFileMap.isEmpty());
-		Set entrySet = classNameToFileMap.entrySet();
-		for (Iterator iterator = entrySet.iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			String className = (String) entry.getKey();
+		Set<Map.Entry<String,File>> entrySet = classNameToFileMap.entrySet();
+		for (Iterator<Map.Entry<String,File>> iterator = entrySet.iterator(); iterator.hasNext();) {
+			Map.Entry<String,File> entry = iterator.next();
+			String className = entry.getKey();
 			String fullClassName = expectedOutputDir + File.separator + className.replace('.', File.separatorChar) + ".class";
 			File file = (File) entry.getValue();
 			assertEquals("expected file to have path \n" + fullClassName + ", but" + " found path \n" + file.getAbsolutePath(),
@@ -105,15 +105,14 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 
 		// the classes onthe inpath are recorded against the AjBuildManager
 		// (they are deleted from the ajstate whilst cleaning up after a build)
-		Map binarySources = state.getAjBuildManager().getBinarySourcesForThisWeave();
+		Map<String,List<UnwovenClassFile>> binarySources = state.getAjBuildManager().getBinarySourcesForThisWeave();
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
-		List unwovenClassFiles = (List) binarySources.get(inpathDir + File.separator + "InpathClass.class");
-		List fileNames = new ArrayList();
+		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir + File.separator + "InpathClass.class");
+		List<String> fileNames = new ArrayList<>();
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
-		for (Iterator iterator = unwovenClassFiles.iterator(); iterator.hasNext();) {
-			UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
+		for (UnwovenClassFile ucf: unwovenClassFiles) {
 			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
 				fileNames.add(ucf.getFilename());
 			}
@@ -145,15 +144,14 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		AjBuildConfig buildConfig = state.getBuildConfig();
 		state.prepareForNextBuild(buildConfig);
 
-		Map binarySources = state.getBinaryFilesToCompile(true);
+		Map<String, List<UnwovenClassFile>> binarySources = state.getBinaryFilesToCompile(true);
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
-		List unwovenClassFiles = (List) binarySources.get(inpathDir + File.separator + "InpathClass.class");
-		List fileNames = new ArrayList();
+		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir + File.separator + "InpathClass.class");
+		List<String> fileNames = new ArrayList<>();
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
-		for (Iterator iterator = unwovenClassFiles.iterator(); iterator.hasNext();) {
-			UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
+		for (UnwovenClassFile ucf: unwovenClassFiles) {
 			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
 				fileNames.add(ucf.getFilename());
 			}
@@ -177,14 +175,13 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		AjState state = getState();
 
 		// tests AjState.createUnwovenClassFile(BinarySourceFile)
-		Map binarySources = state.getAjBuildManager().getBinarySourcesForThisWeave();
+		Map<String,List<UnwovenClassFile>> binarySources = state.getAjBuildManager().getBinarySourcesForThisWeave();
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
-		List unwovenClassFiles = (List) binarySources.get(inpathDir);
-		List fileNames = new ArrayList();
+		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir);
+		List<String> fileNames = new ArrayList<>();
 
-		for (Iterator iterator = unwovenClassFiles.iterator(); iterator.hasNext();) {
-			UnwovenClassFile ucf = (UnwovenClassFile) iterator.next();
+		for (UnwovenClassFile ucf: unwovenClassFiles) {
 			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
 				fileNames.add(ucf.getFilename());
 			}
@@ -312,7 +309,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			return;
 		}
 		File f = new File(entry);
-		Set s = new HashSet();
+		Set<File> s = new HashSet<>();
 		s.add(f);
 		configureInPath("inpathTesting", s);
 	}
@@ -325,14 +322,14 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		private File classOutputLoc;
 		private File resourceOutputLoc;
 		private String testProjectOutputPath;
-		private List allOutputLocations;
+		private List<File> allOutputLocations;
 		private File outputLoc;
 
 		public SingleDirOutputLocMgr(String testProjectPath) {
 			this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 			outputLoc = new File(testProjectOutputPath);
 
-			allOutputLocations = new ArrayList();
+			allOutputLocations = new ArrayList<>();
 			allOutputLocations.add(outputLoc);
 		}
 
@@ -340,8 +337,8 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			return outputLoc;
 		}
 		
-		public Map getInpathMap() {
-			return Collections.EMPTY_MAP;
+		public Map<File,String> getInpathMap() {
+			return Collections.emptyMap();
 		}
 
 
@@ -349,7 +346,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			return outputLoc;
 		}
 
-		public List /* File */getAllOutputLocations() {
+		public List<File> getAllOutputLocations() {
 			return allOutputLocations;
 		}
 
@@ -364,13 +361,11 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		}
 
 		public String getSourceFolderForFile(File sourceFile) {
-			// TODO Auto-generated method stub
-			return null;
+			return null; // no impl
 		}
 
 		public int discoverChangesSince(File dir, long buildtime) {
-			// TODO Auto-generated method stub
-			return 0;
+			return 0; // no impl
 		}
 	}
 

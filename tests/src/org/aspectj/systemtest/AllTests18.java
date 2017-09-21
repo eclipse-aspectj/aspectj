@@ -13,6 +13,7 @@ package org.aspectj.systemtest;
 import org.aspectj.systemtest.ajc180.AllTestsAspectJ180;
 import org.aspectj.systemtest.ajc181.AllTestsAspectJ181;
 import org.aspectj.systemtest.ajc1810.AllTestsAspectJ1810;
+import org.aspectj.systemtest.ajc1811.AllTestsAspectJ1811;
 import org.aspectj.systemtest.ajc182.AllTestsAspectJ182;
 import org.aspectj.systemtest.ajc183.AllTestsAspectJ183;
 import org.aspectj.systemtest.ajc184.AllTestsAspectJ184;
@@ -30,6 +31,7 @@ public class AllTests18 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.8");
 		// $JUnit-BEGIN$ 
+		suite.addTest(AllTestsAspectJ1811.suite()); 
 		suite.addTest(AllTestsAspectJ1810.suite()); 
 		suite.addTest(AllTestsAspectJ189.suite()); 
 		suite.addTest(AllTestsAspectJ188.suite()); 

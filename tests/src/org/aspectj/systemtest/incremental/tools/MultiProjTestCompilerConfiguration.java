@@ -13,7 +13,6 @@ package org.aspectj.systemtest.incremental.tools;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,11 +29,11 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private boolean verbose = false;
 
 	private String classPath = "";
-	private Set aspectPath = null;
-	private Map sourcePathResources = null;
+	private Set<File> aspectPath = null;
+	private Map<String,File> sourcePathResources = null;
 	private IOutputLocationManager outputLocationManager = null;
 	private List<String> dependants;
-	private Map javaOptionsMap;
+	private Map<String,String> javaOptionsMap;
 	private Set<File> inpath;
 	private String encoding = null;
 	private String outjar;
@@ -43,8 +42,8 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private String nonstandardoptions;
 	private List<File> modifiedFiles;
 	private List<String> modifiedDirs;
-	private List<String> projectSourceFiles = new ArrayList();
-	private List xmlConfigFiles = new ArrayList();
+	private List<String> projectSourceFiles = new ArrayList<>();
+	private List<String> xmlConfigFiles = new ArrayList<>();
 	private String projectPath;
 
 	int changed;
@@ -53,7 +52,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		this.projectPath = projectPath;
 	}
 
-	public Set getAspectPath() {
+	public Set<File> getAspectPath() {
 		log("ICompilerConfiguration.getAspectPath(" + aspectPath + ")");
 		return aspectPath;
 	}
@@ -62,9 +61,8 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		log("ICompilerConfiguration.getClasspath()");
 		// AJDT has all the output directories on it's classpath
 		StringBuffer sb = new StringBuffer();
-		List allOutputPaths = getOutputLocationManager().getAllOutputLocations();
-		for (Iterator iterator = allOutputPaths.iterator(); iterator.hasNext();) {
-			File dir = (File) iterator.next();
+		List<File> allOutputPaths = getOutputLocationManager().getAllOutputLocations();
+		for (File dir: allOutputPaths) {
 			sb.append(File.pathSeparator + dir.getAbsolutePath());
 		}
 		String cp = sb.toString() + File.pathSeparator + new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator
@@ -77,8 +75,8 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 		// look at dependant projects
 		if (dependants != null) {
-			for (Iterator iter = dependants.iterator(); iter.hasNext();) {
-				cp = AjdeInteractionTestbed.getFile((String) iter.next(), "bin") + File.pathSeparator + cp;
+			for (String dependant: dependants) {
+				cp = AjdeInteractionTestbed.getFile(dependant, "bin") + File.pathSeparator + cp;
 			}
 		}
 		// System.err.println("For project "+projectPath+" getClasspath() returning "+cp);
@@ -120,12 +118,12 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return outputLocationManager;
 	}
 
-	public List getProjectSourceFiles() {
+	public List<String> getProjectSourceFiles() {
 		log("ICompilerConfiguration.getProjectSourceFiles()");
 		return projectSourceFiles;
 	}
 
-	public List getProjectXmlConfigFiles() {
+	public List<String> getProjectXmlConfigFiles() {
 		return xmlConfigFiles;
 	}
 
@@ -134,7 +132,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return modifiedFiles;
 	}
 
-	public Map getSourcePathResources() {
+	public Map<String,File> getSourcePathResources() {
 		log("ICompilerConfiguration.getSourcePathResources()");
 		return sourcePathResources;
 	}
@@ -152,7 +150,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	}
 
 	// -------------------- setter methods useful for testing ---------------
-	public void setAspectPath(Set aspectPath) {
+	public void setAspectPath(Set<File> aspectPath) {
 		this.aspectPath = aspectPath;
 		this.changed |= ICompilerConfiguration.ASPECTPATH_CHANGED;
 	}
@@ -177,7 +175,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		this.changed |= ICompilerConfiguration.PROCESSOR_CHANGED;
 	}
 
-	public void setJavaOptions(Map javaOptions) {
+	public void setJavaOptions(Map<String,String> javaOptions) {
 		this.javaOptionsMap = javaOptions;
 		this.changed |= ICompilerConfiguration.JAVAOPTIONS_CHANGED;
 	}
@@ -215,7 +213,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		}
 	}
 
-	public void setSourcePathResources(Map sourcePathResources) {
+	public void setSourcePathResources(Map<String,File> sourcePathResources) {
 		this.sourcePathResources = sourcePathResources;
 		this.changed |= ICompilerConfiguration.PROJECTSOURCERESOURCES_CHANGED;
 	}
@@ -240,7 +238,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		modifiedDirs = null;
 	}
 
-	public List getClasspathElementsWithModifiedContents() {
+	public List<String> getClasspathElementsWithModifiedContents() {
 		return modifiedDirs;
 	}
 

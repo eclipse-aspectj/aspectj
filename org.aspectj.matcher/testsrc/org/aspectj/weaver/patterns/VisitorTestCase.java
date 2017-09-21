@@ -15,7 +15,6 @@ import junit.framework.TestCase;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Iterator;
 import java.io.LineNumberReader;
 import java.io.FileReader;
 
@@ -28,8 +27,8 @@ import org.aspectj.weaver.patterns.TypePattern;
  */
 public class VisitorTestCase extends TestCase {
 
-    private Set pointcuts = new HashSet();
-    private Set typePatterns = new HashSet();
+    private Set<String> pointcuts = new HashSet<>();
+    private Set<String> typePatterns = new HashSet<>();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -41,7 +40,7 @@ public class VisitorTestCase extends TestCase {
         rt.close();
     }
 
-    private void feed(LineNumberReader r, Set set) throws Exception {
+    private void feed(LineNumberReader r, Set<String> set) throws Exception {
         for (String line = r.readLine(); line != null; line = r.readLine()) {
             set.add(line);
         }
@@ -51,8 +50,7 @@ public class VisitorTestCase extends TestCase {
         if (pointcuts.isEmpty()) {
             fail("Empty pointcuts file!");
         }
-        for (Iterator iterator = pointcuts.iterator(); iterator.hasNext();) {
-            String pointcut = (String) iterator.next();
+        for (String pointcut: pointcuts) {
             try  {
                 DumpPointcutVisitor.check(pointcut);
             } catch (Throwable t) {
@@ -66,8 +64,7 @@ public class VisitorTestCase extends TestCase {
         if (typePatterns.isEmpty()) {
             fail("Empty typePatterns file!");
         }
-        for (Iterator iterator = typePatterns.iterator(); iterator.hasNext();) {
-            String tp = (String) iterator.next();
+        for (String tp: typePatterns) {
             try  {
                 TypePattern p = new PatternParser(tp).parseTypePattern();
                 DumpPointcutVisitor.check(p, true);

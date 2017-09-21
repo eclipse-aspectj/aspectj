@@ -66,10 +66,20 @@ public class JavaLangTypeToResolvedTypeConverter {
 				return getWorld().resolve(name);
 			}
 		} else if (type instanceof ParameterizedType) {
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=509327
+			// TODO should deal with the ownerType if it set, indicating this is possibly an inner type of a parameterized type
+			Type ownerType = ((ParameterizedType) type).getOwnerType();
 			ParameterizedType parameterizedType = (ParameterizedType) type;
 			ResolvedType baseType = fromType(parameterizedType.getRawType());
-			if (!baseType.isRawType()) throw new IllegalStateException("Expected raw type form of "+parameterizedType.getRawType().getTypeName());
 			Type[] typeArguments = parameterizedType.getActualTypeArguments();
+			if (baseType.isSimpleType() && typeArguments.length == 0 && ownerType != null) {
+				// 'type' is an inner type of some outer parameterized type
+				// For now just return the base type - in future create the parameterized form of the outer
+				// and use it with the inner. We return the base type to be compatible with what the
+				// code does that accesses the info from the bytecode (unlike this code which accesses it
+				// reflectively).
+				return baseType;
+			}
 			ResolvedType[] resolvedTypeArguments = fromTypes(typeArguments);
 			return TypeFactory.createParameterizedType(baseType, resolvedTypeArguments, getWorld());
 		} else if (type instanceof java.lang.reflect.TypeVariable) {

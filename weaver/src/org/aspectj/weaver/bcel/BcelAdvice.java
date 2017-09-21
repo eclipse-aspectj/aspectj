@@ -26,7 +26,6 @@ import org.aspectj.apache.bcel.generic.InstructionConstants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
-import org.aspectj.apache.bcel.generic.InvokeDynamic;
 import org.aspectj.apache.bcel.generic.LineNumberTag;
 import org.aspectj.apache.bcel.generic.LocalVariableTag;
 import org.aspectj.bridge.ISourceLocation;

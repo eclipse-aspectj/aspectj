@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.bridge.AbortException;
@@ -151,7 +150,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 			throw new AbortException("expected sources at " + reader);
 		}
 
-		ArrayList exp = new ArrayList();
+		ArrayList<Message> exp = new ArrayList<>();
 		// !compile || noerrors || className {runOption..}
 		String first = words[0];
 		if ("!compile".equals(first)) {
@@ -290,10 +289,9 @@ public class FlatSuiteReader implements SFileReader.Maker {
         }
         result.description = input;
     
-        ArrayList newOptions = new ArrayList();
-        ArrayList optionsCopy = result.getOptionsList();
-        for (Iterator iter = optionsCopy.iterator(); iter.hasNext();) {
-			String option = (String) iter.next();
+        ArrayList<String> newOptions = new ArrayList<>();
+        ArrayList<String> optionsCopy = result.getOptionsList();
+        for (String option: optionsCopy) {
 			if (option.startsWith("-")) {
                 newOptions.add("!" + option.substring(1));
             } else {
@@ -325,9 +323,9 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	 * @param lastFile default file for source location if the input does not specify
 	 * @return List
 	 */
-	private List makeMessages(// XXX weak - also support expected exceptions, etc.
+	private List<Message> makeMessages(// XXX weak - also support expected exceptions, etc.
 	Kind kind, String[] words, int start, File lastFile) {
-		ArrayList result = new ArrayList();
+		ArrayList<Message> result = new ArrayList<>();
 		for (int i = start; i < words.length; i++) {
 			ISourceLocation sl =
 				BridgeUtil.makeSourceLocation(words[i], lastFile);
@@ -340,7 +338,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 				result.add(new Message(text, kind, null, sl));
 			}
 		}
-		return (0 == result.size() ? Collections.EMPTY_LIST : result);
+		return (0 == result.size() ? Collections.<Message>emptyList() : result);
 	}
 
 	/** 

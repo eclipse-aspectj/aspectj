@@ -31,7 +31,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	private File classOutputLoc;
 	private File resourceOutputLoc;
 	private final Map sourceFolders = new HashMap();
-	private List allOutputLocations;
+	private List<File> allOutputLocations;
 
 	public MultiProjTestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
@@ -52,9 +52,9 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 		return resourceOutputLoc;
 	}
 
-	public List getAllOutputLocations() {
+	public List<File> getAllOutputLocations() {
 		if (allOutputLocations == null) {
-			allOutputLocations = new ArrayList();
+			allOutputLocations = new ArrayList<>();
 			initLocations();
 			allOutputLocations.add(classOutputLoc);
 			if (!classOutputLoc.equals(resourceOutputLoc)) {

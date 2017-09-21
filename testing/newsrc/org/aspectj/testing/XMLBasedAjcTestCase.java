@@ -24,10 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.commons.digester.Digester;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -39,6 +35,12 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.ResolvedMember;
+import org.aspectj.weaver.ResolvedType;
+
+import junit.extensions.TestSetup;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * Root class for all Test suites that are based on an AspectJ XML test suite file. Extends AjcTestCase allowing a mix of
@@ -462,6 +464,24 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
   protected File getClassResource(String resourceName) {
     return new File(getClass().getResource(resourceName).getFile());
   }
+
+	protected Method findMethod(JavaClass jc, String string) {
+		for (Method m : jc.getMethods()) {
+			if (m.getName().equals(string)) {
+				return m;
+			}
+		}
+		return null;
+	}
+
+	protected ResolvedMember findMethod(ResolvedType outerType, String string) {
+		for (ResolvedMember method: outerType.getDeclaredMethods()) {
+			if (method.getName().equals(string)) {
+				return method;
+			}
+		}
+		return null;
+	}
 
 	
 }

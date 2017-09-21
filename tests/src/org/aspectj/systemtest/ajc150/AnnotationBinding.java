@@ -18,6 +18,7 @@ import junit.framework.Test;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -313,7 +314,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 					"declare @method: int A.m() : @Fruit(\"orange\")");
 			assertTrue("Couldn't find 'declare @method' element in the tree", ipe != null);
 
-			List l = asm.getRelationshipMap().get(ipe);
+			List<IRelationship> l = asm.getRelationshipMap().get(ipe);
 			assertTrue("Should have a relationship but does not ", l.size() > 0);
 
 			ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_ANNOTATION_AT_METHOD,
@@ -343,7 +344,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 					"declare @field: int A.i : @Fruit(\"orange\")");
 			assertTrue("Couldn't find 'declare @type' element in the tree", ipe != null);
 
-			List l = asm.getRelationshipMap().get(ipe);
+			List<IRelationship> l = asm.getRelationshipMap().get(ipe);
 			assertTrue("Should have a relationship but does not ", l.size() > 0);
 
 			ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_ANNOTATION_AT_FIELD,
@@ -375,7 +376,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 					"declare @constructor: A.new(java.lang.String) : @Fruit(\"pear\")");
 			assertTrue("Couldn't find 'declare @constructor' element in the tree", ipe != null);
 
-			List l = asm.getRelationshipMap().get(ipe);
+			List<IRelationship> l = asm.getRelationshipMap().get(ipe);
 			assertTrue("Should have a relationship but does not ", l.size() > 0);
 
 			ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_ANNOTATION_AT_CONSTRUCTOR,

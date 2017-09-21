@@ -40,7 +40,7 @@ public class Result {
 
     private static final Kind[] KINDS = { RELEASE, TEST, RELEASE_ALL, TEST_ALL };
 
-    private static final HashMap nameToResult = new HashMap();
+    private static final HashMap<String,Result> nameToResult = new HashMap<>();
 
     public static boolean isTestingJar(String name) {
         name = name.toLowerCase();
@@ -141,25 +141,25 @@ public class Result {
     /** path to output jar - may not exist */
     private final File outputFile;
 
-    /** list of required Result */
-    private final List requiredResults;
+    /** List of required Result */
+    private final List<Result> requiredResults;
 
-    /** File list of library jars */
-    private final List libJars;
+    /** List of library jars */
+    private final List<File> libJars;
 
-    /** String list of classpath variables */
-    private final List classpathVariables;
+    /** List of classpath variables */
+    private final List<String> classpathVariables;
 
     transient String toLongString;
 
     /**
-     * File list of library jars exported to clients (duplicates some libJars
+     * List of library jars exported to clients (duplicates some libJars
      * entries)
      */
-    private final List exportedLibJars;
+    private final List<File> exportedLibJars;
 
-    /** File list of source directories */
-    private final List srcDirs;
+    /** List of source directories */
+    private final List<File> srcDirs;
 
     /** true if this has calculated List fields. */
     private boolean requiredDone;
@@ -179,11 +179,11 @@ public class Result {
     Result(Kind kind, Module module, File jarDir) {
         this.kind = kind;
         this.module = module;
-        this.libJars = new ArrayList();
-        this.exportedLibJars = new ArrayList();
-        this.srcDirs = new ArrayList();
-        this.classpathVariables = new ArrayList();
-        this.requiredResults = new ArrayList();
+        this.libJars = new ArrayList<>();
+        this.exportedLibJars = new ArrayList<>();
+        this.srcDirs = new ArrayList<>();
+        this.classpathVariables = new ArrayList<>();
+        this.requiredResults = new ArrayList<>();
         String name = module.name;
         if (!kind.normal) {
             name += "-test";
@@ -218,14 +218,14 @@ public class Result {
     }
 
     /** @return List (File) of jar's required */
-    public List findJarRequirements() {
-        ArrayList result = new ArrayList();
+    public List<File> findJarRequirements() {
+        ArrayList<File> result = new ArrayList<>();
         Module.doFindJarRequirements(this, result);
         return result;
     }
 
     /** @return unmodifiable List of String classpath variables */
-    public List getClasspathVariables() {
+    public List<String> getClasspathVariables() {
         return safeList(classpathVariables);
     }
 
@@ -238,14 +238,14 @@ public class Result {
     /**
      * @return unmodifiable list of exported library files, guaranteed readable
      */
-    public List getExportedLibJars() {
+    public List<File> getExportedLibJars() {
         return safeList(exportedLibJars);
     }
 
     /**
      * @return unmodifiable list of required library files, guaranteed readable
      */
-    public List getLibJars() {
+    public List<File> getLibJars() {
         requiredDone();
         return safeList(libJars);
     }
@@ -258,7 +258,7 @@ public class Result {
     // return safeList(merges);
     // }
     /** @return unmodifiable list of source directories, guaranteed readable */
-    public List getSrcDirs() {
+    public List<File> getSrcDirs() {
         return safeList(srcDirs);
     }
 
@@ -283,12 +283,12 @@ public class Result {
         return name;
     }
 
-    private List safeList(List l) {
+    private <T> List<T> safeList(List<T> l) {
         requiredDone();
         return Collections.unmodifiableList(l);
     }
 
-    private Result[] safeResults(List list) {
+    private Result[] safeResults(List<Result> list) {
         requiredDone();
         if (null == list) {
             return new Result[0];
@@ -300,8 +300,8 @@ public class Result {
         srcDirs.addAll(getModule().srcDirs(this));
         if (getKind().normal) {
             // trim testing source directories
-            for (ListIterator iter = srcDirs.listIterator(); iter.hasNext();) {
-                File srcDir = (File) iter.next();
+            for (ListIterator<File> iter = srcDirs.listIterator(); iter.hasNext();) {
+                File srcDir = iter.next();
                 if (isTestingDir(srcDir.getName())) {
                     iter.remove();
                 }
@@ -313,8 +313,8 @@ public class Result {
         libJars.addAll(getModule().libJars(this));
         if (getKind().normal && !isTestingModule(getModule())) {
             // trim testing libraries
-            for (ListIterator iter = libJars.listIterator(); iter.hasNext();) {
-                File libJar = (File) iter.next();
+            for (ListIterator<File> iter = libJars.listIterator(); iter.hasNext();) {
+                File libJar = iter.next();
                 if (isTestingJar(libJar.getName())) {
                     iter.remove();
                 }
@@ -348,10 +348,9 @@ public class Result {
             assertKind(RELEASE);
         }
         // externally-required:
-        List modules = module.requiredModules(this);
+        List<Module> modules = module.requiredModules(this);
         final boolean adoptTests = !kind.normal || isTestingModule(module);
-        for (Iterator iter = modules.iterator(); iter.hasNext();) {
-            Module required = (Module) iter.next();
+        for (Module required: modules) {
             if (adoptTests) {
                 // testing builds can rely on other release and test results
                 requiredResults.add(required.getResult(TEST));

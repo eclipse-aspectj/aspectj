@@ -188,6 +188,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		}
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
 		inAspect.accessForInline.put(m, ret);
+		System.out.println(">>"+m);
 		return ret;
 	}
 

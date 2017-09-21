@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc180;
 
-import org.aspectj.systemtest.ajc181.Ajc181Tests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

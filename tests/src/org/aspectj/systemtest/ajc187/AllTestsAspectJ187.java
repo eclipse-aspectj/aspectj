@@ -12,7 +12,6 @@ package org.aspectj.systemtest.ajc187;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.aspectj.systemtest.apt.AptTests;
 
 public class AllTestsAspectJ187 {
 

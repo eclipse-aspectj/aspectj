@@ -268,10 +268,8 @@ class Sample {
     public static final String ASPECTJ_TEAM = "The AspectJ Team";
 
     /** sort by anchorName, file path, and start/end location */
-    static Comparator NAME_SOURCE_COMPARER = new Comparator() {
-        public int compare(Object lhs, Object rhs) {
-            Sample left = (Sample) lhs;
-            Sample right = (Sample) rhs;
+    static Comparator<Sample> NAME_SOURCE_COMPARER = new Comparator<Sample>() {
+        public int compare(Sample left, Sample right) {
             if (null == left) {
                 return (null == right ? 0 : -1);
             } 
@@ -295,10 +293,8 @@ class Sample {
     };
 
     /** sort by author, then NAME_SOURCE_COMPARER */
-    static Comparator AUTHOR_NAME_SOURCE_COMPARER = new Comparator() {
-        public int compare(Object lhs, Object rhs) {
-            Sample left = (Sample) lhs;
-            Sample right = (Sample) rhs;
+    static Comparator<Sample> AUTHOR_NAME_SOURCE_COMPARER = new Comparator<Sample>() {
+        public int compare(Sample left, Sample right) {
             if (null == left) {
                 return (null == right ? 0 : -1);
             } 
@@ -309,7 +305,7 @@ class Sample {
             if (0 != result) {
                 return result;                
             }
-            return NAME_SOURCE_COMPARER.compare(lhs, rhs);
+            return NAME_SOURCE_COMPARER.compare(left,right);
         }
     };
     
@@ -395,7 +391,7 @@ class Sample {
  * type-safe Collection of samples.
  */
 class Samples {
-    private ArrayList samples = new ArrayList();
+    private ArrayList<Sample> samples = new ArrayList<>();
     int size() {
         return samples.size();
     }
@@ -405,12 +401,12 @@ class Samples {
     /**
      * @return List copy, sorted by Sample.NAME_SOURCE_COMPARER
      */
-    List getSortedSamples() {
+    List<Sample> getSortedSamples() {
         return getSortedSamples(Sample.NAME_SOURCE_COMPARER);
     }
     
-    List getSortedSamples(Comparator comparer) {
-        ArrayList result = new ArrayList();
+    List<Sample> getSortedSamples(Comparator<Sample> comparer) {
+        ArrayList<Sample> result = new ArrayList<>();
         result.addAll(samples);
         Collections.sort(result, comparer);
         return result;
@@ -961,7 +957,7 @@ class SampleUtil {
     }
     
     public static String[] splitAnchorName(String anchorName) {
-        ArrayList result = new ArrayList();
+        ArrayList<String> result = new ArrayList<>();
         int start = 0;
         int loc = anchorName.indexOf("-", start);
         String next;

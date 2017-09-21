@@ -99,7 +99,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setNonStandardOptions(options);
 	}
 
-	public void configureAspectPath(String projectName, Set aspectpath) {
+	public void configureAspectPath(String projectName, Set<File> aspectpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setAspectPath(aspectpath);
 	}
@@ -121,12 +121,12 @@ public class AjdeInteractionTestbed extends TestCase {
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setAspectPath(s);
 	}
 
-	public void configureResourceMap(String projectName, Map resourcesMap) {
+	public void configureResourceMap(String projectName, Map<String,File> resourcesMap) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setSourcePathResources(resourcesMap);
 	}
 
-	public void configureJavaOptionsMap(String projectName, Map options) {
+	public void configureJavaOptionsMap(String projectName, Map<String,String> options) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setJavaOptions(options);
 	}
@@ -240,7 +240,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	private void addSourceFilesToBuild(String pname, AjCompiler compiler) {
 		File projectBase = new File(sandboxDir, pname);
 		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
-		List currentFiles = icc.getProjectSourceFiles();
+		List<String> currentFiles = icc.getProjectSourceFiles();
 		List<String> filesForCompilation = new ArrayList<String>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 		boolean changed = false;
@@ -335,9 +335,8 @@ public class AjdeInteractionTestbed extends TestCase {
 		MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
 		if (handler.hasErrorMessages()) {
 			System.err.println("Build errors:");
-			for (Iterator<IMessage> iter = handler.getErrorMessages().iterator(); iter.hasNext();) {
-				IMessage element = iter.next();
-				System.err.println(element);
+			for (IMessage message: handler.getErrorMessages()) {
+				System.err.println(message);
 			}
 			System.err.println("---------");
 		}
@@ -358,7 +357,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getWeavingMessages();
 	}
 
-	public List<IMessage> getCompilerErrorMessages(String projectName) {
+	public List<String> getCompilerErrorMessages(String projectName) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		return ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getCompilerErrors();
 	}
@@ -393,12 +392,10 @@ public class AjdeInteractionTestbed extends TestCase {
 		if (getCompiledFiles(projectName).size() == 0 && getWovenClasses(projectName).size() == 0) {
 			sb.append("No files were compiled or woven\n");
 		}
-		for (Iterator iter = getCompiledFiles(projectName).iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		for (String element: getCompiledFiles(projectName)) {
 			sb.append("compiled: " + element + "\n");
 		}
-		for (Iterator iter = getWovenClasses(projectName).iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		for (String element: getWovenClasses(projectName)) {
 			sb.append("woven: " + element + "\n");
 		}
 		return sb.toString();

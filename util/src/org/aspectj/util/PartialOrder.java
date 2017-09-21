@@ -49,12 +49,12 @@ public class PartialOrder {
 		public int fallbackCompareTo(Object other);
 	}
 
-	private static class SortObject {
-		PartialComparable object;
-		List<SortObject> smallerObjects = new LinkedList<SortObject>();
-		List<SortObject> biggerObjects = new LinkedList<SortObject>();
+	private static class SortObject<T extends PartialComparable> {
+		T object;
+		List<SortObject<T>> smallerObjects = new LinkedList<SortObject<T>>();
+		List<SortObject<T>> biggerObjects = new LinkedList<SortObject<T>>();
 
-		public SortObject(PartialComparable o) {
+		public SortObject(T o) {
 			object = o;
 		}
 
@@ -62,12 +62,12 @@ public class PartialOrder {
 			return smallerObjects.size() == 0;
 		}
 
-		boolean removeSmallerObject(SortObject o) {
+		boolean removeSmallerObject(SortObject<T> o) {
 			smallerObjects.remove(o);
 			return hasNoSmallerObjects();
 		}
 
-		void addDirectedLinks(SortObject other) {
+		void addDirectedLinks(SortObject<T> other) {
 			int cmp = object.compareTo(other.object);
 			if (cmp == 0) {
 				return;
@@ -86,18 +86,18 @@ public class PartialOrder {
 		}
 	}
 
-	private static void addNewPartialComparable(List<SortObject> graph, PartialComparable o) {
-		SortObject so = new SortObject(o);
-		for (Iterator<SortObject> i = graph.iterator(); i.hasNext();) {
-			SortObject other = i.next();
+	private static <T extends PartialComparable> void addNewPartialComparable(List<SortObject<T>> graph, T o) {
+		SortObject<T> so = new SortObject<T>(o);
+		for (Iterator<SortObject<T>> i = graph.iterator(); i.hasNext();) {
+			SortObject<T> other = i.next();
 			so.addDirectedLinks(other);
 		}
 		graph.add(so);
 	}
 
-	private static void removeFromGraph(List<SortObject> graph, SortObject o) {
-		for (Iterator<SortObject> i = graph.iterator(); i.hasNext();) {
-			SortObject other = i.next();
+	private static <T extends PartialComparable> void removeFromGraph(List<SortObject<T>> graph, SortObject<T> o) {
+		for (Iterator<SortObject<T>> i = graph.iterator(); i.hasNext();) {
+			SortObject<T> other = i.next();
 
 			if (o == other) {
 				i.remove();
@@ -114,7 +114,7 @@ public class PartialOrder {
 	 * @returns the same members as objects, but sorted according to their partial order. returns null if the objects are cyclical
 	 * 
 	 */
-	public static List sort(List objects) {
+	public static <T extends PartialComparable> List<T> sort(List<T> objects) {
 		// lists of size 0 or 1 don't need any sorting
 		if (objects.size() < 2) {
 			return objects;
@@ -124,9 +124,9 @@ public class PartialOrder {
 
 		// ??? I don't like creating this data structure, but it does give good
 		// ??? separation of concerns.
-		List<SortObject> sortList = new LinkedList<SortObject>(); // objects.size());
-		for (Iterator i = objects.iterator(); i.hasNext();) {
-			addNewPartialComparable(sortList, (PartialComparable) i.next());
+		List<SortObject<T>> sortList = new LinkedList<SortObject<T>>();
+		for (Iterator<T> i = objects.iterator(); i.hasNext();) {
+			addNewPartialComparable(sortList, i.next());
 		}
 
 		// System.out.println(sortList);
@@ -140,11 +140,9 @@ public class PartialOrder {
 			// System.out.println(sortList);
 			// System.out.println("-->" + ret);
 
-			SortObject leastWithNoSmallers = null;
+			SortObject<T> leastWithNoSmallers = null;
 
-			for (Iterator i = sortList.iterator(); i.hasNext();) {
-				SortObject so = (SortObject) i.next();
-				// System.out.println(so);
+			for (SortObject<T> so: sortList) {
 				if (so.hasNoSmallerObjects()) {
 					if (leastWithNoSmallers == null || so.object.fallbackCompareTo(leastWithNoSmallers.object) < 0) {
 						leastWithNoSmallers = so;

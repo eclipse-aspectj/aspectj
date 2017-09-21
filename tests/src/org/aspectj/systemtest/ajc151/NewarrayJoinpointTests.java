@@ -17,6 +17,7 @@ import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /*
@@ -102,14 +103,14 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 		runTest("structure model");
 		IProgramElement ipe = AsmManager.lastActiveStructureModel.getHierarchy().findElementForType("", "Five");
 		assertTrue("Couldnt find 'Five' type in the model", ipe != null);
-		List kids = ipe.getChildren();
+		List<IProgramElement> kids = ipe.getChildren();
 		assertTrue("Couldn't find 'main' method in the 'Five' type", kids != null && kids.size() == 1);
-		List codenodes = ((IProgramElement) kids.get(0)).getChildren();
+		List<IProgramElement> codenodes = ((IProgramElement) kids.get(0)).getChildren();
 		assertTrue("Couldn't find nodes below 'main' method", codenodes != null && codenodes.size() == 1);
 		IProgramElement arrayCtorCallNode = (IProgramElement) codenodes.get(0);
 		String exp = "constructor-call(void java.lang.Integer[].<init>(int))";
 		assertTrue("Expected '" + exp + "' but found " + arrayCtorCallNode.toString(), arrayCtorCallNode.toString().equals(exp));
-		List rels = AsmManager.lastActiveStructureModel.getRelationshipMap().get(arrayCtorCallNode);
+		List<IRelationship> rels = AsmManager.lastActiveStructureModel.getRelationshipMap().get(arrayCtorCallNode);
 		assertTrue("Should have a relationship from the ctorcall node, but didn't find one?", rels != null && rels.size() == 1);
 	}
 

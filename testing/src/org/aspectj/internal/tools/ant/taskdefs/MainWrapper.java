@@ -81,8 +81,8 @@ public class MainWrapper {
             // access classname from jvm arg 
             classname = System.getProperty(PROP_NAME);
             // this will fail if the class is not available from this classloader
-            Class cl = Class.forName(classname);
-            final Class[] argTypes = new Class[] {String[].class};
+            Class<?> cl = Class.forName(classname);
+            final Class<?>[] argTypes = new Class[] {String[].class};
             // will fail if no main method
             main = cl.getMethod("main", argTypes);
             if (!Modifier.isStatic(main.getModifiers())) {
