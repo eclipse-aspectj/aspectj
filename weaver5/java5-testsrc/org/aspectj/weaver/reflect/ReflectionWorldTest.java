@@ -1,38 +1,32 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005,2017 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-<<<<<<< HEAD
 import java.util.List;
 
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
-=======
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedType;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;
->>>>>>> master
 
+/**
+ * @author Andy Clement
+ * @author Adrian Colyer
+ */
 public class ReflectionWorldTest extends TestCase {
 
 	public void testDelegateCreation() {
