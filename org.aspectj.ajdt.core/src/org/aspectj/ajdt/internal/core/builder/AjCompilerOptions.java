@@ -9,7 +9,6 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
 package org.aspectj.ajdt.internal.core.builder;
 
 import java.util.Map;
@@ -110,12 +109,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		setAspectJWarningDefaults();
 	}
 
-	/**
-	 * Initializing the compiler options with external settings
-	 * 
-	 * @param settings
-	 */
-	public AjCompilerOptions(Map settings) {
+	public AjCompilerOptions(Map<String,String> settings) {
 		setAspectJWarningDefaults();
 		if (settings == null) {
 			return;
@@ -123,11 +117,6 @@ public class AjCompilerOptions extends CompilerOptions {
 		set(settings);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#getMap()
-	 */
 	public Map<String,String> getMap() {
 		Map<String,String> map = super.getMap();
 		// now add AspectJ additional options		
@@ -159,12 +148,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		return map;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.compiler.impl.CompilerOptions#set(java.util.Map)
-	 */
-	public void set(Map optionsMap) {
+	public void set(Map<String,String> optionsMap) {
 		super.set(optionsMap);
 		Object optionValue;
 		if ((optionValue = optionsMap.get(OPTION_ReportUnusedPrivateMember)) != null) {
@@ -294,14 +278,10 @@ public class AjCompilerOptions extends CompilerOptions {
 	private void setAspectJWarningDefaults() {
 		super.warningThreshold = new IrritantSet(super.warningThreshold);
 		super.warningThreshold.set(InvalidAbsoluteTypeName | UnresolvableMember | TypeNotExposedToWeaver
-				| UnmatchedSuperTypeInCall | CannotImplementLazyTJP | CompilerOptions.SwallowedExceptionInCatchBlock);
+				| UnmatchedSuperTypeInCall | CannotImplementLazyTJP);
+		super.warningThreshold.set(CompilerOptions.SwallowedExceptionInCatchBlock);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer(super.toString());
 		// now add AspectJ additional options
@@ -327,8 +307,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		buf.append("\n\t- cannot implement lazy thisJoinPoint (XLint): ").append(getSeverityString(CannotImplementLazyTJP)); //$NON-NLS-1$
 		buf.append("\n\t- need serialVersionUID field (XLint): ").append(getSeverityString(NeedSerialVersionUIDField)); //$NON-NLS-1$
 		buf.append("\n\t- incompatible serial version (XLint): ").append(getSeverityString(IncompatibleSerialVersion)); //$NON-NLS-1$
-		buf
-				.append("\n\t- swallowed exception in catch block (XLint): ").append(getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock)); //$NON-NLS-1$
+		buf.append("\n\t- swallowed exception in catch block (XLint): ").append(getSeverityString(CompilerOptions.SwallowedExceptionInCatchBlock)); //$NON-NLS-1$
 
 		return buf.toString();
 	}
