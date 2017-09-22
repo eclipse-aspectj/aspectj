@@ -72,12 +72,7 @@ public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testVersionCorrect2() throws ClassNotFoundException {
 		runTest("simple - k");
-		checkVersion("A", 53, 0);
-	}
-
-	public void testVersionCorrect3() throws ClassNotFoundException {
-		runTest("simple - l");
-		checkVersion("A", 53, 0);
+		checkVersion("A", 46, 0); // source 1.9, default compliance will be 1.4
 	}
 
 	public void testVersionCorrect4() throws ClassNotFoundException {// check it is 49.0 when -1.5 is specified
@@ -155,7 +150,7 @@ public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return getClassResource("sanity-tests.xml");
+		return getClassResource("sanity-tests-19.xml");
 	}
 
 }
