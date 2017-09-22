@@ -134,9 +134,11 @@ public class WeavingAdaptor implements IMessageContext {
 				warn("cannot determine classpath");
 			}
 		}
-
 		list.addAll(0, makeClasspath(System.getProperty("sun.boot.class.path")));
-
+		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+        if (LangUtil.is19VMOrGreater()) {
+        		list.add(0, LangUtil.getJrtFsFilePath());
+        }
 		return list;
 	}
 

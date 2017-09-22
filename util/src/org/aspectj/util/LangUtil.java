@@ -42,6 +42,13 @@ public class LangUtil {
 
 	private static double vmVersion;
 
+	/**
+	 * @return the vm version (1.1, 1.2, 1.3, 1.4, etc)
+	 */
+	public static String getVmVersionString() {
+		return Double.toString(vmVersion);
+	}
+	
 	static {
 		StringWriter buf = new StringWriter();
 		PrintWriter writer = new PrintWriter(buf);

@@ -1,9 +1,7 @@
-package org.aspectj.apache.bcel.util;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2001 The Apache Software Foundation.  All rights
+ * Copyright (c) 2001, 2017 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,12 +51,15 @@ package org.aspectj.apache.bcel.util;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.util;
 
 import java.util.*;
 import java.util.zip.*;
 
 import java.io.*;
 import java.net.URI;
+import java.nio.file.FileVisitResult;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -71,10 +72,13 @@ import java.nio.file.attribute.BasicFileAttributes;
  * Responsible for loading (class) files from the CLASSPATH. Inspired by
  * sun.tools.ClassPath.
  *
- * @version $Id: ClassPath.java,v 1.5 2009/09/09 19:56:20 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author M. Dahm
+ * @author Mario Ivankovits
+ * @author Andy Clement
  */
 public class ClassPath implements Serializable {
+	private static final String JRT_FS = "jrt-fs.jar";
+
 	private static ClassPath SYSTEM_CLASS_PATH = null;
 
 	private PathEntry[] paths;
@@ -174,6 +178,7 @@ public class ClassPath implements Serializable {
 		String class_path = System.getProperty("java.class.path");
 		String boot_path = System.getProperty("sun.boot.class.path");
 		String ext_path = System.getProperty("java.ext.dirs");
+		String vm_version = System.getProperty("java.version");
 
 		ArrayList<String> list = new ArrayList<String>();
 
@@ -205,6 +210,12 @@ public class ClassPath implements Serializable {
 			if (e.hasNext())
 				buf.append(File.pathSeparatorChar);
 		}
+
+		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+        if (vm_version.startsWith("9")) {
+        		buf.insert(0, File.pathSeparatorChar);
+        		buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);        		
+        }
 
 		return buf.toString().intern();
 	}
@@ -405,19 +416,50 @@ public class ClassPath implements Serializable {
 	}
 	
 	private static class JImage extends PathEntry {
-		private java.nio.file.FileSystem fs;
-		
-		private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
 
+		private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
 		private static String MODULES_PATH = "modules"; //$NON-NLS-1$
 		private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
 
+		private java.nio.file.FileSystem fs;
+		
+		private final Map<String, Path> fileMap;	
+		
 
 		JImage(File jimage) {
 			// TODO bizarre that you use getFileSystem with just the jrt:/ and not the path !! What happens
 			// if there are two?
-			fs = FileSystems.getFileSystem(JRT_URI);//.create(jimage.getAbsolutePath()));
+			fs = FileSystems.getFileSystem(JRT_URI);
+			fileMap = buildFileMap();
 		}
+		
+
+		private Map<String, Path> buildFileMap() {
+			final Map<String, Path> fileMap = new HashMap<>();
+System.out.println("Building filemap");
+			final java.nio.file.PathMatcher matcher = fs.getPathMatcher("glob:*.class");
+			Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+			for (java.nio.file.Path path : roots) {
+				try {
+					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            if (file.getNameCount() > 2
+                                && matcher.matches(file.getFileName())) {
+                                Path classPath = file.subpath(2, file.getNameCount());
+                                fileMap.put(classPath.toString(), file);
+                            }
+
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+				}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			return fileMap;
+ 		}
 		
 		private static class ByteBasedClassFile implements ClassFile {
 
@@ -465,43 +507,56 @@ public class ClassPath implements Serializable {
 			//   /modules/java.base/java/lang/Object.class (jdk9 b74)
 			// so within a modules top level qualifier and then the java.base module
 			String fileName = name + suffix;
-			try {
-				Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
-				byte[] bs = Files.readAllBytes(p);
-				BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
-				BasicFileAttributes bfas = bfav.readAttributes();
-				long time = bfas.lastModifiedTime().toMillis();
-				long size = bfas.size();
-				return new ByteBasedClassFile(bs, "jimage",fileName,time,size);
-			} catch (NoSuchFileException nsfe) {
-				// try other modules!
-				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
-				roots = fs.getRootDirectories();
-				for (java.nio.file.Path path : roots) {
-					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
-					try {
-						for (java.nio.file.Path module: stream) {
-							// module will be something like /packages or /modules
-							for (java.nio.file.Path submodule: Files.newDirectoryStream(module)) {
-								// submodule will be /modules/java.base or somesuch
-								try {
-									Path p = fs.getPath(submodule.toString(), fileName);
-									byte[] bs = Files.readAllBytes(p);
-									BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
-									BasicFileAttributes bfas = bfav.readAttributes();
-									long time = bfas.lastModifiedTime().toMillis();
-									long size = bfas.size();
-									return new ByteBasedClassFile(bs, "jimage", fileName,time,size);
-								} catch (NoSuchFileException nsfe2) {
-								}
-							}
-						}
-					} finally {
-						stream.close();
-					}
-				}
-				return null;			
+			
+//			try {
+//				Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
+//				byte[] bs = Files.readAllBytes(p);
+//				BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
+//				BasicFileAttributes bfas = bfav.readAttributes();
+//				long time = bfas.lastModifiedTime().toMillis();
+//				long size = bfas.size();
+//				return new ByteBasedClassFile(bs, "jimage",fileName,time,size);
+//			} catch (NoSuchFileException nsfe) {
+//				// try other modules!
+//				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+//				roots = fs.getRootDirectories();
+//				for (java.nio.file.Path path : roots) {
+//					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
+//					try {
+//						for (java.nio.file.Path module: stream) {
+//							// module will be something like /packages or /modules
+//							for (java.nio.file.Path submodule: Files.newDirectoryStream(module)) {
+//								// submodule will be /modules/java.base or somesuch
+//								try {
+//									Path p = fs.getPath(submodule.toString(), fileName);
+//									byte[] bs = Files.readAllBytes(p);
+//									BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
+//									BasicFileAttributes bfas = bfav.readAttributes();
+//									long time = bfas.lastModifiedTime().toMillis();
+//									long size = bfas.size();
+//									return new ByteBasedClassFile(bs, "jimage", fileName,time,size);
+//								} catch (NoSuchFileException nsfe2) {
+//								}
+//							}
+//						}
+//					} finally {
+//						stream.close();
+//					}
+//				}
+//				return null;			
+//			}
+			Path p = fileMap.get(fileName);
+			if (p == null) {
+				return null;
 			}
+			// Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
+			byte[] bs = Files.readAllBytes(p);
+			BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
+			BasicFileAttributes bfas = bfav.readAttributes();
+			long time = bfas.lastModifiedTime().toMillis();
+			long size = bfas.size();
+			ClassFile cf = new ByteBasedClassFile(bs, "jimage",fileName,time,size);
+			return cf;
 		}
 	}
 

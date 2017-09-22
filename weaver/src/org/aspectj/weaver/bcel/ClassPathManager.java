@@ -29,10 +29,15 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.SimpleFileVisitor;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -87,9 +92,6 @@ public class ClassPathManager {
 	}
 
 	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
-
-	private static String MODULES_PATH = "modules"; //$NON-NLS-1$
-	private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
 	
 	public void addPath(String name, IMessageHandler handler) {
 		File f = new File(name);
@@ -108,7 +110,7 @@ public class ClassPathManager {
 			try {
 				if (lc.endsWith(LangUtil.JRT_FS)) {
 					// Java9
-					entries.add(new JImageEntry(new File(f.getParentFile()+File.separator+"lib"+File.separator+"modules")));
+					entries.add(new JImageEntry());//new File(f.getParentFile()+File.separator+"lib"+File.separator+"modules")));
 				} else {
 					entries.add(new ZipFileEntry(f));
 				}
@@ -298,78 +300,128 @@ public class ClassPathManager {
 
 	}
 	
-	public class JImageEntry extends Entry {
-		private FileSystem fs;
+	/**
+	 * Maintains a shared package cache for java runtime image. This maps packages (for example:
+	 * java/lang) to a starting root position in the filesystem (for example: /modules/java.base/java/lang).
+	 * When searching for a type we work out the package name, use it to find where in the filesystem
+	 * to start looking then run from there. Once found we do cache what we learn to make subsequent
+	 * lookups of that type even faster.
+	 */
+	public static class JImageEntry extends Entry {
 		
-		public JImageEntry(File file) {
-			fs = FileSystems.getFileSystem(JRT_URI);
-//			Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
-//			java.nio.file.Path basePath = null;
-//			try {
-//				System.err.println("Find on javax.naming.Context: "+find("javax.naming.Context"));
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			roots: for (java.nio.file.Path path : roots) {
-//				System.err.println(">>"+path);
-//				try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path)) {
-//					for (java.nio.file.Path subdir: stream) {
-//						System.err.println(">>>"+subdir);
-////						if (subdir.toString().indexOf(JAVA_BASE_PATH) != -1) {
-////							basePath = subdir;
-////							break roots;
-////						}
-//				    }
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
+		private final static FileSystem fs = FileSystems.getFileSystem(JRT_URI);
+		private final static Map<String, Path> fileCache = new HashMap<>();
+		private final static Map<String, Path> packageCache = new HashMap<>();
+		private static boolean packageCacheInitialized = false;
+
+		public JImageEntry() {
+			buildPackageMap();
 		}
 		
-		@Override
-		public ClassFile find(String name) throws IOException {
-			String fileName = name.replace('.', '/') + ".class";
-			try {
-				// /modules/java.base/java/lang/Object.class (jdk9 b74)
-				Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
-				byte[] bs = Files.readAllBytes(p);
-				return new ByteBasedClassFile(bs, fileName);
-			} catch (NoSuchFileException nsfe) {
-				// try other modules!
-				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
-				for (java.nio.file.Path path : roots) {
-					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
-					try {
-						for (java.nio.file.Path module: stream) {
-							// module will be something like /packages or /modules
-							for (java.nio.file.Path submodule: Files.newDirectoryStream(module)) {
-								// submodule will be /modules/java.base or somesuch
-								try {
-									Path p = fs.getPath(submodule.toString(), fileName);
-									byte[] bs = Files.readAllBytes(p);
-									return new ByteBasedClassFile(bs, fileName);
-								} catch (NoSuchFileException nsfe2) {
-								}
-							}
-						}
-					} finally {
-						stream.close();
+		class PackageCacheConstructionVisitor extends SimpleFileVisitor<Path> {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				if (file.getNameCount() > 3 && file.toString().endsWith(".class")) {
+					int fnc = file.getNameCount();
+					if (fnc > 3) { // There is a package name - e.g. /modules/java.base/java/lang/Object.class
+						Path packagePath = file.subpath(2, fnc-1);
+						String packagePathString = packagePath.toString();
+	//					System.out.println("adding entry "+packagePath+" "+file.subpath(0, fnc-1));
+	//					if (packageMap.get(packagePath) != null && !packageMap.get(packagePath).equals(file.subpath(0, 2))) {
+	//						throw new IllegalStateException("Found "+packageMap.get(packagePath)+" for path "+file);
+	//					}
+						packageCache.put(packagePathString, file.subpath(0, fnc-1));
 					}
 				}
-				return null;			
+				return FileVisitResult.CONTINUE;
 			}
 		}
 		
-		public ClassFile find(String module, String name) throws IOException {
-			String fileName = name.replace('.', '/') + ".class";
-			try {
-				Path p = fs.getPath(module,fileName);
-				byte[] bs = Files.readAllBytes(p);
-				return new ByteBasedClassFile(bs, fileName);
-			} catch (NoSuchFileException nsfe) {
-				return null;			
+		/**
+		 * Create a map from package names to the root area of the relevant filesystem (e.g.
+		 * java/lang -> /modules/java.base).
+		 */
+		private synchronized void buildPackageMap() {
+			if (!packageCacheInitialized) {
+				packageCacheInitialized = true;
+//				long s = System.currentTimeMillis();
+				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+				PackageCacheConstructionVisitor visitor = new PackageCacheConstructionVisitor();
+				try {
+					for (java.nio.file.Path path : roots) {
+						Files.walkFileTree(path, visitor);
+		 			}
+				}
+				catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+//				System.out.println("Time to build package map: "+(System.currentTimeMillis()-s)+"ms");
 			}
+		}
+		
+		class TypeLocator extends SimpleFileVisitor<Path> {
+			
+			private String name;
+			public Path found;
+			public int filesSearchedCount;
+
+			public TypeLocator(String name) {
+				this.name = name;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				filesSearchedCount++;
+				if (file.getNameCount() > 2 && file.toString().endsWith(".class")) {
+					int fnc = file.getNameCount();
+					Path filePath = file.subpath(2, fnc);
+					String filePathString = filePath.toString();
+					if (filePathString.equals(name)) {
+						fileCache.put(filePathString, file);
+						found = file;
+						return FileVisitResult.TERMINATE;
+					}
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		}
+		
+		private Path searchForFileAndCache(final Path startPath, final String name) {
+			TypeLocator locator = new TypeLocator(name);
+			try {
+				Files.walkFileTree(startPath, locator);
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return locator.found;
+ 		}
+
+		public ClassFile find(String name) throws IOException {
+			String fileName = name.replace('.', '/') + ".class";
+			Path p = fileCache.get(fileName);
+			if (p == null) {
+				// Check the packages map to see if we know about this package
+				int idx = fileName.lastIndexOf('/');
+				if (idx == -1) {
+					return null;
+				}
+				Path packageStart = null;
+				String packageName = null;
+				if (idx !=-1 ) {
+					packageName = fileName.substring(0, idx);
+					packageStart = packageCache.get(packageName);
+					if (packageStart != null) {
+						p = searchForFileAndCache(packageStart, fileName);
+					}
+				}
+ 			}
+			if (p == null) {
+				return null;
+			}
+			byte[] bs = Files.readAllBytes(p);
+			ClassFile cf = new ByteBasedClassFile(bs, fileName);
+			return cf;
 		}
 
 	}

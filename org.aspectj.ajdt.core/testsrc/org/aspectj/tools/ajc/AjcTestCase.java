@@ -108,7 +108,6 @@ public class AjcTestCase extends TestCase {
 	public static final String JAVA5_CLASSPATH_ENTRIES = File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator
 			+ "bin" + File.pathSeparator + ".." + File.separator + "loadtime5" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "weaver5" + File.separator + "bin"
-
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "aspectj5rt.jar"
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "loadtime5.jar"
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "weaver5.jar";
@@ -614,12 +613,13 @@ public class AjcTestCase extends TestCase {
 		
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if ( !useFullLTW && useLTW) {
-			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
+//			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
 			/*
 			 * Create a new AspectJ class loader using the existing test CLASSPATH and any missing Java 5 projects
 			 */
-			URL[] testUrls = testLoader.getURLs();
-			URL[] java5Urls = getURLs(JAVA5_CLASSPATH_ENTRIES);
+			URL[] testUrls = new URL[0];//testLoader.getURLs();
+			// What are the URLs on java 8?
+			URL[] java5Urls = getURLs(DEFAULT_CLASSPATH_ENTRIES);//getURLs(JAVA5_CLASSPATH_ENTRIES);
 			URL[] urls = new URL[testUrls.length + java5Urls.length];
 			System.arraycopy(testUrls, 0, urls, 0, testUrls.length);
 			System.arraycopy(java5Urls, 0, urls, testUrls.length, java5Urls.length);
@@ -628,7 +628,7 @@ public class AjcTestCase extends TestCase {
 			URL[] sandboxUrls = getURLs(cp.toString());
 			sandboxLoader = createWeavingClassLoader(sandboxUrls, aspectjLoader);
 			// sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
-		}else if(useFullLTW  && useLTW) {			
+		} else if(useFullLTW  && useLTW) {			
 			if(vmargs == null){
 				vmargs ="";
 			}

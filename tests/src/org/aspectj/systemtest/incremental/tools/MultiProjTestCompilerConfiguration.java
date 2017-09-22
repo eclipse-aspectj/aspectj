@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.IOutputLocationManager;
+import org.aspectj.util.LangUtil;
 
 /**
  * ICompilerConfiguration which mirrors the way AJDT behaves. Always returns that its 1.5 compliant and enables the setting of all
@@ -72,6 +73,9 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 				+ "c:/batik/batik-1.6/lib/batik-awt-util.jar;" + "c:/batik/batik-1.6/lib/batik-dom.jar;"
 				+ "c:/batik/batik-1.6/lib/batik-svggen.jar;" + File.pathSeparator + ".." + File.separator + "lib" + File.separator
 				+ "test" + File.separator + "aspectjrt.jar";
+		if (LangUtil.is19VMOrGreater()) {
+			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
+		}
 
 		// look at dependant projects
 		if (dependants != null) {

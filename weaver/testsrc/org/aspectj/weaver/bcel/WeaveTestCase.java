@@ -29,6 +29,7 @@ import org.aspectj.apache.bcel.generic.InvokeInstruction;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.ShadowMunger;
@@ -115,7 +116,12 @@ public abstract class WeaveTestCase extends TestCase {
 			gen = classType.getLazyClassGen(); // new LazyClassGen(classType);
 		}
 		try {
-			checkClass(gen, outDirPath, outName + ".txt");
+			File possibleVmSpecificFile = new File(TESTDATA_DIR,outName + "." + LangUtil.getVmVersionString()+".txt");
+			if (possibleVmSpecificFile.exists()) {				
+				checkClass(gen, outDirPath, outName + "." + LangUtil.getVmVersionString()+".txt");
+			} else {
+				checkClass(gen, outDirPath, outName + ".txt");
+			}
 			if (runTests) {
 				System.out.println("*******RUNNING: " + outName + "  " + name + " *******");
 				TestUtil.runMain(makeClassPath(outDirPath), name);

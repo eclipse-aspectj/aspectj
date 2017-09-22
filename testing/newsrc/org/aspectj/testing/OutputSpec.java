@@ -16,13 +16,16 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.util.LangUtil;
 
 public class OutputSpec {
 	
 	private List<String> expectedOutputLines = new ArrayList<String>();
 
 	public void addLine(OutputLine line) {
-		expectedOutputLines.add(line.getText());
+		if (line.getVm() == null || line.getVm().contains(LangUtil.getVmVersionString())) {
+			expectedOutputLines.add(line.getText());
+		}
 	}
 	
 	public void matchAgainst(String output) {
