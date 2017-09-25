@@ -21,6 +21,18 @@ import junit.framework.Test;
  */
 public class Ajc190Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
+	public void testVarious_SettingFinalStatic() {
+		runTest("setting static final outside clinit");
+	}
+
+	public void testAnnotMethodHasMember_pr156962_1() { // From similar in Ajc153Tests
+		runTest("Test Annot Method Has Member 1");
+	}
+
+	public void testAnnotMethodHasMember_pr156962_2() { // From similar in Ajc153Tests
+		runTest("Test Annot Method Has Member 1");
+	}
+	
 	public void testFunnySignature() {
 		runTest("funny signature with method reference");
 	}

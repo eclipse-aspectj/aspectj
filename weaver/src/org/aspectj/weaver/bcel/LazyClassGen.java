@@ -53,6 +53,7 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverState;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
@@ -1003,7 +1004,13 @@ public final class LazyClassGen {
 			return tjpField;
 		}
 
-		int modifiers = Modifier.STATIC | Modifier.FINAL ;
+		int modifiers = Modifier.STATIC;
+		
+		// J9: Can't always be final on Java 9 because it is set outside of clinit
+		// But must be final in interface
+		if (shadow.getEnclosingClass().isInterface()) {
+			modifiers |= Modifier.FINAL;
+		}
 
 		// XXX - Do we ever inline before or after advice? If we do, then we
 		// better include them in the check below. (or just change it to

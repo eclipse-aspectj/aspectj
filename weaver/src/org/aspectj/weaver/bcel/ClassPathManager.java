@@ -310,8 +310,8 @@ public class ClassPathManager {
 	public static class JImageEntry extends Entry {
 		
 		private final static FileSystem fs = FileSystems.getFileSystem(JRT_URI);
-		private final static Map<String, Path> fileCache = new HashMap<>();
-		private final static Map<String, Path> packageCache = new HashMap<>();
+		private final static Map<String, Path> fileCache = new HashMap<String, Path>();
+		private final static Map<String, Path> packageCache = new HashMap<String, Path>();
 		private static boolean packageCacheInitialized = false;
 
 		public JImageEntry() {

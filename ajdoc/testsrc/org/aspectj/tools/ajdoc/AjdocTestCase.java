@@ -160,8 +160,14 @@ public class AjdocTestCase extends TestCase {
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && !sourceLevel.equals("1.4") && !sourceLevel.equals("1.5")) {
-			fail("need to pass ajdoc '1.3', '1.4', or '1.5' as the source level");
+		if (!sourceLevel.equals("1.3") && 
+			!sourceLevel.equals("1.4") && 
+			!sourceLevel.equals("1.5") && 
+			!sourceLevel.equals("1.6") && 
+			!sourceLevel.equals("1.7") && 
+			!sourceLevel.equals("1.8") && 
+			!sourceLevel.equals("1.9")) {
+			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
 		}
 		String[] args = new String[6 + inputFiles.length + ajOptions.length];
 		args[0] = "-source";
@@ -186,8 +192,14 @@ public class AjdocTestCase extends TestCase {
 		if (!visibility.equals("public") && !visibility.equals("protected") && !visibility.equals("private")) {
 			fail("need to pass 'public','protected' or 'private' visibility to ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && !sourceLevel.equals("1.4") && !sourceLevel.equals("1.5")) {
-			fail("need to pass ajdoc '1.3', '1.4', or '1.5' as the source level");
+		if (!sourceLevel.equals("1.3") && 
+			!sourceLevel.equals("1.4") && 
+			!sourceLevel.equals("1.5") && 
+			!sourceLevel.equals("1.6") && 
+			!sourceLevel.equals("1.7") && 
+			!sourceLevel.equals("1.8") && 
+			!sourceLevel.equals("1.9")) {
+			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
 		}
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");

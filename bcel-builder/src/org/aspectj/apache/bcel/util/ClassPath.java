@@ -108,10 +108,10 @@ public class ClassPath implements Serializable {
 
 				try {
 					if (file.exists()) {
-						if (file.isDirectory())
+						if (file.isDirectory()) {
 							vec.add(new Dir(path));
-						else if (file.getName().endsWith(".jimage")) {
-							vec.add(new JImage(file));
+						} else if (file.getName().endsWith("jrt-fs.jar")) { // TODO a bit crude...
+							vec.add(new JImage());
 						} else {
 							vec.add(new Zip(new ZipFile(file)));
 						}
@@ -422,21 +422,15 @@ public class ClassPath implements Serializable {
 		private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
 
 		private java.nio.file.FileSystem fs;
-		
 		private final Map<String, Path> fileMap;	
 		
-
-		JImage(File jimage) {
-			// TODO bizarre that you use getFileSystem with just the jrt:/ and not the path !! What happens
-			// if there are two?
+		JImage() {
 			fs = FileSystems.getFileSystem(JRT_URI);
 			fileMap = buildFileMap();
 		}
-		
 
 		private Map<String, Path> buildFileMap() {
 			final Map<String, Path> fileMap = new HashMap<>();
-System.out.println("Building filemap");
 			final java.nio.file.PathMatcher matcher = fs.getPathMatcher("glob:*.class");
 			Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
 			for (java.nio.file.Path path : roots) {
@@ -506,50 +500,11 @@ System.out.println("Building filemap");
 			// Class files are in here under names like this:
 			//   /modules/java.base/java/lang/Object.class (jdk9 b74)
 			// so within a modules top level qualifier and then the java.base module
-			String fileName = name + suffix;
-			
-//			try {
-//				Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
-//				byte[] bs = Files.readAllBytes(p);
-//				BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
-//				BasicFileAttributes bfas = bfav.readAttributes();
-//				long time = bfas.lastModifiedTime().toMillis();
-//				long size = bfas.size();
-//				return new ByteBasedClassFile(bs, "jimage",fileName,time,size);
-//			} catch (NoSuchFileException nsfe) {
-//				// try other modules!
-//				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
-//				roots = fs.getRootDirectories();
-//				for (java.nio.file.Path path : roots) {
-//					DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(path);
-//					try {
-//						for (java.nio.file.Path module: stream) {
-//							// module will be something like /packages or /modules
-//							for (java.nio.file.Path submodule: Files.newDirectoryStream(module)) {
-//								// submodule will be /modules/java.base or somesuch
-//								try {
-//									Path p = fs.getPath(submodule.toString(), fileName);
-//									byte[] bs = Files.readAllBytes(p);
-//									BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
-//									BasicFileAttributes bfas = bfav.readAttributes();
-//									long time = bfas.lastModifiedTime().toMillis();
-//									long size = bfas.size();
-//									return new ByteBasedClassFile(bs, "jimage", fileName,time,size);
-//								} catch (NoSuchFileException nsfe2) {
-//								}
-//							}
-//						}
-//					} finally {
-//						stream.close();
-//					}
-//				}
-//				return null;			
-//			}
+			String fileName = name.replace('.', '/') + suffix;
 			Path p = fileMap.get(fileName);
 			if (p == null) {
 				return null;
 			}
-			// Path p = fs.getPath(MODULES_PATH,JAVA_BASE_PATH,fileName);
 			byte[] bs = Files.readAllBytes(p);
 			BasicFileAttributeView bfav = Files.getFileAttributeView(p, BasicFileAttributeView.class);
 			BasicFileAttributes bfas = bfav.readAttributes();

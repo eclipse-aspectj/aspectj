@@ -1,8 +1,8 @@
 public class HelloWorld extends java.lang.Object:
-  private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_0 [Synthetic]
-  private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_1 [Synthetic]
-  private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_2 [Synthetic]
-  private static final org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_3 [Synthetic]
+  private static org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_0 [Synthetic]
+  private static org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_1 [Synthetic]
+  private static org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_2 [Synthetic]
+  private static org.aspectj.lang.JoinPoint$StaticPart ajc$tjp_3 [Synthetic]
   public void <init>():
                     ALOAD_0     // LHelloWorld; ajc$this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V

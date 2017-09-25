@@ -25,6 +25,7 @@ import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.tools.ajc.AjcTests;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Test implementation of ICompilerConfiguration. Allows users to configure the settings via setter methods. By default returns null
@@ -64,8 +65,12 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getClasspath() {
-		return projectPath + File.pathSeparator + System.getProperty("sun.boot.class.path") + File.pathSeparator
+		String cp = projectPath + File.pathSeparator + System.getProperty("sun.boot.class.path") + File.pathSeparator
 				+ AjcTests.aspectjrtClasspath();
+		if (LangUtil.is19VMOrGreater()) {
+			cp = LangUtil.getJrtFsFilePath()+File.pathSeparator+cp;
+		}
+		return cp;
 	}
 
 	public Set getInpath() {

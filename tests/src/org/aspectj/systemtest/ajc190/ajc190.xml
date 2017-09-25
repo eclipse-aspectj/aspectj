@@ -10,5 +10,29 @@
     <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
     <java classpath="runner.jar" class="a.b.c.Code"/>
   </ajc-test>
+  
+  <ajc-test dir="bugs190/various" title="setting static final outside clinit">
+	  <compile files="Code.java" options="-1.9"/>
+	  <run class="Code">
+	  <stdout>
+	  <line text="call(void java.io.PrintStream.println(String))"/>
+	  <line text="running"/>
+	  </stdout>
+	  </run>
+  </ajc-test>
+
+	<!-- from ajc153 -->
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member 1">
+      <compile files="Sample.java, LiftDeprecation.aj" options="-1.9 -XhasMember -showWeaveInfo -Xlint:ignore">
+        <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
+      </compile>
+    </ajc-test>
+
+	<!-- from ajc153 -->
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member 2">
+      <compile files="Sample.java, LiftDeprecation.aj" options="-1.8 -XhasMember -showWeaveInfo -Xlint:ignore">
+        <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
+      </compile>
+    </ajc-test>
 
 </suite>

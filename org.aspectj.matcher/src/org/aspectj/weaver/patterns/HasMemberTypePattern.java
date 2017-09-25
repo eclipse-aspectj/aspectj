@@ -87,10 +87,17 @@ public class HasMemberTypePattern extends TypePattern {
 				continue;
 			}
 			if (signaturePattern.matches(method, type.getWorld(), false)) {
-				if (method.getDeclaringType().resolve(world) != type) {
+				ResolvedType declaringType = method.getDeclaringType().resolve(world);
+				if (declaringType != type) {
 					if (Modifier.isPrivate(method.getModifiers())) {
 						continue;
 					}
+				}
+				// J9: Object.finalize() is marked Deprecated it seems... triggers unhelpful messages
+				if (method.getName().equals("finalize") && declaringType.equals(ResolvedType.OBJECT)
+						&& (signaturePattern.getAnnotationPattern() instanceof ExactAnnotationTypePattern)
+						&& ((ExactAnnotationTypePattern)signaturePattern.getAnnotationPattern()).getAnnotationType().getSignature().equals("Ljava/lang/Deprecated;")) {
+					continue;
 				}
 				return true;
 			}
