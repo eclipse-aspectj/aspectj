@@ -38,6 +38,8 @@ public class LangUtil {
 
 	public static final String EOL;
 
+	public static final String JRT_FS = "jrt-fs.jar";
+
 	private static double vmVersion;
 
 	static {
@@ -71,12 +73,17 @@ public class LangUtil {
 						.printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
-				try {
-					String versionString = vm.substring(0, 3);
-					Double temp = new Double(Double.parseDouble(versionString));
-					vmVersion = temp.doubleValue();
-				} catch (Exception e) {
-					vmVersion = 1.4;
+				if (vm.startsWith("9")) {
+					// JDK 9 beta 99 starts using 9-ea as the version string.
+					vmVersion = 1.9;
+				} else {
+					try {
+						String versionString = vm.substring(0, 3);
+						Double temp = new Double(Double.parseDouble(versionString));
+						vmVersion = temp.doubleValue();
+					} catch (Exception e) {
+						vmVersion = 1.4;
+					}
 				}
 			}
 		} catch (Throwable t) {
@@ -109,6 +116,10 @@ public class LangUtil {
 	
 	public static boolean is18VMOrGreater() {
 		return 1.8 <= vmVersion;
+	}
+	
+	public static boolean is19VMOrGreater() {
+		return 1.9 <= vmVersion;
 	}
 
 	/**
@@ -1446,6 +1457,14 @@ public class LangUtil {
 				}
 			}
 		} // class Thrown
+	}
+	
+	public static String getJrtFsFilePath() {
+		return getJavaHome() + File.separator + "lib" + File.separator + JRT_FS;
+	}
+		
+	public static String getJavaHome() {
+	    return System.getProperty("java.home");
 	}
 
 }
