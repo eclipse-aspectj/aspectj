@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.11 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2017 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.11 Readme</h1>
+
+<p>This release is a small compatibility release to improve the behaviour of the AspectJ 1.8
+line on JDK9. Importantly it includes a change that knows about the Java 9 version information
+and so does not get confused and think it is running on something really old (which typically
+manifests as it complaining about annotations not being supported on this level of Java).</p>
+
+<p>With that change this release is usable for Spring AOP use cases because that is doing
+runtime pointcut matching with proxy creation rather than actual weaving. Although if you
+using Spring AOP with class level annotation retention there may still be issues. If you
+experience problems or need to do actual weaving on JDK9, please use AspectJ9 instead.</p>
+
+<ul>
+<li>1.8.11 available 26-Sep-2017
+</ul>
+
+</body>
+</html>
