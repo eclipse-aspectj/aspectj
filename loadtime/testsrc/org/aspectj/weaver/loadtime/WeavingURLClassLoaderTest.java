@@ -356,6 +356,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			invokeMain(clazz, new String[] { "LTWAspect" });
 			fail("Expecting java.lang.NoClassDefFoundError");
 		} catch (Exception ex) {
+			// Expecting: java.lang.NoClassDefFoundError: LTWAspect
 			String m = ex.getMessage();
 			if (-1 == m.indexOf("java.lang.NoClassDefFoundError")) {
 				fail("Expecting java.lang.NoClassDefFoundError but caught " + ex);
