@@ -5,7 +5,7 @@
   <groupId>org.aspectj</groupId>
   <artifactId>aspectjtools</artifactId>
   <packaging>jar</packaging>
-  <version>1.9.0.BETA-6</version>
+  <version>1.9.0.BETA-7</version>
   <name>AspectJ tools</name>
   <description>Tools from the AspectJ project</description>
   <url>http://www.aspectj.org</url>
