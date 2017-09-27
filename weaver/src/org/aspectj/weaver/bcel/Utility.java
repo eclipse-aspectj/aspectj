@@ -212,7 +212,7 @@ public class Utility {
 			kind = Constants.INVOKEVIRTUAL;
 		}
 
-		return fact.createInvoke(m.getClassName(), m.getName(), m.getReturnType(), m.getArgumentTypes(), kind);
+		return fact.createInvoke(m.getClassName(), m.getName(), m.getReturnType(), m.getArgumentTypes(), kind, m.getEnclosingClass().isInterface());
 	}
 
 	/**
