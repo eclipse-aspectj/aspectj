@@ -29,40 +29,40 @@ import junit.framework.Test;
  */
 public class Ajc1811Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-//	public void testParameterizedWithInner() throws Exception {
-//		runTest("parameterized with inner");
-//		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Outer");
-//		assertNotNull(jc);
-//		BcelWorld world = new BcelWorld(ajc.getSandboxDirectory().toString());
-//
-//		ResolvedType outerType = world.resolve(UnresolvedType.forName("Outer"));
-//		ResolvedMember m = findMethod(outerType,"m");
-//		
-//		UnresolvedType type = m.getReturnType();
-//		assertEquals("LOuter$Inner;",type.getSignature());
-//		
-//		type = m.getGenericReturnType();
-//		assertEquals("LOuter$Inner;",type.getSignature());
-//		
-//		ResolvedType resolvedType = world.resolve(type);
-//		ResolvedType outerResolvedType = resolvedType.getOuterClass();
-//		assertEquals("LOuter;",outerResolvedType.getSignature());
-//		
-//		ResolvedMember m2 = findMethod(outerType,"m2");
-//		type = m2.getReturnType();
-//		assertEquals("LOuter$Inner;",type.getSignature());
-//		
-//		type = m2.getGenericReturnType();
-//		assertEquals("LOuter$Inner;",type.getSignature());
-//		
-//		// public Inner m() { ... }
+	public void testParameterizedWithInner() throws Exception {
+		runTest("parameterized with inner");
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Outer");
+		assertNotNull(jc);
+		BcelWorld world = new BcelWorld(ajc.getSandboxDirectory().toString());
+
+		ResolvedType outerType = world.resolve(UnresolvedType.forName("Outer"));
+		ResolvedMember m = findMethod(outerType,"m");
+		
+		UnresolvedType type = m.getReturnType();
+		assertEquals("LOuter$Inner;",type.getSignature());
+		
+		type = m.getGenericReturnType();
+		assertEquals("LOuter$Inner;",type.getSignature());
+		
+		ResolvedType resolvedType = world.resolve(type);
+		ResolvedType outerResolvedType = resolvedType.getOuterClass();
+		assertEquals("LOuter;",outerResolvedType.getSignature());
+		
+		ResolvedMember m2 = findMethod(outerType,"m2");
+		type = m2.getReturnType();
+		assertEquals("LOuter$Inner;",type.getSignature());
+		
+		type = m2.getGenericReturnType();
+		assertEquals("LOuter$Inner;",type.getSignature());
+		
+		// public Inner m() { ... }
 //		Method m = findMethod(jc,"m");
 //		System.out.println(m);
 //		System.out.println(">"+m.getReturnType());
 //		assertNotNull(returnType);
-//		
-//		// public Outer<String>.Inner m2() { ... }
-//	}
+		
+		// public Outer<String>.Inner m2() { ... }
+	}
 //	
 //	public void testMultiArgs_509235() {
 //		runTest("multiargs");
