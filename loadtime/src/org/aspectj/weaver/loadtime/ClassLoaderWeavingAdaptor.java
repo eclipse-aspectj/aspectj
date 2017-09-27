@@ -14,10 +14,13 @@
 package org.aspectj.weaver.loadtime;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.util.*;
 
@@ -41,6 +44,8 @@ import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.tools.*;
 import org.aspectj.weaver.tools.cache.WeavedClassCache;
+
+import sun.misc.Unsafe;
 
 /**
  * @author Alexandre Vasseur
@@ -995,7 +1000,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private Method defineClassMethod;
 	private Method defineClassWithProtectionDomainMethod;
+	private Unsafe unsafe;
 
+	private Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
+		if (unsafe == null) {
+	        Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+	        theUnsafeField.setAccessible(true);
+	        return (Unsafe) theUnsafeField.get(null);
+		}
+		return unsafe;
+    }
+	
 	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
@@ -1004,20 +1019,23 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		debug("generating class '" + name + "'");
 
 		try {
-			if (defineClassMethod == null) {
-				defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] { String.class,
-						bytes.getClass(), int.class, int.class });
-			}
-			defineClassMethod.setAccessible(true);
-			clazz = defineClassMethod.invoke(loader, new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) });
-		} catch (InvocationTargetException e) {
-			if (e.getTargetException() instanceof LinkageError) {
-				warn("define generated class failed", e.getTargetException());
-				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-				// TODO maw I don't think this is OK and
-			} else {
-				warn("define generated class failed", e.getTargetException());
-			}
+//			loader.getClass().getProtectionDomain()
+//			ProtectionDomain pd = new ProtectionDomain(new CodeSource(new URL("",""),(Certificate[])null), new Permissions());
+			clazz = getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, null);
+//			if (defineClassMethod == null) {
+//				defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] { String.class,
+//						bytes.getClass(), int.class, int.class });
+//			}
+//			defineClassMethod.setAccessible(true);
+//			clazz = defineClassMethod.invoke(loader, new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) });
+//		} catch (InvocationTargetException e) {
+//			if (e.getTargetException() instanceof LinkageError) {
+//				warn("define generated class failed", e.getTargetException());
+//				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+//				// TODO maw I don't think this is OK and
+//			} else {
+//				warn("define generated class failed", e.getTargetException());
+//			}
 		} catch (Exception e) {
 			warn("define generated class failed", e);
 		}
@@ -1033,24 +1051,24 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 		Object clazz = null;
 		debug("generating class '" + name + "'");
-
 		try {
-			// System.out.println(">> Defining with protection domain " + name + " pd=" + protectionDomain);
-			if (defineClassWithProtectionDomainMethod == null) {
-				defineClassWithProtectionDomainMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] {
-						String.class, bytes.getClass(), int.class, int.class, ProtectionDomain.class });
-			}
-			defineClassWithProtectionDomainMethod.setAccessible(true);
-			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, Integer.valueOf(0),
-					new Integer(bytes.length), protectionDomain });
-		} catch (InvocationTargetException e) {
-			if (e.getTargetException() instanceof LinkageError) {
-				warn("define generated class failed", e.getTargetException());
-				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-				// TODO maw I don't think this is OK and
-			} else {
-				warn("define generated class failed", e.getTargetException());
-			}
+//			// System.out.println(">> Defining with protection domain " + name + " pd=" + protectionDomain);
+//			if (defineClassWithProtectionDomainMethod == null) {
+//				defineClassWithProtectionDomainMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] {
+//						String.class, bytes.getClass(), int.class, int.class, ProtectionDomain.class });
+//			}
+//			defineClassWithProtectionDomainMethod.setAccessible(true);
+//			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, Integer.valueOf(0),
+//					new Integer(bytes.length), protectionDomain });
+			getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, protectionDomain);
+//		} catch (InvocationTargetException e) {
+//			if (e.getTargetException() instanceof LinkageError) {
+//				warn("define generated class failed", e.getTargetException());
+//				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+//				// TODO maw I don't think this is OK and
+//			} else {
+//				warn("define generated class failed", e.getTargetException());
+//			}
 		} catch (Exception e) {
 			warn("define generated class failed", e);
 		}
