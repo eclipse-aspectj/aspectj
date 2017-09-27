@@ -72,10 +72,10 @@ public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testVersionCorrect2() throws ClassNotFoundException {
 		runTest("simple - k");
-		checkVersion("A", 46, 0); // source 1.9, default compliance will be 1.4
+		checkVersion("A", 53, 0);
 	}
 
-	public void testVersionCorrect4() throws ClassNotFoundException {// check it is 49.0 when -1.5 is specified
+	public void testVersionCorrect4() throws ClassNotFoundException { // check it is 49.0 when -1.5 is specified
 		runTest("simple - m");
 		checkVersion("A", 49, 0);
 	}
