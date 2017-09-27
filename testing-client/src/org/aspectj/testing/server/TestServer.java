@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006,2017 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Matthew Webster - initial implementation
  *******************************************************************************/
 package org.aspectj.testing.server;
 
@@ -25,6 +22,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+/**
+ * @author Matthew Webster
+ * @author Andy Clement
+ */
 public class TestServer implements Runnable {
 
 	private static final boolean debug = Boolean.getBoolean("org.aspectj.testing.server.debug");
@@ -49,7 +50,7 @@ public class TestServer implements Runnable {
 		props.load(in);
 		in.close();
 		
-		Enumeration enu = props.propertyNames();
+		Enumeration<?> enu = props.propertyNames();
 		while (enu.hasMoreElements()) {
 			String key = (String)enu.nextElement();
 			if (key.startsWith("loader.")) {
@@ -69,19 +70,20 @@ public class TestServer implements Runnable {
 		StringTokenizer st = new StringTokenizer(property,",");
 		String name = st.nextToken();
 		String classpath = st.nextToken();
+		if (debug) System.err.println("Creating loader "+name+" with classpath "+classpath);
 		if (st.hasMoreTokens()) {
 			String parentName = st.nextToken();
 			parent = (ClassLoader)loaders.get(parentName);
 			if (parent == null) error("No such loader: " + parentName);
 		}
-
+		
 		List<URL> urlList = new ArrayList<>();
 		st = new StringTokenizer(classpath,";");
 		while (st.hasMoreTokens()) {
 			String fileName = st.nextToken();
 			File file = new File(workingDirectory,fileName).getCanonicalFile();
 			if (!file.exists()) error("Missing or invalid file: " + file.getPath());
-			URL url = file.toURL();
+			URL url = file.toURI().toURL();
 			urlList.add(url);
 		}
 		URL[] urls = new URL[urlList.size()];
@@ -92,25 +94,26 @@ public class TestServer implements Runnable {
 		loaders.put(name,loader);
 	}
 	
-	private void createRootLoader () throws IOException {
-		List<URL> urlList = new ArrayList();
+	private void createRootLoader() throws IOException {
+		List<URL> urlList = new ArrayList<>();
 		
-		/* Sandbox */
-		URL url = workingDirectory.getCanonicalFile().toURL();
+		// Sandbox
+		URL url = workingDirectory.getCanonicalFile().toURI().toURL();
 		urlList.add(url);
 
-		/* AspectJ runtime */
-		URL[] urls = ((URLClassLoader)getClass().getClassLoader()).getURLs();
-		for (int i = 0; i < urls.length; i++) {
-			url = urls[i];
-			String file = url.getFile();
-			if (debug) System.err.println("? TestServer.createRootLoader() " + file);
-			if (file.indexOf("runtime") != -1 || file.indexOf("aspectjrt") != -1 || file.indexOf("aspectj5rt") != -1) {
-				urlList.add(url);
-			}
+		// Find the AspectJ root folder (i.e. org.aspectj)
+		File aspectjBase = new File(".").getCanonicalFile();
+		while (aspectjBase!= null && !aspectjBase.getName().equals("org.aspectj")) {
+			aspectjBase = aspectjBase.getParentFile();
 		}
+		if (aspectjBase == null) {
+			error("Unable to locate 'org.aspectj' in "+new File(".").getCanonicalPath());
+		}
+		urlList.add(new File(aspectjBase,"runtime/bin").toURI().toURL());
+		urlList.add(new File(aspectjBase,"aspectjrt/bin").toURI().toURL());
+		urlList.add(new File(aspectjBase,"aspectj5rt/bin").toURI().toURL());
 		
-		urls = new URL[urlList.size()];
+		URL[] urls = new URL[urlList.size()];
 		urlList.toArray(urls);
 		ClassLoader parent = getClass().getClassLoader().getParent();
 		rootLoader = new URLClassLoader(urls,parent);
@@ -156,9 +159,9 @@ public class TestServer implements Runnable {
 		}
 	}
 	
-	public void invokeMain (Class clazz, String[] args)
+	public void invokeMain (Class<?> clazz, String[] args)
 	{
-		Class[] paramTypes = new Class[1];
+		Class<?>[] paramTypes = new Class[1];
 		paramTypes[0] = args.getClass();
 	
 		try {
