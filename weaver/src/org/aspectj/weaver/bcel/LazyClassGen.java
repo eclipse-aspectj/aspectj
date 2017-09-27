@@ -253,6 +253,19 @@ public final class LazyClassGen {
 		regenerateGenericSignatureAttribute = true;
 		this.world = world;
 	}
+	
+	public void setMajorMinor(int major, int minor) {
+		myGen.setMajor(major);
+		myGen.setMinor(minor);
+	}
+	
+	public int getMajor() {
+		return myGen.getMajor();
+	}
+	
+	public int getMinor() {
+		return myGen.getMinor();
+	}
 
 	// Non child type, so it comes from a real type in the world.
 	public LazyClassGen(BcelObjectType myType) {
