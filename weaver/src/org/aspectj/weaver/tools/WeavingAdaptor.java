@@ -20,7 +20,17 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -134,11 +144,20 @@ public class WeavingAdaptor implements IMessageContext {
 				warn("cannot determine classpath");
 			}
 		}
-		list.addAll(0, makeClasspath(System.getProperty("sun.boot.class.path")));
-		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+		// On Java9 it is possible to fail to find a URLClassLoader from which to derive a suitable classpath
+		// For now we can determine it from the java.class.path:
         if (LangUtil.is19VMOrGreater()) {
-        		list.add(0, LangUtil.getJrtFsFilePath());
+	    		list.add(0, LangUtil.getJrtFsFilePath());
+			List<String> javaClassPathEntries = makeClasspath(System.getProperty("java.class.path"));
+			for (int i=javaClassPathEntries.size()-1;i>=0;i--) {
+				String javaClassPathEntry = javaClassPathEntries.get(i);
+				if (!list.contains(javaClassPathEntry)) {
+					list.add(0,javaClassPathEntry);
+				}
+			}
         }
+		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+		list.addAll(0, makeClasspath(System.getProperty("sun.boot.class.path")));
 		return list;
 	}
 
