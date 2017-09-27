@@ -239,7 +239,7 @@ public final class SimpleProcessor extends AbstractProcessor {
                     bw.newLine();
                 }
             } catch (final Throwable e) {
-            	
+            		e.printStackTrace(System.err);
 //                processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, e.getMessage());
             }
         }
