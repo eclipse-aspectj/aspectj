@@ -3,7 +3,7 @@ public class LazyTjp {
 	private static final int N = 10000000;
 	// if lazy tjp is working, then calling the advice that uses thisJoinPoint should
 	// take at least this much longer than using an if pcd to bypass the advice
-	private static final double minimumRatio = 8.0; 
+	private static final double minimumRatio = 1.8; // was 8 but jvm seems to be improving all the time!! 
 	
 	public static void main(String[] args) {
 		Trace.enabled = false;
