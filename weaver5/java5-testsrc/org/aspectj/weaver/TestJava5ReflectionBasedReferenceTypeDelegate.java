@@ -15,6 +15,10 @@ package org.aspectj.weaver;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Field;
+
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegateTest;
 
 public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBasedReferenceTypeDelegateTest {
@@ -72,6 +76,73 @@ public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBas
 
 		ResolvedType rt2 = genericType.getSuperclass();
 		assertTrue("Superclass for Map generic type should be Object but was " + rt2, rt2.equals(UnresolvedType.OBJECT));
+	}
+	
+
+	/**
+	 * This is testing the optimization in the reflective annotation finder to verify that if you only want runtime
+	 * annotation info then we use reflection and don't go digging through the classfile bytes.
+	 */
+	public void testAnnotationFinderClassRetention() throws Exception {
+		ResolvedType type = world.resolve(AnnoTesting.class.getName());
+		ResolvedMember[] ms = type.getDeclaredMethods();
+		int findMethod = findMethod("a", ms);
+		
+		ResolvedMember methodWithOnlyClassLevelAnnotation = ms[findMethod("a", ms)];
+		ResolvedMember methodWithOnlyRuntimeLevelAnnotation = ms[findMethod("b", ms)];
+		ResolvedMember methodWithClassAndRuntimeLevelAnnotations = ms[findMethod("c", ms)];
+		ResolvedMember methodWithClassAndRuntimeLevelAnnotations2 = ms[findMethod("d", ms)];
+		
+		assertTrue(methodWithOnlyClassLevelAnnotation.hasAnnotation(world.resolve(AnnoClass.class.getName())));
+		assertTrue(methodWithOnlyRuntimeLevelAnnotation.hasAnnotation(world.resolve(AnnoRuntime.class.getName())));
+		
+		// This is the tricky scenario.
+		
+		// When asking about the runtime level annotations it should not go digging into bcel
+		assertTrue(methodWithClassAndRuntimeLevelAnnotations.hasAnnotation(world.resolve(AnnoRuntime.class.getName())));
+		
+		Field annotationsField = ResolvedMemberImpl.class.getDeclaredField("annotationTypes");
+		annotationsField.setAccessible(true);
+		ResolvedType[] annoTypes = (ResolvedType[])annotationsField.get(methodWithClassAndRuntimeLevelAnnotations);
+
+		// Should only be the runtime one here
+		assertEquals(1, annoTypes.length);
+		
+		// But when you do ask again and this time for class level, it should redo the unpack and pull both runtime and class out
+		assertTrue(methodWithClassAndRuntimeLevelAnnotations.hasAnnotation(world.resolve(AnnoClass.class.getName())));
+
+		annotationsField.setAccessible(true);
+		annoTypes = (ResolvedType[])annotationsField.get(methodWithClassAndRuntimeLevelAnnotations);
+
+		// Now both should be there
+		assertEquals(2, annoTypes.length);
+
+		assertTrue(methodWithClassAndRuntimeLevelAnnotations2.hasAnnotation(world.resolve(AnnoRuntime.class.getName())));
+		// now ask for 'all annotations' via another route, this should reunpack and get them all
+		ResolvedType[] annotations = methodWithClassAndRuntimeLevelAnnotations2.getAnnotationTypes();
+		assertEquals(2,annotations.length);
+	}
+	
+	@Retention(RetentionPolicy.CLASS)
+	@interface AnnoClass {}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AnnoRuntime {}
+	
+	class AnnoTesting {
+		
+		@AnnoClass
+		public void a() {}
+		
+		@AnnoRuntime
+		public void b() {}
+		
+		@AnnoClass @AnnoRuntime
+		public void c() {}
+		
+		@AnnoClass @AnnoRuntime
+		public void d() {}
+
 	}
 
 }
