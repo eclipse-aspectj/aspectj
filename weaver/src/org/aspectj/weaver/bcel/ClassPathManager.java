@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002, 2017 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     PARC     initial implementation 
+ * Palo Alto Research Center, Incorporated (PARC).
  * ******************************************************************/
-
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
@@ -19,40 +18,45 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.util.SoftHashMap;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
+/**
+ * @author Andy Clement
+ * @author Mario Ivankovits
+ */
 public class ClassPathManager {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
+
+	private static int maxOpenArchives = -1;
+	
+	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
+	
+	private static final int MAXOPEN_DEFAULT = 1000;
 
 	private List<Entry> entries;
 
@@ -61,10 +65,6 @@ public class ClassPathManager {
 	// org.aspectj.weaver.openarchives
 	// and it defaults to 1000
 	private List<ZipFile> openArchives = new ArrayList<ZipFile>();
-
-	private static int maxOpenArchives = -1;
-	
-	private static final int MAXOPEN_DEFAULT = 1000;
 
 	static {
 		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",
@@ -91,8 +91,6 @@ public class ClassPathManager {
 	protected ClassPathManager() {
 	}
 
-	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
-	
 	public void addPath(String name, IMessageHandler handler) {
 		File f = new File(name);
 		String lc = name.toLowerCase();
@@ -108,9 +106,8 @@ public class ClassPathManager {
 				return;
 			}
 			try {
-				if (lc.endsWith(LangUtil.JRT_FS)) {
-					// Java9
-					entries.add(new JImageEntry());//new File(f.getParentFile()+File.separator+"lib"+File.separator+"modules")));
+				if (lc.endsWith(LangUtil.JRT_FS)) { // Java9
+					entries.add(new JImageEntry());
 				} else {
 					entries.add(new ZipFileEntry(f));
 				}
@@ -176,11 +173,11 @@ public class ClassPathManager {
 		public abstract void close();
 	}
 
-	public abstract static class Entry {
+	abstract static class Entry {
 		public abstract ClassFile find(String name) throws IOException;
 	}
 	
-	private static class ByteBasedClassFile extends ClassFile {
+	static class ByteBasedClassFile extends ClassFile {
 
 		private byte[] bytes;
 		private ByteArrayInputStream bais;
@@ -215,7 +212,7 @@ public class ClassPathManager {
 		
 	}
 
-	private static class FileClassFile extends ClassFile {
+	static class FileClassFile extends ClassFile {
 		private File file;
 		private FileInputStream fis;
 
@@ -244,7 +241,7 @@ public class ClassPathManager {
 		}
 	}
 
-	public class DirEntry extends Entry {
+	class DirEntry extends Entry {
 		private String dirPath;
 
 		public DirEntry(File dir) {
@@ -268,7 +265,7 @@ public class ClassPathManager {
 		}
 	}
 
-	private static class ZipEntryClassFile extends ClassFile {
+	static class ZipEntryClassFile extends ClassFile {
 		private ZipEntry entry;
 		private ZipFileEntry zipFile;
 		private InputStream is;
@@ -305,32 +302,32 @@ public class ClassPathManager {
 	 * java/lang) to a starting root position in the filesystem (for example: /modules/java.base/java/lang).
 	 * When searching for a type we work out the package name, use it to find where in the filesystem
 	 * to start looking then run from there. Once found we do cache what we learn to make subsequent
-	 * lookups of that type even faster.
+	 * lookups of that type even faster. Maintaining just a package cache rather than complete type cache
+	 * helps reduce memory usage but still gives reasonably fast lookup performance.
 	 */
-	public static class JImageEntry extends Entry {
+	static class JImageEntry extends Entry {
 		
 		private final static FileSystem fs = FileSystems.getFileSystem(JRT_URI);
-		private final static Map<String, Path> fileCache = new HashMap<String, Path>();
+		
+		private final static Map<String, Path> fileCache = new SoftHashMap<String, Path>();
+
 		private final static Map<String, Path> packageCache = new HashMap<String, Path>();
+		
 		private static boolean packageCacheInitialized = false;
 
 		public JImageEntry() {
 			buildPackageMap();
 		}
 		
-		class PackageCacheConstructionVisitor extends SimpleFileVisitor<Path> {
+		class PackageCacheBuilderVisitor extends SimpleFileVisitor<Path> {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				if (file.getNameCount() > 3 && file.toString().endsWith(".class")) {
 					int fnc = file.getNameCount();
 					if (fnc > 3) { // There is a package name - e.g. /modules/java.base/java/lang/Object.class
-						Path packagePath = file.subpath(2, fnc-1);
+						Path packagePath = file.subpath(2, fnc-1); // e.g. java/lang
 						String packagePathString = packagePath.toString();
-	//					System.out.println("adding entry "+packagePath+" "+file.subpath(0, fnc-1));
-	//					if (packageMap.get(packagePath) != null && !packageMap.get(packagePath).equals(file.subpath(0, 2))) {
-	//						throw new IllegalStateException("Found "+packageMap.get(packagePath)+" for path "+file);
-	//					}
-						packageCache.put(packagePathString, file.subpath(0, fnc-1));
+						packageCache.put(packagePathString, file.subpath(0, fnc-1)); // java/lang -> /modules/java.base/java/lang
 					}
 				}
 				return FileVisitResult.CONTINUE;
@@ -338,34 +335,35 @@ public class ClassPathManager {
 		}
 		
 		/**
-		 * Create a map from package names to the root area of the relevant filesystem (e.g.
-		 * java/lang -> /modules/java.base).
+		 * Create a map from package names to the specific directory of the package members in the filesystem.
 		 */
 		private synchronized void buildPackageMap() {
 			if (!packageCacheInitialized) {
 				packageCacheInitialized = true;
-//				long s = System.currentTimeMillis();
 				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
-				PackageCacheConstructionVisitor visitor = new PackageCacheConstructionVisitor();
+				PackageCacheBuilderVisitor visitor = new PackageCacheBuilderVisitor();
 				try {
 					for (java.nio.file.Path path : roots) {
 						Files.walkFileTree(path, visitor);
 		 			}
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-//				System.out.println("Time to build package map: "+(System.currentTimeMillis()-s)+"ms");
 			}
 		}
 		
-		class TypeLocator extends SimpleFileVisitor<Path> {
+		class TypeIdentifier extends SimpleFileVisitor<Path> {
 			
+			// What are we looking for?
 			private String name;
+			
+			// If set, where did we find it?
 			public Path found;
+			
+			// Basic metric count of how many files we checked before finding it
 			public int filesSearchedCount;
 
-			public TypeLocator(String name) {
+			public TypeIdentifier(String name) {
 				this.name = name;
 			}
 
@@ -387,11 +385,10 @@ public class ClassPathManager {
 		}
 		
 		private Path searchForFileAndCache(final Path startPath, final String name) {
-			TypeLocator locator = new TypeLocator(name);
+			TypeIdentifier locator = new TypeIdentifier(name);
 			try {
 				Files.walkFileTree(startPath, locator);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 			return locator.found;
@@ -399,11 +396,12 @@ public class ClassPathManager {
 
 		public ClassFile find(String name) throws IOException {
 			String fileName = name.replace('.', '/') + ".class";
-			Path p = fileCache.get(fileName);
-			if (p == null) {
+			Path file = fileCache.get(fileName);
+			if (file == null) {
 				// Check the packages map to see if we know about this package
 				int idx = fileName.lastIndexOf('/');
 				if (idx == -1) {
+					// Package not here
 					return null;
 				}
 				Path packageStart = null;
@@ -412,21 +410,29 @@ public class ClassPathManager {
 					packageName = fileName.substring(0, idx);
 					packageStart = packageCache.get(packageName);
 					if (packageStart != null) {
-						p = searchForFileAndCache(packageStart, fileName);
+						file = searchForFileAndCache(packageStart, fileName);
 					}
 				}
  			}
-			if (p == null) {
+			if (file == null) {
 				return null;
 			}
-			byte[] bs = Files.readAllBytes(p);
+			byte[] bs = Files.readAllBytes(file);
 			ClassFile cf = new ByteBasedClassFile(bs, fileName);
 			return cf;
 		}
 
+		static Map<String, Path> getPackageCache() {
+			return packageCache;
+		}
+		
+		static Map<String, Path> getFileCache() {
+			return fileCache;
+		}
+
 	}
 
-	public class ZipFileEntry extends Entry {
+	class ZipFileEntry extends Entry {
 		private File file;
 		private ZipFile zipFile;
 
@@ -545,4 +551,10 @@ public class ClassPathManager {
 			return aDefaultValue;
 		}
 	}
+	
+	// Mainly exposed for testing
+	public List<Entry> getEntries() {
+		return entries;
+	}
+
 }

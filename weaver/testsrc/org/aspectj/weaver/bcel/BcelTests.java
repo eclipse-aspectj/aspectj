@@ -13,6 +13,8 @@
 
 package org.aspectj.weaver.bcel;
 
+import org.aspectj.util.LangUtil;
+
 import junit.framework.*;
 
 public class BcelTests extends TestCase {
@@ -43,6 +45,9 @@ public class BcelTests extends TestCase {
         suite.addTestSuite(WeaveOrderTestCase.class); 
         suite.addTestSuite(WorldTestCase.class);  
         suite.addTestSuite(ZipTestCase.class); 
+        if (LangUtil.is19VMOrGreater()) {
+        		suite.addTestSuite(JImageTestCase.class);
+        }
         //$JUnit-END$
         return suite;
     }
