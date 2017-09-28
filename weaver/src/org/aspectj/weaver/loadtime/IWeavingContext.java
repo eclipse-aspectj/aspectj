@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
@@ -35,7 +36,7 @@ public interface IWeavingContext {
 	 * @return an enumeration containing all of the matching resources found
 	 * @throws IOException
 	 */
-	public Enumeration getResources(String name) throws IOException;
+	public Enumeration<URL> getResources(String name) throws IOException;
 	
 	/**
 	 * In an OSGi environment, determin which bundle a URL originated from.
@@ -86,6 +87,6 @@ public interface IWeavingContext {
 	 * @param adaptor
 	 * @return List containing 0 or more Definition instances
 	 */
-    public List getDefinitions(final ClassLoader loader, WeavingAdaptor adaptor);
+    public List<Definition> getDefinitions(final ClassLoader loader, WeavingAdaptor adaptor);
 
 }
