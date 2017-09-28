@@ -1,28 +1,32 @@
 /*******************************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005, 2017 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
  * http://eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *   Alexandre Vasseur         initial implementation
- *   David Knibb		       weaving context enhancments
- *   John Kew (vmware)         caching hook
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.CodeSource;
-import java.security.Permissions;
 import java.security.ProtectionDomain;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
@@ -42,7 +46,10 @@ import org.aspectj.weaver.loadtime.definition.DocumentParser;
 import org.aspectj.weaver.ltw.LTWWorld;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.tools.*;
+import org.aspectj.weaver.tools.GeneratedClassHandler;
+import org.aspectj.weaver.tools.Trace;
+import org.aspectj.weaver.tools.TraceFactory;
+import org.aspectj.weaver.tools.WeavingAdaptor;
 import org.aspectj.weaver.tools.cache.WeavedClassCache;
 
 import sun.misc.Unsafe;
@@ -51,6 +58,8 @@ import sun.misc.Unsafe;
  * @author Alexandre Vasseur
  * @author Andy Clement
  * @author Abraham Nevado
+ * @author David Knibb
+ * @author John Kew
  */
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
@@ -58,8 +67,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private boolean initialized;
 
-	private List<TypePattern> m_dumpTypePattern = new ArrayList<TypePattern>();
-	private boolean m_dumpBefore = false;
+	private List<TypePattern> dumpTypePattern = new ArrayList<TypePattern>();
+	private boolean dumpBefore = false;
 	private boolean dumpDirPerClassloader = false;
 
 	private boolean hasExcludes = false;
@@ -72,14 +81,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private boolean hasIncludes = false;
 	private List<TypePattern> includeTypePattern = new ArrayList<TypePattern>();
-	private List<String> m_includeStartsWith = new ArrayList<String>();
+	private List<String> includeStartsWith = new ArrayList<String>();
 	private List<String> includeExactName = new ArrayList<String>();
 	private boolean includeStar = false;
 
-	private List<TypePattern> m_aspectExcludeTypePattern = new ArrayList<TypePattern>();
-	private List<String> m_aspectExcludeStartsWith = new ArrayList<String>();
-	private List<TypePattern> m_aspectIncludeTypePattern = new ArrayList<TypePattern>();
-	private List<String> m_aspectIncludeStartsWith = new ArrayList<String>();
+	private List<TypePattern> aspectExcludeTypePattern = new ArrayList<TypePattern>();
+	private List<String> aspectExcludeStartsWith = new ArrayList<String>();
+	private List<TypePattern> aspectIncludeTypePattern = new ArrayList<TypePattern>();
+	private List<String> aspectIncludeStartsWith = new ArrayList<String>();
 
 	private StringBuffer namespace;
 	private IWeavingContext weavingContext;
@@ -158,7 +167,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 		this.generatedClassHandler = new SimpleGeneratedClassHandler(classLoader);
 
-		List definitions = weavingContext.getDefinitions(classLoader, this);
+		List<Definition> definitions = weavingContext.getDefinitions(classLoader, this);
 		if (definitions.isEmpty()) {
 			disable(); // TODO maw Needed to ensure messages are flushed
 			if (trace.isTraceEnabled()) {
@@ -237,7 +246,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				String file = System.getProperty("aj5.def", null);
 				if (file != null) {
 					info("using (-Daj5.def) " + file);
-					definitions.add(DocumentParser.parse((new File(file)).toURL()));
+					definitions.add(DocumentParser.parse((new File(file)).toURI().toURL()));
 				}
 			}
 
@@ -257,7 +266,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						if (!configFile.exists()) {
 							warn("configuration does not exist: " + nextDefinition);
 						} else {
-							definitions.add(DocumentParser.parse(configFile.toURL()));
+							definitions.add(DocumentParser.parse(configFile.toURI().toURL()));
 						}
 					} catch (MalformedURLException mue) {
 						error("malformed definition url: " + nextDefinition);
@@ -419,10 +428,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		for (Definition definition : definitions) {
 			for (String exclude : definition.getAspectExcludePatterns()) {
 				TypePattern excludePattern = new PatternParser(exclude).parseTypePattern();
-				m_aspectExcludeTypePattern.add(excludePattern);
+				aspectExcludeTypePattern.add(excludePattern);
 				fastMatchInfo = looksLikeStartsWith(exclude);
 				if (fastMatchInfo != null) {
-					m_aspectExcludeStartsWith.add(fastMatchInfo);
+					aspectExcludeStartsWith.add(fastMatchInfo);
 				}
 			}
 		}
@@ -433,10 +442,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		for (Definition definition : definitions) {
 			for (String include : definition.getAspectIncludePatterns()) {
 				TypePattern includePattern = new PatternParser(include).parseTypePattern();
-				m_aspectIncludeTypePattern.add(includePattern);
+				aspectIncludeTypePattern.add(includePattern);
 				fastMatchInfo = looksLikeStartsWith(include);
 				if (fastMatchInfo != null) {
-					m_aspectIncludeStartsWith.add(fastMatchInfo);
+					aspectIncludeStartsWith.add(fastMatchInfo);
 				}
 			}
 		}
@@ -591,7 +600,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				String include = iterator1.next();
 				fastMatchInfo = looksLikeStartsWith(include);
 				if (fastMatchInfo != null) {
-					m_includeStartsWith.add(fastMatchInfo);
+					includeStartsWith.add(fastMatchInfo);
 				} else if (include.equals("*")) {
 					includeStar = true;
 				} else if ((fastMatchInfo = looksLikeExactName(include)) != null) {
@@ -728,10 +737,10 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			for (Iterator<String> iterator1 = definition.getDumpPatterns().iterator(); iterator1.hasNext();) {
 				String dump = iterator1.next();
 				TypePattern pattern = new PatternParser(dump).parseTypePattern();
-				m_dumpTypePattern.add(pattern);
+				dumpTypePattern.add(pattern);
 			}
 			if (definition.shouldDumpBefore()) {
-				m_dumpBefore = true;
+				dumpBefore = true;
 			}
 			if (definition.createDumpDirPerClassloader()) {
 				dumpDirPerClassloader = true;
@@ -816,9 +825,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				}
 			}
 			boolean fastAccept = false;// defaults to false if no fast include
-			for (int i = 0; i < m_includeStartsWith.size(); i++) {
+			for (int i = 0; i < includeStartsWith.size(); i++) {
 				didSomeIncludeMatching = true;
-				fastAccept = fastClassName.startsWith(m_includeStartsWith.get(i));
+				fastAccept = fastClassName.startsWith(includeStartsWith.get(i));
 				if (fastAccept) {
 					return true;
 				}
@@ -854,9 +863,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					}
 				}
 			}
-			for (int i = 0; i < m_includeStartsWith.size(); i++) {
+			for (int i = 0; i < includeStartsWith.size(); i++) {
 				didSomeIncludeMatching = true;
-				boolean fastaccept = fastClassName.startsWith(m_includeStartsWith.get(i));
+				boolean fastaccept = fastClassName.startsWith(includeStartsWith.get(i));
 				if (fastaccept) {
 					return true;
 				}
@@ -879,21 +888,21 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	// this can be nice but very dangerous as well to change that
 	private boolean acceptAspect(String aspectClassName) {
 		// avoid ResolvedType if not needed
-		if (m_aspectExcludeTypePattern.isEmpty() && m_aspectIncludeTypePattern.isEmpty()) {
+		if (aspectExcludeTypePattern.isEmpty() && aspectIncludeTypePattern.isEmpty()) {
 			return true;
 		}
 
 		// still try to avoid ResolvedType if we have simple patterns
 		// EXCLUDE: if one match then reject
 		String fastClassName = aspectClassName.replace('/', '.').replace('.', '$');
-		for (int i = 0; i < m_aspectExcludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith(m_aspectExcludeStartsWith.get(i))) {
+		for (int i = 0; i < aspectExcludeStartsWith.size(); i++) {
+			if (fastClassName.startsWith(aspectExcludeStartsWith.get(i))) {
 				return false;
 			}
 		}
 		// INCLUDE: if one match then accept
-		for (int i = 0; i < m_aspectIncludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith(m_aspectIncludeStartsWith.get(i))) {
+		for (int i = 0; i < aspectIncludeStartsWith.size(); i++) {
+			if (fastClassName.startsWith(aspectIncludeStartsWith.get(i))) {
 				return true;
 			}
 		}
@@ -901,8 +910,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// needs further analysis
 		ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(aspectClassName), true);
 		// exclude are "AND"ed
-		for (Iterator iterator = m_aspectExcludeTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = (TypePattern) iterator.next();
+		for (TypePattern typePattern: aspectExcludeTypePattern) {
 			if (typePattern.matchesStatically(classInfo)) {
 				// exclude match - skip
 				return false;
@@ -910,8 +918,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 		// include are "OR"ed
 		boolean accept = true;// defaults to true if no include
-		for (Iterator iterator = m_aspectIncludeTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = (TypePattern) iterator.next();
+		for (TypePattern typePattern: aspectIncludeTypePattern) {
 			accept = typePattern.matchesStatically(classInfo);
 			if (accept) {
 				break;
@@ -924,19 +931,19 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	@Override
 	protected boolean shouldDump(String className, boolean before) {
 		// Don't dump before weaving unless asked to
-		if (before && !m_dumpBefore) {
+		if (before && !dumpBefore) {
 			return false;
 		}
 
 		// avoid ResolvedType if not needed
-		if (m_dumpTypePattern.isEmpty()) {
+		if (dumpTypePattern.isEmpty()) {
 			return false;
 		}
 
 		// TODO AV - optimize for className.startWith only
 		ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
 		// dump
-		for (Iterator<TypePattern> iterator = m_dumpTypePattern.iterator(); iterator.hasNext();) {
+		for (Iterator<TypePattern> iterator = dumpTypePattern.iterator(); iterator.hasNext();) {
 			TypePattern typePattern = iterator.next();
 			if (typePattern.matchesStatically(classInfo)) {
 				// dump match
@@ -995,11 +1002,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	public void flushGeneratedClasses() {
 		// System.err.println("? ClassLoaderWeavingAdaptor.flushGeneratedClasses() generatedClasses=" + generatedClasses);
-		generatedClasses = new HashMap();
+		generatedClasses = new HashMap<>();
 	}
 
-	private Method defineClassMethod;
-	private Method defineClassWithProtectionDomainMethod;
 	private Unsafe unsafe;
 
 	private Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
@@ -1017,26 +1022,15 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 		Object clazz = null;
 		debug("generating class '" + name + "'");
-
 		try {
-//			loader.getClass().getProtectionDomain()
-//			ProtectionDomain pd = new ProtectionDomain(new CodeSource(new URL("",""),(Certificate[])null), new Permissions());
 			clazz = getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, null);
-//			if (defineClassMethod == null) {
-//				defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] { String.class,
-//						bytes.getClass(), int.class, int.class });
-//			}
-//			defineClassMethod.setAccessible(true);
-//			clazz = defineClassMethod.invoke(loader, new Object[] { name, bytes, new Integer(0), new Integer(bytes.length) });
-//		} catch (InvocationTargetException e) {
-//			if (e.getTargetException() instanceof LinkageError) {
-//				warn("define generated class failed", e.getTargetException());
-//				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-//				// TODO maw I don't think this is OK and
-//			} else {
-//				warn("define generated class failed", e.getTargetException());
-//			}
+		} catch (LinkageError le) {
+			// likely thrown due to defining something that already exists?
+			// Old comments from before moving to Unsafe.defineClass():
+			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+			// TODO maw I don't think this is OK and
 		} catch (Exception e) {
+			e.printStackTrace(System.err);
 			warn("define generated class failed", e);
 		}
 
@@ -1052,23 +1046,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		Object clazz = null;
 		debug("generating class '" + name + "'");
 		try {
-//			// System.out.println(">> Defining with protection domain " + name + " pd=" + protectionDomain);
-//			if (defineClassWithProtectionDomainMethod == null) {
-//				defineClassWithProtectionDomainMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class[] {
-//						String.class, bytes.getClass(), int.class, int.class, ProtectionDomain.class });
-//			}
-//			defineClassWithProtectionDomainMethod.setAccessible(true);
-//			clazz = defineClassWithProtectionDomainMethod.invoke(loader, new Object[] { name, bytes, Integer.valueOf(0),
-//					new Integer(bytes.length), protectionDomain });
 			getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, protectionDomain);
-//		} catch (InvocationTargetException e) {
-//			if (e.getTargetException() instanceof LinkageError) {
-//				warn("define generated class failed", e.getTargetException());
-//				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-//				// TODO maw I don't think this is OK and
-//			} else {
-//				warn("define generated class failed", e.getTargetException());
-//			}
+		} catch (LinkageError le) {
+			// likely thrown due to defining something that already exists?
+			// Old comments from before moving to Unsafe.defineClass():
+			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+			// TODO maw I don't think this is OK and
 		} catch (Exception e) {
 			warn("define generated class failed", e);
 		}
