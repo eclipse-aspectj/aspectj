@@ -207,6 +207,11 @@ public class ConstantPool implements Node {
 			str = (constantToString(((ConstantCP) c).getClassIndex(), Constants.CONSTANT_Class) + "." + constantToString(
 					((ConstantCP) c).getNameAndTypeIndex(), Constants.CONSTANT_NameAndType));
 			break;
+			
+		case Constants.CONSTANT_InvokeDynamic:
+			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)c;
+			str = cid.toString();
+			break;
 
 		default: // Never reached
 			throw new RuntimeException("Unknown constant type " + c.tag);

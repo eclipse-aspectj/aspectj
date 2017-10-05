@@ -35,7 +35,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * Super class for the Java5 tests, includes various helper methods.
  */
 
-public class BcelTestCase extends TestCase {
+public abstract class BcelTestCase extends TestCase {
 
 	private boolean verbose = false;
 

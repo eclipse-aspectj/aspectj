@@ -17,6 +17,9 @@ import java.net.URLClassLoader;
 
 import junit.framework.Test;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Utility;
+import org.aspectj.apache.bcel.util.ByteSequence;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.DefaultMatchingContext;
@@ -117,7 +120,6 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Runnable r2 = (Runnable) fails.invoke(instance);		
 		// r2.getClass().getName() == Application$$Lambda$1/1652149987
 		
-//		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Application");
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(ucl);
 		FooDesignatorHandler beanHandler = new FooDesignatorHandler();
@@ -137,6 +139,19 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		
 		context.addContextBinding("beanName", "yourBean");
 		assertFalse(pc.couldMatchJoinPointsInType(r2.getClass()));
+		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Application");
+		System.out.println("XXXX");
+		assertNotNull(jc);
+		// 525541: Checking that we can disassemble invokedynamic:
+		boolean checkedInvokeDynamic = false;
+		for (org.aspectj.apache.bcel.classfile.Method m: jc.getMethods()) {
+			if (m.getName().equals("fromLambdaExpression")) {
+				String code = m.getCode().getCodeString();
+				assertTrue(code.contains("invokedynamic"));
+				checkedInvokeDynamic = true;
+			}
+		}
+		assertTrue(checkedInvokeDynamic);
 	}
 	
 	
