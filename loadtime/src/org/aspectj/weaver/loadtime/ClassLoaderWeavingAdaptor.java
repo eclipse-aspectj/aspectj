@@ -32,6 +32,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.ResolvedType;
@@ -1002,7 +1003,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	public void flushGeneratedClasses() {
 		// System.err.println("? ClassLoaderWeavingAdaptor.flushGeneratedClasses() generatedClasses=" + generatedClasses);
-		generatedClasses = new HashMap<>();
+		generatedClasses = new HashMap<String, IUnwovenClassFile>();
 	}
 
 	private Unsafe unsafe;
