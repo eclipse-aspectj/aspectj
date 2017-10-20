@@ -378,6 +378,18 @@ class MyCompilerConfig implements ICompilerConfiguration {
 		return null;
 	}
 
+	@Override
+	public String getModulepath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getModuleSourcepath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
 class MyOutputLocationManager implements IOutputLocationManager {
@@ -417,7 +429,6 @@ class MyOutputLocationManager implements IOutputLocationManager {
 	}
 
 	public int discoverChangesSince(File dir, long buildtime) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

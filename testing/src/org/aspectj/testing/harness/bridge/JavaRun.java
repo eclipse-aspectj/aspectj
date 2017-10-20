@@ -610,6 +610,9 @@ public class JavaRun implements IAjcRun {
         /** fully-qualified name of the class to run */
         protected String className;
         
+        /** Alternative to classname for specifying what to run modulename/type */
+        protected String module;
+        
         /** minimum required version of Java, if any */
         protected String javaVersion;
         
@@ -669,6 +672,10 @@ public class JavaRun implements IAjcRun {
             this.className = className;
         }
         
+        public void setModule(String module) {
+            this.module = module;
+        }
+
         public void setLTW(String ltw) {
             useLTW = TestUtil.parseBoolean(ltw);
         }
