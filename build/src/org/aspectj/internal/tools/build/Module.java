@@ -69,7 +69,7 @@ public class Module {
 
     /** @return all source files under srcDir */
     private static Iterator<File> sourceFiles(File srcDir) {
-        ArrayList<File> result = new ArrayList<>();
+        ArrayList<File> result = new ArrayList<File>();
         sourceFiles(srcDir, result);
         return result.iterator();
     }
@@ -199,11 +199,11 @@ public class Module {
         Util.iaxIfNull(name, "name");
         Util.iaxIfNull(modules, "modules");
         this.moduleDir = moduleDir;
-        this.libJars = new ArrayList<>();
-        this.exportedLibJars = new ArrayList<>();
-        this.requiredModules = new ArrayList<>();
-        this.srcDirs = new ArrayList<>();
-        this.classpathVariables = new ArrayList<>();
+        this.libJars = new ArrayList<File>();
+        this.exportedLibJars = new ArrayList<File>();
+        this.requiredModules = new ArrayList<Module>();
+        this.srcDirs = new ArrayList<File>();
+        this.classpathVariables = new ArrayList<String>();
         this.properties = new Properties();
         this.name = name;
         this.modules = modules;
@@ -613,7 +613,7 @@ public class Module {
         String[] tokenize(String line) {
             final String DELIM = " \n\t\\<>\"=";
             StringTokenizer st = new StringTokenizer(line, DELIM, true);
-            ArrayList<String> result = new ArrayList<>();
+            ArrayList<String> result = new ArrayList<String>();
             StringBuffer quote = new StringBuffer();
             boolean inQuote = false;
             while (st.hasMoreTokens()) {

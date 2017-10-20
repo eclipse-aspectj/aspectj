@@ -413,7 +413,7 @@ public class AntBuilder extends Builder {
 	 * @see org.aspectj.internal.tools.build.Builder#buildAntecedants(Module)
 	 */
 	protected Result[] getAntecedantResults(Result moduleResult) {
-		Hashtable<String,Target> targets = new Hashtable<>();
+		Hashtable<String,Target> targets = new Hashtable<String, Target>();
 		makeTargetsForResult(moduleResult, targets);
 		String targetName = resultToTargetName(moduleResult);
 		// bug: doc says topoSort returns String, but returns Target
@@ -423,7 +423,7 @@ public class AntBuilder extends Builder {
 		if (0 == result.size()) {
 			return new Result[0];
 		}
-		ArrayList<String> toReturn = new ArrayList<>();
+		ArrayList<String> toReturn = new ArrayList<String>();
 		for (Iterator<Target> iter = result.iterator(); iter.hasNext();) {
 			Target target = (Target) iter.next();
 			String name = target.getName();
