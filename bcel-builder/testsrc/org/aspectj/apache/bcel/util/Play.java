@@ -1,3 +1,5 @@
+package org.aspectj.apache.bcel.util;
+
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -6,9 +8,7 @@ import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
-import org.aspectj.apache.bcel.classfile.Unknown;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
-
 
 public class Play {
 	
