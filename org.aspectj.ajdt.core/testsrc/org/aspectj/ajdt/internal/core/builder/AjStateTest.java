@@ -48,44 +48,48 @@ public class AjStateTest extends TestCase {
 	}
 
 	public void testAddEntryToAspectpath() {
-		newConfig.getAspectpath().add(new File("anotherEntry.jar"));
+		newConfig.addToAspectpath(new File("anotherEntry.jar"));
+//		newConfig.getAspectpath().add(new File("anotherEntry.jar"));
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testRemoveEntryFromAspectpath() {
-		newConfig.getAspectpath().remove(0);
+		newConfig.removeAspectPathEntry(0);
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testReorderAspectpath() {
-		String o = newConfig.getClasspath().remove(0);
-		newConfig.getAspectpath().add(new File(o));
+		String o = newConfig.removeClasspathEntry(0);
+		newConfig.addToAspectpath(new File(o));
+//		newConfig.getAspectpath().add(new File(o));
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testAddEntryToInpath() {
-		newConfig.getInpath().add(new File("anotherEntry"));
+		newConfig.addToInpath(new File("anotherEntry"));
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testRemoveEntryFromInpath() {
-		newConfig.getInpath().remove(0);
+		newConfig.removeInpathEntry(0);//getInpath().remove(0);
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testReorderInpath() {
-		String o = newConfig.getClasspath().remove(0);
-		newConfig.getInpath().add(new File(o));
+		String o = newConfig.removeClasspathEntry(0);//getClasspath().remove(0);
+		newConfig.addToInpath(new File(o));//getInpath().add(new File(o));
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testAddEntryToInjars() {
-		newConfig.getInJars().add(new File("anotherEntry.jar"));
+		newConfig.addToInjars(new File("anotherEntry.jar"));
+//		newConfig.getInJars().add(new File("anotherEntry.jar"));
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 
 	public void testRemoveEntryFromInjars() {
-		newConfig.getInJars().remove(0);
+		newConfig.removeInjarsEntry(0);
+//		newConfig.getInJars().remove(0);
 		assertFalse("Can do incremental", aRightState.prepareForNextBuild(newConfig));
 	}
 

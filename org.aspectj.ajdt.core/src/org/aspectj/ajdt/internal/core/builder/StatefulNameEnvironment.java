@@ -26,18 +26,18 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
-import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModuleAwareNameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
 
-public class StatefulNameEnvironment implements INameEnvironment {
+public class StatefulNameEnvironment implements IModuleAwareNameEnvironment {
 	private Map<String,File> classesFromName;
 	private Map<String,NameEnvironmentAnswer> inflatedClassFilesCache;
 	private Set<String> packageNames;
 	private AjState state;
-	private INameEnvironment baseEnvironment;
+	private IModuleAwareNameEnvironment baseEnvironment;
 
-	public StatefulNameEnvironment(INameEnvironment baseEnvironment, Map<String,File> classesFromName, AjState state) {
+	public StatefulNameEnvironment(IModuleAwareNameEnvironment baseEnvironment, Map<String,File> classesFromName, AjState state) {
 		this.classesFromName = classesFromName;
 		this.inflatedClassFilesCache = new HashMap<String,NameEnvironmentAnswer>();
 		this.baseEnvironment = baseEnvironment;
@@ -128,6 +128,36 @@ public class StatefulNameEnvironment implements INameEnvironment {
 			addAllPackageNames(className);
 		}
 		this.classesFromName = classNameToFileMap;
+	}
+
+	@Override
+	public NameEnvironmentAnswer findType(char[][] compoundName, char[] moduleName) {
+		return baseEnvironment.findType(compoundName, moduleName);
+	}
+
+	@Override
+	public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName, char[] moduleName) {
+		return baseEnvironment.findType(typeName, packageName, moduleName);
+	}
+
+	@Override
+	public char[][] getModulesDeclaringPackage(char[][] parentPackageName, char[] name, char[] moduleName) {
+		return baseEnvironment.getModulesDeclaringPackage(parentPackageName, name, moduleName);
+	}
+
+	@Override
+	public boolean hasCompilationUnit(char[][] qualifiedPackageName, char[] moduleName, boolean checkCUs) {
+		return baseEnvironment.hasCompilationUnit(qualifiedPackageName, moduleName, checkCUs);
+	}
+
+	@Override
+	public IModule getModule(char[] moduleName) {
+		return baseEnvironment.getModule(moduleName);
+	}
+
+	@Override
+	public char[][] getAllAutomaticModules() {
+		return baseEnvironment.getAllAutomaticModules();
 	}
 
 }

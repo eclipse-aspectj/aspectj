@@ -581,7 +581,7 @@ public class AjcTestCase extends TestCase {
 	}
 
 	public RunResult run(String className, String[] args, String classpath) {
-		return run(className, args, "", null, false,false);
+		return run(className, null, args, "", "", null, false,false);
 	}
 
 	/**
@@ -593,7 +593,7 @@ public class AjcTestCase extends TestCase {
 	 *        be appended to the classpath, as will any jars in the sandbox.
 	 * @param runSpec 
 	 */
-	public RunResult run(String className, String[] args, String vmargs, final String classpath, boolean useLTW, boolean useFullLTW) {
+	public RunResult run(String className, String moduleName, String[] args, String vmargs, final String classpath, String modulepath, boolean useLTW, boolean useFullLTW) {
 
 		if (args != null) {
 			for (int i = 0; i < args.length; i++) {
@@ -607,8 +607,16 @@ public class AjcTestCase extends TestCase {
 			cp.append(substituteSandbox(classpath));
 			cp.append(File.pathSeparator);
 		}
-		cp.append(ajc.getSandboxDirectory().getAbsolutePath());
-		getAnyJars(ajc.getSandboxDirectory(), cp);
+		if (moduleName == null) {
+			// When running modules, we want more control so don't try to be helpful by adding all jars
+			cp.append(ajc.getSandboxDirectory().getAbsolutePath());
+			getAnyJars(ajc.getSandboxDirectory(), cp);
+		}
+		StringBuffer mp = new StringBuffer();
+		if (modulepath != null) {
+			mp.append(substituteSandbox(modulepath));
+			mp.append(File.pathSeparator);
+		}
 
 		URLClassLoader sandboxLoader;
 		ClassLoader parentLoader = getClass().getClassLoader().getParent();
@@ -639,7 +647,6 @@ public class AjcTestCase extends TestCase {
 			String absPath = directory.getAbsolutePath();
 			String javaagent= absPath+File.separator+".."+File.separator+"aj-build"+File.separator+"dist"+File.separator+"tools"+File.separator+"lib"+File.separator+"aspectjweaver.jar";
 			try {
-
 				String command ="java " +vmargs+ " -classpath " + cp +" -javaagent:"+javaagent + " " + className ;
 				
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
@@ -654,10 +661,35 @@ public class AjcTestCase extends TestCase {
 				System.out.println("Error executing full LTW test: " + e);
 				e.printStackTrace();
 			}
-
 			return lastRunResult;
-		
-		}else{
+		} else if (moduleName != null) {
+			// CODE FOR RUNNING MODULES
+			if(vmargs == null){
+				vmargs ="";
+			}
+			try {
+				if (mp.indexOf("$runtime") != -1) {
+					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
+				}
+				if (cp.indexOf("aspectjrt")==-1) {
+					cp.append(TestUtil.aspectjrtPath().getPath()).append(File.pathSeparator);
+				}
+				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " -p "+mp+" --module "+moduleName   ;
+				System.out.println("Command is "+command);
+				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
+				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
+				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
+				exec = pb.start();
+		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				exec.waitFor();
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+			} catch (Exception e) {
+				System.out.println("Error executing module test: " + e);
+				e.printStackTrace();
+			}
+			return lastRunResult;
+		} else {
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());
 			sandboxLoader = new URLClassLoader(urls, parentLoader);
@@ -666,7 +698,8 @@ public class AjcTestCase extends TestCase {
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 		
 
-		StringBuffer command = new StringBuffer("java -classpath ");
+		StringBuffer command = new StringBuffer();
+		command.append("java -classpath ");
 		command.append(cp.toString());
 		command.append(" ");
 		command.append(className);
@@ -834,15 +867,15 @@ public class AjcTestCase extends TestCase {
 		return urls;
 	}
 
-	private String substituteSandbox(String classpath) {
-		// the longhand form of the non 1.3 API: classpath.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
-		while (classpath.indexOf("$sandbox") != -1) {
-			int pos = classpath.indexOf("$sandbox");
-			String firstbit = classpath.substring(0, pos);
-			String endbit = classpath.substring(pos + 8);
-			classpath = firstbit + ajc.getSandboxDirectory().getAbsolutePath() + endbit;
+	private String substituteSandbox(String path) {
+		// the longhand form of the non 1.3 API: path.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
+		while (path.indexOf("$sandbox") != -1) {
+			int pos = path.indexOf("$sandbox");
+			String firstbit = path.substring(0, pos);
+			String endbit = path.substring(pos + 8);
+			path = firstbit + ajc.getSandboxDirectory().getAbsolutePath() + endbit;
 		}
-		return classpath;
+		return path;
 	}
 
 	/**
@@ -864,6 +897,8 @@ public class AjcTestCase extends TestCase {
                         args[i + 1] = substituteSandbox(args[i + 1]);
                         String next = args[i + 1];
                         hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
+                } else if ("-p".equals(args[i]) || "--module-path".equals(args[i])) {
+                    args[i + 1] = substituteSandbox(args[i + 1]);
                 }
         }
         if (-1 == cpIndex) {

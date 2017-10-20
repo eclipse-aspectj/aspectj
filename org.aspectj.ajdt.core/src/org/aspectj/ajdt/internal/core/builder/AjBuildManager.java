@@ -79,6 +79,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
@@ -865,8 +866,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			bcelWorld.getLint().setFromProperties(buildConfig.getLintSpecFile());
 		}
 
-		for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
-			File f = (File) i.next();
+		for (File f: buildConfig.getAspectpath()) {
 			if (!f.exists()) {
 				IMessage message = new Message("invalid aspectpath entry: " + f.getName(), null, true);
 				handler.handleMessage(message);
@@ -943,7 +943,19 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// a classpathDirectory object that will attempt to look for source when it can't find binary.
 		// int[] classpathModes = new int[classpaths.length];
 		// for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
-		return new FileSystem(classpaths, filenames, defaultEncoding, ClasspathLocation.BINARY);
+		
+		FileSystem nameEnvironment = null;
+		// TODO J9 The compiler likes to work in terms of checked classpath objects - these will be different
+		// depending on where the code came from (classpath, modulepath). If working with just the raw
+		// 'classpaths' object it isn't recording where the code came from. This will be an issue later for
+		// weaving, the distinction will need to be maintained for proper 'module aware/respecting' weaving.
+		if (buildConfig.getCheckedClasspaths() == null) {
+			nameEnvironment = new FileSystem(classpaths, filenames, defaultEncoding, ClasspathLocation.BINARY);
+		} else {
+			nameEnvironment = new FileSystem(buildConfig.getCheckedClasspaths(), filenames, false);
+		}
+		nameEnvironment.module = buildConfig.getModuleDesc();
+		return nameEnvironment;
 	}
 
 	public IProblemFactory getProblemFactory() {
@@ -962,9 +974,30 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if ("".equals(defaultEncoding)) {//$NON-NLS-1$
 			defaultEncoding = null;
 		}
-
+		CompilationUnit moduleCU = null;
+		
+		// TODO building with multiple module-infos?
+		int moduleIndex = -1;
+		IModule moduleDesc = buildConfig.getModuleDesc();
+		String moduleName = moduleDesc == null? null: new String(moduleDesc.name());
+		for (int i=0;i<fileCount;i++) {
+			if (filenames[i].endsWith("module-info.java")) {
+				moduleIndex = i;
+				moduleCU = new CompilationUnit(null, filenames[i], defaultEncoding, null, false, moduleName);
+			}
+		}
+		
 		for (int i = 0; i < fileCount; i++) {
-			units[i] = new CompilationUnit(null, filenames[i], defaultEncoding);
+//			units[i] = new CompilationUnit(null, filenames[i], defaultEncoding);
+			if (i == moduleIndex) {
+				units[i] = moduleCU;
+			} else {
+				units[i] = new CompilationUnit(null, filenames[i], defaultEncoding, null, false, moduleName);
+				units[i].setModule(moduleCU);
+			}
+//			new CompilationUnit(null, fileName, encoding, this.destinationPaths[i],
+//					shouldIgnoreOptionalProblems(this.ignoreOptionalProblemsFromFolders, fileName.toCharArray()), 
+//					this.modNames[i]);
 		}
 		return units;
 	}

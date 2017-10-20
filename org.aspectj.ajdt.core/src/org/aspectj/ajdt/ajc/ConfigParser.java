@@ -176,7 +176,7 @@ public class ConfigParser {
 		}
 	}
 
-	protected void parseOption(String arg, LinkedList args) {
+	protected void parseOption(String arg, LinkedList<Arg> args) {
 		showWarning("unrecognized option: " + arg);
 	}
 
@@ -191,22 +191,22 @@ public class ConfigParser {
 		throw new ParseException(CONFIG_MSG + message, location);
 	}
 
-	void parseArgs(LinkedList args) {
+	void parseArgs(LinkedList<Arg> args) {
 		while (args.size() > 0) {
 			parseOneArg(args);
 		}
 	}
 
-	protected Arg removeArg(LinkedList args) {
+	protected Arg removeArg(LinkedList<Arg> args) {
 		if (args.size() == 0) {
 			showError("value missing");
 			return null;
 		} else {
-			return (Arg) args.removeFirst();
+			return args.removeFirst();
 		}
 	}
 
-	protected String removeStringArg(LinkedList args) {
+	protected String removeStringArg(LinkedList<Arg> args) {
 		Arg arg = removeArg(args);
 		if (arg == null) {
 			return null;
@@ -235,7 +235,7 @@ public class ConfigParser {
 		return false;
 	}
 
-	void parseOneArg(LinkedList args) {
+	void parseOneArg(LinkedList<Arg> args) {
 		Arg arg = removeArg(args);
 		String v = arg.getValue();
 		location = arg.getLocation();
@@ -245,6 +245,9 @@ public class ConfigParser {
 			parseConfigFileHelper(makeFile(removeArg(args).getValue()));
 		} else if (isSourceFileName(v)) {
 			addFileOrPattern(makeFile(v));
+			if (v.endsWith("module-info.java")) {
+				parseOption(arg.getValue(), args);				
+			}
 		} else if (isXml(v)) {
 			addXmlFile(makeFile(v));
 		} else {
@@ -284,6 +287,10 @@ public class ConfigParser {
 		private Location location;
 		private String value;
 
+		public String toString() {
+			return "Arg[location="+location+" value="+value+"]";
+		}
+		
 		public Arg(String value, Location location) {
 			this.value = value;
 			this.location = location;
