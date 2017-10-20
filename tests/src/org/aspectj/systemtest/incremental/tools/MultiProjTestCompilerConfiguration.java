@@ -262,4 +262,14 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		return this.processorPath;
 	}
 
+	@Override
+	public String getModulepath() {
+		return null;
+	}
+
+	@Override
+	public String getModuleSourcepath() {
+		return null;
+	}
+
 }

@@ -12,13 +12,10 @@ package org.aspectj.systemtest.ajc190;
 
 import java.io.File;
 
-import junit.framework.Test;
-
-import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /*
  * Some very trivial tests that help verify things are OK.
@@ -88,46 +85,46 @@ public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// }
 
 	/* For the specified class, check that each method has a stackmap attribute */
-	private void checkStackMapExistence(String classname, String toIgnore) throws ClassNotFoundException {
-		toIgnore = "_" + (toIgnore == null ? "" : toIgnore) + "_";
-		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
-		Method[] methods = jc.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
-			if (toIgnore.contains("_" + method.getName() + "_")) {
-				continue;
-			}
-			boolean hasStackMapAttribute = findAttribute(method.getAttributes(), "StackMapTable");
-			if (!hasStackMapAttribute) {
-				fail("Could not find StackMap attribute for method " + method.getName());
-			}
-		}
-	}
+//	private void checkStackMapExistence(String classname, String toIgnore) throws ClassNotFoundException {
+//		toIgnore = "_" + (toIgnore == null ? "" : toIgnore) + "_";
+//		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
+//		Method[] methods = jc.getMethods();
+//		for (int i = 0; i < methods.length; i++) {
+//			Method method = methods[i];
+//			if (toIgnore.contains("_" + method.getName() + "_")) {
+//				continue;
+//			}
+//			boolean hasStackMapAttribute = findAttribute(method.getAttributes(), "StackMapTable");
+//			if (!hasStackMapAttribute) {
+//				fail("Could not find StackMap attribute for method " + method.getName());
+//			}
+//		}
+//	}
 
-	private boolean findAttribute(Attribute[] attrs, String attributeName) {
-		if (attrs == null) {
-			return false;
-		}
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute.getName().equals(attributeName)) {
-				return true;
-			}
-			// System.out.println(attribute.getName());
-			if (attribute.getName().equals("Code")) {
-				Code c = (Code) attribute;
-				Attribute[] codeAttributes = c.getAttributes();
-				for (int j = 0; j < codeAttributes.length; j++) {
-					Attribute codeAttribute = codeAttributes[j];
-					if (codeAttribute.getName().equals(attributeName)) {
-						return true;
-						// System.out.println(codeAttribute.getName());
-					}
-				}
-			}
-		}
-		return false;
-	}
+//	private boolean findAttribute(Attribute[] attrs, String attributeName) {
+//		if (attrs == null) {
+//			return false;
+//		}
+//		for (int i = 0; i < attrs.length; i++) {
+//			Attribute attribute = attrs[i];
+//			if (attribute.getName().equals(attributeName)) {
+//				return true;
+//			}
+//			// System.out.println(attribute.getName());
+//			if (attribute.getName().equals("Code")) {
+//				Code c = (Code) attribute;
+//				Attribute[] codeAttributes = c.getAttributes();
+//				for (int j = 0; j < codeAttributes.length; j++) {
+//					Attribute codeAttribute = codeAttributes[j];
+//					if (codeAttribute.getName().equals(attributeName)) {
+//						return true;
+//						// System.out.println(codeAttribute.getName());
+//					}
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
 	private void checkVersion(String classname, int major, int minor) throws ClassNotFoundException {
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
