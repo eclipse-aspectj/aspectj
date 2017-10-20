@@ -366,14 +366,14 @@ public class Ajc {
 			if (FileUtil.hasSourceSuffix(args[i])) {
 				File f = new File(args[i]);
 				// newArgs[i] = new File(baseDir,args[i]).getAbsolutePath(); // might be quicker?
-				newArgs[i] = adjustFileOrDir(f, doCopy).getAbsolutePath();
+				newArgs[i] = adjustFileOrDir(f, doCopy, false).getAbsolutePath();
 			} else if (args[i].endsWith(".xml") && !args[i].startsWith("-")) {
 				if (i > 0 && args[i - 1].equals("-outxmlfile")) {
 					// dont adjust it
 				} else {
 					File f = new File(args[i]);
 					// newArgs[i] = new File(baseDir,args[i]).getAbsolutePath(); // might be quicker?
-					newArgs[i] = adjustFileOrDir(f, doCopy).getAbsolutePath();
+					newArgs[i] = adjustFileOrDir(f, doCopy, false).getAbsolutePath();
 				}
 			} else {
 				if ((args[i].equals("-aspectpath") || args[i].equals("-inpath") || args[i].equals("-injars")
@@ -387,10 +387,11 @@ public class Ajc {
 						copyThisTime = false;
 						hasOutdir = true;
 					}
+					boolean isOutjar = args[i].equals("-outjar");
 					StringTokenizer strTok = new StringTokenizer(args[++i], File.pathSeparator);
 					while (strTok.hasMoreTokens()) {
 						File f = new File(strTok.nextToken());
-						buff.append(adjustFileOrDir(f, copyThisTime).getAbsolutePath());
+						buff.append(adjustFileOrDir(f, copyThisTime, isOutjar).getAbsolutePath());
 						if (strTok.hasMoreTokens())
 							buff.append(File.pathSeparator);
 					}
@@ -404,7 +405,7 @@ public class Ajc {
 					// could be resource file
 					File f = new File(args[i]);
 					if (f.exists()) {
-						newArgs[i] = adjustFileOrDir(f, doCopy).getAbsolutePath();
+						newArgs[i] = adjustFileOrDir(f, doCopy, false).getAbsolutePath();
 					}
 				}
 			}
@@ -426,7 +427,7 @@ public class Ajc {
 		return newArgs;
 	}
 
-	private File adjustFileOrDir(File from, boolean doCopy) throws IOException {
+	private File adjustFileOrDir(File from, boolean doCopy, boolean ensureDirsExist) throws IOException {
 		File to = from;
 		File ret = from;
 		if (!from.isAbsolute()) {
@@ -435,6 +436,10 @@ public class Ajc {
 			String relativeToPath = (fromParent != null) ? (fromParent.getPath() + File.separator) : "";
 			if (baseDir != null) {
 				from = new File(baseDir, from.getPath());
+//				if (ensureDirsExist) {
+//					File toMkdir = (ret.getPath().endsWith(".jar") || ret.getPath().endsWith(".zip"))?ret.getParentFile():ret;
+//					toMkdir.mkdirs();
+//				}
 			}
 			if (!from.exists())
 				return ret;
