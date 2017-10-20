@@ -69,7 +69,7 @@ public class BuildModuleTests extends TestCase {
      * @return
      */
     private static File[] findSourceRoots(File moduleDir) {
-        ArrayList<File> result = new ArrayList<>();
+        ArrayList<File> result = new ArrayList<File>();
         for (String name: SOURCE_NAMES) {
             File srcDir = new File(moduleDir, name);
             if (srcDir.canRead() && srcDir.isDirectory()) {
@@ -196,7 +196,7 @@ public class BuildModuleTests extends TestCase {
         
         // separate check to verify all file types (suffixes) are known
         if (!"testsrc".equals(srcDir.getName())) {
-            ArrayList<File> unknownFiles = new ArrayList<>();
+            ArrayList<File> unknownFiles = new ArrayList<File>();
             UnknownFileCheck.SINGLETON.unknownFiles(srcDir, unknownFiles);
             if (!unknownFiles.isEmpty()) {
                 String s = "unknown files (see readme-build-module.html to "
@@ -217,12 +217,12 @@ public class BuildModuleTests extends TestCase {
      */
     static class UnknownFileCheck implements FileFilter {
         private static final UnknownFileCheck SINGLETON = new UnknownFileCheck();
-        private static final ArrayList<String> STATIC_ERRORS = new ArrayList<>();
+        private static final ArrayList<String> STATIC_ERRORS = new ArrayList<String>();
         // Builder.BINARY_SOURCE_PATTERN and Builder.RESOURCE_PATTERN
         public static final List<String> KNOWN_SUFFIXES;
 
         static {
-            List<String> suffixes = new ArrayList<>();
+            List<String> suffixes = new ArrayList<String>();
             // sources from org.aspectj.util.FileUtil.SOURCE_SUFFIXES
             suffixes.add(".aj");
             suffixes.add(".java");
