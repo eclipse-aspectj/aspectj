@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2017 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -77,7 +77,6 @@ public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBas
 		ResolvedType rt2 = genericType.getSuperclass();
 		assertTrue("Superclass for Map generic type should be Object but was " + rt2, rt2.equals(UnresolvedType.OBJECT));
 	}
-	
 
 	/**
 	 * This is testing the optimization in the reflective annotation finder to verify that if you only want runtime
