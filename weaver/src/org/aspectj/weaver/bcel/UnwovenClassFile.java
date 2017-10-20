@@ -30,17 +30,25 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 	// protected byte[] writtenBytes = null;
 	protected List<ChildClass> writtenChildClasses = Collections.emptyList();
 	protected String className = null;
+	protected boolean isModule = false;
 
 	public UnwovenClassFile(String filename, byte[] bytes) {
 		this.filename = filename;
+		this.isModule = filename.toLowerCase().endsWith("module-info.java");
 		this.bytes = bytes;
 	}
 
 	/** Use if the classname is known, saves a bytecode parse */
 	public UnwovenClassFile(String filename, String classname, byte[] bytes) {
 		this.filename = filename;
+		this.isModule = filename.toLowerCase().endsWith("module-info.class");
 		this.className = classname;
 		this.bytes = bytes;
+	}
+
+	public boolean shouldBeWoven() {
+		// Skip module-info files for now, they aren't really types
+		return !isModule;
 	}
 
 	public String getFilename() {

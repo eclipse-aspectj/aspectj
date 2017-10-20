@@ -1035,10 +1035,12 @@ public class BcelWeaver {
 		// repaired prior to weaving
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
-			String className = classFile.getClassName();
-			ResolvedType theType = world.resolve(className);
-			if (theType != null) {
-				theType.ensureConsistent();
+			if (classFile.shouldBeWoven()) {
+				String className = classFile.getClassName();
+				ResolvedType theType = world.resolve(className);
+				if (theType != null) {
+					theType.ensureConsistent();
+				}
 			}
 		}
 
@@ -1051,22 +1053,24 @@ public class BcelWeaver {
 			CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_ASPECTS, "");
 			for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 				UnwovenClassFile classFile = i.next();
-				String className = classFile.getClassName();
-				ResolvedType theType = world.resolve(className);
-				if (theType.isAnnotationStyleAspect()) {
-					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
-					if (classType == null) {
-						throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
+				if (classFile.shouldBeWoven()) {
+					String className = classFile.getClassName();
+					ResolvedType theType = world.resolve(className);
+					if (theType.isAnnotationStyleAspect()) {
+						BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+						if (classType == null) {
+							throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
+						}
+						LazyClassGen clazz = classType.getLazyClassGen();
+						BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
+						selfMunger.forceMunge(clazz, true);
+						classType.finishedWith();
+						UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+						for (int news = 0; news < newClasses.length; news++) {
+							requestor.acceptResult(newClasses[news]);
+						}
+						wovenClassNames.add(classFile.getClassName());
 					}
-					LazyClassGen clazz = classType.getLazyClassGen();
-					BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
-					selfMunger.forceMunge(clazz, true);
-					classType.finishedWith();
-					UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
-					for (int news = 0; news < newClasses.length; news++) {
-						requestor.acceptResult(newClasses[news]);
-					}
-					wovenClassNames.add(classFile.getClassName());
 				}
 			}
 			requestor.weaveCompleted();
@@ -1081,17 +1085,19 @@ public class BcelWeaver {
 		// clear all state from files we'll be reweaving
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
-			String className = classFile.getClassName();
-			BcelObjectType classType = getClassType(className);
-
-			// null return from getClassType() means the delegate is an eclipse
-			// source type - so
-			// there *cant* be any reweavable state... (he bravely claimed...)
-			if (classType != null) {
-				ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.PROCESSING_REWEAVABLE_STATE, className);
-				processReweavableStateIfPresent(className, classType);
-				CompilationAndWeavingContext.leavingPhase(tok);
+			if (classFile.shouldBeWoven()) {
+				String className = classFile.getClassName();
+				BcelObjectType classType = getClassType(className);
+	
+				// null return from getClassType() means the delegate is an eclipse
+				// source type - so
+				// there *cant* be any reweavable state... (he bravely claimed...)
+				if (classType != null) {
+					ContextToken tok = CompilationAndWeavingContext.enteringPhase(
+							CompilationAndWeavingContext.PROCESSING_REWEAVABLE_STATE, className);
+					processReweavableStateIfPresent(className, classType);
+					CompilationAndWeavingContext.leavingPhase(tok);
+				}
 			}
 		}
 
@@ -1112,7 +1118,9 @@ public class BcelWeaver {
 		List<String> typesToProcess = new ArrayList<String>();
 		for (Iterator<UnwovenClassFile> iter = input.getClassFileIterator(); iter.hasNext();) {
 			UnwovenClassFile clf = iter.next();
-			typesToProcess.add(clf.getClassName());
+			if (clf.shouldBeWoven()) {
+				typesToProcess.add(clf.getClassName());
+			}
 		}
 		while (typesToProcess.size() > 0) {
 			weaveParentsFor(typesToProcess, typesToProcess.get(0), null);
@@ -1120,8 +1128,10 @@ public class BcelWeaver {
 
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
-			String className = classFile.getClassName();
-			addNormalTypeMungers(className);
+			if (classFile.shouldBeWoven()) {
+				String className = classFile.getClassName();
+				addNormalTypeMungers(className);
+			}
 		}
 
 		CompilationAndWeavingContext.leavingPhase(typeMungingToken);
@@ -1131,28 +1141,30 @@ public class BcelWeaver {
 		// first weave into aspects
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
-			String className = classFile.getClassName();
-			ResolvedType theType = world.resolve(className);
-			if (theType.isAspect()) {
-				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
-				if (classType == null) {
-
-					// Sometimes.. if the Bcel Delegate couldn't be found then a
-					// problem occurred at compile time - on
-					// a previous compiler run. In this case I assert the
-					// delegate will still be an EclipseSourceType
-					// and we can ignore the problem here (the original compile
-					// error will be reported again from
-					// the eclipse source type) - pr113531
-					ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
-					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
-						continue;
+			if (classFile.shouldBeWoven()) {
+				String className = classFile.getClassName();
+				ResolvedType theType = world.resolve(className);
+				if (theType.isAspect()) {
+					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+					if (classType == null) {
+	
+						// Sometimes.. if the Bcel Delegate couldn't be found then a
+						// problem occurred at compile time - on
+						// a previous compiler run. In this case I assert the
+						// delegate will still be an EclipseSourceType
+						// and we can ignore the problem here (the original compile
+						// error will be reported again from
+						// the eclipse source type) - pr113531
+						ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
+						if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
+							continue;
+						}
+	
+						throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 					}
-
-					throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
+					weaveAndNotify(classFile, classType, requestor);
+					wovenClassNames.add(className);
 				}
-				weaveAndNotify(classFile, classType, requestor);
-				wovenClassNames.add(className);
 			}
 		}
 
@@ -1163,25 +1175,27 @@ public class BcelWeaver {
 		// then weave into non-aspects
 		for (Iterator<UnwovenClassFile> i = input.getClassFileIterator(); i.hasNext();) {
 			UnwovenClassFile classFile = i.next();
-			String className = classFile.getClassName();
-			ResolvedType theType = world.resolve(className);
-			if (!theType.isAspect()) {
-				BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
-				if (classType == null) {
-
-					// bug 119882 - see above comment for bug 113531
-					ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
-
-					// TODO urgh - put a method on the interface to check this,
-					// string compare is hideous
-					if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
-						continue;
+			if (classFile.shouldBeWoven()) {
+				String className = classFile.getClassName();
+				ResolvedType theType = world.resolve(className);
+				if (!theType.isAspect()) {
+					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+					if (classType == null) {
+	
+						// bug 119882 - see above comment for bug 113531
+						ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
+	
+						// TODO urgh - put a method on the interface to check this,
+						// string compare is hideous
+						if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
+							continue;
+						}
+	
+						throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 					}
-
-					throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
+					weaveAndNotify(classFile, classType, requestor);
+					wovenClassNames.add(className);
 				}
-				weaveAndNotify(classFile, classType, requestor);
-				wovenClassNames.add(className);
 			}
 		}
 		CompilationAndWeavingContext.leavingPhase(classToken);
