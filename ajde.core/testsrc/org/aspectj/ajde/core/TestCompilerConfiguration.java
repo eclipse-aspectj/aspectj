@@ -62,9 +62,9 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		StringBuilder classpath = new StringBuilder();
 		classpath.append(projectPath);
         if (LangUtil.is19VMOrGreater()) {
-        	classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
+        		classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
         } else {
-        	classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));
+        		classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));
         }
 		classpath.append(File.pathSeparator).append(AjcTests.aspectjrtClasspath());
 		return classpath.toString();
@@ -184,6 +184,16 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getProcessorPath() {
+		return null;
+	}
+
+	@Override
+	public String getModulepath() {
+		return null;
+	}
+
+	@Override
+	public String getModuleSourcepath() {
 		return null;
 	}
 

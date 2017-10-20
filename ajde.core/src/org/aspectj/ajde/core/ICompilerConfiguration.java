@@ -61,10 +61,11 @@ public interface ICompilerConfiguration extends CompilerConfigurationChangeFlags
 	 */
 	public List<File> getProjectSourceFilesChanged();
 
-	/**
-	 * @return the classpath to use
-	 */
 	public String getClasspath();
+	
+	public String getModulepath();
+	
+	public String getModuleSourcepath();
 
 	/**
 	 * @return the IOutputLocationManager associated with this compiler configuration
