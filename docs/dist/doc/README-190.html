@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.9.0.RC1 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2017 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.9.0.RC1 Readme</h1>
+
+<p>The full list of resolved issues in 1.9.0 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.0">here</a></h2>.</p>
+
+<ul>
+<li>1.9.0.RC1 available 20-Oct-2017
+</ul>
+
+<h2>Notable changes</h2>
+
+<p>This is the first release candidate of AspectJ 1.9.0 - the version of AspectJ to be based on Java9.  It includes
+a recent version of the Eclipse Java9 compiler (from jdt core, commit #062ac5d7a6bf9).</p>
+
+
+<h3>Automatic Modules</h3>
+<p>AspectJ can now be used with the new module system available in Java9. The key jars in AspectJ have been given automatic module names.
+
+The automatic module name is <tt>org.aspectj.runtime</tt> for the <tt>aspectjrt</tt> module:</p>
+<pre><code>
+$ java --module-path &lt;pathto&gt;/lib/aspectjrt.jar --list-modules | grep aspectj
+
+org.aspectj.runtime file:///&lt;pathto&gt;/lib/aspectjrt.jar automatic
+
+</code></pre>
+
+<p>And similarly <tt>org.aspectj.weaver</tt> and <tt>org.aspectj.tools</tt> for <tt>aspectjweaver</tt> and <tt>aspectjtools</tt> respectively:</p>
+
+<pre><code>
+$ java --module-path &lt;pathto&gt;/lib/aspectjweaver.jar --describe-module org.aspectj.weaver
+
+org.aspectj.weaver file:///&lt;pathto&gt;/lib/aspectjweaver.jar automatic
+requires java.base mandated
+contains aj.org.objectweb.asm
+contains aj.org.objectweb.asm.signature
+contains org.aspectj.apache.bcel
+contains org.aspectj.apache.bcel.classfile
+contains org.aspectj.apache.bcel.classfile.annotation
+contains org.aspectj.apache.bcel.generic
+contains org.aspectj.apache.bcel.util
+contains org.aspectj.asm
+contains org.aspectj.asm.internal
+...
+</code></pre>
+
+<h3>Building woven modules</h3>
+<p>AspectJ understands module-info.java source files and building modules that include aspects. Here is an example:</p>
+
+<pre><code>
+<b>module-info.java</b>
+
+module demo {
+	exports pkg;
+	requires org.aspectj.runtime;
+}
+
+
+<b>pkg/Demo.java</b>
+
+package pkg;
+
+public class Demo {
+	public static void main(String[] argv) {
+		System.out.println("Demo running");
+	}
+}
+
+
+<b>otherpkg/Azpect.java</b>
+
+package otherpkg;
+
+public aspect Azpect {
+	before(): execution(* *(..)) && !within(Azpect) {
+		System.out.println("Azpect running");
+	}
+}
+
+</code></pre>
+
+<p>We can now build those into a module:</p>
+
+<pre><code>
+$ ajc -1.9 module-info.java otherpkg/Azpect.java pkg/Demo.java -outjar demo.jar
+
+...
+module-info.java:3 [error] org.aspectj.runtime cannot be resolved to a module
+...
+</code></pre>
+
+<p>Wait, that failed!  Yes, <tt>aspectjrt.jar</tt> (which includes the required <tt>org.aspectj.weaver</tt> module) wasn't supplied.
+We need to pass it on the module-path:</p>
+
+<pre><code>
+$ ajc -1.9 --module-path &lt;pathto&gt;/aspectjrt.jar module-info.java otherpkg/Azpect.java pkg/Demo.java -outjar demo.jar
+
+</code></pre>
+
+<p>Now we have a demo module we can run:</p>
+
+<pre><code>
+$ java --module-path &lt;pathto&gt;/aspectjrt.jar:demo.jar --module demo/pkg.Demo
+
+Azpect running
+Demo running
+</code></pre>
+
+<p>That's it!</p>
+
+
+<h3>Binary weaving with modules</h3>
+
+<p>A module is really just a jar with a module-info descriptor. As such you can simply pass a module on the <tt>inpath</tt>
+and binary weave it with other aspects.  Take the module we built above, let's weave into it again:</p>
+
+<pre><code>extra/AnotherAzpect.java
+
+package extra;
+
+public aspect AnotherAzpect {
+	before(): execution(* *(..)) && !within(*Azpect) {
+		System.out.println("AnotherAzpect running");
+	}
+}
+</code></pre>
+
+<pre><code>
+$ ajc -inpath demo.jar AnotherAzpect.java -outjar newdemo.jar</code></pre>
+
+<p>Notice how there was no complaint here that the <tt>org.aspectj.runtime</tt> module hadn't been passed in. That is because <tt>inpath</tt>
+was being used which doesn't treat specified jars as modules (and so does not check dependencies). There is no <tt>module-inpath</tt> right now.
+
+<p>Because the new jar produced includes the compiled aspect, the module-info specification inside is still correct, so we can run it
+exactly as before:</p>
+
+<pre><code>$ java --module-path ~/installs/aspectj190rc1/lib/aspectjrt.jar:newdemo.jar --module demo/pkg.Demo
+
+Azpect running
+AnotherAzpect running
+Demo running
+</code></pre>
+
+<h3>Faster Spring AOP</h3>
+<p>Dave Syer recently created a series of benchmarks for checking the speed of Spring-AspectJ: 
+<tt><a href="https://github.com/dsyer/spring-boot-aspectj">https://github.com/dsyer/spring-boot-aspectj</a></tt>
+
+<p>Here we can see the numbers for AspectJ 1.8.11 (on an older Macbook Pro):
+
+<pre><code>
+Benchmark                 (scale)  Mode  Cnt   Score   Error  Units
+StartupBenchmark.ltw          N/A  avgt   10   2.553 ~ 0.030   s/op
+StartupBenchmark.ltw_100      N/A  avgt   10   2.608 ~ 0.046   s/op
+StartupBenchmark.spring     v0_10  avgt   10   2.120 ~ 0.148   s/op
+StartupBenchmark.spring     v1_10  avgt   10   2.219 ~ 0.066   s/op
+StartupBenchmark.spring    v1_100  avgt   10   2.244 ~ 0.030   s/op
+StartupBenchmark.spring    v10_50  avgt   10   2.950 ~ 0.026   s/op
+StartupBenchmark.spring    v20_50  avgt   10   3.854 ~ 0.090   s/op
+StartupBenchmark.spring   v20_100  avgt   10   4.003 ~ 0.038   s/op
+StartupBenchmark.spring     a0_10  avgt   10   2.067 ~ 0.019   s/op
+StartupBenchmark.spring     a1_10  avgt   10   2.724 ~ 0.023   s/op
+StartupBenchmark.spring    a1_100  avgt   10   2.778 ~ 0.057   s/op
+StartupBenchmark.spring    a10_50  avgt   10   7.191 ~ 0.134   s/op
+StartupBenchmark.spring   a10_100  avgt   10   7.191 ~ 0.168   s/op
+StartupBenchmark.spring    a20_50  avgt   10  11.541 ~ 0.158   s/op
+StartupBenchmark.spring   a20_100  avgt   10  11.464 ~ 0.157   s/op
+</code></pre>
+
+<p>So this is the average startup of an app affected by aspects applying to the beans involved.
+Where numbers are referenced the first is the number of aspects/pointcuts and the second
+is the number of beans.  The 'a' indicates an annotation based pointcut vs a non-annotation 
+based pointcut ('v'). Notice things are much worse for annotation based pointcuts.  At 20
+pointcuts and 50 beans the app is 9 seconds slower to startup.
+<br>
+
+<p>In AspectJ 1.8.12 and 1.9.0.RC1 some work has been done here. The key change is to recognize that the use
+of annotations with runtime retention is much more likely than annotations with class level
+retention. Retrieving annotations with class retention is costly because we must open the
+bytes for the class file and dig around in there (vs runtime retention which are immediately
+accessible by reflection on the types). In 1.8.11 the actual type of the annotation involved
+in the matching is ignored and the code will fetch *all* the annotations on the type/method/field
+being matched against. So even if the match is looking for a runtime retention annotation, we
+were doing the costly thing of fetching any class retention annotations. In 1.8.12/1.9.0.RC1
+we take the type of the match annotation into account - allowing us to skip opening the classfiles
+in many cases. There is also some deeper work on activating caches that were not previously
+being used correctly but the primary change is factoring in the annotation type.
+
+<p>What difference does that make?
+
+AspectJ 1.9.0.RC1:
+<pre><code>
+Benchmark                 (scale)  Mode  Cnt  Score   Error  Units
+StartupBenchmark.ltw          N/A  avgt   10  2.568 ~ 0.035   s/op
+StartupBenchmark.ltw_100      N/A  avgt   10  2.622 ~ 0.075   s/op
+StartupBenchmark.spring     v0_10  avgt   10  2.096 ~ 0.054   s/op
+StartupBenchmark.spring     v1_10  avgt   10  2.206 ~ 0.031   s/op
+StartupBenchmark.spring    v1_100  avgt   10  2.252 ~ 0.025   s/op
+StartupBenchmark.spring    v10_50  avgt   10  2.979 ~ 0.071   s/op
+StartupBenchmark.spring    v20_50  avgt   10  3.851 ~ 0.058   s/op
+StartupBenchmark.spring   v20_100  avgt   10  4.000 ~ 0.046   s/op
+StartupBenchmark.spring     a0_10  avgt   10  2.071 ~ 0.026   s/op
+StartupBenchmark.spring     a1_10  avgt   10  2.182 ~ 0.032   s/op
+StartupBenchmark.spring    a1_100  avgt   10  2.272 ~ 0.024   s/op
+StartupBenchmark.spring    a10_50  avgt   10  2.557 ~ 0.027   s/op
+StartupBenchmark.spring   a10_100  avgt   10  2.598 ~ 0.040   s/op
+StartupBenchmark.spring    a20_50  avgt   10  2.961 ~ 0.043   s/op
+StartupBenchmark.spring   a20_100  avgt   10  3.093 ~ 0.098   s/op
+</code></pre>
+
+<p>Look at the a20_100 case - instead of impacting start time by 9 seconds, it impacts it by 1 second.
+
+<h3>More to come...</h3>
+
+<ul>
+<li><p>Eclipse JDT Java 9 support is still being actively worked on and lots of fixes will be coming through over the next few months
+and included in AspectJ 1.9.X revisions.</p>
+
+<li><p>AspectJ does not currently modify <tt>module-info.java</tt> files. An aspect from one module applying to code in
+another module clearly introduces a dependency between those two modules. There is no reason - other than time! - that
+this can't be done. (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=526244">Issue 526244</a>)</p>
+
+<li><p>Related to that AspectJ, on detection of aspects should be able to automatically introduce the <tt>requires org.aspectj.runtime</tt> to
+the <tt>module-info</tt>. (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=526242">Issue 526242</a>)</p>
+
+<li><p>Module aware variants of AspectJ paths: <tt>--module-inpath</tt>, <tt>--module-aspectpath</tt>. (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=526243">Issue 526243</a>)</p>
+</ul>
+
+<!-- ============================== -->  
+</body>
+</html>
