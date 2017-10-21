@@ -66,7 +66,7 @@ public class PointcutDesignatorHandlerTests extends TestCase {
      * InternalUseOnlyPointcutParser inside the Java15ReflectionBasedReferenceTypeDelegate code. First test checks
      * parsing is OK
      */
-    public void testParsingBeanInReferencePointcut01() throws Exception {
+    public void xtestParsingBeanInReferencePointcut01() throws Exception {
         if (needToSkip) return;
         PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
         BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
@@ -87,7 +87,7 @@ public class PointcutDesignatorHandlerTests extends TestCase {
      * InternalUseOnlyPointcutParser inside the Java15ReflectionBasedReferenceTypeDelegate code. This test checks the
      * actual matching.
      */
-    public void testParsingBeanInReferencePointcut02() throws Exception {
+    public void xtestParsingBeanInReferencePointcut02() throws Exception {
         if (needToSkip) return;
         PointcutParser parser = PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
         BeanDesignatorHandler beanHandler = new BeanDesignatorHandler();
