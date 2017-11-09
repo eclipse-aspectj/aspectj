@@ -18,22 +18,32 @@
 All rights reserved.
 </small></div>
 
-<h1>AspectJ 1.9.0.RC1 Readme</h1>
+<h1>AspectJ 1.9.0.RC2 Readme</h1>
 
 <p>The full list of resolved issues in 1.9.0 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.0">here</a></h2>.</p>
 
 <ul>
+<li>1.9.0.RC2 available 9-Nov-2017
+</ul>
+
+<h3>1.9.0.RC2 changes</h3>
+
+<p>Key change in 1.9.0.RC2 is actually to be more tolerant of JDK10. The version handling has been somewhat overhauled so AspectJ 9 will
+behave better on Java 10 and future JDKs. This should put AspectJ in a better place if new JDK versions are going
+to arrive thick and fast.
+
+<ul>
 <li>1.9.0.RC1 available 20-Oct-2017
 </ul>
 
-<h2>Notable changes</h2>
+<h3>1.9.0.RC1 changes</h3>
 
 <p>This is the first release candidate of AspectJ 1.9.0 - the version of AspectJ to be based on Java9.  It includes
 a recent version of the Eclipse Java9 compiler (from jdt core, commit #062ac5d7a6bf9).</p>
 
 
-<h3>Automatic Modules</h3>
+<h4>Automatic Modules</h4>
 <p>AspectJ can now be used with the new module system available in Java9. The key jars in AspectJ have been given automatic module names.
 
 The automatic module name is <tt>org.aspectj.runtime</tt> for the <tt>aspectjrt</tt> module:</p>
@@ -62,8 +72,9 @@ contains org.aspectj.asm
 contains org.aspectj.asm.internal
 ...
 </code></pre>
-
-<h3>Building woven modules</h3>
+</p>
+<br><br>
+<h4>Building woven modules</h4>
 <p>AspectJ understands module-info.java source files and building modules that include aspects. Here is an example:</p>
 
 <pre><code>
@@ -127,8 +138,9 @@ Demo running
 
 <p>That's it!</p>
 
+<br><br>
 
-<h3>Binary weaving with modules</h3>
+<h4>Binary weaving with modules</h4>
 
 <p>A module is really just a jar with a module-info descriptor. As such you can simply pass a module on the <tt>inpath</tt>
 and binary weave it with other aspects.  Take the module we built above, let's weave into it again:</p>
@@ -159,8 +171,9 @@ Azpect running
 AnotherAzpect running
 Demo running
 </code></pre>
+<br><br>
 
-<h3>Faster Spring AOP</h3>
+<h4>Faster Spring AOP</h4>
 <p>Dave Syer recently created a series of benchmarks for checking the speed of Spring-AspectJ: 
 <tt><a href="https://github.com/dsyer/spring-boot-aspectj">https://github.com/dsyer/spring-boot-aspectj</a></tt>
 
