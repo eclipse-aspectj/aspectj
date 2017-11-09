@@ -2809,7 +2809,7 @@
               <line text="1 @Foo()"/>
               <line text="1 @Foo()"/>
               <line text="1 @Classified(classification=TOP-SECRET)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-              <line text="1 @Classified(classification=&quot;TOP-SECRET&quot;)" vm="1.9"/>
+              <line text="1 @Classified(classification=&quot;TOP-SECRET&quot;)" vm="9+"/>
               <line text="This information is TOP-SECRET"/>
               <line text="Entering critical join point with priority 3"/>
               <line text="Entering critical join point with reflectively obtained priority 3"/>

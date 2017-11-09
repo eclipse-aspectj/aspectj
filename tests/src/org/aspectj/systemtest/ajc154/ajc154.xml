@@ -28,7 +28,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @a.b.SimpleAnnotation(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @a.b.SimpleAnnotation(classname=&quot;oranges&quot;)" vm="1.9"/>
+       <line text="Annotation is @a.b.SimpleAnnotation(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
@@ -41,7 +41,7 @@
       <run class="c.d.DistantResource">
      <stdout>       
        <line text="Annotation is @a.b.SimpleAnnotation(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @a.b.SimpleAnnotation(classname=&quot;oranges&quot;)" vm="1.9"/>
+       <line text="Annotation is @a.b.SimpleAnnotation(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
@@ -54,7 +54,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="1.9"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
      </stdout>
      </run>
    </ajc-test>
@@ -67,7 +67,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="1.9"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
      </stdout>
      </run>
    </ajc-test>
@@ -81,7 +81,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="1.9"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
      </stdout>
      </run>
    </ajc-test>
@@ -96,7 +96,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="1.9"/>              
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>              
      </stdout>
      </run>
    </ajc-test>

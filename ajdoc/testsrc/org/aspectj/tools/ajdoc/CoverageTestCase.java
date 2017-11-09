@@ -55,7 +55,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
     public void testCoveragePublicMode() throws Exception {
     	File[] files = {file3,file9};
-    	runAjdoc("public","1.6",files);
+    	runAjdoc("public","9",files);
         
         // have passed the "public" modifier as well as
         // one public and one package visible class. There

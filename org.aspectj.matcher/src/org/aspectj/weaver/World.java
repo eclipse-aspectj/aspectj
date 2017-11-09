@@ -462,6 +462,9 @@ public abstract class World implements Dump.INode {
 		} else if (ty.isGenericType()) {
 			// ======= generic types ======================
 			ResolvedType rt = resolveGenericTypeFor(ty, false);
+			if (rt.isMissing()) {
+				return rt;
+			}
 			ReferenceType genericType = (ReferenceType) rt;
 			return genericType;
 
