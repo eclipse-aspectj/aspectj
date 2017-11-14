@@ -82,7 +82,7 @@ public class LangUtil {
 						Double temp = new Double(Double.parseDouble(versionString));
 						vmVersion = temp.doubleValue();
 					} catch (Exception e) {
-						vmVersion = 1.4;
+						vmVersion = 1.5;
 					}
 				}
 			}
