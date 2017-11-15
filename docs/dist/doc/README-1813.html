@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.13 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2017 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.13 Readme</h1>
+
+<p>Small release that:</p>
+
+<ul>
+<li>Dials back the performance optimizations for Spring AOP. One of them was taking things too far and has caused
+an issue <a href="https://jira.spring.io/browse/SPR-16161">SPR-16161</a>. This wasn't the main performance enhancement
+for Spring AOP though so the numbers are still very close to those shown in the 1.8.12 readme.
+
+<li>Includes better toleration of new JDK versions. If the versions are coming out thick and fast we need older
+AspectJs to cope when simply running on new JDKs they haven't encountered before.
+</ul>
+
+<p>1.8.13 available 15-Nov-2017
+
+</body>
+</html>
