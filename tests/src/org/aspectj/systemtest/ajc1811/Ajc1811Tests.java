@@ -56,13 +56,14 @@ public class Ajc1811Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("LOuter$Inner;",type.getSignature());
 		
 		// public Inner m() { ... }
-		Method m3 = findMethod(jc,"m");
-		System.out.println(m3);
-		System.out.println(">"+m3.getReturnType());
+//		Method m = findMethod(jc,"m");
+//		System.out.println(m);
+//		System.out.println(">"+m.getReturnType());
 //		assertNotNull(returnType);
 		
 		// public Outer<String>.Inner m2() { ... }
 	}
+	
 //	
 //	public void testMultiArgs_509235() {
 //		runTest("multiargs");
@@ -71,6 +72,12 @@ public class Ajc1811Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	public void testMultiArgs_509235_2() {
 //		runTest("multiargs - no ellipsis");
 //	}
+
+	// 1.8.13:
+
+	public void testAjcGenerics() {
+		runTest("generics");
+	}
 
 	// ---
 

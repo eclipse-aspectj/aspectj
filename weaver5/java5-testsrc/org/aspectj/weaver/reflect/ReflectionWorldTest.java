@@ -1,29 +1,36 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005,2017 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+import java.util.Map;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeakClassLoaderReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;
 
+/**
+ * @author Andy Clement
+ * @author Adrian Colyer
+ */
 public class ReflectionWorldTest extends TestCase {
 
 	public void testDelegateCreation() {
@@ -31,6 +38,66 @@ public class ReflectionWorldTest extends TestCase {
 		ResolvedType rt = world.resolve("java.lang.Object");
 		assertNotNull(rt);
 		assertEquals("Ljava/lang/Object;", rt.getSignature());
+	}
+	
+	// Removed for now. In Spring the reflection worlds are customized by introducing new
+	// PCD handlers. It means more thought needs to be put into reusing worlds.
+	public void xtestReflectionWorldFactory() throws Exception {
+		ClassLoader parent = getClass().getClassLoader();
+		ClassLoader cl1 = new URLClassLoader(new URL[] {}, parent);
+		ClassLoader cl2 = new URLClassLoader(new URL[] {}, parent);
+
+		WeakClassLoaderReference wcl1 = new WeakClassLoaderReference(cl1);
+		WeakClassLoaderReference wcl2 = new WeakClassLoaderReference(cl2);
+		ReflectionWorld a = ReflectionWorld.getReflectionWorldFor(wcl1);
+
+		ResolvedType stringClass1 = a.resolve(String.class);
+		assertNotNull(stringClass1);
+		
+		ReflectionWorld b = ReflectionWorld.getReflectionWorldFor(wcl1);
+		
+		// They should be the same because the classloader has not gone away
+		assertTrue(a==b);
+		
+		cl1 = null;
+		for (int i=0;i<100;i++) {
+			System.gc(); // How robust is it that this should be causing the reference to be collected?
+		}
+		b = ReflectionWorld.getReflectionWorldFor(wcl1);
+		
+		assertFalse(a==b);
+		
+		cl1 = new URLClassLoader(new URL[] {}, parent);
+		wcl1 = new WeakClassLoaderReference(cl1);
+		a = ReflectionWorld.getReflectionWorldFor(wcl1);
+		b = ReflectionWorld.getReflectionWorldFor(wcl2);
+		assertFalse(a==b);
+		
+		Field declaredField = ReflectionWorld.class.getDeclaredField("rworlds");
+		declaredField.setAccessible(true);
+		Map worlds = (Map)declaredField.get(null);
+		assertEquals(2, worlds.size());
+		
+		cl2 = null;
+		for (int i=0;i<100;i++) {
+			System.gc(); // How robust is it that this should be causing the reference to be collected?
+		}
+		ReflectionWorld.getReflectionWorldFor(wcl1); // need to call this to trigger tidyup
+		assertEquals(1, worlds.size());
+
+		cl1 = null;
+		for (int i=0;i<100;i++) {
+			System.gc(); // How robust is it that this should be causing the reference to be collected?
+		}
+		ReflectionWorld.getReflectionWorldFor(wcl1); // need to call this to trigger tidyup
+		assertEquals(0, worlds.size());
+		
+		cl1 = new URLClassLoader(new URL[] {}, parent);
+		wcl1 = new WeakClassLoaderReference(cl1);
+		ReflectionWorld reflectionWorldFor = ReflectionWorld.getReflectionWorldFor(wcl1);
+		assertEquals(1, worlds.size());
+		ReflectionWorld.cleanUpWorlds();		
+		assertEquals(0, worlds.size());
 	}
 
 	public void testArrayTypes() {
@@ -46,6 +113,28 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals("void", UnresolvedType.VOID, world.resolve(void.class));
 	}
 	
+	static class AbstractSuperClass<A,B> {}
+	static interface InterfaceOne {}
+	static interface InterfaceTwo<A> {}
+	static class ID {}
+	static abstract class AbstractTestClass<T> extends AbstractSuperClass<T,ID> implements InterfaceOne, InterfaceTwo<T> {
+
+	}
+	static class TestType {}
+//	static class ConcreteClass extends AbstractTestClass<TestType> {
+	static class ConcreteClass extends AbstractTestClass<List<TestType>> {
+	}
+	
+	static class Bar extends ConcreteClass {}
+	
+	public void testGenerics() {
+		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
+//		world.lookupOrCreateName(UnresolvedType.forName(AbstractTestClass.class.getName()));
+//		ResolvedType resolvedType = world.resolve(AbstractTestClass.class);
+		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
+		ResolvedType resolvedType2 = converter.fromType(ConcreteClass.class);
+	}
+
 	public void testTypeConversions_509327() throws Exception {
 		ReflectionWorld rWorld = new ReflectionWorld(getClass().getClassLoader());
 		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(rWorld);
@@ -197,6 +286,5 @@ public class ReflectionWorldTest extends TestCase {
 		}
 		return null;
 	}
-
 
 }

@@ -16,15 +16,38 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
+import org.aspectj.util.LangUtil;
 
 public class OutputSpec {
 	
 	private List<String> expectedOutputLines = new ArrayList<String>();
 
 	public void addLine(OutputLine line) {
-		expectedOutputLines.add(line.getText());
+		if (line.getVm() == null || matchesThisVm(line.getVm())) {
+			expectedOutputLines.add(line.getText());
+		}
 	}
 	
+	/**
+	 * For a test output line that has specified a vm version, check if it matches the vm we are running on.
+	 * vm might be "1.2,1.3,1.4,1.5" or simply "9" or it may be a version with a '+' suffix indicating that
+	 * level or later, e.g. "9+" should be ok on Java 10
+	 * @return true if the current vm version matches the spec
+	 */
+	private boolean matchesThisVm(String vm) {
+		// vm might be 1.2, 1.3, 1.4, 1.5 or 1.9 possibly with a '+' in there
+		// For now assume + is attached to there only being one version, like "9+"
+		if (vm.contains(LangUtil.getVmVersionString())) {
+			return true;
+		}
+		if (vm.endsWith("+")) {
+			double vmVersion = LangUtil.getVmVersion();
+			double vmSpecified = Double.parseDouble(vm.substring(0,vm.length()-1));
+			return vmVersion >= vmSpecified;
+		}
+		return false;
+	}
+
 	public void matchAgainst(String output) {
 		matchAgainst(output, "yes");
 	}

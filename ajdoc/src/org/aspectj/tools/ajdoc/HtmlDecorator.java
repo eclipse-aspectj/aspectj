@@ -48,7 +48,7 @@ class HtmlDecorator {
 	private static final String ITD_FIELD_SUMMARY = "Inter-Type Field Summary";
 	private static final String ITD_CONSTRUCTOR_SUMMARY = "Inter-Type Constructor Summary";
 
-	static List visibleFileList = new ArrayList();
+	static List<String> visibleFileList = new ArrayList<String>();
 	static Hashtable declIDTable = null;
 	static File rootDir = null;
 	static String docVisibilityModifier;
@@ -291,22 +291,22 @@ class HtmlDecorator {
 	}
 
 	static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index) {
-		List pointcuts = new ArrayList();
-		List advice = new ArrayList();
-		List declares = new ArrayList();
-		List methodsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_METHOD);
+		List<IProgramElement> pointcuts = new ArrayList<IProgramElement>();
+		List<IProgramElement> advice = new ArrayList<IProgramElement>();
+		List<IProgramElement> declares = new ArrayList<IProgramElement>();
+		List<IProgramElement> methodsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_METHOD);
 		if (methodsDeclaredOn != null && !methodsDeclaredOn.isEmpty()) {
 			insertDeclarationsSummary(fileBuffer, methodsDeclaredOn, ITD_METHOD_SUMMARY, index);
 		}
-		List fieldsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_FIELD);
+		List<IProgramElement> fieldsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_FIELD);
 		if (fieldsDeclaredOn != null && !fieldsDeclaredOn.isEmpty()) {
 			insertDeclarationsSummary(fileBuffer, fieldsDeclaredOn, ITD_FIELD_SUMMARY, index);
 		}
-		List constDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
+		List<IProgramElement> constDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR);
 		if (fieldsDeclaredOn != null && !constDeclaredOn.isEmpty()) {
 			insertDeclarationsSummary(fileBuffer, constDeclaredOn, ITD_CONSTRUCTOR_SUMMARY, index);
 		}
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
+		for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
 			IProgramElement member = (IProgramElement) it.next();
 			if (member.getKind().equals(IProgramElement.Kind.POINTCUT)) {
 				pointcuts.add(member);
@@ -329,17 +329,17 @@ class HtmlDecorator {
 			insertDeclarationsDetails(fileBuffer, advice, ADVICE_DETAIL, index);
 		}
 		// add the 'aspect declarations' information against the type
-		List parentsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.DECLARE_PARENTS);
+		List<IProgramElement> parentsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.DECLARE_PARENTS);
 		if (parentsDeclaredOn != null && parentsDeclaredOn.size() > 0) {
 			decorateDocWithRel(node, fileBuffer, index, parentsDeclaredOn, HtmlRelationshipKind.ASPECT_DECLARATIONS);
 		}
 		// add the 'annotated by' information against the type
-		List annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
+		List<String> annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
 		if (annotatedBy != null && annotatedBy.size() > 0) {
 			decorateDocWithRel(node, fileBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
 		}
 		// add the 'advised by' information against the type
-		List advisedBy = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
+		List<String> advisedBy = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
 		if (advisedBy != null && advisedBy.size() > 0) {
 			decorateDocWithRel(node, fileBuffer, index, advisedBy, HtmlRelationshipKind.ADVISED_BY);
 		}
@@ -621,16 +621,16 @@ class HtmlDecorator {
 	}
 
 	static void decorateMemberDocumentation(IProgramElement node, StringBuffer fileContentsBuffer, int index) {
-		List targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
+		List<String> targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
 		decorateDocWithRel(node, fileContentsBuffer, index, targets, HtmlRelationshipKind.ADVISED_BY);
 
-		List warnings = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "matches declare");
+		List<String> warnings = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "matches declare");
 		decorateDocWithRel(node, fileContentsBuffer, index, warnings, HtmlRelationshipKind.MATCHES_DECLARE);
 
-		List softenedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "softened by");
+		List<String> softenedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "softened by");
 		decorateDocWithRel(node, fileContentsBuffer, index, softenedBy, HtmlRelationshipKind.SOFTENED_BY);
 
-		List annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
+		List<String> annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
 		decorateDocWithRel(node, fileContentsBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
 	}
 

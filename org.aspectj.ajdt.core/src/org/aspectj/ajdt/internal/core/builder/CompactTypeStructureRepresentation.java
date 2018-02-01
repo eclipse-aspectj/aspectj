@@ -190,7 +190,13 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		return walker;
 	}
 
+	public char[] getModule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public ExternalAnnotationStatus getExternalAnnotationStatus() {
 		return ExternalAnnotationStatus.NOT_EEA_CONFIGURED;
 	}
+
 }

@@ -966,10 +966,36 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		TypeVariable[] tvs = getGenericType().getTypeVariables();
 		Map<String, UnresolvedType> parameterizationMap = new HashMap<String, UnresolvedType>();
-		for (int i = 0; i < tvs.length; i++) {
-			parameterizationMap.put(tvs[i].getName(), typeParameters[i]);
+		if (tvs.length != typeParameters.length) {
+			world.getMessageHandler()
+					.handleMessage(
+							new Message("Mismatch when building parameterization map. For type '" + this.signature +
+									"' expecting "+tvs.length+":["+toString(tvs)+"] type parameters but found "+typeParameters.length+
+									":["+toString(typeParameters)+"]", "",
+									IMessage.ERROR, getSourceLocation(), null,
+									new ISourceLocation[] { getSourceLocation() }));
+		} else {
+			for (int i = 0; i < tvs.length; i++) {
+				parameterizationMap.put(tvs[i].getName(), typeParameters[i]);
+			}
 		}
 		return parameterizationMap;
+	}
+
+	private String toString(UnresolvedType[] typeParameters) {
+		StringBuilder s = new StringBuilder();
+		for (UnresolvedType tv: typeParameters) {
+			s.append(tv.getSignature()).append(" ");
+		}
+		return s.toString().trim();
+	}
+
+	private String toString(TypeVariable[] tvs) {
+		StringBuilder s = new StringBuilder();
+		for (TypeVariable tv: tvs) {
+			s.append(tv.getName()).append(" ");
+		}
+		return s.toString().trim();
 	}
 
 	public List<ShadowMunger> getDeclaredAdvice() {

@@ -40,8 +40,23 @@ public class FileSpec implements ITestStep {
 	public void execute(AjcTestCase inTestCase) {
 		File sandbox = inTestCase.getSandboxDirectory();
 		if (toDelete != null) {
-			new File(sandbox, toDelete).delete();
+			File targetForDeletion = new File(sandbox, toDelete);
+			if (targetForDeletion.isFile()) {
+				targetForDeletion.delete();
+			} else {
+				recursiveDelete(targetForDeletion);
+			}
 		}
+	}
+
+	private void recursiveDelete(File toDelete) {
+		if (toDelete.isDirectory()) {
+			File[] files = toDelete.listFiles();
+			for (File f: files) {
+				recursiveDelete(f);
+			}
+		}
+		toDelete.delete();
 	}
 
 	public void setBaseDir(String dir) {

@@ -40,7 +40,7 @@ public class Result {
 
     private static final Kind[] KINDS = { RELEASE, TEST, RELEASE_ALL, TEST_ALL };
 
-    private static final HashMap<String,Result> nameToResult = new HashMap<>();
+    private static final HashMap<String,Result> nameToResult = new HashMap<String, Result>();
 
     public static boolean isTestingJar(String name) {
         name = name.toLowerCase();
@@ -179,11 +179,11 @@ public class Result {
     Result(Kind kind, Module module, File jarDir) {
         this.kind = kind;
         this.module = module;
-        this.libJars = new ArrayList<>();
-        this.exportedLibJars = new ArrayList<>();
-        this.srcDirs = new ArrayList<>();
-        this.classpathVariables = new ArrayList<>();
-        this.requiredResults = new ArrayList<>();
+        this.libJars = new ArrayList<File>();
+        this.exportedLibJars = new ArrayList<File>();
+        this.srcDirs = new ArrayList<File>();
+        this.classpathVariables = new ArrayList<String>();
+        this.requiredResults = new ArrayList<Result>();
         String name = module.name;
         if (!kind.normal) {
             name += "-test";
@@ -219,7 +219,7 @@ public class Result {
 
     /** @return List (File) of jar's required */
     public List<File> findJarRequirements() {
-        ArrayList<File> result = new ArrayList<>();
+        ArrayList<File> result = new ArrayList<File>();
         Module.doFindJarRequirements(this, result);
         return result;
     }

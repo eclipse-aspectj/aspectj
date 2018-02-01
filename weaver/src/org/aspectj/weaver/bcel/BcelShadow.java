@@ -3059,6 +3059,7 @@ public class BcelShadow extends Shadow {
 
 		LazyClassGen closureClass = new LazyClassGen(closureClassName, superClassName, getEnclosingClass().getFileName(),
 				Modifier.PUBLIC, new String[] {}, getWorld());
+		closureClass.setMajorMinor(getEnclosingClass().getMajor(), getEnclosingClass().getMinor());
 		InstructionFactory fact = new InstructionFactory(closureClass.getConstantPool());
 
 		// constructor

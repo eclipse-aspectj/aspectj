@@ -21,6 +21,9 @@ import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.Utils;
+import org.aspectj.weaver.bcel.Utility;
 
 /**
  * @author Adrian Colyer
@@ -29,9 +32,11 @@ public class RunSpec implements ITestStep {
 
 	private List<ExpectedMessageSpec> expected = new ArrayList<ExpectedMessageSpec>();
 	private String classToRun;
+	private String moduleToRun;  // alternative to classToRun on JDK9+
 	private String baseDir;
 	private String options;
 	private String cpath;
+	private String mpath;
 	private String orderedStderr;
 	private AjcTest myTest;
 	private OutputSpec stdErrSpec;
@@ -59,9 +64,9 @@ public class RunSpec implements ITestStep {
 		try {
 			setSystemProperty("test.base.dir", inTestCase.getSandboxDirectory().getAbsolutePath());
 
-			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), args, vmargs, getClasspath(), useLtw, "true".equalsIgnoreCase(usefullltw));
+			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), getModuleToRun(), args, vmargs, getClasspath(), getModulepath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 
-			if (stdErrSpec != null) {
+			if (stdErrSpec != null) { 
 				stdErrSpec.matchAgainst(rr.getStdErr(), orderedStderr);
 			}
 			if (stdOutSpec != null) {
@@ -129,6 +134,16 @@ public class RunSpec implements ITestStep {
 		return this.cpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 
+	public String getModulepath() {
+		if (mpath == null)
+			return null;
+		return this.mpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
+	}
+
+	public void setModulepath(String mpath) {
+		this.mpath = mpath;
+	}
+	
 	public void setClasspath(String cpath) {
 		this.cpath = cpath;
 	}
@@ -144,19 +159,21 @@ public class RunSpec implements ITestStep {
 	public void setOrderedStderr(String orderedStderr) {
 		this.orderedStderr = orderedStderr;
 	}
-
-	/**
-	 * @return Returns the classToRun.
-	 */
+	
 	public String getClassToRun() {
 		return classToRun;
 	}
-
-	/**
-	 * @param classToRun The classToRun to set.
-	 */
+	
 	public void setClassToRun(String classToRun) {
 		this.classToRun = classToRun;
+	}
+	
+	public void setModuleToRun(String moduleToRun) {
+		this.moduleToRun = moduleToRun;
+	}
+	
+	public String getModuleToRun() {
+		return this.moduleToRun;
 	}
 
 	public String getLtwFile() {

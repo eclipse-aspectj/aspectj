@@ -88,15 +88,13 @@ public class ClassLoaderRepository implements Repository {
 	private ClassLoaderReference loaderRef;
 
 	// Choice of cache...
-	private WeakHashMap /* <URL,SoftRef(JavaClass)> */<URL, SoftReference<JavaClass>> localCache = new WeakHashMap<URL, SoftReference<JavaClass>>();
-	private static SoftHashMap /* <URL,JavaClass> */sharedCache = new SoftHashMap(Collections
-			.synchronizedMap(new HashMap<Object, SpecialValue>()));
+	private WeakHashMap<URL, SoftReference<JavaClass>> localCache = new WeakHashMap<URL, SoftReference<JavaClass>>();
+	private static SoftHashMap /* <URL,JavaClass> */sharedCache = new SoftHashMap(Collections.synchronizedMap(new HashMap<Object, SpecialValue>()));
 
 	// For fast translation of the classname *intentionally not static*
 	private SoftHashMap /* <String,URL> */nameMap = new SoftHashMap(new HashMap(), false);
 
-	public static boolean useSharedCache = System.getProperty("org.aspectj.apache.bcel.useSharedCache", "true").equalsIgnoreCase(
-			"true");
+	public static boolean useSharedCache = System.getProperty("org.aspectj.apache.bcel.useSharedCache", "true").equalsIgnoreCase("true");
 
 	private static int cacheHitsShared = 0;
 	private static int missSharedEvicted = 0; // Misses in shared cache access due to reference GC

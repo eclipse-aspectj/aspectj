@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.aspectj.tools.ajc.AjcTests;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Test implementation of ICompilerConfiguration. Allows users to configure the settings via setter methods. By default returns null
@@ -58,8 +59,15 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getClasspath() {
-		return projectPath + File.pathSeparator + System.getProperty("sun.boot.class.path") + File.pathSeparator
-				+ AjcTests.aspectjrtClasspath();
+		StringBuilder classpath = new StringBuilder();
+		classpath.append(projectPath);
+        if (LangUtil.is19VMOrGreater()) {
+        		classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
+        } else {
+        		classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));
+        }
+		classpath.append(File.pathSeparator).append(AjcTests.aspectjrtClasspath());
+		return classpath.toString();
 	}
 
 	public Set<File> getInpath() {
@@ -176,6 +184,16 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getProcessorPath() {
+		return null;
+	}
+
+	@Override
+	public String getModulepath() {
+		return null;
+	}
+
+	@Override
+	public String getModuleSourcepath() {
 		return null;
 	}
 

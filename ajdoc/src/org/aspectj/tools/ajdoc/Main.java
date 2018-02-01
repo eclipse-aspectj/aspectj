@@ -47,24 +47,24 @@ public class Main implements Config {
 	private static final String FAIL_MESSAGE = "> compile failed, exiting ajdoc";
 
 	/** Command line options. */
-	static Vector options;
+	static Vector<String> options;
 
 	/** Options to pass to ajc. */
-	static Vector ajcOptions;
+	static Vector<String> ajcOptions;
 
 	/** All of the files to be processed by ajdoc. */
-	static Vector filenames;
+	static Vector<String> filenames;
 
 	/** List of files to pass to javadoc. */
-	static Vector fileList;
+	static Vector<String> fileList;
 
 	/** List of packages to pass to javadoc. */
-	static Vector packageList;
+	static Vector<String> packageList;
 
 	/** Default to package visiblity. */
 	static String docModifier = "package";
 
-	static Vector sourcepath;
+	static Vector<String> sourcepath;
 
 	static boolean verboseMode = false;
 	static boolean packageMode = false;
@@ -85,13 +85,13 @@ public class Main implements Config {
 	private static String outputWorkingDir = Config.WORKING_DIR;
 
 	public static void clearState() {
-		options = new Vector();
-		ajcOptions = new Vector();
-		filenames = new Vector();
-		fileList = new Vector();
-		packageList = new Vector();
+		options = new Vector<String>();
+		ajcOptions = new Vector<String>();
+		filenames = new Vector<String>();
+		fileList = new Vector<String>();
+		packageList = new Vector<String>();
 		docModifier = "package";
-		sourcepath = new Vector();
+		sourcepath = new Vector<String>();
 		verboseMode = false;
 		packageMode = false;
 		rootDir = null;
@@ -169,7 +169,7 @@ public class Main implements Config {
 	 * package-summary properly.
 	 */
 	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
-		ArrayList dirList = new ArrayList();
+		ArrayList<String> dirList = new ArrayList<String>();
 		for (int i = 0; i < inputFiles.length; i++) {
 			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFiles[i]);
 			// Only copy the package.html file once.
@@ -192,7 +192,7 @@ public class Main implements Config {
 				String pathName = outputWorkingDir + File.separator + packageName.replace('.', File.separatorChar);
 				File packageDir = new File(pathName);
 				if (!packageDir.exists()) {
-					dirList.add(packageDir);
+					dirList.add(packageName);
 					continue;
 				}
 				packageName = packageName.replace('.', '/'); // !!!
@@ -273,7 +273,6 @@ public class Main implements Config {
 				javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
 			}
 		}
-
 		JavadocRunner.callJavadoc(javadocargs);
 	}
 
@@ -345,8 +344,8 @@ public class Main implements Config {
 		}
 	}
 
-	static Vector getSourcePath() {
-		Vector sourcePath = new Vector();
+	static Vector<String> getSourcePath() {
+		Vector<String> sourcePath = new Vector<String>();
 		boolean found = false;
 		for (int i = 0; i < options.size(); i++) {
 			String currOption = (String) options.elementAt(i);
@@ -455,14 +454,14 @@ public class Main implements Config {
 				String line = "";
 				line = br.readLine();
 				StringTokenizer st = new StringTokenizer(line, " ");
-				List argList = new ArrayList();
+				List<String> argList = new ArrayList<String>();
 				while (st.hasMoreElements()) {
-					argList.add(st.nextElement());
+					argList.add(st.nextToken());
 				}
 				// System.err.println(argList);
 				args = new String[argList.size()];
 				int counter = 0;
-				for (Iterator it = argList.iterator(); it.hasNext();) {
+				for (Iterator<String> it = argList.iterator(); it.hasNext();) {
 					args[counter] = (String) it.next();
 					counter++;
 				}
@@ -474,7 +473,7 @@ public class Main implements Config {
 				ioe.printStackTrace();
 			}
 		}
-		List vargs = new LinkedList(Arrays.asList(args));
+		List<String> vargs = new LinkedList<String>(Arrays.asList(args));
 		vargs.add("-Xset:minimalModel=false");
 		parseArgs(vargs, new File(".")); // !!!
 
@@ -488,7 +487,7 @@ public class Main implements Config {
 		arg = arg + File.pathSeparator; // makes things easier for ourselves
 		StringTokenizer tokenizer = new StringTokenizer(arg, File.pathSeparator);
 		while (tokenizer.hasMoreElements()) {
-			sourcepath.addElement(tokenizer.nextElement());
+			sourcepath.addElement(tokenizer.nextToken());
 		}
 	}
 
@@ -705,7 +704,7 @@ public class Main implements Config {
 	}
 
 	static void expandAtSignFile(String filename, File currentWorkingDir) {
-		List result = new LinkedList();
+		List<String> result = new LinkedList<String>();
 
 		File atFile = qualifiedFile(filename, currentWorkingDir);
 		String atFileParent = atFile.getParent();
@@ -730,6 +729,7 @@ public class Main implements Config {
 					continue;
 				result.add(line);
 			}
+			stream.close();
 		} catch (IOException e) {
 			System.err.println("Error while reading the @ file " + atFile.getPath() + ".\n" + e);
 			System.exit(-1);

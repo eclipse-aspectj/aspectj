@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Main-Class: org.aspectj.tools.ajdoc.Main
+Automatic-Module-Name: org.aspectj.tools
 
 Name: org/aspectj/tools/
 Specification-Title: AspectJ Tools Classes

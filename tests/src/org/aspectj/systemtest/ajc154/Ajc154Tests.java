@@ -275,7 +275,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		// Should be 'rounded down' when transforming it into a MethodGen, new position will be '2'
 		// This next line will go BANG with an NPE if we don't correctly round the start pc down to 2
-		MethodGen toTransform = new MethodGen(oneWeWant, "A", cp, true);
+		new MethodGen(oneWeWant, "A", cp, true);
 	}
 
 	public void testGenericAspectGenericPointcut_pr174449() {

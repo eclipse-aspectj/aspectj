@@ -11,8 +11,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/aspectj5rt"/>
 	<classpathentry kind="lib" path="/lib/commons/commons.jar" sourcepath="/lib/commons/commons-src.zip"/>
 	<classpathentry kind="lib" path="/lib/bcel/bcel.jar" sourcepath="/lib/bcel/bcel-src.zip"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.aspectj.matcher"/>
-	<classpathentry kind="lib" path="/lib/asm/asm-5.0.4.renamed.jar"/>
+	<classpathentry kind="lib" path="/lib/asm/asm-6.0_BETA.renamed.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

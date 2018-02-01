@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 
@@ -31,6 +32,7 @@ public class CompileSpec implements ITestStep {
 	private boolean includeClassesDir;
 	private String aspectpath;
 	private String classpath;
+	private String modulepath;
 	private String inpath;
 	private String sourceroots;
 	private String outjar;
@@ -96,6 +98,14 @@ public class CompileSpec implements ITestStep {
 	 */
 	public void setClasspath(String classpath) {
 		this.classpath = classpath.replace(',',File.pathSeparatorChar);
+	}
+
+	public String getModulepath() {
+		return this.modulepath;
+	}
+	
+	public void setModulepath(String modulepath) {
+		this.modulepath = modulepath.replace(',', File.pathSeparatorChar);
 	}
 	/**
 	 * @return Returns the files.
@@ -241,6 +251,11 @@ public class CompileSpec implements ITestStep {
 			args.append(getClasspath());
 			args.append(" ");
 		}
+		if (getModulepath() != null) {
+			args.append("-p ");
+			args.append(rewrite(getModulepath()));
+			args.append(" ");
+		}
 		if (getXlintfile() != null) {
 			args.append("-Xlintfile ");
 			args.append(getXlintfile());
@@ -287,6 +302,11 @@ public class CompileSpec implements ITestStep {
 		return ret;
 	}
 	
+	private String rewrite(String path) {
+		path = path.replace("$runtime", TestUtil.aspectjrtPath().toString());
+		return path;
+	}
+
 	protected AjcTestCase.MessageSpec buildMessageSpec() {
 		List<AjcTestCase.Message> infos = null;
 		List<AjcTestCase.Message> warnings = new ArrayList<AjcTestCase.Message>();

@@ -31,7 +31,7 @@ public class StructureUtil {
 	 * 
 	 * @return null if a relationship of that kind is not found
 	 */
-	public static List /* String */getTargets(IProgramElement node, IRelationship.Kind kind) {
+	public static List<String> getTargets(IProgramElement node, IRelationship.Kind kind) {
 		return getTargets(node, kind, null);
 	}
 
@@ -41,21 +41,21 @@ public class StructureUtil {
 	 * 
 	 * @return null if a relationship of that kind is not found
 	 */
-	public static List /* String */getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
-		List relations = new ArrayList();
-		List rels = node.getModel().getRelationshipMap().get(node);
+	public static List<String> getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
+		List<IRelationship> relations = new ArrayList<IRelationship>();
+		List<IRelationship> rels = node.getModel().getRelationshipMap().get(node);
 		if (rels != null) {
 			relations.addAll(rels);
 		}
-		for (Iterator iter = node.getChildren().iterator(); iter.hasNext();) {
+		for (Iterator<IProgramElement> iter = node.getChildren().iterator(); iter.hasNext();) {
 			IProgramElement child = (IProgramElement) iter.next();
 			// if we're not a type, or if we are and the child is code, then
 			// we want to get the relationships for this child - this means that the
 			// correct relationships appear against the type in the ajdoc
 			if (!node.getKind().isType() || child.getKind().equals(IProgramElement.Kind.CODE)) {
-				List childRelations = node.getModel().getRelationshipMap().get(child);
+				List<IRelationship> childRelations = node.getModel().getRelationshipMap().get(child);
 				if (childRelations != null) {
-					for (Iterator iterator = childRelations.iterator(); iterator.hasNext();) {
+					for (Iterator<IRelationship> iterator = childRelations.iterator(); iterator.hasNext();) {
 						IRelationship rel = (IRelationship) iterator.next();
 						if (!relations.contains(rel)) {
 							relations.add(rel);
@@ -66,13 +66,12 @@ public class StructureUtil {
 		}
 		if (relations == null || relations.isEmpty())
 			return null;
-		List targets = new ArrayList();
-		for (Iterator it = relations.iterator(); it.hasNext();) {
+		List<String> targets = new ArrayList<String>();
+		for (Iterator<IRelationship> it = relations.iterator(); it.hasNext();) {
 			IRelationship rtn = (IRelationship) it.next();
 			if (rtn.getKind().equals(kind) && ((relName != null && relName.equals(rtn.getName())) || relName == null)) {
-				List targs = rtn.getTargets();
-				for (Iterator iter = targs.iterator(); iter.hasNext();) {
-					String element = (String) iter.next();
+				List<String> targs = rtn.getTargets();
+				for (String element: targs) {
 					if (!targets.contains(element)) {
 						targets.add(element);
 					}
@@ -82,14 +81,13 @@ public class StructureUtil {
 		return targets;
 	}
 
-	static List /* IProgramElement */getDeclareInterTypeTargets(IProgramElement node, IProgramElement.Kind kind) {
-		List targets = new ArrayList();
-		List stringTargets = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE);
+	static List<IProgramElement> getDeclareInterTypeTargets(IProgramElement node, IProgramElement.Kind kind) {
+		List<IProgramElement> targets = new ArrayList<IProgramElement>();
+		List<String> stringTargets = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE);
 		if (stringTargets == null) {
 			return null;
 		}
-		for (Iterator iter = stringTargets.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (String element: stringTargets) {
 			IProgramElement ipe = node.getModel().getHierarchy().findElementForHandle(element);
 			if (ipe != null && ipe.getKind().equals(kind)) {
 				targets.add(ipe);
@@ -98,13 +96,12 @@ public class StructureUtil {
 		return targets;
 	}
 
-	public static List/* String */getDeclareTargets(IProgramElement node) {
-		List relations = node.getModel().getRelationshipMap().get(node);
-		List targets = null;
+	public static List<String> getDeclareTargets(IProgramElement node) {
+		List<IRelationship> relations = node.getModel().getRelationshipMap().get(node);
+		List<String> targets = null;
 		if (relations == null)
 			return null;
-		for (Iterator it = relations.iterator(); it.hasNext();) {
-			IRelationship rtn = (IRelationship) it.next();
+		for (IRelationship rtn: relations) {
 			if (rtn.getKind().isDeclareKind()) {
 				targets = rtn.getTargets();
 			}

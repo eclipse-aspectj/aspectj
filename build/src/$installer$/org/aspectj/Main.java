@@ -997,10 +997,9 @@ class LocationPane extends WizardPane implements ActionListener {
 	//XXX would like to find the place they last chose...
 	public String getDefaultLocation() {
 		if (context.onWindows()) {
-			//XXX hard-coded majorminor version needs to be fixed by 1.1 release
-			return "c:\\aspectj1.8";
+			return "c:\\aspectj1.9";
 		} else {
-			return new File(System.getProperty("user.home"), "aspectj1.8").getAbsolutePath();
+			return new File(System.getProperty("user.home"), "aspectj1.9").getAbsolutePath();
 		}
 	}
 

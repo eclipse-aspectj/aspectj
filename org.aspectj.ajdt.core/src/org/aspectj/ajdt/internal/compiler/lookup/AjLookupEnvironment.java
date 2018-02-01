@@ -107,6 +107,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			INameEnvironment nameEnvironment) {
 		super(typeRequestor, options, problemReporter, nameEnvironment);
 	}
+	
+	public AjLookupEnvironment(LookupEnvironment env, ModuleBinding moduleBinding) {
+		super(env, moduleBinding);
+	}
 
 	// ??? duplicates some of super's code
 	public void completeTypeBindings() {
@@ -1473,6 +1477,13 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
   public void reset() {
     this.factory.cleanup();
     super.reset();
+  }
+  
+  @Override
+  public LookupEnvironment wrapInModuleEnvironment(ModuleBinding moduleBinding) {
+	  AjLookupEnvironment newAjLookupEnvironment = new AjLookupEnvironment(this, moduleBinding);
+	  newAjLookupEnvironment.factory = this.factory;
+	  return newAjLookupEnvironment;
   }
 }
 

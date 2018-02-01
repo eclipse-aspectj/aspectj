@@ -391,7 +391,7 @@ class Sample {
  * type-safe Collection of samples.
  */
 class Samples {
-    private ArrayList<Sample> samples = new ArrayList<>();
+    private ArrayList<Sample> samples = new ArrayList<Sample>();
     int size() {
         return samples.size();
     }
@@ -406,7 +406,7 @@ class Samples {
     }
     
     List<Sample> getSortedSamples(Comparator<Sample> comparer) {
-        ArrayList<Sample> result = new ArrayList<>();
+        ArrayList<Sample> result = new ArrayList<Sample>();
         result.addAll(samples);
         Collections.sort(result, comparer);
         return result;
@@ -957,7 +957,7 @@ class SampleUtil {
     }
     
     public static String[] splitAnchorName(String anchorName) {
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> result = new ArrayList<String>();
         int start = 0;
         int loc = anchorName.indexOf("-", start);
         String next;

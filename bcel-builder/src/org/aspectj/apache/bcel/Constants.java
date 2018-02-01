@@ -80,6 +80,8 @@ public interface Constants {
 	public final static short MINOR_1_7 = 0;
 	public final static short MAJOR_1_8 = 52;
 	public final static short MINOR_1_8 = 0;
+	public final static short MAJOR_1_9 = 53;
+	public final static short MINOR_1_9 = 0;
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;
@@ -107,11 +109,27 @@ public interface Constants {
 	public final static short ACC_STRICT = 0x0800;
 
 	public final static short ACC_SYNTHETIC = 0x1000;
+
 	public final static short ACC_ANNOTATION = 0x2000;
 	public final static short ACC_ENUM = 0x4000;
+	public final static int ACC_MODULE = 0x8000;
 	public final static short ACC_BRIDGE = 0x0040;
 	public final static short ACC_VARARGS = 0x0080;
 
+	// Module related
+	// Indicates that any module which depends on the current module,
+	// implicitly declares a dependence on the module indicated by this entry.
+	public final static int MODULE_ACC_TRANSITIVE   = 0x0020;
+	// Indicates that this dependence is mandatory in the static phase, i.e., at
+	// compile time, but is optional in the dynamic phase, i.e., at run time.
+	public final static int MODULE_ACC_STATIC_PHASE = 0x0040;
+	// Indicates that this dependence was not explicitly or implicitly declared
+	// in the source of the module declaration.
+	public final static int MODULE_ACC_SYNTHETIC    = 0x1000;
+	// Indicates that this dependence was implicitly declared in the source of
+	// the module declaration
+	public final static int MODULE_ACC_MANDATED     = 0x8000;
+	
 	// Applies to classes compiled by new compilers only
 	public final static short ACC_SUPER = 0x0020;
 
@@ -136,10 +154,17 @@ public interface Constants {
 	public final static byte CONSTANT_MethodHandle = 15;
 	public final static byte CONSTANT_MethodType = 16;
 	public final static byte CONSTANT_InvokeDynamic = 18;
+	
+	// J9:
+	public final static byte CONSTANT_Module = 19;
+	public final static byte CONSTANT_Package = 20;
+	
 
 	public final static String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
-			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic" };
+			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic",
+			// J9:
+			"CONSTANT_Module", "CONSTANT_Package"};
 
 	/**
 	 * The name of the static initializer, also called &quot;class initialization method&quot; or &quot;interface initialization
@@ -617,8 +642,13 @@ public interface Constants {
 	public static final byte ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS = 20;
 	public static final byte ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS = 21;
 	public static final byte ATTR_METHOD_PARAMETERS = 22;
-
-	public static final short KNOWN_ATTRIBUTES = 23;
+	
+	// J9:
+	public static final byte ATTR_MODULE = 23;
+	public static final byte ATTR_MODULE_PACKAGES = 24;
+	public static final byte ATTR_MODULE_MAIN_CLASS = 25;
+	
+	public static final short KNOWN_ATTRIBUTES = 26;
 
 	public static final String[] ATTRIBUTE_NAMES = { 
 		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
@@ -626,7 +656,7 @@ public interface Constants {
 		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
 		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", 
 		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
-		"MethodParameters"
+		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass"
 		};
 
 	/**

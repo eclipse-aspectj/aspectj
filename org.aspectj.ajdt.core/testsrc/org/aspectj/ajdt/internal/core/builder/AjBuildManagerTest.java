@@ -57,10 +57,10 @@ public class AjBuildManagerTest extends TestCase {
 	}
 
 	public void testSimpleStructure() throws IOException /* , CoreException */{
-
 		AjBuildManager manager = new AjBuildManager(messageWriter);
 		BuildArgParser parser = new BuildArgParser(messageWriter);
 		String javaClassPath = System.getProperty("java.class.path");
+		System.out.println(javaClassPath);
 		String sandboxName = Ajc.createEmptySandbox().getAbsolutePath();
 		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-classpath", javaClassPath,
 				AjdtAjcTests.TESTDATA_PATH + "/src1/A.java",

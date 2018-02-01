@@ -22,6 +22,7 @@ import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 //import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author hugunin
@@ -71,6 +72,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	public void testThisAndModifiers() {
 		checkCompile("src1/ThisAndModifiers.java", NO_ERRORS);
 	}
+	
 	public void testDeclares() {
 		checkCompile("src1/Declares.java", new int[] {2});
 	}	
@@ -92,20 +94,23 @@ public class BasicCommandTestCase extends CommandTestCase {
 		checkCompile("src1/Xlint.java", NO_ERRORS);
 	}
 	public void testXlintError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
 		
 		args.add("-classpath");
-		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin");
+		StringBuilder classpath = new StringBuilder();
+		classpath.append(getRuntimeClasspath());
+		classpath.append(File.pathSeparator).append("../lib/junit/junit.jar;../testing-client/bin");
+		args.add(classpath.toString());
 		args.add("-Xlint:error");
 		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Xlint.java");
 		
 		runCompiler(args, new int[] {2});
 	}
 	public void testMissingJarError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
@@ -125,7 +130,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 
 	}
 	public void testMissingRuntimeError() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());
@@ -176,7 +181,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	public void testSizeChanges() {
 		File f1 = new File(getSandboxName(),"SizeIssues.class");
 		
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-d");
 		args.add(getSandboxName());

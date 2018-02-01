@@ -17,8 +17,10 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.bridge.*;
 import org.aspectj.org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.apt.dispatch.AptProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
@@ -157,10 +159,15 @@ public class BuildArgParser extends Main {
 			// TODO fix org.eclipse.jdt.internal.compiler.batch.Main so this hack isn't needed
 			javaArgList.add("-classpath");
 			javaArgList.add(parser.classpath == null ? System.getProperty("user.dir") : parser.classpath);
-			javaArgList.add("-bootclasspath");
-			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
+//			javaArgList.add("-bootclasspath");
+//			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
 			javaArgList.addAll(parser.getUnparsedArgs());
 			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
+
+			if (parser.getModuleInfoArgument() != null) {
+				IModule moduleDesc = super.getModuleDesc(parser.getModuleInfoArgument());
+				buildConfig.setModuleDesc(moduleDesc);
+			}
 
 			if (!proceed) {
 				buildConfig.doNotProceed();
@@ -181,8 +188,14 @@ public class BuildArgParser extends Main {
 			}
 
 			if (setClasspath) {
+				// This computed classpaths will be missing aspectpaths, inpaths, add those first
 				buildConfig.setClasspath(getClasspath(parser));
+				buildConfig.setModulepath(getModulepath(parser));
+				buildConfig.setModulepathClasspathEntries(handleModulepath(parser.modulepath));
+				buildConfig.setModulesourcepath(getModulesourcepath(parser));
+				buildConfig.setModulesourcepathClasspathEntries(handleModuleSourcepath(parser.modulesourcepath));
 				buildConfig.setBootclasspath(getBootclasspath(parser));
+				// TODO other paths (module/module source)
 			}
 
 			if (incrementalMode && (0 == buildConfig.getSourceRoots().size())) {
@@ -214,8 +227,7 @@ public class BuildArgParser extends Main {
 				}
 
 				/* Search aspectpath */
-				for (Iterator i = buildConfig.getAspectpath().iterator(); i.hasNext();) {
-					File pathElement = (File) i.next();
+				for (File pathElement: buildConfig.getAspectpath()) {
 					if (!pathElement.isDirectory() && pathElement.equals(outjar)) {
 						String message = WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH);
 						MessageUtil.error(handler, message);
@@ -235,6 +247,28 @@ public class BuildArgParser extends Main {
 			handler.handleMessage(m);
 		}
 		return buildConfig;
+	}
+
+	private void augmentCheckedClasspaths(List<File> extraPathEntries, String encoding) {
+		if (extraPathEntries.size() == 0) {
+			return;
+		}
+		ArrayList<String> asList = toArrayList(extraPathEntries);
+		List<FileSystem.Classpath> newClasspathEntries = handleClasspath(asList, encoding);
+		FileSystem.Classpath[] newCheckedClasspaths = new FileSystem.Classpath[checkedClasspaths.length + newClasspathEntries.size()];
+		System.arraycopy(checkedClasspaths, 0, newCheckedClasspaths, 0, checkedClasspaths.length);
+		for (int i = 0; i < newClasspathEntries.size();i++) {
+			newCheckedClasspaths[i + checkedClasspaths.length] = newClasspathEntries.get(i);
+		}
+		checkedClasspaths = newCheckedClasspaths;
+	}
+
+	private ArrayList<String> toArrayList(java.util.List<File> files) {
+		ArrayList<String> arrayList = new ArrayList<String>();
+		for (File file: files) {
+			arrayList.add(file.getAbsolutePath());
+		}
+		return arrayList;
 	}
 
 	public void printVersion() {
@@ -315,13 +349,33 @@ public class BuildArgParser extends Main {
 		List<String> ret = new ArrayList<String>();
 
 		if (parser.bootclasspath == null) {
-			addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+			if (LangUtil.is19VMOrGreater()) {
+				addClasspath(LangUtil.getJrtFsFilePath(),ret);
+			} else {
+				addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
+			}
 		} else {
 			addClasspath(parser.bootclasspath, ret);
 		}
 		return ret;
 	}
+	
+	public List<String> getModulepath(AjcConfigParser parser) {
+		List<String> ret = new ArrayList<String>();
+		addClasspath(parser.modulepath, ret);
+		return ret;
+	}
 
+	public List<String> getModulesourcepath(AjcConfigParser parser) {
+		List<String> ret = new ArrayList<String>();
+		addClasspath(parser.modulesourcepath, ret);
+		return ret;
+	}
+
+	public ArrayList<FileSystem.Classpath> handleClasspath(ArrayList<String> classpaths, String customEncoding) {
+		return super.handleClasspath(classpaths, customEncoding);
+	}
+	
 	/**
 	 * If the classpath is not set, we use the environment's java.class.path, but remove the aspectjtools.jar entry from that list
 	 * in order to prevent wierd bootstrap issues (refer to bug#39959).
@@ -376,6 +430,9 @@ public class BuildArgParser extends Main {
 	}
 
 	private void addClasspath(String classpath, List<String> classpathCollector) {
+		if (classpath == null) {
+			return;
+		}
 		StringTokenizer tokenizer = new StringTokenizer(classpath, File.pathSeparator);
 		while (tokenizer.hasMoreTokens()) {
 			classpathCollector.add(tokenizer.nextToken());
@@ -385,10 +442,13 @@ public class BuildArgParser extends Main {
 	private class AjcConfigParser extends ConfigParser {
 		private String bootclasspath = null;
 		private String classpath = null;
+		private String modulepath = null;
+		private String modulesourcepath = null;
 		private String extdirs = null;
 		private List unparsedArgs = new ArrayList();
 		private AjBuildConfig buildConfig;
 		private IMessageHandler handler;
+		private String moduleInfoArgument;
 
 		public AjcConfigParser(AjBuildConfig buildConfig, IMessageHandler handler) {
 			this.buildConfig = buildConfig;
@@ -398,38 +458,48 @@ public class BuildArgParser extends Main {
 		public List getUnparsedArgs() {
 			return unparsedArgs;
 		}
+		
+		public String getModuleInfoArgument() {
+			return this.moduleInfoArgument;
+		}
 
 		/**
 		 * Extract AspectJ-specific options (except for argfiles). Caller should warn when sourceroots is empty but in incremental
 		 * mode. Signals warnings or errors through handler set in constructor.
 		 */
-		public void parseOption(String arg, LinkedList args) { // XXX use ListIterator.remove()
+		public void parseOption(String arg, LinkedList<Arg> args) { // XXX use ListIterator.remove()
 			int nextArgIndex = args.indexOf(arg) + 1; // XXX assumes unique
 			// trim arg?
 			buildConfig.setXlazyTjp(true); // now default - MINOR could be pushed down and made default at a lower level
 			if (LangUtil.isEmpty(arg)) {
 				showWarning("empty arg found");
+			} else if (arg.endsWith("module-info.java")) {
+				moduleInfoArgument = arg;
 			} else if (arg.equals("-inpath")) {
 				if (args.size() > nextArgIndex) {
 					// buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
 
-					List<File> inPath = buildConfig.getInpath();
 					StringTokenizer st = new StringTokenizer(((ConfigParser.Arg) args.get(nextArgIndex)).getValue(),
 							File.pathSeparator);
+					boolean inpathChange = false;
 					while (st.hasMoreTokens()) {
 						String filename = st.nextToken();
 						File file = makeFile(filename);
 						if (FileUtil.isZipFile(file)) {
-							inPath.add(file);
+							buildConfig.addToInpath(file);
+							inpathChange = true;
 						} else {
 							if (file.isDirectory()) {
-								inPath.add(file);
+								buildConfig.addToInpath(file);
+								inpathChange = true;
 							} else {
 								showWarning("skipping missing, empty or corrupt inpath entry: " + filename);
 							}
 						}
 					}
-					buildConfig.setInPath(inPath);
+					if (inpathChange) {
+						buildConfig.processInPath();
+					}
 					args.remove(args.get(nextArgIndex));
 				}
 			} else if (arg.equals("-injars")) {
@@ -463,7 +533,8 @@ public class BuildArgParser extends Main {
 						String filename = st.nextToken();
 						File jarFile = makeFile(filename);
 						if (FileUtil.isZipFile(jarFile) || jarFile.isDirectory()) {
-							buildConfig.getAspectpath().add(jarFile);
+//							buildConfig.getAspectpath().add(jarFile);
+							buildConfig.addToAspectpath(jarFile);
 						} else {
 							showWarning("skipping missing, empty or corrupt aspectpath entry: " + filename);
 						}
@@ -655,9 +726,46 @@ public class BuildArgParser extends Main {
 						}
 					}
 					classpath = cp.toString();
-					args.remove(args.get(nextArgIndex));
+					Arg pathArg = args.get(nextArgIndex);
+					unparsedArgs.add("-classpath");
+					unparsedArgs.add(pathArg.getValue());
+					args.remove(pathArg);
 				} else {
 					showError("-classpath requires classpath entries");
+				}
+			} else if (arg.equals("--module-path") || arg.equals("-p")) {
+				if (args.size() > nextArgIndex) {
+					String mpArg = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
+					modulepath = mpArg;
+//					StringBuffer mp = new StringBuffer();
+//					StringTokenizer strTok = new StringTokenizer(mpArg, File.pathSeparator);
+//					while (strTok.hasMoreTokens()) {
+//						mp.append(makeFile(strTok.nextToken()));
+//						if (strTok.hasMoreTokens()) {
+//							mp.append(File.pathSeparator);
+//						}
+//					}
+//					modulepath = mp.toString();
+					args.remove(args.get(nextArgIndex));
+				} else {
+					showError("--module-path requires modulepath entries");
+				}
+			} else if (arg.equals("--module-source-path") || arg.equals("-p")) {
+				if (args.size() > nextArgIndex) {
+					String mspArg = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
+					modulesourcepath = mspArg;
+//					StringBuffer mp = new StringBuffer();
+//					StringTokenizer strTok = new StringTokenizer(mpArg, File.pathSeparator);
+//					while (strTok.hasMoreTokens()) {
+//						mp.append(makeFile(strTok.nextToken()));
+//						if (strTok.hasMoreTokens()) {
+//							mp.append(File.pathSeparator);
+//						}
+//					}
+//					modulepath = mp.toString();
+					args.remove(args.get(nextArgIndex));
+				} else {
+					showError("--module-source-path requires modulepath entries");
 				}
 			} else if (arg.equals("-extdirs")) {
 				if (args.size() > nextArgIndex) {
@@ -721,11 +829,14 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-1.8")) {
 				buildConfig.setBehaveInJava5Way(true);
 				unparsedArgs.add("-1.8");
+			} else if (arg.equals("-1.9")) {
+				buildConfig.setBehaveInJava5Way(true);
+				unparsedArgs.add("-1.9");
 			} else if (arg.equals("-source")) {
 				if (args.size() > nextArgIndex) {
 					String level = ((ConfigParser.Arg) args.get(nextArgIndex)).getValue();
 					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6") || level.equals("1.7")
-							|| level.equals("7") || level.equals("8") || level.equals("1.8")) {
+							|| level.equals("7") || level.equals("8") || level.equals("1.8") || level.equals("9") || level.equals("1.9")) {
 						buildConfig.setBehaveInJava5Way(true);
 					}
 					unparsedArgs.add("-source");

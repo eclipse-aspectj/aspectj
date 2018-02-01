@@ -24,6 +24,7 @@ public class AtItd3 {
 
       if (!aa.toString().equals("@Ann(id=goodbye, anInt=4)")) // < Java8 order
           if (!aa.toString().equals("@Ann(anInt=4, id=goodbye)")) // Java8 order
+        	    if (!aa.toString().equals("@Ann(anInt=4, id=\"goodbye\")")) // Java9 quotes strings
         throw new RuntimeException("Incorrect output, expected:"+
           "@Ann(id=goodbye, anInt=4) but got "+aa.toString());
  

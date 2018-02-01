@@ -37,6 +37,7 @@ import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.Classpath;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.util.LangUtil;
 
@@ -277,6 +278,14 @@ public class AjdeCoreBuildManager {
 				both.addAll(configClasspath);
 				both.addAll(toAdd);
 				config.setClasspath(both);
+				Classpath[] checkedClasspaths = config.getCheckedClasspaths();
+				ArrayList<Classpath> cps = parser.handleClasspath(toAdd, compilerConfig.getProjectEncoding());
+				Classpath[] newCheckedClasspaths = new Classpath[checkedClasspaths.length+cps.size()];
+				System.arraycopy(checkedClasspaths, 0, newCheckedClasspaths, 0, checkedClasspaths.length);
+				for (int i=0;i<cps.size();i++) {
+					newCheckedClasspaths[checkedClasspaths.length+i] = cps.get(i);
+				}
+				config.setCheckedClasspaths(newCheckedClasspaths);
 			}
 		}
 
@@ -295,18 +304,18 @@ public class AjdeCoreBuildManager {
 		}
 
 		// Process the INPATH
-		mergeInto(config.getInpath(), compilerConfig.getInpath());
+		config.addToInpath(compilerConfig.getInpath());
 		// bug 168840 - calling 'setInPath(..)' creates BinarySourceFiles which
 		// are used to see if there have been changes in classes on the inpath
 		if (config.getInpath() != null) {
-			config.setInPath(config.getInpath());
+			config.processInPath();
 		}
 
 		// Process the SOURCE PATH RESOURCES
 		config.setSourcePathResources(compilerConfig.getSourcePathResources());
 
 		// Process the ASPECTPATH
-		mergeInto(config.getAspectpath(), compilerConfig.getAspectPath());
+		config.addToAspectpath(compilerConfig.getAspectPath());
 
 		// Process the JAVA OPTIONS MAP
 		Map<String,String> jom = compilerConfig.getJavaOptionsMap();
@@ -345,17 +354,6 @@ public class AjdeCoreBuildManager {
 		config.setProcessor(compilerConfig.getProcessor());
 		config.setProcessorPath(compilerConfig.getProcessorPath());
 		return config;
-	}
-
-	private <T> void mergeInto(Collection<T> target, Collection<T> source) {
-		if ((null == target) || (null == source)) {
-			return;
-		}
-		for (T next : source) {
-			if (!target.contains(next)) {
-				target.add(next);
-			}
-		}
 	}
 
 	/**

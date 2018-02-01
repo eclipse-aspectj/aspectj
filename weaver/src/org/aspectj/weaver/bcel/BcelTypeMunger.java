@@ -352,8 +352,21 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 									&& targetMethod.getBackingGenericMember().getParameterSignature().equals(newParentMethodSig)) {
 								discoveredImpl = targetMethod;
 							} else if (newParentMethod.hasBackingGenericMember()) {
-								if (newParentMethod.getBackingGenericMember().getParameterSignature().equals(targetMethodSignature)) {
+ 								if (newParentMethod.getBackingGenericMember().getParameterSignature().equals(targetMethodSignature)) { // newParentMethod.getBackingGenericMember().getParameterSignature gives: (Pjava/util/List<TI;>;)  targetMethodSignature= (Ljava/util/List;)
 									discoveredImpl = targetMethod;
+								} else if (targetMethod instanceof BcelMethod) {
+									// BcelMethod does not have backing generic member set (need to investigate why). For now, special case here:
+									UnresolvedType[] targetMethodGenericParameterTypes = targetMethod.getGenericParameterTypes();
+									if (targetMethodGenericParameterTypes !=null) {
+										StringBuilder b = new StringBuilder("(");
+										for (UnresolvedType p: targetMethodGenericParameterTypes) {
+											b.append(p.getSignature());
+										}
+										b.append(')');
+										if (b.toString().equals(newParentMethodSig)) {
+											discoveredImpl = targetMethod;
+										}
+									}
 								}
 							}
 						}

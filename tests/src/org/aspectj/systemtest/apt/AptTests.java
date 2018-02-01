@@ -13,6 +13,7 @@ package org.aspectj.systemtest.apt;
 import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.LangUtil;
 
 import java.io.File;
 
@@ -24,6 +25,9 @@ import java.io.File;
 public class AptTests extends XMLBasedAjcTestCase {
 
   public void testAptWithSpecifiedProcessor() {
+	  if (LangUtil.is19VMOrGreater()) {
+		  return;
+	  }
     runTest("annotation processing with specified processor");
   }
 
@@ -31,6 +35,9 @@ public class AptTests extends XMLBasedAjcTestCase {
    * SPI - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
    */
   public void testAptUsingSPI() {
+	  if (LangUtil.is19VMOrGreater()) {
+		  return;
+	  }
     runTest("annotation processing in action using SPI");
   }
 

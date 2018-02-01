@@ -275,7 +275,7 @@
 
   <target name="maven.init" >
     <property name="org.apache.maven.ant.version" value="2.0.10"/>
-<property name="org.springframework.build.aws.maven.version" value="2.0.0.RELEASE"/>
+    <property name="org.springframework.build.aws.maven.version" value="2.0.0.RELEASE"/>
 <!--
     <ivy:cachepath resolveId="maven.ant.tasks.classpath" pathid="maven.ant.tasks.classpath"
        organisation="org.apache.maven" module="com.springsource.org.apache.maven.ant"
@@ -287,6 +287,10 @@
 -->
           <maven:install-provider groupId="org.springframework.build.aws" artifactId="org.springframework.build.aws.maven"
                            version="${org.springframework.build.aws.maven.version}"/>
+<!--
+          <maven:install-provider groupId="org.springframework.build" artifactId="aws.maven"
+                           version="${org.springframework.build.aws.maven.version}"/>
+-->
   </target>
 
 
@@ -836,7 +840,7 @@ ant -propertyfile XXX publishtomaven
 
 
   <target name="publishtomaven_milestone" depends="maven.init">
-    <property name="suffix" value="1.8.11.RC1"/>
+    <property name="suffix" value="1.9.0.BETA-6"/>
 
     <property name="build.root" value="/Users/aclement/gits/org.aspectj/aj-build"/>
     <property name="adjusted.release.type" value="milestone"/>

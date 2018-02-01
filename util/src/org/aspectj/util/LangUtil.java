@@ -42,6 +42,17 @@ public class LangUtil {
 
 	private static double vmVersion;
 
+	/**
+	 * @return the vm version (1.1, 1.2, 1.3, 1.4, etc)
+	 */
+	public static String getVmVersionString() {
+		return Double.toString(vmVersion);
+	}
+	
+	public static double getVmVersion() {
+		return vmVersion;
+	}
+	
 	static {
 		StringWriter buf = new StringWriter();
 		PrintWriter writer = new PrintWriter(buf);
@@ -59,6 +70,8 @@ public class LangUtil {
 	}
 
 	static {
+		// http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
+		// http://openjdk.java.net/jeps/223 "New Version-String Scheme"
 		try {
 			String vm = System.getProperty("java.version"); // JLS 20.18.7
 			if (vm == null) {
@@ -73,17 +86,21 @@ public class LangUtil {
 						.printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
-				if (vm.startsWith("9")) {
-					// JDK 9 beta 99 starts using 9-ea as the version string.
-					vmVersion = 1.9;
-				} else {
-					try {
-						String versionString = vm.substring(0, 3);
-						Double temp = new Double(Double.parseDouble(versionString));
-						vmVersion = temp.doubleValue();
-					} catch (Exception e) {
-						vmVersion = 1.4;
+				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)* 
+				// Care about the first set of digits and second set if first digit is 1
+				try {
+					List<Integer> numbers = getFirstNumbers(vm);
+					if (numbers.get(0) == 1) {
+						// Old school for 1.0 > 1.8
+						vmVersion = numbers.get(0)+(numbers.get(1)/10d);
+					} else {
+						// numbers.get(0) is the major version (9 and above)
+						// Note here the number will be 9 (or 10), *not* 1.9 or 1.10
+						vmVersion = numbers.get(0);
 					}
+				} catch (Throwable t) {
+					// Give up
+					vmVersion = 1.5;
 				}
 			}
 		} catch (Throwable t) {
@@ -92,6 +109,19 @@ public class LangUtil {
 					.printStackTrace(System.err);
 			vmVersion = 1.5;
 		}
+	}
+	
+	private static List<Integer> getFirstNumbers(String vm) {
+		List<Integer> result = new ArrayList<Integer>();
+		StringTokenizer st = new StringTokenizer(vm,".-_");
+		try {
+			result.add(Integer.parseInt(st.nextToken()));
+			result.add(Integer.parseInt(st.nextToken()));
+		} catch (Exception e) {
+			// NoSuchElementException if no more tokens
+			// NumberFormatException if not a number
+		}
+		return result;
 	}
 
 	public static boolean is13VMOrGreater() {
@@ -119,7 +149,7 @@ public class LangUtil {
 	}
 	
 	public static boolean is19VMOrGreater() {
-		return 1.9 <= vmVersion;
+		return 9 <= vmVersion;
 	}
 
 	/**

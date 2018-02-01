@@ -170,7 +170,7 @@ public class BcweaverJarMaker {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		args = new ArrayList();
+		args = new ArrayList<>();
 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
@@ -183,7 +183,7 @@ public class BcweaverJarMaker {
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
 		// For PR55341
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
 			File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -213,7 +213,7 @@ public class BcweaverJarMaker {
 		/* 
 		 * Woven classes
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -227,7 +227,7 @@ public class BcweaverJarMaker {
 		/*
 		 * Advice
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -239,7 +239,7 @@ public class BcweaverJarMaker {
 		/*
 		 * Declare warning advice
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -263,7 +263,7 @@ public class BcweaverJarMaker {
 		/*
 		 * Around closure advice
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -373,7 +373,6 @@ public class BcweaverJarMaker {
 	
 	public static void makeAjc11TestJars() throws IOException {
 		List<String> args = new ArrayList<>();
-
 		args.clear();
 		args.add("-classpath"); 
 		args.add(cp);
@@ -386,9 +385,7 @@ public class BcweaverJarMaker {
 	public static void makeOutjarTestJars() throws IOException {
 		List<String> args = new ArrayList<>();
 
-		/*
-		 * parent
-		 */
+		// parent
 		args.clear();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +

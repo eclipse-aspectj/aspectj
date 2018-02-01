@@ -18,18 +18,13 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import junit.framework.TestCase;
 
 /**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author Adrian Colyer
+ * @uahtor Andy Clement
  */
 public class AjCompilerOptionsTest extends TestCase {
 
 	private AjCompilerOptions options;
 	
-	/*
-	 * @see TestCase#setUp()
-	 */
 	protected void setUp() throws Exception {
 		super.setUp();
 		options = new AjCompilerOptions();
@@ -48,7 +43,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		
 		Map<String,String> map = options.getMap();
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
-		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
+		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportTypeNotExposedToWeaver));
 		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportShadowNotInStructure));
@@ -69,7 +64,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		options.generateEmacsSymFiles = true;
 		options.noAtAspectJProcessing = true;
 
-		Map map = options.getMap();
+		Map<String,String> map = options.getMap();
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_TerminateAfterCompilation));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XSerializableAspects));
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XLazyThisJoinPoint));
@@ -83,7 +78,7 @@ public class AjCompilerOptionsTest extends TestCase {
 
 	
 	public void testMapSet() {
-		Map map = new HashMap();
+		Map<String,String> map = new HashMap<>();
 		map.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,CompilerOptions.ERROR);
 		map.put(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName,CompilerOptions.ERROR);
 		map.put(AjCompilerOptions.OPTION_ReportUnresolvableMember,CompilerOptions.IGNORE);
@@ -116,8 +111,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertTrue(options.generateEmacsSymFiles);
 		assertTrue(options.noAtAspectJProcessing);
 		
-		Map newMap = options.getMap();
-		
+		Map<String,String> newMap = options.getMap();
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
 		assertEquals(CompilerOptions.IGNORE,newMap.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
@@ -129,9 +123,6 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion));
 	}
 	
-	/*
-	 * Class to test for String toString()
-	 */
 	public void testToString() {
 		String s = options.toString();
 		assertTrue("Should have info on AspectJ options",s.indexOf("AspectJ Specific Options:") > 0);

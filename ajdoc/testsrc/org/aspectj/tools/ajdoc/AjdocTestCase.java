@@ -19,6 +19,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.util.LangUtil;
 
 /**
  * This class is the super class of all Ajdoc tests. It creates a sandbox directory and provides utility methods for copying over
@@ -159,8 +160,14 @@ public class AjdocTestCase extends TestCase {
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && !sourceLevel.equals("1.4") && !sourceLevel.equals("1.5")) {
-			fail("need to pass ajdoc '1.3', '1.4', or '1.5' as the source level");
+		if (!sourceLevel.equals("1.3") && 
+			!sourceLevel.equals("1.4") && 
+			!sourceLevel.equals("1.5") && 
+			!sourceLevel.equals("1.6") && 
+			!sourceLevel.equals("1.7") && 
+			!sourceLevel.equals("1.8") && 
+			!sourceLevel.equals("1.9")) {
+			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
 		}
 		String[] args = new String[6 + inputFiles.length + ajOptions.length];
 		args[0] = "-source";
@@ -185,8 +192,16 @@ public class AjdocTestCase extends TestCase {
 		if (!visibility.equals("public") && !visibility.equals("protected") && !visibility.equals("private")) {
 			fail("need to pass 'public','protected' or 'private' visibility to ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && !sourceLevel.equals("1.4") && !sourceLevel.equals("1.5")) {
-			fail("need to pass ajdoc '1.3', '1.4', or '1.5' as the source level");
+		if (!sourceLevel.equals("1.3") && 
+			!sourceLevel.equals("1.4") && 
+			!sourceLevel.equals("1.5") && 
+			!sourceLevel.equals("1.6") && 
+			!sourceLevel.equals("1.7") && 
+			!sourceLevel.equals("1.8") && 
+			!sourceLevel.equals("1.9") &&
+			!sourceLevel.startsWith("9") &&
+			!sourceLevel.startsWith("10")) {
+			fail("need to pass suitable version to ajdoc as the source level");
 		}
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");
@@ -202,7 +217,12 @@ public class AjdocTestCase extends TestCase {
 		args[1] = "-source";
 		args[2] = sourceLevel;
 		args[3] = "-classpath";
-		args[4] = AjdocTests.ASPECTJRT_PATH.getPath();
+		StringBuilder classpath = new StringBuilder();
+		if (LangUtil.is19VMOrGreater()) {
+			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
+		}
+		classpath.append(AjdocTests.ASPECTJRT_PATH.getPath());
+		args[4] = classpath.toString();
 		args[5] = "-d";
 		args[6] = getAbsolutePathOutdir();
 		// args[7] = "-Xset:minimalModel=false";

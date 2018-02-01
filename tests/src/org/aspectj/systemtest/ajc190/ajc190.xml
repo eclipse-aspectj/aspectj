@@ -1,0 +1,110 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs190/modules/aaa" title="build a module">
+    <compile files="module-info.java com/foo1/C1.java" options="-1.9"/>
+  </ajc-test>
+
+  <ajc-test dir="bugs190/modules/bbb" title="run a module - classpath">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9"/>
+    <run class="aaa.bbb.A">
+    <stdout>
+    <line text="A running"/>
+    </stdout>
+    </run>
+  </ajc-test>
+
+  <ajc-test dir="bugs190/modules/bbb" title="run a module - modulepath">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9"/>
+    <run modulepath="$sandbox" module="my.module/aaa.bbb.A">
+    <stdout>
+    <line text="A running"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/bbb" title="package and run a module - modulepath">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
+   	<file deletefile="module-info.java"/>
+    <file deletefile="aaa"/>
+    <run modulepath="my.module.jar" module="my.module/aaa.bbb.A">
+    <stdout>
+    <line text="A running"/>
+    </stdout>
+    </run>
+   </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/ccc" title="compile regular code using module code">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="modules/my.module.jar"/>
+    <file deletefile="module-info.java"/>
+    <file deletefile="aaa"/>
+    <compile files="InvokeA.java" options="-1.9" modulepath="$sandbox/modules/my.module.jar"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/ddd" title="compile regular code using module code that isn't visible">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="modules/my.module.jar"/>
+    <compile files="InvokeA.java" options="-1.9" modulepath="$sandbox/modules/my.module.jar">
+		<message kind="error" text="package aaa.bbb is not visible"/>
+    </compile>
+  </ajc-test>
+
+
+  <ajc-test dir="bugs190/modules/eee" title="binary weaving module">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
+    <file deletefile="module-info.java"/>
+    <file deletefile="aaa"/>
+    <compile files="Azpect.java" inpath="my.module.jar" outjar="my.module.woven.jar"/>
+    <run modulepath="my.module.woven.jar" module="my.module/aaa.bbb.A">
+      <stdout>
+      <line text="Azpect running"/>
+      <line text="A running"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
+
+  <ajc-test dir="bugs190/520135" title="funny signature with method reference">
+    <compile files="FailsApectJ.java" options="-1.8"/>
+  </ajc-test>
+
+  <ajc-test dir="bugs190/modules/fff" title="compile module including aspects">
+    <compile files="module-info.java pkg/Demo.java otherpkg/Azpect.java" modulepath="$runtime" outjar="demomodule.jar" options="-1.9"/>
+    <run modulepath="$runtime:demomodule.jar" module="demo/pkg.Demo">
+      <stdout>
+      <line text="Azpect running"/>
+      <line text="Demo running"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules" title="weave module">
+    <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
+    <java classpath="runner.jar" class="a.b.c.Code"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/various" title="setting static final outside clinit">
+	  <compile files="Code.java" options="-1.9"/>
+	  <run class="Code">
+	  <stdout>
+	  <line text="call(void java.io.PrintStream.println(String))"/>
+	  <line text="running"/>
+	  </stdout>
+	  </run>
+  </ajc-test>
+
+	<!-- from ajc153 -->
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member 1">
+      <compile files="Sample.java, LiftDeprecation.aj" options="-1.9 -XhasMember -showWeaveInfo -Xlint:ignore">
+        <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
+      </compile>
+    </ajc-test>
+
+	<!-- from ajc153 -->
+    <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member 2">
+      <compile files="Sample.java, LiftDeprecation.aj" options="-1.8 -XhasMember -showWeaveInfo -Xlint:ignore">
+        <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
+      </compile>
+    </ajc-test>
+
+</suite>

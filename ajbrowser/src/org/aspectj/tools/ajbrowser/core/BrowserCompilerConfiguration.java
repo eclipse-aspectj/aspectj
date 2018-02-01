@@ -124,4 +124,14 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 		return null;
 	}
 
+	@Override
+	public String getModulepath() {
+		return null;
+	}
+
+	@Override
+	public String getModuleSourcepath() {
+		return null;
+	}
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004, 2017 Contributors
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,6 +51,9 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 
 /**
  * A PointcutParser can be used to build PointcutExpressions for a user-defined subset of AspectJ's pointcut language
+ * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class PointcutParser {
 
@@ -123,7 +126,7 @@ public class PointcutParser {
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
 	public static PointcutParser getPointcutParserSupportingSpecifiedPrimitivesAndUsingContextClassloaderForResolution(
-			Set supportedPointcutKinds) {
+			Set<PointcutPrimitive> supportedPointcutKinds) {
 		PointcutParser p = new PointcutParser(supportedPointcutKinds);
 		p.setClassLoader(Thread.currentThread().getContextClassLoader());
 		return p;
@@ -163,7 +166,7 @@ public class PointcutParser {
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
 	public static PointcutParser getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(
-			Set supportedPointcutKinds, ClassLoader classLoader) {
+			Set<PointcutPrimitive> supportedPointcutKinds, ClassLoader classLoader) {
 		PointcutParser p = new PointcutParser(supportedPointcutKinds);
 		p.setClassLoader(classLoader);
 		return p;
@@ -216,7 +219,22 @@ public class PointcutParser {
 	 */
 	protected void setClassLoader(ClassLoader aLoader) {
 		this.classLoaderReference = new WeakClassLoaderReference(aLoader);
-		world = new ReflectionWorld(this.classLoaderReference.getClassLoader());
+		world = ReflectionWorld.getReflectionWorldFor(this.classLoaderReference);
+	}
+	
+	/**
+	 * Set the classloader that this parser should use for type resolution.
+	 * 
+	 * @param aLoader
+	 * @param shareWorlds if true then two PointcutParsers operating using the same classloader will share a ReflectionWorld
+	 */
+	protected void setClassLoader(ClassLoader aLoader, boolean shareWorlds) {
+		this.classLoaderReference = new WeakClassLoaderReference(aLoader);
+		if (shareWorlds) {
+			world = ReflectionWorld.getReflectionWorldFor(this.classLoaderReference);
+		} else {
+			world = new ReflectionWorld(classLoaderReference);
+		}
 	}
 
 	/**
@@ -261,7 +279,7 @@ public class PointcutParser {
 	 * @param type
 	 * @return
 	 */
-	public PointcutParameter createPointcutParameter(String name, Class type) {
+	public PointcutParameter createPointcutParameter(String name, Class<?> type) {
 		return new PointcutParameterImpl(name, type);
 	}
 
@@ -287,7 +305,7 @@ public class PointcutParser {
 	 *         supported by this PointcutParser.
 	 * @throws IllegalArgumentException if the expression is not a well-formed pointcut expression
 	 */
-	public PointcutExpression parsePointcutExpression(String expression, Class inScope, PointcutParameter[] formalParameters)
+	public PointcutExpression parsePointcutExpression(String expression, Class<?> inScope, PointcutParameter[] formalParameters)
 			throws UnsupportedPointcutPrimitiveException, IllegalArgumentException {
 		PointcutExpressionImpl pcExpr = null;
 		try {
@@ -303,7 +321,7 @@ public class PointcutParser {
 		return pcExpr;
 	}
 
-	protected Pointcut resolvePointcutExpression(String expression, Class inScope, PointcutParameter[] formalParameters) {
+	protected Pointcut resolvePointcutExpression(String expression, Class<?> inScope, PointcutParameter[] formalParameters) {
 		try {
 			PatternParser parser = new PatternParser(expression);
 			parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
@@ -317,7 +335,7 @@ public class PointcutParser {
 		}
 	}
 
-	protected Pointcut concretizePointcutExpression(Pointcut pc, Class inScope, PointcutParameter[] formalParameters) {
+	protected Pointcut concretizePointcutExpression(Pointcut pc, Class<?> inScope, PointcutParameter[] formalParameters) {
 		ResolvedType declaringTypeForResolution = null;
 		if (inScope != null) {
 			declaringTypeForResolution = getWorld().resolve(inScope.getName());
@@ -355,7 +373,7 @@ public class PointcutParser {
 	}
 
 	/* for testing */
-	Set getSupportedPrimitives() {
+	Set<PointcutPrimitive> getSupportedPrimitives() {
 		return supportedPrimitives;
 	}
 
@@ -366,7 +384,7 @@ public class PointcutParser {
 		return current;
 	}
 
-	private IScope buildResolutionScope(Class inScope, PointcutParameter[] formalParameters) {
+	private IScope buildResolutionScope(Class<?> inScope, PointcutParameter[] formalParameters) {
 		if (formalParameters == null) {
 			formalParameters = new PointcutParameter[0];
 		}
@@ -398,7 +416,7 @@ public class PointcutParser {
 		}
 	}
 
-	private UnresolvedType toUnresolvedType(Class clazz) {
+	private UnresolvedType toUnresolvedType(Class<?> clazz) {
 		if (clazz.isArray()) {
 			return UnresolvedType.forSignature(clazz.getName().replace('.', '/'));
 		} else {
@@ -560,4 +578,5 @@ public class PointcutParser {
 		msg.append("\n");
 		return msg.toString();
 	}
+	
 }

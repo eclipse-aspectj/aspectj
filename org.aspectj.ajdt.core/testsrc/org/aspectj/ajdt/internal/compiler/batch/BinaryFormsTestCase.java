@@ -48,7 +48,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-aspectpath");
 		args.add(library);
 

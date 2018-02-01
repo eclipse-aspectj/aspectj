@@ -251,8 +251,8 @@ public class AjcSpecXmlReader {
         digester.addSetProperties(compileX + "/file");
         digester.addSetProperties(inccompileX, "classes", "paths");
         digester.addSetProperties(runX, 
-            new String[] { "class", "vm", "skipTester", "fork", "vmargs", "aspectpath"},
-            new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs", "aspectpath"});
+            new String[] { "class", "vm", "skipTester", "fork", "vmargs", "aspectpath", "module"},
+            new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs", "aspectpath", "module"});
         digester.addSetProperties(dirchangesX);
         digester.addSetProperties(messageX);
         digester.addSetProperties(messageSrcLocX, "line", "lineAsString");

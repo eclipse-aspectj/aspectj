@@ -23,6 +23,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.InterTypeFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.InterTypeMethodBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedFieldBinding;
 import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
+import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AssertStatement;
@@ -44,6 +45,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBin
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.ResolvedMember;
@@ -123,10 +125,15 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			// send.arguments = AstUtil.insert(new ThisReference(send.sourceStart, send.sourceEnd), send.arguments);
 			MethodBinding superAccessBinding = getSuperAccessMethod(send.binding);
 			AstUtil.replaceMethodBinding(send, superAccessBinding);
-		} else if (!isPublic(send.binding)) {
+		} else if (!isPublic(send.binding) && !isCloneMethod(send.binding)) {
 			send.syntheticAccessor = getAccessibleMethod(send.binding, send.actualReceiverType);
 		}
 
+	}
+	
+	private boolean isCloneMethod(MethodBinding binding) {
+		return (CharOperation.equals(binding.selector, TypeConstants.CLONE)) &&
+				(CharOperation.equals(binding.declaringClass.compoundName, TypeConstants.JAVA_LANG_OBJECT));
 	}
 
 	public void endVisit(AllocationExpression send, BlockScope scope) {
@@ -181,7 +188,6 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		}
 		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
 		inAspect.accessForInline.put(m, ret);
-		System.out.println(">>"+m);
 		return ret;
 	}
 

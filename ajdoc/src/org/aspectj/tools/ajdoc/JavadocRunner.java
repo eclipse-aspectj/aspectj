@@ -14,8 +14,11 @@
 
 package org.aspectj.tools.ajdoc;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import org.aspectj.util.LangUtil;
 
 /**
  * @author Mik Kersten
@@ -62,7 +65,12 @@ class JavadocRunner {
 		// defaultSecurityManager.checkPermission( permission, context );
 		// }
 		// } );
-
+		
+		// Need to do something different on Java > 9 due to removal of standard doclet I think
+//		if (LangUtil.is19VMOrGreater()) {
+//			// Not visible according to module rules...
+//			clazz = Class.forName("jdk.javadoc.internal.tool.Main");
+//		}
 		try {
 			// for JDK 1.4 and above call the execute method...
 			Class jdMainClass = com.sun.tools.javadoc.Main.class;

@@ -31,6 +31,7 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.tools.ajc.AjcTests;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.LazyClassGen;
 
 public abstract class CommandTestCase extends TestCase {
@@ -175,7 +176,12 @@ public abstract class CommandTestCase extends TestCase {
 
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
-		return AjcTests.aspectjrtClasspath();
+		StringBuilder classpath = new StringBuilder();
+		if (LangUtil.is19VMOrGreater()) {
+			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
+		}
+		classpath.append(AjcTests.aspectjrtClasspath());
+		return classpath.toString();
 	}
 
 	protected String getSandboxName() {

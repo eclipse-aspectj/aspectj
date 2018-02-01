@@ -204,7 +204,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 					return new String(sLit.source());
 				} else if (expr instanceof NameReference && (((NameReference) expr).binding instanceof FieldBinding)) {
 					Binding b = ((NameReference) expr).binding;
-					Constant c = ((FieldBinding) b).constant;
+					Constant c = ((FieldBinding) b).constant();
 					return c.stringValue();
 				} else {
 					throw new BCException("Do not know how to recover pointcut definition from " + expr + " (type "

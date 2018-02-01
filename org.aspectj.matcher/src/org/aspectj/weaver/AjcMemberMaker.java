@@ -74,7 +74,7 @@ public class AjcMemberMaker {
 	}
 
 	public static ResolvedMember perSingletonField(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.FIELD, declaringType, PUBLIC_STATIC_FINAL, NameMangler.PERSINGLETON_FIELD_NAME,
+		return new ResolvedMemberImpl(Member.FIELD, declaringType, PUBLIC_STATIC, NameMangler.PERSINGLETON_FIELD_NAME,
 				declaringType.getSignature());
 	}
 

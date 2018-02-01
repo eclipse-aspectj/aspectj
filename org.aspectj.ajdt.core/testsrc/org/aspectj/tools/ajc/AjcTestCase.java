@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * A TestCase class that acts as the superclass for all test cases wishing to drive the ajc compiler.
@@ -89,6 +90,8 @@ public class AjcTestCase extends TestCase {
 			+ "bcel"
 			+ File.separator
 			+ "bcel-verifier.jar"
+			
+			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-6.0_BETA.renamed.jar"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
@@ -107,7 +110,6 @@ public class AjcTestCase extends TestCase {
 	public static final String JAVA5_CLASSPATH_ENTRIES = File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator
 			+ "bin" + File.pathSeparator + ".." + File.separator + "loadtime5" + File.separator + "bin" + File.pathSeparator + ".."
 			+ File.separator + "weaver5" + File.separator + "bin"
-
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "aspectj5rt.jar"
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "loadtime5.jar"
 			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "weaver5.jar";
@@ -579,7 +581,7 @@ public class AjcTestCase extends TestCase {
 	}
 
 	public RunResult run(String className, String[] args, String classpath) {
-		return run(className, args, "", null, false,false);
+		return run(className, null, args, "", "", null, false,false);
 	}
 
 	/**
@@ -591,7 +593,7 @@ public class AjcTestCase extends TestCase {
 	 *        be appended to the classpath, as will any jars in the sandbox.
 	 * @param runSpec 
 	 */
-	public RunResult run(String className, String[] args, String vmargs, final String classpath, boolean useLTW, boolean useFullLTW) {
+	public RunResult run(String className, String moduleName, String[] args, String vmargs, final String classpath, String modulepath, boolean useLTW, boolean useFullLTW) {
 
 		if (args != null) {
 			for (int i = 0; i < args.length; i++) {
@@ -605,22 +607,29 @@ public class AjcTestCase extends TestCase {
 			cp.append(substituteSandbox(classpath));
 			cp.append(File.pathSeparator);
 		}
-		cp.append(ajc.getSandboxDirectory().getAbsolutePath());
-		getAnyJars(ajc.getSandboxDirectory(), cp);
+		if (moduleName == null) {
+			// When running modules, we want more control so don't try to be helpful by adding all jars
+			cp.append(ajc.getSandboxDirectory().getAbsolutePath());
+			getAnyJars(ajc.getSandboxDirectory(), cp);
+		}
+		StringBuffer mp = new StringBuffer();
+		if (modulepath != null) {
+			mp.append(substituteSandbox(modulepath));
+			mp.append(File.pathSeparator);
+		}
 
 		URLClassLoader sandboxLoader;
-		URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
-		ClassLoader parentLoader = testLoader.getParent();
-
-	
+		ClassLoader parentLoader = getClass().getClassLoader().getParent();
 		
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if ( !useFullLTW && useLTW) {
+//			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
 			/*
 			 * Create a new AspectJ class loader using the existing test CLASSPATH and any missing Java 5 projects
 			 */
-			URL[] testUrls = testLoader.getURLs();
-			URL[] java5Urls = getURLs(JAVA5_CLASSPATH_ENTRIES);
+			URL[] testUrls = new URL[0];//testLoader.getURLs();
+			// What are the URLs on java 8?
+			URL[] java5Urls = getURLs(DEFAULT_CLASSPATH_ENTRIES);//getURLs(JAVA5_CLASSPATH_ENTRIES);
 			URL[] urls = new URL[testUrls.length + java5Urls.length];
 			System.arraycopy(testUrls, 0, urls, 0, testUrls.length);
 			System.arraycopy(java5Urls, 0, urls, testUrls.length, java5Urls.length);
@@ -629,7 +638,7 @@ public class AjcTestCase extends TestCase {
 			URL[] sandboxUrls = getURLs(cp.toString());
 			sandboxLoader = createWeavingClassLoader(sandboxUrls, aspectjLoader);
 			// sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
-		}else if(useFullLTW  && useLTW) {			
+		} else if(useFullLTW  && useLTW) {			
 			if(vmargs == null){
 				vmargs ="";
 			}
@@ -638,7 +647,6 @@ public class AjcTestCase extends TestCase {
 			String absPath = directory.getAbsolutePath();
 			String javaagent= absPath+File.separator+".."+File.separator+"aj-build"+File.separator+"dist"+File.separator+"tools"+File.separator+"lib"+File.separator+"aspectjweaver.jar";
 			try {
-
 				String command ="java " +vmargs+ " -classpath " + cp +" -javaagent:"+javaagent + " " + className ;
 				
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
@@ -653,10 +661,35 @@ public class AjcTestCase extends TestCase {
 				System.out.println("Error executing full LTW test: " + e);
 				e.printStackTrace();
 			}
-
 			return lastRunResult;
-		
-		}else{
+		} else if (moduleName != null) {
+			// CODE FOR RUNNING MODULES
+			if(vmargs == null){
+				vmargs ="";
+			}
+			try {
+				if (mp.indexOf("$runtime") != -1) {
+					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
+				}
+				if (cp.indexOf("aspectjrt")==-1) {
+					cp.append(TestUtil.aspectjrtPath().getPath()).append(File.pathSeparator);
+				}
+				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " -p "+mp+" --module "+moduleName   ;
+				System.out.println("Command is "+command);
+				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
+				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
+				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
+				exec = pb.start();
+		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				exec.waitFor();
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+			} catch (Exception e) {
+				System.out.println("Error executing module test: " + e);
+				e.printStackTrace();
+			}
+			return lastRunResult;
+		} else {
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());
 			sandboxLoader = new URLClassLoader(urls, parentLoader);
@@ -665,7 +698,8 @@ public class AjcTestCase extends TestCase {
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 		
 
-		StringBuffer command = new StringBuffer("java -classpath ");
+		StringBuffer command = new StringBuffer();
+		command.append("java -classpath ");
 		command.append(cp.toString());
 		command.append(" ");
 		command.append(className);
@@ -833,15 +867,15 @@ public class AjcTestCase extends TestCase {
 		return urls;
 	}
 
-	private String substituteSandbox(String classpath) {
-		// the longhand form of the non 1.3 API: classpath.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
-		while (classpath.indexOf("$sandbox") != -1) {
-			int pos = classpath.indexOf("$sandbox");
-			String firstbit = classpath.substring(0, pos);
-			String endbit = classpath.substring(pos + 8);
-			classpath = firstbit + ajc.getSandboxDirectory().getAbsolutePath() + endbit;
+	private String substituteSandbox(String path) {
+		// the longhand form of the non 1.3 API: path.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
+		while (path.indexOf("$sandbox") != -1) {
+			int pos = path.indexOf("$sandbox");
+			String firstbit = path.substring(0, pos);
+			String endbit = path.substring(pos + 8);
+			path = firstbit + ajc.getSandboxDirectory().getAbsolutePath() + endbit;
 		}
-		return classpath;
+		return path;
 	}
 
 	/**
@@ -850,38 +884,48 @@ public class AjcTestCase extends TestCase {
 	 * @param args the String[] args to fix up
 	 * @return the String[] args to use
 	 */
-	protected String[] fixupArgs(String[] args) {
-		if (null == args) {
-			return null;
-		}
-		int cpIndex = -1;
-		boolean hasruntime = false;
-		for (int i = 0; i < args.length - 1; i++) {
-			args[i] = adaptToPlatform(args[i]);
-			if ("-classpath".equals(args[i])) {
-				cpIndex = i;
-				args[i + 1] = substituteSandbox(args[i + 1]);
-				String next = args[i + 1];
-				hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
-			}
-		}
-		if (-1 == cpIndex) {
-			String[] newargs = new String[args.length + 2];
-			newargs[0] = "-classpath";
-			newargs[1] = TestUtil.aspectjrtPath().getPath();
-			System.arraycopy(args, 0, newargs, 2, args.length);
-			args = newargs;
-		} else {
-			if (!hasruntime) {
-				cpIndex++;
-				String[] newargs = new String[args.length];
-				System.arraycopy(args, 0, newargs, 0, args.length);
-				newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
-				args = newargs;
-			}
-		}
-		return args;
-	}
+    protected String[] fixupArgs(String[] args) {
+        if (null == args) {
+                return null;
+        }
+        int cpIndex = -1;
+        boolean hasruntime = false;
+        for (int i = 0; i < args.length - 1; i++) {
+                args[i] = adaptToPlatform(args[i]);
+                if ("-classpath".equals(args[i])) {
+                        cpIndex = i;
+                        args[i + 1] = substituteSandbox(args[i + 1]);
+                        String next = args[i + 1];
+                        hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
+                } else if ("-p".equals(args[i]) || "--module-path".equals(args[i])) {
+                    args[i + 1] = substituteSandbox(args[i + 1]);
+                }
+        }
+        if (-1 == cpIndex) {
+                String[] newargs = new String[args.length + 2];
+                newargs[0] = "-classpath";
+                newargs[1] = TestUtil.aspectjrtPath().getPath();
+                System.arraycopy(args, 0, newargs, 2, args.length);
+                args = newargs;
+                cpIndex = 1;
+        } else {
+                if (!hasruntime) {
+                        cpIndex++;
+                        String[] newargs = new String[args.length];
+                        System.arraycopy(args, 0, newargs, 0, args.length);
+                        newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
+                        args = newargs;
+                }
+        }
+        boolean needsJRTFS = LangUtil.is19VMOrGreater();
+        if (needsJRTFS) {
+                if (args[cpIndex].indexOf(LangUtil.JRT_FS) == -1) {
+                        String jrtfsPath = LangUtil.getJrtFsFilePath();
+                        args[cpIndex] = jrtfsPath + File.pathSeparator + args[cpIndex];
+                }
+        }
+        return args;
+}
 
 	private String adaptToPlatform(String s) {
 		String ret = s.replace(';', File.pathSeparatorChar);

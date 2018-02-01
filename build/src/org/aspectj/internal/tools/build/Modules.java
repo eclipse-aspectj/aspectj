@@ -24,7 +24,7 @@ import java.util.Hashtable;
  */
 public class Modules {
     
-    private final Hashtable<String,Module> modules = new Hashtable<>();
+    private final Hashtable<String,Module> modules = new Hashtable<String,Module>();
     public final File baseDir;
     public final File jarDir;
     private final Messager handler;

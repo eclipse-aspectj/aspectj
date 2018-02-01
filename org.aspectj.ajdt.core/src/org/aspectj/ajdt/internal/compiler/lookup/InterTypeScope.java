@@ -113,4 +113,8 @@ public class InterTypeScope extends ClassScope {
 		return usedAliases;
 	}
 
+	@Override
+	public boolean isInterTypeScope() {
+		return true;
+	}
 }

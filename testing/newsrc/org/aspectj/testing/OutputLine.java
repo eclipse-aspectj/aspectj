@@ -12,25 +12,31 @@
 package org.aspectj.testing;
 
 /**
- * @author colyer
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class OutputLine {
 
+	// Expected text
 	private String text;
+
+	// Comma separated list of vm versions on which this is expected
+	private String vm;
 	
-	/**
-	 * @return Returns the text.
-	 */
 	public String getText() {
 		return text;
 	}
-	/**
-	 * @param text The text to set.
-	 */
+	
 	public void setText(String text) {
 		this.text = text;
 	}
+	
+	public String getVm() {
+		return vm;
+	}
+	
+	public void setVm(String vm) {
+		this.vm = vm;
+	}
+	
 }

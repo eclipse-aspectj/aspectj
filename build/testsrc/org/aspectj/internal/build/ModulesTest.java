@@ -72,7 +72,7 @@ public class ModulesTest extends TestCase {
         }
     }
 
-    ArrayList<File> tempFiles = new ArrayList<>();
+    ArrayList<File> tempFiles = new ArrayList<File>();
      
 	public ModulesTest(String name) {
 		super(name);
@@ -101,7 +101,7 @@ public class ModulesTest extends TestCase {
     }
       
     public void testAllModulesCreation() {
-        ArrayList<Module> badModules = new ArrayList<>();
+        ArrayList<Module> badModules = new ArrayList<Module>();
         for (String name: MODULE_NAMES) {
             File dir = new File(BASE_DIR, name);
             if (dir.isDirectory()) {

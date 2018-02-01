@@ -1,17 +1,16 @@
 /* *******************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2017 Contributors.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.AbortException;
@@ -31,14 +30,55 @@ import org.aspectj.weaver.World;
  * A ReflectionWorld is used solely for purposes of type resolution based on the runtime classpath (java.lang.reflect). It does not
  * support weaving operations (creation of mungers etc..).
  * 
+ * @author Adrian Colyer
+ * @author Andy Clement
  */
 public class ReflectionWorld extends World implements IReflectionWorld {
+
+	private static Map<WeakClassLoaderReference, ReflectionWorld> rworlds = Collections.synchronizedMap(new HashMap<WeakClassLoaderReference, ReflectionWorld>());
 
 	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
 	private boolean mustUseOneFourDelegates = false; // for testing
 	private Map<String,Class<?>> inProgressResolutionClasses = new HashMap<String,Class<?>>();
-
+	
+	public static ReflectionWorld getReflectionWorldFor(WeakClassLoaderReference classLoaderReference) {
+		
+		// Temporarily do as before. Although the cache makes things faster it needs a bit more thought because
+		// if the world has pointcutdesignators registered then someone may inadvertently register additional
+		// ones on reusing a world (when they would be expecting a clean world). We can't automatically
+		// clear them because we don't know when they are finished with.
+		return new ReflectionWorld(classLoaderReference);
+		
+		/*
+		synchronized (rworlds) {
+			// Tidyup any no longer relevant entries...
+			for (Iterator<Map.Entry<WeakClassLoaderReference, ReflectionWorld>> it = rworlds.entrySet().iterator();
+					it.hasNext();) {
+				Map.Entry<WeakClassLoaderReference, ReflectionWorld> entry = it.next();
+				if (entry.getKey().getClassLoader() == null) {
+					it.remove();
+				}
+			}
+			ReflectionWorld rworld = null;
+			if (classLoaderReference.getClassLoader() != null) {
+				rworld = rworlds.get(classLoaderReference);
+				if (rworld == null) {
+					rworld = new ReflectionWorld(classLoaderReference);
+					rworlds.put(classLoaderReference, rworld);
+				}
+			}
+			return rworld;
+		}
+		*/
+	}
+	
+	public static void cleanUpWorlds() {
+		synchronized (rworlds) {
+			rworlds.clear();
+		}
+	}
+	
 	private ReflectionWorld() {
 		// super();
 		// this.setMessageHandler(new ExceptionBasedMessageHandler());
@@ -48,6 +88,13 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		// this.annotationFinder =
 		// makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(),
 		// this);
+	}
+	
+	public ReflectionWorld(WeakClassLoaderReference classloaderRef) {
+		this.setMessageHandler(new ExceptionBasedMessageHandler());
+		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		classLoaderReference = classloaderRef;
+		annotationFinder = makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(), this);
 	}
 
 	public ReflectionWorld(ClassLoader aClassLoader) {
@@ -71,7 +118,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		AnnotationFinder annotationFinder = null;
 		try {
 			if (LangUtil.is15VMOrGreater()) {
-				Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
+				Class<?> java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
 				annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
 				annotationFinder.setClassLoader(loader);
 				annotationFinder.setWorld(world);
@@ -99,7 +146,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		return resolve(this, aClass);
 	}
 
-	public static ResolvedType resolve(World world, Class aClass) {
+	public static ResolvedType resolve(World world, Class<?> aClass) {
 		// classes that represent arrays return a class name that is the
 		// signature of the array type, ho-hum...
 		String className = aClass.getName();

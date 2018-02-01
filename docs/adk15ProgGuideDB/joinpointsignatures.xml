@@ -185,7 +185,7 @@
         </tgroup>
         </informaltable>
         
-        <para>Note that whilst an advice excetution join point has a
+        <para>Note that whilst an advice execution join point has a
         signature comprising the declaring type of the advice and the
         advice parameter types, the <literal>adviceexecution</literal>
         pointcut designator does not support matching based on this

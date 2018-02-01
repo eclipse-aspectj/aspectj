@@ -82,6 +82,10 @@ public class InstructionFactory implements InstructionConstants {
 		this(null, cp);
 	}
 
+	public InvokeInstruction createInvoke(String class_name, String name, Type ret_type, Type[] arg_types, short kind) {
+		return createInvoke(class_name, name, ret_type, arg_types, kind, false);
+	}
+		
 	/**
 	 * Create an invoke instruction.
 	 * 
@@ -90,14 +94,15 @@ public class InstructionFactory implements InstructionConstants {
 	 * @param ret_type return type of method
 	 * @param arg_types argument types of method
 	 * @param kind how to invoke, i.e., INVOKEINTERFACE, INVOKESTATIC, INVOKEVIRTUAL, or INVOKESPECIAL
+	 * @param isInterface for an invokestatic on an interface allows us to tell this method the target is an interface
 	 * @see Constants
 	 */
-	public InvokeInstruction createInvoke(String class_name, String name, Type ret_type, Type[] arg_types, short kind) {
+	public InvokeInstruction createInvoke(String class_name, String name, Type ret_type, Type[] arg_types, short kind, boolean isInterface) {
 
 		String signature = Utility.toMethodSignature(ret_type, arg_types);
 
 		int index;
-		if (kind == Constants.INVOKEINTERFACE) {
+		if (kind == Constants.INVOKEINTERFACE || isInterface) {
 			index = cp.addInterfaceMethodref(class_name, name, signature);
 		} else if (kind == Constants.INVOKEDYNAMIC){
 			throw new IllegalStateException("NYI");

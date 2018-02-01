@@ -367,7 +367,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.METHOD, ipeLabel);
 		assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree", ipe);
-		List l = ipe.getParameterSignatures();
+		List<char[]> l = ipe.getParameterSignatures();
 		boolean eq = CharOperation.equals(((char[]) l.get(0)), expectedParm.toCharArray());
 		assertTrue("expected parameter to be '" + expectedParm + "' but found '" + new String(((char[]) l.get(0))) + "'", eq);
 	}

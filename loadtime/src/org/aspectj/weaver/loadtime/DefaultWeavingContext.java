@@ -47,7 +47,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	/**
 	 * Same as ClassLoader.getResources()
 	 */
-	public Enumeration getResources(String name) throws IOException {
+	public Enumeration<URL> getResources(String name) throws IOException {
 		return getClassLoader().getResources(name);
 	}
 
