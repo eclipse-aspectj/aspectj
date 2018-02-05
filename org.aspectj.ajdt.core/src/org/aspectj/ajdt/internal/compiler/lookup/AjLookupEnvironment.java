@@ -27,17 +27,38 @@ import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.PointcutDeclaration;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ITypeRequestor;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.*;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeCollisionException;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.ConcreteTypeMunger;
@@ -113,6 +134,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	}
 
 	// ??? duplicates some of super's code
+	@Override
 	public void completeTypeBindings() {
 		AsmManager.setCompletingTypeBindings(true);
 		ContextToken completeTypeBindingsToken = CompilationAndWeavingContext.enteringPhase(
@@ -1389,7 +1411,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			ReferenceTypeDelegate rtd = rt.getDelegate();
 			if (rtd instanceof BcelObjectType) {
 				if (rt.isRawType()) {
-					rt = (ReferenceType)rt.getGenericType();
+					rt = rt.getGenericType();
 				}
 				rt.addParent(parent);
 				// ((BcelObjectType) rtd).addParent(parent);
@@ -1412,6 +1434,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	boolean inBinaryTypeCreationAndWeaving = false;
 	boolean processingTheQueue = false;
 
+	@Override
 	public BinaryTypeBinding createBinaryTypeFrom(IBinaryType binaryType, PackageBinding packageBinding,
 			boolean needFieldsAndMethods, AccessRestriction accessRestriction) {
 
@@ -1452,6 +1475,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 *
 	 * @param aBinding
 	 */
+	@Override
 	public void anonymousTypeBindingCreated(LocalTypeBinding aBinding) {
 		factory.addSourceTypeBinding(aBinding, null);
 	}
@@ -1480,7 +1504,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
   }
   
   @Override
-  public LookupEnvironment wrapInModuleEnvironment(ModuleBinding moduleBinding) {
+public LookupEnvironment wrapInModuleEnvironment(ModuleBinding moduleBinding) {
 	  AjLookupEnvironment newAjLookupEnvironment = new AjLookupEnvironment(this, moduleBinding);
 	  newAjLookupEnvironment.factory = this.factory;
 	  return newAjLookupEnvironment;

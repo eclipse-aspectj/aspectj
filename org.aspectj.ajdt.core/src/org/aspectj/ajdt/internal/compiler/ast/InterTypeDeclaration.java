@@ -63,7 +63,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 *  them.  This is a list of strings representing the alternative names - the position in the list is used to
 	 *  match it to the real type variable in the target generic type.
 	 */
-	protected List typeVariableAliases; 
+	protected List<String> typeVariableAliases; 
 	
 	protected InterTypeScope interTypeScope;
 	
@@ -140,6 +140,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		return false;
 	}
 	
+	@Override
 	public void resolve(ClassScope upperScope) {
 		if (ignoreFurtherInvestigation) return;
 		
@@ -264,7 +265,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		// check if they used stupid names for type variables
 		if (aliasCount>0) {
 			for (int i = 0; i < aliasCount; i++) {
-				String array_element = (String)typeVariableAliases.get(i);
+				String array_element = typeVariableAliases.get(i);
 				SingleTypeReference str = new SingleTypeReference(array_element.toCharArray(),0);
 				TypeBinding tb = str.getTypeBindingPublic(classScope);
 				if (tb!=null && !(tb instanceof ProblemReferenceBinding)) {// && !(tb instanceof TypeVariableBinding)) {
@@ -314,6 +315,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		this.munger = munger;
 	}
 	
+	@Override
 	protected int generateInfoAttributes(ClassFile classFile) {
 		List l;
 		Shadow.Kind kind = getShadowKindForBody();
@@ -378,6 +380,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 * by the ITD can be resolved.  For example, if type variables are referred to in the ontype for the ITD,
 	 * they have to be resolved against the ontype, not the aspect containing the ITD.
 	 */
+	@Override
 	public void ensureScopeSetup() {
 		if (scopeSetup) return; // don't do it again
 		MethodScope scope = this.scope;

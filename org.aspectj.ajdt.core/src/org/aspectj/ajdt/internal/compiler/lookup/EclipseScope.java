@@ -61,6 +61,7 @@ public class EclipseScope implements IScope {
 		enclosingType = world.fromEclipse(scope.enclosingSourceType());
 	}
 
+	@Override
 	public UnresolvedType lookupType(String name, IHasPosition location) {
 		char[][] splitName = WildTypePattern.splitNames(name, true);
 		TypeBinding b = scope.getType(splitName, splitName.length);
@@ -156,8 +157,8 @@ public class EclipseScope implements IScope {
 		if (importedNames != null)
 			return;
 
-		List importedNamesList = new ArrayList();
-		List importedPrefixesList = new ArrayList();
+		List<String> importedNamesList = new ArrayList<>();
+		List<String> importedPrefixesList = new ArrayList<>();
 
 		Scope currentScope = scope;
 		// add any enclosing types to this list
@@ -197,12 +198,12 @@ public class EclipseScope implements IScope {
 			importedNamesList.add(world.fromBinding(topTypes[i]).getName());
 		}
 
-		importedNames = (String[]) importedNamesList.toArray(new String[importedNamesList.size()]);
+		importedNames = importedNamesList.toArray(new String[importedNamesList.size()]);
 
-		importedPrefixes = (String[]) importedPrefixesList.toArray(new String[importedPrefixesList.size()]);
+		importedPrefixes = importedPrefixesList.toArray(new String[importedPrefixesList.size()]);
 	}
 
-	private void addClassAndParentsToPrefixes(ReferenceBinding binding, List importedPrefixesList) {
+	private void addClassAndParentsToPrefixes(ReferenceBinding binding, List<String> importedPrefixesList) {
 		if (binding == null)
 			return;
 		importedPrefixesList.add(world.fromBinding(binding).getName() + "$");
@@ -216,11 +217,13 @@ public class EclipseScope implements IScope {
 		}
 	}
 
+	@Override
 	public String[] getImportedNames() {
 		computeImports();
 		return importedNames;
 	}
 
+	@Override
 	public String[] getImportedPrefixes() {
 		computeImports();
 		// System.err.println("prefixes: " + Arrays.asList(importedPrefixes));
@@ -228,6 +231,7 @@ public class EclipseScope implements IScope {
 	}
 
 	// XXX add good errors when would bind to extra parameters
+	@Override
 	public FormalBinding lookupFormal(String name) {
 		for (int i = 0, len = bindings.length; i < len; i++) {
 			if (bindings[i].getName().equals(name))
@@ -236,10 +240,12 @@ public class EclipseScope implements IScope {
 		return null;
 	}
 
+	@Override
 	public FormalBinding getFormal(int i) {
 		return bindings[i];
 	}
 
+	@Override
 	public int getFormalCount() {
 		return bindings.length;
 	}
@@ -249,15 +255,18 @@ public class EclipseScope implements IScope {
 				location.getEnd());
 	}
 
+	@Override
 	public IMessageHandler getMessageHandler() {
 		return world.getWorld().getMessageHandler();
 	}
 
+	@Override
 	public void message(IMessage.Kind kind, IHasPosition location1, IHasPosition location2, String message) {
 		message(kind, location1, message);
 		message(kind, location2, message);
 	}
 
+	@Override
 	public void message(IMessage.Kind kind, IHasPosition location, String message) {
 		// System.out.println("message: " + message + " loc: " +
 		// makeSourceLocation(location));
@@ -265,14 +274,17 @@ public class EclipseScope implements IScope {
 
 	}
 
+	@Override
 	public void message(IMessage aMessage) {
 		getMessageHandler().handleMessage(aMessage);
 	}
 
+	@Override
 	public World getWorld() {
 		return world.getWorld();
 	}
 
+	@Override
 	public ResolvedType getEnclosingType() {
 		return enclosingType;
 	}

@@ -45,6 +45,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		this.inAspect = inAspect;
 	}
 
+	@Override
 	public boolean definesPrivilegedAccessToField(FieldBinding field) {
 		if (field instanceof ParameterizedFieldBinding) {
 			field = ((ParameterizedFieldBinding) field).originalField;
@@ -53,6 +54,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return (accessors.containsKey(key));
 	}
 
+	@Override
 	public FieldBinding getPrivilegedAccessField(FieldBinding baseField, ASTNode location) {
 		if (baseField instanceof ParameterizedFieldBinding) {
 			baseField = ((ParameterizedFieldBinding) baseField).originalField;
@@ -76,6 +78,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return ret;
 	}
 
+	@Override
 	public MethodBinding getPrivilegedAccessMethod(MethodBinding baseMethod, ASTNode location) {
 		if (baseMethod.alwaysNeedsAccessMethod())
 			return baseMethod;
@@ -113,6 +116,7 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		return ret;
 	}
 
+	@Override
 	public void notePrivilegedTypeAccess(ReferenceBinding type, ASTNode location) {
 		ResolvedMember key = new ResolvedMemberImpl(Member.STATIC_INITIALIZATION, inAspect.factory.fromEclipse(type), 0,
 				UnresolvedType.VOID, "", UnresolvedType.NONE);

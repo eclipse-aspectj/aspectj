@@ -41,7 +41,7 @@ public class InterTypeFieldBinding extends FieldBinding {
 		// We called the super() with null, we must now do the last step that will have been skipped because of this, see the
 		// supers() final line:
 		// OPTIMIZE dont makeFieldBinding twice, HORRIBLE
-		setAnnotations(world.makeFieldBinding(munger.getSignature(), munger.getTypeVariableAliases()).getAnnotations());
+		setAnnotations(world.makeFieldBinding(munger.getSignature(), munger.getTypeVariableAliases()).getAnnotations(), false);
 
 		reader = new SimpleSyntheticAccessMethodBinding(world.makeMethodBinding(AjcMemberMaker.interFieldGetDispatcher(munger
 				.getSignature(), withinType)));

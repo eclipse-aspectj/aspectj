@@ -11,6 +11,7 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.core.CompilationGroup;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.SourceFile;
 
@@ -22,12 +23,10 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.SourceFile;
 public class AjBatchImageBuilder extends BatchImageBuilder {
 	
 	public AjBatchImageBuilder(AspectJBuilder builder) {
-		super(builder,true);
+		super(builder, true, CompilationGroup.MAIN);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.compiler.ICompilerRequestor#acceptResult(org.eclipse.jdt.internal.compiler.CompilationResult)
-	 */
+	@Override
 	public void acceptResult(CompilationResult result) {
 		if ((result.getCompilationUnit() != null) && (result.getCompilationUnit() instanceof SourceFile)) {
 			super.acceptResult(result);

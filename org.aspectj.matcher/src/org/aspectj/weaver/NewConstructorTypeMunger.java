@@ -33,6 +33,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof NewConstructorTypeMunger)) {
 			return false;
@@ -56,6 +57,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 
 	private volatile int hashCode = 0;
 
+	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;
@@ -71,6 +73,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	// return AjcMemberMaker.interMethodBody(signature, aspectType);
 	// }
 
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		kind.write(s);
 		signature.write(s);
@@ -111,6 +114,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		hashCode = 0;
 	}
 
+	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member, ResolvedType aspectType) {
 		ResolvedMember ret = getSyntheticConstructor();
 		if (ResolvedType.matches(ret, member)) {
@@ -129,6 +133,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	/**
 	 * see ResolvedTypeMunger.parameterizedFor(ResolvedType)
 	 */
+	@Override
 	public ResolvedTypeMunger parameterizedFor(ResolvedType target) {
 		ResolvedType genericType = target;
 		if (target.isRawType() || target.isParameterizedType()) {

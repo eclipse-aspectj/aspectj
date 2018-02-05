@@ -17,7 +17,6 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +95,8 @@ public class EclipseFactory {
 
 	// We can get clashes if we don't treat raw types differently - we end up looking
 	// up a raw and getting the generic type (pr115788)
-	private final Map/* UnresolvedType, TypeBinding */typexToBinding = new HashMap();
-	private final Map/* UnresolvedType, TypeBinding */rawTypeXToBinding = new HashMap();
+	private final Map<UnresolvedType, TypeBinding> typexToBinding = new HashMap<>();
+	private final Map<UnresolvedType, TypeBinding> rawTypeXToBinding = new HashMap<>();
 
 	// XXX currently unused
 	// private Map/*TypeBinding, ResolvedType*/ bindingToResolvedTypeX = new HashMap();
@@ -143,7 +142,7 @@ public class EclipseFactory {
 		if (binding == null) {
 			return ResolvedType.MISSING;
 		}
-		// ??? this seems terribly inefficient
+		// ??? this seems terribly inefficient 
 		// System.err.println("resolving: " + binding.getClass() + ", name = " + getName(binding));
 		ResolvedType ret = getWorld().resolve(fromBinding(binding));
 		// System.err.println("      got: " + ret);
@@ -362,7 +361,7 @@ public class EclipseFactory {
 	/**
 	 * Some type variables refer to themselves recursively, this enables us to avoid recursion problems.
 	 */
-	private static Map typeVariableBindingsInProgress = new HashMap();
+	private static Map<TypeVariableBinding,UnresolvedType> typeVariableBindingsInProgress = new HashMap<>();
 
 	/**
 	 * Convert from the eclipse form of type variable (TypeVariableBinding) to the AspectJ form (TypeVariable).
@@ -370,12 +369,12 @@ public class EclipseFactory {
 	private UnresolvedType fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
 		// first, check for recursive call to this method for the same tvBinding
 		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
-			return (UnresolvedType) typeVariableBindingsInProgress.get(aTypeVariableBinding);
+			return typeVariableBindingsInProgress.get(aTypeVariableBinding);
 		}
 
 		// Check if its a type variable binding that we need to recover to an alias...
 		if (typeVariablesForAliasRecovery != null) {
-			String aliasname = (String) typeVariablesForAliasRecovery.get(aTypeVariableBinding);
+			String aliasname = typeVariablesForAliasRecovery.get(aTypeVariableBinding);
 			if (aliasname != null) {
 				UnresolvedTypeVariableReferenceType ret = new UnresolvedTypeVariableReferenceType();
 				ret.setTypeVariable(new TypeVariable(aliasname));
@@ -384,7 +383,7 @@ public class EclipseFactory {
 		}
 
 		if (typeVariablesForThisMember.containsKey(new String(aTypeVariableBinding.sourceName))) {
-			return (UnresolvedType) typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
+			return typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
 		}
 
 		// Create the UnresolvedTypeVariableReferenceType for the type variable
@@ -534,24 +533,21 @@ public class EclipseFactory {
 	 * Before converting the parts of a methodbinding (params, return type) we store the type variables in this structure, then
 	 * should any component of the method binding refer to them, we grab them from the map.
 	 */
-	private final Map typeVariablesForThisMember = new HashMap();
+	private final Map<String,UnresolvedType> typeVariablesForThisMember = new HashMap<>();
 
 	/**
 	 * This is a map from typevariablebindings (eclipsey things) to the names the user originally specified in their ITD. For
 	 * example if the target is 'interface I<N extends Number> {}' and the ITD was 'public void I<X>.m(List<X> lxs) {}' then this
 	 * map would contain a pointer from the eclipse type 'N extends Number' to the letter 'X'.
 	 */
-	private Map typeVariablesForAliasRecovery;
+	private Map<TypeVariableBinding, String> typeVariablesForAliasRecovery;
 
 	/**
 	 * Construct a resolvedmember from a methodbinding. The supplied map tells us about any typevariablebindings that replaced
 	 * typevariables whilst the compiler was resolving types - this only happens if it is a generic itd that shares type variables
 	 * with its target type.
 	 */
-	public ResolvedMemberImpl makeResolvedMemberForITD(MethodBinding binding, TypeBinding declaringType, Map /*
-																											 * TypeVariableBinding >
-																											 * original alias name
-																											 */recoveryAliases) {
+	public ResolvedMemberImpl makeResolvedMemberForITD(MethodBinding binding, TypeBinding declaringType, Map<TypeVariableBinding,String> recoveryAliases) {
 		ResolvedMemberImpl result = null;
 		try {
 			typeVariablesForAliasRecovery = recoveryAliases;
@@ -630,9 +626,9 @@ public class EclipseFactory {
 		// looking up type variables can get us into trouble
 		if (!typeX.isTypeVariableReference() && !isParameterizedWithTypeVariables(typeX)) {
 			if (typeX.isRawType()) {
-				ret = (TypeBinding) rawTypeXToBinding.get(typeX);
+				ret = rawTypeXToBinding.get(typeX);
 			} else {
-				ret = (TypeBinding) typexToBinding.get(typeX);
+				ret = typexToBinding.get(typeX);
 			}
 		}
 
@@ -818,7 +814,7 @@ public class EclipseFactory {
 	/**
 	 * Convert a resolvedmember into an eclipse field binding
 	 */
-	public FieldBinding makeFieldBinding(ResolvedMember member, List aliases) {
+	public FieldBinding makeFieldBinding(ResolvedMember member, List<String> aliases) {
 		return internalMakeFieldBinding(member, aliases);
 	}
 
@@ -849,7 +845,7 @@ public class EclipseFactory {
 	 * to being a generic itd. Any aliases are put into the typeVariableToBinding map so that they will be substituted as
 	 * appropriate in the returned fieldbinding.
 	 */
-	public FieldBinding internalMakeFieldBinding(ResolvedMember member, List aliases) {
+	public FieldBinding internalMakeFieldBinding(ResolvedMember member, List<String> aliases) {
 		typeVariableToTypeBinding.clear();
 
 		ReferenceBinding declaringType = (ReferenceBinding) makeTypeBinding(member.getDeclaringType());
@@ -858,8 +854,9 @@ public class EclipseFactory {
 		if (aliases != null && aliases.size() > 0 && declaringType.typeVariables() != null
 				&& declaringType.typeVariables().length != 0) {
 			int i = 0;
-			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
+			for (String element: aliases) {
+//			for (Iterator iter = aliases.iterator(); iter.hasNext();) {
+//				String element = (String) iter.next();
 				typeVariableToTypeBinding.put(element, declaringType.typeVariables()[i++]);
 			}
 		}
@@ -894,7 +891,7 @@ public class EclipseFactory {
 	/**
 	 * Convert a resolvedmember into an eclipse method binding.
 	 */
-	public MethodBinding makeMethodBinding(ResolvedMember member, List aliases) {
+	public MethodBinding makeMethodBinding(ResolvedMember member, List<String> aliases) {
 		return internalMakeMethodBinding(member, aliases);
 	}
 
@@ -913,7 +910,7 @@ public class EclipseFactory {
 		return internalMakeMethodBinding(member, null); // there are no aliases
 	}
 
-	public MethodBinding internalMakeMethodBinding(ResolvedMember member, List aliases) {
+	public MethodBinding internalMakeMethodBinding(ResolvedMember member, List<String> aliases) {
 		return internalMakeMethodBinding(member, aliases, member.getDeclaringType());
 	}
 
@@ -938,8 +935,21 @@ public class EclipseFactory {
 		ReferenceBinding declaringType = (ReferenceBinding) makeTypeBinding(member.getDeclaringType());
 
 		// If there are aliases, place them in the map
-		if (aliases != null && aliases.size() != 0 && declaringType.typeVariables() != null
-				&& declaringType.typeVariables().length != 0) {
+		if (aliases != null && aliases.size() != 0
+				
+				// Not sure what this check is trying to check for?
+				// In latest JDT (2-Feb-2018) there seem to be some code (in LookupEnvironment ~860 and
+				// TypeSystem ~340) related to avoiding raw'ifying the enclosing type if the type to
+				// be rawed is static.  These changes cause these checks to fail and the sophisticated
+				// test variant V fails.  It checks declaring type typevariables and then
+				// uses aliasTargetType ... I'm switching it to check aliasTargetType
+				
+//				&& declaringType.typeVariables() != null
+//				&& declaringType.typeVariables().length != 0
+				&& aliasTargetType != null
+				&& aliasTargetType.getTypeVariables() != null
+				&& aliasTargetType.getTypeVariables().length!=0
+				) {
 			int i = 0;
 			ReferenceBinding aliasTarget = (ReferenceBinding) makeTypeBinding(aliasTargetType);
 			if (aliasTarget.isRawType()) {
@@ -952,7 +962,8 @@ public class EclipseFactory {
 
 		currentType = declaringType;
 		MethodBinding mb = new MethodBinding(member.getModifiers(), member.getName().toCharArray(),
-				makeTypeBinding(member.getReturnType()), makeTypeBindings(member.getParameterTypes()),
+				makeTypeBinding(member.getReturnType()),
+				makeTypeBindings(member.getParameterTypes()),
 				makeReferenceBindings(member.getExceptions()), declaringType);
 
 		if (tvbs != null) {
@@ -992,7 +1003,7 @@ public class EclipseFactory {
 	// map back to the same type binding - this is important later when Eclipse code is processing
 	// a methodbinding trying to come up with possible bindings for the type variables.
 	// key is currently the name of the type variable...is that ok?
-	private final Map typeVariableToTypeBinding = new HashMap();
+	private final Map<String,TypeVariableBinding> typeVariableToTypeBinding = new HashMap<>();
 
 	// /**
 	// * Converts from an TypeVariableReference to a TypeVariableBinding. A TypeVariableReference
@@ -1035,7 +1046,7 @@ public class EclipseFactory {
 	// }
 
 	private TypeVariableBinding makeTypeVariableBindingFromAJTypeVariable(TypeVariable tv) {
-		TypeVariableBinding tvBinding = (TypeVariableBinding) typeVariableToTypeBinding.get(tv.getName());
+		TypeVariableBinding tvBinding = typeVariableToTypeBinding.get(tv.getName());
 		if (currentType != null) {
 			TypeVariableBinding tvb = currentType.getTypeVariable(tv.getName().toCharArray());
 			if (tvb != null) {
@@ -1142,7 +1153,7 @@ public class EclipseFactory {
 			ReferenceType complexName = null;
 			if (!resolvedGenericType.isMissing()) {
 				complexName = (ReferenceType) resolvedGenericType;
-				complexName = (ReferenceType) complexName.getGenericType();
+				complexName = complexName.getGenericType();
 				if (complexName == null) {
 					complexName = new ReferenceType(unresolvedGenericType, world);
 				}

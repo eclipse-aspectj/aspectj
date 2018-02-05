@@ -35,6 +35,7 @@ import org.aspectj.weaver.NewMethodTypeMunger;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class EclipseTypeMunger extends ConcreteTypeMunger {
@@ -77,6 +78,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 				|| kind == ResolvedTypeMunger.InnerClass;
 	}
 
+	@Override
 	public String toString() {
 		return "(EclipseTypeMunger " + getMunger() + ")";
 	}
@@ -275,6 +277,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		return finder;
 	}
 
+	@Override
 	public ISourceLocation getSourceLocation() {
 		return sourceLocation;
 	}
@@ -290,11 +293,12 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 		return sourceMethod;
 	}
 
+	@Override
 	public ConcreteTypeMunger parameterizedFor(ResolvedType target) {
 		return new EclipseTypeMunger(world, munger.parameterizedFor(target), aspectType, sourceMethod);
 	}
 
-	public ConcreteTypeMunger parameterizeWith(Map m, World w) {
+	public ConcreteTypeMunger parameterizeWith(Map<String,UnresolvedType> m, World w) {
 		return new EclipseTypeMunger(world, munger.parameterizeWith(m, w), aspectType, sourceMethod);
 	}
 

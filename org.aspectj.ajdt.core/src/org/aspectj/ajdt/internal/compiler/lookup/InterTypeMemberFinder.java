@@ -17,7 +17,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,11 +39,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
  * The member finder looks after intertype declared members on a type, there is one member finder per type that was hit by an ITD.
  */
 public class InterTypeMemberFinder implements IMemberFinder {
-	private List interTypeFields = new ArrayList();
-	private List interTypeMethods = new ArrayList();
+	private List<FieldBinding> interTypeFields = new ArrayList<>();
+	private List<MethodBinding> interTypeMethods = new ArrayList<>();
 
 	public SourceTypeBinding sourceTypeBinding;
 
+	@Override
 	public FieldBinding getField(SourceTypeBinding sourceTypeBinding, char[] fieldName, InvocationSite site, Scope scope) {
 		FieldBinding retField = sourceTypeBinding.getFieldBase(fieldName, true); // XXX may need to get the correct value for second
 		// parameter in the future (see #55341)
@@ -54,7 +54,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		int fieldLength = fieldName.length;
 
 		for (int i = 0, len = interTypeFields.size(); i < len; i++) {
-			FieldBinding field = (FieldBinding) interTypeFields.get(i);
+			FieldBinding field = interTypeFields.get(i);
 			if (field.name.length == fieldLength && CharOperation.prefixEquals(field.name, fieldName)) {
 				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);
 			}
@@ -250,13 +250,14 @@ public class InterTypeMemberFinder implements IMemberFinder {
 
 	// find all of my methods, including ITDs
 	// PLUS: any public ITDs made on interfaces that I implement
+	@Override
 	public MethodBinding[] methods(SourceTypeBinding sourceTypeBinding) {
 		MethodBinding[] orig = sourceTypeBinding.methodsBase();
 		// if (interTypeMethods.isEmpty()) return orig;
 
-		List ret = new ArrayList(Arrays.asList(orig));
+		List<MethodBinding> ret = new ArrayList<>(Arrays.asList(orig));
 		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = (MethodBinding) interTypeMethods.get(i);
+			MethodBinding method = interTypeMethods.get(i);
 			ret.add(method);
 		}
 
@@ -271,26 +272,26 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		if (ret.isEmpty()) {
 			return Binding.NO_METHODS;
 		}
-		return (MethodBinding[]) ret.toArray(new MethodBinding[ret.size()]);
+		return ret.toArray(new MethodBinding[ret.size()]);
 	}
 
-	private void addPublicITDSFrom(SourceTypeBinding anInterface, List toAList) {
+	private void addPublicITDSFrom(SourceTypeBinding anInterface, List<MethodBinding> accumulator) {
 		if (anInterface.memberFinder != null) {
 			InterTypeMemberFinder finder = (InterTypeMemberFinder) anInterface.memberFinder;
-			for (Iterator iter = finder.interTypeMethods.iterator(); iter.hasNext();) {
-				MethodBinding aBinding = (MethodBinding) iter.next();
+			for (MethodBinding aBinding: finder.interTypeMethods) {
 				if (Modifier.isPublic(aBinding.modifiers)) {
-					toAList.add(aBinding);
+					accumulator.add(aBinding);
 				}
 			}
 		}
 		ReferenceBinding superType = anInterface.superclass;
 		if (superType instanceof SourceTypeBinding && superType.isInterface()) {
-			addPublicITDSFrom((SourceTypeBinding) superType, toAList);
+			addPublicITDSFrom((SourceTypeBinding) superType, accumulator);
 		}
 	}
 
 	// XXX conflicts
+	@Override
 	public MethodBinding[] getMethods(SourceTypeBinding sourceTypeBinding, char[] selector) {
 		// System.err.println("getMethods: " + new String(sourceTypeBinding.signature()) +
 		// ", " + new String(selector));
@@ -304,7 +305,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
 
 		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = (MethodBinding) interTypeMethods.get(i);
+			MethodBinding method = interTypeMethods.get(i);
 
 			if (CharOperation.equals(selector, method.selector)) {
 				ret.add(method);
@@ -331,16 +332,17 @@ public class InterTypeMemberFinder implements IMemberFinder {
 
 		// System.err.println("got methods: " + ret + " on " + sourceTypeBinding);
 
-		return (MethodBinding[]) ret.toArray(new MethodBinding[ret.size()]);
+		return ret.toArray(new MethodBinding[ret.size()]);
 	}
 
+	@Override
 	public MethodBinding getExactMethod(SourceTypeBinding sourceTypeBinding, char[] selector, TypeBinding[] argumentTypes,
 			CompilationUnitScope refScope) {
 		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes, refScope);
 
 		// An intertype declaration may override an inherited member (Bug#50776)
 		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding im = (MethodBinding) interTypeMethods.get(i);
+			MethodBinding im = interTypeMethods.get(i);
 			if (matches(im, selector, argumentTypes)) {
 				return im;
 			}
@@ -512,11 +514,11 @@ public class InterTypeMemberFinder implements IMemberFinder {
 	 * @return true if already know about an intertype field declaration for that field
 	 */
 	public boolean definesField(String name) {
-		List l = interTypeFields;
+		List<FieldBinding> l = interTypeFields;
 		if (l.size() > 0) {
 			char[] nameChars = name.toCharArray();
 			for (int i = 0; i < l.size(); i++) {
-				FieldBinding fieldBinding = (FieldBinding) interTypeFields.get(i);
+				FieldBinding fieldBinding = interTypeFields.get(i);
 				if (CharOperation.equals(fieldBinding.name, nameChars)) {
 					return true;
 				}

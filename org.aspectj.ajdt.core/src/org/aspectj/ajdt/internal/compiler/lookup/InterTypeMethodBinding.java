@@ -14,7 +14,6 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import org.aspectj.ajdt.internal.compiler.ast.InterTypeMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.IPrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -88,6 +87,7 @@ public class InterTypeMethodBinding extends MethodBinding {
 	}
 
 	// XXX this is identical to InterTypeFieldBinding
+	@Override
 	public boolean canBeSeenBy(TypeBinding receiverType, InvocationSite invocationSite, Scope scope) {
 		scope.compilationUnitScope().recordTypeReference(declaringClass);
 
@@ -155,12 +155,14 @@ public class InterTypeMethodBinding extends MethodBinding {
 		return false;
 	}
 
+	@Override
 	public boolean isFinal() {
 		if (sourceMethod == null || !(sourceMethod instanceof InterTypeMethodDeclaration))
 			return super.isFinal();
 		return ((InterTypeMethodDeclaration) sourceMethod).isFinal();
 	}
 
+	@Override
 	public MethodBinding getAccessMethod(boolean staticReference) {
 		if (staticReference)
 			return postDispatchMethod;
@@ -168,10 +170,12 @@ public class InterTypeMethodBinding extends MethodBinding {
 			return syntheticMethod;
 	}
 
+	@Override
 	public boolean alwaysNeedsAccessMethod() {
 		return true;
 	}
 
+	@Override
 	public AbstractMethodDeclaration sourceMethod() {
 		return sourceMethod;
 	}
@@ -181,10 +185,12 @@ public class InterTypeMethodBinding extends MethodBinding {
 	}
 
 	// override method in MethodBinding to ensure correct behaviour in some of JDTs generics checks.
+	@Override
 	public ReferenceBinding getOwningClass() {
 		return targetType;
 	}
 
+	@Override
 	public String toString() {
 		return "InterTypeMethodBinding(" + super.toString() + ", " + getTargetType() + ")";
 	}
