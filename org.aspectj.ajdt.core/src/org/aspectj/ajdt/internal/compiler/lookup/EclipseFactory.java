@@ -95,8 +95,8 @@ public class EclipseFactory {
 
 	// We can get clashes if we don't treat raw types differently - we end up looking
 	// up a raw and getting the generic type (pr115788)
-	private final Map<UnresolvedType, TypeBinding> typexToBinding = new HashMap<>();
-	private final Map<UnresolvedType, TypeBinding> rawTypeXToBinding = new HashMap<>();
+	private final Map<UnresolvedType, TypeBinding> typexToBinding = new HashMap<UnresolvedType, TypeBinding>();
+	private final Map<UnresolvedType, TypeBinding> rawTypeXToBinding = new HashMap<UnresolvedType, TypeBinding>();
 
 	// XXX currently unused
 	// private Map/*TypeBinding, ResolvedType*/ bindingToResolvedTypeX = new HashMap();
@@ -361,7 +361,7 @@ public class EclipseFactory {
 	/**
 	 * Some type variables refer to themselves recursively, this enables us to avoid recursion problems.
 	 */
-	private static Map<TypeVariableBinding,UnresolvedType> typeVariableBindingsInProgress = new HashMap<>();
+	private static Map<TypeVariableBinding,UnresolvedType> typeVariableBindingsInProgress = new HashMap<TypeVariableBinding,UnresolvedType>();
 
 	/**
 	 * Convert from the eclipse form of type variable (TypeVariableBinding) to the AspectJ form (TypeVariable).
@@ -533,7 +533,7 @@ public class EclipseFactory {
 	 * Before converting the parts of a methodbinding (params, return type) we store the type variables in this structure, then
 	 * should any component of the method binding refer to them, we grab them from the map.
 	 */
-	private final Map<String,UnresolvedType> typeVariablesForThisMember = new HashMap<>();
+	private final Map<String,UnresolvedType> typeVariablesForThisMember = new HashMap<String, UnresolvedType>();
 
 	/**
 	 * This is a map from typevariablebindings (eclipsey things) to the names the user originally specified in their ITD. For
@@ -1003,7 +1003,7 @@ public class EclipseFactory {
 	// map back to the same type binding - this is important later when Eclipse code is processing
 	// a methodbinding trying to come up with possible bindings for the type variables.
 	// key is currently the name of the type variable...is that ok?
-	private final Map<String,TypeVariableBinding> typeVariableToTypeBinding = new HashMap<>();
+	private final Map<String,TypeVariableBinding> typeVariableToTypeBinding = new HashMap<String,TypeVariableBinding>();
 
 	// /**
 	// * Converts from an TypeVariableReference to a TypeVariableBinding. A TypeVariableReference
