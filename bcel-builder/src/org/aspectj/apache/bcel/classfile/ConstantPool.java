@@ -207,6 +207,26 @@ public class ConstantPool implements Node {
 			str = (constantToString(((ConstantCP) c).getClassIndex(), Constants.CONSTANT_Class) + "." + constantToString(
 					((ConstantCP) c).getNameAndTypeIndex(), Constants.CONSTANT_NameAndType));
 			break;
+			
+		case Constants.CONSTANT_InvokeDynamic:
+			ConstantInvokeDynamic cID = ((ConstantInvokeDynamic)c);
+			return "#"+cID.getBootstrapMethodAttrIndex()+"."+constantToString(cID.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
+
+		case Constants.CONSTANT_MethodHandle:
+			ConstantMethodHandle cMH = ((ConstantMethodHandle)c);
+			return cMH.getReferenceKind()+":"+constantToString(cMH.getReferenceIndex(),Constants.CONSTANT_Methodref);
+
+		case Constants.CONSTANT_MethodType:
+			ConstantMethodType cMT = (ConstantMethodType)c;
+			return constantToString(cMT.getDescriptorIndex(),Constants.CONSTANT_Utf8);
+
+		case Constants.CONSTANT_Module:
+			ConstantModule cM = (ConstantModule)c;
+			return "Module:"+constantToString(cM.getNameIndex(),Constants.CONSTANT_Utf8);
+
+		case Constants.CONSTANT_Package:
+			ConstantPackage cP = (ConstantPackage)c;
+			return "Package:"+constantToString(cP.getNameIndex(),Constants.CONSTANT_Utf8);
 
 		default: // Never reached
 			throw new RuntimeException("Unknown constant type " + c.tag);
@@ -254,6 +274,7 @@ public class ConstantPool implements Node {
 		return constantToString(getConstant(index));
 	}
 
+	@Override
 	public void accept(ClassVisitor v) {
 		v.visitConstantPool(this);
 	}

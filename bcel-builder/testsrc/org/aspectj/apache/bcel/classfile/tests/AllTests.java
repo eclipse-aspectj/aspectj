@@ -25,6 +25,7 @@ public class AllTests {
 		suite.addTestSuite(Fundamentals.class);
 		suite.addTestSuite(RuntimeVisibleParameterAnnotationAttributeTest.class);
 		suite.addTestSuite(AnnotationDefaultAttributeTest.class);
+		suite.addTestSuite(ConstantPoolToStringTest.class);
 		suite.addTestSuite(EnclosingMethodAttributeTest.class);
 		suite.addTestSuite(MethodAnnotationsTest.class);
 		suite.addTestSuite(RuntimeVisibleAnnotationAttributeTest.class);
