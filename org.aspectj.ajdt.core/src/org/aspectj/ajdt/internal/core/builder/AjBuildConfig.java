@@ -390,8 +390,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			full.add(file.getAbsolutePath());
 		}
 		full.addAll(getClasspath());
-		full.addAll(getModulepath());
-		full.addAll(getModulesourcepath());
+//		full.addAll(getModulepath());
+//		full.addAll(getModulesourcepath());
 		// if (null != outputDir) {
 		// full.add(outputDir.getAbsolutePath());
 		// } else if (null != outputJar) {
