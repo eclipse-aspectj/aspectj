@@ -55,10 +55,7 @@ class BcelMethod extends ResolvedMemberImpl {
 
 	// these fields are not set for many BcelMethods...
 	private ShadowMunger associatedShadowMunger;
-	private ResolvedPointcutDefinition preResolvedPointcut; // used when ajc has
-	// pre-resolved the
-	// pointcut of some
-	// @Advice
+	private ResolvedPointcutDefinition preResolvedPointcut; // used when ajc has pre-resolved the pointcut of some @Advice
 	private AjAttribute.EffectiveSignatureAttribute effectiveSignature;
 
 	private AjAttribute.MethodDeclarationLineNumberAttribute declarationLineNumber;
