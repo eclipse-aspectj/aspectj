@@ -27,8 +27,6 @@ import java.util.Arrays;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import junit.framework.TestCase;
-
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
@@ -40,8 +38,11 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.tools.ant.taskdefs.AjcTask.CompilerArg;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.TestCase;
 
 /**
  * AjcTask test cases.
@@ -85,6 +86,7 @@ public class AjcTaskTest extends TestCase {
 			testdataDir = null;
 		}
 		PICK_CLASS_FILES = new FileFilter() {
+			@Override
 			public boolean accept(File file) {
 				return (
 					(null != file)
@@ -160,6 +162,7 @@ public class AjcTaskTest extends TestCase {
 		super(name);
 	}
 
+	@Override
 	public void tearDown() {
 		deleteTempDir();
 		MESSAGES.setLength(0);
@@ -240,7 +243,8 @@ public class AjcTaskTest extends TestCase {
     public static class InfoHolder extends MessageHandler {
         public InfoHolder() {
         }
-        public boolean handleMessage(IMessage message) {
+        @Override
+		public boolean handleMessage(IMessage message) {
             if (0 == IMessage.INFO.compareTo(message.getKind())) {
                 AjcTaskTest.collectMessage(message.getMessage());
             }
@@ -252,7 +256,8 @@ public class AjcTaskTest extends TestCase {
     public static class Holder extends MessageHandler {
         public Holder() {
         }
-        public boolean handleMessage(IMessage message) {
+        @Override
+		public boolean handleMessage(IMessage message) {
             IMessage.Kind kind = message.getKind();
             if (IMessage.ERROR.isSameOrLessThan(kind)) {
                 String m = kind.toString();
@@ -692,6 +697,32 @@ public class AjcTaskTest extends TestCase {
 			"expecting aspectj in classpath",
 			(-1 != classpath.indexOf("aspectjrt.jar")));
 	}
+	
+	CompilerArg createCompilerArg(String value) {
+		CompilerArg c = new CompilerArg();
+		c.setValue(value);
+		return c;
+	}
+	
+	public void testAddModulesJ9() {
+		AjcTask task = getTask(NOFILE);
+		task.createCompilerarg().setValue("--add-modules");
+		task.createCompilerarg().setValue("java.xml.bind,java.io");
+		String[] cmd = task.makeCommand();
+		System.out.println(Arrays.toString(cmd));
+		int addModulesPos = findOptionPosition(cmd,"--add-modules");
+		assertNotSame(-1, addModulesPos);
+		assertEquals("java.xml.bind,java.io",cmd[addModulesPos+1]);
+	}
+	
+	private int findOptionPosition(String[] cmd, String optionString) {
+		for (int i=0;i<cmd.length;i++) {
+			if (cmd[i].equals(optionString)) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	// ---------------------------------------- sourcefile
 	// XXX need to figure out how to specify files directly programmatically
@@ -1007,17 +1038,24 @@ public class AjcTaskTest extends TestCase {
         private LogListener(int priority) {
             this.priority = priority;
         }
-        public void buildFinished(BuildEvent event) {}
-        public void buildStarted(BuildEvent event) {}
-        public void messageLogged(BuildEvent event) {
+        @Override
+		public void buildFinished(BuildEvent event) {}
+        @Override
+		public void buildStarted(BuildEvent event) {}
+        @Override
+		public void messageLogged(BuildEvent event) {
             if (priority == event.getPriority()) {
                 results.add(event.getMessage());
             }
         }
-        public void targetFinished(BuildEvent event) {}
-        public void targetStarted(BuildEvent event) {}
-        public void taskFinished(BuildEvent event) {}
-        public void taskStarted(BuildEvent event) {}
+        @Override
+		public void targetFinished(BuildEvent event) {}
+        @Override
+		public void targetStarted(BuildEvent event) {}
+        @Override
+		public void taskFinished(BuildEvent event) {}
+        @Override
+		public void taskStarted(BuildEvent event) {}
         String[] getResults() {
             return (String[]) results.toArray(new String[0]);
         }
@@ -1026,6 +1064,7 @@ public class AjcTaskTest extends TestCase {
 class SnoopingCommandEditor implements ICommandEditor {
 	private static final String[] NONE = new String[0];
 	String[] lastCommand;
+	@Override
 	public String[] editCommand(String[] command) {
 		lastCommand = (String[]) LangUtil.safeCopy(command, NONE);
 		return command;
@@ -1036,6 +1075,7 @@ class SnoopingCommandEditor implements ICommandEditor {
 }
 class VerboseCommandEditor implements ICommandEditor {
 	public static final String VERBOSE = "-verbose";
+	@Override
 	public String[] editCommand(String[] command) {
 		for (int i = 0; i < command.length; i++) {
 			if (VERBOSE.equals(command[i])) {
@@ -1065,6 +1105,7 @@ class AppendingCommandEditor implements ICommandEditor {
 		this.suffix = suffix;
 	}
 
+	@Override
 	public String[] editCommand(String[] command) {
 		int len = command.length + prefix.length + suffix.length;
 		String[] result = new String[len];

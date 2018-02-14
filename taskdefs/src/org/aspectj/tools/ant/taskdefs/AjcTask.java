@@ -227,6 +227,7 @@ public class AjcTask extends MatchingTask {
 	private static final int MAX_COMMANDLINE = 4096;
 
 	private static final File DEFAULT_DESTDIR = new File(".") {
+		@Override
 		public String toString() {
 			return "(no destination dir specified)";
 		}
@@ -326,6 +327,8 @@ public class AjcTask extends MatchingTask {
 	private File xweaveDir;
 	private String xdoneSignal;
 
+	private List<CompilerArg> compilerArgs;
+	
 	// ----- added by adapter - integrate better?
 	private List /* File */adapterFiles;
 	private String[] adapterArguments;
@@ -390,6 +393,7 @@ public class AjcTask extends MatchingTask {
 		// need declare for "all fields initialized in ..."
 		adapterArguments = null;
 		adapterFiles = new ArrayList();
+		compilerArgs = null;
 		argfiles = null;
 		inxmlfiles = null;
 		executing = false;
@@ -481,7 +485,7 @@ public class AjcTask extends MatchingTask {
   public void setProcessor(String processors) {
     cmd.addFlagged("-processor", processors);
   }
-
+  
   /**
    * -processorpath path
    * Specify where to find annotation processors; if this option is not used, the class path will be searched for processors.
@@ -693,6 +697,33 @@ public class AjcTask extends MatchingTask {
 	/** support for nested &lt;jvmarg&gt; elements */
 	public Commandline.Argument createJvmarg() {
 		return this.javaCmd.createVmArgument();
+	}
+	
+	public static class CompilerArg {
+
+		private String value;
+		
+		public String getValue() {
+			return value;
+		}
+		
+		public void setValue(String value) {
+			this.value = value;
+		}
+		
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
+
+	public CompilerArg createCompilerarg() {
+		 CompilerArg compilerArg = new CompilerArg();
+		 if (compilerArgs == null) {
+			 compilerArgs = new ArrayList<CompilerArg>();
+		 }
+		 compilerArgs.add(compilerArg);
+		 return compilerArg;
 	}
 
 	// ----------------
@@ -1076,6 +1107,7 @@ public class AjcTask extends MatchingTask {
 	 * 
 	 * @exception BuildException if the compilation has problems or if there were compiler errors and failonerror is true.
 	 */
+	@Override
 	public void execute() throws BuildException {
 		this.logger = new TaskLogger(this);
 		if (executing) {
@@ -1273,6 +1305,7 @@ public class AjcTask extends MatchingTask {
 			Main newmain = new Main();
 			newmain.setHolder(holder);
 			newmain.setCompletionRunner(new Runnable() {
+				@Override
 				public void run() {
 					doCompletionTasks();
 				}
@@ -1480,7 +1513,7 @@ public class AjcTask extends MatchingTask {
 
 	// ------------------------------ setup and reporting
 	/** @return null if path null or empty, String rendition otherwise */
-	protected static void addFlaggedPath(String flag, Path path, List list) {
+	protected static void addFlaggedPath(String flag, Path path, List<String> list) {
 		if (!LangUtil.isEmpty(flag) && ((null != path) && (0 < path.size()))) {
 			list.add(flag);
 			list.add(path.toString());
@@ -1490,7 +1523,7 @@ public class AjcTask extends MatchingTask {
 	/**
 	 * Add to list any path or plural arguments.
 	 */
-	protected void addListArgs(List list) throws BuildException {
+	protected void addListArgs(List<String> list) throws BuildException {
 		addFlaggedPath("-classpath", classpath, list);
 		addFlaggedPath("-bootclasspath", bootclasspath, list);
 		addFlaggedPath("-extdirs", extdirs, list);
@@ -1498,6 +1531,12 @@ public class AjcTask extends MatchingTask {
 		addFlaggedPath("-injars", injars, list);
 		addFlaggedPath("-inpath", inpath, list);
 		addFlaggedPath("-sourceroots", sourceRoots, list);
+		
+		if (this.compilerArgs != null) {
+			for (CompilerArg compilerArg:compilerArgs) {
+				list.add(compilerArg.toString());
+			}
+		}
 
 		if (argfiles != null) {
 			String[] files = argfiles.list();
@@ -2070,6 +2109,7 @@ public class AjcTask extends MatchingTask {
 		 * 
 		 * @see org.aspectj.bridge.IMessageHandler#handleMessage(org.aspectj.bridge.IMessage)
 		 */
+		@Override
 		public boolean handleMessage(IMessage message) throws AbortException {
 			Kind messageKind = message.getKind();
 			String messageText = message.toString();
@@ -2104,6 +2144,7 @@ public class AjcTask extends MatchingTask {
 		 * 
 		 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 		 */
+		@Override
 		public boolean isIgnoring(Kind kind) {
 			return false;
 		}
@@ -2113,6 +2154,7 @@ public class AjcTask extends MatchingTask {
 		 * 
 		 * @see org.aspectj.bridge.IMessageHandler#dontIgnore(org.aspectj.bridge.IMessage.Kind)
 		 */
+		@Override
 		public void dontIgnore(Kind kind) {
 		}
 
@@ -2121,6 +2163,7 @@ public class AjcTask extends MatchingTask {
 		 * 
 		 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
 		 */
+		@Override
 		public void ignore(Kind kind) {
 		}
 

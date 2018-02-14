@@ -12,6 +12,16 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
@@ -28,23 +38,13 @@ import org.aspectj.tools.ajc.Main;
 import org.aspectj.tools.ajc.Main.MessagePrinter;
 import org.aspectj.util.FileUtil;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 /**
  * Main taskdef class for the AspectJ 1.0 compiler, <code>ajc</code>.
  * See the README and examples/build.xml for more information.
  */
 public class Ajc10 extends MatchingTask {
 
-    private static final List VALID_XOPTIONS;
+    private static final List<String> VALID_XOPTIONS;
     static {
         String[] xs = new String[] 
             {   "lint", "serializableAspects", "targetNearSource", "OcodeSize",
@@ -398,7 +398,8 @@ public class Ajc10 extends MatchingTask {
 
     // ------------------------- operational methods
 
-    public void execute() throws BuildException {
+    @Override
+	public void execute() throws BuildException {
         if (srcdir == null && argfiles == null) {
             throw new BuildException("one of srcdir or argfiles must be set!",
                                      location);
