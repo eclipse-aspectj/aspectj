@@ -22,11 +22,11 @@ import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;
 import org.aspectj.apache.bcel.generic.InstructionList;
 import org.aspectj.apache.bcel.generic.Type;
-import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 
 /**.
@@ -55,7 +55,7 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
     }  
 
     public void testLots() throws IOException {
-        List<Advice> l = new ArrayList();
+        List<ShadowMunger> l = new ArrayList<>();
         
         BcelAdvice p1 = 
             makeArgsMunger("before");
@@ -104,11 +104,13 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
         return new BcelAdvice(AdviceKind.stringToKind(kindx), makePointcutNoZeroArg(),
         			MemberImpl.method(UnresolvedType.forName("Aspect"), 0, "foo", "()V"), 0, -1, -1, null,
         			rtx) {
-            public void specializeOn(Shadow shadow) {
+            @Override
+			public void specializeOn(Shadow shadow) {
                 super.specializeOn(shadow);
                 shadow.getArgVar(0);
             }
-            public InstructionList getAdviceInstructions(BcelShadow shadow, BcelVar extraVar, InstructionHandle fk) {
+            @Override
+			public InstructionList getAdviceInstructions(BcelShadow shadow, BcelVar extraVar, InstructionHandle fk) {
                 return getArgsAdviceTag(shadow, kindx);
             }
         };    	

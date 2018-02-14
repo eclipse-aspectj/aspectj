@@ -15,9 +15,15 @@ package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.UnresolvedType;
 
 public class AroundWeaveTestCase extends WeaveTestCase {
 	{
@@ -59,7 +65,8 @@ public class AroundWeaveTestCase extends WeaveTestCase {
         	matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(),
 	        sig, 0, -1, -1, null, UnresolvedType.forName("Aspect").resolve(world))
 	    {
-            public void specializeOn(Shadow s) {
+            @Override
+			public void specializeOn(Shadow s) {
             	super.specializeOn(s);
                 ((BcelShadow) s).initializeForAroundClosure();
             }
@@ -74,7 +81,7 @@ public class AroundWeaveTestCase extends WeaveTestCase {
             throws IOException 
     {
                 
-        List l = new ArrayList();
+        List<ShadowMunger> l = new ArrayList<>();
 
 		// the afterReturning was taken out to avoid circular advice dependency        
 

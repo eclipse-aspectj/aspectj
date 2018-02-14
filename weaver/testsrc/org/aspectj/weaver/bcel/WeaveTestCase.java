@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionList;
@@ -37,6 +35,8 @@ import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.SimpleScope;
+
+import junit.framework.TestCase;
 
 public abstract class WeaveTestCase extends TestCase {
 
@@ -61,11 +61,13 @@ public abstract class WeaveTestCase extends TestCase {
 		super(name);
 	}
 
+	@Override
 	public void setUp() throws Exception {
 		outDir = BcweaverTests.getOutdir();
 		outDirPath = outDir.getAbsolutePath();
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 		BcweaverTests.removeOutDir();
@@ -279,11 +281,10 @@ public abstract class WeaveTestCase extends TestCase {
 		}
 	}
 
-	protected List addLexicalOrder(List l) {
+	protected List<ShadowMunger> addLexicalOrder(List<ShadowMunger> l) {
 		int i = 10;
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			Advice element = (Advice) iter.next();
-			element.setLexicalPosition(i += 10);
+		for (ShadowMunger element: l) {
+			((Advice)element).setLexicalPosition(i += 10);
 		}
 		return l;
 	}
