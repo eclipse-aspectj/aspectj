@@ -21,9 +21,6 @@ import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.Utils;
-import org.aspectj.weaver.bcel.Utility;
 
 /**
  * @author Adrian Colyer
@@ -46,18 +43,20 @@ public class RunSpec implements ITestStep {
 	private String vmargs;
 	private String usefullltw;
 
+	@Override
 	public String toString() {
 		return "RunSpec: Running '"+classToRun+"' in directory '"+baseDir+"'.  Classpath of '"+cpath+"'";
 	}
 	public RunSpec() {
 	}
 
+	@Override
 	public void execute(AjcTestCase inTestCase) {
 		if (!expected.isEmpty()) {
 			System.err.println("Warning, message spec for run command is currently ignored (org.aspectj.testing.RunSpec)");
 		}
 		String[] args = buildArgs();
-		// System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
+//		 System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
 		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
 		
 		copyXlintFile(inTestCase.getSandboxDirectory());
@@ -108,16 +107,23 @@ public class RunSpec implements ITestStep {
 		}
 	}
 
+	@Override
 	public void addExpectedMessage(ExpectedMessageSpec message) {
 		expected.add(message);
 	}
 
+	@Override
 	public void setBaseDir(String dir) {
 		this.baseDir = dir;
 	}
 
+	@Override
 	public void setTest(AjcTest test) {
 		this.myTest = test;
+	}
+	
+	public AjcTest getTest() {
+		return this.myTest;
 	}
 
 	public String getOptions() {
@@ -241,7 +247,6 @@ public class RunSpec implements ITestStep {
 	public void setUsefullltw(String usefullltw) {
 		this.usefullltw = usefullltw;
 	}
-
 
 	private void copyXlintFile(File sandboxDirectory) {
 		if (xlintFile != null) {
