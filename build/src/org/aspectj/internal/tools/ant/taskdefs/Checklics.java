@@ -180,7 +180,7 @@ public class Checklics extends MatchingTask {
 
 	/** @param tl mpl | apache | cpl */
 	public void setLicense(String tl) {
-		License input = (License) LICENSES.get(tl);
+		License input = LICENSES.get(tl);
 		if (null == input) {
 			throw new BuildException("no license known for " + tl);
 		}
@@ -217,6 +217,7 @@ public class Checklics extends MatchingTask {
 	}
 
 	/** list known licenses or check source tree */
+	@Override
 	public void execute() throws BuildException {
 		if (list) {
 			list();
@@ -256,6 +257,7 @@ public class Checklics extends MatchingTask {
 
 	private void replaceHeaders() {
 		class YearVisitor implements FileVisitor {
+			@Override
 			public void visit(File file) {
 				HeaderInfo info = Header.checkFile(file);
 				if (!Header.replaceHeader(file, info)) {
@@ -269,6 +271,7 @@ public class Checklics extends MatchingTask {
 	private void getYears() {
 		final PrintStream out = getOut();
 		class YearVisitor implements FileVisitor {
+			@Override
 			public void visit(File file) {
 				HeaderInfo info = Header.checkFile(file);
 				out.println(info.toString());
@@ -291,6 +294,7 @@ public class Checklics extends MatchingTask {
 			int failed = 0;
 			int passed = 0;
 
+			@Override
 			public void visit(File file) {
 				if (license.checkFile(file)) {
 					passed++;
@@ -339,7 +343,7 @@ public class Checklics extends MatchingTask {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
 		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", 
-				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2001 ", "2000 ",
+				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2001 ", "2000 ",
 				"1999 " };
 		public final String tag;
 		public final String license;
@@ -408,6 +412,7 @@ public class Checklics extends MatchingTask {
 			return gotValidFile();
 		}
 
+		@Override
 		public String toString() {
 			return tag;
 		}
@@ -484,6 +489,7 @@ class HeaderInfo {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return file.getPath() + ":" + lastLine + " " + years;
 	}
