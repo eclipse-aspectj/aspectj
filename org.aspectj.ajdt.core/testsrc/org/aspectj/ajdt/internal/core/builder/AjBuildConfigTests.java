@@ -100,6 +100,7 @@ public class AjBuildConfigTests extends TestCase {
 		checkMessages("skipping missing, empty or corrupt aspectpath entry: bar.jar");
 	}
 
+	// TODO why does this misbehave on java8? (It doesn't remove the duplicate jar references when normalizing the classpath)
 	public void testClashingJars() {
 		File tempJar = createTempJar("foo");
 		try {
@@ -108,11 +109,11 @@ public class AjBuildConfigTests extends TestCase {
 					" -inpath "+tempJar.getAbsolutePath()+" -aspectpath "+tempJar.getAbsolutePath());
 			AjBuildConfig buildConfig = buildArgParser.genBuildConfig(args);
 			Classpath[] checkedClasspaths = buildConfig.getCheckedClasspaths();
-			checkOccurrencesOf(checkedClasspaths, "foo", 1);
 			System.out.println(Arrays.toString(checkedClasspaths));
+			checkOccurrencesOf(checkedClasspaths, "/foo", 1);
 			checkMessages();
 		} finally {
-			tempJar.deleteOnExit();
+			tempJar.delete();
 		}
 	}
 
