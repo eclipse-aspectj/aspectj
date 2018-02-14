@@ -23,6 +23,9 @@ import org.aspectj.tools.ajc.AjcTestCase;
 public class FileSpec implements ITestStep {
 
 	private String toDelete;
+	
+	private String renameFrom;
+	private String renameTo;
 
 	// private String dir;
 	// private AjcTest test;
@@ -30,13 +33,23 @@ public class FileSpec implements ITestStep {
 	public FileSpec() {
 	}
 
+	public void setRenameFrom(String file) {
+		this.renameFrom = file;
+	}
+	
+	public void setRenameTo(String file) {
+		this.renameTo = file;
+	}
+	
 	public void setDeletefile(String file) {
 		this.toDelete = file;
 	}
 
+	@Override
 	public void addExpectedMessage(ExpectedMessageSpec message) {
 	}
 
+	@Override
 	public void execute(AjcTestCase inTestCase) {
 		File sandbox = inTestCase.getSandboxDirectory();
 		if (toDelete != null) {
@@ -46,6 +59,14 @@ public class FileSpec implements ITestStep {
 			} else {
 				recursiveDelete(targetForDeletion);
 			}
+		}
+		if (renameFrom != null) {
+			if (renameTo == null) {
+				throw new IllegalStateException("If setting renameFrom the renameTo should also be set");
+			}
+			File fileFrom = new File(sandbox, renameFrom);
+			File fileTo = new File(sandbox, renameTo);
+			fileFrom.renameTo(fileTo);
 		}
 	}
 
@@ -59,10 +80,12 @@ public class FileSpec implements ITestStep {
 		toDelete.delete();
 	}
 
+	@Override
 	public void setBaseDir(String dir) {
 		// this.dir = dir;
 	}
 
+	@Override
 	public void setTest(AjcTest test) {
 		// this.test = test;
 	}
