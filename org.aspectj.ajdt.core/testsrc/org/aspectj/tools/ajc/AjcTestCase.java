@@ -30,12 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.TestCase;
 
 /**
  * A TestCase class that acts as the superclass for all test cases wishing to drive the ajc compiler.
@@ -91,7 +91,7 @@ public class AjcTestCase extends TestCase {
 			+ File.separator
 			+ "bcel-verifier.jar"
 			
-			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-6.0_BETA.renamed.jar"
+			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-6.0.renamed.jar"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
@@ -260,6 +260,7 @@ public class AjcTestCase extends TestCase {
 		/**
 		 * Returns a string indicating what this <code>Message</code> will match.
 		 */
+		@Override
 		public String toString() {
 			StringBuffer buff = new StringBuffer();
 			buff.append("message ");
@@ -410,6 +411,7 @@ public class AjcTestCase extends TestCase {
 		/**
 		 * Returns the command that was executed to produce this result.
 		 */
+		@Override
 		public String toString() {
 			return command;
 		}
@@ -1036,6 +1038,7 @@ public class AjcTestCase extends TestCase {
 	 * 
 	 * @see junit.framework.TestCase#setUp()
 	 */
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		ajc = new Ajc();
@@ -1046,6 +1049,7 @@ public class AjcTestCase extends TestCase {
 	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 */
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		// ajc = null;
