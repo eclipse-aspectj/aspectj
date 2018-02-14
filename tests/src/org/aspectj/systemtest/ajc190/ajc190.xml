@@ -78,6 +78,69 @@
     </run>
   </ajc-test>
   
+  <ajc-test dir="bugs190/modules/eee" title="compile module and apply aspects via aspectpath">
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
+    <file deletefile="module-info.java"/>
+    <file deletefile="aaa"/>
+    <compile files="Azpect.java" outjar="azpects.jar"/>
+    <compile options="-showWeaveInfo" inpath="my.module.jar" aspectpath="azpects.jar" outjar="my.module.woven.jar">
+    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>    
+    </compile>
+    <file deletefile="my.module.jar"/>
+    <run classpath="my.module.woven.jar:azpects.jar" class="aaa.bbb.A">
+      <stdout>
+      <line text="Azpect running"/>
+      <line text="A running"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/ggg" title="module path vs classpath 1">
+    <!-- build some simple code into a jar we can depend on *not a module* -->
+    <compile files="ddd/D.java" options="-1.9" outjar="foo.jar"/>
+    <file deletefile="ddd/D.java"/>
+    <!-- compile a module that depends on that -->
+    <!-- this fails because if you start working with modules you commit to the modules story and classpath
+         becomes irrelevant -->
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" classpath="foo.jar">
+    <message kind="error" text="The import ddd cannot be resolved"/>
+    <message kind="error" text="D cannot be resolved"/>
+    </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/hhh" title="module path vs classpath 2">
+    <!-- build some simple code into a jar we can depend on *not a module* -->
+    <file renamefrom="module-info-a.java" renameto="module-info.java"/>
+    <compile files="module-info.java ddd/D.java" options="-1.9" outjar="my.module.a.jar"/>
+    <!-- 
+    <file renamefrom="module-info-b.java" renameto="module-info.java"/>
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.b.jar" modulepath="my.module.a.jar"/>
+     -->
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/iii" title="java use of java.xml.bind">
+    <compile files="UsesJAXB.java" options="--add-modules java.xml.bind -1.9"/>
+  </ajc-test>
+    
+  <!-- 
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" aspectpath="foo.jar"/>
+    <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
+    <file deletefile="module-info.java"/>
+    <file deletefile="aaa"/>
+    <compile files="Azpect.java" outjar="azpects.jar"/>
+    <compile options="-showWeaveInfo" inpath="my.module.jar" aspectpath="azpects.jar" outjar="my.module.woven.jar">
+    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>    
+    </compile>
+    <file deletefile="my.module.jar"/>
+    <run classpath="my.module.woven.jar:azpects.jar" class="aaa.bbb.A">
+      <stdout>
+      <line text="Azpect running"/>
+      <line text="A running"/>
+      </stdout>
+    </run>
+  </ajc-test>
+     -->
+  
   <ajc-test dir="bugs190/modules" title="weave module">
     <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
     <java classpath="runner.jar" class="a.b.c.Code"/>

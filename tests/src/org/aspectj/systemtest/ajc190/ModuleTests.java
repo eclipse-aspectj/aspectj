@@ -9,21 +9,22 @@ package org.aspectj.systemtest.ajc190;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
+
+import junit.framework.Test;
 
 /**
- * Building and weaving with modules in the picture...
+ * Building and weaving with modules in the picture.
  * 
  * @author Andy Clement
  * 
  */
-public class ModuleTests extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 
 	public void testBuildAModule() {
 		runTest("build a module");
@@ -44,31 +45,30 @@ public class ModuleTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testBuildModuleIncludingAspects() {
 		runTest("compile module including aspects");
 	}
+	
+	public void testBuildModuleAndApplyAspectsFromAspectPath() {
+		runTest("compile module and apply aspects via aspectpath");
+	}
 
 	public void testBinaryWeavingAModuleJar() {
 		// Pass a module on inpath, does it weave ok with a source aspect, does it run afterwards?
 		runTest("binary weaving module");
 	}
 
-	// can't really write these tests now... pure jdt seems to allow type resolution against module path for types
-	// not in modules being compiled but javac does not
-
-	public void xtestReferenceTypesFromModuleInBuildingSomeCode() {
-		runTest("compile regular code using module code");
+	public void testModulepathClasspathResolution1() {
+		runTest("module path vs classpath 1");
 	}
 
-	public void xtestReferenceTypesFromModuleInBuildingSomeCodeButCantSeeThem() {
-		runTest("compile regular code using module code that isn't visible");
-	}
-
-	public void xtestBinaryWeavingInvolvingTypesOnModulePath() {
-		fail();
-	}
-
-	public void xtestLoadtimeWeavingWithModulePathContainingTypes() {
-		fail();
-	}
+//	public void testModulepathClasspathResolution2() {
+//		runTest("module path vs classpath 2");
+//	}
 	
+	// This tests that when using --add-modules with one of the JDK modules (in the jmods subfolder of the JDK)
+	// that it can be found without needing to set --module-path (this seems to be implicitly included by javac too)
+	public void testAddModules1() {
+		runTest("java use of java.xml.bind");
+	}
+
 	/* For the specified class, check that each method has a stackmap attribute */
 	private void checkStackMapExistence(String classname, String toIgnore) throws ClassNotFoundException {
 		toIgnore = "_" + (toIgnore == null ? "" : toIgnore) + "_";
@@ -131,6 +131,7 @@ public class ModuleTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(ModuleTests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return getClassResource("ajc190.xml");
 	}

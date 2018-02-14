@@ -13,13 +13,14 @@ package org.aspectj.systemtest.ajc190;
 import java.io.File;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
 
 import junit.framework.Test;
 
 /**
  * @author Andy Clement
  */
-public class Ajc190Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 
 	public void testAnnotMethodHasMember_pr156962_1() { // From similar in Ajc153Tests
 		runTest("Test Annot Method Has Member 1");
@@ -36,6 +37,10 @@ public class Ajc190Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// Weave a module with code that isn't in a module
 	public void testWeaveModule() throws Exception {
 		runTest("weave module");
+	}
+	
+	public void testUsesJaxb() {
+		runTest("java use of java.xml.bind");
 	}
 
 	// ---
