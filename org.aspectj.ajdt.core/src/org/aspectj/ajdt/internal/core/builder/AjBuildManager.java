@@ -61,6 +61,7 @@ import org.aspectj.bridge.ILifecycleAware;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IProgressListener;
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
@@ -78,6 +79,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.INameEnvironment;
@@ -107,6 +109,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	static final boolean FAIL_IF_RUNTIME_NOT_FOUND = false;
 
 	private static final FileFilter binarySourceFilter = new FileFilter() {
+		@Override
 		public boolean accept(File f) {
 			return f.getName().endsWith(".class");
 		}
@@ -509,6 +512,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 		// Get a list of all files (i.e. everything that isnt a directory)
 		File[] files = FileUtil.listFiles(dir, new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				boolean accept = !(f.isDirectory() || f.getName().endsWith(".class"));
 				return accept;
@@ -1046,7 +1050,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			for (int i = 0; i < cps.size(); i++) {
 				classpaths[i] = cps.get(i);
 			}
-			environment = new StatefulNameEnvironment(getLibraryAccess(classpaths, filenames), state.getClassNameToFileMap(), state);
+			FileSystem fileSystem = getLibraryAccess(classpaths, filenames);
+			environment = new StatefulNameEnvironment(fileSystem, state.getClassNameToFileMap(), state);
+			state.setFileSystem(fileSystem);
 			state.setNameEnvironment(environment);
 		} else {
 			((StatefulNameEnvironment) environment).update(state.getClassNameToFileMap(), state.deltaAddedClasses);
@@ -1064,6 +1070,33 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		bMain.batchCompiler = compiler;
 		bMain.initializeAnnotationProcessorManager();
 		compiler.options.produceReferenceInfo = true; // TODO turn off when not needed
+		
+
+		if (bMain.compilerOptions.complianceLevel >= ClassFileConstants.JDK1_6
+				&& bMain.compilerOptions.processAnnotations) {
+			// need this too?
+//			if (bMain.checkVMVersion(ClassFileConstants.JDK1_6)) {
+//				initializeAnnotationProcessorManager();
+//				if (this.classNames != null) {
+//					this.batchCompiler.setBinaryTypes(processClassNames(this.batchCompiler.lookupEnvironment));
+//				}
+//			} else {
+//				// report a warning
+//				this.logger.logIncorrectVMVersionForAnnotationProcessing();
+//			}
+			if (bMain.checkVMVersion(ClassFileConstants.JDK9)) {
+				try {
+					bMain.initRootModules(bMain.batchCompiler.lookupEnvironment, state.getFileSystem());
+				} catch (IllegalArgumentException iae) {
+					ISourceLocation location = null;
+					if (buildConfig.getConfigFile() != null) {
+						location = new SourceLocation(buildConfig.getConfigFile(), 0);
+					}
+					IMessage m = new Message(iae.getMessage(), IMessage.ERROR, null, location);
+					handler.handleMessage(m);
+				}
+			}
+		}
 
 		try {
 			compiler.compile(getCompilationUnits(filenames));
@@ -1090,6 +1123,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 */
 	public IIntermediateResultsRequestor getInterimResultRequestor() {
 		return new IIntermediateResultsRequestor() {
+			@Override
 			public void acceptResult(InterimCompilationResult result) {
 				if (progressListener != null) {
 					compiledCount++;
@@ -1107,6 +1141,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	public ICompilerRequestor getBatchRequestor() {
 		return new ICompilerRequestor() {
+			@Override
 			public void acceptResult(CompilationResult unitResult) {
 				// end of compile, must now write the results to the output destination
 				// this is either a jar file or a file in a directory
@@ -1351,6 +1386,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		return "couldn't find aspectjrt.jar on classpath, checked: " + makeClasspathString(buildConfig);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("AjBuildManager(");
@@ -1383,6 +1419,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 *
 	 * @see org.aspectj.ajdt.internal.compiler.AjCompiler.IOutputClassFileNameProvider#getOutputClassFileName(char[])
 	 */
+	@Override
 	public String getOutputClassFileName(char[] eclipseClassFileName, CompilationResult result) {
 		String filename = new String(eclipseClassFileName);
 		filename = filename.replace('/', File.separatorChar) + ".class";
@@ -1406,6 +1443,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 *
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
+	@Override
 	public ICompilerAdapter getAdapter(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
 		// complete compiler config and return a suitable adapter...
 		populateCompilerOptionsFromLintSettings(forCompiler);
@@ -1460,6 +1498,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 *
 	 * @see org.aspectj.ajdt.internal.compiler.IBinarySourceProvider#getBinarySourcesForThisWeave()
 	 */
+	@Override
 	public Map<String, List<UnwovenClassFile>> getBinarySourcesForThisWeave() {
 		return binarySourcesForTheNextCompile;
 	}
@@ -1485,6 +1524,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	private static class AjBuildContexFormatter implements ContextFormatter {
 
+		@Override
 		public String formatEntry(int phaseId, Object data) {
 			StringBuffer sb = new StringBuffer();
 			if (phaseId == CompilationAndWeavingContext.BATCH_BUILD) {

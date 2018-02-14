@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 - 2014 Contributors
+ * Copyright (c) 2002 - 2018 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -30,19 +30,10 @@ import java.util.StringTokenizer;
 
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
-import org.aspectj.org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJar;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJrt;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
-import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ModuleFinder;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.Classpath;
-import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
-import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -102,6 +93,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private boolean incrementalMode;
 	private File incrementalFile;
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("BuildConfig[" + (configFile == null ? "null" : configFile.getAbsoluteFile().toString()) + "] #Files="
@@ -118,6 +110,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		public File fromInPathDirectory;
 		public File binSrc;
 
+		@Override
 		public boolean equals(Object obj) {
 			if (obj != null && (obj instanceof BinarySourceFile)) {
 				BinarySourceFile other = (BinarySourceFile) obj;
@@ -126,6 +119,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			return false;
 		}
 
+		@Override
 		public int hashCode() {
 			return binSrc != null ? binSrc.hashCode() : 0;
 		}
@@ -325,6 +319,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		// remember all the class files in directories on the inpath
 		binaryFiles = new ArrayList<BinarySourceFile>();
 		FileFilter filter = new FileFilter() {
+			@Override
 			public boolean accept(File pathname) {
 				return pathname.getPath().endsWith(".class");
 			}
@@ -927,7 +922,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 
 	// This is similar to the calculation done in Main.setPaths() but it isn't as sophisticated
-	// as that one (doesn't need to be) and it also considers the additional paths for an 
+	// as that one (doesn't need to be) and it also considers the additional paths for an
 	// AspectJ project (aspectpath/inpath/injars)
 	private void computeCheckedClasspath() {		
 		// Follow what we do in getFullClasspath():

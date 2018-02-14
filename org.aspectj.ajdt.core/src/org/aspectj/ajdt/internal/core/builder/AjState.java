@@ -35,7 +35,6 @@ import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
-import org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig.BinarySourceFile;
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.asm.AsmManager;
@@ -44,6 +43,7 @@ import org.aspectj.bridge.Message;
 import org.aspectj.bridge.SourceLocation;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryAnnotation;
@@ -117,6 +117,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 	private final AjBuildManager buildManager;
 	private INameEnvironment nameEnvironment;
+	private FileSystem fileSystem;
 
 	// now follows normal state that must be written out
 
@@ -663,6 +664,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			}
 		}
 
+		@Override
 		public Object get(Object key) {
 			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.get(key);
 			if (value == null) {
@@ -677,25 +679,30 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			}
 		}
 
+		@Override
 		public Object put(Object k, Object v) {
 			processQueue();
 			return map.put(k, new SoftReferenceKnownKey(k, v));
 		}
 
+		@Override
 		public Set entrySet() {
 			return map.entrySet();
 		}
 
+		@Override
 		public void clear() {
 			processQueue();
 			map.clear();
 		}
 
+		@Override
 		public int size() {
 			processQueue();
 			return map.size();
 		}
 
+		@Override
 		public Object remove(Object k) {
 			processQueue();
 			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.remove(k);
@@ -797,6 +804,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	// return null;
 	// }
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		// null config means failed build i think as it is only set on successful full build?
@@ -2445,6 +2453,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			this.locationOnDisk = location;
 		}
 
+		@Override
 		public String toString() {
 			StringBuilder s = new StringBuilder();
 			s.append("ClassFile(type=").append(fullyQualifiedTypeName).append(",location=").append(locationOnDisk).append(")");
@@ -2458,6 +2467,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			File dir = locationOnDisk.getParentFile();
 			if (dir != null) {
 				File[] weaverGenerated = dir.listFiles(new FilenameFilter() {
+					@Override
 					public boolean accept(File dir, String name) {
 						return name.startsWith(targetPrefix);
 					}
@@ -2518,6 +2528,14 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		this.nameEnvironment = nameEnvironment;
 	}
 
+	public FileSystem getFileSystem() {
+		return this.fileSystem;
+	}
+
+	public void setFileSystem(FileSystem fileSystem) {
+		this.fileSystem = fileSystem;
+	}
+	
 	/**
 	 * Record an aspect that came in on the aspect path. When a .class file changes on the aspect path we can then recognize it as
 	 * an aspect and know to do more than just a tiny incremental build. <br>
@@ -2540,6 +2558,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * See if we can create a delegate from a CompactTypeStructure - TODO better comment
 	 */
+	@Override
 	public ReferenceTypeDelegate getDelegate(ReferenceType referenceType) {
 		File f = classesFromName.get(referenceType.getName());
 		if (f == null) {
