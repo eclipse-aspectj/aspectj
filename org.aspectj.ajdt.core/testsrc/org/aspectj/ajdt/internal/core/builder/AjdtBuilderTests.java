@@ -14,7 +14,9 @@
 
 package org.aspectj.ajdt.internal.core.builder;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class AjdtBuilderTests extends TestCase {
 
@@ -22,6 +24,7 @@ public class AjdtBuilderTests extends TestCase {
         TestSuite suite = new TestSuite(AjdtBuilderTests.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(AjBuildManagerTest.class); 
+        suite.addTestSuite(AjBuildConfigTests.class); 
 		suite.addTestSuite(AsmBuilderTest.class); 
 		suite.addTestSuite(AjCompilerOptionsTest.class);
 		suite.addTestSuite(AjStateTest.class);
