@@ -12,19 +12,19 @@
 
 package org.aspectj.tools.ant.taskdefs.compilers;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.taskdefs.LogOutputStream;
-import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
-import org.apache.tools.ant.types.Commandline;
-
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.LogOutputStream;
+import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
+import org.apache.tools.ant.types.Commandline;
 
 /**
  * Ajc uses this as the CompilerAdapter.
@@ -45,15 +45,15 @@ public class Ajc extends DefaultCompilerAdapter {
     /**
      * List of arguments allowed only by javac and <b>not</b> ajc.
      */    
-    final static List javacOnlyFlags
+    final static List<String> javacOnlyFlags
         = finalList(new String[] { "-g:none", "-g:lines",
         "-g:vars", "-g:source", "-nowarn"});
-    final static List javacOnlyArgs  
+    final static List<String> javacOnlyArgs  
         = finalList(new String[] { "-sourcepath",
         "-encoding", "-target" });
 
-    private static List finalList(String[] args) {
-        List result = new ArrayList();
+    private static List<String> finalList(String[] args) {
+        List<String> result = new ArrayList<String>();
         result.addAll(Arrays.asList(args));
         return Collections.unmodifiableList(result);
     }
@@ -65,7 +65,8 @@ public class Ajc extends DefaultCompilerAdapter {
      * @return true if a good compile, false otherwise.
      * @throws org.apache.tools.ant.BuildException
      */
-    public boolean execute() throws BuildException {
+    @Override
+	public boolean execute() throws BuildException {
         attributes.log("Using AJC", Project.MSG_VERBOSE);
         return compile(addAjcOptions(setupJavacCommand()));
     }
@@ -185,7 +186,8 @@ public class Ajc extends DefaultCompilerAdapter {
      * Logs the compilation parameters, adds the files to compile and logs the 
      * &qout;niceSourceList&quot;
      */
-    protected void logAndAddFilesToCompile(Commandline cmd) {
+    @Override
+	protected void logAndAddFilesToCompile(Commandline cmd) {
 
         // Same behavior as DefaultCompilerAdapter.logAndAddFilesToCompile
         attributes.log("Compilation args: " + cmd.toString(), Project.MSG_VERBOSE);
