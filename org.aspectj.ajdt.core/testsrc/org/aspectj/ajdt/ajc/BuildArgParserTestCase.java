@@ -12,21 +12,28 @@
 
 package org.aspectj.ajdt.ajc;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.aspectj.ajdt.internal.core.builder.*;
+import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
-import org.aspectj.testing.util.TestUtil;
 import org.aspectj.org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+import org.aspectj.testing.util.TestUtil;
+
+import junit.framework.TestCase;
 
 /**
  * Some black-box test is happening here.
@@ -114,18 +121,18 @@ public class BuildArgParserTestCase extends TestCase {
 	public void testPathResolutionFromConfigArgs() {
 		String FILE_PATH =   "@" + TEST_DIR + "configWithClasspathExtdirsBootCPArgs.lst";
 		AjBuildConfig config = genBuildConfig(new String[] { FILE_PATH }, messageWriter);
-		List classpath = config.getFullClasspath();
+		List<String> classpath = config.getFullClasspath();
 		// note that empty or corrupt jars are NOT included in the classpath
 		// should have three entries, resolved relative to location of .lst file
 		assertEquals("Three entries in classpath",3,classpath.size());
-		Iterator cpIter = classpath.iterator();
+		Iterator<String> cpIter = classpath.iterator();
 		try {
 		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"xyz").getCanonicalPath(),cpIter.next());
 		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"myextdir" + File.separator + "dummy.jar").getCanonicalPath(),cpIter.next());
 		    assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"abc.jar").getCanonicalPath(),cpIter.next());
-			List files = config.getFiles();
+			List<File> files = config.getFiles();
 			assertEquals("Two source files",2,files.size());
-			Iterator fIter = files.iterator();
+			Iterator<File> fIter = files.iterator();
 			assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"Abc.java").getCanonicalFile(),fIter.next());
 			assertEquals("Should be relative to TESTDIR",new File(TEST_DIR+File.separator+"xyz"+File.separator+"Def.aj").getCanonicalFile(),fIter.next());
 		    
@@ -152,7 +159,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-aspectpath", SOURCE_JAR }, 
 			messageWriter);
 		
-		assertTrue(((File)config.getAspectpath().get(0)).getName(), ((File)config.getAspectpath().get(0)).getName().equals("testclasses.jar"));
+		assertTrue(config.getAspectpath().get(0).getName(), config.getAspectpath().get(0).getName().equals("testclasses.jar"));
 
 		config = genBuildConfig(new String[] { 
 			"-aspectpath", SOURCE_JARS }, 
@@ -172,7 +179,7 @@ public class BuildArgParserTestCase extends TestCase {
 //		assertTrue(
 //			"" + config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs),  
 //			config.getAjOptions().get(AjCompilerOptions.OPTION_InJARs).equals(CompilerOptions.PRESERVE));
-		assertTrue(((File)config.getInJars().get(0)).getName(), ((File)config.getInJars().get(0)).getName().equals("testclasses.jar"));
+		assertTrue(config.getInJars().get(0).getName(), config.getInJars().get(0).getName().equals("testclasses.jar"));
 
 		config = genBuildConfig(new String[] { 
 			"-injars", SOURCE_JARS }, 
@@ -201,7 +208,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-sourceroots", SRCROOT_1 + File.pathSeparator + SRCROOT_2 }, 
 			messageWriter);
 		
-		assertEquals(getCanonicalPath(new File(SRCROOT_1)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		assertEquals(getCanonicalPath(new File(SRCROOT_1)), config.getSourceRoots().get(0).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT_1+File.separator+"A.java").getCanonicalFile(),
@@ -238,7 +245,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-sourceroots", SRCROOT }, 
 			messageWriter);
 
-		assertEquals(getCanonicalPath(new File(SRCROOT)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		assertEquals(getCanonicalPath(new File(SRCROOT)), config.getSourceRoots().get(0).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"A.java").getCanonicalFile(),
@@ -277,7 +284,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-sourceroots", SRCROOT,  AjdtAjcTests.TESTDATA_PATH + "/src1/A.java"}, 
 			messageWriter);
 
-		assertEquals(getCanonicalPath(new File(SRCROOT)), ((File)config.getSourceRoots().get(0)).getAbsolutePath());
+		assertEquals(getCanonicalPath(new File(SRCROOT)), config.getSourceRoots().get(0).getAbsolutePath());
 		
 		Collection expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"Hello.java").getCanonicalFile(),
@@ -304,7 +311,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-bootclasspath", PATH }, 
 			messageWriter);		
 		assertTrue("Should find '" + PATH + "' contained in the first entry of '" + config.getBootclasspath().toString(),
-				((String)config.getBootclasspath().get(0)).indexOf(PATH) != -1); 
+				config.getBootclasspath().get(0).indexOf(PATH) != -1); 
 
 		config = genBuildConfig(new String[] { 
 			}, 
@@ -574,10 +581,12 @@ public class BuildArgParserTestCase extends TestCase {
 			messageWriter);
 	}
 	
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
 	
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
