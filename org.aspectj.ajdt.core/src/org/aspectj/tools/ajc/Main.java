@@ -534,6 +534,7 @@ public class Main {
 		 * 
 		 * @return false always
 		 */
+		@Override
 		public boolean handleMessage(IMessage message) {
 			if (null != message) {
 				PrintStream out = getStreamFor(message.getKind());
@@ -617,6 +618,7 @@ public class Main {
 
 		}
 
+		@Override
 		public boolean isIgnoring(IMessage.Kind kind) {
 			return (null != getStreamFor(kind));
 		}
@@ -627,6 +629,7 @@ public class Main {
 		 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 		 * @param kind
 		 */
+		@Override
 		public void dontIgnore(IMessage.Kind kind) {
 
 		}
@@ -652,6 +655,7 @@ public class Main {
 		 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
 		 * @param kind
 		 */
+		@Override
 		public void ignore(Kind kind) {
 		}
 	}
@@ -665,6 +669,7 @@ public class Main {
 			this.logStream = logStream;
 		}
 
+		@Override
 		protected PrintStream getStreamFor(IMessage.Kind kind) {
 			if (IMessage.WARNING.isSameOrLessThan(kind)) {
 				return logStream;
@@ -849,4 +854,5 @@ public class Main {
 			}
 		}
 	}
+
 }
