@@ -38,10 +38,6 @@ public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 	public void testWeaveModule() throws Exception {
 		runTest("weave module");
 	}
-	
-	public void testUsesJaxb() {
-		runTest("java use of java.xml.bind");
-	}
 
 	// ---
 

@@ -118,10 +118,45 @@
      -->
   </ajc-test>
   
-  <ajc-test dir="bugs190/modules/iii" title="java use of java.xml.bind">
+  <ajc-test dir="bugs190/modules/iii" title="compile use of java.xml.bind">
     <compile files="UsesJAXB.java" options="--add-modules java.xml.bind -1.9"/>
+    <run class="UsesJAXB" vmargs="--add-modules java.xml.bind">
+      <stdout>
+      <line text="UsesJAXB.running..."/>
+      </stdout>
+    </run>
   </ajc-test>
     
+  <ajc-test dir="bugs190/modules/iii" title="weave use of java.xml.bind">
+    <compile files="UsesJAXB.java Azpect.java" options="--add-modules java.xml.bind -1.9"/>
+    <run class="UsesJAXB" vmargs="--add-modules java.xml.bind">
+      <stdout>
+      <line text="UsesJAXB.running..."/>
+      <line text="null"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/iii" title="limit modules 1">
+    <compile files="UsesJAXB.java Azpect.java" options="--limit-modules java.xml.bind -1.9"/>
+    <run class="UsesJAXB" vmargs="--limit-modules java.xml.bind">
+      <stdout>
+      <line text="UsesJAXB.running..."/>
+      <line text="null"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs190/modules/iii" title="add reads 1">
+    <compile files="UsesJAXB.java Azpect.java" options="--add-reads java.sql=java.xml.bind --add-modules java.sql -1.9"/>
+    <run class="UsesJAXB" vmargs="--add-modules java.xml.bind ">
+      <stdout>
+      <line text="UsesJAXB.running..."/>
+      <line text="null"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
   <!-- 
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" aspectpath="foo.jar"/>
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>

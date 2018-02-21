@@ -691,6 +691,30 @@ public class AjcTestCase extends TestCase {
 				e.printStackTrace();
 			}
 			return lastRunResult;
+		} else if (vmargs!=null && (vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") || vmargs.contains("--add-reads"))) {
+			// If --add-modules supplied, need to fork the test
+			try {
+//				if (mp.indexOf("$runtime") != -1) {
+//					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
+//				}
+				if (cp.indexOf("aspectjrt")==-1) {
+					cp.append(File.pathSeparator).append(TestUtil.aspectjrtPath().getPath());
+				}
+				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " " + className   ;
+				System.out.println("Command is "+command);
+				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
+				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
+				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
+				exec = pb.start();
+		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				exec.waitFor();
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+			} catch (Exception e) {
+				System.out.println("Error executing module test: " + e);
+				e.printStackTrace();
+			}
+			return lastRunResult;
 		} else {
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());

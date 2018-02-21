@@ -21,6 +21,8 @@ import junit.framework.Test;
 /**
  * Building and weaving with modules in the picture.
  * 
+ * Module options from http://openjdk.java.net/jeps/261
+ * 
  * @author Andy Clement
  * 
  */
@@ -63,11 +65,32 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 //		runTest("module path vs classpath 2");
 //	}
 	
+	// --add-modules
+	
 	// This tests that when using --add-modules with one of the JDK modules (in the jmods subfolder of the JDK)
 	// that it can be found without needing to set --module-path (this seems to be implicitly included by javac too)
 	public void testAddModules1() {
-		runTest("java use of java.xml.bind");
+		runTest("compile use of java.xml.bind");
 	}
+	
+	// This tests that we can use add-modules to pull in something from the JDK jmods package and that
+	// when subsequently weaving we can see types from those modules
+	public void testWovenAfterAddModules() {
+		runTest("weave use of java.xml.bind");
+	}
+	
+	// --limit-modules
+	public void testLimitModules1() {
+		runTest("limit modules 1");
+	}
+
+	// --add-reads
+	public void testAddReads1() {
+		runTest("add reads 1");
+	}
+	
+	
+	// ---
 
 	/* For the specified class, check that each method has a stackmap attribute */
 	private void checkStackMapExistence(String classname, String toIgnore) throws ClassNotFoundException {

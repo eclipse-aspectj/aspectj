@@ -18,4 +18,11 @@ public class UsesJAXB {
         JAXBContext context;
     }
 
+    public void m(JAXBContext jc) {
+    }
+
+    public static void main(String[] argv) {
+	    System.out.println("UsesJAXB.running...");
+	    new UsesJAXB().m(null);
+    }
 }
