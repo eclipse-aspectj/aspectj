@@ -22,6 +22,7 @@ public interface Constants {
 
 	public final static String RUNTIME_LEVEL_12 = "1.2";
 	public final static String RUNTIME_LEVEL_15 = "1.5";
+	public final static String RUNTIME_LEVEL_19 = "1.9";
 
 	// Default for 1.5.0
 	public final static String RUNTIME_LEVEL_DEFAULT = RUNTIME_LEVEL_15;

@@ -723,26 +723,32 @@ public class BcelWorld extends World implements Repository {
 
 	// / The repository interface methods
 
+	@Override
 	public JavaClass findClass(String className) {
 		return lookupJavaClass(classPath, className);
 	}
 
+	@Override
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
 		return lookupJavaClass(classPath, className);
 	}
 
+	@Override
 	public void storeClass(JavaClass clazz) {
 		// doesn't need to do anything
 	}
 
+	@Override
 	public void removeClass(JavaClass clazz) {
 		throw new RuntimeException("Not implemented");
 	}
 
+	@Override
 	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
 		throw new RuntimeException("Not implemented");
 	}
 
+	@Override
 	public void clear() {
 		delegate.clear();
 		// throw new RuntimeException("Not implemented");
@@ -1291,10 +1297,12 @@ public class BcelWorld extends World implements Repository {
 
 	}
 
+	@Override
 	public TypeMap getTypeMap() {
 		return typeMap;
 	}
 
+	@Override
 	public boolean isLoadtimeWeaving() {
 		return false;
 	}
@@ -1306,6 +1314,7 @@ public class BcelWorld extends World implements Repository {
 		typeDelegateResolvers.add(typeDelegateResolver);
 	}
 
+	@Override
 	public void classWriteEvent(char[][] compoundName) {
 		typeMap.classWriteEvent(new String(CharOperation.concatWith(compoundName, '.')));
 	}

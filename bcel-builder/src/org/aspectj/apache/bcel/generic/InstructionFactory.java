@@ -761,6 +761,7 @@ public class InstructionFactory implements InstructionConstants {
 				iList.append(new InstructionCP(Instruction.LDC_W, classIndex));
 			}
 		} else {
+			className = className.replace('/', '.');
 			iList.append(InstructionFactory.PUSH(cp, className));
 			iList.append(this.createInvoke("java.lang.Class", "forName", ObjectType.CLASS, Type.STRINGARRAY1,
 					Constants.INVOKESTATIC));

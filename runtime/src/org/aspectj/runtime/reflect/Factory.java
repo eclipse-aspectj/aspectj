@@ -1,6 +1,6 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2002-2018 Palo Alto Research Center, Incorporated (PARC), Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -8,9 +8,10 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  *  
  * Contributors: 
- *     Xerox/PARC     initial implementation 
+ *      Xerox/PARC    initial implementation 
  *    Alex Vasseur    new factory methods for variants of JP
- *    Abraham Nevado  new factory methods for collapsed SJPs
+ *  Abraham Nevado    new factory methods for collapsed SJPs
+ *    Andy Clement    new factory methods that rely on LDC <class>
  * ******************************************************************/
 
 package org.aspectj.runtime.reflect;
@@ -38,6 +39,9 @@ public final class Factory {
 	ClassLoader lookupClassLoader;
 	String filename;
 	int count;
+	
+	private static final Class[] NO_TYPES = new Class[0];
+	private static final String[] NO_STRINGS = new String[0];
 
 	static Hashtable prims = new Hashtable();
 	static {
@@ -55,7 +59,7 @@ public final class Factory {
 	static Class makeClass(String s, ClassLoader loader) {
 		if (s.equals("*"))
 			return null;
-		Class ret = (Class) prims.get(s);
+		Class ret = (Class)prims.get(s);
 		if (ret != null)
 			return ret;
 		try {
@@ -113,6 +117,105 @@ public final class Factory {
 		Signature sig = this.makeMethodSig(modifiers, methodName, declaringType, paramTypes, paramNames, "", returnType);
 		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(l, -1));
 	}
+	
+	// These are direct routes to creating thisJoinPoint and thisEnclosingJoinPoint objects
+	// added in 1.9.1
+	
+	public JoinPoint.StaticPart makeMethodSJP(String kind, int modifiers, String methodName, Class declaringType, Class[] paramTypes, String[] paramNames, Class[] exceptionTypes, Class returnType, int line) {
+		Signature sig = this.makeMethodSig(modifiers, methodName, declaringType, paramTypes==null?NO_TYPES:paramTypes, 
+			paramNames==null?NO_STRINGS:paramNames, exceptionTypes==null?NO_TYPES:exceptionTypes, returnType == null?Void.TYPE:returnType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));		
+	}
+
+	public JoinPoint.EnclosingStaticPart makeMethodESJP(String kind, int modifiers, String methodName, Class declaringType, Class[] paramTypes, String[] paramNames, Class[] exceptionTypes, Class returnType, int line) {
+		Signature sig = this.makeMethodSig(modifiers, methodName, declaringType, paramTypes==null?NO_TYPES:paramTypes,
+				paramNames==null?NO_STRINGS:paramNames, exceptionTypes==null?NO_TYPES:exceptionTypes, returnType == null?Void.TYPE:returnType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));		
+	}
+
+	public JoinPoint.StaticPart makeConstructorSJP(String kind, int modifiers, Class declaringType, Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes, int line) {
+		ConstructorSignatureImpl sig = new ConstructorSignatureImpl(modifiers, declaringType, parameterTypes==null?NO_TYPES:parameterTypes, parameterNames==null?NO_STRINGS:parameterNames,
+				exceptionTypes==null?NO_TYPES:exceptionTypes);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeConstructorESJP(String kind, int modifiers, Class declaringType, Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes, int line) {
+		ConstructorSignatureImpl sig = new ConstructorSignatureImpl(modifiers, declaringType, parameterTypes==null?NO_TYPES:parameterTypes, parameterNames==null?NO_STRINGS:parameterNames,
+				exceptionTypes==null?NO_TYPES:exceptionTypes);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.StaticPart makeCatchClauseSJP(String kind, Class declaringType, Class parameterType, String parameterName, int line) {
+		CatchClauseSignatureImpl sig = new CatchClauseSignatureImpl(declaringType, parameterType, parameterName==null?"":parameterName);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeCatchClauseESJP(String kind, Class declaringType, Class parameterType, String parameterName, int line) {
+		CatchClauseSignatureImpl sig = new CatchClauseSignatureImpl(declaringType, parameterType, parameterName==null?"":parameterName);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.StaticPart makeFieldSJP(String kind, int modifiers, String name, Class declaringType, Class fieldType, int line) {
+		FieldSignatureImpl sig = new FieldSignatureImpl(modifiers, name, declaringType, fieldType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeFieldESJP(String kind, int modifiers, String name, Class declaringType, Class fieldType, int line) {
+		FieldSignatureImpl sig = new FieldSignatureImpl(modifiers, name, declaringType, fieldType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+	
+	public JoinPoint.StaticPart makeInitializerSJP(String kind, int modifiers, Class declaringType, int line) {
+		InitializerSignatureImpl sig = new InitializerSignatureImpl(modifiers, declaringType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeInitializerESJP(String kind, int modifiers, Class declaringType, int line) {
+		InitializerSignatureImpl sig = new InitializerSignatureImpl(modifiers, declaringType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+	
+	public JoinPoint.StaticPart makeLockSJP(String kind, Class declaringType, int line) {
+		LockSignatureImpl sig = new LockSignatureImpl(declaringType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeLockESJP(String kind, Class declaringType, int line) {
+		LockSignatureImpl sig = new LockSignatureImpl(declaringType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.StaticPart makeUnlockSJP(String kind, Class declaringType, int line) {
+		UnlockSignatureImpl sig = new UnlockSignatureImpl(declaringType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeUnlockESJP(String kind, Class declaringType, int line) {
+		UnlockSignatureImpl sig = new UnlockSignatureImpl(declaringType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.StaticPart makeAdviceSJP(String kind, int modifiers, String name, Class declaringType, Class[] parameterTypes,
+			String[] parameterNames, Class[] exceptionTypes, Class returnType, int line) {
+		AdviceSignatureImpl sig = new AdviceSignatureImpl(modifiers, name, declaringType,
+				parameterTypes==null?NO_TYPES:parameterTypes,
+				parameterNames==null?NO_STRINGS:parameterNames,
+				exceptionTypes==null?NO_TYPES:exceptionTypes,
+				returnType==null?Void.TYPE:returnType);
+		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+
+	public JoinPoint.EnclosingStaticPart makeAdviceESJP(String kind, int modifiers, String name, Class declaringType, Class[] parameterTypes,
+			String[] parameterNames, Class[] exceptionTypes, Class returnType, int line) {
+		AdviceSignatureImpl sig = new AdviceSignatureImpl(modifiers, name, declaringType,
+				parameterTypes==null?NO_TYPES:parameterTypes,
+				parameterNames==null?NO_STRINGS:parameterNames,
+				exceptionTypes==null?NO_TYPES:exceptionTypes,
+				returnType==null?Void.TYPE:returnType);
+		return new JoinPointImpl.EnclosingStaticPartImpl(count++, kind, sig, makeSourceLoc(line, -1));	
+	}
+		
+	// ---
 
 	public JoinPoint.StaticPart makeSJP(String kind, Signature sig, SourceLocation loc) {
 		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, loc);
@@ -181,12 +284,16 @@ public final class Factory {
 		ret.setLookupClassLoader(lookupClassLoader);
 		return ret;
 	}
-
+	
 	public MethodSignature makeMethodSig(String modifiers, String methodName, String declaringType, String paramTypes,
 			String paramNames, String exceptionTypes, String returnType) {
-		int modifiersAsInt = Integer.parseInt(modifiers, 16);
-
 		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		return makeMethodSig(modifiers, methodName, declaringTypeClass, paramTypes, paramNames, exceptionTypes, returnType);
+	}
+	
+	public MethodSignature makeMethodSig(String modifiers, String methodName, Class declaringTypeClass, String paramTypes,
+			String paramNames, String exceptionTypes, String returnType) {
+		int modifiersAsInt = Integer.parseInt(modifiers, 16);
 
 		StringTokenizer st = new StringTokenizer(paramTypes, ":");
 		int numParams = st.countTokens();
@@ -216,8 +323,8 @@ public final class Factory {
 
 	public MethodSignature makeMethodSig(int modifiers, String name, Class declaringType, Class[] parameterTypes,
 			String[] parameterNames, Class[] exceptionTypes, Class returnType) {
-		MethodSignatureImpl ret = new MethodSignatureImpl(modifiers, name, declaringType, parameterTypes, parameterNames,
-				exceptionTypes, returnType);
+		MethodSignatureImpl ret = new MethodSignatureImpl(modifiers, name, declaringType, parameterTypes==null?NO_TYPES:parameterTypes, parameterNames,
+				exceptionTypes == null?NO_TYPES:exceptionTypes, returnType);
 		ret.setLookupClassLoader(lookupClassLoader);
 		return ret;
 	}

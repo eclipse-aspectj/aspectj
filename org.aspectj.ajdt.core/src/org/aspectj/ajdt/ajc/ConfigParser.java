@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class ConfigParser {
 	Location location;
@@ -43,6 +44,13 @@ public class ConfigParser {
 		LinkedList<Arg> args = new LinkedList<Arg>();
 		for (int i = 0; i < argsArray.length; i++) {
 			args.add(new Arg(argsArray[i], location));
+		}
+		String aspectjOptions = System.getProperty("ASPECTJ_OPTS");
+		if (aspectjOptions != null) {
+			StringTokenizer st = new StringTokenizer(aspectjOptions);
+			while (st.hasMoreElements()) {
+				args.add(new Arg(st.nextToken(),location));
+			}
 		}
 		parseArgs(args);
 	}
@@ -138,12 +146,14 @@ public class ConfigParser {
 		if (sourceFile.getName().charAt(0) == '*') {
 			if (sourceFile.getName().equals("*.java")) {
 				addFiles(sourceFile.getParentFile(), new FileFilter() {
+					@Override
 					public boolean accept(File f) {
 						return f != null && f.getName().endsWith(".java");
 					}
 				});
 			} else if (sourceFile.getName().equals("*.aj")) {
 				addFiles(sourceFile.getParentFile(), new FileFilter() {
+					@Override
 					public boolean accept(File f) {
 						return f != null && f.getName().endsWith(".aj");
 					}
@@ -287,6 +297,7 @@ public class ConfigParser {
 		private Location location;
 		private String value;
 
+		@Override
 		public String toString() {
 			return "Arg[location="+location+" value="+value+"]";
 		}
@@ -320,6 +331,7 @@ public class ConfigParser {
 
 		public abstract int getLine();
 
+		@Override
 		public abstract String toString();
 	}
 
@@ -332,36 +344,44 @@ public class ConfigParser {
 			this.file = file;
 		}
 
+		@Override
 		public File getFile() {
 			return file;
 		}
 
+		@Override
 		public File getDirectory() {
 			return file.getParentFile();
 		}
 
+		@Override
 		public int getLine() {
 			return line;
 		}
 
+		@Override
 		public String toString() {
 			return file.getPath() + ":" + line;
 		}
 	}
 
 	static class CommandLineLocation extends Location {
+		@Override
 		public File getFile() {
 			return new File(System.getProperty("user.dir"));
 		}
 
+		@Override
 		public File getDirectory() {
 			return new File(System.getProperty("user.dir"));
 		}
 
+		@Override
 		public int getLine() {
 			return -1;
 		}
 
+		@Override
 		public String toString() {
 			return "command-line";
 		}

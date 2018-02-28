@@ -20,7 +20,7 @@ public class AllTestsAspectJ190 {
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc190Tests.suite());
 		suite.addTest(SanityTests19.suite());
-//		suite.addTest(EfficientTJPTests.suite());
+		suite.addTest(EfficientTJPTests.suite());
 		suite.addTest(ModuleTests.suite());
 		suite.addTest(Annotations.suite());
 		// $JUnit-END$

@@ -807,8 +807,10 @@ public class BuildArgParser extends Main {
 					buildConfig.setTargetAspectjRuntimeLevel(Constants.RUNTIME_LEVEL_12);
 				} else if (arg.endsWith(":1.5")) {
 					buildConfig.setTargetAspectjRuntimeLevel(Constants.RUNTIME_LEVEL_15);
+				} else if (arg.endsWith(":1.9")) {
+					buildConfig.setTargetAspectjRuntimeLevel(Constants.RUNTIME_LEVEL_19);
 				} else {
-					showError("-Xajruntimetarget:<level> only supports a target level of 1.2 or 1.5");
+					showError("-Xajruntimetarget:<level> supports a target level of 1.2, 1.5, 1.9");
 				}
 			} else if (arg.equals("-timers")) {
 				buildConfig.setTiming(true);

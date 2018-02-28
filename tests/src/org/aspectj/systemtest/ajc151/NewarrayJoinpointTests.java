@@ -13,12 +13,12 @@ package org.aspectj.systemtest.ajc151;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /*
  * The design:
@@ -57,6 +57,15 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 
 	public void testThisJoinPoint() {
 		runTest("thisjoinpoint");
+	}
+
+	public void testThisJoinPoint19() {
+		try {
+			System.setProperty("ASPECTJ_OPTS", "-Xajruntimetarget:1.9");
+			runTest("thisjoinpoint");
+		} finally {
+			System.setProperty("ASPECTJ_OPTS", "");
+		}
 	}
 
 	public void testDifferentAdviceKinds() {
@@ -105,9 +114,9 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 		assertTrue("Couldnt find 'Five' type in the model", ipe != null);
 		List<IProgramElement> kids = ipe.getChildren();
 		assertTrue("Couldn't find 'main' method in the 'Five' type", kids != null && kids.size() == 1);
-		List<IProgramElement> codenodes = ((IProgramElement) kids.get(0)).getChildren();
+		List<IProgramElement> codenodes = kids.get(0).getChildren();
 		assertTrue("Couldn't find nodes below 'main' method", codenodes != null && codenodes.size() == 1);
-		IProgramElement arrayCtorCallNode = (IProgramElement) codenodes.get(0);
+		IProgramElement arrayCtorCallNode = codenodes.get(0);
 		String exp = "constructor-call(void java.lang.Integer[].<init>(int))";
 		assertTrue("Expected '" + exp + "' but found " + arrayCtorCallNode.toString(), arrayCtorCallNode.toString().equals(exp));
 		List<IRelationship> rels = AsmManager.lastActiveStructureModel.getRelationshipMap().get(arrayCtorCallNode);
@@ -119,6 +128,7 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(NewarrayJoinpointTests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return getClassResource("newarray_joinpoint.xml");
 	}

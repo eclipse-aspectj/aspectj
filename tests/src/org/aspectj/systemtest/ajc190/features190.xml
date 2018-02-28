@@ -1,0 +1,172 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="features190/efficientTJP" title="tjp 1">
+    <compile files="One.java" options="-1.8"/>
+    <run class="One">
+    <stdout>
+    <line text="void One.main(String[])"/>
+    <line text="One running"/>
+    </stdout>
+    </run>
+  </ajc-test>
+
+  <ajc-test dir="features190/efficientTJP" title="tjp 2">
+    <compile files="Two.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Two">
+    <stdout>
+    <line text="void Two.main(String[])"/>
+    <line text="Two running"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp 3">
+    <compile files="Three.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Three">
+    <stdout>
+    <line text="Three running"/>
+    <line text="Three()"/>
+    <line text="Three(String)"/>
+    <line text="Three(int, String)"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp 3a">
+    <compile files="ThreeA.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="ThreeA">
+    <stdout>
+    <line text="ThreeA running"/>
+    <line text="ThreeA()"/>
+    <line text="ThreeA(String)"/>
+    <line text="ThreeA(int, String)"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp 4">
+    <compile files="Four.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Four">
+    <stdout>
+    <line text="run() running"/>
+    <line text="catch(Throwable)"/>
+    <line text="caught something"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp 4a">
+    <compile files="FourA.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="FourA">
+    <stdout>
+    <line text="run() running"/>
+    <line text="void FourA.run()"/>
+    <line text="caught something"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp get fields">
+    <compile files="Fields.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Fields">
+    <stdout>
+    <line text="int Fields.a"/>
+    <line text="String Fields.s"/>
+    <line text="double Fields.d"/>
+    <line text="Fields.Inner Fields.obj"/>
+    <line text="short Fields.ps"/>
+    <line text="float Fields.fs"/>
+    <line text="long Fields.ls"/>
+    <line text="byte Fields.bs"/>
+    <line text="char Fields.cs"/>   
+    <line text="int Fields.as"/>
+    <line text="String Fields.ss"/>
+    <line text="double Fields.ds"/>
+    <line text="Fields.Inner Fields.objs"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp get fieldsE">
+    <compile files="FieldsE.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="FieldsE">
+    <stdout>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    <line text="void FieldsE.main(String[])"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp set fields">
+    <compile files="Fields2.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Fields2">
+    <stdout>
+    <line text="int Fields2.a"/>
+    <line text="short Fields2.ps"/>
+    <line text="double Fields2.d"/>
+    <line text="Fields2.Inner Fields2.obj"/>
+    <line text="String Fields2.s"/>
+    <line text="float Fields2.fs"/>
+    <line text="long Fields2.ls"/>
+    <line text="byte Fields2.bs"/>
+    <line text="char Fields2.cs"/>   
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp clinit">
+    <compile files="Clinit.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Clinit">
+    <stdout>
+    <line text="Clinit.&lt;clinit&gt;"/>
+    <line text="Clinit.Inner.&lt;clinit&gt;"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tejp clinit">
+    <compile files="ClinitE.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="ClinitE">
+    <stdout>
+    <line text="ClinitE.&lt;clinit&gt;"/>
+    <line text="ClinitE.Inner.&lt;clinit&gt;"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp advice">
+    <compile files="Advice.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Advice">
+    <stdout>
+    <line text="tjp:void X.before()"/>
+    <line text="tejp:void X.before()"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="features190/efficientTJP" title="tjp init">
+    <compile files="Init.java" options="-Xajruntimetarget:1.9 -1.8"/>
+    <run class="Init">
+    <stdout>
+    <line text="A()"/>
+    <line text="A()"/>
+    <line text="B()"/>
+    <line text="B()"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+</suite>

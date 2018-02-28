@@ -89,9 +89,9 @@ public abstract class Type {
 	public static final BasicType CHAR = new BasicType(Constants.T_CHAR);
 	public static final ObjectType OBJECT = new ObjectType("java.lang.Object");
 	public static final ObjectType STRING = new ObjectType("java.lang.String");
-	public static final ObjectType OBJECT_ARRAY = new ObjectType("java.lang.Object[]");
-	public static final ObjectType STRING_ARRAY = new ObjectType("java.lang.String[]");
-	public static final ObjectType CLASS_ARRAY = new ObjectType("java.lang.Class[]");
+	public static final ArrayType OBJECT_ARRAY = new ArrayType("java.lang.Object",1);
+	public static final ArrayType STRING_ARRAY = new ArrayType("java.lang.String",1);
+	public static final ArrayType CLASS_ARRAY = new ArrayType("java.lang.Class",1);
 	public static final ObjectType STRINGBUFFER = new ObjectType("java.lang.StringBuffer");
 	public static final ObjectType STRINGBUILDER = new ObjectType("java.lang.StringBuilder");
 	public static final ObjectType THROWABLE = new ObjectType("java.lang.Throwable");
@@ -130,6 +130,7 @@ public abstract class Type {
 		commonTypes.put(CLASS.getSignature(), CLASS);
 		commonTypes.put(OBJECT.getSignature(), OBJECT);
 		commonTypes.put(STRING_ARRAY.getSignature(), STRING_ARRAY);
+		commonTypes.put(CLASS_ARRAY.getSignature(), CLASS_ARRAY);
 		commonTypes.put(OBJECT_ARRAY.getSignature(), OBJECT_ARRAY);
 		commonTypes.put(INTEGER.getSignature(), INTEGER);
 		commonTypes.put(EXCEPTION.getSignature(), EXCEPTION);

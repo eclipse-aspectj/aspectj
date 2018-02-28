@@ -53,15 +53,16 @@ import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverState;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
+import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.RuntimeVersion;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.SignatureUtils;
 import org.aspectj.weaver.TypeVariable;
@@ -79,6 +80,45 @@ import org.aspectj.weaver.bcel.asm.StackMapAdder;
  * Aspect.
  */
 public final class LazyClassGen {
+
+	private static final Type[] ARRAY_7STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
+			Type.STRING, Type.STRING, Type.INT };
+	
+	private static final Type[] ARRAY_8STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
+			Type.STRING, Type.STRING, Type.STRING, Type.INT };
+
+	private static final Type[] PARAMSIGNATURE_MAKESJP_METHOD = new Type[] {
+			Type.STRING, Type.INT, Type.STRING, Type.CLASS, Type.CLASS_ARRAY, Type.STRING_ARRAY, Type.CLASS_ARRAY, Type.CLASS, Type.INT
+	};
+
+	private static final Type[] PARAMSIGNATURE_MAKESJP_CONSTRUCTOR = new Type[] {
+			Type.STRING, Type.INT, Type.CLASS, Type.CLASS_ARRAY, Type.STRING_ARRAY, Type.CLASS_ARRAY, Type.INT
+	};
+	
+	private static final Type[] PARAMSIGNATURE_MAKESJP_CATCHCLAUSE = new Type[] {
+			Type.STRING, Type.CLASS, Type.CLASS, Type.STRING, Type.INT
+	};
+	
+	private static final Type[] PARAMSIGNATURE_MAKESJP_FIELD = new Type[] {
+			Type.STRING, Type.INT, Type.STRING, Type.CLASS, Type.CLASS, Type.INT
+	};
+	
+	private static final Type[] PARAMSIGNATURE_MAKESJP_INITIALIZER = new Type[] {
+			Type.STRING, Type.INT, Type.CLASS, Type.INT
+	};
+	
+	private static final Type[] PARAMSIGNATURE_MAKESJP_MONITOR = new Type[] {
+			Type.STRING, Type.CLASS, Type.INT
+	};
+
+	private static final Type[] PARAMSIGNATURE_MAKESJP_ADVICE = new Type[] {
+			Type.STRING, Type.INT, Type.STRING, Type.CLASS, Type.CLASS_ARRAY, Type.STRING_ARRAY,
+			Type.CLASS_ARRAY, Type.CLASS, Type.INT
+	};
+	
+	
+	
+	
 
 	private static final int ACC_SYNTHETIC = 0x1000;
 
@@ -1232,6 +1272,7 @@ public final class LazyClassGen {
 
 		List<Map.Entry<BcelShadow, Field>> entries = new ArrayList<Map.Entry<BcelShadow, Field>>(tjpFields.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<BcelShadow, Field>>() {
+			@Override
 			public int compare(Map.Entry<BcelShadow, Field> a, Map.Entry<BcelShadow, Field> b) {
 				return (a.getValue()).getName().compareTo((b.getValue()).getName());
 			}
@@ -1253,6 +1294,10 @@ public final class LazyClassGen {
 	}
 
 	private void initializeTjp(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
+		if (world.getTargetAspectjRuntimeLevel() == RuntimeVersion.V1_9) {
+			initializeTjpOptimal(fact, list, field, shadow);
+			return;
+		}
 		boolean fastSJP = false;
 		// avoid fast SJP if it is for an enclosing joinpoint
 		boolean isFastSJPAvailable = shadow.getWorld().isTargettingRuntime1_6_10()
@@ -1274,9 +1319,7 @@ public final class LazyClassGen {
 		String signatureMakerName = SignatureUtils.getSignatureMakerName(sig);
 		ObjectType signatureType = new ObjectType(SignatureUtils.getSignatureType(sig));
 		UnresolvedType[] exceptionTypes = null;
-		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We
-			// didn't have optimized
-			// factory methods in 1.2
+		if (world.isTargettingAspectJRuntime12()) { // TAG:SUPPORTING12: We didn't have optimized factory methods in 1.2
 			list.append(InstructionFactory.PUSH(cp, SignatureUtils.getSignatureString(sig, shadow.getWorld())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
@@ -1370,6 +1413,7 @@ public final class LazyClassGen {
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY2,
 					Constants.INVOKEVIRTUAL));
 		} else {
+			// TODO looks like this block is unused code
 			list.append(InstructionFactory.PUSH(cp, SignatureUtils.getSignatureString(sig, shadow.getWorld())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
@@ -1415,10 +1459,208 @@ public final class LazyClassGen {
 		}
 	}
 
-	private static final Type[] ARRAY_7STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
-			Type.STRING, Type.STRING, Type.INT };
-	private static final Type[] ARRAY_8STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
-			Type.STRING, Type.STRING, Type.STRING, Type.INT };
+	public String getFactoryMethod(Field field, BcelShadow shadow) {
+		StringBuilder b = new StringBuilder();
+		b.append("make");
+		MemberKind kind = shadow.getSignature().getKind();
+		if (kind.equals(Member.METHOD)) {
+			b.append("Method");
+		} else if (kind.equals(Member.CONSTRUCTOR)) {
+			b.append("Constructor");
+		} else if (kind.equals(Member.HANDLER)) {
+			b.append("CatchClause");
+		} else if (kind.equals(Member.FIELD)) {
+			b.append("Field");
+		} else if (kind.equals(Member.STATIC_INITIALIZATION)) {
+			b.append("Initializer");
+		} else if (kind.equals(Member.MONITORENTER)) {
+			b.append("Lock");
+		} else if (kind.equals(Member.MONITOREXIT)) {
+			b.append("Unlock");
+		} else if (kind.equals(Member.ADVICE)) {
+			b.append("Advice");
+		} else {
+			throw new IllegalStateException(kind.toString());
+		}
+		if (staticTjpType.equals(field.getType())) {
+			b.append("SJP");
+		} else if (enclosingStaticTjpType.equals(field.getType())) {
+			b.append("ESJP");
+		}
+		return b.toString();
+	}
+	
+	/**
+	 * Generate optimal joinpoint initialization code.
+	 * 
+	 * As of version 1.9.1 the runtime includes new factory methods for joinpoints that take classes, not strings
+	 * and using them requires different code generation. Using these instead of the old ones means we can avoid
+	 * deferred classloading for these types. By using the LDC instruction that loads classes, it also means
+	 * anything modifying woven code and changing type names will also pick up on these references.
+	 */
+	private void initializeTjpOptimal(InstructionFactory fact, InstructionList list, Field field, BcelShadow shadow) {
+		list.append(InstructionFactory.createLoad(factoryType, 0));
+		pushString(list, shadow.getKind().getName());
+		String factoryMethod = getFactoryMethod(field, shadow);
+		Member sig = shadow.getSignature();
+		BcelWorld w = shadow.getWorld();
+
+		if (sig.getKind().equals(Member.METHOD)) {
+			pushInt(list, sig.getModifiers(w));
+			pushString(list, sig.getName());
+			pushClass(list, sig.getDeclaringType());
+			pushClasses(list, sig.getParameterTypes());
+			pushStrings(list, sig.getParameterNames(w));
+			pushClasses(list, sig.getExceptions(w));
+			pushClass(list, sig.getReturnType());
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_METHOD, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.CONSTRUCTOR)) {
+			if (w.isJoinpointArrayConstructionEnabled() && sig.getDeclaringType().isArray()) {
+				pushInt(list, Modifier.PUBLIC);
+				pushClass(list, sig.getDeclaringType());
+				pushClasses(list, sig.getParameterTypes());
+				pushStrings(list, null);
+				pushClasses(list, null);
+			} else {
+				pushInt(list, sig.getModifiers(w));
+				pushClass(list, sig.getDeclaringType());
+				pushClasses(list, sig.getParameterTypes());
+				pushStrings(list, sig.getParameterNames(w));
+				pushClasses(list, sig.getExceptions(w));
+			}
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_CONSTRUCTOR, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.HANDLER)) {
+			pushClass(list, sig.getDeclaringType());
+			pushClass(list, sig.getParameterTypes()[0]);
+			String pname = null;
+			String[] pnames = sig.getParameterNames(w);
+			if (pnames != null && pnames.length>0) {
+				pname = pnames[0];
+			}
+			pushString(list, pname);
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_CATCHCLAUSE, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.FIELD)) {
+			pushInt(list, sig.getModifiers(w));
+			pushString(list, sig.getName());
+			// see pr227401
+			UnresolvedType dType = sig.getDeclaringType();
+			if (dType.getTypekind() == TypeKind.PARAMETERIZED || dType.getTypekind() == TypeKind.GENERIC) {
+				dType = sig.getDeclaringType().resolve(world).getGenericType();
+			}
+			pushClass(list, dType);
+			pushClass(list, sig.getReturnType());
+			pushInt(list,shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_FIELD, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
+			pushInt(list, sig.getModifiers(w));
+			pushClass(list, sig.getDeclaringType());
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_INITIALIZER, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.MONITORENTER)) {
+			pushClass(list, sig.getDeclaringType());
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_MONITOR, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.MONITOREXIT)) {
+			pushClass(list, sig.getDeclaringType());
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_MONITOR, Constants.INVOKEVIRTUAL));
+		} else if (sig.getKind().equals(Member.ADVICE)) {
+			pushInt(list, sig.getModifiers(w));
+			pushString(list, sig.getName());
+			pushClass(list, sig.getDeclaringType());
+			pushClasses(list, sig.getParameterTypes());
+			pushStrings(list, sig.getParameterNames(w));
+			pushClasses(list, sig.getExceptions(w));
+			pushClass(list, sig.getReturnType());
+			pushInt(list, shadow.getSourceLine());
+			list.append(fact.createInvoke(factoryType.getClassName(), factoryMethod, field.getType(), 
+					PARAMSIGNATURE_MAKESJP_ADVICE, Constants.INVOKEVIRTUAL));
+		} else {
+			throw new IllegalStateException("not sure what to do: "+shadow);
+		}
+		list.append(fact.createFieldAccess(getClassName(), field.getName(), field.getType(), Constants.PUTSTATIC));
+	}
+
+	private void pushStrings(InstructionList list, String[] strings) {
+		// Build an array loaded with the strings
+		if (strings == null || strings.length == 0) {
+			list.append(InstructionFactory.ACONST_NULL);
+		} else {
+			list.append(InstructionFactory.PUSH(cp, strings.length));
+			list.append(fact.createNewArray(Type.STRING, (short)1));
+			for (int s=0;s<strings.length;s++) {
+				list.append(InstructionFactory.DUP);
+				list.append(InstructionFactory.PUSH(cp, s));
+				list.append(InstructionFactory.PUSH(cp, strings[s]));
+				list.append(InstructionFactory.AASTORE);
+			}
+		}
+	}
+
+	private void pushClass(InstructionList list, UnresolvedType type) {
+		if (type.isPrimitiveType()) {
+			if (type.getSignature().equals("I")) {
+				list.append(fact.createGetStatic("java/lang/Integer","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("D")) {
+				list.append(fact.createGetStatic("java/lang/Double","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("S")) {
+				list.append(fact.createGetStatic("java/lang/Short","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("J")) {
+				list.append(fact.createGetStatic("java/lang/Long","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("F")) {
+				list.append(fact.createGetStatic("java/lang/Float","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("C")) {
+				list.append(fact.createGetStatic("java/lang/Character","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("B")) {
+				list.append(fact.createGetStatic("java/lang/Byte","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("Z")) {
+				list.append(fact.createGetStatic("java/lang/Boolean","TYPE", Type.CLASS));
+			} else if (type.getSignature().equals("V")) {
+				list.append(InstructionFactory.ACONST_NULL);
+			}
+			return;
+		}
+		String classString = makeLdcClassString(type);
+		if (classString == null) {
+			list.append(InstructionFactory.ACONST_NULL);
+		} else {
+			list.append(fact.PUSHCLASS(cp, classString));
+		}
+	}
+
+	private void pushClasses(InstructionList list, UnresolvedType[] types) {
+		// Build an array loaded with the class objects
+		if (types == null || types.length == 0) {
+			list.append(InstructionFactory.ACONST_NULL);
+		} else {
+			list.append(InstructionFactory.PUSH(cp, types.length));
+			list.append(fact.createNewArray(Type.CLASS, (short)1));
+			for (int t=0;t<types.length;t++) {
+				list.append(InstructionFactory.DUP);
+				list.append(InstructionFactory.PUSH(cp, t));
+				pushClass(list, types[t]);
+				list.append(InstructionFactory.AASTORE);
+			}
+		}
+	}
+
+	private final void pushString(InstructionList list, String string) {
+		list.append(InstructionFactory.PUSH(cp, string));
+	}
+	
+	private final void pushInt(InstructionList list, int value) {
+		list.append(InstructionFactory.PUSH(cp, value));
+	}
 
 	protected String makeString(int i) {
 		return Integer.toString(i, 16); // ??? expensive
@@ -1436,6 +1678,24 @@ public final class LazyClassGen {
 			} else {
 				return t.getName();
 			}
+		}
+	}
+	
+	protected String makeLdcClassString(UnresolvedType type) {
+		if (type.isVoid() || type.isPrimitiveType()) {
+			return null;
+		}
+		if (type.isArray()) {
+			return type.getSignature();
+		} else {
+			if (type.isParameterizedType()) {
+				type = type.getRawType();
+			}
+			String signature = type.getSignature();
+			if (signature.length() ==1 ) {
+				return signature;
+			}
+			return signature.substring(1,signature.length()-1);
 		}
 	}
 
