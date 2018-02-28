@@ -22,6 +22,10 @@ import junit.framework.Test;
  */
 public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 
+	public void testParamAnnosNegative() {
+		runTest("param annos negative");
+	}
+	
 	public void testAnnotMethodHasMember_pr156962_1() { // From similar in Ajc153Tests
 		runTest("Test Annot Method Has Member 1");
 	}

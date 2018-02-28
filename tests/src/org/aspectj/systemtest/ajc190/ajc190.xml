@@ -2,6 +2,14 @@
 
 <suite>
 
+
+  <ajc-test dir="bugs190/paramannos" title="param annos negative">
+    <compile files="Code.java" options="-1.9 -showWeaveInfo">
+    		<message kind="weave" text="Join point 'constructor-execution(void Code.&lt;init&gt;(java.lang.Object))' in Type 'Code' (Code.java:8) advised by before advice from 'X' (Code.java:12)"/>
+	</compile>
+  </ajc-test>
+
+
   <ajc-test dir="bugs190/modules/aaa" title="build a module">
     <compile files="module-info.java com/foo1/C1.java" options="-1.9"/>
   </ajc-test>

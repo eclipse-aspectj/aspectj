@@ -72,6 +72,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		this.isExactDeclaringTypePattern = (declaringType instanceof ExactTypePattern);
 	}
 
+	@Override
 	public SignaturePattern resolveBindings(IScope scope, Bindings bindings) {
 		if (returnType != null) {
 			returnType = returnType.resolveBindings(scope, bindings, false, false);
@@ -290,6 +291,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	 * return a copy of this signature pattern in which every type variable reference is replaced by the corresponding entry in the
 	 * map.
 	 */
+	@Override
 	public SignaturePattern parameterizeWith(Map<String, UnresolvedType> typeVariableMap, World w) {
 		SignaturePattern ret = new SignaturePattern(kind, modifiers, returnType.parameterizeWith(typeVariableMap, w), declaringType
 				.parameterizeWith(typeVariableMap, w), name, parameterTypes.parameterizeWith(typeVariableMap, w), throwsPattern
@@ -298,6 +300,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		return ret;
 	}
 
+	@Override
 	public boolean matches(Member joinPointSignature, World world, boolean allowBridgeMethods) {
 		// fail (or succeed!) fast tests...
 		if (joinPointSignature == null) {
@@ -628,7 +631,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 		if (!parameterTypes.matches(resolvedParameters, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
-			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()), TypePattern.STATIC).alwaysTrue()) {
+			if (!parameterTypes.matches(world.resolve(aConstructor.getGenericParameterTypes()), TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 				return FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
@@ -968,6 +971,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		return annotationPattern;
 	}
 
+	@Override
 	public boolean isStarAnnotation() {
 		return annotationPattern == AnnotationTypePattern.ANY;
 	}
@@ -981,10 +985,12 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		return isExactDeclaringTypePattern;
 	}
 
+	@Override
 	public boolean isMatchOnAnyName() {
 		return getName().isAny();
 	}
 
+	@Override
 	public List<ExactTypePattern> getExactDeclaringTypes() {
 		if (declaringType instanceof ExactTypePattern) {
 			List<ExactTypePattern> l = new ArrayList<ExactTypePattern>();
@@ -995,6 +1001,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		}
 	}
 
+	@Override
 	public boolean couldEverMatch(ResolvedType type) {
 		return declaringType.matches(type, TypePattern.STATIC).maybeTrue();
 	}

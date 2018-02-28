@@ -91,6 +91,7 @@ public abstract class Type {
 	public static final ObjectType STRING = new ObjectType("java.lang.String");
 	public static final ObjectType OBJECT_ARRAY = new ObjectType("java.lang.Object[]");
 	public static final ObjectType STRING_ARRAY = new ObjectType("java.lang.String[]");
+	public static final ObjectType CLASS_ARRAY = new ObjectType("java.lang.Class[]");
 	public static final ObjectType STRINGBUFFER = new ObjectType("java.lang.StringBuffer");
 	public static final ObjectType STRINGBUILDER = new ObjectType("java.lang.StringBuilder");
 	public static final ObjectType THROWABLE = new ObjectType("java.lang.Throwable");
