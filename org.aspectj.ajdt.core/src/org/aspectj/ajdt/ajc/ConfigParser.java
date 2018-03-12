@@ -45,7 +45,15 @@ public class ConfigParser {
 		for (int i = 0; i < argsArray.length; i++) {
 			args.add(new Arg(argsArray[i], location));
 		}
-		String aspectjOptions = System.getProperty("ASPECTJ_OPTS");
+		String aspectjOptions = null;
+		try {
+			aspectjOptions = System.getenv("ASPECTJ_OPTS");
+			if (aspectjOptions == null) {
+				aspectjOptions = System.getProperty("ASPECTJ_OPTS");
+			}
+		} catch (Throwable t) {
+			aspectjOptions = null;
+		}
 		if (aspectjOptions != null) {
 			StringTokenizer st = new StringTokenizer(aspectjOptions);
 			while (st.hasMoreElements()) {
