@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2008 Contributors
+ * Copyright (c) 2008, 2018 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
@@ -15,7 +15,11 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
-import aj.org.objectweb.asm.*;
+import aj.org.objectweb.asm.ClassReader;
+import aj.org.objectweb.asm.ClassVisitor;
+import aj.org.objectweb.asm.ClassWriter;
+import aj.org.objectweb.asm.MethodVisitor;
+import aj.org.objectweb.asm.Opcodes;
 
 /**
  * Uses asm to add the stack map attribute to methods in a class. The class is passed in as pure byte data and then a reader/writer
@@ -79,6 +83,7 @@ public class StackMapAdder {
 		
 
 		// Implementation of getCommonSuperClass() that avoids Class.forName()
+		@Override
 		protected String getCommonSuperClass(final String type1, final String type2) {
 
 			ResolvedType resolvedType1 = world.resolve(UnresolvedType.forName(type1.replace('/', '.')));
@@ -97,6 +102,14 @@ public class StackMapAdder {
 			} else {
 				do {
 					resolvedType1 = resolvedType1.getSuperclass();
+					if (resolvedType1 == null) {
+						// This happens if some types are missing, the getSuperclass() call on 
+						// MissingResolvedTypeWithKnownSignature will return the Missing type which
+						// in turn returns a superclass of null. By returning Object here it
+						// should surface the cantFindType message raised in the first problematic
+						// getSuperclass call
+						return "java/lang/Object";
+					}
 					if (resolvedType1.isParameterizedOrGenericType()) {
 						resolvedType1 = resolvedType1.getRawType();
 					}
