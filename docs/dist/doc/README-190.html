@@ -20,6 +20,40 @@ All rights reserved.
 <p>The full list of resolved issues in 1.9.0 is available 
 <a href="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.0">here</a></h2>.</p>
 
+<h1>AspectJ 1.9.0</h1>
+
+<h4>Improved runtime interface</h4>
+<p>New factory methods have been added to the AspectJ runtime. This is an attempt to more optimally create <tt>thisJoinPoint</tt> and
+<tt>thisEnclosingJoinPoint</tt> objects. The generated code that invokes these now also uses the ability 
+for the LDC bytecode instruction to load class constants directly (this replaces what was happening
+previously where generated code referenced string classnames and classloading was being done from the
+aspectj runtime as the woven application was starting).</p>
+
+<p>This is turned on by using <tt>-Xajruntimetarget:1.9</tt>. This option was used previously to enable
+users to target an old runtime if they knew that old runtime is all that was available at some deployed target.
+The new generation mechanism is not the default, not until it has had a bit more testing out in the wild.</p>
+
+<p>The changes to generated code have a couple of potential side effects:
+<ul>
+<li><b>overall size</b>: the woven code may be smaller due to the use of smaller string constant pieces in the generated
+code (previously strings were smashed together in the generated code and then taken apart by AspectJ at runtime).
+Since the pieces are smaller, they can be shared across other uses in the class file.
+<li><b>method size</b>: although the overall class may be smaller there are more instructions involved in preparing the
+data for invocation of the new joinpoint factory methods. It is possible if you have a lot of joinpoints that we might
+blow the 64k instruction limit for the <tt>ajc$preClinit</tt> method (where the factory invocation code is generated).
+Please provide feedback if this happens to you!
+</ul>
+
+<p>In anticipation of not all build plugins supporting that <tt>-Xajruntimetarget</tt> option, you can now specify
+these kinds of option in the <tt>ASPECTJ_OPTS</tt> environment variable. Set that in your environment:</p>
+<pre><code>
+export ASPECTJ_OPTS="-Xajruntimetarget:1.9"
+</code></pre>
+<p>And it should get picked up by AspectJ when it runs.</p>
+
+<ul>
+<li>1.9.0 available 30-Mar-2018
+</ul>
 
 <h1>AspectJ 1.9.0.RC4</h1>
 
@@ -285,34 +319,6 @@ the <tt>module-info</tt>. (<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?i
 
 <br><br>
 
-<h4>Improved runtime interface</h4>
-<p>New factory methods have been added to the AspectJ runtime. This is an attempt to more optimally create <tt>thisJoinPoint</tt> and
-<tt>thisEnclosingJoinPoint</tt> objects. The generated code that invokes these now also uses the ability 
-for the LDC bytecode instruction to load class constants directly (this replaces what was happening
-previously where generated code referenced string classnames and classloading was being done from the
-aspectj runtime as the woven application was starting).</p>
-
-<p>This is turned on by using <tt>-Xajruntimetarget:1.9</tt>. This option was used previously to enable
-users to target an old runtime if they knew that old runtime is all that was available at some deployed target.
-The new generation mechanism is not the default, not until it has had a bit more testing out in the wild.</p>
-
-<p>The changes to generated code have a couple of potential side effects:
-<ul>
-<li><b>overall size</b>: the woven code may be smaller due to the use of smaller string constant pieces in the generated
-code (previously strings were smashed together in the generated code and then taken apart by AspectJ at runtime).
-Since the pieces are smaller, they can be shared across other uses in the class file.
-<li><b>method size</b>: although the overall class may be smaller there are more instructions involved in preparing the
-data for invocation of the new joinpoint factory methods. It is possible if you have a lot of joinpoints that we might
-blow the 64k instruction limit for the <tt>ajc$preClinit</tt> method (where the factory invocation code is generated).
-Please provide feedback if this happens to you!
-</ul>
-
-<p>In anticipation of not all build plugins supporting that <tt>-Xajruntimetarget</tt> option, you can now specify
-these kinds of option in the <tt>ASPECTJ_OPTS</tt> environment variable. Set that in your environment:</p>
-<pre><code>
-export ASPECTJ_OPTS="-Xajruntimetarget:1.9"
-</code></pre>
-<p>And it should get picked up by AspectJ when it runs.</p>
 
 <!-- ============================== -->  
 </body>
