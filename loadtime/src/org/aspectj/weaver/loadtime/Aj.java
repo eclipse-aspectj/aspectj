@@ -66,6 +66,7 @@ public class Aj implements ClassPreProcessor {
 	/**
 	 * Initialization
 	 */
+	@Override
 	public void initialize() {
 
 	}
@@ -80,6 +81,7 @@ public class Aj implements ClassPreProcessor {
 	 * @param loader
 	 * @return woven bytes
 	 */
+	@Override
 	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader, ProtectionDomain protectionDomain) {
 		// TODO AV needs to doc that
 		if (loader == null || className == null || loader.getClass().getName().equals(deleLoader)) {
@@ -171,6 +173,7 @@ public class Aj implements ClassPreProcessor {
 			return instance;
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (!(obj instanceof AdaptorKey)) {
 				return false;
@@ -181,6 +184,7 @@ public class Aj implements ClassPreProcessor {
 					&& loaderClass.equals(other.loaderClass);
 		}
 
+		@Override
 		public int hashCode() {
 			return hashValue;
 		}
@@ -301,7 +305,7 @@ public class Aj implements ClassPreProcessor {
                 if (loader.equals(myClassLoader)){
                     adaptor = myClassLoaderAdaptor;
                 } else {
-                	adaptor = (ExplicitlyInitializedClassLoaderWeavingAdaptor) weavingAdaptors.get(adaptorKey);
+                	adaptor = weavingAdaptors.get(adaptorKey);
                 }
 				if (adaptor == null) {
 					// create it and put it back in the weavingAdaptors map but avoid any kind of instantiation
@@ -368,6 +372,11 @@ public class Aj implements ClassPreProcessor {
 
 	public void flushGeneratedClasses(ClassLoader loader) {
 		((ClassLoaderWeavingAdaptor) WeaverContainer.getWeaver(loader, weavingContext)).flushGeneratedClasses();
+	}
+
+	@Override
+	public void prepareForRedefinition(ClassLoader loader, String className) {
+		((ClassLoaderWeavingAdaptor) WeaverContainer.getWeaver(loader, weavingContext)).flushGeneratedClassesFor(className);
 	}
 
 }

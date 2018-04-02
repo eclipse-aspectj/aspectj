@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
@@ -24,6 +22,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -114,6 +114,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * 
 	 * @deprecated
 	 */
+	@Deprecated
 	public ClassLoaderWeavingAdaptor(final ClassLoader deprecatedLoader, final IWeavingContext deprecatedContext) {
 		super();
 		if (trace.isTraceEnabled()) {
@@ -135,6 +136,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		 * Callback when we need to define a Closure in the JVM
 		 * 
 		 */
+		@Override
 		public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
 			try {
 				if (shouldDump(name.replace('/', '.'), false)) {
@@ -1006,6 +1008,30 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		generatedClasses = new HashMap<String, IUnwovenClassFile>();
 	}
 
+	/**
+	 * Remove generated classes based on the supplied className. This will
+	 * remove any entries related to this name - so the class itself plus
+	 * and inner classes.
+	 * @param className a slashed classname (e.g. com/foo/Bar)
+	 */
+	public void flushGeneratedClassesFor(String className) {
+		try {
+			String dottedClassName = className.replace('/', '.');
+			String dottedClassNameDollar = dottedClassName+"$"; // to pickup inner classes
+			Iterator<Map.Entry<String, IUnwovenClassFile>> iter = generatedClasses.entrySet().iterator();
+			while (iter.hasNext()) {
+				Entry<String, IUnwovenClassFile> next = iter.next();
+				String existingGeneratedName = next.getKey();
+				if (existingGeneratedName.equals(dottedClassName) ||
+						existingGeneratedName.startsWith(dottedClassNameDollar)) {
+					iter.remove();
+				}
+			}
+		} catch (Throwable t) {
+			new RuntimeException("Unexpected problem tidying up generated classes for "+className,t).printStackTrace();
+		}
+	}
+
 	private Unsafe unsafe;
 
 	private Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
@@ -1061,4 +1087,5 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			trace.exit("defineClass", clazz);
 		}
 	}
+
 }
