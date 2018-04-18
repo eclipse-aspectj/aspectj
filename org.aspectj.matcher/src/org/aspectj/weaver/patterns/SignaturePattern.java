@@ -532,18 +532,27 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		ResolvableTypeList rtl = new ResolvableTypeList(world, aMethod.getParameterTypes());
 		// Only fetch the parameter annotations if the pointcut is going to be matching on them
 		ResolvedType[][] parameterAnnotationTypes = null;
-		if (isMatchingParameterAnnotations()) {
+		boolean paramAnnoMatching = false;
+		// if there are parameterAnnotationTypes then only be concerned if a subjectMatch
+		if (subjectMatch && isMatchingParameterAnnotations()) {
 			parameterAnnotationTypes = aMethod.getParameterAnnotationTypes();
 			if (parameterAnnotationTypes != null && parameterAnnotationTypes.length == 0) {
 				parameterAnnotationTypes = null;
 			}
+			paramAnnoMatching = true;
 		}
 
 		if (!parameterTypes.matches(rtl, TypePattern.STATIC, parameterAnnotationTypes).alwaysTrue()) {
 			// It could still be a match based on the generic sig parameter types of a parameterized type
-			if (!parameterTypes.matches(new ResolvableTypeList(world, aMethod.getGenericParameterTypes()), TypePattern.STATIC,
-					parameterAnnotationTypes).alwaysTrue()) {
+			FuzzyBoolean matches = parameterTypes.matches(new ResolvableTypeList(world, aMethod.getGenericParameterTypes()), TypePattern.STATIC,
+					parameterAnnotationTypes);
+			if (!matches.alwaysTrue()) {
+				if (paramAnnoMatching && matches.alwaysFalse()) {
+					return FuzzyBoolean.NO;
+				}
 				return FuzzyBoolean.MAYBE;
+//					return FuzzyBoolean.NO;// 
+//					return matches.alwaysFalse()?FuzzyBoolean.NO:FuzzyBoolean.MAYBE;
 				// It could STILL be a match based on the erasure of the parameter types??
 				// to be determined via test cases...
 			}

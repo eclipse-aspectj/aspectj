@@ -22,6 +22,10 @@ import junit.framework.Test;
  */
 public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 
+	public void testParamAnnoInheritance() {
+		runTest("param anno inheritance");
+	}
+
 	public void testParamAnnosNegative() {
 		runTest("param annos negative");
 	}
