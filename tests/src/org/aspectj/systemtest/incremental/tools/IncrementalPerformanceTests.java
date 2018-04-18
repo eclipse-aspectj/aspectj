@@ -141,6 +141,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 
 	// --- helper code ---
 
+	@SuppressWarnings("unused")
 	private void waitFor10() {
 		try {
 			Thread.sleep(10000);
@@ -149,6 +150,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void waitForReturn() {
 		try {
 			System.in.read();
@@ -157,11 +159,13 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		}
 	}
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		testdataSrcDir = "../tests/incrementalPerformance";
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		testdataSrcDir = "../tests/multiIncremental";

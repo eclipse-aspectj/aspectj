@@ -12,10 +12,10 @@ package org.aspectj.systemtest.ajc171;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 // NOTE THIS IS ACTUALLY IN 1.7.2 - IT IS JUST THAT THE PATCH WAS CREATED AGAINST 1.7.1
 public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -60,10 +60,12 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(NewFeatures.class);
 	}
 
+	@SuppressWarnings("unused")
 	private JavaClass getMyClass(String className) throws ClassNotFoundException {
 		return getClassFrom(ajc.getSandboxDirectory(), className);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return new File("../tests/src/org/aspectj/systemtest/ajc171/newfeatures-tests.xml");
 	}

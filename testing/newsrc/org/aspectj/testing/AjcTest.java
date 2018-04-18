@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2004,2013 IBM Corporation, contributors
+ * Copyright (c) 2004,2018 IBM Corporation, contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -27,6 +27,7 @@ public class AjcTest {
 	private static boolean is17VMOrGreater = false;
 	private static boolean is18VMOrGreater = false;
 	private static boolean is19VMOrGreater = false;
+	private static boolean is10VMOrGreater = false;
 	
 	static { // matching logic is also in org.aspectj.util.LangUtil
 		is14VMOrGreater = LangUtil.is14VMOrGreater();
@@ -35,6 +36,7 @@ public class AjcTest {
 		is17VMOrGreater = LangUtil.is17VMOrGreater();
 		is18VMOrGreater = LangUtil.is18VMOrGreater();
 		is19VMOrGreater = LangUtil.is19VMOrGreater();
+		is10VMOrGreater = LangUtil.is10VMOrGreater();
 	}
 
 	private List<ITestStep> testSteps = new ArrayList<ITestStep>();
@@ -78,6 +80,7 @@ public class AjcTest {
 		if (vmLevel.equals("1.7")) canRun = is17VMOrGreater;
 		if (vmLevel.equals("1.8")) canRun = is18VMOrGreater;
 		if (vmLevel.equals("1.9")) canRun = is19VMOrGreater;
+		if (vmLevel.equals("10")) canRun = is10VMOrGreater;
 		if (!canRun) {
 			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel() 
 					+ ", currently running on " + System.getProperty("java.vm.version"));

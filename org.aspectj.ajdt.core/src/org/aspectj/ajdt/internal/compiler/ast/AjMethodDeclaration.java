@@ -56,9 +56,10 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		return classFile.generateMethodInfoAttributes(binding,extras);
 	}
 	
+	@Override
 	protected int generateInfoAttributes(ClassFile classFile) {
 	    return generateInfoAttributes(classFile,false);
-	}
+	} 
 	
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
 		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;

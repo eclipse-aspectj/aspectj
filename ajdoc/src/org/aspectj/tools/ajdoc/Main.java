@@ -35,6 +35,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * This is an old implementation of ajdoc that does not use an OO style. However, it does the job, and should serve to evolve a
@@ -125,7 +126,7 @@ public class Main implements Config {
 			}
 
 			for (int i = 0; i < filenames.size(); i++) {
-				inputFiles[i] = new File((String) filenames.elementAt(i));
+				inputFiles[i] = new File(filenames.elementAt(i));
 			}
 
 			// PHASE 0: call ajc
@@ -223,7 +224,7 @@ public class Main implements Config {
 		String[] argsToCompiler = new String[ajcOptions.size() + inputFiles.length];
 		int i = 0;
 		for (; i < ajcOptions.size(); i++) {
-			argsToCompiler[i] = (String) ajcOptions.elementAt(i);
+			argsToCompiler[i] = ajcOptions.elementAt(i);
 		}
 		for (int j = 0; j < inputFiles.length; j++) {
 			argsToCompiler[i] = inputFiles[j].getAbsolutePath();
@@ -237,6 +238,8 @@ public class Main implements Config {
 	private static void callJavadoc(File[] signatureFiles) throws IOException {
 		System.out.println("> Calling javadoc...");
 		String[] javadocargs = null;
+
+		List<String> files = new ArrayList<String>();
 		if (packageMode) {
 			int numExtraArgs = 2;
 			if (authorStandardDocletSwitch)
@@ -256,24 +259,37 @@ public class Main implements Config {
 			}
 			// javadocargs[1] = getSourcepathAsString();
 			for (int k = 0; k < options.size(); k++) {
-				javadocargs[numExtraArgs + k] = (String) options.elementAt(k);
+				javadocargs[numExtraArgs + k] = options.elementAt(k);
 			}
 			for (int k = 0; k < packageList.size(); k++) {
-				javadocargs[numExtraArgs + options.size() + k] = (String) packageList.elementAt(k);
+				javadocargs[numExtraArgs + options.size() + k] = packageList.elementAt(k);
 			}
 			for (int k = 0; k < fileList.size(); k++) {
-				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = (String) fileList.elementAt(k);
+				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
+			}
+			if (LangUtil.is19VMOrGreater()) {
+				options = new Vector<String>();
+				for (String a: javadocargs) {
+					options.add(a);
+				}
 			}
 		} else {
 			javadocargs = new String[options.size() + signatureFiles.length];
 			for (int k = 0; k < options.size(); k++) {
-				javadocargs[k] = (String) options.elementAt(k);
+				javadocargs[k] = options.elementAt(k);
 			}
 			for (int k = 0; k < signatureFiles.length; k++) {
 				javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
 			}
+			for (int k = 0; k < signatureFiles.length; k++) {
+				files.add(StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath()));
+			}
 		}
-		JavadocRunner.callJavadoc(javadocargs);
+		if (LangUtil.is19VMOrGreater()) {
+			JavadocRunner.callJavadocViaToolProvider(options, files);
+		} else {
+			JavadocRunner.callJavadoc(javadocargs);
+		}
 	}
 
 	/**
@@ -290,7 +306,7 @@ public class Main implements Config {
 		removeDeclIDsFromFile("serialized-form.html", true);
 		if (packageList.size() > 0) {
 			for (int p = 0; p < packageList.size(); p++) {
-				removeDeclIDsFromFile(((String) packageList.elementAt(p)).replace('.', '/') + Config.DIR_SEP_CHAR
+				removeDeclIDsFromFile(packageList.elementAt(p).replace('.', '/') + Config.DIR_SEP_CHAR
 						+ "package-summary.html", true);
 			}
 		} else {
@@ -300,6 +316,7 @@ public class Main implements Config {
 				return;
 			}
 			files = FileUtil.listFiles(rootDir, new FileFilter() {
+				@Override
 				public boolean accept(File f) {
 					return f.getName().equals("package-summary.html");
 				}
@@ -348,7 +365,7 @@ public class Main implements Config {
 		Vector<String> sourcePath = new Vector<String>();
 		boolean found = false;
 		for (int i = 0; i < options.size(); i++) {
-			String currOption = (String) options.elementAt(i);
+			String currOption = options.elementAt(i);
 			if (found && !currOption.startsWith("-")) {
 				sourcePath.add(currOption);
 			}
@@ -362,8 +379,8 @@ public class Main implements Config {
 	static File getRootDir() {
 		File rootDir = new File(".");
 		for (int i = 0; i < options.size(); i++) {
-			if (((String) options.elementAt(i)).equals("-d")) {
-				rootDir = new File((String) options.elementAt(i + 1));
+			if (options.elementAt(i).equals("-d")) {
+				rootDir = new File(options.elementAt(i + 1));
 				if (!rootDir.exists()) {
 					rootDir.mkdir();
 					// System.out.println( "Destination directory not found: " +
@@ -462,7 +479,7 @@ public class Main implements Config {
 				args = new String[argList.size()];
 				int counter = 0;
 				for (Iterator<String> it = argList.iterator(); it.hasNext();) {
-					args[counter] = (String) it.next();
+					args[counter] = it.next();
 					counter++;
 				}
 			} catch (FileNotFoundException e) {
@@ -494,7 +511,7 @@ public class Main implements Config {
 	static String getSourcepathAsString() {
 		String cPath = "";
 		for (int i = 0; i < sourcepath.size(); i++) {
-			cPath += (String) sourcepath.elementAt(i) + Config.DIR_SEP_CHAR + outputWorkingDir;
+			cPath += sourcepath.elementAt(i) + Config.DIR_SEP_CHAR + outputWorkingDir;
 			if (i != sourcepath.size() - 1) {
 				cPath += File.pathSeparator;
 			}
@@ -667,10 +684,11 @@ public class Main implements Config {
 
 					// do this for every item in the classpath
 					for (int c = 0; c < sourcepath.size(); c++) {
-						String path = (String) sourcepath.elementAt(c) + Config.DIR_SEP_CHAR + arg;
+						String path = sourcepath.elementAt(c) + Config.DIR_SEP_CHAR + arg;
 						File pkg = new File(path);
 						if (pkg.isDirectory()) {
 							String[] files = pkg.list(new FilenameFilter() {
+								@Override
 								public boolean accept(File dir, String name) {
 									int index1 = name.lastIndexOf(".");
 									int index2 = name.length();
@@ -684,7 +702,7 @@ public class Main implements Config {
 								}
 							});
 							for (int j = 0; j < files.length; j++) {
-								filenames.addElement((String) sourcepath.elementAt(c) + Config.DIR_SEP_CHAR + arg
+								filenames.addElement(sourcepath.elementAt(c) + Config.DIR_SEP_CHAR + arg
 										+ Config.DIR_SEP_CHAR + files[j]);
 							}
 						} else if (c == sourcepath.size()) { // last element on classpath

@@ -15,11 +15,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 /**
  * This class is the super class of all Ajdoc tests. It creates a sandbox directory and provides utility methods for copying over
@@ -31,6 +31,7 @@ public class AjdocTestCase extends TestCase {
 	protected static File sandboxDir;
 	private String docOutdir, projectDir;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		docOutdir = null;
@@ -41,6 +42,7 @@ public class AjdocTestCase extends TestCase {
 		Main.setOutputWorkingDir(getWorkingDir().getAbsolutePath());
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		// reset where ajdocworkingdir is created
@@ -166,7 +168,8 @@ public class AjdocTestCase extends TestCase {
 			!sourceLevel.equals("1.6") && 
 			!sourceLevel.equals("1.7") && 
 			!sourceLevel.equals("1.8") && 
-			!sourceLevel.equals("1.9")) {
+			!sourceLevel.equals("1.9") &&
+			!sourceLevel.equals("10")) {
 			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
 		}
 		String[] args = new String[6 + inputFiles.length + ajOptions.length];

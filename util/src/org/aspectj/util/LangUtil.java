@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2018 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -151,6 +152,10 @@ public class LangUtil {
 	public static boolean is19VMOrGreater() {
 		return 9 <= vmVersion;
 	}
+	
+	public static boolean is10VMOrGreater() {
+		return 10 <= vmVersion;
+	}
 
 	/**
 	 * Shorthand for "if null, throw IllegalArgumentException"
@@ -267,7 +272,7 @@ public class LangUtil {
 	 * @param text <code>String</code> to split.
 	 */
 	public static String[] split(String text) {
-		return (String[]) strings(text).toArray(new String[0]);
+		return strings(text).toArray(new String[0]);
 	}
 
 	/**
@@ -298,7 +303,7 @@ public class LangUtil {
 				result.add(entry);
 			}
 		}
-		return (String[]) result.toArray(new String[0]);
+		return result.toArray(new String[0]);
 	}
 
 	/**
@@ -886,7 +891,7 @@ public class LangUtil {
 		String line;
 		int elided = 0;
 		while (!lines.isEmpty()) {
-			line = (String) lines.getLast();
+			line = lines.getLast();
 			if (!checker.acceptString(line)) {
 				break;
 			} else {
@@ -898,7 +903,7 @@ public class LangUtil {
 			final int EOL_LEN = EOL.length();
 			int totalLength = 0;
 			while (!lines.isEmpty()) {
-				totalLength += EOL_LEN + ((String) lines.getFirst()).length();
+				totalLength += EOL_LEN + lines.getFirst().length();
 				lines.removeFirst();
 			}
 			if (stack.length() > totalLength) {
@@ -1060,7 +1065,7 @@ public class LangUtil {
 		if (!LangUtil.isEmpty(args)) {
 			cmd.addAll(Arrays.asList(args));
 		}
-		String[] command = (String[]) cmd.toArray(new String[0]);
+		String[] command = cmd.toArray(new String[0]);
 		if (null == controller) {
 			controller = new ProcessController();
 		}
@@ -1249,7 +1254,7 @@ public class LangUtil {
 			if (!LangUtil.isEmpty(args)) {
 				cmd.addAll(Arrays.asList(args));
 			}
-			init((String[]) cmd.toArray(new String[0]), mainClass);
+			init(cmd.toArray(new String[0]), mainClass);
 		}
 
 		public final void init(String[] command, String label) {
@@ -1315,6 +1320,7 @@ public class LangUtil {
 			inStream = new FileUtil.Pipe(System.in, process.getOutputStream());
 			// start 4 threads, process & pipes for in, err, out
 			Runnable processRunner = new Runnable() {
+				@Override
 				public void run() {
 					Throwable thrown = null;
 					int result = Integer.MIN_VALUE;
@@ -1466,6 +1472,7 @@ public class LangUtil {
 				thrown = ((null != fromProcess) || (null != fromInPipe) || (null != fromOutPipe) || (null != fromErrPipe));
 			}
 
+			@Override
 			public String toString() {
 				StringBuffer sb = new StringBuffer();
 				append(sb, fromProcess, "process");

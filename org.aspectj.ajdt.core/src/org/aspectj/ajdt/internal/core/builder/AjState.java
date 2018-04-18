@@ -2227,7 +2227,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		if (qualifiedNames.length < qualifiedStrings.elementSize) {
 			qualifiedNames = null;
 		}
-		char[][] simpleNames = ReferenceCollection.internSimpleNames(simpleStrings);
+		char[][] simpleNames = ReferenceCollection.internSimpleNames(simpleStrings, true);
 		// if a well known name was found then we can skip over these
 		if (simpleNames.length < simpleStrings.elementSize) {
 			simpleNames = null;

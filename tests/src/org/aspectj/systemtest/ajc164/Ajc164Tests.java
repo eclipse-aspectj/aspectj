@@ -15,9 +15,6 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Test;
-
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -26,6 +23,8 @@ import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -116,14 +115,14 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// assertEquals("/binaries<{Aspect.java}Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
 		assertEquals("/binaries<(Aspect.class'Aspect)Fruit.Fruit_new)QColor;)QString;", itdCtorHandle);
 		IProgramElement itdcpe = model.getHierarchy().findElementForHandle(itdCtorHandle);
-		List ptypes = itdcpe.getParameterTypes();
-		assertEquals("java.awt.Color", new String((char[]) ptypes.get(0)));
-		assertEquals("java.lang.String", new String((char[]) ptypes.get(1)));
+		List<char[]> ptypes = itdcpe.getParameterTypes();
+		assertEquals("java.awt.Color", new String(ptypes.get(0)));
+		assertEquals("java.lang.String", new String(ptypes.get(1)));
 	}
 
 	private void printModel(AsmManager model) {
 		try {
-			model.dumptree(model.getHierarchy().getRoot(), 0);
+			AsmManager.dumptree(model.getHierarchy().getRoot(), 0);
 			model.dumprels(new PrintWriter(System.out));
 		} catch (Exception e) {
 		}
@@ -416,6 +415,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc164Tests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return getClassResource("ajc164.xml");
 	}
@@ -427,9 +427,9 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		if (whereToLook.getSourceLocation() != null && whereToLook.getSourceLocation().getLine() == line) {
 			return whereToLook;
 		}
-		List kids = whereToLook.getChildren();
-		for (Iterator iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement object = (IProgramElement) iterator.next();
+		List<IProgramElement> kids = whereToLook.getChildren();
+		for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
+			IProgramElement object = iterator.next();
 			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
 				return object;
 			}

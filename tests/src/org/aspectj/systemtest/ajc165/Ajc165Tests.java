@@ -13,10 +13,11 @@ package org.aspectj.systemtest.ajc165;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.Test;
-
+import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.LintMessage;
+
+import junit.framework.Test;
 
 public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -82,7 +83,7 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testAnnotationStyle_pr265356() {
 		runTest("annotation style message positions");
-		List ms = ajc.getLastCompilationResult().getWarningMessages();
+		List<IMessage> ms = ajc.getLastCompilationResult().getWarningMessages();
 		boolean checked = true;
 		// Look for the message relating to 'List' and check the offsets
 		for (int i = 0; i < ms.size(); i++) {
@@ -115,6 +116,7 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc165Tests.class);
 	}
 
+	@Override
 	protected File getSpecFile() {
 		return getClassResource("ajc165.xml");
 	}

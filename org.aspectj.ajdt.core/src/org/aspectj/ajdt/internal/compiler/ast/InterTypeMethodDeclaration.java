@@ -22,14 +22,12 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
-import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.CodeStream;
 import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.flow.FlowInfo;
-import org.aspectj.org.eclipse.jdt.internal.compiler.flow.InitializationFlowContext;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
@@ -59,9 +57,10 @@ import org.aspectj.weaver.UnresolvedType;
  */
 public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public InterTypeMethodDeclaration(CompilationResult result, TypeReference onType) {
-		super(result, onType);
+		super(result, onType); 
 	}
 
+	@Override
 	public void parseStatements(Parser parser, CompilationUnitDeclaration unit) {
 		if (ignoreFurtherInvestigation)
 			return;
@@ -70,6 +69,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 	}
 
+	@Override
 	protected char[] getPrefix() {
 		return (NameMangler.ITD_PREFIX + "interMethod$").toCharArray();
 	}
@@ -91,6 +91,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		super.analyseCode(classScope, flowContext, flowInfo);
 	}
 
+	@Override
 	public void resolve(ClassScope upperScope) {
 		if (munger == null)
 			ignoreFurtherInvestigation = true;
@@ -119,6 +120,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		super.resolve(upperScope);
 	}
 
+	@Override
 	public void resolveStatements() {
 		checkAndSetModifiersForMethod();
 		if ((modifiers & ExtraCompilerModifiers.AccSemicolonBody) != 0) {
@@ -196,6 +198,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		}
 	}
 
+	@Override
 	public EclipseTypeMunger build(ClassScope classScope) {
 		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(classScope);
 
@@ -241,6 +244,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		return new AjAttribute.TypeMunger(munger);
 	}
 
+	@Override
 	public void generateCode(ClassScope classScope, ClassFile classFile) {
 		if (ignoreFurtherInvestigation) {
 			// System.err.println("no code for " + this);
@@ -339,6 +343,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}
 
+	@Override
 	protected Shadow.Kind getShadowKindForBody() {
 		return Shadow.MethodExecution;
 	}

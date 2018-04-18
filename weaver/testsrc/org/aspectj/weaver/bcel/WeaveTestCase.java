@@ -118,12 +118,8 @@ public abstract class WeaveTestCase extends TestCase {
 			gen = classType.getLazyClassGen(); // new LazyClassGen(classType);
 		}
 		try {
-			File possibleVmSpecificFile = new File(TESTDATA_DIR,outName + "." + LangUtil.getVmVersionString()+".txt");
-			if (possibleVmSpecificFile.exists()) {				
-				checkClass(gen, outDirPath, outName + "." + LangUtil.getVmVersionString()+".txt");
-			} else {
-				checkClass(gen, outDirPath, outName + ".txt");
-			}
+			String filenameToUse = findMostRelevantFile(outName);
+			checkClass(gen, outDirPath, filenameToUse);
 			if (runTests) {
 				System.out.println("*******RUNNING: " + outName + "  " + name + " *******");
 				TestUtil.runMain(makeClassPath(outDirPath), name);
@@ -136,6 +132,19 @@ public abstract class WeaveTestCase extends TestCase {
 			gen.print(System.err);
 			throw e;
 		}
+	}
+	
+	public String findMostRelevantFile(String name) {
+		double version = LangUtil.getVmVersion();
+		while (version > 0) {
+			String possibleFileName = name+"."+Double.toString(version)+".txt";
+			if (new File(TESTDATA_DIR, possibleFileName).exists()) {
+				return possibleFileName;
+			}
+			version--;
+		}
+		// Use the standard file
+		return name+".txt";
 	}
 
 	public String makeClassPath(String outDir) {

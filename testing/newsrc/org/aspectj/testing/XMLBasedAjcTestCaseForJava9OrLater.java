@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
+import org.aspectj.util.LangUtil;
+
 /**
  * Makes sure tests are running on the right level of JDK.
  * 
@@ -20,9 +22,8 @@ public abstract class XMLBasedAjcTestCaseForJava9OrLater extends XMLBasedAjcTest
 
 	@Override
 	public void runTest(String title) {
-		// Check we are on Java9
-		String property = System.getProperty("java.version");
-		if (!property.startsWith("9")) {
+		// Check we are on Java9 or later
+		if (!LangUtil.is19VMOrGreater()) {
 			throw new IllegalStateException("These tests should be run on Java 9 or later");
 		}
 		super.runTest(title);

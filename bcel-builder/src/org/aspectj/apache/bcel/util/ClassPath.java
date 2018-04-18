@@ -53,20 +53,29 @@
  */
 package org.aspectj.apache.bcel.util;
 
-import java.util.*;
-import java.util.zip.*;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URI;
-import java.nio.file.FileVisitResult;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Responsible for loading (class) files from the CLASSPATH. Inspired by
@@ -131,6 +140,7 @@ public class ClassPath implements Serializable {
 	 * 
 	 * @deprecated Use SYSTEM_CLASS_PATH constant
 	 */
+	@Deprecated
 	public ClassPath() {
 		this(getClassPath());
 	}
@@ -138,14 +148,17 @@ public class ClassPath implements Serializable {
 	/**
 	 * @return used class path string
 	 */
+	@Override
 	public String toString() {
 		return class_path;
 	}
 
+	@Override
 	public int hashCode() {
 		return class_path.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ClassPath) {
 			return class_path.equals(((ClassPath) o).class_path);
@@ -191,6 +204,7 @@ public class ClassPath implements Serializable {
 		for (Iterator<String> e = dirs.iterator(); e.hasNext();) {
 			File ext_dir = new File(e.next());
 			String[] extensions = ext_dir.list(new FilenameFilter() {
+				@Override
 				public boolean accept(File dir, String name) {
 					name = name.toLowerCase();
 					return name.endsWith(".zip") || name.endsWith(".jar");
@@ -212,7 +226,7 @@ public class ClassPath implements Serializable {
 		}
 
 		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
-        if (vm_version.startsWith("9")) {
+        if (vm_version.startsWith("9") || vm_version.startsWith("10")) {
         		buf.insert(0, File.pathSeparatorChar);
         		buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);        		
         }
@@ -378,14 +392,17 @@ public class ClassPath implements Serializable {
 			dir = d;
 		}
 
+		@Override
 		ClassFile getClassFile(String name, String suffix) throws IOException {
 			final File file = new File(dir + File.separatorChar + name.replace('.', File.separatorChar) + suffix);
 
 			return file.exists() ? new ClassFile() {
+				@Override
 				public InputStream getInputStream() throws IOException {
 					return new FileInputStream(file);
 				}
 
+				@Override
 				public String getPath() {
 					try {
 						return file.getCanonicalPath();
@@ -395,14 +412,17 @@ public class ClassPath implements Serializable {
 
 				}
 
+				@Override
 				public long getTime() {
 					return file.lastModified();
 				}
 
+				@Override
 				public long getSize() {
 					return file.length();
 				}
 
+				@Override
 				public String getBase() {
 					return dir;
 				}
@@ -410,6 +430,7 @@ public class ClassPath implements Serializable {
 			} : null;
 		}
 
+		@Override
 		public String toString() {
 			return dir;
 		}
@@ -472,30 +493,36 @@ public class ClassPath implements Serializable {
 				this.size = size;
 			}
 			
+			@Override
 			public InputStream getInputStream() throws IOException {
 				// TODO too costly to keep these in inflated form in memory?
 				this.bais = new ByteArrayInputStream(bytes);
 				return this.bais;
 			}
 
+			@Override
 			public String getPath() {
 				return this.path;
 			}
 
+			@Override
 			public String getBase() {
 				return this.base;
 			}
 
+			@Override
 			public long getTime() {
 				return this.time;
 			}
 
+			@Override
 			public long getSize() {
 				return this.size;
 			}
 			
 		}
 		
+		@Override
 		ClassFile getClassFile(String name, String suffix) throws IOException {
 			// Class files are in here under names like this:
 			//   /modules/java.base/java/lang/Object.class (jdk9 b74)
@@ -522,26 +549,32 @@ public class ClassPath implements Serializable {
 			zip = z;
 		}
 
+		@Override
 		ClassFile getClassFile(String name, String suffix) throws IOException {
 			final ZipEntry entry = zip.getEntry(name.replace('.', '/') + suffix);
 
 			return (entry != null) ? new ClassFile() {
+				@Override
 				public InputStream getInputStream() throws IOException {
 					return zip.getInputStream(entry);
 				}
 
+				@Override
 				public String getPath() {
 					return entry.toString();
 				}
 
+				@Override
 				public long getTime() {
 					return entry.getTime();
 				}
 
+				@Override
 				public long getSize() {
 					return entry.getSize();
 				}
 
+				@Override
 				public String getBase() {
 					return zip.getName();
 				}

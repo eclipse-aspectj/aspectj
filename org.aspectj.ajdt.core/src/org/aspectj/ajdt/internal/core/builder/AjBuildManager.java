@@ -997,7 +997,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				units[i] = moduleCU;
 			} else {
 				units[i] = new CompilationUnit(null, filenames[i], defaultEncoding, null, false, moduleName);
-				units[i].setModule(moduleCU);
+				// With Java 10 changes the modulebinding is fetched from the rootenvironment 
+				// this.moduleBinding = rootEnvironment.getModule(this.module);
+				// rather than using the moduleCU:
+				// if (this.modCU != null)
+				// 	return this.moduleBinding = this.modCU.module(rootEnvironment);
+//				units[i].setModule(moduleCU);
 			}
 //			new CompilationUnit(null, fileName, encoding, this.destinationPaths[i],
 //					shouldIgnoreOptionalProblems(this.ignoreOptionalProblemsFromFolders, fileName.toCharArray()), 

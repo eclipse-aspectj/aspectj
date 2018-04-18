@@ -48,6 +48,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	private String inpathTestingDir;
 	private String expectedOutputDir;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("inpathTesting");
@@ -71,7 +72,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			Map.Entry<String,File> entry = iterator.next();
 			String className = entry.getKey();
 			String fullClassName = expectedOutputDir + File.separator + className.replace('.', File.separatorChar) + ".class";
-			File file = (File) entry.getValue();
+			File file = entry.getValue();
 			assertEquals("expected file to have path \n" + fullClassName + ", but" + " found path \n" + file.getAbsolutePath(),
 					fullClassName, file.getAbsolutePath());
 		}
@@ -289,7 +290,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		configureNonStandardCompileOptions("inpathTesting", "-outxml");
 		build("inpathTesting");
 		AjState state = getState();
-		Map m = state.getAspectNamesToFileNameMap();
+		Map<String,char[]> m = state.getAspectNamesToFileNameMap();
 		assertEquals("Expected only one aspect recored in the state but found " + m.size(), 1, m.size());
 		build("inpathTesting");
 		m = state.getAspectNamesToFileNameMap();
@@ -333,37 +334,46 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			allOutputLocations.add(outputLoc);
 		}
 
+		@Override
 		public File getOutputLocationForClass(File compilationUnit) {
 			return outputLoc;
 		}
 		
+		@Override
 		public Map<File,String> getInpathMap() {
 			return Collections.emptyMap();
 		}
 
 
+		@Override
 		public File getOutputLocationForResource(File resource) {
 			return outputLoc;
 		}
 
+		@Override
 		public List<File> getAllOutputLocations() {
 			return allOutputLocations;
 		}
 
+		@Override
 		public File getDefaultOutputLocation() {
 			return outputLoc;
 		}
 
+		@Override
 		public void reportFileWrite(String outputfile, int filetype) {
 		}
 
+		@Override
 		public void reportFileRemove(String outputfile, int filetype) {
 		}
 
+		@Override
 		public String getSourceFolderForFile(File sourceFile) {
 			return null; // no impl
 		}
 
+		@Override
 		public int discoverChangesSince(File dir, long buildtime) {
 			return 0; // no impl
 		}
