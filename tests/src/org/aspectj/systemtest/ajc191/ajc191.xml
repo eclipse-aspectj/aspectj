@@ -28,7 +28,7 @@
 	<run class="Code3">
 	<stdout>
 	<line text="call(Class java.lang.Object.getClass())"/>
-	<line text="class java.util.ArrayList"/>
+	<line text="class java.lang.String"/>
 	</stdout>
 	</run>
   </ajc-test>

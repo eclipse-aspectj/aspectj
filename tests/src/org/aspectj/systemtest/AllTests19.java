@@ -11,6 +11,7 @@
 package org.aspectj.systemtest;
 
 import org.aspectj.systemtest.ajc190.AllTestsAspectJ190;
+import org.aspectj.systemtest.ajc191.AllTestsAspectJ191;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -21,6 +22,7 @@ public class AllTests19 {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.9");
 		// $JUnit-BEGIN$ 
 		suite.addTest(AllTestsAspectJ190.suite()); 
+		suite.addTest(AllTestsAspectJ191.suite()); 
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$
 		return suite;

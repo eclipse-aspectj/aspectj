@@ -19,6 +19,7 @@ public class AllTestsAspectJ191 {
 		TestSuite suite = new TestSuite("AspectJ 1.9.1 tests");
 		// $JUnit-BEGIN$
 		suite.addTest(Ajc191Tests.suite());
+		suite.addTest(SanityTestsJava10.suite());
 		// $JUnit-END$
 		return suite;
 	}

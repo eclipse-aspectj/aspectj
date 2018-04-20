@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.9.1 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2018 Contributors.
+All rights reserved.
+</small></div>
+<p>The full list of resolved issues in 1.9.1 is available 
+<a href="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.1">here</a></h2>.</p>
+
+<h1>AspectJ 1.9.1</h1>
+
+<h4>Java 10 support</h4>
+<p>AspectJ has updated to a recent JDT compiler version (commit <tt>#abe06abe4ce1</tt> - 9-Apr-2018). With this update it
+now supports Java10.  This means you can use the 'var' support. A simple example of combining var with
+an aspect:</p>
+<p>
+<pre><code>
+public class Code3 {
+	public static void main(String []argv) {
+		var x = "hello";
+		System.out.println(x.getClass());
+	}
+}
+
+aspect X {
+	before(): call(* *.getClass()) && target(String) {
+		System.out.println(thisJoinPointStaticPart);
+	}
+}
+</code></pre>
+</p>
+<p>Available: 1.9.1 available 20-Apr-2018</p>
+
+<br><br>
+
+
+<!-- ============================== -->  
+</body>
+</html>
