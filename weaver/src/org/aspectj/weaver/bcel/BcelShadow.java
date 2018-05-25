@@ -1129,6 +1129,7 @@ public class BcelShadow extends Shadow {
 		return getThisJoinPointStaticPartBcelVar(false);
 	}
 
+	@Override
 	public BcelVar getThisAspectInstanceVar(ResolvedType aspectType) {
 		return new AspectInstanceVar(aspectType);
 	}
@@ -1995,16 +1996,24 @@ public class BcelShadow extends Shadow {
 	 * Causes the aspect instance to be *set* for later retrievable through localAspectof()/aspectOf()
 	 */
 	public void weavePerTypeWithinAspectInitialization(final BcelAdvice munger, UnresolvedType t) {
-
-		if (t.resolve(world).isInterface()) {
-			return; // Don't initialize statics in
+		ResolvedType tResolved = t.resolve(world);
+		if (tResolved.isInterface()) {
+			return; // Don't initialize statics in interfaces
 		}
+		ResolvedType aspectRT = munger.getConcreteAspect();
+		BcelWorld.getBcelObjectType(aspectRT);
+		
+		// Although matched, if the visibility rules prevent the aspect from seeing this type, don't
+		// insert any code (easier to do it here than try to affect the matching logic, unfortunately)
+		if (!(tResolved.canBeSeenBy(aspectRT) || aspectRT.isPrivilegedAspect())) {
+			return;
+		}
+		
 		final InstructionFactory fact = getFactory();
 
 		InstructionList entryInstructions = new InstructionList();
 		InstructionList entrySuccessInstructions = new InstructionList();
 
-		BcelWorld.getBcelObjectType(munger.getConcreteAspect());
 		String aspectname = munger.getConcreteAspect().getName();
 
 		String ptwField = NameMangler.perTypeWithinFieldForTarget(munger.getConcreteAspect());

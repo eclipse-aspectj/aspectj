@@ -51,14 +51,17 @@ public class PerTypeWithin extends PerClause {
 		typePattern = p;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public int couldMatchKinds() {
 		return kindSet;
 	}
 
+	@Override
 	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		PerTypeWithin ret = new PerTypeWithin(typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
@@ -66,6 +69,7 @@ public class PerTypeWithin extends PerClause {
 	}
 
 	// -----
+	@Override
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (typePattern.annotationPattern instanceof AnyAnnotationTypePattern) {
 			return isWithinType(info.getType());
@@ -73,6 +77,7 @@ public class PerTypeWithin extends PerClause {
 		return FuzzyBoolean.MAYBE;
 	}
 
+	@Override
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		ResolvedType enclosingType = shadow.getIWorld().resolve(shadow.getEnclosingType(), true);
 		if (enclosingType.isMissing()) {
@@ -90,15 +95,20 @@ public class PerTypeWithin extends PerClause {
 		if (enclosingType.isInterface()) {
 			return FuzzyBoolean.NO;
 		}
+		if (!(enclosingType.canBeSeenBy(inAspect) || inAspect.isPrivilegedAspect())) {
+			return FuzzyBoolean.NO;
+		}
 
 		typePattern.resolve(shadow.getIWorld());
 		return isWithinType(enclosingType);
 	}
 
+	@Override
 	public void resolveBindings(IScope scope, Bindings bindings) {
 		typePattern = typePattern.resolveBindings(scope, bindings, false, false);
 	}
 
+	@Override
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		// Member ptwField =
 		// AjcMemberMaker.perTypeWithinField(shadow.getEnclosingType
@@ -135,6 +145,7 @@ public class PerTypeWithin extends PerClause {
 		return match(shadow).alwaysTrue() ? Literal.TRUE : Literal.FALSE;
 	}
 
+	@Override
 	public PerClause concretize(ResolvedType inAspect) {
 		PerTypeWithin ret = new PerTypeWithin(typePattern);
 		ret.copyLocationFrom(this);
@@ -152,14 +163,12 @@ public class PerTypeWithin extends PerClause {
 		Pointcut staticInitStar = new KindedPointcut(Shadow.StaticInitialization, sigpat);
 		Pointcut withinTp = new WithinPointcut(typePattern);
 		Pointcut andPcut = new AndPointcut(staticInitStar, withinTp);
-		// We want the pointcut to be 'staticinitialization(*) &&
-		// within(<typepattern>' -
+		// We want the pointcut to be:
+		// 'staticinitialization(*) && within(<typepattern>)' -
 		// we *cannot* shortcut this to staticinitialization(<typepattern>)
-		// because it
-		// doesnt mean the same thing.
+		// because it doesnt mean the same thing.
 
-		// This munger will initialize the aspect instance field in the matched
-		// type
+		// This munger will initialize the aspect instance field in the matched type
 
 		inAspect.crosscuttingMembers.addConcreteShadowMunger(Advice.makePerTypeWithinEntry(world, andPcut, inAspect));
 
@@ -181,6 +190,7 @@ public class PerTypeWithin extends PerClause {
 
 	}
 
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		PERTYPEWITHIN.write(s);
 		typePattern.write(s);
@@ -193,14 +203,17 @@ public class PerTypeWithin extends PerClause {
 		return ret;
 	}
 
+	@Override
 	public PerClause.Kind getKind() {
 		return PERTYPEWITHIN;
 	}
 
+	@Override
 	public String toString() {
 		return "pertypewithin(" + typePattern + ")";
 	}
 
+	@Override
 	public String toDeclarationString() {
 		return toString();
 	}
@@ -215,6 +228,7 @@ public class PerTypeWithin extends PerClause {
 		return FuzzyBoolean.NO;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof PerTypeWithin)) {
 			return false;
@@ -224,6 +238,7 @@ public class PerTypeWithin extends PerClause {
 				&& ((pc.typePattern == null) ? (typePattern == null) : pc.typePattern.equals(typePattern));
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + ((inAspect == null) ? 0 : inAspect.hashCode());

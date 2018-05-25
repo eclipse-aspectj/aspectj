@@ -114,18 +114,22 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	public ISourceContext getSourceContext() {
 		return new ISourceContext() {
 
+			@Override
 			public ISourceLocation makeSourceLocation(IHasPosition position) {
 				return null;
 			}
 
+			@Override
 			public ISourceLocation makeSourceLocation(int line, int offset) {
 				return null;
 			}
 
+			@Override
 			public int getOffset() {
 				return 0;
 			}
 
+			@Override
 			public void tidy() {
 			}
 
@@ -151,7 +155,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 			return isAssignableFrom(other);
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -168,6 +172,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	 * 
 	 * @see org.aspectj.weaver.AnnotatedElement#hasAnnotation(org.aspectj.weaver.UnresolvedType)
 	 */
+	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_ANNOTATION);
 		return false;

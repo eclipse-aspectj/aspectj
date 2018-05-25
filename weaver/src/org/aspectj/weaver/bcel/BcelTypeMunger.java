@@ -829,7 +829,9 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// e.g ajc$com_blah_SecurityAspect$ptwAspectInstance
 		FieldGen fg = makeFieldGen(gen, AjcMemberMaker.perTypeWithinField(gen.getType(), aspectType));
 		gen.addField(fg, getSourceLocation());
-
+		if (!gen.getType().canBeSeenBy(aspectType) && aspectType.isPrivilegedAspect()) {
+			gen.forcePublic();
+		}
 		// Add an accessor for this new field, the
 		// ajc$<aspectname>$localAspectOf() method
 		// e.g.

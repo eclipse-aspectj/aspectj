@@ -29,6 +29,7 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		this.testPointcut = testPointcut;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof PerTypeWithinTargetTypeMunger)) {
 			return false;
@@ -40,6 +41,7 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 
 	private volatile int hashCode = 0;
 
+	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
 			int result = 17;
@@ -50,6 +52,7 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		return hashCode;
 	}
 
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		throw new RuntimeException("shouldn't be serialized");
 	}
@@ -65,8 +68,9 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 	// This is a lexical within() so if you say PerTypeWithin(Test) and matchType is an
 	// inner type (e.g. Test$NestedType) then it should match successfully
 	// Does not match if the target is an interface
+	@Override
 	public boolean matches(ResolvedType matchType, ResolvedType aspectType) {
-		return isWithinType(matchType).alwaysTrue() && !matchType.isInterface();
+		return isWithinType(matchType).alwaysTrue() && !matchType.isInterface() && (matchType.canBeSeenBy(aspectType) || aspectType.isPrivilegedAspect());
 	}
 
 	private FuzzyBoolean isWithinType(ResolvedType type) {
@@ -78,5 +82,5 @@ public class PerTypeWithinTargetTypeMunger extends ResolvedTypeMunger {
 		}
 		return FuzzyBoolean.NO;
 	}
-
+	
 }

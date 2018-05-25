@@ -59,6 +59,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	private static int TypeHierarchyCompleteBit = 0x0010;
 	private static int GroovyObjectInitialized = 0x0020;
 	private static int IsGroovyObject = 0x0040;
+	private static int IsPrivilegedBitInitialized = 0x0080;
+	private static int IsPrivilegedAspect = 0x0100;
 
 	protected ResolvedType(String signature, World world) {
 		super(signature);
@@ -70,6 +72,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		this.world = world;
 	}
 
+	@Override
 	public int getSize() {
 		return 1;
 	}
@@ -107,6 +110,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	public abstract int getModifiers();
 
+	public boolean canBeSeenBy(ResolvedType from) {
+		int targetMods = getModifiers();
+		if (Modifier.isPublic(targetMods)) {
+			return true;
+		}
+		if (Modifier.isPrivate(targetMods)) {
+			return false;
+		}
+		// isProtected() or isDefault()
+		return getPackageName().equals(from.getPackageName());
+	}
+
 	// return true if this resolved type couldn't be found (but we know it's name maybe)
 	public boolean isMissing() {
 		return false;
@@ -124,10 +139,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		return EMPTY_RESOLVED_TYPE_ARRAY;
 	}
 
+	@Override
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		return null;
 	}
@@ -197,6 +214,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public Iterator<ResolvedMember> getFields() {
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			@Override
 			public Iterator<ResolvedType> get(ResolvedType o) {
 				return dupFilter.filter(o.getDirectSupertypes());
 			}
@@ -230,6 +248,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * An Iterators.Getter that returns an iterator over all methods declared on some resolved type.
 	 */
 	private static class MethodGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		@Override
 		public Iterator<ResolvedMember> get(ResolvedType type) {
 			return Iterators.array(type.getDeclaredMethods());
 		}
@@ -239,6 +258,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * An Iterators.Getter that returns an iterator over all pointcuts declared on some resolved type.
 	 */
 	private static class PointcutGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		@Override
 		public Iterator<ResolvedMember> get(ResolvedType o) {
 			return Iterators.array(o.getDeclaredPointcuts());
 		}
@@ -248,6 +268,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	// Getter that returns all declared methods for a type through an iterator - including intertype declarations
 	private static class MethodGetterIncludingItds implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		@Override
 		public Iterator<ResolvedMember> get(ResolvedType type) {
 			ResolvedMember[] methods = type.getDeclaredMethods();
 			if (type.interTypeMungers != null) {
@@ -280,6 +301,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * An Iterators.Getter that returns an iterator over all fields declared on some resolved type.
 	 */
 	private static class FieldGetter implements Iterators.Getter<ResolvedType, ResolvedMember> {
+		@Override
 		public Iterator<ResolvedMember> get(ResolvedType type) {
 			return Iterators.array(type.getDeclaredFields());
 		}
@@ -307,6 +329,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
 			List<String> alreadySeen = new ArrayList<String>(); // Strings are signatures (ResolvedType.getSignature())
 
+			@Override
 			public Iterator<ResolvedType> get(ResolvedType type) {
 				ResolvedType[] interfaces = type.getDeclaredInterfaces();
 
@@ -732,6 +755,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		// same order as fields
 		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			@Override
 			public Iterator<ResolvedType> get(ResolvedType o) {
 				return dupFilter.filter(o.getDirectSupertypes());
 			}
@@ -799,6 +823,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// ret.addAll(getDeclares());
 			final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 			Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+				@Override
 				public Iterator<ResolvedType> get(ResolvedType o) {
 					return dupFilter.filter((o).getDirectSupertypes());
 				}
@@ -832,6 +857,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		List<ShadowMunger> acc = new ArrayList<ShadowMunger>();
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
+			@Override
 			public Iterator<ResolvedType> get(ResolvedType o) {
 				return dupFilter.filter((o).getDirectSupertypes());
 			}
@@ -1097,7 +1123,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		public final int getSize() {
 			return size;
 		}
-
+		
 		@Override
 		public final int getModifiers() {
 			return Modifier.PUBLIC | Modifier.FINAL;
@@ -1108,6 +1134,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return true;
 		}
 
+		@Override
 		public boolean hasAnnotation(UnresolvedType ofType) {
 			return false;
 		}
@@ -1236,6 +1263,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return true;
 		}
 
+		@Override
 		public boolean hasAnnotation(UnresolvedType ofType) {
 			return false;
 		}
@@ -2261,10 +2289,12 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			this.wantGenerics = genericsAware;
 		}
 
+		@Override
 		public boolean hasNext() {
 			return curr != null;
 		}
 
+		@Override
 		public ResolvedType next() {
 			ResolvedType ret = curr;
 			if (!wantGenerics && ret.isParameterizedOrGenericType()) {
@@ -2275,6 +2305,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return ret;
 		}
 
+		@Override
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
@@ -2296,6 +2327,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			this.delegate = Iterators.one(interfaceType);
 		}
 
+		@Override
 		public boolean hasNext() {
 			if (delegate == null || !delegate.hasNext()) {
 				// either we set it up or we have run out, is there anything else to look at?
@@ -2315,6 +2347,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			toPersue.add(ret);
 		}
 
+		@Override
 		public ResolvedType next() {
 			ResolvedType next = delegate.next();
 			// BUG should check for generics and erase?
@@ -2326,6 +2359,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return next;
 		}
 
+		@Override
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
@@ -2882,6 +2916,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			bits |= GroovyObjectInitialized;
 		}
 		return (bits & IsGroovyObject) != 0;
+	}
+	
+	public boolean isPrivilegedAspect() {
+		if ((bits & IsPrivilegedBitInitialized) == 0) {
+			AnnotationAJ privilegedAnnotation = getAnnotationOfType(UnresolvedType.AJC_PRIVILEGED);
+			if (privilegedAnnotation != null) {
+				bits |= IsPrivilegedAspect;
+			}
+			// TODO do we need to reset this bit if the annotations are set again ?
+			bits |= IsPrivilegedBitInitialized;
+		}
+		return (bits & IsPrivilegedAspect) != 0;
 	}
 
 }

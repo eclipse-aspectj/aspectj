@@ -61,6 +61,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType[] ARRAY_WITH_JUST_OBJECT = new UnresolvedType[] { OBJECT };
 	public static final UnresolvedType JOINPOINT_STATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
 	public static final UnresolvedType JOINPOINT_ENCLOSINGSTATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
+	public static final UnresolvedType AJC_PRIVILEGED = forSignature("Lorg/aspectj/internal/lang/annotation/ajcPrivileged;");
 
 	public static final UnresolvedType BOOLEAN = forPrimitiveType("Z");
 	public static final UnresolvedType BYTE = forPrimitiveType("B");
@@ -868,6 +869,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		private final String type;
 	}
 
+	@Override
 	public TypeVariable getTypeVariableNamed(String name) {
 		TypeVariable[] vars = getTypeVariables();
 		if (vars == null || vars.length == 0) {
@@ -882,6 +884,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return null;
 	}
 
+	@Override
 	public String toTraceString() {
 		return getClass().getName() + "[" + getName() + "]";
 	}
