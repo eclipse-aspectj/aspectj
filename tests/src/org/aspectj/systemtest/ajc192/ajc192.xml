@@ -1,0 +1,74 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs192/ptw" title="ptw">
+    <compile files="a/b/c/Code.java a/b/d/Foo.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.d.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="DefaultInner.run()"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/ptw" title="ptw - same package">
+    <compile files="a/b/c/Code.java a/b/c/Foo.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.c.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$DefaultInner) = a.b.c.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PrivateInner) = a.b.c.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+
+  <ajc-test dir="bugs192/ptw" title="ptw - privileged">
+    <compile files="a/b/c/Code.java a/b/d/FooPrivileged.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/ptw" title="ptw - privileged same package">
+    <compile files="a/b/c/Code.java a/b/c/FooPrivileged.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.c.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$DefaultInner) = a.b.c.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PrivateInner) = a.b.c.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+
+</suite>
