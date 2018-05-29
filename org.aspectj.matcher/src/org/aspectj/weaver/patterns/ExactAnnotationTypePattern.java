@@ -18,6 +18,7 @@ import java.util.Set;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
@@ -31,7 +32,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
 /**
  * Matches an annotation of a given type
@@ -321,13 +321,13 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		UnresolvedType newAnnotationType = annotationType;
 		if (annotationType.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) annotationType;
 			String key = t.getTypeVariable().getName();
 			if (typeVariableMap.containsKey(key)) {
-				newAnnotationType = (UnresolvedType) typeVariableMap.get(key);
+				newAnnotationType = typeVariableMap.get(key);
 			}
 		} else if (annotationType.isParameterizedType()) {
 			newAnnotationType = annotationType.parameterize(typeVariableMap);

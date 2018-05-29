@@ -82,11 +82,13 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		return annotationTypePattern;
 	}
 
+	@Override
 	public int couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	@Override
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnnotationPointcut ret = new AnnotationPointcut((ExactAnnotationTypePattern) annotationTypePattern.parameterizeWith(
 				typeVariableMap, w));
 		ret.copyLocationFrom(this);
@@ -98,6 +100,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
+	@Override
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
 		if (info.getKind() == Shadow.StaticInitialization) {
 			return annotationTypePattern.fastMatches(info.getType());
@@ -111,6 +114,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
+	@Override
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
 		AnnotatedElement toMatchAgainst = null;
 		Member member = shadow.getSignature();
@@ -173,6 +177,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope,
 	 * org.aspectj.weaver.patterns.Bindings)
 	 */
+	@Override
 	protected void resolveBindings(IScope scope, Bindings bindings) {
 		if (!scope.getWorld().isInJava5Mode()) {
 			scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.ATANNOTATION_ONLY_SUPPORTED_AT_JAVA5_LEVEL),
@@ -188,6 +193,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
+	@Override
 	protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
 		ExactAnnotationTypePattern newType = (ExactAnnotationTypePattern) annotationTypePattern.remapAdviceFormals(bindings);
 		Pointcut ret = new AnnotationPointcut(newType, bindings.getEnclosingAdvice());
@@ -195,6 +201,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		return ret;
 	}
 
+	@Override
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {
 		if (annotationTypePattern instanceof BindingAnnotationFieldTypePattern) {
 			if (shadow.getKind() != Shadow.MethodExecution) {
@@ -254,6 +261,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
+	@Override
 	public List<BindingPattern> getBindingAnnotationTypePatterns() {
 		if (annotationTypePattern instanceof BindingPattern) { // BindingAnnotationTypePattern) {
 			List<BindingPattern> l = new ArrayList<BindingPattern>();
@@ -269,6 +277,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
+	@Override
 	public List<BindingTypePattern> getBindingTypePatterns() {
 		return Collections.emptyList();
 	}
@@ -278,6 +287,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	 * 
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Pointcut.ANNOTATION);
 		annotationTypePattern.write(s);
@@ -291,6 +301,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		return ret;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof AnnotationPointcut)) {
 			return false;
@@ -299,6 +310,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		return o.annotationTypePattern.equals(this.annotationTypePattern);
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + annotationTypePattern.hashCode();
@@ -314,10 +326,12 @@ public class AnnotationPointcut extends NameBindingPointcut {
 		this.declarationText = buf.toString();
 	}
 
+	@Override
 	public String toString() {
 		return this.declarationText;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}

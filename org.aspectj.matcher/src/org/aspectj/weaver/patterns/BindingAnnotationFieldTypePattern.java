@@ -65,6 +65,7 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 		}
 	}
 
+	@Override
 	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
 		throw new BCException("Parameterization not implemented for annotation field binding construct (compiler limitation)");
 		// UnresolvedType newAnnotationType = annotationType;
@@ -86,10 +87,12 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 		// return ret;
 	}
 
+	@Override
 	public int getFormalIndex() {
 		return formalIndex;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof BindingAnnotationFieldTypePattern)) {
 			return false;
@@ -99,10 +102,12 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 				&& (formalType.equals(btp.formalType));
 	}
 
+	@Override
 	public int hashCode() {
 		return (annotationType.hashCode() * 37 + formalIndex * 37) + formalType.hashCode();
 	}
 
+	@Override
 	public AnnotationTypePattern remapAdviceFormals(IntMap bindings) {
 		if (!bindings.hasKey(formalIndex)) {
 			throw new BCException("Annotation field binding reference must be bound (compiler limitation)");
@@ -117,6 +122,7 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 		}
 	}
 
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(AnnotationTypePattern.BINDINGFIELD2);
 		formalType.write(s); // the type of the field within the annotation
@@ -141,6 +147,7 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 		return ret;
 	}
 
+	@Override
 	public FuzzyBoolean matches(AnnotatedElement annotated, ResolvedType[] parameterAnnotations) {
 		// Inheritance irrelevant because @annotation(Anno(x)) only supported at method execution join points (compiler limitation)
 		// boolean checkSupers = false;

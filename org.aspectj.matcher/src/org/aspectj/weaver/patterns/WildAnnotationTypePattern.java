@@ -346,7 +346,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		WildAnnotationTypePattern ret = new WildAnnotationTypePattern(typePattern.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		ret.resolved = resolved;

@@ -19,6 +19,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
@@ -41,33 +42,40 @@ public class AndTypePattern extends TypePattern {
 		setLocation(left.getSourceContext(), left.getStart(), right.getEnd());
 	}
 
+	@Override
 	protected boolean couldEverMatchSameTypesAs(TypePattern other) {
 		return true; // don't dive into ands yet....
 	}
 
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return left.matchesInstanceof(type).and(right.matchesInstanceof(type));
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type) {
 		// ??? if these had side-effects, this sort-circuit could be a mistake
 		return left.matchesExactly(type) && right.matchesExactly(type);
 	}
 
+	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return left.matchesExactly(type, annotatedType) && right.matchesExactly(type, annotatedType);
 	}
 
+	@Override
 	public boolean matchesStatically(ResolvedType type) {
 		return left.matchesStatically(type) && right.matchesStatically(type);
 	}
 
+	@Override
 	public void setIsVarArgs(boolean isVarArgs) {
 		this.isVarArgs = isVarArgs;
 		left.setIsVarArgs(isVarArgs);
 		right.setIsVarArgs(isVarArgs);
 	}
 
+	@Override
 	public void setAnnotationTypePattern(AnnotationTypePattern annPatt) {
 		if (annPatt == AnnotationTypePattern.ANY) {
 			return;
@@ -84,6 +92,7 @@ public class AndTypePattern extends TypePattern {
 		}
 	}
 
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(TypePattern.AND);
 		left.write(s);
@@ -100,6 +109,7 @@ public class AndTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public TypePattern resolveBindings(IScope scope, Bindings bindings, boolean allowBinding, boolean requireExactType) {
 		if (requireExactType) {
 			return notExactType(scope);
@@ -108,8 +118,9 @@ public class AndTypePattern extends TypePattern {
 		right = right.resolveBindings(scope, bindings, false, false);
 		return this;
 	}
-
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+ 
+	@Override
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		TypePattern newLeft = left.parameterizeWith(typeVariableMap, w);
 		TypePattern newRight = right.parameterizeWith(typeVariableMap, w);
 		AndTypePattern ret = new AndTypePattern(newLeft, newRight);
@@ -117,6 +128,7 @@ public class AndTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
@@ -143,6 +155,7 @@ public class AndTypePattern extends TypePattern {
 		return right;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof AndTypePattern)) {
 			return false;
@@ -151,6 +164,7 @@ public class AndTypePattern extends TypePattern {
 		return left.equals(atp.left) && right.equals(atp.right);
 	}
 
+	@Override
 	public boolean isStarAnnotation() {
 		return left.isStarAnnotation() && right.isStarAnnotation();
 	}
@@ -160,6 +174,7 @@ public class AndTypePattern extends TypePattern {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		int ret = 17;
 		ret = ret + 37 * left.hashCode();
@@ -167,10 +182,12 @@ public class AndTypePattern extends TypePattern {
 		return ret;
 	}
 
+	@Override
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
 		left.traverse(visitor, ret);

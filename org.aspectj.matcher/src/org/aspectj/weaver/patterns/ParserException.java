@@ -9,12 +9,9 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
-
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.IHasPosition;
-
 
 public class ParserException extends RuntimeException {
 	private IHasPosition token;

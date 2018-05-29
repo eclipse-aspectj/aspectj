@@ -18,6 +18,7 @@ import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class AnyAnnotationTypePattern extends AnnotationTypePattern {
@@ -62,7 +63,7 @@ public class AnyAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map arg0, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> arg0, World w) {
 		return this;
 	}
 

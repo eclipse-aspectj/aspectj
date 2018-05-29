@@ -457,7 +457,7 @@ public class KindedPointcut extends Pointcut {
 	}
 
 	@Override
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		Pointcut ret = new KindedPointcut(kind, signature.parameterizeWith(typeVariableMap, w), munger);
 		ret.copyLocationFrom(this);
 		return ret;

@@ -17,6 +17,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class AnyTypePattern extends TypePattern {
@@ -106,7 +107,7 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	@Override
-	public TypePattern parameterizeWith(Map arg0, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> arg0, World w) {
 		return this;
 	}
 }
