@@ -270,7 +270,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 	/**
 	 * @return field object with given name, or null if not found
 	 */
-	public Field containsField(String name) {
+	public Field findsField(String name) {
 		for (Field field : fieldsList) {
 			if (field.getName().equals(name)) {
 				return field;
