@@ -88,7 +88,7 @@ public class PerCflow extends PerClause {
 			return ret;
 		}
 
-		Member cflowStackField = new ResolvedMemberImpl(Member.FIELD, inAspect, Modifier.STATIC | Modifier.PUBLIC | Modifier.FINAL,
+		Member cflowStackField = new ResolvedMemberImpl(Member.FIELD, inAspect, Modifier.PUBLIC | Modifier.STATIC,
 				UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE), NameMangler.PERCFLOW_FIELD_NAME, UnresolvedType.NONE);
 
 		World world = inAspect.getWorld();

@@ -2,6 +2,43 @@
 
 <suite>
 
+  <ajc-test dir="bugs192/537825" title="no final on cflow elements">
+    <compile files="Code.java" options="-9">
+    </compile>
+    <run class="Code">
+    <stdout>
+    <line text="call(void B.methodB())"/>
+    <line text="staticinitialization(B.&lt;clinit&gt;)"/>
+    <line text="execution(void B.methodB())"/>
+    <line text="call(void C.methodC())"/>
+    <line text="staticinitialization(C.&lt;clinit&gt;)"/>
+    <line text="execution(void C.methodC())"/>
+    <line text="call(void D.methodD())"/>
+    <line text="staticinitialization(D.&lt;clinit&gt;)"/>
+    <line text="execution(void D.methodD())"/>
+    <line text="get(PrintStream java.lang.System.out)"/>
+    <line text="call(void java.io.PrintStream.println(int))"/>
+    <line text="3"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/535156" title="around advice">
+    <compile files="DemoApp.java" options="-8 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-call(void DemoApp.say())' in Type 'DemoApp' (DemoApp.java:6) advised by around advice from 'X' (DemoApp.java:14)"/>
+	</compile>
+	<run class="DemoApp">
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/535156" title="around advice - 2">
+    <compile files="DemoApp2.java" options="-8 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-call(void DemoApp2.say())' in Type 'DemoApp2' (DemoApp2.java:6) advised by around advice from 'X' (DemoApp2.java:13)"/>
+	</compile>
+	<run class="DemoApp2">
+	</run>
+  </ajc-test>
+  
   <ajc-test dir="bugs192/ptw" title="ptw">
     <compile files="a/b/c/Code.java a/b/d/Foo.java" options="-8">
 	</compile>

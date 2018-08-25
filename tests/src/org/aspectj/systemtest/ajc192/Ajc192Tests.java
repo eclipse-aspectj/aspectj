@@ -21,6 +21,18 @@ import junit.framework.Test;
  */
 public class Ajc192Tests extends XMLBasedAjcTestCase {
 
+	public void testCflowFinal() {
+		runTest("no final on cflow elements");
+	}
+	
+	public void testAroundAdvice_AnnoStyle() {
+		runTest("around advice");
+	}
+
+	public void testAroundAdvice_CodeStyle() {
+		runTest("around advice - 2");
+	}
+
 	public void testPTW_nonPrivileged() {
 		runTest("ptw");
 	}

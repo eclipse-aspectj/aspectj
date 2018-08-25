@@ -9,12 +9,9 @@
  * Contributors: 
  *     PARC     initial implementation 
  * ******************************************************************/
-
 package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
-
-//import org.aspectj.weaver.ResolvedType.Name;
 
 /**
  * The AjcMemberMaker is responsible for creating the representations of methods/fields/etc that are placed in both aspects and
@@ -69,7 +66,7 @@ public class AjcMemberMaker {
 	}
 
 	public static ResolvedMember perCflowField(UnresolvedType declaringType) {
-		return new ResolvedMemberImpl(Member.FIELD, declaringType, PUBLIC_STATIC_FINAL, NameMangler.PERCFLOW_FIELD_NAME,
+		return new ResolvedMemberImpl(Member.FIELD, declaringType, PUBLIC_STATIC, NameMangler.PERCFLOW_FIELD_NAME,
 				CFLOW_STACK_TYPE.getSignature());
 	}
 

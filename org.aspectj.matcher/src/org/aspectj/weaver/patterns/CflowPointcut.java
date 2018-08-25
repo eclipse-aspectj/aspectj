@@ -64,9 +64,6 @@ public class CflowPointcut extends Pointcut {
 		pointcutKind = CFLOW;
 	}
 
-	/**
-	 * @return Returns true is this is a cflowbelow pointcut
-	 */
 	public boolean isCflowBelow() {
 		return isBelow;
 	}
@@ -230,8 +227,8 @@ public class CflowPointcut extends Pointcut {
 			} else {
 
 				// Create a counter field in the aspect
-				localCflowField = new ResolvedMemberImpl(Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC
-						| Modifier.FINAL, NameMangler.cflowCounter(xcut), UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE)
+				localCflowField = new ResolvedMemberImpl(Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC,
+						NameMangler.cflowCounter(xcut), UnresolvedType.forName(NameMangler.CFLOW_COUNTER_TYPE)
 						.getSignature());
 
 				// Create type munger to add field to the aspect
@@ -294,8 +291,8 @@ public class CflowPointcut extends Pointcut {
 				localCflowField = (ResolvedMember) field;
 			} else {
 
-				localCflowField = new ResolvedMemberImpl(Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC
-						| Modifier.FINAL, NameMangler.cflowStack(xcut), UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE)
+				localCflowField = new ResolvedMemberImpl(Member.FIELD, concreteAspect, Modifier.STATIC | Modifier.PUBLIC,
+						NameMangler.cflowStack(xcut), UnresolvedType.forName(NameMangler.CFLOW_STACK_TYPE)
 						.getSignature());
 				// System.out.println("adding field to: " + inAspect + " field "
 				// + cflowField);
