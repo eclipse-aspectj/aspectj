@@ -75,7 +75,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		this.weavingContext = weavingContext;
 		try {
 			classLoaderString = loader.toString();
-		} catch (NullPointerException npe) {
+		} catch (Throwable t) {
 			// Possibly some state in the loader isn't initialized but is used in the toString()
 			classLoaderString = loader.getClass().getName()+":"+Integer.toString(System.identityHashCode(loader));
 		}
