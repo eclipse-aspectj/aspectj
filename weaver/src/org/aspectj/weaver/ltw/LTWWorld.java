@@ -73,7 +73,12 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	public LTWWorld(ClassLoader loader, IWeavingContext weavingContext, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		super(loader, handler, xrefHandler);
 		this.weavingContext = weavingContext;
-		classLoaderString = loader.toString();
+		try {
+			classLoaderString = loader.toString();
+		} catch (NullPointerException npe) {
+			// Possibly some state in the loader isn't initialized but is used in the toString()
+			classLoaderString = loader.getClass().getName()+":"+Integer.toString(System.identityHashCode(loader));
+		}
 		classLoaderParentString = (loader.getParent() == null ? "<NullParent>" : loader.getParent().toString());
 		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
 		annotationFinder = ReflectionWorld.makeAnnotationFinderIfAny(loader, this);
