@@ -253,7 +253,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List<Classpath> processFilePath(List<File> path, java.lang.String encoding) {
 		List<Classpath> entries = new ArrayList<Classpath>();
 		for (File file: path) {
-			entries.add(FileSystem.getClasspath(file.getAbsolutePath(), encoding, null, ClasspathLocation.BINARY));
+			entries.add(FileSystem.getClasspath(file.getAbsolutePath(), encoding, null, ClasspathLocation.BINARY, null));
 		}
 		return entries;
 	}
@@ -261,7 +261,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List<Classpath> processStringPath(List<String> path, java.lang.String encoding) {
 		List<Classpath> entries = new ArrayList<Classpath>();
 		for (String file: path) {
-			entries.add(FileSystem.getClasspath(file, encoding, null, ClasspathLocation.BINARY));
+			entries.add(FileSystem.getClasspath(file, encoding, null, ClasspathLocation.BINARY, null));
 		}
 		return entries;
 	}

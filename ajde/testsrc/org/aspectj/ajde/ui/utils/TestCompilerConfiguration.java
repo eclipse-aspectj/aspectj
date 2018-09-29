@@ -40,7 +40,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	private Set aspectpath;
 	private Set inpath;
 	private String outjar;
-	private Map javaOptions;
+	private Map<String,String> javaOptions;
 	private String nonStandardOptions;
 	private List projectSourceFiles = new ArrayList();
 	private Map sourcePathResources;
@@ -77,9 +77,9 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return inpath;
 	}
 
-	public Map getJavaOptionsMap() {
+	public Map<String,String> getJavaOptionsMap() {
 		if (javaOptions == null) {
-			javaOptions = new Hashtable();
+			javaOptions = new Hashtable<>();
 			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_13);
 			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_13);
 		}
@@ -180,12 +180,10 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getProcessor() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getProcessorPath() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

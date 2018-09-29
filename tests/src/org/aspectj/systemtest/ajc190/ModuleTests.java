@@ -15,6 +15,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
+import org.aspectj.util.LangUtil;
 
 import junit.framework.Test;
 
@@ -70,22 +71,38 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 	// This tests that when using --add-modules with one of the JDK modules (in the jmods subfolder of the JDK)
 	// that it can be found without needing to set --module-path (this seems to be implicitly included by javac too)
 	public void testAddModules1() {
+		if (LangUtil.is11VMOrGreater()) {
+			// java.xml.bind is gone in Java11
+			return;
+		}
 		runTest("compile use of java.xml.bind");
 	}
 	
 	// This tests that we can use add-modules to pull in something from the JDK jmods package and that
 	// when subsequently weaving we can see types from those modules
 	public void testWovenAfterAddModules() {
+		if (LangUtil.is11VMOrGreater()) {
+			// java.xml.bind is gone in Java11
+			return;
+		}
 		runTest("weave use of java.xml.bind");
 	}
 	
 	// --limit-modules
 	public void testLimitModules1() {
+		if (LangUtil.is11VMOrGreater()) {
+			// java.xml.bind is gone in Java11
+			return;
+		}
 		runTest("limit modules 1");
 	}
 
 	// --add-reads
 	public void testAddReads1() {
+		if (LangUtil.is11VMOrGreater()) {
+			// java.xml.bind is gone in Java11
+			return;
+		}
 		runTest("add reads 1");
 	}
 	

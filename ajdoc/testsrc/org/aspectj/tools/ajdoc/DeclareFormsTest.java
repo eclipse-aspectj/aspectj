@@ -126,15 +126,14 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				LangUtil.is18VMOrGreater()?"doIt--":doIt,
-//				doIt,
+				toName(doIt),
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				declareWarningQuotes);
 		assertTrue("Should have '" + doIt + " matches declare " + 
 				declareWarningQuotes + "' in the Declare Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					LangUtil.is18VMOrGreater()?"doIt--":doIt,
+					toName(doIt),
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					declareWarningQuotes);
 		assertTrue("Should have '" + doIt + " matches declare " + 
@@ -159,14 +158,16 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
-				LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
+				toName("setX(int)"),
+//				LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" + 
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
-					LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
+					toName("setX(int)"),
+//					LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" + 
@@ -290,7 +291,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	}
 	
 	private String toName(String name) {
-		if (LangUtil.is18VMOrGreater()) {
+		if (LangUtil.is18VMOrGreater() && !LangUtil.is11VMOrGreater()) {
 			name = name.replace('(','-');
 			name = name.replace(')','-');
 		}
@@ -393,7 +394,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				toName("C(java.lang.String)"),
+				LangUtil.is11VMOrGreater()?"&lt;init&gt;(java.lang.String)":toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " + 
@@ -401,7 +402,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				toName("C(java.lang.String)"),
+				LangUtil.is11VMOrGreater()?"#%3Cinit%3E(java.lang.String)":toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " + 

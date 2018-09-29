@@ -954,7 +954,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// 'classpaths' object it isn't recording where the code came from. This will be an issue later for
 		// weaving, the distinction will need to be maintained for proper 'module aware/respecting' weaving.
 		if (buildConfig.getCheckedClasspaths() == null) {
-			nameEnvironment = new FileSystem(classpaths, filenames, defaultEncoding, ClasspathLocation.BINARY);
+			nameEnvironment = new FileSystem(classpaths, filenames, defaultEncoding, ClasspathLocation.BINARY, null);
 		} else {
 			nameEnvironment = new FileSystem(buildConfig.getCheckedClasspaths(), filenames, false, null);
 		}

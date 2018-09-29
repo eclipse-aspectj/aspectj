@@ -17,6 +17,7 @@ import java.util.List;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
+import org.aspectj.util.LangUtil;
 
 public class JavadocTest extends AjcTestCase {
 	public static final String PROJECT_DIR = "javadoc";
@@ -56,6 +57,8 @@ public class JavadocTest extends AjcTestCase {
 		// Basically that the javadoc on a public member refers to something that is not public
 		warningMessages.add(new Message(6,"'public' visibility for malformed doc comments hides this 'default' reference"));
 		warningMessages.add(new Message(32,"'public' visibility for malformed doc comments hides this 'default' reference"));
+		warningMessages.add(new Message(22,"'public' visibility for malformed doc comments hides this 'default' reference"));
+		warningMessages.add(new Message(48,"'public' visibility for malformed doc comments hides this 'default' reference"));
 		MessageSpec spec = new MessageSpec(warningMessages, null);
 
 		CompilationResult result = ajc(baseDir, args);

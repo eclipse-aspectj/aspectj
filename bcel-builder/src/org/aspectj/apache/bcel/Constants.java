@@ -84,6 +84,8 @@ public interface Constants {
 	public final static short MINOR_1_9 = 0;
 	public final static short MAJOR_10 = 54;
 	public final static short MINOR_10 = 0;
+	public final static short MAJOR_11 = 55;
+	public final static short MINOR_11 = 0;
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;
@@ -155,9 +157,9 @@ public interface Constants {
 	
 	public final static byte CONSTANT_MethodHandle = 15;
 	public final static byte CONSTANT_MethodType = 16;
+	public final static byte CONSTANT_Dynamic = 17;
 	public final static byte CONSTANT_InvokeDynamic = 18;
 	
-	// J9:
 	public final static byte CONSTANT_Module = 19;
 	public final static byte CONSTANT_Package = 20;
 	

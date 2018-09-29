@@ -11,7 +11,12 @@ package org.aspectj.weaver.loadtime;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
@@ -1043,49 +1048,145 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		return unsafe;
     }
 	
-	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
+	private static Method bindTo_Method, invokeWithArguments_Method = null;
+	private static Object defineClassMethodHandle = null;
+	
+	private static Boolean initializedForJava11 = false;
+	
+	// In order to let this code compile on earlier versions of Java (8), use reflection to discover the elements
+	// we need to define classes.
+	private static synchronized void initializeForJava11() {
+		if (initializedForJava11) return;
+		try {
+			// MethodType defineClassMethodType = MethodType.methodType(Class.class, new Class[]{String.class, byte[].class, int.class, int.class});
+			Class<?> methodType_Class = Class.forName("java.lang.invoke.MethodType");
+			Method methodTypeMethodOnMethodTypeClass = methodType_Class.getDeclaredMethod("methodType", Class.class,Class[].class);
+			methodTypeMethodOnMethodTypeClass.setAccessible(true);
+			Object defineClassMethodType = methodTypeMethodOnMethodTypeClass.invoke(null, Class.class, new Class[] {String.class,byte[].class,int.class,int.class});
+
+			// MethodHandles.Lookup methodHandlesLookup = MethodHandles.lookup();
+			Class<?> methodHandles_Class = Class.forName("java.lang.invoke.MethodHandles");
+			Method lookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("lookup");
+			lookupMethodOnMethodHandlesClass.setAccessible(true);			
+			Object methodHandlesLookup = lookupMethodOnMethodHandlesClass.invoke(null);
+			
+			// MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, baseLookup);
+			Class<?> methodHandlesLookup_Class = Class.forName("java.lang.invoke.MethodHandles$Lookup");
+			Method privateLookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("privateLookupIn",Class.class,methodHandlesLookup_Class);
+			privateLookupMethodOnMethodHandlesClass.setAccessible(true);
+			Object lookup = privateLookupMethodOnMethodHandlesClass.invoke(null, ClassLoader.class, methodHandlesLookup);
+			
+			// MethodHandle defineClassMethodHandle = lookup.findVirtual(ClassLoader.class, "defineClass", defineClassMethodType);
+			Method findVirtual_Method = methodHandlesLookup_Class.getDeclaredMethod("findVirtual", Class.class,String.class,methodType_Class);
+			findVirtual_Method.setAccessible(true);
+			defineClassMethodHandle = findVirtual_Method.invoke(lookup, ClassLoader.class, "defineClass",defineClassMethodType);
+
+			// clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length);
+			Class<?> methodHandle_Class = Class.forName("java.lang.invoke.MethodHandle");
+			bindTo_Method = methodHandle_Class.getDeclaredMethod("bindTo", Object.class);
+			invokeWithArguments_Method = methodHandle_Class.getDeclaredMethod("invokeWithArguments",Object[].class);
+			
+			initializedForJava11 = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
 		}
 		Object clazz = null;
 		debug("generating class '" + name + "'");
-		try {
-			clazz = getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, null);
-		} catch (LinkageError le) {
-			// likely thrown due to defining something that already exists?
-			// Old comments from before moving to Unsafe.defineClass():
-			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-			// TODO maw I don't think this is OK and
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			warn("define generated class failed", e);
+		if (LangUtil.is11VMOrGreater()) {
+			try {
+				if (!initializedForJava11) {
+					initializeForJava11();
+				}
+				// Do this: clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length);
+				Object o = bindTo_Method.invoke(defineClassMethodHandle,loader);
+				clazz = invokeWithArguments_Method.invoke(o, new Object[] {new Object[] {name, bytes, 0, bytes.length}});
+			    
+			} catch (Throwable t) {
+				t.printStackTrace(System.err);
+				warn("define generated class failed", t);
+			}
+		} else {
+			try {
+				if (defineClassMethod == null) {
+					synchronized (lock) {
+						getUnsafe();
+						defineClassMethod = 
+								Unsafe.class.getDeclaredMethod("defineClass", String.class,byte[].class,Integer.TYPE,Integer.TYPE, ClassLoader.class,ProtectionDomain.class);
+					}
+				}
+				defineClassMethod.setAccessible(true);
+				clazz = defineClassMethod.invoke(getUnsafe(), name,bytes,0,bytes.length,loader,protectionDomain);
+			} catch (LinkageError le) {
+				le.printStackTrace();
+				// likely thrown due to defining something that already exists?
+				// Old comments from before moving to Unsafe.defineClass():
+				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+				// TODO maw I don't think this is OK and
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+				warn("define generated class failed", e);
+			}
 		}
 
 		if (trace.isTraceEnabled()) {
 			trace.exit("defineClass", clazz);
 		}
 	}
+	static Method defineClassMethod;
+	private static String lock = "lock";
+	
+	
+//    /*
+//    This method is equivalent to the following code but use reflection to compile on Java 7:
+//     MethodHandles.Lookup baseLookup = MethodHandles.lookup();
+//    MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, baseLookup);
+//    MethodHandle defineClassMethodHandle = lookup.findVirtual(ClassLoader.class, "defineClass", defineClassMethodType);
+//    handle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length));
+// */
+//@Override
+//@SuppressWarnings("unchecked")
+//public <T> Class<T> defineClass(ClassLoader classLoader, String className, byte[] classBytes) {
+//    Object baseLookup = methodHandlesLookup.invoke(null);
+//    Object lookup = methodHandlesPrivateLookupIn.invoke(null, ClassLoader.class, baseLookup);
+//    MethodHandle defineClassMethodHandle = (MethodHandle) lookupFindVirtual.invoke(lookup, ClassLoader.class, "defineClass", defineClassMethodType);
+//    try {
+//        return Cast.uncheckedCast(defineClassMethodHandle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length));
+//    } catch (Throwable throwable) {
+//        throw new RuntimeException(throwable);
+//        return (Class) defineClassMethodHandle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length);
+//    } catch (Throwable e) {
+//        throw new RuntimeException(e);
+//    }
+//}
 
-	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
-		if (trace.isTraceEnabled()) {
-			trace.enter("defineClass", this, new Object[] { loader, name, bytes, protectionDomain });
-		}
-		Object clazz = null;
-		debug("generating class '" + name + "'");
-		try {
-			getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, protectionDomain);
-		} catch (LinkageError le) {
-			// likely thrown due to defining something that already exists?
-			// Old comments from before moving to Unsafe.defineClass():
-			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-			// TODO maw I don't think this is OK and
-		} catch (Exception e) {
-			warn("define generated class failed", e);
-		}
-
-		if (trace.isTraceEnabled()) {
-			trace.exit("defineClass", clazz);
-		}
+	private void defineClass(ClassLoader loader, String name, byte[] bytes){
+		defineClass(loader,name,bytes,null);//, ProtectionDomain protectionDomain) {
 	}
+//		if (trace.isTraceEnabled()) {
+//			trace.enter("defineClass", this, new Object[] { loader, name, bytes, protectionDomain });
+//		}
+//		Object clazz = null;
+//		debug("generating class '" + name + "'");
+//		try {
+//			getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, protectionDomain);
+//		} catch (LinkageError le) {
+//			// likely thrown due to defining something that already exists?
+//			// Old comments from before moving to Unsafe.defineClass():
+//			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
+//			// TODO maw I don't think this is OK and
+//		} catch (Exception e) {
+//			warn("define generated class failed", e);
+//		}
+//
+//		if (trace.isTraceEnabled()) {
+//			trace.exit("defineClass", clazz);
+//		}
+//	}
 
 }

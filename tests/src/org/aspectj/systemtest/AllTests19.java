@@ -13,6 +13,7 @@ package org.aspectj.systemtest;
 import org.aspectj.systemtest.ajc190.AllTestsAspectJ190;
 import org.aspectj.systemtest.ajc191.AllTestsAspectJ191;
 import org.aspectj.systemtest.ajc192.AllTestsAspectJ192;
+import org.aspectj.systemtest.ajc193.AllTestsAspectJ193;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -25,6 +26,7 @@ public class AllTests19 {
 		suite.addTest(AllTestsAspectJ190.suite()); 
 		suite.addTest(AllTestsAspectJ191.suite()); 
 		suite.addTest(AllTestsAspectJ192.suite()); 
+		suite.addTest(AllTestsAspectJ193.suite()); 
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$
 		return suite;

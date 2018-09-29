@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.aspectj.util.LangUtil;
+
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
@@ -43,6 +45,9 @@ public class VersionTest extends TestCase {
 	}
 
 	public void testVersion() {
+		if (LangUtil.is11VMOrGreater()) {
+			return;
+		}
 		if (Version.time_text.equals("")) {
 			return; // dev build, we can only test this on the build server.
 		}

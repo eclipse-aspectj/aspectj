@@ -98,6 +98,8 @@ public interface ClassVisitor {
 	public void visitConstantMethodType(ConstantMethodType obj);
 	
 	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj);
+	
+	public void visitConstantDynamic(ConstantDynamic obj);
 
 	public void visitConstantPool(ConstantPool obj);
 

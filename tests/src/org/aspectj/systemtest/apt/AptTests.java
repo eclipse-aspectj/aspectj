@@ -42,6 +42,10 @@ public class AptTests extends XMLBasedAjcTestCase {
   }
 
   public void testDisabledApt() {
+	  if (LangUtil.is11VMOrGreater()) {
+		  // javax.annotation.Generated not in Java11
+		  return;
+	  }
     runTest("disabled annotation processing");
   }
 

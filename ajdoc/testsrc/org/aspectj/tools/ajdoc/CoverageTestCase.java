@@ -329,7 +329,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				toName("Point()"),
+				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): constructorExecutionP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
@@ -337,10 +337,16 @@ public class CoverageTestCase extends AjdocTestCase {
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Constructor Detail should have " + strings[0]+" advised by " + strings[1],b);
-		
+
+		// Pre-JDK 11:
+		// This precedes the line containing strings[1]
+		// <td class="colOne"><code><span class="memberNameLink"><a href="../foo/Point.html#Point--">Point</a></span>()</code>
+		// On JDK 11:
+		// This precedes the line containing strings[1]
+		// <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Point</a></span>()</code></th>
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				strings[0],
+				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Constructor Summary should have " + strings[0]+" advised by " + strings[1],b);
@@ -469,14 +475,14 @@ public class CoverageTestCase extends AjdocTestCase {
 
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				toName("Point()"),
+				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Detail should have advised by " + href,b);
 		
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				toName("Point()"),
+				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Summary should have advised by " + href,b);
@@ -502,15 +508,19 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
         
 		String[] strings = {
-				toName("Point()"),
+				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): initializationP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
-				htmlFile,"=== CONSTRUCTOR DETAIL",strings[0],
+				htmlFile,
+				"=== CONSTRUCTOR DETAIL",
+				strings[0],
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Method Detail should have 'setX(int) advised by ... before()'",b);
 		b = AjdocOutputChecker.summarySectionContainsRel(
-				htmlFile,"=== CONSTRUCTOR SUMMARY",strings[0],
+				htmlFile,
+				"=== CONSTRUCTOR SUMMARY",
+				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":strings[0],
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Method Summary should have 'setX(int) advised by ... before()'",b);
@@ -569,7 +579,7 @@ public class CoverageTestCase extends AjdocTestCase {
     }
 
 	private String toName(String name) {
-		if (LangUtil.is18VMOrGreater()) {
+		if (LangUtil.is18VMOrGreater() && !LangUtil.is11VMOrGreater()) {
 			name = name.replace('(','-');
 			name = name.replace(')','-');
 		}

@@ -12,10 +12,7 @@ package org.aspectj.systemtest.ajc1811;
 
 import java.io.File;
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;

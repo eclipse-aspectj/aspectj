@@ -22,7 +22,7 @@ import org.aspectj.ajde.core.AjCompiler;
  */
 public class CompilerFactory {
 
-	private static Map compilerMap = new Hashtable();
+	private static Map<String,AjCompiler> compilerMap = new Hashtable<>();
 	
 	/**
 	 * If an AjCompiler exists for the given projectDir then returns
@@ -48,9 +48,8 @@ public class CompilerFactory {
 	 * IncrementalStateManager)
 	 */
 	public static void clearCompilerMap() {
-		Collection compilers = compilerMap.values();
-		for (Iterator iterator = compilers.iterator(); iterator.hasNext();) {
-			AjCompiler compiler = (AjCompiler) iterator.next();
+		Collection<AjCompiler> compilers = compilerMap.values();
+		for (AjCompiler compiler: compilers) {
 			compiler.clearLastState();
 		}
 		compilerMap.clear();

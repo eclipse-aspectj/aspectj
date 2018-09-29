@@ -59,6 +59,7 @@ import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
@@ -176,5 +177,7 @@ public class EmptyClassVisitor implements ClassVisitor {
   public void visitModule(Module attribute) {}
   public void visitModulePackages(ModulePackages attribute) {}
   public void visitModuleMainClass(ModuleMainClass attribute) {}
+
+  public void visitConstantDynamic(ConstantDynamic obj) {}
  
 }

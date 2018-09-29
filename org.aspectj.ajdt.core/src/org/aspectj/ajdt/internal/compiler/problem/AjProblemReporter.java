@@ -54,6 +54,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedMethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -68,6 +69,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 import org.aspectj.weaver.patterns.DeclareSoft;
@@ -489,8 +491,8 @@ public class AjProblemReporter extends ProblemReporter {
 		if (typeDecl.enclosingType != null && (typeDecl.enclosingType instanceof AspectDeclaration)) {
 			AspectDeclaration ad = (AspectDeclaration) typeDecl.enclosingType;
 			if (ad.concreteName != null) {
-				List declares = ad.concreteName.declares;
-				for (Iterator iter = declares.iterator(); iter.hasNext();) {
+				List<Declare> declares = ad.concreteName.declares;
+				for (Iterator<Declare> iter = declares.iterator(); iter.hasNext();) {
 					Object dec = iter.next();
 					if (dec instanceof DeclareParents) {
 						DeclareParents decp = (DeclareParents) dec;
@@ -514,8 +516,9 @@ public class AjProblemReporter extends ProblemReporter {
 	private final static char[] thisJoinPointStaticPartName = "thisJoinPointStaticPart".toCharArray();
 	private final static char[] thisEnclosingJoinPointStaticPartName = "thisEnclosingJoinPointStaticPart".toCharArray();
 	private final static char[] thisAspectInstanceName = "thisAspectInstance".toCharArray();
-	
-	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location) {
+
+	@Override
+	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location, Scope scope) {
 		if (CharOperation.equals(binding.name, thisJoinPointName) ||
 			CharOperation.equals(binding.name, thisJoinPointStaticPartName) ||
 			CharOperation.equals(binding.name, thisAspectInstanceName) || 
@@ -526,7 +529,7 @@ public class AjProblemReporter extends ProblemReporter {
 				return;
 			}
 		}			
-		super.uninitializedLocalVariable(binding, location);
+		super.uninitializedLocalVariable(binding, location, scope);
 	}
 	
 	public void abstractMethodInConcreteClass(SourceTypeBinding type) {

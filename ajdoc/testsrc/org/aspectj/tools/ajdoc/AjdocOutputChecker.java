@@ -16,6 +16,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.util.LangUtil;
+
 /**
  * Helper class to check whether the ajdoc contains the expected
  * information.
@@ -205,7 +207,9 @@ public class AjdocOutputChecker {
 				// found the required main section
 				String nextLine = reader.readLine();
 				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
-					if (nextLine.indexOf("NAME=\""+source+"\"") != -1 || nextLine.indexOf("name=\""+source+"\"") != -1) {
+					// On JDK11 it looks like <a id="doIt()"> on earlier JDKs it can look like <a name="doit">
+					if ((LangUtil.is11VMOrGreater() && nextLine.indexOf("ID=\""+source+"\"") != -1 || nextLine.indexOf("id=\""+source+"\"") != -1) ||
+						 nextLine.indexOf("NAME=\""+source+"\"") != -1 || nextLine.indexOf("name=\""+source+"\"") != -1) {
 						// found the required subsection
 						String subLine = reader.readLine();
 						while(subLine != null 
@@ -235,7 +239,7 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
-	
+
 	/**
 	 * Returns whether the supplied source has the expected 
 	 * relationship and target within the given summary section

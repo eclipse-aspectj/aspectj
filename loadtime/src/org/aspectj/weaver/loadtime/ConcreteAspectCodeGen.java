@@ -355,9 +355,7 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * Build the bytecode for the concrete aspect
-	 * 
-	 * @return concrete aspect bytecode
+	 * @return the bytecode for the concrete aspect
 	 */
 	public byte[] getBytes() {
 		if (!isValid) {

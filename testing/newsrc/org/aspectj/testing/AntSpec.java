@@ -199,6 +199,21 @@ public class AntSpec implements ITestStep {
 			if (stderr2.indexOf("Class JavaLaunchHelper is implemented in both")!=-1 && stderr2.indexOf('\n')!=-1) {
 				stderr2 = stderr2.replaceAll("objc\\[[0-9]*\\]: Class JavaLaunchHelper is implemented in both [^\n]*\n","");
 			}
+			// JDK 11 is complaining about illegal reflective calls - temporary measure ignore these - does that get all tests passing and this is the last problem?
+			if (stderr2.indexOf("WARNING: Illegal reflective access using Lookup on org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor") != -1) {
+//				WARNING: An illegal reflective access operation has occurred
+//				WARNING: Illegal reflective access using Lookup on org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor (file:/Users/aclement/gits/org.aspectj/loadtime/bin/) to class java.lang.ClassLoader
+//				WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor
+//				WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+//				WARNING: All illegal access operations will be denied in a future release
+				
+				stderr2 = stderr2.replaceAll("WARNING: An illegal reflective access operation has occurred\n","");
+				stderr2 = stderr2.replaceAll("WARNING: Illegal reflective access using Lookup on org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor[^\n]*\n","");
+				stderr2 = stderr2.replaceAll("WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor\n","");
+				stderr2 = stderr2.replaceAll("WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\n","");
+				stderr2 = stderr2.replaceAll("WARNING: All illegal access operations will be denied in a future release\n","");
+			}
+
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}

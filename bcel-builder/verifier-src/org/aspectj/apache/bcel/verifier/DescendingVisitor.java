@@ -64,6 +64,7 @@ import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
 import org.aspectj.apache.bcel.classfile.ConstantDouble;
+import org.aspectj.apache.bcel.classfile.ConstantDynamic;
 import org.aspectj.apache.bcel.classfile.ConstantFieldref;
 import org.aspectj.apache.bcel.classfile.ConstantFloat;
 import org.aspectj.apache.bcel.classfile.ConstantInteger;
@@ -354,6 +355,10 @@ public class DescendingVisitor implements ClassVisitor {
 	}
 
 	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {
+		throw new IllegalStateException("nyi");
+	}
+
+	public void visitConstantDynamic(ConstantDynamic obj) {
 		throw new IllegalStateException("nyi");
 	}
 

@@ -36,10 +36,17 @@ public class TestJava5ReflectionBasedReferenceTypeDelegate extends ReflectionBas
 		UnresolvedType collectionType = UnresolvedType.forName("java.util.Collection");
 		world.resolve(collectionType).getRawType().resolve(world);
 		ResolvedMember[] methods = world.resolve(collectionType).getDeclaredMethods();
-		int i = findMethod("toArray", 1, methods);
+		int i = -1;
+		for (int j=0;j<methods.length;j++) {
+			ResolvedMember method = methods[j];
+			if (method.getName().equals("toArray") && method.getParameterSignature().equals("([TT;)")) {
+				i = j;
+			}
+		}
 		assertTrue("Couldn't find 'toArray' in the set of methods? ", i != -1);
 		// String expectedSignature = "java.lang.Object[] java.util.Collection.toArray(java.lang.Object[])";
 		String expectedSignature = "([Ljava/lang/Object;)[Ljava/lang/Object;";
+		
 		assertTrue("Expected signature of '" + expectedSignature + "' but it was '" + methods[i].getSignatureErased(), methods[i]
 				.getSignatureErased().equals(expectedSignature));
 	}
