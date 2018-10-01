@@ -2,6 +2,23 @@
 
 <suite>
 
+  <ajc-test dir="bugs192/nestmates" title="nestmates">
+    <compile files="Outer.java" options="-11">
+	</compile>
+  </ajc-test>
+  
+  
+  <ajc-test dir="bugs192/nestmates" title="nestmates 2">
+    <compile files="Outer2.java" options="-11">
+	</compile>
+	<run class="Outer2">
+	<stdout>
+	<line text="Before main()"/>
+	<line text="Before i"/>
+	<line text="0"/>
+	</stdout></run>
+  </ajc-test>
+  
   <ajc-test dir="bugs192/537825" title="no final on cflow elements">
     <compile files="Code.java" options="-9">
     </compile>

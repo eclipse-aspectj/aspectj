@@ -1,5 +1,5 @@
 public aspect MyAspect {
-    pointcut all(): execution(@javax.annotation.Resource * *(..));
+    pointcut all(): execution(@Resource * *(..));
 
 
     before(): all() {

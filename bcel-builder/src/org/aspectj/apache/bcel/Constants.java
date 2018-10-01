@@ -651,8 +651,12 @@ public interface Constants {
 	public static final byte ATTR_MODULE = 23;
 	public static final byte ATTR_MODULE_PACKAGES = 24;
 	public static final byte ATTR_MODULE_MAIN_CLASS = 25;
-	
-	public static final short KNOWN_ATTRIBUTES = 26;
+
+	// J11:
+	public static final byte ATTR_NEST_HOST = 26;
+	public static final byte ATTR_NEST_MEMBERS = 27;
+
+	public static final short KNOWN_ATTRIBUTES = 28;
 
 	public static final String[] ATTRIBUTE_NAMES = { 
 		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
@@ -660,7 +664,7 @@ public interface Constants {
 		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
 		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", 
 		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
-		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass"
+		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers"
 		};
 
 	/**

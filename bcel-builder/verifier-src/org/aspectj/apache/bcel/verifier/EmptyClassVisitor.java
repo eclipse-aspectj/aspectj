@@ -55,6 +55,7 @@ package org.aspectj.apache.bcel.verifier;
 
 import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.BootstrapMethods;
+import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.ConstantClass;
@@ -93,13 +94,14 @@ import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.aspectj.apache.bcel.classfile.ModuleMainClass;
 import org.aspectj.apache.bcel.classfile.ModulePackages;
+import org.aspectj.apache.bcel.classfile.NestHost;
+import org.aspectj.apache.bcel.classfile.NestMembers;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.StackMapEntry;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
@@ -120,64 +122,118 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 public class EmptyClassVisitor implements ClassVisitor {
   protected EmptyClassVisitor() { }
 
-  public void visitCode(Code obj) {}
-  public void visitCodeException(CodeException obj) {}
-  public void visitConstantClass(ConstantClass obj) {}
-  public void visitConstantDouble(ConstantDouble obj) {}
-  public void visitConstantFieldref(ConstantFieldref obj) {}
-  public void visitConstantFloat(ConstantFloat obj) {}
-  public void visitConstantInteger(ConstantInteger obj) {}
-  public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj) {}
-  public void visitConstantLong(ConstantLong obj) {}
-  public void visitConstantMethodref(ConstantMethodref obj) {}
-  public void visitConstantMethodHandle(ConstantMethodHandle obj) {}
-  public void visitConstantMethodType(ConstantMethodType obj) {}
-  public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {}
-  public void visitConstantNameAndType(ConstantNameAndType obj) {}
-  public void visitConstantPool(ConstantPool obj) {}
-  public void visitConstantString(ConstantString obj) {}
-  public void visitConstantModule(ConstantModule obj) {}
-  public void visitConstantPackage(ConstantPackage obj) {}
-  public void visitConstantUtf8(ConstantUtf8 obj) {}
-  public void visitConstantValue(ConstantValue obj) {}
-  public void visitDeprecated(Deprecated obj) {}
-  public void visitExceptionTable(ExceptionTable obj) {}
-  public void visitField(Field obj) {}
-  public void visitInnerClass(InnerClass obj) {}
-  public void visitInnerClasses(InnerClasses obj) {}
-  public void visitJavaClass(JavaClass obj) {}
-  public void visitLineNumber(LineNumber obj) {}
-  public void visitBootstrapMethods(BootstrapMethods obj) {}
-  public void visitLineNumberTable(LineNumberTable obj) {}
-  public void visitLocalVariable(LocalVariable obj) {}
-  public void visitLocalVariableTable(LocalVariableTable obj) {}
-  public void visitMethod(Method obj) {}
-  public void visitSignature(Signature obj) {}
-  public void visitSourceFile(SourceFile obj) {}
-  public void visitSynthetic(Synthetic obj) {}
-  public void visitUnknown(Unknown obj) {}
-  public void visitStackMap(StackMap obj) {}
-  public void visitStackMapEntry(StackMapEntry obj) {}
+  @Override
+public void visitCode(Code obj) {}
+  @Override
+public void visitCodeException(CodeException obj) {}
+  @Override
+public void visitConstantClass(ConstantClass obj) {}
+  @Override
+public void visitConstantDouble(ConstantDouble obj) {}
+  @Override
+public void visitConstantFieldref(ConstantFieldref obj) {}
+  @Override
+public void visitConstantFloat(ConstantFloat obj) {}
+  @Override
+public void visitConstantInteger(ConstantInteger obj) {}
+  @Override
+public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj) {}
+  @Override
+public void visitConstantLong(ConstantLong obj) {}
+  @Override
+public void visitConstantMethodref(ConstantMethodref obj) {}
+  @Override
+public void visitConstantMethodHandle(ConstantMethodHandle obj) {}
+  @Override
+public void visitConstantMethodType(ConstantMethodType obj) {}
+  @Override
+public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {}
+  @Override
+public void visitConstantNameAndType(ConstantNameAndType obj) {}
+  @Override
+public void visitConstantPool(ConstantPool obj) {}
+  @Override
+public void visitConstantString(ConstantString obj) {}
+  @Override
+public void visitConstantModule(ConstantModule obj) {}
+  @Override
+public void visitConstantPackage(ConstantPackage obj) {}
+  @Override
+public void visitConstantUtf8(ConstantUtf8 obj) {}
+  @Override
+public void visitConstantValue(ConstantValue obj) {}
+  @Override
+public void visitDeprecated(Deprecated obj) {}
+  @Override
+public void visitExceptionTable(ExceptionTable obj) {}
+  @Override
+public void visitField(Field obj) {}
+  @Override
+public void visitInnerClass(InnerClass obj) {}
+  @Override
+public void visitInnerClasses(InnerClasses obj) {}
+  @Override
+public void visitJavaClass(JavaClass obj) {}
+  @Override
+public void visitLineNumber(LineNumber obj) {}
+  @Override
+public void visitBootstrapMethods(BootstrapMethods obj) {}
+  @Override
+public void visitLineNumberTable(LineNumberTable obj) {}
+  @Override
+public void visitLocalVariable(LocalVariable obj) {}
+  @Override
+public void visitLocalVariableTable(LocalVariableTable obj) {}
+  @Override
+public void visitMethod(Method obj) {}
+  @Override
+public void visitSignature(Signature obj) {}
+  @Override
+public void visitSourceFile(SourceFile obj) {}
+  @Override
+public void visitSynthetic(Synthetic obj) {}
+  @Override
+public void visitUnknown(Unknown obj) {}
+  @Override
+public void visitStackMap(StackMap obj) {}
+  @Override
+public void visitStackMapEntry(StackMapEntry obj) {}
 
   // J5:
-  public void visitEnclosingMethod(EnclosingMethod obj) {}
-  public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {}
-  public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {}
-  public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos attribute) {}
-  public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {}
-  public void visitAnnotationDefault(AnnotationDefault attribute) {}
-  public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
+  @Override
+public void visitEnclosingMethod(EnclosingMethod obj) {}
+  @Override
+public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {}
+  @Override
+public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {}
+  @Override
+public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos attribute) {}
+  @Override
+public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {}
+  @Override
+public void visitAnnotationDefault(AnnotationDefault attribute) {}
+  @Override
+public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
   	 
   // J8:
-  public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {}
-  public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {}
-  public void visitMethodParameters(MethodParameters attribute) {}
+  @Override
+public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {}
+  @Override
+public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {}
+  @Override
+public void visitMethodParameters(MethodParameters attribute) {}
 
   // J9:
-  public void visitModule(Module attribute) {}
-  public void visitModulePackages(ModulePackages attribute) {}
-  public void visitModuleMainClass(ModuleMainClass attribute) {}
+  @Override
+public void visitModule(Module attribute) {}
+  @Override
+public void visitModulePackages(ModulePackages attribute) {}
+  @Override
+public void visitModuleMainClass(ModuleMainClass attribute) {}
 
-  public void visitConstantDynamic(ConstantDynamic obj) {}
+  // J11:
+  @Override public void visitConstantDynamic(ConstantDynamic attribute) {}
+  @Override public void visitNestHost(NestHost attribute) { }
+  @Override public void visitNestMembers(NestMembers attribute) { }
  
 }

@@ -1,5 +1,5 @@
 public class MyClass {
-    @javax.annotation.Resource
+    @Resource
     public void method() {
     }
 }

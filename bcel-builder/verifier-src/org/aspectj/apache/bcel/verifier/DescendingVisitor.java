@@ -59,6 +59,7 @@ import org.aspectj.apache.bcel.classfile.AnnotationDefault;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.AttributeUtils;
 import org.aspectj.apache.bcel.classfile.BootstrapMethods;
+import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.Constant;
@@ -98,13 +99,14 @@ import org.aspectj.apache.bcel.classfile.MethodParameters;
 import org.aspectj.apache.bcel.classfile.Module;
 import org.aspectj.apache.bcel.classfile.ModuleMainClass;
 import org.aspectj.apache.bcel.classfile.ModulePackages;
+import org.aspectj.apache.bcel.classfile.NestHost;
+import org.aspectj.apache.bcel.classfile.NestMembers;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 import org.aspectj.apache.bcel.classfile.StackMap;
 import org.aspectj.apache.bcel.classfile.StackMapEntry;
 import org.aspectj.apache.bcel.classfile.Synthetic;
 import org.aspectj.apache.bcel.classfile.Unknown;
-import org.aspectj.apache.bcel.classfile.ClassVisitor;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisParamAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
@@ -171,6 +173,7 @@ public class DescendingVisitor implements ClassVisitor {
 		clazz.accept(this);
 	}
 
+	@Override
 	public void visitJavaClass(JavaClass clazz) {
 		stack.push(clazz);
 		clazz.accept(visitor);
@@ -189,6 +192,7 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitField(Field field) {
 		stack.push(field);
 		field.accept(visitor);
@@ -197,12 +201,14 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantValue(ConstantValue cv) {
 		stack.push(cv);
 		cv.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitMethod(Method method) {
 		stack.push(method);
 		method.accept(visitor);
@@ -210,12 +216,14 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitExceptionTable(ExceptionTable table) {
 		stack.push(table);
 		table.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitCode(Code code) {
 		stack.push(code);
 		code.accept(visitor);
@@ -230,12 +238,14 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitCodeException(CodeException ce) {
 		stack.push(ce);
 		ce.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitLineNumberTable(LineNumberTable table) {
 		stack.push(table);
 		table.accept(visitor);
@@ -246,12 +256,14 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitLineNumber(LineNumber number) {
 		stack.push(number);
 		number.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitLocalVariableTable(LocalVariableTable table) {
 		stack.push(table);
 		table.accept(visitor);
@@ -262,6 +274,7 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitStackMap(StackMap table) {
 		stack.push(table);
 		table.accept(visitor);
@@ -273,18 +286,21 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitStackMapEntry(StackMapEntry var) {
 		stack.push(var);
 		var.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitLocalVariable(LocalVariable var) {
 		stack.push(var);
 		var.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantPool(ConstantPool cp) {
 		stack.push(cp);
 		cp.accept(visitor);
@@ -298,104 +314,123 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantClass(ConstantClass constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantDouble(ConstantDouble constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantFieldref(ConstantFieldref constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantFloat(ConstantFloat constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantInteger(ConstantInteger constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantLong(ConstantLong constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantMethodref(ConstantMethodref constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantMethodHandle(ConstantMethodHandle constant) {
 		throw new IllegalStateException("nyi");
 	}
 
+	@Override
 	public void visitConstantMethodType(ConstantMethodType obj) {
 		throw new IllegalStateException("nyi");
 	}
 
+	@Override
 	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {
 		throw new IllegalStateException("nyi");
 	}
 
+	@Override
 	public void visitConstantDynamic(ConstantDynamic obj) {
 		throw new IllegalStateException("nyi");
 	}
 
+	@Override
 	public void visitBootstrapMethods(BootstrapMethods obj) {
 		throw new IllegalStateException("nyi");
 	}
 
+	@Override
 	public void visitConstantNameAndType(ConstantNameAndType constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantString(ConstantString constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantModule(ConstantModule constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantPackage(ConstantPackage constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitConstantUtf8(ConstantUtf8 constant) {
 		stack.push(constant);
 		constant.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitInnerClasses(InnerClasses ic) {
 		stack.push(ic);
 		ic.accept(visitor);
@@ -406,18 +441,21 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitInnerClass(InnerClass inner) {
 		stack.push(inner);
 		inner.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitDeprecated(Deprecated attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitSignature(Signature attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
@@ -425,60 +463,70 @@ public class DescendingVisitor implements ClassVisitor {
 	}
 
 	// J5SUPPORT:
+	@Override
 	public void visitEnclosingMethod(EnclosingMethod attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitMethodParameters(MethodParameters attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitAnnotationDefault(AnnotationDefault attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitLocalVariableTypeTable(LocalVariableTypeTable table) {
 		stack.push(table);
 		table.accept(visitor);
@@ -489,37 +537,57 @@ public class DescendingVisitor implements ClassVisitor {
 		stack.pop();
 	}
 
+	@Override
 	public void visitSourceFile(SourceFile attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitSynthetic(Synthetic attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitUnknown(Unknown attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitModule(Module attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitModulePackages(ModulePackages attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();
 	}
 
+	@Override
 	public void visitModuleMainClass(ModuleMainClass attribute) {
+		stack.push(attribute);
+		attribute.accept(visitor);
+		stack.pop();
+	}
+
+	@Override
+	public void visitNestHost(NestHost attribute) {
+		stack.push(attribute);
+		attribute.accept(visitor);
+		stack.pop();
+	}
+
+	@Override
+	public void visitNestMembers(NestMembers attribute) {
 		stack.push(attribute);
 		attribute.accept(visitor);
 		stack.pop();

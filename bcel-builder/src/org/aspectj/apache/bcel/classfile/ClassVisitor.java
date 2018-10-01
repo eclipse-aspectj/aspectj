@@ -173,4 +173,8 @@ public interface ClassVisitor {
 	public void visitModule(Module module);
 	public void visitModulePackages(ModulePackages modulePackage);
 	public void visitModuleMainClass(ModuleMainClass moduleMainClass);
+
+	// J11:
+	public void visitNestHost(NestHost nestHost);
+	public void visitNestMembers(NestMembers nestMembers);
 }

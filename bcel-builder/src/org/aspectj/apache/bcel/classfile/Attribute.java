@@ -173,6 +173,10 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new ModulePackages(idx, len, file, cpool);
 		case Constants.ATTR_MODULE_MAIN_CLASS:
 			return new ModuleMainClass(idx, len, file, cpool);
+		case Constants.ATTR_NEST_HOST:
+			return new NestHost(idx, len, file, cpool);
+		case Constants.ATTR_NEST_MEMBERS:
+			return new NestMembers(idx, len, file, cpool);
 		default:
 			throw new IllegalStateException();
 		}
@@ -203,6 +207,7 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 		return Constants.ATTRIBUTE_NAMES[tag];
 	}
 
+	@Override
 	public abstract void accept(ClassVisitor v);
 
 }

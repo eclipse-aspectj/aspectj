@@ -12,6 +12,9 @@ package org.aspectj.systemtest.ajc192;
 
 import java.io.File;
 
+import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.NestHost;
+import org.aspectj.apache.bcel.classfile.NestMembers;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
@@ -21,6 +24,29 @@ import junit.framework.Test;
  */
 public class Ajc192Tests extends XMLBasedAjcTestCase {
 
+	public void testNestmates() throws Exception {
+		runTest("nestmates");
+		JavaClass outer = getClassFrom(ajc.getSandboxDirectory(), "Outer");
+		JavaClass inner = getClassFrom(ajc.getSandboxDirectory(), "Outer$Inner");
+		NestMembers nestMembers = (NestMembers) getAttributeStartsWith(outer.getAttributes(),"NestMembers");
+		assertEquals(1,nestMembers.getClasses().length);
+		assertEquals("Outer$Inner",nestMembers.getClassesNames()[0]);
+		NestHost nestHost = (NestHost) getAttributeStartsWith(inner.getAttributes(),"NestHost");
+		assertEquals("Outer",nestHost.getHostClassName());
+	}
+
+	// Verifying not destroyed on weaving
+	public void testNestmates2() throws Exception {
+		runTest("nestmates 2");
+		JavaClass outer = getClassFrom(ajc.getSandboxDirectory(), "Outer2");
+		JavaClass inner = getClassFrom(ajc.getSandboxDirectory(), "Outer2$Inner2");
+		NestMembers nestMembers = (NestMembers) getAttributeStartsWith(outer.getAttributes(),"NestMembers");
+		assertEquals(1,nestMembers.getClasses().length);
+		assertEquals("Outer2$Inner2",nestMembers.getClassesNames()[0]);
+		NestHost nestHost = (NestHost) getAttributeStartsWith(inner.getAttributes(),"NestHost");
+		assertEquals("Outer2",nestHost.getHostClassName());
+	}
+	
 	public void testCflowFinal() {
 		runTest("no final on cflow elements");
 	}
