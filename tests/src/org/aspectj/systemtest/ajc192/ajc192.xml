@@ -2,6 +2,13 @@
 
 <suite>
 
+  <ajc-test dir="bugs192/513528" title="itd lambdas">
+    <compile files="Apple.java AppleController.java AppleControllerITDAspect.java" options="-11">
+	</compile>
+	<run class="de.scrum_master.app.AppleController">
+	</run>
+  </ajc-test>
+  
   <ajc-test dir="bugs192/11flags" title="11flags">
     <compile files="A.java" options="-11 -showWeaveInfo">
     <message kind="weave" text="Join point 'method-execution(void A.foo())' in Type 'A' (A.java:8) advised by before advice from 'X' (A.java:12)"/>

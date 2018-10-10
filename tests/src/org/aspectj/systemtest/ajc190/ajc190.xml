@@ -90,7 +90,7 @@
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
     <file deletefile="module-info.java"/>
     <file deletefile="aaa"/>
-    <compile files="Azpect.java" outjar="azpects.jar"/>
+    <compile files="Azpect.java" outjar="azpects.jar" options="-1.4"/>
     <compile options="-showWeaveInfo" inpath="my.module.jar" aspectpath="azpects.jar" outjar="my.module.woven.jar">
     		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>    
     </compile>

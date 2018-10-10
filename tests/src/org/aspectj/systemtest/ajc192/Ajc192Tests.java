@@ -24,6 +24,10 @@ import junit.framework.Test;
  */
 public class Ajc192Tests extends XMLBasedAjcTestCase {
 
+	public void testITDLambdas() throws Exception {
+		runTest("itd lambdas");
+	}
+	
 	public void test11Flags() throws Exception {
 		runTest("11flags");
 	}
