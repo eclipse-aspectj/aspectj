@@ -12,12 +12,12 @@ package org.aspectj.systemtest.ajc1611;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.systemtest.ajc150.GenericsTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement

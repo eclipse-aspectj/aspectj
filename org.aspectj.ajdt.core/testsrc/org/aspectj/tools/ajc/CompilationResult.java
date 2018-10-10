@@ -114,7 +114,7 @@ public class CompilationResult {
 	 * though.
 	 * @see org.aspectj.tools.ajc.AjcTestCase
 	 */
-	public List /*IMessage*/ getInfoMessages() { return infoMessages; }
+	public List<IMessage> getInfoMessages() { return infoMessages; }
 	/**
 	 * The error messages produced by the compiler. The list
 	 * entries are the <code>IMessage</code> objects created during the
@@ -152,6 +152,7 @@ public class CompilationResult {
 	 * Returns string containing message count summary, list of messages
 	 * by type, and the actual ajc compilation command that was issued.
 	 */
+	@Override
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		buff.append("AspectJ Compilation Result:\n");

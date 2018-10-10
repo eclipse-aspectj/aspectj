@@ -30,6 +30,7 @@ public class OutjarTest extends AjcTestCase {
 	 * Make copies of JARs used for -injars/-inpath and -aspectpath because so
 	 * they are not overwritten when a test fails.
 	 */
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		baseDir = new File("../org.aspectj.ajdt.core/testdata",PROJECT_DIR);
@@ -109,7 +110,7 @@ public class OutjarTest extends AjcTestCase {
 	 * Expected result = Compile fails with error message.
 	 */
 	public void testOutjarDeletedOnError () {
-		String[] args = new String[] {"-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName};
+		String[] args = new String[] {"-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName,"-1.4"};
 		Message error = new Message(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACES,"jar1.Parent"));
 		MessageSpec spec = new MessageSpec(null,newMessageList(error));
 		CompilationResult result = ajc(baseDir,args);

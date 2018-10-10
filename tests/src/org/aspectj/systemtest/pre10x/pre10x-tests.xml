@@ -127,7 +127,7 @@
     <ajc-test dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
       keywords="from-errors">
-        <compile files="AroundReturnType.java">
+        <compile files="AroundReturnType.java" options="-1.4">
             <message kind="error" line="2"/>
             <message kind="error" line="6"/>
             <message kind="error" line="7"/>
@@ -395,7 +395,7 @@
     <ajc-test dir="errors"
       title="circular dominates leading to irresolvable advice precedence"
       keywords="from-errors">
-        <compile files="CircularDominates.java">
+        <compile files="CircularDominates.java" options="-1.4">
             <message kind="error" line="12"/>
             <message kind="error" line="16"/>
             <message kind="error" line="20"/>

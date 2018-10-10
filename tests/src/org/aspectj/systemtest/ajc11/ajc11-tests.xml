@@ -204,7 +204,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
-        <compile files="CloseConnectionsCflow.java">
+        <compile files="CloseConnectionsCflow.java" options="-1.4">
         </compile>
     </ajc-test>
 
@@ -535,7 +535,7 @@
     <ajc-test dir="new" pr="36778"
       title="can't put around advice on interface static initializer"
       comment="this tests for a nice message given a compiler limitation">
-        <compile files="EmptyInterfaceCE.java">
+        <compile files="EmptyInterfaceCE.java" options="-1.4">
         	<message kind="error" line="20"/>
         	<message kind="error" line="23"/>
         </compile>
@@ -543,7 +543,7 @@
     
     <ajc-test dir="bugs" pr="36803"
       title="cflow concretization causing assertion failure">
-        <compile files="CflowConcrete.java"/>
+        <compile files="CflowConcrete.java" options="-1.4"/>
         <run class="CflowConcrete"/>
     </ajc-test>
 
@@ -810,7 +810,7 @@
 	
     <ajc-test dir="bugs" pr="42652"
    	 title="perthis and signature bad interaction">
-        <compile files="InterPerCall.java"/>
+        <compile files="InterPerCall.java" options="-1.4"/>
         <run class="InterPerCall"/>
     </ajc-test>
     

@@ -74,13 +74,13 @@
    
       <ajc-test dir="new"
       title="if(false) optimisation" pr="48990">
-        <compile files="IfFalse.aj"/>
+        <compile files="IfFalse.aj" options="-1.4"/>
         <run class="IfFalse"/>
     </ajc-test>
    
     <ajc-test dir="new"
       title="if(true) optimisation" pr="48990">
-        <compile files="IfTrue.aj"/>
+        <compile files="IfTrue.aj" options="-1.4"/>
         <run class="IfTrue"/>
     </ajc-test> 
     
@@ -464,7 +464,7 @@
     </ajc-test>
 	
 	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - shared counters (2)">
-        <compile files="CounterTest02.java"/>
+        <compile files="CounterTest02.java" options="-1.4"/>
 		<run class="CounterTest02"/>
     </ajc-test>
 	
@@ -474,7 +474,7 @@
     </ajc-test>
 	
 	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters (4)">
-        <compile files="CounterTest04.java"/>
+        <compile files="CounterTest04.java" options="-1.4"/>
 		<run class="CounterTest04"/>
     </ajc-test>
 	

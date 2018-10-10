@@ -439,7 +439,7 @@
     
    <ajc-test dir="bugs152/pr144465" title="ltw with serialversionUID creation">
       <compile files="BigHorribleClass.java"/>
-      <compile files="AnAspect.java"/>
+      <compile files="AnAspect.java" options="-1.4"/>
       <run class="BigHorribleClass" ltw="aop1.xml">
         <stderr>
           <line text="weaveinfo Join point 'staticinitialization(void BigHorribleClass.&lt;clinit&gt;())'"/>
@@ -550,9 +550,9 @@
     
     <ajc-test dir="bugs152/pr137235"  pr="137235"
 		title="directory with .jar extension"  >
-	    <compile files="directory.jar/Before.java" outjar="directory.jar/inOne.custom"/>
-	    <compile files="directory.jar/BeforeExec.aj" outjar="directory.jar/inTwo"/>
-	    <compile files="directory.jar/Rename.aj" outjar="directory.jar/weave.jar"/>
+	    <compile files="directory.jar/Before.java" outjar="directory.jar/inOne.custom" options="-1.4"/>
+	    <compile files="directory.jar/BeforeExec.aj" outjar="directory.jar/inTwo" options="-1.4"/>
+	    <compile files="directory.jar/Rename.aj" outjar="directory.jar/weave.jar" options="-1.4"/>
 	    <compile files="directory.jar/Hello.java" inpath="directory.jar/inOne.custom,directory.jar/inTwo" aspectpath="directory.jar/weave.jar" outjar="directory.jar/outJar.jar"/>
         <run class="Hello" classpath="$sandbox/directory.jar/outJar.jar,$sandbox/directory.jar/weave.jar">
           <stdout>

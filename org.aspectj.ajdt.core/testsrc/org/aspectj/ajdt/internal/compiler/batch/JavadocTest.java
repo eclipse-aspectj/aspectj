@@ -14,16 +14,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.bridge.IMessage;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
-import org.aspectj.util.LangUtil;
 
 public class JavadocTest extends AjcTestCase {
 	public static final String PROJECT_DIR = "javadoc";
 
 	private File baseDir;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		baseDir = new File("../org.aspectj.ajdt.core/testdata", PROJECT_DIR);
@@ -36,7 +35,7 @@ public class JavadocTest extends AjcTestCase {
 	 * 
 	 */
 	public void testMissingJavadoc() {
-		String[] args = new String[] { "World.java", "-warn:allJavadoc" };
+		String[] args = new String[] { "World.java", "-warn:allJavadoc", "-1.4" };
 
 		List<Message> warningMessages = new ArrayList<Message>();
 		// These warnings are against public textX() methods declared in the World.java

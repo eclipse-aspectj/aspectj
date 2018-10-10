@@ -184,7 +184,7 @@
  
     <ajc-test dir="harness" 
         title="valid XLintWarningTest file, default level of warning">
-        <compile files="XLintWarningTest.java">
+        <compile files="XLintWarningTest.java" options="-1.4">
         	<message kind="warning" line="5"
         		 text="Xlint:invalidAbsoluteTypeName"/> 
         </compile>

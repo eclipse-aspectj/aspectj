@@ -815,33 +815,17 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-timers")) {
 				buildConfig.setTiming(true);
 				// swallow - it is dealt with in Main.runMain()
-			} else if (arg.equals("-1.5")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.5");
-				// this would enable the '-source 1.5' to do the same as '-1.5' but doesnt sound quite right as
-				// as an option right now as it doesnt mean we support 1.5 source code - people will get confused...
-			} else if (arg.equals("-1.6")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.6");
-			} else if (arg.equals("-1.7")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.7");
-			} else if (arg.equals("-1.8")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.8");
-			} else if (arg.equals("-1.9")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-1.9");
-			} else if (arg.equals("-10")) {
-				buildConfig.setBehaveInJava5Way(true);
-				unparsedArgs.add("-10");
+			} else if (arg.equals("-1.3")) {
+				buildConfig.setBehaveInJava5Way(false);
+				unparsedArgs.add("-1.3");
+			} else if (arg.equals("-1.4")) {
+				buildConfig.setBehaveInJava5Way(false);
+				unparsedArgs.add("-1.4");
 			} else if (arg.equals("-source")) {
 				if (args.size() > nextArgIndex) {
 					String level = args.get(nextArgIndex).getValue();
-					if (level.equals("1.5") || level.equals("5") || level.equals("1.6") || level.equals("6") || level.equals("1.7")
-							|| level.equals("7") || level.equals("8") || level.equals("1.8")
-							|| level.equals("9") || level.equals("1.9") || level.equals("10")) {
-						buildConfig.setBehaveInJava5Way(true);
+					if (level.equals("1.3") || level.equals("1.4")) {
+						buildConfig.setBehaveInJava5Way(false);
 					}
 					unparsedArgs.add("-source");
 					unparsedArgs.add(level);

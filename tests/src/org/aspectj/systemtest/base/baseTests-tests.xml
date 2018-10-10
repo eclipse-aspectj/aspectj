@@ -210,7 +210,7 @@
 
     <ajc-test dir="base/test136" title="supers, supers, supers"
       keywords="from-base">
-        <compile files="Driver.java"/>
+        <compile files="Driver.java" options="-1.4"/>
         <run class="Driver"/>
     </ajc-test>
 

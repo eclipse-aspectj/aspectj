@@ -75,7 +75,7 @@
     <ajc-test dir="incremental/model/sourcefiles_updating" 
     	title="Testing incremental structure model: Updating files"
     	keywords="incremental-test,model-test" >
-        <compile staging="true" options="-incremental,-emacssym,-Xset:minimalModel=false" sourceroots="src"/>
+        <compile staging="true" options="-incremental,-emacssym,-Xset:minimalModel=false,-1.4" sourceroots="src"/>
         <!-- On first compile, 5 source files in model, 'root','Alpha','Beta','Gamma','Delta' -->
         <inc-compile tag="20" checkModel="java source file=5,method=4,class=3,FileMapSize=4"/> <!-- Beta changed, method added -->
         <inc-compile tag="30" checkModel="java source file=5,method=4,class=4,advice=1"/> <!-- Delta changed, class added -->

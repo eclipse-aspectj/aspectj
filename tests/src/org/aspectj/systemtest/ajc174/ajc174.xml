@@ -117,7 +117,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 1">
-	  <compile files="Azpect.java" outjar="foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -135,7 +135,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 2">
-	  <compile files="Azpect.java" outjar="foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -154,7 +154,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 3">
-	  <compile files="Azpect.java" outjar="foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -172,7 +172,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 4">
-	  <compile files="Azpect.java" outjar="foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop2.xml">
         <stdout>
@@ -191,7 +191,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 5">
-	  <compile files="Azpect.java" outjar="foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop3.xml">
         <stdout>

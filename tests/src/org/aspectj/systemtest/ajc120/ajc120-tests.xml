@@ -75,7 +75,7 @@
 
    <ajc-test dir="bugs/faultingInSource" pr="46671"
       title="Ensure we don't look for source on the classpath when binary not found">
-        <compile files="SimpleTracing.java" classpath="." options="-verbose">
+        <compile files="SimpleTracing.java" classpath="." options="-verbose -1.4">
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
     </ajc-test>   
@@ -244,31 +244,31 @@
 
     <ajc-test dir="new" pr="42668"
    	 title="after returning with parameter: matching rules">
-        <compile files="AfterReturningParamMatching.java" />
+        <compile files="AfterReturningParamMatching.java" options="-1.4"/>
         <run class="AfterReturningParamMatching"/>
     </ajc-test>
     
     <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">
-        <compile files="Main.java,TraceV1.aj"/>
+        <compile files="Main.java,TraceV1.aj" options="-1.4"/>
         <run class="Main"/>
-        <compile files="TraceV2.aj"/>
+        <compile files="TraceV2.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
    
     <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect error">
-        <compile files="Main.java,TraceV1.aj"/>
+        <compile files="Main.java,TraceV1.aj" options="-1.4"/>
         <run class="Main"/>
-        <compile files="TraceRE.aj"/>
+        <compile files="TraceRE.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
     
      <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">
-        <compile files="Main.java,TraceWithInnerV1.aj"/>
+        <compile files="Main.java,TraceWithInnerV1.aj" options="-1.4"/>
         <run class="Main"/>
-        <compile files="TraceWithInnerV2.aj"/>
+        <compile files="TraceWithInnerV2.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
     
@@ -383,7 +383,7 @@
 
       <ajc-test dir="bugs" pr="44272"
     		title="retitle warning to circular {advice} dependency at ...">
-        <compile files="CircularAdvicePrecedence.java">
+        <compile files="CircularAdvicePrecedence.java" options="-1.4">
             <message kind="error" line="4"/> 
             <message kind="error" line="5"/> 
             <message kind="error" line="6"/> 
@@ -459,7 +459,7 @@
  
  	<ajc-test dir="bugs" 
 		pr="60936" title="error message for constructor-execution pcd">
-        <compile files="InterfaceConstructor.java">
+        <compile files="InterfaceConstructor.java" options="-1.4">
           <message kind="warning" line="10" text="no interface constructor-execution join point"/>
         </compile>
     </ajc-test>

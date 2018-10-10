@@ -374,7 +374,7 @@
       pr="90806"
       keywords="incremental-test"
    	  title="NPE in genHandleIdentifier">
-        <compile staging="true"	options="-incremental,-verbose,-emacssym" sourceroots="src"/>
+        <compile staging="true"	options="-incremental,-verbose,-emacssym,-1.4" sourceroots="src"/>
         <!--inc-compile tag="20"/-->
     </ajc-test>
     	 

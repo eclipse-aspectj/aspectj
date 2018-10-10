@@ -180,10 +180,10 @@
       keywords="purejava">
         <compile classpath="classesDir,jars/required.jar" 
                  files="Main.java"
-                 outjar="main.zip"/>
+                 outjar="main.zip" options="-1.4"/>
         <compile classpath="classesDir,jars/required.jar"
                  aspectpath="jars/requiredAspects.jar,jars/AspectMain.jar"
-                 files="main.zip"/>
+                 files="main.zip" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
 
@@ -608,15 +608,15 @@
 
     <ajc-test dir="harness/aspectpath"
 		title="pass ltw-jarAspectpath">
-        <compile files="A.java" outjar="out.jar"/>
-        <compile files="Main.java"/>
+        <compile files="A.java" outjar="out.jar" options="-1.4"/>
+        <compile files="Main.java" options="-1.4"/>
         <run class="Main" aspectpath="out.jar"/> 
     </ajc-test>
 
     <ajc-test dir="harness/aspectpath"
 		title="pass ltw-jarAspectpath-jarClasspath">
-        <compile files="A.java" outjar="out.jar"/>
-        <compile files="Main.java" outjar="cl.zip"/>
+        <compile files="A.java" outjar="out.jar" options="-1.4"/>
+        <compile files="Main.java" outjar="cl.zip" options="-1.4"/>
         <run class="Main" aspectpath="out.jar" classpath="cl.zip"/> 
     </ajc-test>
 

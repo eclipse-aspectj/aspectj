@@ -29,7 +29,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs153/pr162657" title="complex pointcut">
-      <compile files="TestAspect.aj"/>
+      <compile files="TestAspect.aj" options="-1.4"/>
     </ajc-test>
     
     <ajc-test dir="bugs153/pr164633" title="incompatibleclasschange">
@@ -352,7 +352,7 @@
     
     <ajc-test dir="bugs153/pr145693" title="verifyErrNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
-      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
       <compile files="Sample.java" options="-Xlint:ignore" aspectpath="apath.jar" outjar="run.jar">
         <message kind="warning" line="8" text="Unable to determine match at this join point because the type 'Event' cannot be found"/>
       </compile>
@@ -365,14 +365,14 @@
 
     <ajc-test dir="bugs153/pr145693" title="verifyErrInpathNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
-      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
       <compile files="Sample.java" options="-Xlint:ignore" inpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
       <run class="Sample" classpath="run.jar,apath.jar"/>
     </ajc-test>    
 
     <ajc-test dir="bugs153/pr145693" title="cpathNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
-      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar"/>
+      <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
       <compile files="Sample.java" options="-Xlint:ignore" classpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
       <run class="Sample" classpath="run.jar,apath.jar"/>
     </ajc-test>    
@@ -550,7 +550,7 @@
         <compile files="HelloWorld.java"/>
         <compile files="MessageHandler.java"/>
 <!--        <compile files="Aspect.aj" options="-outxml"/> -->
-        <compile files="Aspect.aj" options="-outxml -outjar aspects.jar"/>
+        <compile files="Aspect.aj" options="-outxml -outjar aspects.jar -1.4"/>
         <ant file="ajc-ant.xml" target="Duplicate JVMTI agents" verbose="true"/>
     </ajc-test>
     
@@ -695,7 +695,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs153/pr156904/inDiffPkgWithoutImport" title="ensure no invalidAbsoluteTypeName when do match - 4">
-      <compile files="A.aj,Outer.java">
+      <compile files="A.aj,Outer.java" options="-1.4">
 		<message kind="warning" line="5" text="no match for this type name: Outer [Xlint:invalidAbsoluteTypeName]"/>
 	  </compile>
     </ajc-test>
@@ -740,8 +740,8 @@
         	files="HelloWorld.java"
         >
         </compile>	
-        <compile files="AbstractSuperAspect.aj"/>
-        <compile files="TestAdvice.aj"/>
+        <compile files="AbstractSuperAspect.aj" options="-1.4"/>
+        <compile files="TestAdvice.aj" options="-1.4"/>
         <run class="HelloWorld" ltw="aop-advice.xml">
         	<stdout>
                 <line text="? ConcreteAspectWithAdvice()"/>
@@ -787,8 +787,8 @@
 		keywords="aop.xml">
 
         <compile files="HelloWorld.java"/>
-        <compile files="AbstractSuperAspect.aj"/>
-        <compile files="TestAroundClosure.aj"/>
+        <compile files="AbstractSuperAspect.aj" options="-1.4"/>
+        <compile files="TestAroundClosure.aj" options="-1.4"/>
         <run class="HelloWorld" ltw="aop-aroundclosure.xml">
         	<stdout>
                 <line text="&rt; ConcreteAspectWithAroundClosure()"/>

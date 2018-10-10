@@ -39,7 +39,7 @@ public class PerformanceTestCase extends CommandTestCase {
 		// into an error so that we can use checkCompiles() ability to check errors occur.
 		// Pass -proceedOnError to ensure even though we get that message, we still get the class file on disk
 		String sandboxName = getSandboxName();
-		checkCompile("src1/LazyTjp.aj", new String[] {"-Xlint:error","-proceedOnError"}, new int[] {96}, sandboxName);
+		checkCompile("src1/LazyTjp.aj", new String[] {"-Xlint:error","-proceedOnError", "-1.4"}, new int[] {96}, sandboxName);
 		runMain("LazyTjp");
 	}
 	

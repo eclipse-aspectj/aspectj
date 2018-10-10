@@ -65,7 +65,7 @@
         <compile
         	files="HelloWorld.java"
         />
-        <compile files="Aspect.aj" options="-outxml"/>
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
 		<ant file="ant.xml" target="Trace everything" verbose="true">
         	<stdout>
                 <line text="Hello World!"/>
@@ -77,7 +77,7 @@
         <compile
         	files="HelloWorld.java"
         />
-        <compile files="Aspect.aj" options="-outxml"/>
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
 		<ant file="ant.xml" target="JDK 1.4 tracing" verbose="true">
         	<stdout>
                 <line text="Hello World!"/>
@@ -89,7 +89,7 @@
         <compile
         	files="HelloWorld.java"
         />
-        <compile files="Aspect.aj" options="-outxml"/>
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
 		<ant file="ant.xml" target="Tracing file System Property" verbose="true">
         	<stdout>
                 <line text="Hello World!"/>

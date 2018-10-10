@@ -73,7 +73,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	public String xOptionalJoinpoints = null;
 
 	// If true - autoboxing behaves differently ...
-	public boolean behaveInJava5Way = false;
+	public boolean behaveInJava5Way = true;
 
 	public boolean timing = false;
 
@@ -117,6 +117,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		set(settings);
 	}
 
+	@Override
 	public Map<String,String> getMap() {
 		Map<String,String> map = super.getMap();
 		// now add AspectJ additional options		
@@ -148,6 +149,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		return map;
 	}
 
+	@Override
 	public void set(Map<String,String> optionsMap) {
 		super.set(optionsMap);
 		Object optionValue;
@@ -282,6 +284,7 @@ public class AjCompilerOptions extends CompilerOptions {
 		super.warningThreshold.set(CompilerOptions.SwallowedExceptionInCatchBlock);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer(super.toString());
 		// now add AspectJ additional options

@@ -2,11 +2,16 @@
 
 <suite>
 
+  <ajc-test dir="bugs192/11flags" title="11flags">
+    <compile files="A.java" options="-11 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-execution(void A.foo())' in Type 'A' (A.java:8) advised by before advice from 'X' (A.java:12)"/>
+	</compile>
+  </ajc-test>
+  
   <ajc-test dir="bugs192/nestmates" title="nestmates">
     <compile files="Outer.java" options="-11">
 	</compile>
   </ajc-test>
-  
   
   <ajc-test dir="bugs192/nestmates" title="nestmates 2">
     <compile files="Outer2.java" options="-11">

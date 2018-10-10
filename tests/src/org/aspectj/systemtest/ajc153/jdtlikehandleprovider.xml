@@ -12,7 +12,7 @@
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="advice handle">
-      <compile files="A2.aj" options="-emacssym"/>
+      <compile files="A2.aj" options="-emacssym -1.4"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="pointcut handle">
@@ -28,7 +28,7 @@
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="two pieces of advice with the same signature and pointcut">
-      <compile files="A5.aj" options="-emacssym"/>
+      <compile files="A5.aj" options="-emacssym -1.4"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="pointcut handle with args">
@@ -44,7 +44,7 @@
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="advice handle with args">
-      <compile files="A8.aj" options="-emacssym"/>
+      <compile files="A8.aj" options="-emacssym -1.4"/>
     </ajc-test>
 
     <ajc-test dir="features153/jdtlikehandleprovider" title="field itd handle">

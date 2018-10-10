@@ -214,7 +214,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs150/pr120521" pr="120521" title="named pointcut not resolved in pertarget pointcut">
-     <compile files="PerTargetSubaspectError.java"/>
+     <compile files="PerTargetSubaspectError.java" options="-1.4"/>
     </ajc-test>  
 
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
@@ -236,7 +236,7 @@
     </ajc-test> 
    
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 3">
-     <compile files="TestLib2.java,ThreadAspectLib2.java">
+     <compile files="TestLib2.java,ThreadAspectLib2.java" options="-1.4">
        <message kind="error" line="16" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
        <message kind="error" line="4" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
      </compile>
@@ -315,7 +315,7 @@
     
     <ajc-test dir="bugs150/pr120474" pr="120474" title="Dollar classes">
      <compile files="$ProxyPr120474.java"/>
-     <compile files="X.aj" options="-outxml"/>
+     <compile files="X.aj" options="-outxml -1.4"/>
      <run class="$ProxyPr120474" ltw="aop.xml">
         <stdout>
         </stdout>
@@ -445,7 +445,7 @@
 	</ajc-test>
 	
 	<ajc-test dir="bugs150" pr="103157" title="returning(Object) binding">
-		<compile files="Pr103157.aj"/>
+		<compile files="Pr103157.aj" options="-1.4"/>
 		<run class="Pr103157">
 			<stdout>
 				<line text="returning from staticinit"/>
@@ -473,8 +473,8 @@
 	</ajc-test>
 	    
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
-     <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar"/>
-     <compile files="TestClass.java" aspectpath="aspects.jar"/>
+     <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar" options="-1.4"/>
+     <compile files="TestClass.java" aspectpath="aspects.jar" options="-1.4"/>
      <run class="TestClass"/>
     </ajc-test>
     
@@ -1038,7 +1038,7 @@
     </ajc-test>
         
     <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
-        <compile files="AmbiguousBindings.aj">
+        <compile files="AmbiguousBindings.aj" options="-1.4">
             <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
             <message line="19" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
             <message line="21" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
@@ -1355,7 +1355,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs150/pr106554" pr="106554" title="Problem in staticinitialization with pertypewithin aspect">
-        <compile files="A.aj" options="-showWeaveInfo">
+        <compile files="A.aj" options="-showWeaveInfo -1.4">
           <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.aj:1) advised by before advice from 'StopsInit' (A.aj:21)"/>
         </compile>
         <run class="A">
@@ -2546,7 +2546,7 @@
    </ajc-test> 
 
     <ajc-test dir="java5/pertypewithin" title="ptw binary">
-       <weave classesFiles="G.java" aspectsFiles="H.java"/>
+       <weave classesFiles="G.java" aspectsFiles="H.java" options="-1.4"/>
        <run class="G">
            <stderr>
                <line text="advice running"/>
@@ -2555,7 +2555,7 @@
    </ajc-test> 
    
    <ajc-test dir="java5/pertypewithin" title="ptw binary aspect">
-       <compile files="H.java" outjar="aspects.jar">
+       <compile files="H.java" outjar="aspects.jar" options="-1.4">
            <message kind="warning" line="1" text="no match for this type name: G"/>
        </compile>
        <compile files="G.java" aspectpath="aspects.jar"/>
@@ -6261,7 +6261,7 @@
    
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call not self using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
-     <compile files="accounts/recovery/RecoveryNotSelf.aj"/>
+     <compile files="accounts/recovery/RecoveryNotSelf.aj" options="-1.4"/>
      <run class="services.account.StockQuoteServiceTest" ltw="aop-notself.xml">
        <stdout>
            <line text="RecoveryNotSelf.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
@@ -6292,7 +6292,7 @@
    
    <ajc-test dir="bugs150/pr121385" title="override protected pointcut in aop.xml concrete aspect">
      <compile files="Hello.java"/>
-     <compile files="World.aj, ConcreteWorld.aj"/>
+     <compile files="World.aj, ConcreteWorld.aj" options="-1.4"/>
      <run class="Hello" ltw="aop.xml">
        <stdout>
            <line text="around start!"/>

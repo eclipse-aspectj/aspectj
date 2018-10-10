@@ -57,19 +57,19 @@
   
 
   <ajc-test dir="bugs1611/pr335682" title="pr335682">
-    <compile inpath="foo.jar" outjar="bar.jar"/>
+    <compile inpath="foo.jar" options="-1.4" outjar="bar.jar"/>
   </ajc-test>
 
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 2">
-    <compile inpath="case2.jar" outjar="bar.jar"/>
+    <compile inpath="case2.jar" options="-1.4" outjar="bar.jar"/>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 3">
-    <compile inpath="case3.jar" outjar="bar.jar"/>
+    <compile inpath="case3.jar" options="-1.4" outjar="bar.jar"/>
   </ajc-test>  
   
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 5">
-    <compile inpath="case5.jar" outjar="bar.jar"/>
+    <compile inpath="case5.jar" options="-1.4" outjar="bar.jar"/>
   </ajc-test>  
 
   <ajc-test dir="bugs1611/pr335783" title="pr335783">

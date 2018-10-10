@@ -24,6 +24,10 @@ import junit.framework.Test;
  */
 public class Ajc192Tests extends XMLBasedAjcTestCase {
 
+	public void test11Flags() throws Exception {
+		runTest("11flags");
+	}
+
 	public void testNestmates() throws Exception {
 		runTest("nestmates");
 		JavaClass outer = getClassFrom(ajc.getSandboxDirectory(), "Outer");

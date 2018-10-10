@@ -274,7 +274,7 @@
     
     <ajc-test dir="bugs161/pr230134" title="ltw inherited cflow">
       <compile files="HW.java"/>
-      <compile files="SimpleTracing.java Tracing.java HelloWorldTracing.java" outjar="foo.jar"/>
+      <compile files="SimpleTracing.java Tracing.java HelloWorldTracing.java" outjar="foo.jar" options="-1.4"/>
       <run class="hello.HW" classpath="$sandbox/foo.jar" ltw="aop.xml">
         <stdout>
           <line text="Hello World"/>

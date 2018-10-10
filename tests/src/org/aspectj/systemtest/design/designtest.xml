@@ -13,7 +13,7 @@
 
     <ajc-test dir="design/intro"
       title="within and introductions behaves correctly" keywords="from-design">
-        <compile files="Within.java"/>
+        <compile files="Within.java" options="-1.4"/>
         <run class="Within"/>
     </ajc-test>
 
@@ -66,7 +66,7 @@
     <ajc-test dir="design/eachobject"
       title="more tests of eachobject with some difficult typing issues"
       keywords="from-design">
-        <compile files="Tricky3.java"/>
+        <compile files="Tricky3.java" options="-1.4"/>
         <run class="Tricky3"/>
     </ajc-test>
 

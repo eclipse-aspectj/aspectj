@@ -16,9 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.ajdt.ajc.AjdtAjcTests;
 import org.aspectj.ajdt.ajc.BuildArgParser;
@@ -26,6 +23,9 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.tools.ajc.Ajc;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 public class AjBuildManagerTest extends TestCase {
 
@@ -62,7 +62,7 @@ public class AjBuildManagerTest extends TestCase {
 		String javaClassPath = System.getProperty("java.class.path");
 		System.out.println(javaClassPath);
 		String sandboxName = Ajc.createEmptySandbox().getAbsolutePath();
-		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-classpath", javaClassPath,
+		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-1.4", "-classpath", javaClassPath,
 				AjdtAjcTests.TESTDATA_PATH + "/src1/A.java",
 		// EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",
 				});

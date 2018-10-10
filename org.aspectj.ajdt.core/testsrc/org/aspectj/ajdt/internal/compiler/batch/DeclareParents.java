@@ -227,17 +227,17 @@ public class DeclareParents extends AjcTestCase {
 		CompilationResult result = null;
 
 		// Execute: "ajc <classes> <aspects> -showWeaveInfo"
-		String[] sourceCompileCommandLine = new String[classes.length + aspects.length + 1];
+		String[] sourceCompileCommandLine = new String[classes.length + aspects.length + 2];
 		System.arraycopy(classes, 0, sourceCompileCommandLine, 0, classes.length);
 		System.arraycopy(aspects, 0, sourceCompileCommandLine, classes.length, aspects.length);
-		String[] extraOption = new String[] { "-showWeaveInfo" };
-		System.arraycopy(extraOption, 0, sourceCompileCommandLine, classes.length + aspects.length, 1);
+		String[] extraOption = new String[] { "-showWeaveInfo", "-1.4"};
+		System.arraycopy(extraOption, 0, sourceCompileCommandLine, classes.length + aspects.length, 2);
 		result = ajc(testBase, sourceCompileCommandLine);
 		if (!expectErrors)
 			assertTrue("errors? \n" + result.getErrorMessages(), !result.hasErrorMessages());
-		List sourceWeaveMessages = getWeaveMessages(result);
+		List<IMessage> sourceWeaveMessages = getWeaveMessages(result);
 		int sourceWeaveMessagesCount = sourceWeaveMessages.size();
-		List sourceErrorMessages = result.getErrorMessages();
+		List<IMessage> sourceErrorMessages = result.getErrorMessages();
 		int sourceErrorMessagesCount = sourceErrorMessages.size();
 
 		if (verbose) {
@@ -258,15 +258,15 @@ public class DeclareParents extends AjcTestCase {
 		assertTrue("Should get no errors for this compile, but got: " + result.getErrorMessages().size(), result.getErrorMessages()
 				.size() == 0);
 		// Execute: "ajc -inpath classes -showWeaveInfo -d classes2 -aspectpath aspects.jar"
-		result = ajc(testBase, new String[] { "-inpath", "classes", "-showWeaveInfo", "-d", "classes2", "-aspectpath",
+		result = ajc(testBase, new String[] { "-inpath", "classes", "-showWeaveInfo", "-1.4", "-d", "classes2", "-aspectpath",
 				"aspects.jar" });
 
 		if (!expectErrors)
 			assertTrue("unexpected errors? \n" + result.getErrorMessages(), !result.hasErrorMessages());
 
-		List binaryWeaveMessages = getWeaveMessages(result);
+		List<IMessage> binaryWeaveMessages = getWeaveMessages(result);
 		int binaryWeaveMessagesCount = binaryWeaveMessages.size();
-		List binaryErrorMessages = result.getErrorMessages();
+		List<IMessage> binaryErrorMessages = result.getErrorMessages();
 		int binaryErrorMessagesCount = binaryErrorMessages.size();
 
 		if (verbose) {
@@ -281,11 +281,11 @@ public class DeclareParents extends AjcTestCase {
 		// ///////////////////////////////////////////////////////////////////////////
 		// Check the error messages are comparable (allow for differing orderings)
 		if (compareErrors) {
-			for (Iterator iter = binaryErrorMessages.iterator(); iter.hasNext();) {
-				IMessage binaryMessage = (IMessage) iter.next();
+			for (Iterator<IMessage> iter = binaryErrorMessages.iterator(); iter.hasNext();) {
+				IMessage binaryMessage = iter.next();
 				IMessage correctSourceMessage = null;
-				for (Iterator iterator = sourceErrorMessages.iterator(); iterator.hasNext() && correctSourceMessage == null;) {
-					IMessage sourceMessage = (IMessage) iterator.next();
+				for (Iterator<IMessage> iterator = sourceErrorMessages.iterator(); iterator.hasNext() && correctSourceMessage == null;) {
+					IMessage sourceMessage = iterator.next();
 
 					if (sourceMessage.getMessage().equals(binaryMessage.getMessage())) {
 						correctSourceMessage = sourceMessage;
@@ -298,8 +298,8 @@ public class DeclareParents extends AjcTestCase {
 				sourceErrorMessages.remove(correctSourceMessage);
 			}
 			if (sourceErrorMessages.size() > 0) {
-				for (Iterator iter = sourceErrorMessages.iterator(); iter.hasNext();) {
-					IMessage srcMsg = (IMessage) iter.next();
+				for (Iterator<IMessage> iter = sourceErrorMessages.iterator(); iter.hasNext();) {
+					IMessage srcMsg = iter.next();
 					System.err.println("This error message from source compilation '" + srcMsg
 							+ "' didn't occur during binary weaving.");
 				}
@@ -316,8 +316,8 @@ public class DeclareParents extends AjcTestCase {
 
 		// Check weaving messages are comparable
 		for (int i = 0; i < sourceWeaveMessages.size(); i++) {
-			IMessage m1 = (IMessage) sourceWeaveMessages.get(i);
-			IMessage m2 = (IMessage) binaryWeaveMessages.get(i);
+			IMessage m1 = sourceWeaveMessages.get(i);
+			IMessage m2 = binaryWeaveMessages.get(i);
 			String s1 = m1.getDetails();
 			String s2 = m2.getDetails();
 
@@ -355,17 +355,18 @@ public class DeclareParents extends AjcTestCase {
 		return ret;
 	}
 
-	private List getWeaveMessages(CompilationResult result) {
-		List infoMessages = result.getInfoMessages();
-		List weaveMessages = new ArrayList();
-		for (Iterator iter = infoMessages.iterator(); iter.hasNext();) {
-			IMessage element = (IMessage) iter.next();
+	private List<IMessage> getWeaveMessages(CompilationResult result) {
+		List<IMessage> infoMessages = result.getInfoMessages();
+		List<IMessage> weaveMessages = new ArrayList<>();
+		for (IMessage element: infoMessages) {//Iterator iter = infoMessages.iterator(); iter.hasNext();) {
+//			IMessage element = (IMessage) iter.next();
 			if (element.getKind() == IMessage.WEAVEINFO)
 				weaveMessages.add(element);
 		}
 		return weaveMessages;
 	}
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		baseDir = new File("../org.aspectj.ajdt.core/testdata", PROJECT_DIR);
