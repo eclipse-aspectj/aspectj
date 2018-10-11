@@ -153,6 +153,7 @@ public class ClassPathManager {
 		return null;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		boolean start = true;
@@ -220,11 +221,13 @@ public class ClassPathManager {
 			this.file = file;
 		}
 
+		@Override
 		public InputStream getInputStream() throws IOException {
 			fis = new FileInputStream(file);
 			return fis;
 		}
 
+		@Override
 		public void close() {
 			try {
 				if (fis != null)
@@ -236,6 +239,7 @@ public class ClassPathManager {
 			}
 		}
 
+		@Override
 		public String getPath() {
 			return file.getPath();
 		}
@@ -252,6 +256,7 @@ public class ClassPathManager {
 			this.dirPath = dirPath;
 		}
 
+		@Override
 		public ClassFile find(String name) {
 			File f = new File(dirPath + File.separator + name.replace('.', File.separatorChar) + ".class");
 			if (f.isFile())
@@ -260,6 +265,7 @@ public class ClassPathManager {
 				return null;
 		}
 
+		@Override
 		public String toString() {
 			return dirPath;
 		}
@@ -275,11 +281,13 @@ public class ClassPathManager {
 			this.entry = entry;
 		}
 
+		@Override
 		public InputStream getInputStream() throws IOException {
 			is = zipFile.getZipFile().getInputStream(entry);
 			return is;
 		}
 
+		@Override
 		public void close() {
 			try {
 				if (is != null)
@@ -291,6 +299,7 @@ public class ClassPathManager {
 			}
 		}
 
+		@Override
 		public String getPath() {
 			return entry.getName();
 		}
@@ -307,7 +316,7 @@ public class ClassPathManager {
 	 */
 	static class JImageEntry extends Entry {
 		
-		private final static FileSystem fs = FileSystems.getFileSystem(JRT_URI);
+		private static FileSystem fs = null;
 		
 		private final static Map<String, Path> fileCache = new SoftHashMap<String, Path>();
 
@@ -316,6 +325,13 @@ public class ClassPathManager {
 		private static boolean packageCacheInitialized = false;
 
 		public JImageEntry() {
+			if (fs == null) {
+				try {
+					fs = FileSystems.getFileSystem(JRT_URI);
+				} catch (Throwable t) {
+					throw new IllegalStateException("Unexpectedly unable to initialize a JRT filesystem", t);
+				}
+			}
 			buildPackageMap();
 		}
 		
@@ -394,6 +410,7 @@ public class ClassPathManager {
 			return locator.found;
  		}
 
+		@Override
 		public ClassFile find(String name) throws IOException {
 			String fileName = name.replace('.', '/') + ".class";
 			Path file = fileCache.get(fileName);
@@ -448,6 +465,7 @@ public class ClassPathManager {
 			return zipFile;
 		}
 
+		@Override
 		public ClassFile find(String name) throws IOException {
 			ensureOpen();
 			String key = name.replace('.', '/') + ".class";
@@ -502,7 +520,7 @@ public class ClassPathManager {
 
 		public void closeSomeArchives(int n) {
 			for (int i = n - 1; i >= 0; i--) {
-				ZipFile zf = (ZipFile) openArchives.get(i);
+				ZipFile zf = openArchives.get(i);
 				try {
 					zf.close();
 				} catch (IOException e) {
@@ -525,6 +543,7 @@ public class ClassPathManager {
 			}
 		}
 
+		@Override
 		public String toString() {
 			return file.getName();
 		}
