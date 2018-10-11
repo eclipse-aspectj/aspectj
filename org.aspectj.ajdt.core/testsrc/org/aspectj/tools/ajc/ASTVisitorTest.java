@@ -13,8 +13,6 @@ package org.aspectj.tools.ajc;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
@@ -76,6 +74,8 @@ import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.aspectj.org.eclipse.jdt.core.dom.WildTypePattern;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+
+import junit.framework.TestCase;
 
 public class ASTVisitorTest extends TestCase {
 	
@@ -406,7 +406,7 @@ public class ASTVisitorTest extends TestCase {
 	
 	private void check(String source, String expectedOutput){
 		ASTParser parser = ASTParser.newParser(AST.JLS3);//JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
-		Map options = new HashMap();
+		Map<String, String> options = new HashMap<>();
 		options.put(CompilerOptions.OPTION_Source, "1.5");
 		parser.setCompilerOptions(options);//JavaCore.getOptions());
 		parser.setSource(source.toCharArray());
@@ -436,6 +436,7 @@ public class ASTVisitorTest extends TestCase {
 	}
 	
 	/** @deprecated using deprecated code */
+	@Deprecated
 	private static final int AST_INTERNAL_JLS2 = AST.JLS2;
 	
 	
@@ -444,11 +445,14 @@ public class ASTVisitorTest extends TestCase {
 	 * that come from testing Javadoc.getComment())
 	 *
 	 */
+	@Deprecated
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
 
 	
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -472,6 +476,7 @@ class TestVisitor extends AjASTVisitor {
 		this(false);
 	}
 	
+	@Override
 	public String toString(){
 		return b.toString();
 	}
@@ -489,6 +494,7 @@ class TestVisitor extends AjASTVisitor {
 		visitTheKids = visitChildren;
 	}
 	
+	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (((AjTypeDeclaration)node).isAspect()) {
 			if (((AspectDeclaration) node).isPrivileged()){
@@ -506,6 +512,7 @@ class TestVisitor extends AjASTVisitor {
 		return isVisitingChildren();
 	}
 
+	@Override
 	public void endVisit(TypeDeclaration node) {
 		if (((AjTypeDeclaration)node).isAspect()) 
 			if (((AspectDeclaration) node).isPrivileged() 
@@ -515,66 +522,83 @@ class TestVisitor extends AjASTVisitor {
 		b.append(")"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public boolean visit(EnumDeclaration node) {
 		b.append("(enum");
 		return isVisitingChildren();
 	}
 
+	@Override
 	public void endVisit(EnumDeclaration node) {
 		b.append(")");
 	}
 	
+	@Override
 	public boolean visit(PointcutDeclaration node) {
 		b.append("(pointcut"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}	
+	@Override
 	public void endVisit(PointcutDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(ReferencePointcut node) {
 		b.append("(referencePointcut"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}	
+	@Override
 	public void endVisit(ReferencePointcut node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(BeforeAdviceDeclaration node) {
 		b.append("(beforeAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(AroundAdviceDeclaration node) {
 		b.append("(aroundAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(AfterAdviceDeclaration node) {
 		b.append("(afterAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(AfterThrowingAdviceDeclaration node) {
 		b.append("(afterThrowingAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(AfterReturningAdviceDeclaration node) {
 		b.append("(afterReturningAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public void endVisit(BeforeAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(AroundAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(AfterAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(AfterThrowingAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(AfterReturningAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 		
+	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (node instanceof InterTypeMethodDeclaration) return visit((InterTypeMethodDeclaration)node);
 		if (node.isConstructor()){
@@ -584,16 +608,20 @@ class TestVisitor extends AjASTVisitor {
 		}
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(MethodDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(InterTypeFieldDeclaration node) {
 		b.append("(fieldITD"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(InterTypeFieldDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(InterTypeMethodDeclaration node) {
 		if (node.isConstructor()){
 			b.append("(constructorITD");
@@ -602,13 +630,16 @@ class TestVisitor extends AjASTVisitor {
 		}
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(InterTypeMethodDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(MethodInvocation node) {
 		b.append("(methodInvocation"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(MethodInvocation node) {
 		b.append(")"); //$NON-NLS-1$
 	}
@@ -619,94 +650,120 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(BodyDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(FieldDeclaration node) {
 		b.append("(field"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(FieldDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(FieldAccess node) {
 		b.append("(fieldAccess"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(FieldAccess node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(Assignment node) {
 		b.append("(assignment"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(Assignment node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(Block node) {
 		b.append("(block"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(Block node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(CompilationUnit node) {
 		b.append("(compilationUnit"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(CompilationUnit node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(ExpressionStatement node) {
 		b.append("(expressionStatement"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(ExpressionStatement node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(InfixExpression node) {
 		b.append("(infixExpression"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(InfixExpression node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(Initializer node) {
 		b.append("(initializer"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(Initializer node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(NumberLiteral node) {
 		b.append("(numberLiteral"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(NumberLiteral node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(PrimitiveType node) {
 		b.append("(primitiveType"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(PrimitiveType node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(QualifiedName node) {
 		b.append("(qualifiedName"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(QualifiedName node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(SimpleName node) {
 		b.append("(simpleName"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(SimpleName node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(StringLiteral node) {
 		b.append("(stringLiteral"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(StringLiteral node) {
 		b.append(")"); //$NON-NLS-1$
 	}
@@ -714,93 +771,116 @@ class TestVisitor extends AjASTVisitor {
 		b.append("(variableDeclaration"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(BlockComment bc) {
 		b.append("(blockcomment");
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(BlockComment bc) {
 		b.append(")");
 	}
 	public void endVisit(VariableDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(VariableDeclarationStatement node) {
 		b.append("(variableDeclarationStatement"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(VariableDeclarationStatement node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 
+	@Override
 	public boolean visit(DeclareAtTypeDeclaration node) {
 		b.append("(declareAtType");
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(DeclareAtMethodDeclaration node) {
 		b.append("(declareAtMethod");
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(DeclareAtConstructorDeclaration node) {
 		b.append("(declareAtConstructor");
 		return isVisitingChildren();
 	}
+	@Override
 	public boolean visit(DeclareAtFieldDeclaration node) {
 		b.append("(declareAtField");
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public boolean visit(DeclareErrorDeclaration node) {
 		b.append("(declareError");
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public boolean visit(DeclareParentsDeclaration node) {
 		b.append("(declareParents");
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public boolean visit(DeclarePrecedenceDeclaration node) {
 		b.append("(declarePrecedence");
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public boolean visit(DeclareSoftDeclaration node) {
 		b.append("(declareSoft");
 		return isVisitingChildren();
 	}
 	
+	@Override
 	public boolean visit(DeclareWarningDeclaration node) {
 		b.append("(declareWarning");
 		return isVisitingChildren();
 	}
+	@Override
 	public void endVisit(DeclareErrorDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareParentsDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclarePrecedenceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareAtFieldDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareAtMethodDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareAtTypeDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareAtConstructorDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareSoftDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(DeclareWarningDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public boolean visit(AbstractBooleanTypePattern node) {
 		b.append("(");
 		node.getLeft().accept(this);
@@ -817,27 +897,32 @@ class TestVisitor extends AjASTVisitor {
 	}
 
 
+	@Override
 	public boolean visit(AnyTypePattern node) {
 		b.append("(anyTypePattern");
 		return isVisitingChildren();
 	}
 
 
+	@Override
 	public void endVisit(AnyTypePattern node) {
 		b.append(")"); 
 	}
 
 
+	@Override
 	public boolean visit(AnyWithAnnotationTypePattern node) {
 		b.append("(anyWithAnnotationTypePattern");
 		return isVisitingChildren();
 	}
 
 
+	@Override
 	public void endVisit(AnyWithAnnotationTypePattern node) {
 		b.append(")"); 
 	}
 
+	@Override
 	public boolean visit(IdentifierTypePattern node) {
 		if (node instanceof WildTypePattern) {
 			b.append("(wildTypePattern");
@@ -850,28 +935,33 @@ class TestVisitor extends AjASTVisitor {
 	}
 
 
+	@Override
 	public void endVisit(IdentifierTypePattern node) {
 		b.append(")"); 
 	}
 
 
+	@Override
 	public boolean visit(NotTypePattern node) {
 		b.append("(notTypePattern");
 		return isVisitingChildren();
 	}
 
 
+	@Override
 	public void endVisit(NotTypePattern node) {
 		b.append(")"); 
 	}
 
 
+	@Override
 	public boolean visit(TypeCategoryTypePattern node) {
 		b.append("(typeCategoryTypePattern");
 		return isVisitingChildren();
 	}
 
 
+	@Override
 	public void endVisit(TypeCategoryTypePattern node) {
 		b.append(")"); 
 	}
@@ -879,31 +969,39 @@ class TestVisitor extends AjASTVisitor {
 	
 	// End of TypePattern additions for Bugzilla 329268
 
+	@Override
 	public boolean visit(SignaturePattern node) {
 		b.append("(signaturePattern");
 		return isVisitingChildren();		
 	}
+	@Override
 	public void endVisit(SignaturePattern node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public boolean visit(PerObject node) {
 		b.append("(perObject");
 		return isVisitingChildren();		
 	}
+	@Override
 	public boolean visit(PerCflow node) {
 		b.append("(perCflow");
 		return isVisitingChildren();		
 	}
+	@Override
 	public boolean visit(PerTypeWithin node) {
 		b.append("(perTypeWithin");
 		return isVisitingChildren();		
 	}
+	@Override
 	public void endVisit(PerObject node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(PerCflow node) {
 		b.append(")"); //$NON-NLS-1$
 	}
+	@Override
 	public void endVisit(PerTypeWithin node) {
 		b.append(")"); //$NON-NLS-1$
 	}

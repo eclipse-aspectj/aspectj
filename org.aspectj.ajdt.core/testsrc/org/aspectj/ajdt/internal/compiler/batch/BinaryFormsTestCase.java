@@ -85,7 +85,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		
 		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client1");
 
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-aspectpath");
 		args.add(library);
 

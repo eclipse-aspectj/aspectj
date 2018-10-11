@@ -13,6 +13,17 @@
 
 package org.aspectj.ajdt.internal.compiler.batch;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -23,19 +34,6 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.ReflectionFactory;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-//import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Mostly stateless incremental test case.
@@ -86,8 +84,9 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		if (null == targetClasses) {
 			return false;
 		}
-		final ArrayList files = new ArrayList();
+		final ArrayList<File> files = new ArrayList<>();
 		final FileFilter collector = new FileFilter() {
+			@Override
 			public boolean accept(File file) {
 				return files.add(file);
 			}
@@ -122,13 +121,13 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			List safeFiles = Collections.unmodifiableList(files);
 			log("Compiling ", safeFiles, handler);
 			if (1 == i) {
-				ArrayList argList = new ArrayList();
+				ArrayList<String> argList = new ArrayList<>();
 				argList.addAll(getBaseArgs(targetSrc, targetClasses));
 				File[] fra = (File[]) safeFiles.toArray(new File[0]);
 				// sigh
 				argList.addAll(
 					Arrays.asList(FileUtil.getAbsolutePaths(fra)));
-				String[] args = (String[]) argList.toArray(new String[0]);
+				String[] args = argList.toArray(new String[0]);
     		    commandLine.append(""+argList);
             	result = compiler.runCommand(args, compilerMessages);
 			} else {
@@ -227,7 +226,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 	public File outputDir;
 
 	/** @param srcDir ignored for now */
-	protected List getBaseArgs(File srcDir, File classesDir) {
+	protected List<String> getBaseArgs(File srcDir, File classesDir) {
 		outputDir = classesDir;
 		String[] input =
 			new String[] {
@@ -237,7 +236,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 				"-d",
 				classesDir.getAbsolutePath()};
 		return Collections.unmodifiableList(
-			new ArrayList(Arrays.asList(input)));
+			new ArrayList<String>(Arrays.asList(input)));
 	}
 
 	protected File makeDir(
@@ -258,8 +257,8 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
     // -------------------------------------- test case verification
 
 
-    List normalizeFilenames(String[] ra) { // XXX util
-        ArrayList result = new ArrayList();
+    List<String> normalizeFilenames(String[] ra) { // XXX util
+        ArrayList<String> result = new ArrayList<>();
         if (null != ra) {
             for (int i = 0; i < ra.length; i++) {
                 result.add(normalizeFilename(ra[i]));
@@ -272,10 +271,11 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
     }
 
     /** @param list the List of File */
-    List normalizeFilenames(List list) { // XXX util
-        ArrayList result = new ArrayList();
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-			result.add(normalizeFilename(((File) iter.next()).getPath()));			
+    List<String> normalizeFilenames(List<File> list) { // XXX util
+        ArrayList<String> result = new ArrayList<>();
+        for (File file: list) {
+//        for (Iterator<?> iter = list.iterator(); iter.hasNext();) {
+			result.add(normalizeFilename(file.getPath()));			
 		}
         Collections.sort(result);
         return result;
@@ -459,6 +459,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			}
 			return null;
 		}
+		@Override
 		public String toString() {
 			return "Definition "
                 + " expectFail="

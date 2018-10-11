@@ -14,7 +14,8 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.ajdt.ajc.AjdtAjcTests;
 import org.aspectj.tools.ajc.AjcTests;
@@ -275,7 +276,7 @@ public class BcweaverJarMaker {
 		/*
 		 * ITD
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-Xlint:ignore"); 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +

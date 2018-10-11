@@ -71,7 +71,6 @@ import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
-import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.StandardAnnotation;
@@ -135,11 +134,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		resolvedTypeX.setEndPos(declaration.sourceEnd);
 	}
 
+	@Override
 	public boolean isAspect() {
 		final boolean isCodeStyle = declaration instanceof AspectDeclaration;
 		return isCodeStyle ? isCodeStyle : isAnnotationStyleAspect();
 	}
 
+	@Override
 	public boolean isAnonymous() {
 		if (declaration.binding != null) {
 			return declaration.binding.isAnonymousType();
@@ -147,6 +148,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return ((declaration.modifiers & (ASTNode.IsAnonymousType | ASTNode.IsLocalType)) != 0);
 	}
 
+	@Override
 	public boolean isNested() {
 		if (declaration.binding != null) {
 			return (declaration.binding.isMemberType());
@@ -154,6 +156,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return ((declaration.modifiers & ASTNode.IsMemberType) != 0);
 	}
 
+	@Override
 	public ResolvedType getOuterClass() {
 		if (declaration.binding != null) {
 			ReferenceBinding enclosingType = declaration.binding.enclosingType();
@@ -167,6 +170,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return eclipseWorld().fromEclipse(declaration.enclosingType.binding);
 	}
 
+	@Override
 	public boolean isAnnotationStyleAspect() {
 		if (declaration.annotations == null) {
 			return false;
@@ -234,10 +238,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return false;
 	}
 
+	@Override
 	public WeaverStateInfo getWeaverState() {
 		return null;
 	}
 
+	@Override
 	public ResolvedType getSuperclass() {
 		if (binding.isInterface()) {
 			return getResolvedTypeX().getWorld().getCoreType(UnresolvedType.OBJECT);
@@ -246,6 +252,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return eclipseWorld().fromEclipse(binding.superclass());
 	}
 
+	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
 		return eclipseWorld().fromEclipse(binding.superInterfaces());
 	}
@@ -420,6 +427,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * This method may not return all fields, for example it may not include the ajc$initFailureCause or ajc$perSingletonInstance
 	 * fields - see bug 129613
 	 */
+	@Override
 	public ResolvedMember[] getDeclaredFields() {
 		if (declaredFields == null) {
 			fillDeclaredMembers();
@@ -431,6 +439,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * This method may not return all methods, for example it may not include clinit, aspectOf, hasAspect or ajc$postClinit methods
 	 * - see bug 129613
 	 */
+	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		if (declaredMethods == null) {
 			fillDeclaredMembers();
@@ -438,6 +447,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return declaredMethods;
 	}
 
+	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
 		if (declaredPointcuts == null) {
 			fillDeclaredMembers();
@@ -445,11 +455,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return declaredPointcuts;
 	}
 
+	@Override
 	public int getModifiers() {
 		// only return the real Java modifiers, not the extra eclipse ones
 		return binding.modifiers & ExtraCompilerModifiers.AccJustFlag;
 	}
 
+	@Override
 	public String toString() {
 		return "EclipseSourceType(" + new String(binding.sourceName()) + ")";
 	}
@@ -516,6 +528,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	// dec.sourceEnd);
 	// }
 
+	@Override
 	public boolean isInterface() {
 		return binding.isInterface();
 	}
@@ -525,14 +538,17 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public final static short ACC_ANNOTATION = 0x2000;
 	public final static short ACC_ENUM = 0x4000;
 
+	@Override
 	public boolean isEnum() {
 		return (binding.getAccessFlags() & ACC_ENUM) != 0;
 	}
 
+	@Override
 	public boolean isAnnotation() {
 		return (binding.getAccessFlags() & ACC_ANNOTATION) != 0;
 	}
 
+	@Override
 	public boolean isAnnotationWithRuntimeRetention() {
 		if (!isAnnotation()) {
 			return false;
@@ -541,6 +557,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
+	@Override
 	public String getRetentionPolicy() {
 		if (isAnnotation()) {
 			if ((binding.getAnnotationTagBits() & TagBits.AnnotationRetentionMASK) == TagBits.AnnotationRuntimeRetention) {
@@ -556,6 +573,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return null;
 	}
 
+	@Override
 	public boolean canAnnotationTargetType() {
 		if (isAnnotation()) {
 			return ((binding.getAnnotationTagBits() & TagBits.AnnotationForType) != 0);
@@ -563,6 +581,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return false;
 	}
 
+	@Override
 	public AnnotationTargetKind[] getAnnotationTargetKinds() {
 		if (discoveredAnnotationTargetKinds) {
 			return annotationTargetKinds;
@@ -655,6 +674,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
+	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ensureAnnotationTypesResolved();
 		for (int a = 0, max = annotationTypes.length; a < max; a++) {
@@ -680,6 +700,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	 * annotations, this code only needs to deal with converting system annotations that the weaver needs to process
 	 * (RetentionPolicy, Target).
 	 */
+	@Override
 	public AnnotationAJ[] getAnnotations() {
 		int declarationAnnoCount = (declaration.annotations == null ? 0 : declaration.annotations.length);
 		if (annotations != null && annotations.length == declarationAnnoCount) {
@@ -701,6 +722,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return annotations;
 	}
 	
+	@Override
 	public boolean hasAnnotations() {
 		return (declaration.annotations != null && declaration.annotations.length != 0);
 	}
@@ -1002,11 +1024,13 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		}
 	}
 
+	@Override
 	public ResolvedType[] getAnnotationTypes() {
 		ensureAnnotationTypesResolved();
 		return annotationTypes;
 	}
 
+	@Override
 	public PerClause getPerClause() {
 		// should probably be: ((AspectDeclaration)declaration).perClause;
 		// but we don't need this level of detail, and working with real per
@@ -1147,30 +1171,37 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		return kind;
 	}
 
-	public Collection getDeclares() {
+	@Override
+	public Collection<Declare> getDeclares() {
 		return declares;
 	}
 
-	public Collection getPrivilegedAccesses() {
-		return Collections.EMPTY_LIST;
+	@Override
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
+		return Collections.emptyList();
 	}
 
+	@Override
 	public Collection getTypeMungers() {
 		return typeMungers;
 	}
 
+	@Override
 	public boolean doesNotExposeShadowMungers() {
 		return true;
 	}
 
+	@Override
 	public String getDeclaredGenericSignature() {
 		return CharOperation.charToString(binding.genericSignature());
 	}
 
+	@Override
 	public boolean isGeneric() {
 		return binding.isGenericType();
 	}
 
+	@Override
 	public TypeVariable[] getTypeVariables() {
 		if (declaration.typeParameters == null) {
 			return new TypeVariable[0];
