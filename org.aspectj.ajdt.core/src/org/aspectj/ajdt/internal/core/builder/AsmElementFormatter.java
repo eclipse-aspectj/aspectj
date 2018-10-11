@@ -57,7 +57,10 @@ import org.aspectj.weaver.patterns.TypePatternList;
  */
 public class AsmElementFormatter {
 
-	public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
+  private final static String ASPECTJ_ANNOTATION_PACKAGE = "org.aspectj.lang.annotation";
+  private final static char PACKAGE_INITIAL_CHAR = ASPECTJ_ANNOTATION_PACKAGE.charAt(0);
+
+  public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
 
 		if (methodDeclaration instanceof AdviceDeclaration) {
 			AdviceDeclaration ad = (AdviceDeclaration) methodDeclaration;
@@ -219,7 +222,7 @@ public class AsmElementFormatter {
 						// Note: AV: implicit single advice type support here (should be enforced somewhere as well (APT etc))
 						Annotation annotation = methodDeclaration.annotations[i];
 						String annotationSig = new String(annotation.type.getTypeBindingPublic(methodDeclaration.scope).signature());
-						if (annotationSig.charAt(1) == 'o') {
+						if (annotationSig.charAt(1) == PACKAGE_INITIAL_CHAR) {
 							if ("Lorg/aspectj/lang/annotation/Pointcut;".equals(annotationSig)) {
 								node.setKind(IProgramElement.Kind.POINTCUT);
 								node.setAnnotationStyleDeclaration(true); // pointcuts don't seem to get handled quite right...
@@ -418,8 +421,8 @@ public class AsmElementFormatter {
 	public void setParameters(AbstractMethodDeclaration md, IProgramElement pe) {
 		Argument[] argArray = md.arguments;
 		if (argArray == null) {
-			pe.setParameterNames(Collections.EMPTY_LIST);
-			pe.setParameterSignatures(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+			pe.setParameterNames(Collections.<String>emptyList());
+			pe.setParameterSignatures(Collections.<char[]>emptyList(), Collections.<String>emptyList());
 		} else {
 			List<String> names = new ArrayList<String>();
 			List<char[]> paramSigs = new ArrayList<char[]>();
@@ -459,7 +462,7 @@ public class AsmElementFormatter {
 
 	// TODO: fix this way of determing ajc-added arguments, make subtype of Argument with extra info
 	private boolean acceptArgument(String name, String type) {
-		if (name.charAt(0) != 'a' && type.charAt(0) != 'o') {
+		if (name.charAt(0) != 'a' && type.charAt(0) != PACKAGE_INITIAL_CHAR) {
 			return true;
 		}
 		return !name.startsWith("ajc$this_") && !type.equals("org.aspectj.lang.JoinPoint.StaticPart")

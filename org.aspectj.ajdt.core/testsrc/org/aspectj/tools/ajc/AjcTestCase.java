@@ -745,7 +745,7 @@ public class AjcTestCase extends TestCase {
 		ClassLoader contexClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			try {
-				Class testerClass = sandboxLoader.loadClass("org.aspectj.testing.Tester");
+				Class<?> testerClass = sandboxLoader.loadClass("org.aspectj.testing.Tester");
 				Method setBaseDir = testerClass.getDeclaredMethod("setBASEDIR", new Class[] { File.class });
 				setBaseDir.invoke(null, new Object[] { ajc.getSandboxDirectory() });
 			} catch (InvocationTargetException itEx) {
@@ -758,7 +758,7 @@ public class AjcTestCase extends TestCase {
 			/* Frameworks like XML use context class loader for dynamic loading */
 			Thread.currentThread().setContextClassLoader(sandboxLoader);
 
-			Class toRun = sandboxLoader.loadClass(className);
+			Class<?> toRun = sandboxLoader.loadClass(className);
 			Method mainMethod = toRun.getMethod("main", new Class[] { String[].class });
 			mainMethod.invoke(null, new Object[] { args });
 		} catch (ClassNotFoundException cnf) {
