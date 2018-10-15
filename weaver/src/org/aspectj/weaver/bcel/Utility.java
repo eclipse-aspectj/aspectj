@@ -65,6 +65,8 @@ import org.aspectj.weaver.World;
 
 public class Utility {
 
+  private final static char PACKAGE_INITIAL_CHAR = AjAttribute.AttributePrefix.charAt(0);
+
 	public static List<AjAttribute> readAjAttributes(String classname, Attribute[] as, ISourceContext context, World w,
 			AjAttribute.WeaverVersionInfo version, ConstantPoolReader dataDecompressor) {
 		List<AjAttribute> attributes = new ArrayList<AjAttribute>();
@@ -76,7 +78,7 @@ public class Utility {
 			if (a instanceof Unknown) {
 				Unknown u = (Unknown) a;
 				String name = u.getName();
-				if (name.charAt(0) == 'o') { // 'o'rg.aspectj
+				if (name.charAt(0) == PACKAGE_INITIAL_CHAR) { // 'o'rg.aspectj
 					if (name.startsWith(AjAttribute.AttributePrefix)) {
 						if (name.endsWith(WeaverVersionInfo.AttributeName)) {
 							version = (AjAttribute.WeaverVersionInfo) AjAttribute.read(version, name, u.getBytes(), context, w,

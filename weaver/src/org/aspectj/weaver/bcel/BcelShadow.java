@@ -2941,7 +2941,7 @@ public class BcelShadow extends Shadow {
 			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
 			closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
 					new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
-							Modifier.PUBLIC, "linkClosureAndJoinPoint", "(I)Lorg/aspectj/lang/ProceedingJoinPoint;")));
+							Modifier.PUBLIC, "linkClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));
 		}
 
 		InstructionList advice = new InstructionList();

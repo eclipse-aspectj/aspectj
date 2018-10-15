@@ -51,6 +51,9 @@ import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXConverter.GenericSigna
 //public final 
 class BcelMethod extends ResolvedMemberImpl {
 
+  private final static String ASPECTJ_ANNOTATION_PACKAGE = "org.aspectj.lang.annotation";
+  private final static char PACKAGE_INITIAL_CHAR = ASPECTJ_ANNOTATION_PACKAGE.charAt(0);
+
 	private Method method;
 
 	// these fields are not set for many BcelMethods...
@@ -141,7 +144,7 @@ class BcelMethod extends ResolvedMemberImpl {
 				for (int i = 0; i < axs.length; i++) {
 					AnnotationAJ annotationX = axs[i];
 					String typename = annotationX.getTypeName();
-					if (typename.charAt(0) == 'o') {
+					if (typename.charAt(0) == PACKAGE_INITIAL_CHAR) {
 						if (typename.equals("org.aspectj.lang.annotation.Pointcut")
 								|| typename.equals("org.aspectj.lang.annotation.Before")
 								|| typename.equals("org.aspectj.lang.annotation.Around")

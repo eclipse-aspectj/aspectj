@@ -80,6 +80,9 @@ public class WeavingAdaptor implements IMessageContext {
 	public static final String SHOW_WEAVE_INFO_PROPERTY = "org.aspectj.weaver.showWeaveInfo";
 	public static final String TRACE_MESSAGES_PROPERTY = "org.aspectj.tracing.messages";
 
+  private final static String ASPECTJ_BASE_PACKAGE = "org.aspectj.";
+  private final static String PACKAGE_INITIAL_CHARS = ASPECTJ_BASE_PACKAGE.charAt(0) + "sj";
+
 	private boolean enabled = false;
 	protected boolean verbose = getVerbose();
 	protected BcelWorld bcelWorld;
@@ -447,7 +450,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	private boolean shouldWeaveName(String name) {
-		if ("osj".indexOf(name.charAt(0)) != -1) {
+		if (PACKAGE_INITIAL_CHARS.indexOf(name.charAt(0)) != -1) {
 			if ((weavingSpecialTypes & INITIALIZED) == 0) {
 				weavingSpecialTypes |= INITIALIZED;
 				// initialize it
@@ -463,7 +466,7 @@ public class WeavingAdaptor implements IMessageContext {
 					}
 				}
 			}
-			if (name.startsWith("org.aspectj.")) {
+			if (name.startsWith(ASPECTJ_BASE_PACKAGE)) {
 				return false;
 			}
 			if (name.startsWith("sun.reflect.")) {// JDK reflect

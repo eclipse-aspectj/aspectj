@@ -98,6 +98,8 @@ public class AtAjAttributes {
 	private final static String THROWING = "throwing";
 	private final static String RETURNING = "returning";
 	private final static String STRING_DESC = "Ljava/lang/String;";
+	private final static String ASPECTJ_ANNOTATION_PACKAGE = "org.aspectj.lang.annotation";
+	private final static char PACKAGE_INITIAL_CHAR = ASPECTJ_ANNOTATION_PACKAGE.charAt(0);
 
 	/**
 	 * A struct that allows to add extra arguments without always breaking the API
@@ -193,8 +195,8 @@ public class AtAjAttributes {
 	 */
 	public static List<AjAttribute> readAj5ClassAttributes(AsmManager model, JavaClass javaClass, ReferenceType type,
 			ISourceContext context, IMessageHandler msgHandler, boolean isCodeStyleAspect) {
-		boolean ignoreThisClass = javaClass.getClassName().charAt(0) == 'o'
-				&& javaClass.getClassName().startsWith("org.aspectj.lang.annotation");
+		boolean ignoreThisClass = javaClass.getClassName().charAt(0) == PACKAGE_INITIAL_CHAR
+				&& javaClass.getClassName().startsWith(ASPECTJ_ANNOTATION_PACKAGE);
 		if (ignoreThisClass) {
 			return NO_ATTRIBUTES;
 		}
@@ -205,7 +207,7 @@ public class AtAjAttributes {
 			Constant constant = cpool[i];
 			if (constant != null && constant.getTag() == Constants.CONSTANT_Utf8) {
 				String constantValue = ((ConstantUtf8) constant).getValue();
-				if (constantValue.length() > 28 && constantValue.charAt(1) == 'o') {
+				if (constantValue.length() > 28 && constantValue.charAt(1) == PACKAGE_INITIAL_CHAR) {
 					if (constantValue.startsWith("Lorg/aspectj/lang/annotation")) {
 						containsAnnotationClassReference = true;
 						if ("Lorg/aspectj/lang/annotation/DeclareAnnotation;".equals(constantValue)) {
