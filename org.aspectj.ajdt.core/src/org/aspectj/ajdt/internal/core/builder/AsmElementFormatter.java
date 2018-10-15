@@ -57,7 +57,7 @@ import org.aspectj.weaver.patterns.TypePatternList;
  */
 public class AsmElementFormatter {
 
-  public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
+      public void genLabelAndKind(MethodDeclaration methodDeclaration, IProgramElement node) {
 
 		if (methodDeclaration instanceof AdviceDeclaration) {
 			AdviceDeclaration ad = (AdviceDeclaration) methodDeclaration;
