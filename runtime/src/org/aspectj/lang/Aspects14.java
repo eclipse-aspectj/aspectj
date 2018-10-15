@@ -12,9 +12,9 @@
 package org.aspectj.lang;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * For users working on a level of Java prior to Java5, Aspects14 handles generic aspectOf methods when they 
@@ -36,8 +36,8 @@ public class Aspects14 {
     /**
      * Returns the singleton aspect or the percflow / percflowbelow associated with the current thread
      *
-     * @param aspectClass
-     * @return
+     * @param aspectClass aspect class for which to discover the aspect instance
+     * @return an aspect instance
      * @throws NoAspectBoundException if no such aspect
      */
     public static Object aspectOf(Class aspectClass) throws NoAspectBoundException {
@@ -53,9 +53,9 @@ public class Aspects14 {
 
     /**
      * Returns the perthis / pertarget aspect
-     * @param aspectClass
-     * @param perObject
-     * @return
+     * @param aspectClass aspect class for which to discover the aspect instance
+     * @param perObject object for which to discover the aspect instance
+     * @return an aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
     public static Object aspectOf(Class aspectClass, Object perObject) throws NoAspectBoundException {
@@ -71,7 +71,7 @@ public class Aspects14 {
 
     /**
      * Returns the pertypewithin aspect
-     * @param aspectClass
+     * @param aspectClass aspect class for which to discover the aspect instance
      * @param perTypeWithin class
      * @return
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
@@ -90,7 +90,7 @@ public class Aspects14 {
     /**
      * Returns true if singleton aspect or percflow / percflowbelow aspect is bound
      *
-     * @param aspectClass
+     * @param aspectClass aspect class for which to check the aspect instance
      * @return
      * @throws NoAspectBoundException if not bound
      */
@@ -104,9 +104,9 @@ public class Aspects14 {
 
     /**
      * Returns true if the perthis / pertarget aspect is bound
-     * @param aspectClass
+     * @param aspectClass aspect class for which to check the aspect instance
      * @param perObject
-     * @return
+     * @return true if aspect instance exists for the class/object combination
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class aspectClass, Object perObject) throws NoAspectBoundException {
@@ -119,9 +119,9 @@ public class Aspects14 {
 
     /**
      * Returns true if the pertypewithin aspect is bound
-     * @param aspectClass
+     * @param aspectClass aspect class for which to check the aspect instance
      * @param perTypeWithin class
-     * @return
+     * @return true if aspect instance exists for this aspect class/pertypewithin class combination
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class aspectClass, Class perTypeWithin) throws NoAspectBoundException {
