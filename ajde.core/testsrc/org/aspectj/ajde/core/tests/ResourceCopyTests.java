@@ -45,6 +45,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 
 	private String[] config2 = new String[] { "src" + File.separator + "aspects" + File.separator + "Logging.java" };
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject(PROJECT_DIR);
@@ -52,6 +53,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		handler = null;
@@ -91,9 +93,9 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		doBuild(true);
 		assertFalse("Expected compiler errors or warnings but didn't find any", handler.getMessages().isEmpty());
 
-		List msgs = handler.getMessages();
+		List<TestMessageHandler.TestMessage> msgs = handler.getMessages();
 		String exp = "duplicate resource: ";
-		String found = ((TestMessageHandler.TestMessage) msgs.get(0)).getContainedMessage().getMessage();
+		String found = msgs.get(0).getContainedMessage().getMessage();
 		assertTrue("Expected message to start with 'duplicate resource:' but found" + " message " + found, found.startsWith(exp));
 		compareJars(injar1, "src", outjar);
 	}
@@ -150,7 +152,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		File binBase = openFile(outdirName);
 		File[] toResources = FileUtil.listFiles(binBase, aspectjResourceFileFilter);
 
-		HashSet resources = new HashSet();
+		HashSet<String> resources = new HashSet<>();
 		listSourceResources(indirName, resources);
 
 		for (int i = 0; i < toResources.length; i++) {
@@ -162,7 +164,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 		assertTrue("Missing resources: " + resources.toString(), resources.isEmpty());
 	}
 
-	private void listSourceResources(String indirName, Set resources) {
+	private void listSourceResources(String indirName, Set<String> resources) {
 		File srcBase = openFile(indirName);
 		File[] fromResources = FileUtil.listFiles(srcBase, aspectjResourceFileFilter);
 		for (int i = 0; i < fromResources.length; i++) {
@@ -174,6 +176,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	}
 
 	public static final FileFilter aspectjResourceFileFilter = new FileFilter() {
+		@Override
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
 			boolean isCVSRelated = name.indexOf("/cvs/") != -1;
@@ -186,7 +189,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	 */
 	public void compareJars(File injarFile, String indirName, File outjarFile) {
 
-		HashSet resources = new HashSet();
+		HashSet<String> resources = new HashSet<>();
 
 		try {
 			assertTrue(
@@ -224,7 +227,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	 * Ensure -outjar conatins all non-Java resouces from source and injars
 	 */
 	public void compareSourceToOutjar(String indirName, File outjarFile) {
-		HashSet resources = new HashSet();
+		HashSet<String> resources = new HashSet<>();
 		listSourceResources(indirName, resources);
 
 		try {
@@ -252,7 +255,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	 */
 	public void compareInjarsToBin(File injarFile, String indirName, String outdirName) {
 
-		HashSet resources = new HashSet();
+		HashSet<String> resources = new HashSet<>();
 
 		try {
 			byte[] inManifest = listJarResources(injarFile, resources, false);
@@ -286,7 +289,7 @@ public class ResourceCopyTests extends AjdeCoreTestCase {
 	 * @param wantDirectories should any directories found in the jar be included
 	 * @return the byte data for any discovered manifest
 	 */
-	private byte[] listJarResources(File injarFile, Set resources, boolean wantDirectories) {
+	private byte[] listJarResources(File injarFile, Set<String> resources, boolean wantDirectories) {
 		byte[] manifest = null;
 
 		try {

@@ -36,6 +36,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("ReweavableTest");
@@ -44,6 +45,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		handler = null;
@@ -220,7 +222,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		if (debugTests)
 			System.out.println("\ntestReweavableSimpleCompile: Building with Reweavable2.lst");
-		Set paths = new HashSet();
+		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
 		String[] newFiles = new String[] { "SecondAspect.aj" };
@@ -269,7 +271,7 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		if (debugTests)
 			System.out.println("\ntestForReweavableSimpleErrorCompile: Building with Reweavable2.lst");
-		Set paths = new HashSet();
+		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
 		String[] newFiles = new String[] { "SecondAspect.aj" };
@@ -319,10 +321,10 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		if (debugTests)
 			System.out.println("\ntestErrorScenario2: Building with TJP2.lst");
-		Set paths = new HashSet();
+		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
-		compilerConfig.setProjectSourceFiles(new ArrayList());
+		compilerConfig.setProjectSourceFiles(new ArrayList<String>());
 		doBuild(true);
 
 		String expMessage = "aspect tjp.GetInfo cannot be found when reweaving tjp.Demo";
@@ -351,10 +353,10 @@ public class ReweavableTests extends AjdeCoreTestCase {
 
 		if (debugTests)
 			System.out.println("\ntestWorkingScenario2: Building with TJP2.lst");
-		Set paths = new HashSet();
+		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
-		compilerConfig.setProjectSourceFiles(new ArrayList());
+		compilerConfig.setProjectSourceFiles(new ArrayList<String>());
 		doBuild(true);
 
 		String expMessage = "successfully verified type tjp.GetInfo exists";

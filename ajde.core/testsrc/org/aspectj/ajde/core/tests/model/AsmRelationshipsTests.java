@@ -28,6 +28,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 
 	private TestCompilerConfiguration compilerConfig;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("coverage");
@@ -37,6 +38,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		manager = AsmManager.lastActiveStructureModel;
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		compilerConfig = null;
@@ -77,7 +79,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		assertNotNull(dp);
 		/* List relations = */manager.getRelationshipMap().get(dp);
 
-		List rels = manager.getRelationshipMap().get(dp);
+		List<IRelationship> rels = manager.getRelationshipMap().get(dp);
 		assertTrue(rels.size() > 0);
 
 		// assertTrue(rel.getTargets().size() > 0);
@@ -115,7 +117,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.DECLARE, forwardRelName);
 		assertTrue(rel.getTargets().size() > 0);
-		String handle = (String) rel.getTargets().get(0);
+		String handle = rel.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
 		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
@@ -124,7 +126,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.CODE, set);
 		assertNotNull(setNode);
 		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.DECLARE, backRelName);
-		String handle2 = (String) rel2.getTargets().get(0);
+		String handle2 = rel2.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
 	}
 
@@ -138,7 +140,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
 		for (Iterator<String> it = rel.getTargets().iterator(); it.hasNext();) {
-			String currHandle = (String) it.next();
+			String currHandle = it.next();
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(to))
 				return;
 		}
@@ -154,7 +156,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 				.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, forwardRelName);
-		String handle = (String) rel.getTargets().get(0);
+		String handle = rel.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
 		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
@@ -163,7 +165,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		IProgramElement setNode = manager.getHierarchy().findElementForLabel(clazz, IProgramElement.Kind.METHOD, set);
 		assertNotNull(setNode);
 		IRelationship rel2 = manager.getRelationshipMap().get(setNode, IRelationship.Kind.ADVICE, backRelName);
-		String handle2 = (String) rel2.getTargets().get(0);
+		String handle2 = rel2.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle2).toString(), from);
 	}
 
@@ -176,7 +178,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		IProgramElement fromNode = manager.getHierarchy().findElementForLabel(aspect, declareKind, beforeExec);
 		assertNotNull(fromNode);
 		IRelationship rel = manager.getRelationshipMap().get(fromNode, IRelationship.Kind.DECLARE_INTER_TYPE, forwardRelName);
-		String handle = (String) rel.getTargets().get(0);
+		String handle = rel.getTargets().get(0);
 		assertEquals(manager.getHierarchy().findElementForHandle(handle).toString(), to);
 
 		IProgramElement clazz = manager.getHierarchy().findElementForType(null, toType);
@@ -185,7 +187,7 @@ public class AsmRelationshipsTests extends AjdeCoreTestCase {
 		IRelationship rel2 = manager.getRelationshipMap().get(clazz, IRelationship.Kind.DECLARE_INTER_TYPE, backRelName);
 		// String handle2 = (String)rel2.getTargets().get(0);
 		for (Iterator<String> it = rel2.getTargets().iterator(); it.hasNext();) {
-			String currHandle = (String) it.next();
+			String currHandle = it.next();
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from))
 				return;
 		}

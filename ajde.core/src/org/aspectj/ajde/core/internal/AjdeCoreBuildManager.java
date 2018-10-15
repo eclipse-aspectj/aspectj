@@ -223,10 +223,12 @@ public class AjdeCoreBuildManager {
 		if (configFile.exists() && configFile.isFile()) {
 			args = new String[] { "@" + configFile.getAbsolutePath() };
 		} else {
-			List<String> l = compilerConfig.getProjectSourceFiles();
-			if (l == null) {
+			List<String> projectSourceFiles = compilerConfig.getProjectSourceFiles();
+			if (projectSourceFiles == null) {
 				return null;
 			}
+			List<String> l = new ArrayList<>();
+			l.addAll(projectSourceFiles);
 			// If the processor options are specified build the command line options for the JDT compiler to see
 			String processor = compilerConfig.getProcessor();
 			if (processor != null && processor.length() != 0) {
@@ -238,20 +240,25 @@ public class AjdeCoreBuildManager {
 				l.add("-processorpath");
 				l.add(processorPath);
 			}
+			if (compilerConfig.getOutputLocationManager() != null &&
+					compilerConfig.getOutputLocationManager().getDefaultOutputLocation() != null) {
+				l.add("-d");
+				l.add(compilerConfig.getOutputLocationManager().getDefaultOutputLocation().toString());
+			}
 			List<String> xmlfiles = compilerConfig.getProjectXmlConfigFiles();
 			if (xmlfiles != null && !xmlfiles.isEmpty()) {
 				args = new String[l.size() + xmlfiles.size() + 1];
 				// TODO speedup
 				int p = 0;
 				for (int i = 0; i < l.size(); i++) {
-					args[p++] = (String) l.get(i);
+					args[p++] = l.get(i);
 				}
 				for (int i = 0; i < xmlfiles.size(); i++) {
-					args[p++] = (String) xmlfiles.get(i);
+					args[p++] = xmlfiles.get(i);
 				}
 				args[p++] = "-xmlConfigured";
 			} else {
-				args = (String[]) l.toArray(new String[l.size()]);
+				args = l.toArray(new String[l.size()]);
 			}
 		}
 
@@ -320,7 +327,7 @@ public class AjdeCoreBuildManager {
 		// Process the JAVA OPTIONS MAP
 		Map<String,String> jom = compilerConfig.getJavaOptionsMap();
 		if (jom != null) {
-			String version = (String) jom.get(CompilerOptions.OPTION_Compliance);
+			String version = jom.get(CompilerOptions.OPTION_Compliance);
 			if (version != null && !version.equals(CompilerOptions.VERSION_1_4)) {
 				config.setBehaveInJava5Way(true);
 			}
@@ -383,7 +390,7 @@ public class AjdeCoreBuildManager {
 		} else {
 			tokens.addAll(tokenizeString(nonStdOptions));
 		}
-		String[] args = (String[]) tokens.toArray(new String[] {});
+		String[] args = tokens.toArray(new String[] {});
 
 		// set the non-standard options in an alternate build config
 		// (we don't want to lose the settings we already have)

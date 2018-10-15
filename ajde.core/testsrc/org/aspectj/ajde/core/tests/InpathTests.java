@@ -31,6 +31,7 @@ import org.aspectj.util.FileUtil;
 public class InpathTests extends AjdeCoreTestCase {
 
 	public static final FileFilter aspectjResourceFileFilter = new FileFilter() {
+		@Override
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
 			return (!name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj"));
@@ -49,6 +50,7 @@ public class InpathTests extends AjdeCoreTestCase {
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("InpathTest");
@@ -56,6 +58,7 @@ public class InpathTests extends AjdeCoreTestCase {
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		handler = null;
@@ -258,7 +261,7 @@ public class InpathTests extends AjdeCoreTestCase {
 	 * Ensure -outjar contains all non-Java resouces from source and injars
 	 */
 	public void compareSourceToOutjar(String indirName, File outjarFile) {
-		HashSet resources = new HashSet();
+		HashSet<String> resources = new HashSet<>();
 		listSourceResources(indirName, resources);
 
 		try {
@@ -285,7 +288,7 @@ public class InpathTests extends AjdeCoreTestCase {
 	/*
 	 * Ensure bin contains all non-Java resouces from source and injars
 	 */
-	public void compareIndirToBin(File indirFile, String sourceDir, String outdirName, Set expectedOutdirContents) {
+	public void compareIndirToBin(File indirFile, String sourceDir, String outdirName, Set<String> expectedOutdirContents) {
 
 		// byte[] inManifest = null;
 
@@ -302,7 +305,7 @@ public class InpathTests extends AjdeCoreTestCase {
 		assertTrue("Missing resources: " + expectedOutdirContents.toString(), expectedOutdirContents.isEmpty());
 	}
 
-	private void listSourceResources(String indirName, Set resources) {
+	private void listSourceResources(String indirName, Set<String> resources) {
 		File srcBase = openFile(indirName);
 		File[] fromResources = FileUtil.listFiles(srcBase, aspectjResourceFileFilter);
 		for (int i = 0; i < fromResources.length; i++) {

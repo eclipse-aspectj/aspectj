@@ -83,6 +83,7 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject(PROJECT_DIR);
@@ -92,6 +93,7 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 		compilerConfig.setNonStandardOptions("-showWeaveInfo");
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		handler = null;
@@ -303,10 +305,10 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryITDNoDebugInfo() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
-		Set inpath = new HashSet();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		compilerConfig.setInpath(inpath);
-		Set aspectpath = new HashSet();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectITD_nodebug.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -360,7 +362,7 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 	 * Compare weaving messages with what is in the file
 	 */
 	private void compareWeaveMessages(File f) {
-		List fileContents = new ArrayList();
+		List<String> fileContents = new ArrayList<>();
 		BufferedReader fr;
 		try {
 			// Load the file in
@@ -368,14 +370,14 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 			String line = null;
 			while ((line = fr.readLine()) != null)
 				fileContents.add(line);
-			List originalFileContents = new ArrayList();
+			List<String> originalFileContents = new ArrayList<>();
 			originalFileContents.addAll(fileContents);
 
 			// See if the messages match
 			int msgCount = 0;
-			List l = handler.getMessages();
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				IMessage msg = ((TestMessageHandler.TestMessage) iter.next()).getContainedMessage();
+			List<TestMessageHandler.TestMessage> l = handler.getMessages();
+			for (Iterator<TestMessageHandler.TestMessage> iter = l.iterator(); iter.hasNext();) {
+				IMessage msg = iter.next().getContainedMessage();
 				if (debugTests)
 					System.out.println("Looking at [" + msg + "]");
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
@@ -396,10 +398,9 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 		}
 	}
 
-	private String stringify(List l) {
+	private String stringify(List<String> l) {
 		StringBuffer result = new StringBuffer();
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			String str = (String) iter.next();
+		for (String str: l) {
 			result.append(str);
 			result.append("\n");
 		}
@@ -414,9 +415,9 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 		FileWriter fw;
 		try {
 			fw = new FileWriter(f);
-			List l = handler.getMessages();
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				IMessage msg = ((TestMessageHandler.TestMessage) iter.next()).getContainedMessage();
+			List<TestMessageHandler.TestMessage> l = handler.getMessages();
+			for (Iterator<TestMessageHandler.TestMessage> iter = l.iterator(); iter.hasNext();) {
+				IMessage msg = iter.next().getContainedMessage();
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
 					fw.write(msg.getMessage() + "\n");
 				}
@@ -428,7 +429,7 @@ public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
 	}
 
 	private void setRunIn15Mode() {
-		Map m = new Hashtable();
+		Map<String, String> m = new Hashtable<>();
 		m.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_15);
 		m.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_15);
 		m.put(JavaOptions.TARGET_COMPATIBILITY_LEVEL, JavaOptions.VERSION_15);

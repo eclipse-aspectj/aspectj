@@ -35,6 +35,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 	private TestCompilerConfiguration compilerConfig;
 	private AjdeCoreBuildManager ajdeBuildManager;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("SimpleProject");
@@ -42,6 +43,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 		compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		ajdeBuildManager = null;
@@ -52,8 +54,8 @@ public class AjConfigTests extends AjdeCoreTestCase {
 		Map<String,String> options = JavaOptions.getDefaultJavaOptions();
 		options.put(JavaOptions.WARN_DEPRECATION, JavaOptions.WARNING);
 		compilerConfig.setJavaOptions(options);
-		Map found = genAjBuildConfig().getOptions().getMap();
-		String warning = (String) found.get(JavaOptions.WARN_DEPRECATION);
+		Map<String,String> found = genAjBuildConfig().getOptions().getMap();
+		String warning = found.get(JavaOptions.WARN_DEPRECATION);
 		assertEquals("expected to be warning on deprecation but found setting " + " was " + warning, JavaOptions.WARNING, warning);
 	}
 
@@ -136,7 +138,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 		for (Iterator<String> i = found.keySet().iterator(); i.hasNext();) {
 			String resource = i.next();
 			assertEquals("expected to find resource with name newFile.txt but " + "found " + resource, "newFile.txt", resource);
-			File from = (File) buildConfig.getSourcePathResources().get(resource);
+			File from = buildConfig.getSourcePathResources().get(resource);
 			assertEquals("expected to find resource with file " + getWorkingDir() + "but found " + from, getWorkingDir(), from);
 		}
 	}
@@ -146,7 +148,7 @@ public class AjConfigTests extends AjdeCoreTestCase {
 		List<String> found = genAjBuildConfig().getClasspath();
 		StringBuffer sb = new StringBuffer();
 		for (Iterator<String> iterator = found.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
+			String name = iterator.next();
 			sb.append(name);
 			if (iterator.hasNext()) {
 				sb.append(File.pathSeparator);
@@ -182,11 +184,11 @@ public class AjConfigTests extends AjdeCoreTestCase {
 
 	public void testProjectSourceFiles() throws IOException {
 		String f = getAbsoluteProjectDir() + File.separator + "C.java";
-		List files = new ArrayList();
+		List<String> files = new ArrayList<>();
 		files.add(f);
 		compilerConfig.setProjectSourceFiles(files);
 		AjBuildConfig buildConfig = genAjBuildConfig();
-		String found = ((File) buildConfig.getFiles().get(0)).getCanonicalPath();// AbsolutePath();
+		String found = buildConfig.getFiles().get(0).getCanonicalPath();// AbsolutePath();
 		assertEquals("expected source file " + f + ", but found " + found, f, found);
 	}
 

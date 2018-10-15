@@ -32,6 +32,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("coverage");
@@ -48,6 +49,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		handler = null;
@@ -55,7 +57,7 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 	}
 
 	public void testInterfaceIsSameInBoth() {
-		AsmManager asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
+		AsmManager asm = AsmManager.createNewStructureModel(Collections.<File,String>emptyMap());
 		asm.readStructureModel(getAbsoluteProjectDir());
 
 		IHierarchy model = asm.getHierarchy();
@@ -79,14 +81,15 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 	}
 
 	public void testModelIsSamePreAndPostBuild() {
-		AsmManager asm = AsmManager.createNewStructureModel(Collections.EMPTY_MAP);
+		AsmManager asm = AsmManager.createNewStructureModel(Collections.<File,String>emptyMap());
 		asm.readStructureModel(getAbsoluteProjectDir());
 		// AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
 		IHierarchy model = asm.getHierarchy();
 		assertTrue("model exists", model != null);
 
-		final List preBuildKinds = new ArrayList();
+		final List<IProgramElement.Kind> preBuildKinds = new ArrayList<>();
 		HierarchyWalker walker = new HierarchyWalker() {
+			@Override
 			public void preProcess(IProgramElement node) {
 				preBuildKinds.add(node.getKind());
 			}
@@ -97,8 +100,9 @@ public class SavedModelConsistencyTests extends AjdeCoreTestCase {
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 
-		final List postBuildKinds = new ArrayList();
+		final List<IProgramElement.Kind> postBuildKinds = new ArrayList<>();
 		HierarchyWalker walker2 = new HierarchyWalker() {
+			@Override
 			public void preProcess(IProgramElement node) {
 				postBuildKinds.add(node.getKind());
 			}

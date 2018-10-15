@@ -27,28 +27,31 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	private File classOutputLoc;
 	private File resourceOutputLoc;
 	private List<File> allOutputLocations;
-	private Map inpathMap = Collections.EMPTY_MAP;
+	private Map<File,String> inpathMap = Collections.emptyMap();
 
 	public TestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 	}
 
-	public TestOutputLocationManager(String string, Map inpathMap) {
+	public TestOutputLocationManager(String string, Map<File,String> inpathMap) {
 		this(string);
 		this.inpathMap = inpathMap;
 	}
 
+	@Override
 	public File getOutputLocationForClass(File compilationUnit) {
 		initLocations();
 		return classOutputLoc;
 	}
 
+	@Override
 	public File getOutputLocationForResource(File resource) {
 		initLocations();
 		return resourceOutputLoc;
 	}
 
-	public Map getInpathMap() {
+	@Override
+	public Map<File,String> getInpathMap() {
 		return inpathMap;
 	}
 
@@ -61,6 +64,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		resourceOutputLoc = f;
 	}
 
+	@Override
 	public List<File> getAllOutputLocations() {
 		if (allOutputLocations == null) {
 			allOutputLocations = new ArrayList<File>();
@@ -73,6 +77,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		return allOutputLocations;
 	}
 
+	@Override
 	public File getDefaultOutputLocation() {
 		initLocations();
 		return classOutputLoc;
@@ -87,16 +92,20 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		}
 	}
 
+	@Override
 	public String getSourceFolderForFile(File sourceFile) {
 		return null;
 	}
 
+	@Override
 	public void reportFileWrite(String outputfile, int filetype) {
 	}
 
+	@Override
 	public void reportFileRemove(String outputfile, int filetype) {
 	}
 
+	@Override
 	public int discoverChangesSince(File dir, long buildtime) {
 		// TODO Auto-generated method stub
 		return 0;
