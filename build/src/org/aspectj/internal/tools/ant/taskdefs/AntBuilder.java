@@ -86,7 +86,7 @@ public class AntBuilder extends Builder {
 	 */
 	private static void makeTargetsForResult(final Result result, final Hashtable<String,Target> targets) {
 		final String resultTargetName = resultToTargetName(result);
-		Target target = (Target) targets.get(resultTargetName);
+		Target target = targets.get(resultTargetName);
 		if (null == target) {
 			// first add the target
 			target = new Target();
@@ -147,6 +147,7 @@ public class AntBuilder extends Builder {
 	 * @param boolean filter if true, enable filtering
 	 * @see org.aspectj.internal.tools.build.Builder#copyFile(File, File, boolean)
 	 */
+	@Override
 	protected boolean copyFile(File fromFile, File toFile, boolean filter) {
 		Copy copy = makeCopyTask(filter);
 		copy.setFile(fromFile);
@@ -160,6 +161,7 @@ public class AntBuilder extends Builder {
 	 * 
 	 * @see org.aspectj.internal.tools.ant.taskdefs.Builder#copyFiles(File, File, String, String, boolean)
 	 */
+	@Override
 	protected boolean copyFiles(File fromDir, File toDir, String includes, String excludes, boolean filter) {
 		Copy copy = makeCopyTask(filter);
 		copy.setTodir(toDir);
@@ -226,8 +228,6 @@ public class AntBuilder extends Builder {
 		boolean isJava5Compile = false;
 		boolean isJava8Compile = false;
 		for (File file: result.getSrcDirs()) {
-//		for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
-//			File file = (File) iter.next();
 			path.createPathElement().setLocation(file);
 			if (!isJava5Compile
 					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) || 
@@ -270,18 +270,16 @@ public class AntBuilder extends Builder {
 
 		// misc
 		javac.setDebug(true);
-		if (!isJava5Compile) {
+		if (isJava8Compile) {
+			javac.setSource("1.8");
+			javac.setTarget("1.8");				
+		} else if (isJava5Compile) {
+			// *cough*
+			javac.setSource("1.6");
+			javac.setTarget("1.6");			
+		} else {
 			javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
 			javac.setSource("1.3");
-		} else {
-			if (isJava8Compile) {
-				javac.setSource("1.8");
-				javac.setTarget("1.8");				
-			} else {
-				// min
-				javac.setSource("1.6");
-				javac.setTarget("1.6");
-			}
 		}
 		// compile
 		boolean passed = false;
@@ -412,6 +410,7 @@ public class AntBuilder extends Builder {
 	/**
 	 * @see org.aspectj.internal.tools.build.Builder#buildAntecedants(Module)
 	 */
+	@Override
 	protected Result[] getAntecedantResults(Result moduleResult) {
 		Hashtable<String,Target> targets = new Hashtable<String, Target>();
 		makeTargetsForResult(moduleResult, targets);
@@ -425,7 +424,7 @@ public class AntBuilder extends Builder {
 		}
 		ArrayList<String> toReturn = new ArrayList<String>();
 		for (Iterator<Target> iter = result.iterator(); iter.hasNext();) {
-			Target target = (Target) iter.next();
+			Target target = iter.next();
 			String name = target.getName();
 			if (null == name) {
 				throw new Error("null name?");
@@ -437,12 +436,13 @@ public class AntBuilder extends Builder {
 		if ((1 == size) && targetName.equals(toReturn.get(0)) && !moduleResult.outOfDate()) {
 			return new Result[0];
 		}
-		return Result.getResults((String[]) toReturn.toArray(new String[0]));
+		return Result.getResults(toReturn.toArray(new String[0]));
 	}
 
 	/**
 	 * Generate Module.assembledJar with merge of itself and all antecedants
 	 */
+	@Override
 	protected boolean assembleAll(Result result, Messager handler) {
 		if (!buildingEnabled) {
 			return false;
@@ -500,6 +500,7 @@ public class AntBuilder extends Builder {
 	/**
 	 * @see org.aspectj.internal.tools.ant.taskdefs.Builder#buildInstaller(BuildSpec, String)
 	 */
+	@Override
 	protected boolean buildInstaller(BuildSpec buildSpec, String targDirPath) {
 		return false;
 	}
@@ -726,6 +727,7 @@ class ProductBuilder extends AntBuilder {
 	/**
 	 * Delegate for super.buildProduct(..) template method.
 	 */
+	@Override
 	protected boolean copyBinaries(BuildSpec buildSpec, File distDir, File targDir, String excludes) {
 		Copy copy = makeCopyTask(false);
 		copy.setTodir(targDir);
@@ -742,6 +744,7 @@ class ProductBuilder extends AntBuilder {
 	/**
 	 * Delegate for super.buildProduct(..) template method.
 	 */
+	@Override
 	protected boolean copyNonBinaries(BuildSpec buildSpec, File distDir, File targDir) {
 		// filter-copy everything but the binaries
 		Copy copy = makeCopyTask(true);
@@ -754,6 +757,7 @@ class ProductBuilder extends AntBuilder {
 		return executeTask(copy);
 	}
 
+	@Override
 	protected boolean buildInstaller(BuildSpec buildSpec, String targDirPath) {
 		if (buildSpec.verbose) {
 			handler.log("creating installer for " + buildSpec);
@@ -808,16 +812,19 @@ class ProjectMessager extends Messager {
 		this.project = project;
 	}
 
+	@Override
 	public boolean log(String s) {
 		project.log(s);
 		return true;
 	}
 
+	@Override
 	public boolean error(String s) {
 		project.log(s, Project.MSG_ERR);
 		return true;
 	}
 
+	@Override
 	public boolean logException(String context, Throwable thrown) {
 		project.log(context + Util.renderException(thrown), Project.MSG_ERR);
 		return true;
