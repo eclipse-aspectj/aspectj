@@ -59,10 +59,8 @@ import org.aspectj.weaver.patterns.BasicTokenSource;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.ISignaturePattern;
 import org.aspectj.weaver.patterns.ITokenSource;
-import org.aspectj.weaver.patterns.NamePattern;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.PerClause;
-import org.aspectj.weaver.patterns.PerSingleton;
 import org.aspectj.weaver.patterns.TypePattern;
 
 /**
