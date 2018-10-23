@@ -72,19 +72,12 @@ public class Aj implements ClassPreProcessor {
 	}
 
 	private final static String deleLoader = "sun.reflect.DelegatingClassLoader";
+	private final static String deleLoader2 = "jdk.internal.reflect.DelegatingClassLoader"; // On JDK11+
 
-	/**
-	 * Weave
-	 * 
-	 * @param className
-	 * @param bytes
-	 * @param loader
-	 * @return woven bytes
-	 */
 	@Override
 	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader, ProtectionDomain protectionDomain) {
-		// TODO AV needs to doc that
-		if (loader == null || className == null || loader.getClass().getName().equals(deleLoader)) {
+		if (loader == null || className == null || 
+			loader.getClass().getName().equals(deleLoader) || loader.getClass().getName().equals(deleLoader2)) {
 			// skip boot loader, null classes (hibernate), or those from a reflection loader
 			return bytes;
 		}
