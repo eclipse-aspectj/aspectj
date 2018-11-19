@@ -2,6 +2,25 @@
 
 <suite>
 
+
+	<ajc-test dir="bugs193/isAbstractType" title="is abstract">
+	<compile files="Code.java" options="-1.8"/>
+	<run class="Code">
+	  <stdout>
+	  <line text="execution(void Code.run())"/>
+	  </stdout>
+	</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs193/isAbstractType" title="is abstract - 2">
+	<compile files="Code2.java" options="-1.8"/>
+	<run class="Code2">
+	  <stdout>
+	  <line text="execution(void Helper.run())"/>
+	  </stdout>
+	</run>
+	</ajc-test>
+
 <!-- 
   <ajc-test dir="bugs191/var" title="var 3">
     <compile files="Code3.java" options="-10">

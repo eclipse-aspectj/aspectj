@@ -22,6 +22,14 @@ import junit.framework.Test;
  */
 public class Ajc193Tests extends XMLBasedAjcTestCaseForJava10OrLater {
 
+	public void testIsAbstractType() {
+		runTest("is abstract");
+	}
+
+	public void testIsAbstractType2() {
+		runTest("is abstract - 2");
+	}
+	
 	// ---
 
 	public static Test suite() {

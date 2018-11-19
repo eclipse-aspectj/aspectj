@@ -42,6 +42,7 @@ public class TypeCategoryTypePattern extends TypePattern {
 	public static final int ENUM = 6;
 	public static final int ANNOTATION = 7;
 	public static final int FINAL = 8;
+	public static final int ABSTRACT = 9;
 
 	private int category;
 
@@ -136,6 +137,8 @@ public class TypeCategoryTypePattern extends TypePattern {
 			return type.isAnnotation();
 		case FINAL:
 			return Modifier.isFinal(type.getModifiers());
+		case ABSTRACT:
+			return Modifier.isAbstract(type.getModifiers());
 		}
 		return false;
 	}
