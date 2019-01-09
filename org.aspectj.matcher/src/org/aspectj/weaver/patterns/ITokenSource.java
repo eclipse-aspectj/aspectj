@@ -23,4 +23,5 @@ public interface ITokenSource {
 	public int getIndex();
 	public void setIndex(int newIndex);
 	public ISourceContext getSourceContext();
+	public boolean hasMoreTokens();
 }

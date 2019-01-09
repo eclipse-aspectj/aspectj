@@ -180,4 +180,9 @@ public class BasicTokenSource implements ITokenSource {
 		this.sourceContext = context;
 	}
 
+	@Override
+	public boolean hasMoreTokens() {
+		return index < tokens.length;
+	}
+
 }

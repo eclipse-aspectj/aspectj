@@ -325,7 +325,7 @@ public class PointcutParser {
 		try {
 			PatternParser parser = new PatternParser(expression);
 			parser.setPointcutDesignatorHandlers(pointcutDesignators, world);
-			Pointcut pc = parser.parsePointcut();
+			Pointcut pc = parser.parsePointcut(); // more correctly: parsePointcut(true)
 			validateAgainstSupportedPrimitives(pc, expression);
 			IScope resolutionScope = buildResolutionScope((inScope == null ? Object.class : inScope), formalParameters);
 			pc = pc.resolve(resolutionScope);
