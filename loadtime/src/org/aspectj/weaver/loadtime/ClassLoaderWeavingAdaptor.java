@@ -1054,11 +1054,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private static synchronized void initializeForJava11() {
 		if (initializedForJava11) return;
 		try {
-			// MethodType defineClassMethodType = MethodType.methodType(Class.class, new Class[]{String.class, byte[].class, int.class, int.class});
+			// MethodType defineClassMethodType = MethodType.methodType(Class.class, new Class[]{String.class, byte[].class, int.class, int.class, ProtectionDomain.class});
 			Class<?> methodType_Class = Class.forName("java.lang.invoke.MethodType");
 			Method methodTypeMethodOnMethodTypeClass = methodType_Class.getDeclaredMethod("methodType", Class.class,Class[].class);
 			methodTypeMethodOnMethodTypeClass.setAccessible(true);
-			Object defineClassMethodType = methodTypeMethodOnMethodTypeClass.invoke(null, Class.class, new Class[] {String.class,byte[].class,int.class,int.class});
+			Object defineClassMethodType = methodTypeMethodOnMethodTypeClass.invoke(null, Class.class, new Class[] {String.class,byte[].class,int.class,int.class,ProtectionDomain.class});
 
 			// MethodHandles.Lookup methodHandlesLookup = MethodHandles.lookup();
 			Class<?> methodHandles_Class = Class.forName("java.lang.invoke.MethodHandles");
@@ -1099,9 +1099,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				if (!initializedForJava11) {
 					initializeForJava11();
 				}
-				// Do this: clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length);
+				// Do this: clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length, protectionDomain);
 				Object o = bindTo_Method.invoke(defineClassMethodHandle,loader);
-				clazz = invokeWithArguments_Method.invoke(o, new Object[] {new Object[] {name, bytes, 0, bytes.length}});
+				clazz = invokeWithArguments_Method.invoke(o, new Object[] {new Object[] {name, bytes, 0, bytes.length, protectionDomain}});
 			    
 			} catch (Throwable t) {
 				t.printStackTrace(System.err);
