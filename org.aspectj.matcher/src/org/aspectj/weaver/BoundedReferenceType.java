@@ -110,7 +110,12 @@ public class BoundedReferenceType extends ReferenceType {
 					parameterizedAdditionalInterfaces);
 		} else {
 			// (this.kind == SUPER)
-			return new BoundedReferenceType((ReferenceType) getLowerBound().parameterize(typeBindings), false, world,
+			UnresolvedType parameterizedLowerBound = getLowerBound().parameterize(typeBindings);
+			if (!(parameterizedLowerBound instanceof ReferenceType)) {
+				throw new IllegalStateException("PR543023: Unexpectedly found a non reference type: "+
+						parameterizedLowerBound.getClass().getName()+" with signature "+parameterizedLowerBound.getSignature());
+			}
+			return new BoundedReferenceType((ReferenceType)parameterizedLowerBound , false, world,
 					parameterizedAdditionalInterfaces);
 		}
 	}
