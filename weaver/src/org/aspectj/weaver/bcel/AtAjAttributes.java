@@ -1763,6 +1763,14 @@ public class AtAjAttributes {
 				}
 			}
 			if (arguments.size() == 0) {
+				// The local variable table is causing us trouble, try the annotation value
+				// See 539121 for a jacoco variant of the cobertura issue below
+				if (argNamesFromAnnotation != null) {
+					String[] argNames = extractArgNamesFromAnnotationValue(method, argNamesFromAnnotation, methodStruct);
+					if (argNames.length != 0) {
+						return argNames;
+					}
+				}
 				// could be cobertura code where some extra bytecode has been stuffed in at the start of the method
 				// but the local variable table hasn't been repaired - for example:
 				// LocalVariable(start_pc = 6, length = 40, index = 0:com.example.ExampleAspect this)
@@ -1783,32 +1791,11 @@ public class AtAjAttributes {
 				}
 			}
 		} else {
-			// No debug info, do we have an annotation value we can rely on?
 			if (argNamesFromAnnotation != null) {
-				StringTokenizer st = new StringTokenizer(argNamesFromAnnotation, " ,");
-				List<String> args = new ArrayList<String>();
-				while (st.hasMoreTokens()) {
-					args.add(st.nextToken());
+				String[] argNames = extractArgNamesFromAnnotationValue(method, argNamesFromAnnotation, methodStruct);
+				if (argNames != null) {
+					return argNames;
 				}
-				if (args.size() != method.getArgumentTypes().length) {
-					StringBuffer shortString = new StringBuffer().append(lastbit(method.getReturnType().toString())).append(" ")
-							.append(method.getName());
-					if (method.getArgumentTypes().length > 0) {
-						shortString.append("(");
-						for (int i = 0; i < method.getArgumentTypes().length; i++) {
-							shortString.append(lastbit(method.getArgumentTypes()[i].toString()));
-							if ((i + 1) < method.getArgumentTypes().length) {
-								shortString.append(",");
-							}
-
-						}
-						shortString.append(")");
-					}
-					reportError("argNames annotation value does not specify the right number of argument names for the method '"
-							+ shortString.toString() + "'", methodStruct);
-					return EMPTY_STRINGS;
-				}
-				return args.toArray(new String[] {});
 			}
 		}
 
@@ -1834,6 +1821,34 @@ public class AtAjAttributes {
 			argumentNames[i++] = methodArgument.name;
 		}
 		return argumentNames;
+	}
+
+	private static String[] extractArgNamesFromAnnotationValue(Method method, String argNamesFromAnnotation,
+			AjAttributeMethodStruct methodStruct) {
+		StringTokenizer st = new StringTokenizer(argNamesFromAnnotation, " ,");
+		List<String> args = new ArrayList<String>();
+		while (st.hasMoreTokens()) {
+			args.add(st.nextToken());
+		}
+		if (args.size() != method.getArgumentTypes().length) {
+			StringBuffer shortString = new StringBuffer().append(lastbit(method.getReturnType().toString())).append(" ")
+					.append(method.getName());
+			if (method.getArgumentTypes().length > 0) {
+				shortString.append("(");
+				for (int i = 0; i < method.getArgumentTypes().length; i++) {
+					shortString.append(lastbit(method.getArgumentTypes()[i].toString()));
+					if ((i + 1) < method.getArgumentTypes().length) {
+						shortString.append(",");
+					}
+
+				}
+				shortString.append(")");
+			}
+			reportError("argNames annotation value does not specify the right number of argument names for the method '"
+					+ shortString.toString() + "'", methodStruct);
+			return EMPTY_STRINGS;
+		}
+		return args.toArray(new String[] {});
 	}
 
 	/**
