@@ -1,15 +1,11 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002-2019 Contributors
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
  * which accompanies this distribution and is available at 
  * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
  * ******************************************************************/
-
 package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
@@ -30,15 +26,18 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
 
+/**
+ * @author Thomas Kiviaho
+ * @author Andy Clement
+ * @author PARC
+ */
 public class DeclareParents extends Declare {
 	protected TypePattern child;
 	protected TypePatternList parents;
 	private boolean isWildChild = false;
 	protected boolean isExtends = true;
 
-	// private String[] typeVariablesInScope = new String[0]; // AspectJ 5 extension for generic types
-
-	public DeclareParents(TypePattern child, List parents, boolean isExtends) {
+	public DeclareParents(TypePattern child, List<TypePattern> parents, boolean isExtends) {
 		this(child, new TypePatternList(parents), isExtends);
 	}
 
@@ -46,18 +45,10 @@ public class DeclareParents extends Declare {
 		this.child = child;
 		this.parents = parents;
 		this.isExtends = isExtends;
-		if (child instanceof WildTypePattern) {
-			isWildChild = true;
-		}
+		WildChildFinder wildChildFinder = new WildChildFinder();
+		child.accept(wildChildFinder, null);
+		isWildChild = wildChildFinder.containedWildChild();
 	}
-
-	// public String[] getTypeParameterNames() {
-	// return this.typeVariablesInScope;
-	// }
-	//	
-	// public void setTypeParametersInScope(String[] typeParameters) {
-	// this.typeVariablesInScope = typeParameters;
-	// }
 
 	public boolean match(ResolvedType typeX) {
 		if (!child.matchesStatically(typeX)) {
@@ -76,7 +67,7 @@ public class DeclareParents extends Declare {
 	}
 
 	@Override
-	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+	public Declare parameterizeWith(Map<String,UnresolvedType> typeVariableBindingMap, World w) {
 		DeclareParents ret = new DeclareParents(child.parameterizeWith(typeVariableBindingMap, w), parents.parameterizeWith(
 				typeVariableBindingMap, w), isExtends);
 		ret.copyLocationFrom(this);
@@ -117,22 +108,11 @@ public class DeclareParents extends Declare {
 		s.writeByte(Declare.PARENTS);
 		child.write(s);
 		parents.write(s);
-		// s.writeInt(typeVariablesInScope.length);
-		// for (int i = 0; i < typeVariablesInScope.length; i++) {
-		// s.writeUTF(typeVariablesInScope[i]);
-		// }
 		writeLocation(s);
 	}
 
 	public static Declare read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		DeclareParents ret = new DeclareParents(TypePattern.read(s, context), TypePatternList.read(s, context), true);
-		// if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-		// int numTypeVariablesInScope = s.readInt();
-		// ret.typeVariablesInScope = new String[numTypeVariablesInScope];
-		// for (int i = 0; i < numTypeVariablesInScope; i++) {
-		// ret.typeVariablesInScope[i] = s.readUTF();
-		// }
-		// }
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -157,11 +137,14 @@ public class DeclareParents extends Declare {
 
 	@Override
 	public void resolve(IScope scope) {
-		// ScopeWithTypeVariables resolutionScope = new ScopeWithTypeVariables(typeVariablesInScope,scope);
-		child = child.resolveBindings(scope, Bindings.NONE, false, false);
-		isWildChild = (child instanceof WildTypePattern);
+		TypePattern resolvedChild = child.resolveBindings(scope, Bindings.NONE, false, false);
+	    if (!resolvedChild.equals(child)) {
+	        WildChildFinder wildChildFinder = new WildChildFinder();
+	        resolvedChild.accept(wildChildFinder, null);
+	        isWildChild = wildChildFinder.containedWildChild();
+	        this.child = resolvedChild;
+	    }
 		parents = parents.resolveBindings(scope, Bindings.NONE, false, true);
-
 		// Could assert this ...
 		// for (int i=0; i < parents.size(); i++) {
 		// parents.get(i).assertExactType(scope.getMessageHandler());

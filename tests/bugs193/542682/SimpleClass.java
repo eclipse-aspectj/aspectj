@@ -1,0 +1,2 @@
+@Foo
+public class SimpleClass {}
