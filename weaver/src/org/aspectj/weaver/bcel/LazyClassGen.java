@@ -533,9 +533,14 @@ public final class LazyClassGen {
 			myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverVersionInfo(), getConstantPool()));
 		}
 
-		// 352389: don't add another one (there will already be one there and this new one won't deserialize correctly)
-		if (!world.isOverWeaving() || !myGen.hasAttribute(WeaverState.AttributeName)) {
-			if (myType != null && myType.getWeaverState() != null) {
+		// see 389678: TODO more finessing possible here?
+		if (world.isOverWeaving()) {
+			if (myGen.hasAttribute(WeaverState.AttributeName) && myType!=null && myType.getWeaverState() != null) {
+				myGen.removeAttribute(myGen.getAttribute(WeaverState.AttributeName));
+				myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverState(myType.getWeaverState()), getConstantPool()));
+			}
+		} else {
+			if (!myGen.hasAttribute(WeaverState.AttributeName) && myType != null && myType.getWeaverState() != null) {
 				myGen.addAttribute(Utility.bcelAttribute(new AjAttribute.WeaverState(myType.getWeaverState()), getConstantPool()));
 			}
 		}
@@ -750,8 +755,8 @@ public final class LazyClassGen {
 	public byte[] getJavaClassBytesIncludingReweavable(BcelWorld world) {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
-		// At 1.6 stackmaps are optional
-		// At 1.7 or later stackmaps are required (if not turning off the verifier)
+		// At 1.6 stackmaps are optional, whilst at 1.7 and later they
+		// are required (unless turning off the verifier)
 		if ((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6) {
 			if (!AsmDetector.isAsmAround) {
 				throw new BCException("Unable to find Asm for stackmap generation (Looking for 'aj.org.objectweb.asm.ClassReader'). Stackmap generation for woven code is required to avoid verify errors on a Java 1.7 or higher runtime");
@@ -760,7 +765,7 @@ public final class LazyClassGen {
 		}
 
 		WeaverStateInfo wsi = myType.getWeaverState();// getOrCreateWeaverStateInfo();
-		if (wsi != null && wsi.isReweavable()) { // && !reweavableDataInserted
+		if (wsi != null && wsi.isReweavable() && !world.isOverWeaving()) { // && !reweavableDataInserted
 			// reweavableDataInserted = true;
 			return wsi.replaceKeyWithDiff(wovenClassFileData);
 		} else {

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 2002-2019 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Eclipse Public License v1.0 
@@ -38,6 +38,8 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  * themselves If we are reweavable then we also have: Short: Number of aspects that touched this type in some way when it was
  * previously woven <String> The fully qualified name of each type Int: Length of class file data (i.e. the unwovenclassfile)
  * Byte[]: The class file data, compressed if REWEAVABLE_COMPRESSION_BIT set.
+ * 
+ * @author Andy Clement
  */
 public class WeaverStateInfo {
 	private List<Entry> typeMungers;
@@ -230,6 +232,21 @@ public class WeaverStateInfo {
 		}
 	}
 
+	private final static byte[] NO_BYTES = new byte[0];
+	
+	/**
+	 * If the weaver is ever invoked in over weaving mode, we should
+	 * not include the key when writing out, it won't be replaced later.
+	 * If we turn off the reweaving flag that unfortunately removes
+	 * the 'what aspects have been woven into this type' list which we 
+	 * want to keep as it helps overweaving avoid weaving an aspect in
+	 * twice.
+	 */
+	public void markOverweavingInUse() {
+		reweavableDiffMode = false;
+		unwovenClassFile = NO_BYTES;
+	}
+
 	public void addConcreteMunger(ConcreteTypeMunger munger) {
 		typeMungers.add(new Entry(munger.getAspectType(), munger.getMunger()));
 	}
@@ -258,6 +275,10 @@ public class WeaverStateInfo {
 		return oldStyle;
 	}
 
+	public byte[] getUnwovenClassFileData() {
+		return unwovenClassFile;
+	}
+	
 	public byte[] getUnwovenClassFileData(byte wovenClassFile[]) {
 		if (unwovenClassFileIsADiff) {
 			unwovenClassFile = applyDiff(wovenClassFile, unwovenClassFile);
@@ -334,10 +355,12 @@ public class WeaverStateInfo {
 				}
 			} else {
 				classData = new byte[unwovenClassFileSize];
-				int bytesread = s.read(classData);
-				if (bytesread != unwovenClassFileSize) {
-					throw new IOException("ERROR whilst reading reweavable data, expected " + unwovenClassFileSize
-							+ " bytes, only found " + bytesread);
+				if (unwovenClassFileSize != 0) {
+					int bytesread = s.read(classData);
+					if (bytesread != unwovenClassFileSize) {
+						throw new IOException("ERROR whilst reading reweavable data, expected " + unwovenClassFileSize
+								+ " bytes, only found " + bytesread);
+					}
 				}
 			}
 

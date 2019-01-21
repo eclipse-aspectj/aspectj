@@ -1,18 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2004-2019 Contributors
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.aspectj.weaver;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+/**
+ * @author Andy Clement
+ * @author IBM
+ */
 public class WeaverMessages {
 
 	private static ResourceBundle bundle = ResourceBundle.getBundle("org.aspectj.weaver.weaver-messages");
@@ -183,6 +184,8 @@ public class WeaverMessages {
 
 	public static final String HAS_MEMBER_NOT_ENABLED = "hasMemberNotEnabled";
 
+	public static final String MUST_KEEP_OVERWEAVING_ONCE_START = "mustKeepOverweavingOnceStart";
+	
 	// @AspectJ
 	public static final String RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE = "returningFormalNotDeclaredInAdvice";
 	public static final String THROWN_FORMAL_NOT_DECLARED_IN_ADVICE = "thrownFormalNotDeclaredInAdvice";

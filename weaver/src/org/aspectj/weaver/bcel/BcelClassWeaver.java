@@ -538,8 +538,12 @@ class BcelClassWeaver implements IClassWeaver {
 		if (inReweavableMode) {
 			WeaverStateInfo wsi = clazz.getOrCreateWeaverStateInfo(true);
 			wsi.addAspectsAffectingType(aspectsAffectingType);
-			wsi.setUnwovenClassFileData(ty.getJavaClass().getBytes());
-			wsi.setReweavable(true);
+			if (!world.isOverWeaving()) {
+				wsi.setUnwovenClassFileData(ty.getJavaClass().getBytes());
+				wsi.setReweavable(true);
+			} else {
+				wsi.markOverweavingInUse();
+			}
 		} else {
 			clazz.getOrCreateWeaverStateInfo(false).setReweavable(false);
 		}

@@ -1364,15 +1364,12 @@ public class BcelWeaver {
 				if (!alreadyConfirmedReweavableState.contains(requiredTypeSignature)) {
 					ResolvedType rtx = world.resolve(UnresolvedType.forSignature(requiredTypeSignature), true);
 					boolean exists = !rtx.isMissing();
-					if (!exists) {
-						world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className },
+					if (!world.isOverWeaving()) {
+						if (!exists) {
+							world.getLint().missingAspectForReweaving.signal(new String[] { rtx.getName(), className },
 								classType.getSourceLocation(), null);
-						// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
-						// requiredTypeName, className), classType.getSourceLocation(), null);
-					} else {
-						if (world.isOverWeaving()) {
-							// System.out.println(">> Removing " + requiredTypeName + " from weaving process: "
-							// + xcutSet.deleteAspect(rtx));
+							// world.showMessage(IMessage.ERROR, WeaverMessages.format(WeaverMessages.MISSING_REWEAVABLE_TYPE,
+							// requiredTypeName, className), classType.getSourceLocation(), null);
 						} else {
 							// weaved in aspect that are not declared in aop.xml
 							// trigger an error for now
@@ -1386,8 +1383,8 @@ public class BcelWeaver {
 								world.showMessage(IMessage.INFO, WeaverMessages.format(WeaverMessages.VERIFIED_REWEAVABLE_TYPE,
 										rtx.getName(), rtx.getSourceLocation().getSourceFile()), null, null);
 							}
+							alreadyConfirmedReweavableState.add(requiredTypeSignature);
 						}
-						alreadyConfirmedReweavableState.add(requiredTypeSignature);
 					}
 				}
 			}
@@ -1396,11 +1393,21 @@ public class BcelWeaver {
 			// ().getFileName(), wsi.getUnwovenClassFileData()));
 			// new: reweavable default with clever diff
 			if (!world.isOverWeaving()) {
-				byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
-				WeaverVersionInfo wvi = classType.getWeaverVersionAttribute();
-				JavaClass newJavaClass = Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes);
-				classType.setJavaClass(newJavaClass, true);
-				classType.getResolvedTypeX().ensureConsistent();
+				byte[] ucfd = wsi.getUnwovenClassFileData();
+				if (ucfd.length == 0) {
+					// Size 0 indicates the class was previously overwoven, so you need to be overweaving now!
+					world.getMessageHandler().handleMessage(
+							MessageUtil.error(
+							WeaverMessages.format(WeaverMessages.MUST_KEEP_OVERWEAVING_ONCE_START,
+									className)));
+//									onType.getName(), annoX.getTypeName(), annoX.getValidTargets()),
+//							decA.getSourceLocation()));					
+				} else {
+					byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
+					JavaClass newJavaClass = Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes);
+					classType.setJavaClass(newJavaClass, true);
+					classType.getResolvedTypeX().ensureConsistent();
+				}
 			}
 			// } else {
 			// classType.resetState();
