@@ -396,7 +396,7 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember itdAtDeclareParentsField(ResolvedType targetType, UnresolvedType itdType, UnresolvedType aspectType) {
 		return new ResolvedMemberImpl(Member.FIELD, targetType, Modifier.PRIVATE, itdType, NameMangler.itdAtDeclareParentsField(
-				aspectType, itdType), null);
+				aspectType, itdType), ResolvedType.NONE);
 	}
 
 	public static ResolvedMember interConstructor(ResolvedType targetType, ResolvedMember constructor, UnresolvedType aspectType) {
