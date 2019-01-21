@@ -12,6 +12,8 @@
 package org.aspectj.testing;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -35,8 +37,13 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.AjAttribute.WeaverState;
+import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
+import org.aspectj.weaver.bcel.BcelConstantPoolReader;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
@@ -110,6 +117,33 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 */
 	protected Map<String,AjcTest> getSuiteTests() {
 		return testMap;
+	}
+
+	protected WeaverStateInfo getWeaverStateInfo(JavaClass jc) {
+		WeaverStateInfo wsi = null;
+		try {
+			for (Attribute attribute : jc.getAttributes()) {
+				if (attribute.getName().equals("org.aspectj.weaver.WeaverState")) {
+					if (wsi != null) {
+						fail("Found two WeaverState attributes");
+					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					attribute.dump(new DataOutputStream(baos));
+					baos.close();
+					byte[] byteArray = baos.toByteArray();
+					byte[] newbytes = new byte[byteArray.length-6];
+					System.arraycopy(byteArray, 6, newbytes, 0, newbytes.length);
+					WeaverState read = (WeaverState)
+							AjAttribute.read(new WeaverVersionInfo(), WeaverState.AttributeName,
+									newbytes, null, null,
+									new BcelConstantPoolReader(jc.getConstantPool()));
+					wsi = read.reify();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return wsi;
 	}
 
 	/**
