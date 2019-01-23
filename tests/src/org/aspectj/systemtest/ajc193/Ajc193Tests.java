@@ -21,6 +21,34 @@ import junit.framework.Test;
  */
 public class Ajc193Tests extends XMLBasedAjcTestCaseForJava10OrLater {
 
+	public void testDeclareMixinOverweavingControl() {
+		runTest("overweaving decm - control");
+	}
+
+	public void testDeclareMixinOverweavingReweaving() {
+		runTest("overweaving decm - reweaving");
+	}
+
+	public void testDeclareMixinOverweaving() {
+		runTest("overweaving decm - 1");
+	}
+
+	public void xtestDeclareMixinOverweaving2() {
+		runTest("overweaving decm - 2");
+	}
+	
+	public void xtestOverweavingDeclareMixinTargetingAspect() {
+		runTest("mood indicator 4");
+	}
+	
+	public void testOverweavingAtDecPControl() {
+		runTest("overweaving atdecp - control");
+	}
+
+	public void testOverweavingAtDecP() {
+		runTest("overweaving atdecp");
+	}
+
 	public void testComplexOverweaving1() {
 		// This is the same code as the other test but overweaving OFF
 		runTest("overweaving");
