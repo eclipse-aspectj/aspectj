@@ -29,3 +29,4 @@ public class UtilTests extends TestCase {
     public UtilTests(String name) { super(name); }
 
 }  
+
