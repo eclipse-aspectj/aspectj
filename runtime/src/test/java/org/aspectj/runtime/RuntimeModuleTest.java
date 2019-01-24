@@ -21,18 +21,9 @@ import org.aspectj.runtime.reflect.SignatureTest;
 
 import junit.framework.*;
 
-public class RuntimeModuleTests extends TestCase {
+public class RuntimeModuleTest extends TestCase {
 
-    public static TestSuite suite() { 
-        TestSuite suite = new TestSuite(RuntimeModuleTests.class.getName());
-        suite.addTestSuite(RuntimeModuleTests.class); // minimum 1 test (testNothing)
-        suite.addTestSuite(SignatureTest.class);
-		suite.addTestSuite(JoinPointImplTest.class);
-		suite.addTestSuite(RuntimePerformanceTest.class);
-        return suite;
-    }
-
-    public RuntimeModuleTests(String name) { super(name); }
+    public RuntimeModuleTest(String name) { super(name); }
     
     public void testNoAspectBoundException() {
         RuntimeException fun = new RuntimeException("fun");
