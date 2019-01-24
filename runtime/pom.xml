@@ -14,4 +14,13 @@
   <packaging>jar</packaging>
   <name>runtime</name>
 
+
+  <dependencies>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>testing-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>
