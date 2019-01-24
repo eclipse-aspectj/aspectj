@@ -174,7 +174,11 @@ public class KindedPointcut extends Pointcut {
 							}
 						}
 					}
-				}
+				} else  if (this.getSignature().getDeclaringType() instanceof WildTypePattern) {
+					final WildTypePattern pattern = (WildTypePattern) this.getSignature().getDeclaringType();
+					final ResolvedType type = info.getType();
+					return pattern.matches(type, TypePattern.STATIC);
+				}				
 			}
 		}
 
