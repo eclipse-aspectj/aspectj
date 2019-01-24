@@ -16,7 +16,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
-public class SimpleScopeTests extends PatternsTestCase {
+public class SimpleScopeTest extends PatternsTestCase {
 
 	public World getWorld() {
 		return new ReflectionWorld(true, this.getClass().getClassLoader());

@@ -8,7 +8,7 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
  * 
  * @author Andy Clement
  */
-public class ReflectionWorldPointcutExpressionTests extends CommonPointcutExpressionTests {
+public class ReflectionWorldPointcutExpressionTest extends CommonPointcutExpressionTests {
 
 	protected World getWorld() {
 		return new ReflectionWorld(true, getClass().getClassLoader());

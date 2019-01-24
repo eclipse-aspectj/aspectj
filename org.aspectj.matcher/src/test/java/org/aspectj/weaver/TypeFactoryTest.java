@@ -15,7 +15,7 @@ import junit.framework.TestCase;
  * 
  * @author Andy Clement
  */
-public class TypeFactoryTests extends TestCase {
+public class TypeFactoryTest extends TestCase {
 
 	public void testParameterizedSig() {
 		UnresolvedType t = null;
