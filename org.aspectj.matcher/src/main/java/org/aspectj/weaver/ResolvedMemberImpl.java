@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -124,7 +125,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 		List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
 		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
-		Set<ResolvedMember> memberSignatures = new HashSet<ResolvedMember>();
+		Set<ResolvedMember> memberSignatures = new LinkedHashSet<ResolvedMember>();
 		for (ResolvedType declaringType : declaringTypes) {
 			memberSignatures.add(new JoinPointSignature(firstDefiningMember, declaringType));
 		}
