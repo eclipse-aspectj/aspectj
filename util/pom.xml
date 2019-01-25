@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.aspectj</groupId>
     <artifactId>aspectj-parent</artifactId>
-    <version>${revision}</version>
+    <version>1.9.3.BUILD-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
