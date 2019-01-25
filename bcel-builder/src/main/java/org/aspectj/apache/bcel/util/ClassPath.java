@@ -213,7 +213,7 @@ public class ClassPath implements Serializable {
 
 			if (extensions != null)
 				for (int i = 0; i < extensions.length; i++)
-					list.add(ext_path + File.separatorChar + extensions[i]);
+					list.add(ext_dir.toString() + File.separatorChar + extensions[i]);
 		}
 
 		StringBuffer buf = new StringBuffer();
