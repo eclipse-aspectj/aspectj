@@ -24,7 +24,6 @@ import junit.framework.TestCase;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.testing.util.TestUtil.TestError;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.BcweaverTests;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
@@ -32,18 +31,20 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
  * 
  */
 public class WeavingURLClassLoaderTest extends TestCase {
+	
+	private final static String TESTDATA_PATH = "../weaver/testdata";
 
-	private final static String ASPECTJRT = "../runtime/bin";
-	private final static String CLASSES_JAR = BcweaverTests.TESTDATA_PATH + "/ltw-classes.jar";
-	private final static String WOVEN_JAR = BcweaverTests.TESTDATA_PATH + "/ltw-woven.jar";
-	private final static String JUNK_JAR = BcweaverTests.TESTDATA_PATH + "/ltw-junk.jar";
-	private final static String ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-aspects.jar";
-	private final static String DW_ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-dwaspects.jar";
-	private final static String DE_ADVICE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-deaspects.jar";
-	private final static String AROUNDCLOSURE_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-acaspects.jar";
-	private final static String ITD_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-itdaspects.jar";
-	private final static String PER_ASPECTS = BcweaverTests.TESTDATA_PATH + "/ltw-peraspects.jar";
-	private final static String TEST_BASE = BcweaverTests.TESTDATA_PATH + "/WeavingURLClassLoaderTest/builtLibs";
+	private final static String ASPECTJRT = "../runtime/target/classes";
+	private final static String CLASSES_JAR = TESTDATA_PATH + "/ltw-classes.jar";
+	private final static String WOVEN_JAR = TESTDATA_PATH + "/ltw-woven.jar";
+	private final static String JUNK_JAR = TESTDATA_PATH + "/ltw-junk.jar";
+	private final static String ADVICE_ASPECTS = TESTDATA_PATH + "/ltw-aspects.jar";
+	private final static String DW_ADVICE_ASPECTS = TESTDATA_PATH + "/ltw-dwaspects.jar";
+	private final static String DE_ADVICE_ASPECTS = TESTDATA_PATH + "/ltw-deaspects.jar";
+	private final static String AROUNDCLOSURE_ASPECTS = TESTDATA_PATH + "/ltw-acaspects.jar";
+	private final static String ITD_ASPECTS = TESTDATA_PATH + "/ltw-itdaspects.jar";
+	private final static String PER_ASPECTS = TESTDATA_PATH + "/ltw-peraspects.jar";
+	private final static String TEST_BASE = TESTDATA_PATH + "/WeavingURLClassLoaderTest/builtLibs";
 
 	private final static String NULL = "null";
 
@@ -347,7 +348,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	 * Aspects on ASPECTPATH but missing from CLASSPATH
 	 */
 	public void testIncompletePath() {
-		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, ADVICE_ASPECTS);
+		URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, ADVICE_ASPECTS+File.pathSeparator+aspectjrt.toString());
 		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH, CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 

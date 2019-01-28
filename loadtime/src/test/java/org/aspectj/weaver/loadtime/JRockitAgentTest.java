@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.aspectj.util.FileUtil;
+
 import junit.framework.TestCase;
 
 import com.bea.jvm.ClassPreProcessor;
@@ -52,6 +54,9 @@ public class JRockitAgentTest extends TestCase {
 
 	public void testJrockitRecursionProtection() {
 		URLClassLoader thisLoader = (URLClassLoader) getClass().getClassLoader();
+		URL jrockit = FileUtil.getFileURL(new File("../lib/ext/jrockit/jrockit.jar"));
+		URL[] urls = new URL[] {jrockit};
+		 thisLoader = new URLClassLoader(urls, thisLoader);
 		ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
 
 		try {

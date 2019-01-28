@@ -64,7 +64,8 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 
 	public WeavingURLClassLoader(URL[] classURLs, URL[] aspectURLs, ClassLoader parent) {
 		super(classURLs, parent);
-		// System.out.println("> WeavingURLClassLoader.WeavingURLClassLoader() classURLs=" + Arrays.asList(classURLs));
+//		 System.out.println(">WIB WeavingURLClassLoader.WeavingURLClassLoader() classURLs=" + Arrays.asList(classURLs));
+//		 System.out.println(">WIB WeavingURLClassLoader.WeavingURLClassLoader() aspectURLs=" + Arrays.asList(aspectURLs));
 		this.aspectURLs = aspectURLs;
 
 		/*
