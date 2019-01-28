@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.aspectj.weaver
+Name: org/aspectj/weaver/
+Specification-Title: AspectJ Weaver Classes
+Specification-Version: @build.version.short@
+Specification-Vendor: @company.name@
+Implementation-Title: org.aspectj.weaver
+Implementation-Version: @build.version.short@
+Implementation-Vendor: @company.name@
+Premain-Class: org.aspectj.weaver.loadtime.Agent
+Agent-Class: org.aspectj.weaver.loadtime.Agent
+Can-Redefine-Classes: true
