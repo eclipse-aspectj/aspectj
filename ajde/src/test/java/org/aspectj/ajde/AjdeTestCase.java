@@ -27,9 +27,10 @@ import org.aspectj.ajde.ui.utils.TestEditorAdapter;
 import org.aspectj.ajde.ui.utils.TestIdeUIAdapter;
 import org.aspectj.ajde.ui.utils.TestMessageHandler;
 import org.aspectj.ajde.ui.utils.TestRuntimeProperties;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.tools.ajc.Ajc;
 
-public class AjdeTestCase extends TestCase {
+public abstract class AjdeTestCase extends TestCase {
 
 	public final static String testdataSrcDir = "../ajde/testdata";
 	protected static File sandboxDir;
@@ -39,7 +40,7 @@ public class AjdeTestCase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		// Create a sandbox in which to work
-		sandboxDir = Ajc.createEmptySandbox();
+		sandboxDir = TestUtil.createEmptySandbox();
 		// AMC - added this next line as a temporary workaround for
 		// listener leakage in AsmManager induced by the Ajde test suite.
 		// Ajde.getDefault().getModel().removeAllListeners();

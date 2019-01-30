@@ -23,7 +23,7 @@ import java.util.Set;
 import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.IOutputLocationManager;
 import org.aspectj.ajde.core.JavaOptions;
-import org.aspectj.tools.ajc.AjcTests;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
@@ -66,7 +66,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	public String getClasspath() {
 		String cp = projectPath + File.pathSeparator + System.getProperty("sun.boot.class.path") + File.pathSeparator
-				+ AjcTests.aspectjrtClasspath();
+				+ TestUtil.aspectjrtClasspath();
 		if (LangUtil.is19VMOrGreater()) {
 			cp = LangUtil.getJrtFsFilePath()+File.pathSeparator+cp;
 		}

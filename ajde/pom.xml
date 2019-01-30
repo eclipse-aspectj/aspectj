@@ -37,6 +37,13 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
+      <artifactId>org.aspectj.ajdt.core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -17,7 +17,7 @@ import org.aspectj.ajde.core.AjCompiler;
  * there to be a different one for each .lst file and for ajde
  * to only remember the compiler for the last .lst file.
  */
-public class AjdeCompilerTests extends AjdeTestCase {
+public class AjdeCompilerTest extends AjdeTestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();

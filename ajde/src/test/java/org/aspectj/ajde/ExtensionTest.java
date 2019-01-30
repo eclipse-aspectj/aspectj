@@ -25,7 +25,7 @@ import org.aspectj.tools.ajc.CompilationResult;
  * Tests the 'extensions' to AJDE: 1) ID is now available on messages to allow you to see what 'kind' of message it is - this
  * activates quick fixes/etc in Eclipse.
  */
-public class ExtensionTests extends AjcTestCase {
+public class ExtensionTest extends AjcTestCase {
 
 	public static final String PROJECT_DIR = "extensions";
 	private static final boolean debugTests = false;
