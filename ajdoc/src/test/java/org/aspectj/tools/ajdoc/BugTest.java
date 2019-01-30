@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BugTests extends AjdocTestCase {
+public class BugTest extends AjdocTestCase {
 
 	public void testPr160302() throws Exception {
 		initialiseProject("pr160302");

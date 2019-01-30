@@ -119,9 +119,9 @@ public class AjdocOutputChecker {
 	 * @return List of those requiredStrings not found
 	 * @throws Exception
 	 */
-	public static List /*String*/ getMissingStringsInSection(File htmlFile,
+	public static List<String> getMissingStringsInSection(File htmlFile,
 			String[] requiredStrings, String sectionHeader) throws Exception {
-		List missingStrings = new ArrayList();
+		List<String> missingStrings = new ArrayList<String>();
 		for (int i = 0; i < requiredStrings.length; i++) {
 			String string = requiredStrings[i];
 			if (!containsStringWithinSection(htmlFile,string,sectionHeader)) {

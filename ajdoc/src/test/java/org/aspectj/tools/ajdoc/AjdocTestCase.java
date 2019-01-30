@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
 
 import junit.framework.AssertionFailedError;
@@ -25,7 +25,7 @@ import junit.framework.TestCase;
  * This class is the super class of all Ajdoc tests. It creates a sandbox directory and provides utility methods for copying over
  * the test projects and running the ajdoc command
  */
-public class AjdocTestCase extends TestCase {
+public abstract class AjdocTestCase extends TestCase {
 
 	public final static String testdataSrcDir = "../ajdoc/testdata";
 	protected static File sandboxDir;
@@ -37,7 +37,7 @@ public class AjdocTestCase extends TestCase {
 		docOutdir = null;
 		projectDir = null;
 		// Create a sandbox in which to work
-		sandboxDir = Ajc.createEmptySandbox();
+		sandboxDir = TestUtil.createEmptySandbox();
 		// create the ajdocworkdingdir in the sandbox
 		Main.setOutputWorkingDir(getWorkingDir().getAbsolutePath());
 	}

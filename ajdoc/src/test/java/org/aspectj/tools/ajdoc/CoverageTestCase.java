@@ -74,7 +74,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		// the file contains the getI() method but doesn't contain
 		// the private ClassBar, Bazz and Jazz classes.
 		String[] strings = { "private", "getI()","ClassBar", "Bazz", "Jazz"};
-		List missing = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
+		List<String> missing = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
 		assertEquals("There should be 4 missing strings",4,missing.size());
 		assertTrue(htmlFile.getName() + " should not contain the private modifier",missing.contains("private"));
 		assertTrue(htmlFile.getName() + " should not contain the private ClassBar class",missing.contains("ClassBar"));
@@ -186,7 +186,7 @@ public class CoverageTestCase extends AjdocTestCase {
 					"Aspect ClassA</H2>",
 					"public abstract aspect <B>ClassA</B><DT>extends java.lang.Object<DT>"};
 		}
-		List classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
+		List<String> classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
 		assertEquals("There should be 2 missing strings:\n"+classMissing,2,classMissing.size());
 		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",classMissing.contains("Aspect ClassA</H2>"));
 		if (LangUtil.is18VMOrGreater()) {
@@ -222,7 +222,7 @@ public class CoverageTestCase extends AjdocTestCase {
 				"before(int):",
 				"before(int): named()..",
 				"before():"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(
 				htmlFile, strings,"ADVICE DETAIL SUMMARY");
 		assertTrue(htmlFile.getName() + " should contain all advice in the Advice Detail section",missing.isEmpty());
 		missing = AjdocOutputChecker.getMissingStringsInSection(
