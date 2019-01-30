@@ -6,34 +6,34 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     Matthew Webster - initial implementation
+ *     IBM Corporation - initial API and implementation
  *     Helen Hawkins   - Converted to new interface (bug 148190)
  *******************************************************************************/
 package org.aspectj.ajde.core.tests;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
 
-public class DuplicateManifestTests extends AjdeCoreTestCase {
+public class JarManifestTest extends AjdeCoreTestCase {
 
-	public static final String injarName = "injar.jar";
-	public static final String aspectjarName = "aspectjar.jar";
-	public static final String outjarName = "outjar.jar";
+	public static final String outjarName = "/bin/output.jar";
 
+	private String[] weave = { "src" + File.separator + "Main.java",
+			"src" + File.separator + "Logging.aj" };
+	
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		initialiseProject("DuplicateManifestTest");
+		initialiseProject("JarManifestTest");
 		handler = (TestMessageHandler) getCompiler().getMessageHandler();
 		compilerConfig = (TestCompilerConfiguration) getCompiler()
 				.getCompilerConfiguration();
@@ -44,37 +44,39 @@ public class DuplicateManifestTests extends AjdeCoreTestCase {
 		handler = null;
 		compilerConfig = null;
 	}
-
-	public void testWeave() {
-		Set<File> injars = new HashSet<File>();
-		injars.add(openFile(injarName));
-		compilerConfig.setInpath(injars);
-		Set<File> aspectpath = new HashSet<File>();
-		aspectpath.add(openFile(aspectjarName));
-		compilerConfig.setAspectPath(aspectpath);
+	
+	public void testWeave () {
 		File outjar = openFile(outjarName);
 		compilerConfig.setOutjar(outjar.getAbsolutePath());
+		compilerConfig.setProjectSourceFiles(getSourceFileList(weave));
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found "
 				+ handler.getMessages(), handler.getMessages().isEmpty());
-		compareManifests(openFile(injarName), openFile(outjarName));
+		checkManifest(outjar);
 	}
-
-	private void compareManifests(File inFile, File outFile) {
+	
+	public void testNoWeave () {
+		File outjar = openFile(outjarName);
+		compilerConfig.setOutjar(outjar.getAbsolutePath());
+		compilerConfig.setProjectSourceFiles(getSourceFileList(weave));
+		compilerConfig.setNonStandardOptions("-XterminateAfterCompilation");
+		doBuild(true);
+		assertTrue("Expected no compiler errors or warnings but found "
+				+ handler.getMessages(), handler.getMessages().isEmpty());
+		checkManifest(outjar);
+	}
+	
+	private void checkManifest (File outjarFile) {
+		Manifest manifest = null;
 
 		try {
-			JarFile inJar = new JarFile(inFile);
-			Manifest inManifest = inJar.getManifest();
-			inJar.close();
-			JarFile outJar = new JarFile(outFile);
-			Manifest outManifest = outJar.getManifest();
-			outJar.close();
-			assertTrue("The manifests in '" + inFile.getCanonicalPath()
-					+ "' and '" + outFile.getCanonicalPath()
-					+ "' sould be the same", inManifest.equals(outManifest));
-		} catch (IOException ex) {
+			JarInputStream outjar = new JarInputStream(new FileInputStream(outjarFile));
+			manifest = outjar.getManifest();
+			outjar.close();
+			assertNotNull("'" + outjarFile.getCanonicalPath() + "' should contain a manifest",manifest);
+		}
+		catch (IOException ex) {
 			fail(ex.toString());
 		}
 	}
-
 }

@@ -27,7 +27,7 @@ import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.util.FileUtil;
 
-public class ResourceCopyTests extends AjdeCoreTestCase {
+public class ResourceCopyTest extends AjdeCoreTestCase {
 
 	public static final String PROJECT_DIR = "bug-36071a";
 	public static final String srcDir = PROJECT_DIR + "/src";

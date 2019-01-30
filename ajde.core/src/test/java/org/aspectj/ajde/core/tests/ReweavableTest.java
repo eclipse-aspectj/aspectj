@@ -22,7 +22,7 @@ import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.bridge.IMessage;
 
-public class ReweavableTests extends AjdeCoreTestCase {
+public class ReweavableTest extends AjdeCoreTestCase {
 
 	private static final boolean debugTests = false;
 

@@ -17,7 +17,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 
-public class AsmDeclarationsTests extends AjdeCoreTestCase {
+public class AsmDeclarationsTest extends AjdeCoreTestCase {
 
 	private AsmManager manager = null;
 	private IHierarchy model = null;

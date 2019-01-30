@@ -28,7 +28,7 @@ import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.util.FileUtil;
 
-public class InpathTests extends AjdeCoreTestCase {
+public class InpathTest extends AjdeCoreTestCase {
 
 	public static final FileFilter aspectjResourceFileFilter = new FileFilter() {
 		@Override

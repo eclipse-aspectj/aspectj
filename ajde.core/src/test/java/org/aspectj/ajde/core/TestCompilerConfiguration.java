@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aspectj.tools.ajc.AjcTests;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
@@ -66,7 +66,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
         } else {
         		classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));
         }
-		classpath.append(File.pathSeparator).append(AjcTests.aspectjrtClasspath());
+		classpath.append(File.pathSeparator).append(TestUtil.aspectjrtClasspath());
 		return classpath.toString();
 	}
 

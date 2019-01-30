@@ -20,7 +20,7 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 
-public class AsmRelationshipsTests extends AjdeCoreTestCase {
+public class AsmRelationshipsTest extends AjdeCoreTestCase {
 
 	private AsmManager manager = null;
 

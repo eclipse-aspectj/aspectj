@@ -24,7 +24,7 @@ import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 
-public class StructureModelTests extends AjdeCoreTestCase {
+public class StructureModelTest extends AjdeCoreTestCase {
 
 	private AsmManager manager = null;
 

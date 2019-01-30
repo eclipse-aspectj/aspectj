@@ -30,7 +30,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 /**
  * Tests that the AjBuildConfig is populated correctly from the ICompilerConfiguration
  */
-public class AjConfigTests extends AjdeCoreTestCase {
+public class AjConfigTest extends AjdeCoreTestCase {
 
 	private TestCompilerConfiguration compilerConfig;
 	private AjdeCoreBuildManager ajdeBuildManager;

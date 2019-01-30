@@ -25,7 +25,7 @@ import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
 import org.aspectj.bridge.Constants;
 
-public class OutxmlTests extends AjdeCoreTestCase {
+public class OutxmlTest extends AjdeCoreTestCase {
 
 	public static final String PROJECT_DIR = "OutxmlTest";
 	public static final String BIN_DIR = "bin";

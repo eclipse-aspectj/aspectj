@@ -55,7 +55,7 @@ import org.aspectj.util.LangUtil;
  * 
  * TODO - Other forms of declare? Do they need messages? e.g. declare precedence *
  */
-public class ShowWeaveMessagesTests extends AjdeCoreTestCase {
+public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 
 	private static boolean regenerate;
 	private static boolean debugTests = false;

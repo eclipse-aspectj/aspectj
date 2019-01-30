@@ -22,7 +22,7 @@ import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
 import org.aspectj.bridge.IMessage;
 
-public class CompilerMessagesTests extends AjdeCoreTestCase {
+public class CompilerMessagesTest extends AjdeCoreTestCase {
 
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;

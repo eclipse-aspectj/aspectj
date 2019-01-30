@@ -19,13 +19,13 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.aspectj.ajde.core.TestMessageHandler.TestMessage;
-import org.aspectj.tools.ajc.Ajc;
+import org.aspectj.testing.util.TestUtil;
 
 /**
  * Testcase class to be used by all ajde.core tests. Provides helper methods to set up the environment in a sandbox as well as to
  * drive a build.
  */
-public class AjdeCoreTestCase extends TestCase {
+public abstract class AjdeCoreTestCase extends TestCase {
 
 	public final static String testdataSrcDir = "../ajde.core/testdata";
 	protected static File sandboxDir;
@@ -36,7 +36,7 @@ public class AjdeCoreTestCase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		// Create a sandbox in which to work
-		sandboxDir = Ajc.createEmptySandbox();
+		sandboxDir = TestUtil.createEmptySandbox();
 		// AMC - added this next line as a temporary workaround for
 		// listener leakage in AsmManager induced by the Ajde test suite.
 		// AsmManager.getDefault().removeAllListeners();

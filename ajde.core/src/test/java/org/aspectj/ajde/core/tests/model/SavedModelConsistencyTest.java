@@ -25,7 +25,7 @@ import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 
-public class SavedModelConsistencyTests extends AjdeCoreTestCase {
+public class SavedModelConsistencyTest extends AjdeCoreTestCase {
 
 	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
 

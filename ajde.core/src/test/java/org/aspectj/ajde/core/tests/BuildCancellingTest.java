@@ -43,7 +43,7 @@ import org.aspectj.ajde.core.TestCompilerConfiguration;
  * phase then the disk will contain anything finished with by the cancellation
  * point.
  */
-public class BuildCancellingTests extends AjdeCoreTestCase {
+public class BuildCancellingTest extends AjdeCoreTestCase {
 
 	private final boolean debugTests = false;
 	private TestBuildProgressMonitor programmableBPM;
