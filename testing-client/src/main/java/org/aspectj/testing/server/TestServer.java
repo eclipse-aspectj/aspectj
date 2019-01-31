@@ -109,9 +109,9 @@ public class TestServer implements Runnable {
 		if (aspectjBase == null) {
 			error("Unable to locate 'org.aspectj' in "+new File(".").getCanonicalPath());
 		}
-		urlList.add(new File(aspectjBase,"runtime/bin").toURI().toURL());
-		urlList.add(new File(aspectjBase,"aspectjrt/bin").toURI().toURL());
-		urlList.add(new File(aspectjBase,"aspectj5rt/bin").toURI().toURL());
+		urlList.add(new File(aspectjBase,"runtime/target/classes").toURI().toURL());
+//		urlList.add(new File(aspectjBase,"aspectjrt/target/classes").toURI().toURL());
+//		urlList.add(new File(aspectjBase,"aspectj5rt/target/classes").toURI().toURL());
 		
 		URL[] urls = new URL[urlList.size()];
 		urlList.toArray(urls);
