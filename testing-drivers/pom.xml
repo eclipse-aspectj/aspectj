@@ -57,5 +57,11 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>testing</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 </project>
