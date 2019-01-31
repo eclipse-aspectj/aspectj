@@ -20,15 +20,19 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-install-plugin</artifactId>
             <executions>
+<execution>
+<id>default-install</id>
+<phase>none</phase>
+</execution>
                 <execution>
-                        <id>org.aspectj:jdtcore</id>
+                        <id>org.aspectj:org.eclipse.jdt.core</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
                             <groupId>org.aspectj</groupId>
-                            <artifactId>jdtcore</artifactId>
+                            <artifactId>org.eclipse.jdt.core</artifactId>
                             <version>1.9.3.BUILD-SNAPSHOT</version>
                             <packaging>jar</packaging>
                             <file>${basedir}/jdtcore-for-aspectj.jar</file>
@@ -37,14 +41,14 @@
                         </configuration>
                 </execution>
                 <execution>
-                        <id>org.aspectj:jdtcore:sources</id>
+                        <id>org.aspectj:org.eclipse.jdt.core:sources</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
                             <groupId>org.aspectj</groupId>
-                            <artifactId>jdtcore</artifactId>
+                            <artifactId>org.eclipse.jdt.core</artifactId>
                             <version>1.9.3.BUILD-SNAPSHOT</version>
                             <packaging>jar</packaging>
                             <file>${basedir}/jdtcore-for-aspectj-src.zip</file>

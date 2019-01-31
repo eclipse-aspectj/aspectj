@@ -3,15 +3,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>util</artifactId>
-  <packaging>jar</packaging>
-  <name>util</name>
-
   <parent>
     <groupId>org.aspectj</groupId>
     <artifactId>aspectj-parent</artifactId>
     <version>1.9.3.BUILD-SNAPSHOT</version>
-    <relativePath>..</relativePath>
   </parent>
+
+  <artifactId>util</artifactId>
+  <packaging>jar</packaging>
+  <name>util</name>
 
 </project>
