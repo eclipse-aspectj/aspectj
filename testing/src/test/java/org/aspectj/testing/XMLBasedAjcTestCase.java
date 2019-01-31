@@ -73,7 +73,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * 
 	 * <pre>
 	 * public static Test suite() {
-	 * 	return XMLBasedAjcTestCase.loadSuite(MyTestCaseClass.class);
+	 * 	 return XMLBasedAjcTestCase.loadSuite(MyTestCaseClass.class);
 	 * }
 	 * </pre>
 	 * 
@@ -84,21 +84,11 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		TestSuite suite = new TestSuite(testCaseClass.getName());
 		suite.addTestSuite(testCaseClass);
 		TestSetup wrapper = new TestSetup(suite) {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see junit.extensions.TestSetup#setUp()
-			 */
 			protected void setUp() throws Exception {
 				super.setUp();
 				suiteLoaded = false;
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see junit.extensions.TestSetup#tearDown()
-			 */
 			protected void tearDown() throws Exception {
 				super.tearDown();
 				suiteLoaded = false;

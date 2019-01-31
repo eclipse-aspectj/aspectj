@@ -46,12 +46,24 @@ import org.aspectj.tools.ajc.AjcTestCase;
  */
 public class AntSpec implements ITestStep {
 
+	
+	public static final String outputFolders(String... modules) {
+		StringBuilder s = new StringBuilder();
+		for (String module: modules) {
+			s.append(File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes");
+		}
+		return s.toString();
+	}
+	
+	
 	// ALSO SEE AJC
-	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES = ".." + File.separator + "asm/bin" + File.pathSeparator + ".."
-			+ File.separator + "bridge/bin" + File.pathSeparator + ".." + File.separator + "loadtime/bin" + File.pathSeparator
-			+ ".." + File.separator + "loadtime5/bin" + File.pathSeparator + ".." + File.separator + "weaver/bin"
-			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher/bin" + File.pathSeparator + ".." + File.separator
-			+ "lib/bcel/bcel.jar" + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel-verifier.jar";;
+	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES =
+			outputFolders("asm", "bridge", "loadtime", "weaver", "org.aspectj.matcher", "bcel-builder");
+//	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES = ".." + File.separator + "asm/bin" + File.pathSeparator + ".."
+//			+ File.separator + "bridge/bin" + File.pathSeparator + ".." + File.separator + "loadtime/bin" + File.pathSeparator
+//			+ ".." + File.separator + "loadtime5/bin" + File.pathSeparator + ".." + File.separator + "weaver/bin"
+//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher/bin" + File.pathSeparator + ".." + File.separator
+//			+ "lib/bcel/bcel.jar" + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel-verifier.jar";;
 
 	private boolean m_verbose = false;
 	private AjcTest m_ajcTest;
