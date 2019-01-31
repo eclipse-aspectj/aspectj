@@ -35,6 +35,7 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 
 /**
@@ -49,12 +50,18 @@ import org.aspectj.util.FileUtil;
  */
 public class Ajc {
 
-	private static final String SANDBOX_NAME = "ajcSandbox";
-
 	private static final String BUILD_OUTPUT_FOLDER = "target";
 	
 	public static final String outputFolder(String module) {
 		return File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes";
+	}
+
+	public static final String outputFolders(String... modules) {
+		StringBuilder s = new StringBuilder();
+		for (String module: modules) {
+			s.append(File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes");
+		}
+		return s.toString();
 	}
 	
 	// ALSO SEE ANTSPEC AND AJCTESTCASE
@@ -210,7 +217,7 @@ public class Ajc {
 
 		try {
 			if (!isIncremental && shouldEmptySandbox) {
-				sandbox = createEmptySandbox();
+				sandbox = TestUtil.createEmptySandbox();
 			}
 			args = adjustToSandbox(args, !isIncremental);
 			MessageHandler holder = new MessageHandler();
@@ -291,7 +298,7 @@ public class Ajc {
 	 */
 	public File getSandboxDirectory() {
 		if (sandbox == null) {
-			sandbox = createEmptySandbox();
+			sandbox = TestUtil.createEmptySandbox();
 		}
 		return sandbox;
 	}
@@ -317,53 +324,6 @@ public class Ajc {
 				return true;
 		}
 		return false;
-	}
-
-	public static File createEmptySandbox() {
-		File sandbox;
-
-		String os = System.getProperty("os.name");
-		File tempDir = null;
-		// AMC - I did this rather than use the JDK default as I hate having to go look
-		// in c:\documents and settings\......... for the results of a failed test.
-		if (os.startsWith("Windows")) {
-			tempDir = new File("N:\\temp");
-			if (!tempDir.exists()) {
-		  		tempDir = new File("C:\\temp");
-			    if (!tempDir.exists()) {
-				    tempDir.mkdir();
-				}
-			}
-		} else {
-			tempDir = new File("/tmp");
-		}
-		File sandboxRoot = new File(tempDir, SANDBOX_NAME);
-		if (!sandboxRoot.exists()) {
-			sandboxRoot.mkdir();
-		}
-
-		try {
-			File workspace = new File(".." + File.separator);
-			String workspaceName = workspace.getCanonicalPath();
-			int index = workspaceName.lastIndexOf(File.separator);
-			workspaceName = workspaceName.substring(index + 1);
-
-			File workspaceRoot = new File(sandboxRoot, workspaceName);
-			if (!workspaceRoot.exists()) {
-				workspaceRoot.mkdir();
-			}
-
-			FileUtil.deleteContents(workspaceRoot);
-
-			sandbox = File.createTempFile("ajcTest", ".tmp", workspaceRoot);
-			sandbox.delete();
-			sandbox.mkdir();
-
-		} catch (IOException ioEx) {
-			throw new AssertionFailedError("Unable to create sandbox directory for test");
-		}
-
-		return sandbox;
 	}
 
 	/**

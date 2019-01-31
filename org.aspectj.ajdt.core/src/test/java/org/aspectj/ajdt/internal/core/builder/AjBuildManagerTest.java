@@ -22,6 +22,7 @@ import org.aspectj.ajdt.ajc.Constants;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.tools.ajc.Ajc;
 
 import junit.framework.AssertionFailedError;
@@ -61,7 +62,7 @@ public class AjBuildManagerTest extends TestCase {
 		BuildArgParser parser = new BuildArgParser(messageWriter);
 		String javaClassPath = System.getProperty("java.class.path");
 		System.out.println(javaClassPath);
-		String sandboxName = Ajc.createEmptySandbox().getAbsolutePath();
+		String sandboxName = TestUtil.createEmptySandbox().getAbsolutePath();
 		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-1.4", "-classpath", javaClassPath,
 				Constants.TESTDATA_PATH + "/src1/A.java",
 		// EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",

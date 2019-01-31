@@ -190,7 +190,7 @@ public abstract class CommandTestCase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		sandbox = Ajc.createEmptySandbox();
+		sandbox = TestUtil.createEmptySandbox();
 	}
 
 }
