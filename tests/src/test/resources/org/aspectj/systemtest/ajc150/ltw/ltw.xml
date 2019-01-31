@@ -1,11 +1,677 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
-<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc150/ltw/ltw-tests.xml">
-]>
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <!-- Load-time weaving tests -->
 
 <suite>
 
-&tests;
+<!-- Load-time weaving tests -->
+<ajc-test dir="ltw"
+	title="Ensure 1st aspect is rewoven when weaving 2nd aspect"
+	keywords="reweavable">
+	<compile files="Main.java, Aspect1.aj" outjar="main1.jar"
+		options="-showWeaveInfo -verbose -1.4">
+		<message kind="weave"
+			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+	</compile>
+	<compile classpath="main1.jar" files="Aspect2.aj"
+		outjar="aspect2.jar" options="-showWeaveInfo -verbose -1.4">
+	</compile>
+	<run class="Main" ltw="aop-ltwreweavable.xml">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Aspect1.before_test1" />
+			<line text="Aspect2.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Ensure valid aop.xml file is generated" keywords="-outxml">
+	<compile files="Main.java" outjar="main.jar">
+	</compile>
+	<compile classpath="main.jar"
+		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+		outxmlfile="META-INF/aop.xml" options="-1.4">
+	</compile>
+	<run class="Main" ltw="">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line text="Aspect1.before_test1" />
+			<line text="Aspect2.before_test2" />
+			<line text="pakkage.Aspect3.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Ensure valid aop.xml is generated for -outjar"
+	keywords="-outxml">
+	<compile files="Main.java" outjar="main.jar">
+	</compile>
+	<compile classpath="main.jar"
+		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+		outjar="aspects.jar" options="-1.4 -outxml">
+	</compile>
+	<run class="Main" ltw="">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line text="Aspect1.before_test1" />
+			<line text="Aspect2.before_test2" />
+			<line text="pakkage.Aspect3.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Ensure no weaving without visible aop.xml" keywords="reweavable">
+	<compile files="TestMain.java, Main.java">
+	</compile>
+	<run class="TestMain" ltw="">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line
+				text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader" />
+			<line
+				text="info no configuration found. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<!-- type discarding tests, investigating call munging -->
+
+<ajc-test dir="ltw/callMunging"
+	title="discarding woven types - 1">
+	<compile files="A.java,B.java,T.java,Main.java"
+		outjar="classes.jar" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-Xlint:ignore" />
+	<run class="Main" ltw="aop.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="advice running" />
+			<line text="T.m1() running" />
+			<line text="B.method() running" />
+			<line text="advice running" />
+			<line text="T.m2() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/callMunging/case1"
+	title="aggressive ltw - decp">
+	<compile files="A.java,T.java,Main.java" outjar="classes.jar" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-Xlint:ignore" />
+	<run class="Main" ltw="aop.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="advice running" />
+			<line text="T.m1() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/callMunging/case1"
+	title="aggressive ltw - decp - deactivate">
+	<compile files="A.java,T.java,Main.java" outjar="classes.jar" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-Xlint:ignore" />
+	<run class="Main" ltw="aop2.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="T.m1() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/callMunging/case1"
+	title="aggressive ltw - hierarchy">
+	<compile files="T.java,HierMain.java" outjar="classes.jar" />
+	<compile files="A.java" outjar="sub.hiddenjar"
+		classpath="classes.jar" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-Xlint:ignore" />
+	<run class="HierMain" ltw="aop.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="advice running" />
+			<line text="T.m1() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/callMunging/case3"
+	title="aggressive ltw - decp - 2">
+	<compile files="A.java,T.java,S.java,Main.java"
+		outjar="classes.jar" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-Xlint:ignore" />
+	<run class="Main" ltw="aop.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="advice running" />
+			<line text="T.m1() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/callMunging/case2"
+	title="aggressive ltw - deca">
+	<compile files="A.java,T.java,Main.java,MarkerAnnotation.java"
+		outjar="classes.jar" options="-1.5" />
+	<compile files="X.java" outjar="aspects.jar"
+		classpath="classes.jar" options="-1.5 -Xlint:ignore" />
+	<run class="Main" ltw="aop.xml">
+		<stdout>
+			<line text="into:main" />
+			<line text="A.method() running" />
+			<line text="advice running" />
+			<line text="T.m1() running" />
+			<line text="leave:main" />
+		</stdout>
+	</run>
+</ajc-test>
+
+
+
+<!-- end of discarding type tests -->
+
+<ajc-test dir="ltw"
+	title="Define concrete sub-aspect using aop.xml" keywords="aop.xml">
+	<compile files="Main.java" outjar="main.jar">
+	</compile>
+	<!-- was in next section classpath="main1.jar" -->
+	<compile files="AbstractSuperAspect.aj" outjar="aspect.jar"
+		options="-1.4">
+	</compile>
+	<run class="Main" ltw="aop-defineaspect.xml">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line text="info register classloader" />
+			<line text="info using" />
+			<line text="info define aspect ConcreteAspect" />
+			<line text="debug weaving 'ConcreteAspect'" />
+			<line text="debug generating class 'ConcreteAspect'" />
+			<line text="debug weaving 'Main'" />
+			<line text="AbstractSuperAspect.before_test1" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Use abstract aspect for ITD using aop.xml"
+	keywords="abstract aspect, ITD">
+	<compile files="TestITDMethod.java">
+	</compile>
+	<compile files="AbstractAspect.aj" options="-1.4">
+		<message kind="warning"
+			text="this affected type is not exposed to the weaver: TestITDMethod" />
+	</compile>
+	<run class="TestITDMethod" options="test"
+		ltw="aop-abstractaspect.xml">
+		<stdout>
+			<line text="TestITDMethod.main" />
+		</stdout>
+		<stderr>
+			<line
+				text="weaveinfo Type 'TestITDMethod' (TestITDMethod.java) has intertyped method from 'AbstractAspect' (AbstractAspect.aj:'void TestITDMethod.test()')" />
+			<line text="AbstractAspect_TestITDMethod.test" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Ensure a subset of inherited aspects is used for weaving"
+	keywords="aspects, include">
+	<compile files="Main.java" outjar="main.jar">
+	</compile>
+	<compile classpath="main.jar"
+		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+		outjar="aspects.jar" options="-outxml -1.4">
+	</compile>
+	<run class="Main" ltw="aop-aspectsinclude.xml">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line text="pakkage.Aspect3.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Ensure weaver lint warning issued when an aspect is not used for weaving"
+	keywords="aspects, include, lint">
+	<compile files="Main.java" outjar="main.jar">
+	</compile>
+	<compile classpath="main.jar"
+		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
+		outjar="aspects.jar" options="-outxml -1.4">
+	</compile>
+	<run class="Main" ltw="aop-aspectsincludewithlintwarning.xml">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr ordered="no">
+			<line
+				text="warning aspect Aspect1 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]" />
+			<line
+				text="warning aspect Aspect2 exluded for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader [Xlint:aspectExcludedByConfiguration]" />
+			<line text="pakkage.Aspect3.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="Empty Xlint.properties file"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<run class="Main" ltw="aop-xlintfile.xml"
+		xlintfile="Xlint-empty.properties">
+		<stderr>
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="Set Xset properties enabled"
+	keywords="xSet, ltw">
+	<compile files="Main.java,Aspect1.aj">
+	</compile>
+	<run class="Main" ltw="aop-xset-verbose.xml"
+		xlintfile="Xlint-empty.properties">
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="Set Xset properties disabled"
+	keywords="xSet, ltw">
+	<compile files="Main.java,Aspect1.aj">
+	</compile>
+	<run class="Main" ltw="aop-xset-verbose.xml"
+		xlintfile="Xlint-empty.properties">
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Warning with missing Xlint.properties file"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<run class="Main" ltw="aop-xlintfile.xml">
+		<stderr>
+			<line
+				text="warning Cannot access resource for -Xlintfile:Xlint-empty.properties" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/hier"
+	title="separate compilation with ltw: declare parents and call"
+	keywords="ltw">
+	<compile files="util/A.aj,util/T.aj" />
+	<compile
+		files="child/Executor.aj,child/Advisor.aj,top/SimpleMain.aj"
+		options="-1.4">
+		<message kind="warning"
+			text="this affected type is not exposed to the weaver: util.A" />
+	</compile>
+	<run class="top.SimpleMain" ltw="aop-single.xml">
+		<stdout>
+			<line text="T call" />
+		</stdout>
+		<stderr>
+			<line
+				text="weaveinfo Join point 'method-call(void util.A.foo())' in Type 'child.Executor' (Executor.aj:18) advised by before advice from 'child.Advisor' (Advisor.aj:20)" />
+			<line
+				text="weaveinfo Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)" />
+			<line
+				text="weaveinfo Extending interface set for type 'child.Advisor' (Advisor.aj) to include 'util.T' (Advisor.aj)" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Warning when advice doesn't match suppressed for LTW"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<compile files="Aspect3.aj" options="-1.4">
+	</compile>
+	<run class="Main" ltw="aop-nomatch.xml">
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line text="info register classloader" />
+			<line text="info using" />
+			<line text="info register aspect Aspect3" />
+			<line text="debug weaving 'Main'" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Override suppressing of warning when advice doesn't match using -Xlintfile"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<compile files="Aspect3.aj" options="-1.4">
+	</compile>
+	<run class="Main" ltw="aop-nomatchxlintfile.xml"
+		xlintfile="Xlint-nomatch.properties">
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line text="info register classloader" />
+			<line text="info using" />
+			<line text="info register aspect Aspect3" />
+			<line text="can not build thisJoinPoint lazily for this advice" />
+			<line text="debug weaving 'Main'" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Warning when advice doesn't match using -Xlint:default"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<compile files="Aspect3.aj" options="-1.4">
+	</compile>
+	<run class="Main" ltw="aop-nomatchxlint.xml">
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line text="info register classloader" />
+			<line text="info using" />
+			<line text="info register aspect Aspect3" />
+			<line text="can not build thisJoinPoint lazily for this advice" />
+			<line text="debug weaving 'Main'" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="Override suppressing of warning when advice doesn't match using -Xlint:warning"
+	keywords="xlint, ltw">
+	<compile files="Main.java">
+	</compile>
+	<compile files="Aspect3.aj" options="-1.4">
+	</compile>
+	<run class="Main" ltw="aop-nomatchxlint.xml">
+		<stderr>
+			<line text="info AspectJ Weaver Version" />
+			<line text="info register classloader" />
+			<line text="info using" />
+			<line text="info register aspect Aspect3" />
+			<line text="can not build thisJoinPoint lazily for this advice" />
+			<line text="debug weaving 'Main'" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<!-- based on "Ensure 1st aspect is rewoven when weaving 2nd aspect" -->
+<ajc-test dir="ltw" title="Nonstandard jar file extensions"
+	pr="137235">
+	<compile files="folder.jar/Main.java, folder.jar/Aspect1.aj"
+		outjar="folder.jar/main1.zip" options="-showWeaveInfo -1.4">
+		<message kind="weave"
+			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+	</compile>
+	<compile classpath="$sandbox/folder.jar/main1.zip"
+		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.4">
+	</compile>
+	<run class="Main" ltw="aop-ltwreweavable.xml"
+		classpath="$sandbox/folder.jar/main1.zip,$sandbox/aspect2Jar">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Aspect1.before_test1" />
+			<line text="Aspect2.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="Odd zip on classpath" pr="137235">
+	<compile files="folder.jar/Main.java, folder.jar/Aspect1.aj"
+		outjar="folder.jar/main1.archive" options="-showWeaveInfo">
+		<message kind="weave"
+			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+	</compile>
+	<compile classpath="$sandbox/folder.jar/main1.archive"
+		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.4">
+	</compile>
+	<run class="Main" ltw="aop-ltwreweavable.xml"
+		classpath="$sandbox/folder.jar/main1.archive,$sandbox/aspect2Jar">
+		<stdout>
+			<line text="Main.main" />
+			<line text="Main.test1" />
+			<line text="Main.test2" />
+		</stdout>
+		<stderr>
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line
+				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Aspect1.before_test1" />
+			<line text="Aspect2.before_test2" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="JDK14 LTW with XML" keywords="ltw">
+	<compile files="HelloWorldWithException.java"
+		options="-outjar hello.jar" />
+	<compile files="ExceptionHandler.aj"
+		options="-outxml -outjar handler.jar -1.4" />
+	<ant file="ant.xml" target="JDK14 LTW with XML" verbose="true">
+		<stdout>
+			<line text="Hello World!" />
+		</stdout>
+		<stderr>
+			<line text="TraceFactory.instance=" />
+		</stderr>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw" title="JDK14 LTW with ASPECTPATH"
+	keywords="ltw">
+	<compile files="HelloWorldWithException.java"
+		options="-outjar hello.jar" />
+	<compile files="ExceptionHandler.aj"
+		options="-outjar handler.jar" />
+	<ant file="ant.xml" target="JDK14 LTW with ASPECTPATH"
+		verbose="true">
+		<stdout>
+			<line text="Hello World!" />
+		</stdout>
+		<stderr>
+			<line text="TraceFactory.instance=" />
+		</stderr>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw" title="TestServer with HelloWorld"
+	keywords="ltw,server">
+	<compile files="HelloWorldWithException.java"
+		options="-outjar hello.jar" />
+	<compile files="ExceptionHandler.aj"
+		options="-outxml -outjar handler.jar -1.4" />
+	<ant file="ant-server.xml" target="TestServer with HelloWorld"
+		verbose="true">
+		<stdout>
+			<line text="Starting ..." />
+			<line text="Running HelloWorld" />
+			<line text="Hello World!" />
+			<line text="Stopping ..." />
+		</stdout>
+	</ant>
+</ajc-test>
+<!-- <ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server"> 
+	<compile files="Parent.java" options="-outjar parent.jar"/> <compile files="Child.java" 
+	options="-classpath parent.jar -outjar child.jar"/> <ant file="ant-server.xml" 
+	target="TestServer with Parent and Child" verbose="true"> <stdout> <line 
+	text="Starting ..."/> <line text="Running Child"/> <line text="Parent"/> 
+	<line text="Child"/> <line text="Stopping ..."/> </stdout> </ant> </ajc-test> -->
+<ajc-test dir="ltw" title="TestServer with Parent and Child"
+	keywords="ltw,server">
+	<compile files="HelloWorldWithException.java"
+		options="-outjar child.jar" />
+	<compile files="ExceptionHandler.aj"
+		options="-outxml -outjar parent.jar -1.4" />
+	<ant file="ant-server.xml"
+		target="TestServer with Parent and Child" verbose="true">
+		<stdout>
+			<line text="Starting ..." />
+			<line text="Running HelloWorld" />
+			<line text="Hello World!" />
+			<line text="Stopping ..." />
+		</stdout>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw"
+	title="override default path using -Dorg.aspectj.weaver.loadtime.configuration"
+	keywords="ltw">
+	<compile files="HelloWorldWithException.java"
+		options="-outjar hello.jar" />
+	<compile files="ExceptionHandler.aj"
+		options="-outxml -outjar handler.jar -1.4" />
+	<compile files="Tracing.aj"
+		options="-outxml -outjar tracing.jar -1.4" />
+	<ant file="ant.xml"
+		target="override default path using -Dorg.aspectj.weaver.loadtime.configuration"
+		verbose="true">
+		<stdout>
+			<line text="Hello World!" />
+		</stdout>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw/inclExcl" title="Inclusion and patterns"
+	keywords="ltw">
+	<compile files="pkg/sub/Foo.aj, pkg/Main.aj"
+		options="-outjar base.jar" />
+	<compile files="tracing/Tracer.aj" options="-1.4" />
+	<run class="pkg.Main" ltw="aop-include.xml">
+		<stderr>
+			<line text="execution(void pkg.Main.foo())" />
+			<line text="Main.class" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw/inclExcl" title="Exclusion and patterns"
+	keywords="ltw">
+	<compile files="pkg/sub/Foo.aj, pkg/Main.aj"
+		options="-outjar base.jar" />
+	<compile files="tracing/Tracer.aj" options="-1.4" />
+	<run class="pkg.Main" ltw="aop-exclude.xml">
+		<stderr>
+			<line text="execution(void pkg.sub.Foo.foo())" />
+		</stderr>
+	</run>
+</ajc-test>
+<ajc-test dir="ltw/inclExcl" title="And patterns aspects"
+	keywords="ltw">
+	<compile files="pkg/sub/Foo.aj, pkg/Main.aj"
+		options="-outjar base.jar" />
+	<compile
+		files="tracing/Tracer.aj, tracing/staticinit/Tracer.aj, tracing/staticinit/sub/Tracer.aj"
+		options="-1.4" />
+	<run class="pkg.Main" ltw="aop-aspectinclexcl.xml">
+		<stderr>
+			<line text="staticinitialization(pkg.Main.&lt;clinit&gt;)" />
+			<line text="staticinitialization(pkg.sub.Foo.&lt;clinit&gt;)" />
+		</stderr>
+	</run>
+</ajc-test>
+
+<ajc-test dir="ltw" title="simple LTW" keywords="ltw">
+	<compile files="HelloWorldWithException.java" />
+	<compile files="ExceptionHandler.aj" options="-outxml -1.4" />
+	<ant file="ant.xml" target="simple LTW" verbose="true">
+		<stdout>
+			<line text="Hello World!" />
+		</stdout>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw" title="dump on error" keywords="ltw">
+	<compile files="HelloWorldWithException.java" />
+	<compile files="ExceptionHandler.aj" options="-outxml -1.4" />
+	<ant file="ant.xml" target="dump on error" verbose="true">
+		<stdout>
+			<line text="Hello World!" />
+		</stdout>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="bugs153/pr155033" title="multiple dump on error"
+	keywords="ltw">
+	<compile files="Annotation.java" options="-1.5" />
+	<compile
+		files="MultipleDumpTest.java, Class1.java, Class2.java, Class3.java"
+		options="-1.5" />
+	<compile files="Aspect.aj" options="-1.5 -outxml -Xlint:ignore" />
+	<!-- <run class="MultipleDumpTest" ltw="aop-multipledumponerror.xml"> <stdout> 
+		<line text="? AbortingMessageHandler.AbortingMessageHandler()"/> </stdout> 
+		</run> -->
+	<ant file="ant.xml" target="multiple dump on error" verbose="true">
+		<stdout>
+			<line text="? MultipleDumpTest.main()" />
+			<line text="? Class1.main()" />
+			<line text="? Aspect.before()" />
+			<line text="? Class2.main()" />
+			<line text="? Aspect.before()" />
+			<line text="? Class3.main()" />
+			<line text="? Aspect.before()" />
+		</stdout>
+	</ant>
+</ajc-test>
+    
+    
 
 </suite>

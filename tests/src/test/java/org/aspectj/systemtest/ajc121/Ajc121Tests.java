@@ -17,9 +17,6 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-
-
-	  
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc121Tests.class);
   }
@@ -27,7 +24,6 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return getClassResource("ajc121.xml");
   }
-
 
   public void test001(){
     runTest("false ambiguous binding error (introduced in 1.2rc2)");

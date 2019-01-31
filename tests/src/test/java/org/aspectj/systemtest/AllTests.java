@@ -1,9 +1,12 @@
-/*
- * Created on 03-Aug-2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+/* *******************************************************************
+ * Copyright (c) 2004-2019 Contributors
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * ******************************************************************/
 package org.aspectj.systemtest;
 
 import junit.framework.Test;
@@ -28,7 +31,9 @@ import org.aspectj.systemtest.tracing.TracingTests;
 import org.aspectj.systemtest.xlint.XLintTests;
 
 /**
- * @author colyer
+ * @author Andy Clement
+ * @author Adrian Colyer
+ * @author IBM
  */
 public class AllTests {
 

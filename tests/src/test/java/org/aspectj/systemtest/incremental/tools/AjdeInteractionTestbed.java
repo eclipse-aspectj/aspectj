@@ -31,6 +31,7 @@ import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.tools.ajc.Ajc;
 
 /**
@@ -178,7 +179,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		}
 		MyStateListener.reset();
 		// Create a sandbox in which to work
-		sandboxDir = Ajc.createEmptySandbox();
+		sandboxDir = TestUtil.createEmptySandbox();
 	}
 
 	protected void tearDown() throws Exception {

@@ -13,7 +13,7 @@ import java.io.File;
 import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
-public class Ajc120Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class Ajc120Tests extends XMLBasedAjcTestCase {
 
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc120Tests.class);
@@ -22,7 +22,6 @@ public class Ajc120Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   protected File getSpecFile() {
     return getClassResource("ajc120.xml");
   }
-
 
   public void test001(){
     runTest("NPE in concretization error path");

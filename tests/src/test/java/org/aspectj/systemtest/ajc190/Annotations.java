@@ -28,7 +28,7 @@ public class Annotations extends XMLBasedAjcTestCase {
 	}
 
 	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc190/ajc190_from150.xml");
+        return getClassResource("ajc190_from150.xml");
 	}
 
 	public void testCompilingAnnotation() {

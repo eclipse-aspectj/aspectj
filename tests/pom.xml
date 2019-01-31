@@ -52,6 +52,18 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
+      <artifactId>org.aspectj.ajdt.core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>ajde.core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
       <artifactId>bcel-builder</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -83,5 +95,13 @@
       <version>${project.version}</version>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>commons</groupId>
+      <artifactId>commons</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+    </dependency>
   </dependencies>
+
 </project>
