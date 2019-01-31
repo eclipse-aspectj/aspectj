@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<!-- see ../build/*.html for explanation -->
-<project name="testing-drivers" default="test" basedir=".">
-    <import file="${basedir}/../build/build.xml"/>  
-</project>
-
