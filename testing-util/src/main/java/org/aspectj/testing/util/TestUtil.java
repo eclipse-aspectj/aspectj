@@ -45,6 +45,7 @@ import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
@@ -62,6 +63,7 @@ import org.aspectj.util.Reflection;
  * not required to resolve this class. Also, the bytecode weaver is required to compare class files, but not to compare other files.
  */
 public final class TestUtil {
+	private static final String SANDBOX_NAME = "ajcSandbox";
 	private static final boolean JAVA_5_VM;
 	private static final String ASPECTJRT_KEY = "aspectjrt";
 	private static final String TESTING_CLIENT_KEY = "testing-client";
@@ -203,6 +205,10 @@ public final class TestUtil {
 		return path.toString();
 	}
 
+    public static String aspectjrtClasspath() {
+        return TestUtil.aspectjrtPath().getPath();        
+    }
+    
 	/**
 	 * @param input the String to parse for [on|off|true|false]
 	 * @throws IllegalArgumentException if input is bad
@@ -895,6 +901,54 @@ public final class TestUtil {
 				MessageUtil.fail(handler, "disassembling " + name + " path: " + basedirPath, thrown);
 			}
 		}
+	}
+	
+
+	public static File createEmptySandbox() {
+		File sandbox;
+
+		String os = System.getProperty("os.name");
+		File tempDir = null;
+		// AMC - I did this rather than use the JDK default as I hate having to go look
+		// in c:\documents and settings\......... for the results of a failed test.
+		if (os.startsWith("Windows")) {
+			tempDir = new File("N:\\temp");
+			if (!tempDir.exists()) {
+		  		tempDir = new File("C:\\temp");
+			    if (!tempDir.exists()) {
+				    tempDir.mkdir();
+				}
+			}
+		} else {
+			tempDir = new File("/tmp");
+		}
+		File sandboxRoot = new File(tempDir, SANDBOX_NAME);
+		if (!sandboxRoot.exists()) {
+			sandboxRoot.mkdir();
+		}
+
+		try {
+			File workspace = new File(".." + File.separator);
+			String workspaceName = workspace.getCanonicalPath();
+			int index = workspaceName.lastIndexOf(File.separator);
+			workspaceName = workspaceName.substring(index + 1);
+
+			File workspaceRoot = new File(sandboxRoot, workspaceName);
+			if (!workspaceRoot.exists()) {
+				workspaceRoot.mkdir();
+			}
+
+			FileUtil.deleteContents(workspaceRoot);
+
+			sandbox = File.createTempFile("ajcTest", ".tmp", workspaceRoot);
+			sandbox.delete();
+			sandbox.mkdir();
+
+		} catch (IOException ioEx) {
+			throw new AssertionFailedError("Unable to create sandbox directory for test");
+		}
+
+		return sandbox;
 	}
 
 	/**
