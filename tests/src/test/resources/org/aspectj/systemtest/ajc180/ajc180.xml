@@ -1,0 +1,55 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs180/432178" title="percflow ltw">
+		<compile options="-1.8" files="A.java B.java"/>
+		<compile options="-1.8" files="PerCFlowBug.java"/>
+		<run class="A" ltw="aop.xml">
+		<stdout>
+		  <line text="foo"/>
+		  <line text="bar"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs180/pr432714" title="stackmapframe">
+		<compile options="-1.8" files="Code.java"/>
+		<run class="Code"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs180/pr431976" title="thisJoinPoint not initialized">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs180/pr431541" title="NullAnnotationMatching exception">
+		<compile options="-1.8" files="Test.aj"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs180/415957" title="annotations with 1.8 flags">
+		<compile files="MyAspect.aj MyClass.java Resource.java" options="-1.8 -showWeaveInfo">
+			<message kind="weave" text="Join point 'method-execution(void MyClass.method())' in Type 'MyClass' (MyClass.java:3) advised by before advice from 'MyAspect' (MyAspect.aj:5)"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs180/firstprogram" title="first advised java 8 code">
+		<compile files="C.java" options="-1.8">
+		</compile>
+		<run class="C">
+		<stdout>
+		<line text="Clazz staticinitialization(I.&lt;clinit&gt;)"/>
+		<line text="Clazz staticinitialization(C.&lt;clinit&gt;)"/>
+		<line text="I.foo running"/>
+		<line text="ABC"/>
+		<line text="hello world!"/>
+		<line text="Clazz staticinitialization(MyClass.&lt;clinit&gt;)"/>
+		<line text="Clazz staticinitialization(Utils.&lt;clinit&gt;)"/>
+		<line text="1"/>
+		<line text="22"/>
+		<line text="333"/>
+		<line text="4444"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

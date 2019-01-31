@@ -1,0 +1,59 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+ 
+    <ajc-test dir="indy/one" title="indy - 1">
+      <compile files="Code1.java,Asp.java" inpath="indy.jar" options="-1.7"/>
+      <run class="Invoker">
+      <stdout>
+      <line text="staticinitialization(Invoker.&lt;clinit&gt;)"/>
+      <line text="staticinitialization(Code1.&lt;clinit&gt;)"/>
+      <line text="foo() is running"/>
+      </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="indy/two" title="indy - 2">
+      <compile files="Code1.java,Asp.java" inpath="indy.jar" options="-1.7"/>
+      <run class="Invoker">
+      <stdout>
+      <line text="execution(void Invoker.main(String[]))"/>
+      <line text="execution(CallSite Code1.bootstrap(MethodHandles.Lookup, String, MethodType))"/>
+      <line text="execution(void Code1.foo())"/>
+      <line text="foo() is running"/>
+      </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="indy/three" title="indy - 3">
+      <compile files="Code1.java,Asp.java" inpath="indy.jar" options="-1.7"/>
+      <run class="Invoker">
+      <stdout>
+      <line text="call(MethodHandles.Lookup java.lang.invoke.MethodHandles.lookup())"/>
+      <line text="call(Class java.lang.invoke.MethodHandles.Lookup.lookupClass())"/>
+      <line text="call(MethodHandle java.lang.invoke.MethodHandles.Lookup.findStatic(Class, String, MethodType))"/>
+      <line text="call(void java.io.PrintStream.println(String))"/>
+      <line text="foo() is running"/>
+      </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="indy/four" title="indy - 4">
+      <compile files="Code1.java,Asp.java" inpath="indy.jar" options="-1.7"/>
+      <run class="Invoker">
+      <stdout>
+      <line text="staticinitialization(Code1.&lt;clinit&gt;)"/>
+      <line text="execution(CallSite Code1.bootstrap(MethodHandles.Lookup, String, MethodType))"/>
+      <line text="call(MethodHandles.Lookup java.lang.invoke.MethodHandles.lookup())"/>
+      <line text="call(Class java.lang.invoke.MethodHandles.Lookup.lookupClass())"/>
+      <line text="call(MethodHandle java.lang.invoke.MethodHandles.Lookup.findStatic(Class, String, MethodType))"/>
+      <line text="call(java.lang.invoke.ConstantCallSite(MethodHandle))"/>
+      <line text="execution(void Code1.foo())"/>
+      <line text="get(PrintStream java.lang.System.out)"/>
+      <line text="call(void java.io.PrintStream.println(String))"/>
+      <line text="foo() is running"/>
+      </stdout>
+      </run>
+    </ajc-test>
+   
+</suite>

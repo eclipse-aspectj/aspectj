@@ -1,0 +1,202 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+<suite>
+
+    <ajc-test dir="java5/ataspectj" title="SimpleBefore">
+        <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline">
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:33)"/>
+        </compile>
+        <run class="SimpleBefore"/>
+        <compile files="SimpleBefore.java" options="-1.5 -showWeaveInfo -XnoInline -Xdev:NoAtAspectJProcessing">
+            <message kind="weave" text="(SimpleBefore.java:23) advised by before advice from 'SimpleBefore$X' (SimpleBefore.java:33)"/>
+        </compile>
+        <run class="SimpleBefore"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="SimpleAfter">
+        <compile files="SimpleAfter.java" options="-1.5 -showWeaveInfo -XnoInline">
+            <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
+        </compile>
+        <run class="SimpleAfter"/>
+        <compile files="SimpleAfter.java" options="-1.5 -showWeaveInfo -XnoInline -Xdev:NoAtAspectJProcessing">
+            <message kind="weave" text="(SimpleAfter.java:13) advised by after advice from 'SimpleAfter$X'"/>
+        </compile>
+        <run class="SimpleAfter"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="singletonAspectBindings">
+        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline"/>
+        <run class="ataspectj.SingletonAspectBindingsTest"/>
+        <compile files="ataspectj/SingletonAspectBindingsTest.java,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.SingletonAspectBindingsTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="singletonAspectBindings2">
+        <compile files="ataspectj/SingletonAspectBindingsTest2.aj,ataspectj/TestHelper.java" options="-1.5 -emacssym -XnoInline"/>
+        <run class="ataspectj.SingletonAspectBindingsTest2"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="CflowTest">
+        <compile files="ataspectj/CflowTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.CflowTest"/>
+        <compile files="ataspectj/CflowTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.CflowTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="PointcutReferenceTest">
+        <compile files="ataspectj/PointcutReferenceTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PointcutReferenceTest"/>
+        <compile files="ataspectj/PointcutReferenceTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PointcutReferenceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="XXJoinPointTest">
+        <compile files="ataspectj/XXJoinPointTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.XXJoinPointTest"/>
+        <compile files="ataspectj/XXJoinPointTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.XXJoinPointTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="PrecedenceTest">
+        <compile files="ataspectj/PrecedenceTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PrecedenceTest"/>
+        <compile files="ataspectj/PrecedenceTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PrecedenceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AfterXTest">
+        <compile files="ataspectj/AfterXTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.AfterXTest"/>
+        <compile files="ataspectj/AfterXTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.AfterXTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="IfPointcutTest">
+        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.IfPointcutTest"/>
+        <compile files="ataspectj/IfPointcutTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.IfPointcutTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="IfPointcut2Test">
+        <compile files="ataspectj/IfPointcut2Test.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.IfPointcut2Test"/>
+        <compile files="ataspectj/IfPointcut2Test.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.IfPointcut2Test"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="BindingTest">
+        <compile files="ataspectj/BindingTest.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.BindingTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="BindingTest no inline">
+        <compile files="ataspectj/BindingTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.BindingTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="PerClause">
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PerClauseTest"/>
+        <compile files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.PerClauseTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AroundInlineMunger -XnoInline">
+        <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AroundInlineMunger">
+      <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+      <run class="ataspectj.AroundInlineMungerTest">
+        <stdout>
+          <line text="AroundInlineMungerTestAspects.Open.aroundCount=3"/>
+          <line text="AroundInlineMungerTestAspects.Open.beforeCount=6"/>
+        </stdout>
+      </run>
+      <!-- 
+        <compile files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest"/>
+ 	  -->
+     </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AroundInlineMunger2">
+      <compile files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/AroundInlineMungerTestAspects2.aj" options="-1.5 -Xlint:ignore"/>
+      <run class="ataspectj.AroundInlineMungerTest2">
+        <stdout>
+          <line text="AroundInlineMungerTestAspects2.Open.aroundCount=3"/>
+          <line text="AroundInlineMungerTestAspects2.Open.beforeCount=6"/>
+        </stdout>
+      </run>
+      <!-- 
+        <compile files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/AroundInlineMungerTestAspects2.aj,ataspectj/TestHelper.java" options="-1.5 -Xlint:ignore"/>
+        <run class="ataspectj.AroundInlineMungerTest2"/>
+        -->
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="Deow">
+        <compile files="ataspectj/DeowTest.java" options="-1.5">
+            <message kind="warning" line="28" text="call hello"/>
+            <message kind="error" line="29" text="call hi"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="singletonInheritance">
+        <compile files="ataspectj/SingletonInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.SingletonInheritanceTest"/>
+        <compile files="ataspectj/SingletonInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.SingletonInheritanceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="perClauseInheritance">
+        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline"/>
+        <run class="ataspectj.PerClauseInheritanceTest"/>
+        <compile files="ataspectj/PerClauseInheritanceTest.java,ataspectj/TestHelper.java" options="-1.5 -XnoInline -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.PerClauseInheritanceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="MultipleBinding">
+        <compile files="ataspectj/MultipleBindingTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing -XnoInline"/>
+        <run class="ataspectj.MultipleBindingTest"/>
+        <compile files="ataspectj/MultipleBindingTest.java,ataspectj/TestHelper.java" options="-1.5 -Xdev:NoAtAspectJProcessing"/>
+        <run class="ataspectj.MultipleBindingTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="Bug104212">
+        <compile files="ataspectj/Bug104212.java,ataspectj/TestHelper.java" options="-1.5"/>
+        <run class="ataspectj.Bug104212"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="DeclareParentsInterface">
+        <compile files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/TestHelper.java" options="-showWeaveInfo -1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="weave" text="Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
+            <message kind="weave" text="Join point "/>
+        </compile>
+        <run class="ataspectj.DeclareParentsInterfaceTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="DeclareParentsImplements">
+        <compile files="ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java" options="-showWeaveInfo -1.5 -Xdev:NoAtAspectJProcessing -Xlint:ignore">
+            <message kind="weave" text="Join point "/>
+            <message kind="weave" text="Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
+            <message kind="weave" text="Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>
+        </compile>
+        <run class="ataspectj.DeclareParentsImplementsTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj" title="AbstractAspectNPE">
+        <compile files="ataspectj/bugs/AbstractAspectNPEParent.java,ataspectj/bugs/AbstractAspectNPEChild.java"
+            options="-1.5 -showWeaveInfo">
+            <message kind="weave" text="Join point 'method-execution(void ataspectj.bugs.AbstractAspectNPEParent.main"/>            
+        </compile>
+    </ajc-test>
+
+
+    <ajc-test dir="java5/ataspectj" title="AbstractInherited">
+        <compile files="ataspectj/bugs/AbstractInherited.java"
+            options="-1.5 -showWeaveInfo">
+            <message kind="weave" text="Join point "/>
+        </compile>
+    </ajc-test>
+
+</suite>

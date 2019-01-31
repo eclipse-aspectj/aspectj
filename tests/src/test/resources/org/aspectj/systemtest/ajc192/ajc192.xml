@@ -1,0 +1,140 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs192/513528" title="itd lambdas">
+    <compile files="Apple.java AppleController.java AppleControllerITDAspect.java" options="-11">
+	</compile>
+	<run class="de.scrum_master.app.AppleController">
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/11flags" title="11flags">
+    <compile files="A.java" options="-11 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-execution(void A.foo())' in Type 'A' (A.java:8) advised by before advice from 'X' (A.java:12)"/>
+	</compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/nestmates" title="nestmates">
+    <compile files="Outer.java" options="-11">
+	</compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/nestmates" title="nestmates 2">
+    <compile files="Outer2.java" options="-11">
+	</compile>
+	<run class="Outer2">
+	<stdout>
+	<line text="Before main()"/>
+	<line text="Before i"/>
+	<line text="0"/>
+	</stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/537825" title="no final on cflow elements">
+    <compile files="Code.java" options="-9">
+    </compile>
+    <run class="Code">
+    <stdout>
+    <line text="call(void B.methodB())"/>
+    <line text="staticinitialization(B.&lt;clinit&gt;)"/>
+    <line text="execution(void B.methodB())"/>
+    <line text="call(void C.methodC())"/>
+    <line text="staticinitialization(C.&lt;clinit&gt;)"/>
+    <line text="execution(void C.methodC())"/>
+    <line text="call(void D.methodD())"/>
+    <line text="staticinitialization(D.&lt;clinit&gt;)"/>
+    <line text="execution(void D.methodD())"/>
+    <line text="get(PrintStream java.lang.System.out)"/>
+    <line text="call(void java.io.PrintStream.println(int))"/>
+    <line text="3"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/535156" title="around advice">
+    <compile files="DemoApp.java" options="-8 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-call(void DemoApp.say())' in Type 'DemoApp' (DemoApp.java:6) advised by around advice from 'X' (DemoApp.java:14)"/>
+	</compile>
+	<run class="DemoApp">
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/535156" title="around advice - 2">
+    <compile files="DemoApp2.java" options="-8 -showWeaveInfo">
+    <message kind="weave" text="Join point 'method-call(void DemoApp2.say())' in Type 'DemoApp2' (DemoApp2.java:6) advised by around advice from 'X' (DemoApp2.java:13)"/>
+	</compile>
+	<run class="DemoApp2">
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/ptw" title="ptw">
+    <compile files="a/b/c/Code.java a/b/d/Foo.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.d.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="DefaultInner.run()"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/ptw" title="ptw - same package">
+    <compile files="a/b/c/Code.java a/b/c/Foo.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.c.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$DefaultInner) = a.b.c.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PrivateInner) = a.b.c.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+
+  <ajc-test dir="bugs192/ptw" title="ptw - privileged">
+    <compile files="a/b/c/Code.java a/b/d/FooPrivileged.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="Aspect instance = a.b.d.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs192/ptw" title="ptw - privileged same package">
+    <compile files="a/b/c/Code.java a/b/c/FooPrivileged.java" options="-8">
+	</compile>
+	<run class="a.b.c.Code">
+	<stdout>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PublicInner"/>
+	<line text="staticinitialization(a.b.c.Code.PublicInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PublicInner) = a.b.c.Foo"/>
+	<line text="PublicInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$DefaultInner"/>
+	<line text="staticinitialization(a.b.c.Code.DefaultInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$DefaultInner) = a.b.c.Foo"/>
+	<line text="DefaultInner.run()"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) getWithinTypeName() = a.b.c.Code$PrivateInner"/>
+	<line text="staticinitialization(a.b.c.Code.PrivateInner.&lt;clinit&gt;) aspectOf(a.b.c.Code$PrivateInner) = a.b.c.Foo"/>
+	<line text="PrivateInner.run()"/>
+	</stdout>
+	</run>
+  </ajc-test>
+
+</suite>

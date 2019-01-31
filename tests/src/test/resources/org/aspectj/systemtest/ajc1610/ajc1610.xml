@@ -1,0 +1,76 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+
+  <ajc-test dir="bugs1610/pr363962" title="pr363962">
+    <compile files="Code.java" options="-1.5"/>
+    <run class="Code">
+    <stdout>
+	    <line text="OK"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  
+  <ajc-test dir="bugs1610/pr324932" title="pr324932">
+    <compile files="A.java" options="-1.5"/>
+    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
+    <run class="A" ltw="aop.xml">
+    <stdout>
+	    <line text="It WORKS"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr324932_2" title="pr324932 - 2">
+    <compile files="A.java" options="-1.5"/>
+    <run class="A" ltw="aop.xml">
+    <stdout>
+	    <line text="It WORKS"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr322446" title="declare parents abstract aspect">
+    <compile files="Super.java I.java" outjar="aspects.jar" options="-1.5"/>
+    <compile files="Code.java" classpath="aspects.jar" options="-1.5 -emacssym"/>
+    <run class="Code">
+    <stdout>
+    <line text="true"/>
+    </stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/prx" title="duplicate annotation">
+    <compile files="A.java" options="-1.5">
+    </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr319431" title="loading old code">
+    <compile files="Azpect2.java" inpath="builtWith168.jar" options="-1.5">
+    </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr322272" title="abstract aspects and declares">
+    <compile files="Base.java" outjar="superaspect.jar" options="-1.5"/>
+    <compile files="F1.java" classpath="superaspect.jar" options="-1.5">
+    </compile>
+    <run class="F1">
+    <stdout>
+    <line text="@Anno()"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs1610/pr322272" title="abstract aspects and declares - 2">
+    <compile files="Base2.java" outjar="superaspect.jar" options="-1.5"/>
+    <compile files="F2.java" classpath="superaspect.jar" options="-1.5">
+    </compile>
+    <run class="F2">
+    <stdout>
+    <line text="@Anno()"/>
+    </stdout>
+    </run>
+  </ajc-test>
+  
+</suite>

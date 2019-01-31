@@ -1,0 +1,148 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Annotation Value Matching Tests -->
+<suite>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest1.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest1.m())' in Type 'a.EnumTest1' (EnumTest1.java:9) advised by before advice from 'a.EnumTest1' (EnumTest1.java:13)"/>
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest1.o())' in Type 'a.EnumTest1' (EnumTest1.java:11) advised by before advice from 'a.EnumTest1' (EnumTest1.java:13)"/>
+     </compile>
+     <run class="a.EnumTest1"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 2">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest2.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest2.m())' in Type 'a.EnumTest2' (EnumTest2.java:9) advised by before advice from 'a.EnumTest2' (EnumTest2.java:13)"/>
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest2.o())' in Type 'a.EnumTest2' (EnumTest2.java:11) advised by before advice from 'a.EnumTest2' (EnumTest2.java:13)"/>
+     </compile>
+     <run class="a.EnumTest2"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="enum references - 3">
+     <compile options="-1.5 -showWeaveInfo" files="Color.java,TrafficLight.java,Fruit.java,Fruity.java,EnumTest3.java"> 
+       <message kind="weave" text="Join point 'method-execution(void a.EnumTest3.m())' in Type 'a.EnumTest3' (EnumTest3.java:9) advised by before advice from 'a.EnumTest3' (EnumTest3.java:13)"/>
+     </compile>
+     <run class="a.EnumTest3"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="broken - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Broken1.java"> 
+       <message kind="error" line="28" text="Invalid annotation value 'a', expected enum value"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features160/annotationValueMatching" title="allkinds">
+     <compile options="-1.5 -showWeaveInfo" files="AllKinds.java"> 
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="int value matching">
+     <compile options="-1.5 -showWeaveInfo" files="IntValueMatching.java"> 
+       <message kind="weave" text="Join point 'method-execution(void IntValueMatching.b())' in Type 'IntValueMatching' (IntValueMatching.java:9) advised by before advice from 'X' (IntValueMatching.java:21)"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="float value matching">
+     <compile options="-1.5 -showWeaveInfo" files="FloatValueMatching.java"> 
+       <message kind="weave" text="methodTwo"/>
+     </compile>
+     <run class="FloatValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="double value matching">
+     <compile options="-1.5 -showWeaveInfo" files="DoubleValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="DoubleValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="char value matching">
+     <compile options="-1.5 -showWeaveInfo" files="CharValueMatching.java"> 
+       <message kind="weave" text="methodTwo"/>
+     </compile>
+     <run class="CharValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="long value matching">
+     <compile options="-1.5 -showWeaveInfo" files="LongValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="LongValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="string value matching">
+     <compile options="-1.5 -showWeaveInfo" files="StringValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="StringValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="boolean value matching">
+     <compile options="-1.5 -showWeaveInfo" files="BooleanValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="BooleanValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="byte value matching">
+     <compile options="-1.5 -showWeaveInfo" files="ByteValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="ByteValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="short value matching">
+     <compile options="-1.5 -showWeaveInfo" files="ShortValueMatching.java"> 
+       <message kind="weave" text="methodOne"/>
+     </compile>
+     <run class="ShortValueMatching"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="parsing">
+     <compile options="-1.5 -showWeaveInfo Parsing.java"/>
+   </ajc-test>
+      
+   <ajc-test dir="features160/annotationValueMatching" title="simple">
+     <compile options="-1.5 -showWeaveInfo Simple.java">
+       <message kind="weave" text="Join point 'method-execution(void Marked.b())' in Type 'Marked' (Simple.java:18) advised by before advice from 'X' (Simple.java:28)"/>
+       <message kind="weave" text="Join point 'method-execution(void Marked.c())' in Type 'Marked' (Simple.java:21) advised by before advice from 'X' (Simple.java:28)"/>
+     </compile>       
+   </ajc-test>
+
+   <ajc-test dir="features160/annotationValueMatching" title="example one">
+     <compile options="-1.5 -showWeaveInfo ExampleOne.java">
+       <message kind="weave" text="m002"/>
+       <message kind="weave" text="m003"/>
+       <message kind="weave" text="m005"/>
+     </compile>       
+     <run class="ExampleOne">
+       <stderr>
+         <line text="tracing execution(void ExampleOne.m002())"/>
+         <line text="tracing execution(void ExampleOne.m003())"/>
+         <line text="tracing execution(void ExampleOne.m005())"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features160/annotationValueMatching" title="error case">
+     <compile options="-1.5 Error.java">
+       <message kind="error" text="Invalid annotation value 'Color.GREEN', expected int value"/>
+       <message kind="error" text="Invalid annotation value 'hello', expected float value"/>
+       <message kind="error" text="Invalid annotation value 'foo', expected byte value"/>
+       <message kind="error" text="Invalid annotation value '123', expected boolean value"/>
+       <message kind="error" text="Invalid annotation value '12', expected enum value"/>
+       <message kind="error" text="Invalid annotation value '4212312312', expected short value"/>
+       <message kind="error" text="Invalid annotation value 'no', expected char value"/>
+       <message kind="error" text="Invalid annotation value '30.0f', expected long value"/>
+       <message kind="error" text="Invalid annotation value 'foo', expected double value"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features160/annotationValueMatching" title="error - non existing value">
+     <compile options="-1.5 ErrorOne.java">
+       <message kind="error" text="The annotation 'Anno' does not define a value named 'ival'"/>
+     </compile>
+   </ajc-test>
+   
+</suite>

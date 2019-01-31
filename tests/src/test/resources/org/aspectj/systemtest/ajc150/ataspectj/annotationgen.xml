@@ -1,0 +1,187 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+<!-- @AspectJ v1.5.0 Tests -->
+
+    <!-- ================================================================= -->
+    <!-- Adrian's tests for generation of @AspectJ annotations from ajc                                   -->
+    <!-- ================================================================= -->
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for simple aspect">
+        <compile files="SimpleAspect.aj" options="-1.5"/>
+        <run class="SimpleAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for simple annotated aspect">
+        <compile files="SimpleAnnotatedAspect.aj" options="-1.5"/>
+        <run class="SimpleAnnotatedAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for simple aspect pre 1.5">
+        <compile files="Simple14Aspect.aj" options="-1.4"/>
+        <compile files="Simple14AspectTest.java" options="-1.5"/>
+        <run class="Simple14AspectTest"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for privileged aspect">
+        <compile files="PrivilegedAspect.aj" options="-1.5"/>
+        <run class="PrivilegedAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for perthis aspect">
+        <compile files="PerThisAspect.aj" options="-1.5"/>
+        <run class="PerThisAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for pertarget aspect">
+        <compile files="PerTargetAspect.aj" options="-1.5"/>
+        <run class="PerTargetAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for percflow aspect">
+        <compile files="PerCflowAspect.aj" options="-1.5"/>
+        <run class="PerCflowAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for percflowbelow aspect">
+        <compile files="PerCflowbelowAspect.aj" options="-1.5"/>
+        <run class="PerCflowbelowAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for pertypewithin aspect">
+        <compile files="PerTypeWithinAspect.aj" options="-1.5"/>
+        <run class="PerTypeWithinAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for inner aspect of aspect">
+        <compile files="InnerAspectAspect.aj" options="-1.5"/>
+        <run class="InnerAspectAspect"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for inner aspect of class">
+        <compile files="InnerAspectClass.aj" options="-1.5"/>
+        <run class="InnerAspectClass"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for advice declarations">
+        <compile files="BasicAdvice.aj" options="-1.5"/>
+        <run class="BasicAdvice"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for simple pointcut">
+        <compile files="SimplePointcut.aj" options="-1.5"/>
+        <run class="SimplePointcut"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for pointcut modifiers">
+        <compile files="PointcutModifiers.aj" options="-1.5"/>
+        <run class="PointcutModifiers"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for pointcut params">
+        <compile files="PointcutsWithParams.aj" options="-1.5"/>
+        <run class="PointcutsWithParams"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="annotation gen for pointcut refs">
+        <compile files="ReferencePointcuts.aj" options="-1.5"/>
+        <run class="ReferencePointcuts"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="before ann with non-void return">
+        <compile files="BeforeWithBadReturn.java" options="-1.5">
+            <message kind="error" line="7" text="This advice must return void"/>
+            <message kind="error" line="7" text="This method must return a result of type String"/>
+        </compile>
+    </ajc-test>
+
+     <ajc-test dir="java5/ataspectj/annotationGen" title="two anns on same element">
+        <compile files="TwoForThePriceOfOne.java" options="-1.5">
+            <message kind="error" line="7" text="The annotation @Pointcut is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="bad pcut in after advice">
+        <compile files="AfterReturningWithBadPCut.java" options="-1.5">
+            <message kind="error" line="6" text="Syntax error on token &quot;excution(* *.*(..))&quot;"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="bad parameter binding in advice">
+        <compile files="BadParameterBinding.java" options="-1.5">
+            <message kind="warning" line="11" text="no match for this type name: bpb"/>
+            <message kind="warning" line="15" text="no match for this type name: TheUnknownType"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="simple pointcut no params">
+        <compile files="APointcut.java" options="-1.5"/>
+        <run class="APointcut"/>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="pointcut medley">
+        <compile files="PointcutAssortment.java" options="-1.5">
+            <message kind="error" line="9" text="Methods annotated with @Pointcut must return void"/>
+            <message kind="error" line="9" text="This method must return a result of type String"/>
+            <message kind="error" line="15" text="Pointcuts without an if() expression should have an empty method body"/>
+            <message kind="error" line="28" text="Duplicate annotation @Pointcut"/>
+            <message kind="error" line="29" text="Duplicate annotation @Pointcut"/>
+            <message kind="error" line="11" text="can't find referenced pointcut foo"/>
+            <message kind="warning" line="32" text="no match for this type name: foo [Xlint:invalidAbsoluteTypeName]"/>
+         </compile>
+    </ajc-test>
+
+    <ajc-test dir="java5/ataspectj/annotationGen" title="advice in a class">
+        <compile files="AdviceInAClass.java" options="-1.5">
+            <message kind="error" line="6" text="Advice must be declared inside an aspect type"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for deows">
+        <compile files="Deow.aj" options="-1.5">
+        </compile>
+        <run class="Deow"/>
+    </ajc-test>          
+
+   <ajc-test dir="java5/ataspectj/annotationGen" title="runtime pointcut resolution referencing compiled pointcuts">
+        <compile files="PCLib.aj,RuntimePointcuts.java" options="-1.5">
+        </compile>
+        <run class="RuntimePointcuts" classpath=".;../lib/bcel/bcel.jar" ltw=""/>
+    </ajc-test>          
+
+   <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp">
+        <compile files="DeclareParentsTest.aj" options="-1.5, -outxml">
+        </compile>
+        <run class="DeclareParentsTest" ltw=""/>
+    </ajc-test>          
+    
+      <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp 2">
+        <compile files="DeclareParentsTestAdvanced.aj" options="-1.5, -outxml">
+        </compile>
+        <run class="a.b.c.DeclareParentsTestAdvanced" ltw=""/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decs">
+        <compile files="DeclareSoftTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclareSoftTest"/>
+    </ajc-test>     
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec precedence">
+        <compile files="DeclarePrecedenceTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclarePrecedenceTest"/>
+    </ajc-test>     
+    
+     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec annotation">
+        <compile files="DeclareAnnotationTest.aj" options="-1.5">
+        </compile>
+        <run class="DeclareAnnotationTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for itds">
+        <compile files="ITDTest.aj" options="-1.5, -outxml -Xlint:ignore -makeAjReflectable">
+        </compile>
+        <run class="a.b.c.ITDTest" ltw=""/>
+    </ajc-test>    
+</suite>

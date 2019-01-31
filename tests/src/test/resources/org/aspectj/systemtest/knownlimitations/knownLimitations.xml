@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
+<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/knownlimitations/knownLimitations-tests.xml">
+]>
+
+<!-- Known Limitations -these tests will fail -->
+
+<suite>
+
+&tests;
+  
+</suite>

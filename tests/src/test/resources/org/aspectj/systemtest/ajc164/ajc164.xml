@@ -1,0 +1,278 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+   <ajc-test dir="bugs164/pr268710" title="generics aspects incorrect error">
+     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5"/>
+     <run class="none.ConcreteAspect">
+       <stdout>
+         <line text="Building an object class none.C"/>
+         <line text="C.init"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs164/pr268689" title="generics aspects npe">
+     <compile files="GenericAspect.aj ConcreteAspect.aj" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr267559" title="generics and itd npe">
+     <compile files="IMarker.java ClassB.java Aspect.java ClassA.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266564" title="annotation style long">
+     <compile files="AA.java" options="-1.5"/>
+     <run class="business.AA"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266564" title="annotation style long - 2">
+     <compile files="CC.java" options="-1.5"/>
+     <run class="business.CC"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266420" title="unused private warning">
+     <compile files="A.java" options="-1.5 -warn:unusedPrivate"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266420" title="unused private warning - 2">
+     <compile files="B.java" options="-1.5 -warn:unusedPrivate">
+       <message kind="warning" text="The value of the field B.i is not used"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266420" title="unused private warning - 3">
+     <compile files="C.java" options="-1.5 -warn:unusedPrivate">
+       <message kind="warning" text="The value of the field C.j is not used"/>
+     </compile>
+   </ajc-test>
+   
+    <ajc-test dir="bugs164/pr265729" title="aspectpath model">
+    <compile files="Aspect.java Orange.java Strawberry.java Fruit.java" outjar="library.jar" options="-emacssym"/>
+    <compile files="Orange.java Strawberry.java Fruit.java" aspectpath="library.jar" options="-emacssym"/>
+    <!--
+    -->
+   </ajc-test>
+   
+    <ajc-test dir="bugs164/pr266220" title="generics and aop.xml">
+        <compile files="Code.java"/>
+        <compile files="Isolator.java" outjar="aspects.jar" options="-1.5"/>
+        <run class="Code" classpath="aspects.jar" ltw="aop.xml">
+          <stdout>
+            <line text="execution(void Code.main(String[]))"/>
+            <line text="execution(void Code.run())"/>
+            <line text="running..."/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 1">
+     <compile files="NeverWeave.java" options="-1.5 -Xlint:ignore -showWeaveInfo"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 2">
+     <compile files="AlwaysWeave.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 3">
+     <compile files="NeverWeave2.java" options="-1.5 -Xlint:ignore -showWeaveInfo"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr266165" title="optimizing if for constant reference - 4">
+     <compile files="AlwaysWeave2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs164/pr265695" title="anno inherited">
+     <compile files="Asp.aj" options="-showWeaveInfo -1.5">
+       <message kind="warning" line="22" text="advice defined"/>
+       <message kind="warning" line="24" text="advice defined"/>
+       <message kind="warning" line="26" text="advice defined"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr265695" title="new syntax for inherited anno - 1">
+     <compile files="AspNew.aj" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs164/pr265695" title="new syntax for inherited anno - 3">
+     <compile files="AspNew2.aj" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point"/>
+     </compile>
+   </ajc-test>
+    
+    <ajc-test dir="bugs164/pr265418" title="varargs">
+      <compile files="A.java" options="-1.5"/>
+      <run class="A">
+        <stdout>
+          <line text="varargs call(void A.a(Object[]))"/>
+          <line text="varargs call(void A.b(String[]))"/>
+          <line text="varargs call(void A.c(Integer[]))"/>
+          <line text="arrays  call(void A.d(Object[]))"/>
+          <line text="arrays  call(void A.e(String[]))"/>
+          <line text="arrays  call(void A.f(Integer[]))"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+   <ajc-test dir="bugs164" title="parser problem for array subtypes">
+     <compile files="PR148508.java"/>
+     <run class="PR148508">
+     </run>
+   </ajc-test>
+    
+    <ajc-test dir="bugs164/pr265360" title="incorrect resolution of Date">
+      <compile files="Foo.java Main.java" options="-1.5">
+        <message kind="warning" text="no match for this type name: Date "/>
+        <message kind="warning" test="advice defined in"/>
+      </compile>
+    </ajc-test>
+   
+    <ajc-test dir="bugs164/pr233032" title="dual preClinit">
+      <compile files="A.java" options="-1.5"/>
+      <run class="A"/>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 1">
+      <compile files="A.java A2.java B.java foo.xml" options="-1.5 -showWeaveInfo -xmlConfigured">
+        <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 2">
+      <compile files="A.java A2.java B.java B2.java foo2.xml" options="-1.5 -showWeaveInfo -xmlConfigured">
+        <message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/two" title="aop config - 3">
+      <!-- type pattern in the scope in foo.xml is complete nonsense -->
+      <compile files="A.java B.java foo.xml" options="-1.5 -Xlint:ignore -xmlConfigured">
+      	<message kind="error" text="Unable to parse scope as type pattern"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 4">
+      <!-- excluding a type -->
+      <compile files="A.java A2.java B.java B2.java case4.xml" options="-1.5 -Xlint:ignore -xmlConfigured -showWeaveInfo">
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void B.&lt;clinit&gt;())' in Type 'B' (B.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features164/aopconfig/one" title="aop config - 5">
+      <!-- excluding a type -->
+      <compile files="A.java A2.java B.java B2.java case5.xml" options="-1.5 -Xlint:ignore -xmlConfigured -showWeaveInfo">
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.java:1) advised by before advice from 'A' (A.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A2' (A2.java:2)"/>
+      	<message kind="weave" text="Join point 'staticinitialization(void A2.&lt;clinit&gt;())' in Type 'A2' (A2.java:1) advised by before advice from 'A' (A.java:2)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr263310" title="inner handles">
+      <compile files="HandleTestingAspect.java" options="-1.5 -emacssym -Xlint:ignore"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr263666" title="around advice handles">
+      <compile files="x/A.java x/B.java x/OverrideOptions.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164" title="ajcthis not read">
+      <compile files="pr195090.java" options="-1.5 -warn:+unusedArgument">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr256779" title="anno decprecedence">
+      <compile files="ThisAspect.java OtherAspect.java" options="-1.5"/>
+      <run class="com.ThisAspect" ltw="aop.xml"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr262905" title="recursive cflow">
+      <compile files="A.java" options="-1.5">
+        <message kind="warning" line="5" text="advice defined"/>
+        <message kind="error" line="3" text="circular"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 1">
+      <compile files="Service.java IService.java Main.java ServiceInterceptor.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 2">
+      <compile files="Service.java IService.java Main.java ServiceInterceptorCodeStyle.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr194314" title="broken lvt - 3">
+      <compile files="ITDOne.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice">
+      <compile files="Foo.java" options="-1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice - 2">
+      <compile files="Foo2.java" options="-1.5 -preserveAllLocals"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs164/pr262509" title="debugging before advice - 3">
+      <compile files="Foo3.java" options="-1.5 -preserveAllLocals"/>
+    </ajc-test> 
+       
+    <ajc-test dir="bugs164/pr246393" title="rogue errors - 1">
+      <compile files="D.java" options="-1.5">
+        <message kind="error" line="2" text="error on token"/>
+      </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs164/pr262257" title="name clash">
+      <compile files="C.java" options="-1.5">
+      </compile>
+    </ajc-test> 
+       
+    <ajc-test dir="bugs164/pr260384" title="compiling spring">
+      <compile files="Broken.java" options="-1.5">
+      </compile>
+    </ajc-test>    
+
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 2">
+      <compile files="Broken2.java" options="-1.5">
+      </compile>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 3">
+      <compile files="C.java" options="-1.5 -emacssym"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr260384" title="compiling spring - 4">
+      <compile files="D.java" options="-1.5">
+      </compile>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr164016" title="ataspectj decp 164016">
+      <compile files="Code.aj" options="-1.5"/>
+      <run class="test.Code"/>
+    </ajc-test>    
+    
+    
+    <ajc-test dir="bugs164/pr164016" title="ataspectj decp 164016 - 2">
+      <compile files="Code.java TargetBad.java TargetGood.java" aspectpath="code.jar" options="-1.5"/>
+      <run class="test.Code"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs164/pr258788" title="ataspectj decp 258788">
+      <compile files="NameAware.java NameManager.java NameManagerImpl.java StartClass.java TargetClass.java TestAspect.java" options="-1.5"/>
+      <run class="com.StartClass"/>
+    </ajc-test>    
+        
+</suite>

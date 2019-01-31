@@ -1,0 +1,321 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.1 Tests -->
+<suite>
+
+
+	<ajc-test dir="bugs161/pr237447" title="signature processing">
+    	<compile files="GenericClass.java SomeClass.java GenericGenericMemberClass.java UnrelatedAspect.java" options="-1.5"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs161/pr173978" title="lv table for around">
+    	<compile files="TestAroundAspect.java Test.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr237419" title="generics ataround">
+    	<compile files="problem/aspect/AnyAspect.java problem/SpecificService.java problem/Specific.java problem/GenericService.java problem/Generic.java" options="-1.5"/>
+    	<run class="problem.SpecificService"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr203367" title="generic marker match">
+    	<compile files="CantMatchOnInterfaceIntroducedToGenericClass.java" options="-1.5"/>
+    	<run class="bug.CantMatchOnInterfaceIntroducedToGenericClass"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr198196" title="super itds - 2">
+    	<compile files="Marker.java Foo.java MarkerAspect2.java"/>
+    	<run class="Foo">
+	    	<stdout>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    		<line text="a"/>
+	    	</stdout>
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr198196" title="super itds - 3">
+    	<compile files="Marker.java Foo.java MarkerAspect1.java"/>
+    	<run class="Foo"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr198196" title="super itds - 4">
+    	<compile files="Marker.java Foo.java MarkerAspect3.java"/>
+    	<run class="Foo"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr134425" title="super itds">
+    	<compile files="Derived.java Base.java"/>
+    	<run class="pkg.Derived"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr237381" title="ataspectj deow - 1">
+    	<compile files="Deow1.java" options="-1.5">
+    	  <message kind="warning" line="7" text="fromX"/>
+    	  <message kind="warning" line="15" text="fromY"/>
+    	</compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr237381" title="ataspectj deow - 2">
+    	<compile files="Deow2.java" options="-1.5">
+    	  <message kind="error" line="7" text="fromX"/>
+    	  <message kind="error" line="15" text="fromY"/>
+    	</compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr102733" title="running broken code">
+    	<compile files="Invoker.java C.java" options="-proceedOnError">
+    	  <message kind="error" line="2" text="Syntax error"/>
+    	</compile>
+    	<run class="Invoker"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr102733" title="running broken code - 2">
+    	<compile files="Invoker2.java C2.java" options="-proceedOnError">
+    	  <message kind="error" line="5"/>
+    	</compile>
+    	<run class="Invoker2"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr168982" title="error on non-abstract generic ataspectj aspect">
+    	<compile files="TracingAspect2.java" options="-1.5">
+    	  <message kind="error" line="9"/>
+    	</compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr234933" title="ignoring type level suppress">
+    	<compile files="Foobar.java" options="-1.5 -Xlint:error"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr223226" title="duplicate method signature - 2">
+    	<compile files="AspectX.java BInterface.java FooInterface.java AspectXMarker.java Foo.java Test.java" options="-1.5"/>
+    	<run class="Test"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr223226" title="duplicate method signature">
+    	<compile files="AspectX.java BInterface.java FooInterface.java AspectXMarker.java Foo.java Test.java" options="">
+    	  <message kind="error" line="1"/>
+    	  <message kind="error" line="2"/>
+    	  <message kind="error" line="3"/>
+    	  <message kind="error" line="5"/>
+    	</compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs161/pr197719" title="protected methods and around advice - again - 2">
+    	<compile files="test/aspects/C1.java test/aspects/C3.java test/aspects/MyAnn.java test/aspects/MyAnnAspect.java test/aspects2/C2.java" options="-1.5 -showWeaveInfo">
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C1' (C1.java:12) "/>
+    	  
+    	  <!-- first of these through accessor - so line number wrong and target wrong -->
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:1) "/><!-- was line 18 -->
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:8) "/>
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects2.C2' (C2.java:29) "/>
+
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3' (C3.java:10) "/>
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects.C3' (C3.java:13) "/>
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3$InnerClass' (C3.java:24) "/>
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects2.C2.aMethod())' in Type 'test.aspects.C3$InnerClass' (C3.java:27) "/>
+    	  <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C3' (C3.java:34) "/>
+
+    	</compile>
+
+    	<run class="test.aspects.C3">
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr197719" title="protected methods and around advice - again">
+    	<compile files="A.java B.java X.java" options="-1.5"/>
+    	<run class="b.B">
+    	  <stdout>
+    	    <line text="calling m()"/>
+    	    <line text="advice running"/>
+    	    <line text="m() running"/>
+    	  </stdout>
+    	</run>
+    </ajc-test>
+
+	<ajc-test dir="bugs161/pr230075" title="protected methods and around advice">
+    	<compile files="A.java B.java C.java X.java" options="-1.5"/>
+    	<run class="a.C"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr174385" title="static strings in annotation pointcuts">
+    	<compile files="StaticFinalStringInPointcutAspect.java" options="-1.5"/>
+    	<run class="bug.StaticFinalStringInPointcutAspect"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs161/pr199130" title="complex bounds on generic aspect - 1">
+    	<compile files="Simple.java" options="-1.5"/>
+    	<run class="Simple">
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr199130" title="complex bounds on generic aspect - 2">
+    	<compile files="Complex.java" options="-1.5"/>
+    	<run class="Complex">
+    	</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs161/pr199130" title="complex bounds on generic aspect - 3">
+    	<compile files="Complex2.java" options="-1.5"/>
+    	<run class="Complex2">
+    	</run>
+    </ajc-test>
+
+	<ajc-test dir="bugs161/pr226201" title="generic aspect around advice">
+    	<compile files="IntAspTest.java" options="-1.5"/>
+    	<run class="IntAspTest">
+    	</run>
+    </ajc-test>
+
+	<ajc-test dir="bugs161/pr235829" title="crazy generics and inner types">
+    	<compile files="Main.java a/Adapter.java a/b/Adapter.java" options="-1.5"/>
+    	<run class="Main"/>
+    </ajc-test>    
+
+    <ajc-test dir="bugs161/pr235597" title="annotation exposure and generics">
+        <compile files="AnnotationTest1.java SomeAnnotation.java SomeAspect.java" options="-1.5"/>
+        <run class="AnnotationTest1">
+          <stdout>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 1"/>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 2"/>
+            <line text="@someAspect annotation parameter (call)"/>
+            <line text="@someAspect annotation no parameter"/>
+            <line text="@someAspect method name"/>
+            <line text="@someAspect annotation parameter (execution)"/>
+            <line text="test 3"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+
+    <ajc-test dir="bugs161/pr235204" title="incorrect call relationship">
+        <compile files="RecursiveCatcher.java" options="-1.5 -emacssym"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs161/pr233838" title="itd precedence - 1">
+        <compile files="Z.java" options="-1.5"/>
+        <run class="Z">
+          <stdout>
+            <line text="X.test()"/>
+          </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs161/pr233838" title="itd precedence - 2">
+        <compile files="Z2.java" options="-1.5"/>
+        <run class="Z2">
+          <stdout>
+            <line text="Y.test()"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+
+    <ajc-test dir="bugs161/pr227401" title="getfield problem with generics">
+        <compile files="Instrumentation.java Fails.java" options="-1.5"/>
+        <run class="Fails">
+          <stdout>
+            <line text="getField(* protS)  getField()='protected java.lang.String Fails$A.protS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* prot)  getField()='protected int Fails$A.prot'  getDeclaringType()='class Fails$A'"/>
+            <line text="22"/>
+            <line text="getField(* defS)  getField()='java.lang.String Fails$A.defS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* def)  getField()='int Fails$A.def'  getDeclaringType()='class Fails$A'"/>
+            <line text="11"/>
+            <line text="getField(* defS)  getField()='java.lang.String Fails$A.defS'  getDeclaringType()='class Fails$A'"/>
+            <line text="getField(* def)  getField()='int Fails$A.def'  getDeclaringType()='class Fails$A'"/>
+            <line text="22"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr231478" title="generic abstract aspects">
+        <compile files="Base.java Sub.java AbstractComponent.java AbstractWindow.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs161/pr227993" title="field jp anno value">
+        <compile files="FieldJP.java" options="-1.5"/>
+        <run class="FieldJP">
+          <stderr>
+            <line text="get of YES field"/>
+            <line text="fone=0"/>
+            <line text="get of NO field"/>
+            <line text="ftwo=0"/>
+            <line text="fthr=0"/>
+            <line text="set of YES field"/>
+            <line text="set of NO field"/>
+          </stderr>
+        </run>
+    </ajc-test> 
+
+    <ajc-test dir="bugs161/pr231187x" title="generics bounds decp">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java SuperClassAspect.aj WetCement.java Main.java" options="-1.5"/>
+        <run class="concrete.Main">
+          <stdout>
+            <line text="ran!"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr231187x" title="generics bounds decp - 2">
+        <compile files="Cement.java ConcreteClass.java SuperClass.java WetCement.java" options="-1.5">
+          <message kind="error" text="The type WetCement is not a valid substitute for the bounded parameter"/>
+        </compile>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr230134" title="ltw inherited cflow">
+      <compile files="HW.java"/>
+      <compile files="SimpleTracing.java Tracing.java HelloWorldTracing.java" outjar="foo.jar" options="-1.4"/>
+      <run class="hello.HW" classpath="$sandbox/foo.jar" ltw="aop.xml">
+        <stdout>
+          <line text="Hello World"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs161/pr229910" title="around advice on field set">
+        <compile files="Test.java" options="-1.5"/>
+        <run class="Test"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr226567" title="pipeline compilation and generic return type">
+        <compile files="BarAspect.aj Foo.java Bar.java" options="-1.5"/>
+        <compile files="BarAspect.aj Bar.java Foo.java" options="-1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr235505" title="privileged generic aspect">
+        <compile files="A.java" options="-1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr235505" title="privileged generic aspect - 2">
+        <compile files="B.java" options="-1.5"/>
+        <run class="B">
+          <stdout>
+            <line text="Hello World"/>
+            <line text="Hello World"/>
+          </stdout>
+        </run>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs161/pr64222" title="parsing around advice no return">
+        <compile files="C.java" options="-1.5">
+          <message kind="error" line="6" text="to complete around advice declaration"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="bugs161/pr159268" title="before array name">
+        <compile files="C.java" options="-1.5"/>
+    </ajc-test> 
+    
+    
+
+</suite>

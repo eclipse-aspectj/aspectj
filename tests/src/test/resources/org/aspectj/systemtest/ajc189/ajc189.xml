@@ -1,0 +1,102 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs189/433351" title="jar weaving">
+		<compile options="-1.5" files="InterfaceProj1.java" outjar="code.jar"/>
+		<compile options="-1.5 -showWeaveInfo" inpath="code.jar" files="Extender.aj InterfaceProj2.java">
+		<message kind="weave" text="Extending interface set for type 'test.InterfaceProj1' (InterfaceProj1.java) to include 'test.extender.InterfaceProj2' (Extender.aj)"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs189/433351" title="jar weaving 2">
+		<compile options="-1.5" files="InterfaceProj1.java ClassProj1.java" outjar="code.jar"/>
+		<compile options="-1.5 -showWeaveInfo" inpath="code.jar" files="Extender2.aj" outjar="code2.jar">
+		<message kind="weave" text="Extending interface set for type 'test.InterfaceProj1' (InterfaceProj1.java) to include 'java.io.Serializable' (Extender2.aj)"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs189/433351" title="jar weaving 3">
+		<compile options="-1.5" files="InterfaceProj1.java ClassProj1.java" outjar="code.jar"/>
+		<compile options="-1.5 -showWeaveInfo" inpath="code.jar" files="Extender3.aj InterfaceProj2.java ClassProj2.java" outjar="code2.jar">
+		<message kind="weave" text="Setting superclass of type 'test.ClassProj1' (ClassProj1.java) to 'test.extender.ClassProj2' (Extender3.aj)"/>
+		<message kind="weave" text="Extending interface set for type 'test.InterfaceProj1' (InterfaceProj1.java) to include 'test.extender.InterfaceProj2' (Extender3.aj)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs189/433351" title="jar weaving 4">
+		<compile options="-1.5" files="ClassProj1.java InterfaceProj1.java" outjar="code.jar"/>
+		<compile options="-1.5 -showWeaveInfo" inpath="code.jar" files="Extender2.aj" outjar="code2.jar">
+		<message kind="weave" text="Extending interface set for type 'test.InterfaceProj1' (InterfaceProj1.java) to include 'java.io.Serializable' (Extender2.aj)"/>
+		</compile>
+	</ajc-test>
+	
+<ajc-test dir="bugs189/485583" title="NPE at aspectj">
+  <compile files="Foo.aj Bar.aj" options="-1.8">
+  <message kind="error" text="The abstract pointcut deprecatedCode can only be defined in an aspect"/>
+  </compile>
+</ajc-test>
+
+<ajc-test dir="bugs189/486612" title="lost bounds">
+  <compile files="Code.java Azpect.java" options="-1.8"/>
+</ajc-test>
+
+
+<ajc-test dir="bugs189/486203" title="while npe">
+<compile files="While.java" options="-1.8"/>
+</ajc-test>
+
+<ajc-test dir="bugs189/352389" title="overweaving">
+
+	<compile files="A.java Code.java" outjar="one.jar" options="-1.8 -showWeaveInfo">
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'A' (A.java:2)"/>
+	</compile>
+	<run class="Code" classpath="$sandbox/one.jar">
+		<stdout>
+		<line text="a"/>
+		</stdout>
+	</run>
+
+	<!-- The non overweaving case would look like this -->
+	<compile files="B.java" inpath="one.jar" options="-1.8 -showWeaveInfo" outjar="two.jar">
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'B' (B.java:2)"/>
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'A' (one.jar!A.class:2(from A.java))"/>
+	</compile>
+	
+	<!-- With overweaving it looks like the advice from A isn't applying but it just isn't applying during this weave step, it
+	     remains in the bytecode applied from before. -->
+	<compile files="B.java" inpath="one.jar" options="-1.8 -Xset:pipelineCompilation=false{overWeaving=true -showWeaveInfo" outjar="two.jar">
+		<message kind="warning" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'B' (B.java:2)"/>
+	</compile>
+	<!-- Note: with overweaving output is b>a  without overweaving it is a>b -->
+	<run class="Code" classpath="$sandbox/two.jar">
+		<stdout>
+		<line text="b"/>
+		<line text="a"/>
+		</stdout>
+	</run>
+
+	<compile files="C.java" inpath="two.jar" options="-1.8 -Xset:overWeaving=true -showWeaveInfo" outjar="three.jar">
+		<message kind="warning" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+		<message kind="warning" text="advice defined in B has not been applied [Xlint:adviceDidNotMatch]"/>
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'C' (C.java:2)"/>
+	</compile>
+	<!-- 
+	<compile files="C.java" inpath="two.jar" options="-1.8 -showWeaveInfo" outjar="three.jar">
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'C' (C.java:2)"/>
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'B' (two.jar!B.class:2(from B.java))"/>
+		<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Code.java:6) advised by before advice from 'A' (two.jar!A.class:2(from A.java))"/>
+	</compile>
+	-->
+	<!-- Note: with overweaving c>b>a  but without overweaving a>b>c -->
+	<run class="Code" classpath="$sandbox/three.jar">
+		<stdout>
+		<line text="c"/>
+		<line text="b"/>
+		<line text="a"/>
+		</stdout>
+	</run>
+</ajc-test>
+
+</suite>

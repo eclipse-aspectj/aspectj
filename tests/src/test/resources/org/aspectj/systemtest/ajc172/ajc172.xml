@@ -1,0 +1,204 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs172/pr391384" title="unsupported should be normal error">
+      <compile files="Code.java" options="-1.5">
+      	<message kind="error" text="Compiler limitation: annotation value support not implemented for type java.lang.String[]"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr394535" title="signatures">
+      <compile files="Bug.java" options="-1.5"/>
+      <compile files="Bug2.java" options="-1.5"/>
+      <run class="Bug2"/>
+      <run class="Bug"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590" title="p signatures 1">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/two" title="p signatures 2">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/three" title="p signatures 3">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/four" title="p signatures 4">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr399590/five" title="p signatures 5">
+      <compile files="Cage.java" options="-1.5"/>
+      <compile files="Cage2.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr398588" title="optional aspects">
+	     <compile files="Anno.java Anno2.java" outjar="anno.jar" options="-1.5"/>
+	     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+	     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+	     <compile files="Code.java Blah.java" classpath="aspect.jar;aspect2.jar" options="-1.5"/>
+		 <compile files="AspectC.java" classpath="$sandbox" outjar="aspect3.jar" options="-Xlint:ignore -1.5"/>	     
+	     <compile files="AspectD.java" classpath="anno.jar" outjar="aspect4.jar" options="-Xlint:ignore -1.5"/>
+	     
+	     <file deletefile="anno.jar"/>
+	     <run class="Code" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar;aspectj3.jar;aspect4.jar">
+	     <stderr>
+	     <line text="AspectJ Weaver Version"/>
+	     <line text="register classloader"/>
+	     <line text="using configuration"/>
+	     <line text="register aspect AspectA"/>
+	     <line text="deactivating aspect"/>
+	     <line text="register aspect AspectB"/>     
+	     <line text="register aspect AspectC"/>   
+	     <line text="register aspect AspectD"/>
+	     <line text="deactivating aspect 'AspectD' as it requires type 'a.b.c.Anno2' which cannot be found on the classpath"/>
+	     <line text="Join point 'method-execution(void Code.main(java.lang.String[]))' in Type 'Code' (Code.java:7) advised by before advice from 'AspectC'"/>
+	     <line text="Join point 'staticinitialization(void Code.&lt;clinit&gt;())' in Type 'Code' (Code.java) advised by before advice from 'AspectB'"/>  
+	     <line text="processing reweavable"/>
+	     <line text="processing reweavable"/>
+	     </stderr>
+	     <stdout>
+	     <line text="staticinitialization"/>
+	     <line text="C"/>
+	     <line text="abcde"/>
+	     </stdout>
+	     </run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs172/pr398246" title="if pointcut names">
+      <compile files="Code.java" options="-1.5">
+      </compile>
+      <run class="Code" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr398246" title="if pointcut names 2">
+      <compile files="Code2.java" options="-1.5">
+      </compile>
+      <run class="Code2" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr398246" title="if pointcut names 3">
+      <compile files="Code3.java" options="-1.5">
+      </compile> 
+      <run class="Code3" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr398246" title="if pointcut names 4">
+      <compile files="Code4.java" options="-1.5"></compile> 
+      <compile files="Code4.java" options="-1.5" outjar="aspects.jar"/>
+      <run class="Code4" options="-1.5"> 
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+      <compile files="CodeExtra4.java" aspectpath="aspects.jar" options="-1.5"></compile>
+      <run class="CodeExtra4" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs172/pr398246" title="if pointcut names 5">
+      <compile files="Code5.java Code5a.java" options="-1.5">
+      </compile>
+      <run class="Code5" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs172/pr398246" title="if pointcut names 6">
+      <compile files="Code6.java" options="-1.5">
+      </compile>
+      <run class="Code6" options="-1.5">
+      	<stdout>      	
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+    
+     <ajc-test dir="bugs172/pr398246" title="if pointcut names 7">
+      <compile files="Code7.java" options="-1.5">
+      </compile>
+      <run class="Code7" options="-1.5">
+      	<stdout>
+      	<line text="advice"/>
+      	<line text="advice"/>
+      	</stdout>
+      </run>
+    </ajc-test>
+  
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file">
+      <compile files="Code.aj" options="-1.5">
+      </compile>
+      <compile files="Clazz.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 2">
+      <compile files="Code2.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz2.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 3">
+      <compile files="Code3.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz3.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389750" title="inconsistent class file 4">
+      <compile files="Code4.aj" outjar="azpect.jar" options="-1.5">
+      </compile>
+      <compile files="Clazz4.java" aspectpath="azpect.jar" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 1">
+      <compile files="Code.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 2">
+      <compile files="Code2.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs172/pr389752" title="annotation value error 3">
+      <compile files="Code3.java" options="-1.5">
+      	<message kind="error" text="Invalid annotation value 'AA', expected enum value"/>
+      </compile>
+    </ajc-test>
+
+</suite>

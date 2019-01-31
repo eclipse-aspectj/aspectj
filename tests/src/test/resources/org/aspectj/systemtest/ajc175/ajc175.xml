@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs175/pr430243" title="illegalaccesserror">
+		<compile files="PackageManagerAspect.java PolicyManager.java PolicyProviderConstants.java PolicyProviderInterface.java" options="-1.6">
+		</compile>
+		<run class="com.test2.PolicyManager">
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs175/pr423257" title="vertx verify error">
+		<compile files="Test.java AspectX.java" options="-1.7">
+		</compile>
+		<run class="com.foo.bar.Test">
+		</run>
+	</ajc-test>
+
+</suite>

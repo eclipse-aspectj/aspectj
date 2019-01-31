@@ -1,0 +1,185 @@
+<!-- Incremental compilation Tests -->
+
+     <ajc-test dir="incremental/initialTests/classAdded" 
+    	title="expect class added in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"  skipTester="true"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/classRemoved" 
+    	title="expect class removed in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental" 
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/classUpdated" 
+    	title="expect class updated in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+     <ajc-test dir="incremental/initialTests/sourceAdded" 
+    	title="add file with class"
+    	comment="only expecting pickup if sourceroots"    
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <inc-compile tag="30">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="incremental/initialTests/sourceDeleted" 
+        title="delete source file before incremental compile"
+        comment="build config should permit file deletions for incremental (sourceroots)"
+        keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="delete.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="delete.DeleteMe"/>
+        	<message kind="error" line="6" file="delete/Target.java"/>
+        </inc-compile>
+        <inc-compile tag="30"/> 
+        <run class="delete.Main"/>
+    </ajc-test>
+
+<!-- this test cannot pass with the new AjAttribute.MethodDeclarationLineNumberAttribute
+    <ajc-test dir="incremental/initialTests/expClasses" 
+    	title="expected class tree" >
+        <compile files="Main.java">
+            <dir-changes expDir="expected"/>
+        </compile>
+        <run class="Main"/>
+    </ajc-test>
+ -->
+    
+    <ajc-test dir="incremental/initialTests/defaultPackage" 
+    	title="do everything in default package (sourceroots)" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="Target"/>
+        </inc-compile>
+        <run class="Target" skipTester="true"/>
+        <inc-compile tag="30">
+            <dir-changes updated="Main"/>
+        </inc-compile>
+        <run class="Main" skipTester="true"/>
+        <inc-compile tag="40"> 
+			<message kind="error" line="6" file="Main.java"/>
+        </inc-compile>
+        <inc-compile tag="50"/>
+        <run class="Main"/>
+    </ajc-test>
+
+  <ajc-test dir="incremental/defaultPackage"
+    keywords="incremental-test"
+   	title="change sources in default package">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="Main"/>
+        <inc-compile tag="20"/>
+        <run class="Main"/>
+    </ajc-test>
+
+   <ajc-test dir="incremental/interPackage"
+    keywords="incremental-test"
+   	title="change source">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="app.Main"/>
+        <inc-compile tag="20"/>
+        <run class="app.Main"/>
+    </ajc-test>
+
+
+     <ajc-test dir="incremental/stringliteral"
+    	keywords="incremental-test"
+		title="incrementally change only string literal, still expect advice">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+    </ajc-test>
+
+	<ajc-test dir="incremental/initialTests/aspectSourceAdded" 
+    	title="add aspect source file and check world is rewoven"
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <inc-compile tag="20">
+            <dir-changes added="Detour"/>
+        </inc-compile>
+        <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="incremental/initialTests/classWAroundClosureRemoved"
+      title="make sure additional classes generated during weave are deleted with src class file"
+      keywords="incremental-test">
+      <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <inc-compile tag="20" >
+            <dir-changes removed="AdviceOnIntroduced$AjcClosure1"/>
+        </inc-compile>
+    </ajc-test>
+
+  <ajc-test dir="incremental/full-rebuild"
+    	pr="59895"
+		title="incremental with aspect-driven full rebuild">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental">
+        	<message kind="error" line="3" file="Aspect.java"/>
+        	</compile>
+        <inc-compile tag="20">
+        	<message kind="warning" line="3" file="Main.java"/>
+        	</inc-compile>
+        <run class="Main"/>
+    </ajc-test>
+	

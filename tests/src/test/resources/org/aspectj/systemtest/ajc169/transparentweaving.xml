@@ -1,0 +1,68 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="features169/transparent" title="one - private">
+     <compile files="OnePrivate.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="features169/transparent" title="one - default">
+     <compile files="OneDefault.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="one - private - annotated">
+     <compile files="OnePrivateAnnotated.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="one - default - annotated">
+     <compile files="OneDefaultAnnotated.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="one - private - accessors">
+     <compile files="OnePrivateAccessors.java" options="-1.5"/>
+     <run class="OnePrivateAccessors"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="interacting old and new">
+     <compile files="InteractingOldAndNew.java" options="-1.5"/>
+     <run class="InteractingOldAndNew"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="one - private - initializer">
+     <compile files="OnePrivateInitializer.java" options="-1.5"/>
+     <run class="OnePrivateInitializer"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="two">
+     <compile files="Two.java" options="-1.5">
+       <message kind="error" text="inter-type declaration from X conflicts with existing member: int Two.x"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="two itds on target">
+     <compile files="TwoItdsOnTarget.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="two itds on target that already has it">
+     <compile files="TwoItdsOnTargetHasAlready.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="declare at on private itd">
+     <compile files="OneDeclareAt.java" options="-1.5 -makeAjReflectable"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="declare at two">
+     <compile files="DeclareAtTwo.java" options="-1.5 -makeAjReflectable"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="three">
+     <compile files="Three.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/transparent" title="generics - private">
+     <compile files="Generics.java" options="-1.5"/>
+     <run class="Generics"/>
+   </ajc-test>
+   
+
+</suite>

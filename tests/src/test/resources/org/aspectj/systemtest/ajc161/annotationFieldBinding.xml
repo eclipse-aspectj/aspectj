@@ -1,0 +1,127 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.1 Optimized Annotation Field Binding Tests -->
+<suite>
+
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case one - syntax">
+     <compile options="-1.5" files="CaseOne.java"/> 
+     <run class="CaseOne">
+       <stdout>
+         <line text="ONE"/>
+         <line text="TWO"/>
+         <line text="THREE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case two - no such field">
+     <compile options="-1.5" files="CaseTwo.java">
+       <message kind="error" line="30" text="No field of type 'Level' exists on annotation type 'Anno'"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case three - ambiguous">
+     <compile options="-1.5" files="CaseThree.java">
+       <message kind="error" line="31" text="The field type 'Level' is ambiguous for annotation type 'Anno'"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case four - default value">
+     <compile options="-1.5" files="CaseFour.java"/> 
+     <run class="CaseFour">
+       <stdout>
+         <line text="ONE"/>
+         <line text="TWO"/>
+         <line text="ONE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case five - not an enum - compiler limitation">
+     <compile options="-1.5" files="CaseFive.java">
+       <message kind="error" line="20" text="The field within the annotation must be an enum, string or int. 'float' is not"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case six - not an execution join point - compiler limitation">
+     <compile options="-1.5" files="CaseSix.java">
+       <message kind="error" line="20" text="Annotation field binding is only supported at method-execution join points"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case seven - annos in packages one">
+     <compile options="-1.5" files="CaseSeven.java"/> 
+     <run class="p.q.r.CaseSeven">
+       <stdout>
+         <line text="ONE"/>
+         <line text="TWO"/>
+         <line text="THREE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case eight - annos in packages two">
+     <compile options="-1.5" files="CaseEight.java"/> 
+     <run class="p.q.r.CaseEight">
+       <stdout>
+         <line text="ONE"/>
+         <line text="TWO"/>
+         <line text="THREE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case nine - everything in different packages">
+     <compile options="-1.5" files="CaseNine.java Level.java Anno.java"/> 
+     <run class="p.q.r.CaseNine">
+       <stdout>
+         <line text="ONE"/>
+         <line text="TWO"/>
+         <line text="THREE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case ten - binding multiple things">
+     <compile options="-1.5" files="CaseTen.java"/> 
+     <run class="CaseTen">
+       <stdout>
+         <line text="ONE:3"/>
+         <line text="TWO:4"/>
+         <line text="THREE:5"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case eleven - binding multiple annotation fields">
+     <compile options="-1.5" files="CaseEleven.java"/> 
+     <run class="CaseEleven">
+       <stdout>
+         <line text="ONE:GREEN"/>
+         <line text="TWO:GREEN"/>
+         <line text="THREE:BLUE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case twelve - binding anno and anno value">
+     <compile options="-1.5" files="CaseTwelve.java"/> 
+     <run class="CaseTwelve">
+       <stdout>
+         <line text="ONE:GREEN"/>
+         <line text="TWO:GREEN"/>
+         <line text="THREE:BLUE"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   
+   <ajc-test dir="features161/optimizedAnnotationBinding" title="case thirteen - bug npe">
+     <compile options="-1.5" files="CaseThirteen.java">
+       <message kind="error" line="31" text="No field of type 'java.lang.String'"/>
+       <message kind="error" line="31" text="When using @annotation"/>
+       <message kind="error" line="32" text="cannot be resolved"/>
+     </compile>
+   </ajc-test>
+   
+</suite>

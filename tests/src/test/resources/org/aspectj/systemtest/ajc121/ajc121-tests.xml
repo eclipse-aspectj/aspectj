@@ -1,0 +1,494 @@
+<!-- AspectJ v1.2.1 Tests -->
+
+
+   	<ajc-test dir="bugs"
+		pr="62073" title="false ambiguous binding error (introduced in 1.2rc2)">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<message kind="error" line="4" file="DisjunctVarBinding_3.java" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<message kind="error" line="4" file="DisjunctVarBinding_3.java" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
+        </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase1.java">
+        	<message kind="error" line="15" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="23" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="25" text="if() pointcut designator cannot be used directly in a per clause"/>
+        	<message kind="error" line="27" text="if() pointcut designator cannot be used directly in a per clause"/>
+        </compile>
+    </ajc-test>
+    
+   	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase2.java"/>
+        <run class="Testcase2"/>
+    </ajc-test>
+   	
+   	<ajc-test dir="bugs/IfPerThis"
+		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc">
+        <compile files="Testcase3.java">
+        	<message kind="error" line="2" text="if() pointcut designator cannot be used directly in a per clause"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/bug70619"
+		pr="70619" title="compiler aborts with 'conflicting dominates orders' with circular declare precedences">
+        <compile files="Precedence.java">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order2.aj,Order1.aj">        
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+        <compile files="Conflict.java,Order1.aj,Order2.aj">
+          <message kind="error" line="0" text="conflicting declare precedence"/>
+        </compile>
+    </ajc-test>
+ 
+    <ajc-test dir="bugs"
+		pr="53999" title="'can't bind type' message has $ for . in type name for declare soft">
+        <compile files="Cosmetic.java">
+        <message kind="error" line="9" text="can't bind type name 'unknown.Error'"/>
+        </compile>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs/intertypeOverrides"
+		pr="69459" title="Hiding of Instance Methods by static methods">
+        <compile files="IntertypeOverrides.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overriding method is static"/>
+        </compile>
+        <compile files="IntertypeOverrides2.java">
+          <message kind="error" line="8" text="void Sub.m() cannot override void Super.m(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect1.java">
+          <message file="Aspect1.java" kind="error" line="2" 
+             text="void Subclass.staticMethod() cannot override void Superclass.staticMethod(); overridden method is static"/>
+        </compile>
+        <compile files="Superclass.java,Subclass.java,Aspect2.java">
+          <message file="Aspect2.java" kind="error" line="2"
+             text="void Subclass.nonstaticMethod() cannot override void Superclass.nonstaticMethod(); overriding method is static"/>
+        </compile>
+    </ajc-test>
+   
+      <ajc-test dir="new"
+      title="if(false) optimisation" pr="48990">
+        <compile files="IfFalse.aj" options="-1.4"/>
+        <run class="IfFalse"/>
+    </ajc-test>
+   
+    <ajc-test dir="new"
+      title="if(true) optimisation" pr="48990">
+        <compile files="IfTrue.aj" options="-1.4"/>
+        <run class="IfTrue"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs/abstractITDs"
+		pr="64331" title="java.lang.NullPointerException in WeaverMessageHandler class">
+        <compile files="A.java,C.java" aspectpath="B.jar">
+          <message kind="error" line="1" text="must implement abstract inter-type declaration: void A.foo()"/>
+        </compile>
+    </ajc-test>
+  
+   <ajc-test dir="bugs/pr64262"
+      title="ClassCastException at BcelRenderer.java:169" pr="64262">
+        <compile files="PrimitiveCoercionInExactTypePatternMatching.java"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs"
+		pr="61536" title="Front-end bug, shouldn't allow patterns of the form foo.., should be foo..*">
+        <compile files="EllipsesStar.java">
+          <message kind="error" line="3" text="Syntax error on token"/>
+          <message kind="error" line="4" text="Syntax error on token"/>
+          <message kind="error" line="5" text="Syntax error on token"/>
+          <message kind="error" line="6" text="Syntax error on token"/>
+          <message kind="error" line="8" text="Syntax error on token"/>
+          <message kind="error" line="10" text="Syntax error on token"/>
+          <message kind="error" line="12" text="Syntax error on token"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs"
+		pr="67774" title="Nullpointer-Exception when defining a withincode() pointcut">
+        <compile files="WithincodeNPE01.java">
+          <!-- there are 3 join points that result in decw match, but 2 are on the same line! -->
+          <message kind="warning" line="2" text="In String ctor"/>
+          <message kind="warning" line="11" text="In String ctor"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="60015"
+      title="NPE, Incorrect XLint:unmatchedSuperTypeInCall warning">
+      <compile files="IncorrectXlintOnInterface.java">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/typeVisibilityProblem" pr="67591"
+      title="invalid warning indicating no match when a match really occurs">
+      <compile files="Main.java">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="71273"
+      title="RuntimeException thrown: Could not find instruction: org.apache.bcel.generic.B2I">
+      <compile files="NoByteToInt.java"/>
+      <run class="NoByteToInt"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private method call in around advice">
+    	<compile files="JoinPointInAroundAdvice.java"/>
+    	<run class="JoinPointInAroundAdvice"/>
+   	</ajc-test>
+    
+   <ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private field sets in around advice">
+    	<compile files="FieldJoinPointsInAroundAdvice.java"/>
+    	<run class="FieldJoinPointsInAroundAdvice"/>
+   	</ajc-test>
+   	
+   	<ajc-test dir="bugs/AroundAdviceJPs" pr="71377"
+    	title="Cannot advise private field gets in around advice">
+    	<compile files="FieldGetJoinPointsInAroundAdvice.java"/>
+    	<run class="FieldGetJoinPointsInAroundAdvice"/>
+   	</ajc-test>
+
+<!--
+	commented out as test takes over 5 minutes to run - reinstate if you need to investigate 70201 for
+	any reason.
+	<ajc-test dir="bugs" pr="70201"
+    	title="Branch target offset too large for short">
+        <compile files="VeryLongBranch.java"/>
+	</ajc-test>
+-->
+
+<!-- these next two tests commented out as they take minutes to run - reinstate if you need to 
+	investigate 59208 for any reason 
+	<ajc-test dir="bugs/pr59208" pr="59208"
+    	title="Weaver fails in BCEL for large classes">
+        <compile files="Foo.java, A.aj">
+	        <message kind="error" line="0" text="constant pool too big"></message>
+	    </compile>
+	</ajc-test>
+
+
+	<ajc-test dir="bugs/pr59208" pr="59208"
+    	title="Weaver fails in BCEL for large classes (binary)">
+        <compile 
+        	aspectpath="test.jar"
+        	inpath="classes">
+	        <message kind="error" line="0" text="constant pool too big"></message>
+	    </compile>
+	</ajc-test>
+-->
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (1)">
+    	<compile files="Proceeding1.aj"/>
+    	<run class="Proceeding1"/>
+   	</ajc-test>
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (2)">
+    	<compile files="Proceeding2.aj"/>
+    	<run class="Proceeding2"/>
+   	</ajc-test>
+
+  	<ajc-test dir="bugs/pr53981" pr="538981"
+    	title="proceed used as method name in around advice (3)">
+    	<compile files="Proceeding3.aj"/>
+    	<run class="Proceeding3"/>
+   	</ajc-test>
+
+	<ajc-test dir="bugs" pr="61572"
+    	title="ITDs on inner classes should be static context">
+    	<compile files="PR61572.aj">
+	        <message kind="error" line="19" text="Cannot make a static reference to the non-static field zzz"></message>
+    	</compile>
+   	</ajc-test>
+
+    <ajc-test dir="bugs/oxford" pr="65319"
+	  	title="ajc crashes when compiling the following program (binding this() and target())">
+		<compile files="PR65319.java">
+		    <!-- target comes before this comes before args, and we only report one error -->
+			<message kind="error" line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="25" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="27" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+			<message kind="error" line="29" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+		</compile>
+	</ajc-test>
+	
+<!-- should NOT raise error, despite Oxford expectations to the contrary -->
+	<ajc-test dir="bugs/oxford" pr="62475"
+	  	title="resolution of IT field inits">
+		<compile files="PR62475.java">
+		</compile>
+	</ajc-test>
+	
+
+	<ajc-test 
+    	dir="bugs/invalidAbsoluteTypeName" 
+    	pr="65925"
+		title="Valid but inaccessible type names should not be flagged by XLint:invalidAbsoluteTypeName">
+        <compile files="False_InvalidAbsoluteTypeName.java">
+        	<message kind="warning" line="17"/>
+        </compile>
+        <run class="False_InvalidAbsoluteTypeName"/>
+    </ajc-test>
+ 
+  	<ajc-test dir="bugs/PR68991" pr="68991"
+    	title="intertype initialisers should match field set pointcuts">
+    	<compile files="Simple.java"/>
+    	<run class="Simple"/>
+   	</ajc-test>
+   	 	
+   	<ajc-test dir="bugs/PR68991" pr="68991"
+    	title="intertype initialisers should match field set pointcuts (oxford testcase)">
+    	<compile files="Oxford.java"/>
+    	<run class="Oxford"/>
+   	</ajc-test>
+	
+	<ajc-test dir="bugs" pr="54421"
+		title="Compile time declarations (warning and error) do not accept string concatenation (with +)">
+        <compile files="decwStrings.java">
+        	<message kind="warning" line="5"/>
+			<message kind="warning" line="19" text="hello world"/>
+			<message kind="warning" line="22" text="hello world"/>
+			<message kind="warning" line="25" text="hello world"/>
+			<message kind="warning" line="30" text="hello world"/>
+			<message kind="warning" line="34" text="hello world"/>
+			<message kind="warning" line="39" text="abcdefghijklmnopqrstuvwxyz"/>
+        </compile>
+    </ajc-test>
+	
+	<ajc-test dir="bugs" pr="54421"
+		title="Compile time declarations (warning and error) do not accept string concatenation (with +) (2)">
+        <compile files="decwStringsErroneous.java">
+			<message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+	    
+	<ajc-test dir="bugs/oxford" pr="61768"
+	  	title="scope for inter-type methods">
+		<compile files="PR61768.java">
+			<message kind="error" line="37" text="No enclosing instance of type Aspect is accessible"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect">
+		<compile files="PrivateCall.java"/>
+		<run class="PrivateCall"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (2)">
+		<compile files="PrivateCall2.java,PrivateCall3.java"/>
+		<run class="def.PrivateCall3"/>
+	</ajc-test>
+		
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (3)">
+		<compile files="PrivateCallInstance.java"/>
+		<run class="PrivateCallInstance"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/doYouHaveVisiblePrivates" pr="71372"
+	  	title="NoSuchMethodError calling private method from around advice in inner aspect (4)">
+		<compile files="PrivateCall_Instance_Package1.java,PrivateCall_Instance_Package2.java"/>
+		<run class="def.PrivateCall_Instance_Package2"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/privilegedNPE" pr="67579"
+	  	title="NPE on privileged aspect error">
+		<compile files="a/ITD.aj,b/B.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/privilegedNPE" pr="67579"
+	  	title="NPE on privileged aspect error (2)">
+		<compile files="b/B.aj,a/ITD.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs/privilegedAccess" pr="67578"
+	  	title="Privileged Aspect Access Problem Across Packages">
+		<compile files="b/B.aj,a/ITD.aj"/>
+		<run class="b.B"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/privilegedAccess" pr="67578"
+	  	title="Privileged Aspect Access Problem Across Packages (2)">
+		<compile files="b/B_notPrivileged.aj,a/ITD.aj">
+			<message kind="error" line="7" text="The method returnNothing(Object) from the type ITD is not visible"/>
+		</compile>
+	</ajc-test>
+		
+	<ajc-test dir="bugs" pr="62642"
+	  	title="proper handling of ExceptionInIntializer inside clinit in presence of after throwing advice">
+		<compile files="pr62642.java"/>
+		<run class="pr62642"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs" pr="64069"
+	  	title="ITD name clashes with private members">
+		<compile files="PR64069.aj">
+			<message kind="error" line="5" text="conflicts with existing member"/>
+			<message kind="error" line="10" text="conflicts with existing member"/>
+			<message kind="error" line="14" text="conflicts with existing member"/>
+			<!-- new error expected due to 275032 change - the itd for the ctor will be ignored in the clash case -->
+			<message kind="error" line="41" text="The constructor A() is not visible"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/pr71723" pr="71723"
+	  	title="Inconsistency in scoping of protected members in ITDs">
+		<compile files="foo/Foo.java,bar/Bar.aj">
+			<message kind="error" line="8" text="The method i() from the type Foo is not visible"/>
+			<message kind="error" line="9" text="The method ancientI() from the type Foo is not visible"/>
+			<message kind="error" line="10" text="The method ancientJ() from the type AncientFoo is not visible"/>
+			<message kind="error" line="11" text="The method clone() from the type Object is not visible"/>
+			<message kind="error" line="12" text="Cannot make a static reference to the non-static method clone() from the type Object"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="design/sourceLines" pr="37020"
+	  	title="wrong line for method execution join point">
+		<compile files="TestSourceLines.java">
+			<message kind="warning" line="1" text="static init"/>
+			<message kind="warning" line="12" text="cons execution"/>
+			<message kind="warning" line="12" text="pre-init"/>
+			<message kind="warning" line="12" text="just-init"/>
+			<message kind="warning" line="16" text="cons execution"/>
+			<message kind="warning" line="16" text="just-init"/>
+			<message kind="warning" line="16" text="pre-init"/>
+			<message kind="warning" line="20" text="method execution"/>
+			<message kind="warning" line="24" text="method execution"/>
+			<message kind="warning" line="28" text="method execution"/>
+			<message kind="warning" line="35" text="static init"/>
+			<message kind="warning" line="35" text="just-init"/>
+			<message kind="warning" line="35" text="pre-init"/>
+			<message kind="warning" line="39" text="pre-init"/>
+			<message kind="warning" line="39" text="just-init"/>
+			<message kind="warning" line="39" text="static init"/>
+			<message kind="warning" line="47" text="advice"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (1)">
+		<compile files="PublicPublic.java"/>
+	</ajc-test>
+		
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (2)">
+		<compile files="PackagePublic.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (3)">
+		<compile files="PackagePackage.java">
+			<message kind="error" line="17" text="abstract intertype method declaration 'void PackagePackage.world()' on interface PackagePackage must be declared public (compiler limitation)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs/interfaceITDs" pr="70794"
+	  	title="The introduction on interface causes the interface implementation class error (4)">
+		<compile files="PublicPackage.java">
+			<message kind="error" line="13" text="abstract intertype method declaration 'void PublicPackage.world()' on interface PublicPackage must be declared public (compiler limitation)"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs/pr72531" pr="72531"
+	  	title="declare warning warns at wrong points">
+		<compile files="de/rohith/HelloWorld.java,de/rohith/HelloWorldAspect.java,de/rohith/PrinterWorld.java">
+			<message kind="warning" line="15" text="*[] returning method called"/>
+			<message kind="warning" line="22" text="*[] returning method called"/>
+		</compile>
+	</ajc-test>
+
+    <ajc-test dir="bugs" pr="72699"
+	   title="Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (1)">
+	   <compile files="BogusMessage.java">
+	      <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an abstract aspect"/>
+       </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="72699"
+	   title="Bogus error message: The abstract method ajc$pointcut$$tracingScope$a2 in type Tracing can only be defined by an abstract class (2)">
+	   <compile files="BogusMessage2.java">
+	     <message kind="error" line="1" text="The type BogusMessage2 must be an abstract class to define abstract methods"/>
+	     <message kind="error" line="2" text="The abstract pointcut tracingScope can only be defined in an aspect"/>
+	   </compile>
+    </ajc-test>
+	
+	<ajc-test dir="bugs/pr70404" pr="70404" 
+		title="passing null to array arguments confuzes static join point signature. (1)">
+	  <compile files="Main.java,MainAspect.java"/>
+	  <run class="dk.infimum.aspectjtest.Main"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs/pr70404" pr="70404" 
+		title="passing null to array arguments confuzes static join point signature. (2)">
+	  <compile files="Main2.java,MainAspect.java"/>
+	  <run class="dk.infimum.aspectjtest.Main2"/>
+	</ajc-test>
+	
+    <ajc-test dir="bugs" pr="72528"
+		title="around advice throws java.lang.VerifyError at runtime">
+		<compile files="ArrayCloning.java"/>
+		<run class="ArrayCloning"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs" pr="72157"
+		title="declare soft can cause programs with invalid exception behaviour to be generated">
+		<compile files="PR72157.java">
+ 	      <message kind="error" line="13" text="Unhandled"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test 
+    	dir="bugs" 
+    	pr="75129"
+		title="NPE on thisJoinPoint mistake">
+        <compile files="TjpMistake.java">
+        	<message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters (1)">
+        <compile files="CounterTest01.java"/>
+		<run class="CounterTest01"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - shared counters (2)">
+        <compile files="CounterTest02.java" options="-1.4"/>
+		<run class="CounterTest02"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - shared stacks (3)">
+        <compile files="CounterTest03.java"/>
+		<run class="CounterTest03"/>
+    </ajc-test>
+	
+	<ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters (4)">
+        <compile files="CounterTest04.java" options="-1.4"/>
+		<run class="CounterTest04"/>
+    </ajc-test>
+	
+    <ajc-test dir="cflow" pr="76030" title="Optimization of cflow - counters with abstract pointcuts (5)">
+        <compile files="CounterTest05.java"/>
+		<run class="CounterTest05"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs/pr76096" pr="76096" title="Anonymous classes unaware of introductions into abstract classes">
+        <compile files="ConcreteClassA.java"/>
+        <run class="ConcreteClassA"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs" pr="74952" title="before,after not (cflow(within(Trace*))) prints nothing">
+        <compile files="WhatsGoingOn.java"/>
+        <run class="WhatsGoingOn"/>
+    </ajc-test>

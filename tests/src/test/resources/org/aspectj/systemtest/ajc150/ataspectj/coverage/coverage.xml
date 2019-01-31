@@ -1,0 +1,320 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.0 Tests -->
+
+<suite>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect extending Aspect">
+        <compile files="Test001.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect with codestyle pointcut">
+        <compile files="Test002.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="Codestyle Aspect with @Pointcut">
+        <compile files="Test003.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut declared on codestyle advice">		
+        <compile files="Test004.java" options="-1.5">
+        <message kind="error" line="9" text="Only @AdviceName AspectJ annotation allowed on advice"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect class extending @Aspect class">
+        <compile files="Test005.java" options="-1.5">
+            <message kind="error" line="9" text="cannot extend a concrete aspect"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="class with @Before extending @Aspect class">
+        <compile files="Test006.java" options="-1.5">
+        <message kind="error" line="10" text="a class cannot extend an aspect"/>
+        <message kind="error" line="12" text="Advice must be declared inside an aspect type"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before declared on codestyle advice">
+        <compile files="Test007.java" options="-1.5">
+        <message kind="error" line="8" text="Duplicate annotation @Before"/>
+        <message kind="error" line="9" text="Only @AdviceName AspectJ annotation allowed on advice"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut not returning void">
+        <compile files="Test008.java" options="-1.5">
+            <message kind="error" line="10" text="Pointcuts should have an empty method body"/>
+            <message kind="error" line="10" text="Methods annotated with @Pointcut must return void"/>
+         </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut on @Aspect class constructor">
+        <compile files="Test009.java" options="-1.5">
+        <message kind="error" line="7" text="The annotation @Pointcut is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect on interface">
+        <compile files="Test010.java" options="-1.5">
+        <message kind="error" line="6" text="only classes can have an @Aspect annotation"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut on non-aspect class method">
+        <compile files="Test011.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before on non-aspect class method">
+        <compile files="Test012.java" options="-1.5">
+        <message kind="error" line="6" text="Syntax error on token &quot;&quot;"/>
+        <message kind="error" line="7" text="Advice must be declared inside an aspect type"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut on Interface method">
+        <compile files="Test013.java" options="-1.5">
+        <message kind="error" line="8" text="pointcuts can only be declared in a class or an aspect"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut with garbage string">
+        <compile files="Test014.java" options="-1.5">
+        <message kind="error" line="7" text="String literal is not properly closed by a double-quote"/>
+        <message kind="error" line="8" text="Syntax error, insert &quot;}&quot; to complete BlockStatements"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut with non-empty method body">
+        <compile files="Test015.java" options="-1.5">
+        <message kind="error" line="8" text="Pointcuts should have an empty method body"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut with throws clause">
+        <compile files="Test016.java" options="-1.5">
+        <message kind="error" line="8" text="pointcuts cannot throw exceptions!"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect used badly">
+        <compile files="Test017.java" options="-1.5">
+        <message kind="error" line="5" text="Syntax error, insert &quot;interface JavaIdentifier&quot; to complete InterfaceHeader"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before declared on @Aspect class constructor">
+        <compile files="Test018.java" options="-1.5">
+        <message kind="error" line="7" text="The annotation @Before is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@AfterReturning with wrong number of args">
+        <compile files="Test019.java" options="-1.5">
+        <message kind="error" line="7" text="formal unbound in pointcut"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before on non-public method">
+        <compile files="Test020.java" options="-1.5">
+        <message kind="error" line="7" text="advice must be public"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before on method not returning void">
+        <compile files="Test021.java" options="-1.5">
+        <message kind="error" line="7" text="This advice must return void"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut with wrong number of args">
+        <compile files="Test022.java" options="-1.5">
+        <message kind="error" line="8" text="formal unbound in pointcut"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareParents with interface extending interface">
+        <compile files="Test023.java" options="-1.5">
+        <message kind="error" line="11" text="@DeclareParents must be called before a class implementing a single interface"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareParents with interface extending interface">
+        <compile files="Test024.java" options="-1.5">
+        <message kind="error" line="13" text="@DeclareParents must be called before a class implementing a single interface"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareParents used outside of an Aspect">
+        <compile files="Test025.java" options="-1.5">
+        <message kind="error" line="9" text="@DeclareParents must be called inside an aspect"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareParents on an @Aspect">
+        <compile files="Test026.java" options="-1.5">
+        <message kind="error" line="11" text="@DeclareParents must be called before a class implementing a single interface"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareParents on an @Aspect with @DeclarePrecidence">
+        <compile files="Test027.java" options="-1.5">
+        <message kind="error" line="12" text="@DeclareParents must be called before a class implementing a single interface"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareWarning with a non-final String">
+        <compile files="Test028.java" options="-1.5">
+        <message kind="error" line="6" text="@DeclareWarning must be called before a static final String"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareWarning with a static final Object (that is a String)">
+        <compile files="Test029.java" options="-1.5">
+        <message kind="error" line="7" text="Is this an error?"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareWarning with a static final Integer">
+        <compile files="Test030.java" options="-1.5">
+        <message kind="error" line="6" text="@DeclareWarning must be called before a static final String"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Around given an extension of ProceedingJoinPoint">
+        <compile files="Test031.java" options="-1.5">
+        <message kind="error" line="11" text="formal unbound in pointcut"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="calling @Before advice explicitly as a method">
+        <compile files="Test032.java" options="-1.5">
+        <message kind="error" line="14" text="Advice should never be called explicitly"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before on Interface method">
+        <compile files="Test033.java" options="-1.5">
+        <message kind="error" line="7" text="advice must be public"/>
+        <message kind="error" line="7" text="Advice must be declared inside an aspect type"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Aspect Aspect double declaration">
+        <compile files="Test034.java" options="-1.5">
+        <message kind="error" line="5" text="The annotation @Aspect is only allowed before a class definition"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before and @After on one method">
+        <compile files="Test035.java" options="-1.5">
+        <message kind="error" line="7" text="The annotation @After is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before twice on one method">
+        <compile files="Test036.java" options="-1.5">
+        <message kind="error" line="6" text="Duplicate annotation @Before"/>
+        <message kind="error" line="7" text="Duplicate annotation @Before"/>
+        <message kind="error" line="7" text="The annotation @Before is disallowed for this location"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before advice with empty string">
+        <compile files="Test037.java" options="-1.5">
+            <message kind="error" line="6" text="Syntax error on token &quot;&quot;"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="isPrivileged=truu misspelling">
+        <compile files="Test038.java" options="-1.5">
+        <message kind="error" line="5" text="The attribute isPrivileged is undefined for the annotation type Aspect"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Pointcut with an empty string">
+        <compile files="Test039.java" options="-1.5">
+            <message kind="error" line="11" text="Syntax error on token &quot;&quot;"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@Before with &amp;&amp; in string">
+        <compile files="Test040.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@AdviceName given an empty string">
+        <compile files="Test041.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@AdviceName used on @Before advice">
+        <compile files="Test042.java" options="-1.5">
+        <message kind="error" line="6" text="AdviceName annotation cannot be used for advice defined using annotation style"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="The Moody example">
+        <compile files="Test043.java" options="-1.5">
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="java5/ataspectj/coverage"
+		pr="" title="@DeclareWarning">
+        <compile files="Test044.java" options="-1.5">
+        <message kind="warning" line="13" text="This call is warned"/>
+        </compile>
+    </ajc-test>
+    
+    
+    
+    
+    
+</suite>

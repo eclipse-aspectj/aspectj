@@ -1,0 +1,51 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.1 Tests -->
+<suite>
+    
+    <ajc-test dir="features151/serialveruid" title="basic">
+        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID"/>
+        <run class="Basic">
+          <stderr>
+             <line text="SerialVersionUID is -7868414887470674287"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features151/serialveruid" title="basic - lint">
+        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type Basic"/>
+        </compile>
+        <run class="Basic">
+          <stderr>
+             <line text="SerialVersionUID is -7868414887470674287"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features151/serialveruid" title="horrible">
+        <compile files="BigHorribleClass.java,AnAspect.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type BigHorribleClass"/>
+        </compile>
+        <run class="BigHorribleClass">
+          <stderr>
+             <line text="SerialVersionUID is -3425710461209091702"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+	<ajc-test dir="features151/serialveruid" title="abstract class">
+	  <compile files="TwoTypes.java,Test.java,ATest.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+          <message kind="warning" text="calculated SerialVersionUID for type TwoTypes"/>
+          <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.Test to be -1674849842374764518L"/>
+          <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.ATest to be -7300724421810308152L"/>
+	  </compile>
+	  <run class="TwoTypes">
+	    <stderr>
+	      <line text="Test SerialVersionUID is -1674849842374764518"/>
+		  <line text="ATest SerialVersionUID is -7300724421810308152"/>
+	    </stderr>
+	  </run>
+	</ajc-test>
+    
+</suite>

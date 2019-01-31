@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs181/436531" title="parameter names attribute">
+		<compile options="-1.8" files="Azpect.java" inpath="code.jar"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs181/431976" title="variable not initialized">
+		<compile options="-1.8" files="AbstractDependencyInjectionAspect.aj"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs181/431976" title="thisEnclosingJoinPointStaticPart not initialized">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs181/435446" title="lvartable">
+		<compile options="-1.8" files="Application.java MyAspect.java">
+		</compile>
+		<run class="de.scrum_master.app.Application">
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs181/377096" title="broken annotations">
+		<compile options="-1.5 -proceedOnError" files="A.java">
+		<message kind="error" text="The attribute wibble is undefined for the annotation type A"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs181/433744" title="default methods">
+		<compile options="-1.8" files="AnIterator.java"/>
+	</ajc-test>
+
+</suite>

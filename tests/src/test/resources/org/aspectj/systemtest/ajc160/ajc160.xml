@@ -1,0 +1,187 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Tests -->
+<suite>
+
+    <ajc-test dir="bugs160/pr226567" title="pipeline compilation and generic return type">
+        <compile files="BarAspect.aj Foo.java Bar.java" options="-1.5"/>
+        <compile files="BarAspect.aj Bar.java Foo.java" options="-1.5"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs160/pr225916" title="pipeline compilation and anonymous type">
+		<compile files="Test.java TestMBean.java TestAspect.java" options="-showWeaveInfo">
+		 <message kind="weave" text="Join point 'method-execution(java.lang.String test.jmx.Test.test())' in Type"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs160/pr214994" title="generic itd">
+		<compile files="Broke.java" options="-1.5"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs160/pr223605" title="generic decp ltw">
+		<compile files="GenericConfigurableBugTest.java" options="-1.5"><!-- -showWeaveInfo"-->
+		</compile>
+		<run class="test.GenericConfigurableBugTest"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs160/pr173602" title="duplicate itd npe">
+		<compile files="X.java">
+		  <message kind="error" line="2" text="intertype declaration from "/>
+		  <message kind="error" line="3" text="intertype declaration from "/>
+		  <message kind="error" line="6" text="intertype declaration from "/>
+		</compile>
+	</ajc-test>
+	
+    <ajc-test dir="bugs160/pr223094" title="ltw inherited itds">
+      <compile files="B.java" outjar="foo.jar"/>
+      <compile files="A.java" classpath="$sandbox/foo.jar"/>
+      <run class="p.A" classpath="$sandbox/foo.jar" ltw="aop.xml">
+        <stdout>
+          <line text="ok"/>
+ 	    </stdout>
+      </run>
+    </ajc-test>
+
+   <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type">
+     <compile options="-1.5" files="AspectBreaker.java"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr167197" title="generic type parameterized with array type - 2">
+     <compile options="-1.5" files="Breaker2.java"/>
+     <run class="Breaker2"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr180264" title="classcastexception on array type">
+     <compile options="-warn:+uselessTypeCheck" files="Foo.java,Main.java"/>
+   </ajc-test>
+   
+	<ajc-test dir="bugs160/pr145018" title="ataj crashing with cflow, if and args">
+     <compile files="Broken.aj" options="-1.5"/>
+     <run class="Broken">
+     </run>
+    </ajc-test> 
+    
+	<ajc-test dir="bugs160/pr201748" title="itd with array">
+     <compile files="Foo.java">
+       <message kind="error" text="Type mismatch: cannot convert from Factory[] to Factory"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/various" title="incorrect itd error with generics">
+     <compile options="-1.5 -showWeaveInfo" files="IncorrectMessage.java">
+       <message kind="weave" text="Type 'Foo' (IncorrectMessage.java) has intertyped method from 'AspectDoWhatEver' (IncorrectMessage.java:'void Marker.doWhatEver()')"/>
+       <message kind="weave" text="Type 'Marker' (IncorrectMessage.java) has intertyped method from 'AspectDoWhatEver' (IncorrectMessage.java:'void Marker.doWhatEver()')"/>
+     </compile>       
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/various" title="incorrect itd error with generics - 2">
+     <compile options="-1.5 -showWeaveInfo" files="IncorrectMessage2.java">
+       <message kind="weave" text="Type 'Foo' (IncorrectMessage2.java) has intertyped method from 'AspectDoWhatEver' (IncorrectMessage2.java:'void Marker.doWhatEver()')"/>
+       <message kind="weave" text="Type 'Marker' (IncorrectMessage2.java) has intertyped method from 'AspectDoWhatEver' (IncorrectMessage2.java:'void Marker.doWhatEver()')"/>
+     </compile>       
+   </ajc-test>
+   
+   
+   <ajc-test dir="bugs160/various" title="hasmethod anno value - I">
+     <compile options="-1.5 -XhasMember -showWeaveInfo" files="A.java">
+       <message kind="weave" text="Extending interface set for type 'B' (A.java) to include 'java.io.Serializable' (A.java)"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/various" title="hasmethod anno value - Z">
+     <compile options="-1.5 -XhasMember -showWeaveInfo" files="Z.java">
+       <message kind="weave" text="Extending interface set for type 'B' (Z.java) to include 'java.io.Serializable' (Z.java)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/various" title="hasmethod anno value - S">
+     <compile options="-1.5 -XhasMember -showWeaveInfo" files="S.java">
+       <message kind="weave" text="Extending interface set for type 'B' (S.java) to include 'java.io.Serializable' (S.java)"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/various" title="hasmethod semantics">
+     <compile options="-1.5 -XhasMember -Xlint:ignore" files="HasMethodSemantics.java"/>
+     <run class="HasMethodSemantics">
+       <stdout>
+         <line text="Implements Marker? no"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr204505" title="generics method matching - 1">
+     <compile options="-1.5 -showWeaveInfo" files="Bug.java">
+       <message kind="weave" text="execution(void C.save(java.lang.Object))"/>
+       <message kind="weave" text="execution(void C.saveAll(java.util.Collection))"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr204505" title="generics method matching - 2">
+     <compile options="-1.5" files="GenericInterfaceWithGenericArgumentPointcutBug.java"/>
+     <run class="mypackage.GenericInterfaceWithGenericArgumentPointcutBug"/>
+   </ajc-test>  
+   
+   <ajc-test dir="bugs160/pr219298" title="bounds check failure">
+     <compile options="-1.5" files="TestMarkers.java">
+       <message kind="error" line="11" text="Bound mismatch: The type TestMarkers.SubGenericsType is not a valid substitute for the bounded"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr219298" title="bounds check failure - 2">
+     <compile options="-1.5" files="TestMarkers2.java"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr218167" title="dec field problem">
+     <compile options="-1.5" files="Test.java">
+       <message kind="warning" text="already has an annotation of type A, cannot add a second instance"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr206911" title="generics super itd">
+     <compile options="-1.5" files="VerifyError.java"/>
+     <run class="bugs.VerifyError"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr206911" title="generics super itd - 2">
+     <compile options="-1.5" files="VerifyError2.java"/>
+     <run class="bugs.VerifyError2"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr216311" title="serialization and annotation style">
+     <compile options="-1.5" files="PersistabilityTest.java,IPersistable.java,Persistability.java"/>
+     <run class="PersistabilityTest"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem">
+     <compile files="X.java"/>
+     <run class="test.X"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem - 2">
+     <compile files="Y.java"/>
+     <run class="Y"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr214559" title="decp repetition problem - 3">
+     <compile files="TestClass.java Interface1.java Interface1TestClass.java DeclareParentsPrecedenceTest.java TestAspect.java"/>
+     <run class="DeclareParentsPrecedenceTest"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr209831" title="illegal state exception with annotations">
+     <compile options="-1.5 -showWeaveInfo" files="Test.java">
+       <message kind="weave" text="Join point 'exception-handler(void Test.&lt;catch&gt;(java.lang.Throwable))' in Type 'Test' (Test.java:34) advised by before advice from 'ExactAnnotationTypePatternBug' (Test.java:5)"/>
+     </compile>
+     <run class="Test"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs160/pr209831" title="illegal state exception with annotations - 2">
+     <compile options="-Xlint:ignore -1.5 -showWeaveInfo" files="Test2.java"/>
+     <run class="Test2"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs160/pr211146" title="itd lost generic signature">
+     <compile options=" -1.5" files="StringAspect.aj,StringClass.java" outjar="foo.jar"/>
+     <compile options=" -1.5" files="DemoUsage.java" classpath="foo.jar"/>
+   </ajc-test>
+   
+</suite>

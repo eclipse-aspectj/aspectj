@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="features164/joinpointid" title="casea">
+     <compile files="Driver.java" options="-1.5"/>
+     <run class="Driver">
+       <stdout>
+         <line text="At void A.mone() id=0 state=0"/>
+         <line text="At void A.mtwo() id=1 state=0"/>
+         <line text="At void A.mone() id=0 state=1"/>
+         <line text="At void A.mtwo() id=1 state=1"/>
+         <line text="At void A.mone() id=0 state=2"/>
+         <line text="At void A.mtwo() id=1 state=2"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+</suite>

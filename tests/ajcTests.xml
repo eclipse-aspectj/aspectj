@@ -1,20 +1,20 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd" [
-<!ENTITY ajc10xTests SYSTEM "../tests/src/org/aspectj/systemtest/ajc10x/ajc10x-tests.xml">
-<!ENTITY ajc11Tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc11/ajc11-tests.xml">
-<!ENTITY ajc120Tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc120/ajc120-tests.xml">
-<!ENTITY ajc121Tests SYSTEM "../tests/src/org/aspectj/systemtest/ajc121/ajc121-tests.xml">
-<!ENTITY aspectpathTests SYSTEM "../tests/src/org/aspectj/systemtest/aspectpath/aspectpath-tests.xml">
-<!ENTITY baseTests SYSTEM "../tests/src/org/aspectj/systemtest/base/baseTests-tests.xml">
-<!ENTITY designTests SYSTEM "../tests/src/org/aspectj/systemtest/design/designtest.xml">
-<!ENTITY incrementalTests SYSTEM "../tests/src/org/aspectj/systemtest/incremental/incremental-tests.xml">
-<!ENTITY inpathTests SYSTEM "../tests/src/org/aspectj/systemtest/inpath/inpath-tests.xml">
-<!ENTITY java14Tests SYSTEM "../tests/src/org/aspectj/systemtest/java14/java14-tests.xml">
-<!ENTITY knownlimitationsTests SYSTEM "../tests/src/org/aspectj/systemtest/knownlimitations/knownLimitations-tests.xml">
-<!ENTITY optionsTests SYSTEM "../tests/src/org/aspectj/systemtest/options/options-tests.xml">
-<!ENTITY pre10xTests SYSTEM "../tests/src/org/aspectj/systemtest/pre10x/pre10x-tests.xml">
-<!ENTITY purejavaTests SYSTEM "../tests/src/org/aspectj/systemtest/purejava/pureJava-tests.xml">
-<!ENTITY serialVerUIDTests SYSTEM "../tests/src/org/aspectj/systemtest/serialVerUID/serialVerUID-tests.xml">
-<!ENTITY xlintTests SYSTEM "../tests/src/org/aspectj/systemtest/xlint/xlint-tests.xml">
+<!ENTITY ajc10xTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/ajc10x/ajc10x-tests.xml">
+<!ENTITY ajc11Tests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/ajc11/ajc11-tests.xml">
+<!ENTITY ajc120Tests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/ajc120/ajc120-tests.xml">
+<!ENTITY ajc121Tests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/ajc121/ajc121-tests.xml">
+<!ENTITY aspectpathTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/aspectpath/aspectpath-tests.xml">
+<!ENTITY baseTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/base/baseTests-tests.xml">
+<!ENTITY designTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/design/designtest.xml">
+<!ENTITY incrementalTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/incremental/incremental-tests.xml">
+<!ENTITY inpathTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/inpath/inpath-tests.xml">
+<!ENTITY java14Tests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/java14/java14-tests.xml">
+<!ENTITY knownlimitationsTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/knownlimitations/knownLimitations-tests.xml">
+<!ENTITY optionsTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/options/options-tests.xml">
+<!ENTITY pre10xTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/pre10x/pre10x-tests.xml">
+<!ENTITY purejavaTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/purejava/pureJava-tests.xml">
+<!ENTITY serialVerUIDTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/serialVerUID/serialVerUID-tests.xml">
+<!ENTITY xlintTests SYSTEM "../tests/src/test/resources/org/aspectj/systemtest/xlint/xlint-tests.xml">
 ]>
 
 <!--

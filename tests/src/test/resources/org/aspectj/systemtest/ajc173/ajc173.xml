@@ -1,0 +1,90 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs173/pr407739" title="add remove annos">
+		<compile files="MyAnnotation.java Hello.java Aspect.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="'private String dummy [RuntimeVisibleAnnotations]' of type 'Hello' (Hello.java) has had @MyAnnotation field annotation removed by 'Aspect' (Aspect.java:3)"/>
+			<message kind="weave" text="'private String dummy [RuntimeVisibleAnnotations]' of type 'Hello' (Hello.java) is annotated with @MyAnnotation(dummy2 = &quot;korte&quot;) field annotation from 'Aspect' (Aspect.java:4)"/>		
+		</compile>
+		<run class="Hello">
+		<stdout>
+		<line text="@MyAnnotation(dummy1=, dummy2=korte)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+		<line text="@MyAnnotation(dummy1=&quot;&quot;, dummy2=&quot;korte&quot;)" vm="9+"/>
+		</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr408014" title="inner interface mixin">
+		<compile files="IdentifiableMixin.java" options="-1.5 -showWeaveInfo">		
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr407966" title="ordering">
+		<compile files="Aspect.aj Use.java Def.java" options="-1.5 -showWeaveInfo">
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs173/pr407494" title="inner names">
+		<compile files="A.java" options="-1.5 -showWeaveInfo">		
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$B.&lt;clinit&gt;())' in Type 'a.b.c.A$B' (A.java:4) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A.&lt;clinit&gt;())' in Type 'a.b.c.A' (A.java:3) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$$C.&lt;clinit&gt;())' in Type 'a.b.c.A$$C' (A.java:6) advised by before advice from 'a.b.c.X' (A.java:13)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr407494" title="inner names 2">
+		<compile files="A2.java" options="-1.5 -showWeaveInfo">		
+			<message kind="weave" text="Join point 'staticinitialization(void a.b.c.A$$B$$C.&lt;clinit&gt;())' in Type 'a.b.c.A$$B$$C' (A2.java:10) advised by before advice from 'a.b.c.X' (A2.java:14)"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr405016/one" title="class anno value 1">
+		<compile files="Gimme.java Thingy.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>
+		</compile>
+		<run class="Thingy">
+			<stdout>
+				<line text="I am serializable? true"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr405016" title="class anno value">
+		<compile files="Gimme.java Thingy.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Extending interface set for type 'Thingy' (Thingy.java) to include 'java.io.Serializable' (Thingy.java)"/>
+		</compile>
+		<run class="Thingy">
+			<stdout>
+				<line text="I am serializable? true"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs173/pr404601" title="abstract method error">
+		<compile files="user/IUser.java user/Test.java user/UserTrait.java user/Youser.java" options="-1.5">
+			<message kind="error" text="private intertype declaration 'void UserTrait$I.testSetUsername(java.lang.String)' clashes with public member 'void Youser.testSetUsername(java.lang.String)'"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs173/lyor" title="declare anno on itd">
+      <compile files="Code.java" options="-1.5 -showWeaveInfo">
+      	<message kind="weave" text="'public void Intface.getName()' (Code.java) is annotated with @Foo method annotation from 'A' (Code.java:7)"/>
+		<message kind="weave" text="Type 'C' (Code.java) has intertyped method from 'A' (Code.java:'void Intface.getName()')"/>
+		<message kind="weave" text="Type 'Intface' (Code.java) has intertyped method from 'A' (Code.java:'void Intface.getName()')"/>
+      </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs173/lyor/2" title="declare anno on itd 2">
+		<compile files="A1.java" outjar="aspects1.jar" options="-1.5 -Xlint:ignore"/>
+		<compile files="Intface.java A2.java" aspectpath="aspects1.jar" outjar="aspects2.jar" options="-1.5"/>
+		<compile files="Code.java" aspectpath="aspects1.jar;aspects2.jar" options="-1.5"/>
+		
+      <!-- 
+      	<message kind="weave" text="'public void Intface.getName()' (A2.java) is annotated with @Foo method annotation from 'A1' (A1.java:7)"/>
+		<message kind="weave" text="Type 'C' (Code.java) has intertyped method from 'A2' (A2.java:'void Intface.getName()')"/>
+		<message kind="weave" text="Type 'Intface' (Code.java) has intertyped method from 'A2' (A2.java:'void Intface.getName()')"/>
+		-->
+    </ajc-test>
+
+</suite>

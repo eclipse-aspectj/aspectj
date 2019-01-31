@@ -1,0 +1,777 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.2 Tests -->
+<suite>
+
+    <ajc-test dir="bugs152/pr135001" title="aspect libraries and asm">
+      <compile files="AbstractAspect.java" outjar="lib.jar" options="-1.5"/>
+      <compile files="Foo.java,ConcreteAspect.java" classpath="lib.jar" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void Foo.foo())' in Type 'Foo' (Foo.java:3) advised by around advice from 'ConcreteAspect' (AbstractAspect.java:5)"/>
+      </compile>
+      <run class="Foo">
+         <stderr>
+           <line text="In the advice!"/>
+         </stderr>
+      </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr122253" title="aspects14 - persingleton">
+     <compile files="Singleton.java"/>
+     <run class="Singleton">
+       <stderr>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? SingletonInstance : SingletonInstance"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? SingletonInstance : SingletonInstance"/>
+       </stderr>
+     </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr122253" title="aspects14 - percflow">
+     <compile files="PerCflow.java"/>
+     <run class="PerCflow">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerCflowInstance : PerCflowInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+     
+     <ajc-test dir="bugs152/pr122253" title="aspects14 - perthis">
+     <compile files="PerThis.java"/>
+     <run class="PerThis">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerThisInstance : PerThisInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+        
+     <ajc-test dir="bugs152/pr122253" title="aspects14 - pertypewithin">
+     <compile files="PerTypeWithin.java"/>
+     <run class="PerTypeWithin">
+       <stderr>
+         <line text="before"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+         <line text="during"/>
+         <line text="hasAspect?  true : true"/>
+         <line text="aspectOf? PerTypeWithinInstance : PerTypeWithinInstance"/>
+         <line text="after"/>
+         <line text="hasAspect?  false : false"/>
+         <line text="aspectOf? null : null"/>
+       </stderr>
+     </run>
+    </ajc-test>
+ 
+    
+	<ajc-test dir="bugs152/pr148536" title="NPE for unknown annotation">
+     <compile files="Bug.java" options="-1.5">
+       <message kind="error" line="2" text="SomeAnnotation cannot be resolved to a type"/>
+     </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148537" title="classcast annotation value">
+     <compile files="MyClass.java,MyAspect.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148545" title="nosuchmethoderror for privileged aspect">
+      <compile files="MyClass.java,MyAspect.java,MyAnnotation.java,MyEnum.java" options="-1.5"/>
+      <run class="MyClass"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148545" title="nosuchmethoderror for privileged aspect - 2">
+      <compile files="MyClass.java,MyAspect2.java,MyAnnotation.java,MyEnum.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-execution(void MyClass.test())' in Type 'MyClass' (MyClass.java:8) advised by around advice from 'MyAspect2' (MyAspect2.java:5)"/>
+      </compile>
+      <run class="MyClass"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds">
+     <compile files="Pair.java" options="-1.5"/>
+     <compile files="Test.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr126355" title="bizarre generic error with itds - 2">
+     <compile files="Pair.java" options="-1.5"/>
+     <compile files="Test.java" options="-1.5"/>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr145950" title="fails to discover Serializable">
+     <compile files="Indirect.java" options="-1.5 -XaddSerialVersionUID"/>
+     <run class="Indirect">
+       <stderr>
+         <line text="SerialVersionUID is "/>
+       </stderr>
+     </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type">
+     <compile files="TopLevelType.java" options="-1.5"/>
+     <run class="TopLevelType"/>
+    </ajc-test>
+    
+    
+    <ajc-test dir="bugs152/pr144602" title="atAJ perthis aspect verification error">
+     <compile files="MyAspect.aj" options="-1.5"/>
+     <run class="MyAspect"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type - 2">
+     <compile files="TopLevelType2.java" options="-1.5">
+       <message kind="error" line="12"/> <!-- error message is currently crap - its a parser message -->
+     </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr132349" title="ITD on inner type of generic type - 3">
+     <compile files="TopLevelType3.java" options="-1.5">
+       <message kind="error" line="12" text="Cannot make inter-type declarations on parameterized types"/>
+       <message kind="error" line="7" text="The method someMethod() is undefined for the type TopLevelType3.NestedType"/>
+     </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr135865" title="misbehaving declare annotation">
+      <compile files="B.java,A.java" options="-1.5 -Xlint:ignore">
+      	<!--message kind="weave" text="Join point 'method-call(void B.foo())' in Type 'A' (A.java:32) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="Join point 'method-call(void A.foo())' in Type 'A' (A.java:33) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="' void B.goo()' (A.java:7) is annotated with @Ann method annotation from 'Aspect' (A.java:27)"/-->
+      </compile>
+      <run class="A">
+        <stdout>
+          <line text="Join point: call(void B.foo())"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr135865" title="misbehaving declare annotation - 2">
+      <compile files="A.java,B.java" options="-1.5 -Xlint:ignore">
+      	<!--message kind="weave" text="Join point 'method-call(void B.foo())' in Type 'A' (A.java:32) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="Join point 'method-call(void A.foo())' in Type 'A' (A.java:33) advised by before advice from 'Aspect' (A.java:22) [with runtime test]"/>
+      	<message kind="weave" text="' void B.goo()' (A.java:7) is annotated with @Ann method annotation from 'Aspect' (A.java:27)"/-->
+      </compile>
+      <run class="A">
+        <stdout>
+          <line text="Join point: call(void B.foo())"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr129704" title="annotations and generics leading to BCException">
+      <compile files="A.java" options="-1.5"/>
+      <run class="A">
+        <stderr>
+          <line text="@Marker()"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr136026" title="verifyerror">
+      <compile files="CflowOrder.java" options="-1.5"/>
+      <run class="CflowOrder"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr136026" title="verifyerror - 2">
+      <compile files="CflowOrderOriginal.java" options="-1.5"/>
+      <run class="bugs.CflowOrderOriginal">
+        <stderr>
+          <line text="Starting CflowOrder.main(..)"/>
+          <line text="topAnnotated"/>
+          <!--line text=" Join point: call(void bugs.CflowOrderOriginal.A.foo())"/>
+          <line text=" Enclosing join point: execution(void bugs.CflowOrderOriginal.A.main(String[]))"/>
+          <line text=" Annotation: @bugs.CflowOrderOriginal$Annotation(value=A.foo)"/-->
+          <line text="nonTopAnnotated"/>
+          <!--line text=" Join point: call(void bugs.CflowOrderOriginal.B.foo())"/>
+          <line text=" Enclosing join point: execution(void bugs.CflowOrderOriginal.A.foo())"/>
+          <line text=" Annotation: @bugs.CflowOrderOriginal$Annotation(value=B.foo)"/-->
+          <line text="B.foo()"/>
+          <line text="A.foo()"/>
+          <line text="A.main(..)"/>
+          <line text="Ending CflowOrder.main(..)"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr136258" title="stack overflow">
+      <compile files="StatisticsTypeImpl.java" options="-1.5"/>
+      <run class="StatisticsTypeImpl"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138384" title="method too big">
+      <compile files="BigMethod.java" options="-1.5"> <!-- will be 67628 bytes in the big method -->
+        <message kind="error" line="1" text="problem generating method BigMethod.i_am_a_big_method : Code size too big: 67629"/>
+      </compile>
+      <!--run class="BigMethod"/-->
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138798" title="atWithinCodeBug">
+      <compile files="ErrorHandling.aj" options="-1.5"/>
+      <run class="ErrorHandling">
+         <stderr>
+           <line text="Caught in foo"/>
+         </stderr>
+      </run>      
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138158" title="not at withincode - 1">
+      <compile files="Boo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void Boo.m())' in Type 'Boo' (Boo.java:9) advised by before advice from 'X' (Boo.java:19)"/>
+      </compile>
+      <run class="Boo"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138158" title="not at within - 3">
+      <compile files="Doo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Soo' (Doo.java:20) advised by before advice from 'X' (Doo.java:25)"/>
+      </compile>
+      <run class="Doo"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138158" title="not at withincode - 2">
+      <compile files="Foo.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Foo' (Foo.java:14) advised by before advice from 'X' (Foo.java:26)"/>
+		<message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Foo' (Foo.java:18) advised by before advice from 'X' (Foo.java:23)"/>
+      </compile>
+      <run class="Foo"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137568" title="complicated generics declaration">
+      <compile files="C.java" options="-emacssym -1.5"/>
+      <run class="C"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138143" title="npe on duplicate method with ataj">
+      <compile files="AspectClass.java" options="-1.5">
+        <message kind="error" line="7" text="Duplicate method incomingMessage() in type AspectClass"/>
+        <message kind="error" line="12" text="Duplicate method incomingMessage() in type AspectClass"/>
+        <!-- in e37 the TypeDeclaration.traverse(ASTVisitor,CompilationUnitScope) no longer checks 'ignoreFurtherInvestigation' so gets further -->
+        <message kind="warning" line="11" text="no match for this type name: Incoming [Xlint:invalidAbsoluteTypeName]"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - B">
+      <compile files="B.java" options="-1.5 -showWeaveInfo">
+        <!--message kind="weave" text="Join point 'method-call(java.lang.String C.pm(java.lang.String))' in Type 'B' (B.java:20) advised by before advice from 'X' (B.java:26)"/-->
+        <message kind="weave" text="Join point 'method-call(java.lang.Object C.pm(java.lang.Object))' in Type 'B' (B.java:20) advised by before advice from 'X' (B.java:26)"/>
+        <!--message kind="weave" text="Join point 'method-call(java.lang.String C.pm2(java.lang.String))' in Type 'B' (B.java:21) advised by before advice from 'X' (B.java:27)"/-->
+      </compile>
+      <run class="B">
+        <stderr>
+          <line text="advice"/>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - D">
+      <compile files="D.java" options="-1.5 -showWeaveInfo">
+		<message kind="weave" text="Join point 'method-call(java.lang.String CImpl.pm(java.lang.String))' in Type 'D' (D.java:20) advised by before advice from 'X' (D.java:26)"/>
+		<message kind="weave" text="Join point 'method-call(java.lang.String CImpl.pm2(java.lang.String))' in Type 'D' (D.java:21) advised by before advice from 'X' (D.java:27)"/>
+      </compile>
+      <run class="D">
+        <stderr>
+          <line text="advice"/>
+          <line text="foo"/>
+          <line text="advice2"/>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - E">
+      <compile files="E.java" options="-1.5 -showWeaveInfo">
+      	<message kind="weave" text="Join point 'method-call(java.lang.Object C.pm(java.lang.Object))' in Type 'E' (E.java:18) advised by before advice from 'X' (E.java:23)"/>
+      </compile>
+      <run class="E">
+        <stderr>
+          <line text="advice"/>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - F">
+      <compile files="F.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(java.lang.Object C.pm(java.lang.Object))' in Type 'F' (F.java:18) advised by before advice from 'X' (F.java:23)"/>
+      </compile>
+      <run class="F">
+        <stderr>
+          <line text="advice"/>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - G">
+      <compile files="G.java" options="-1.5 -showWeaveInfo">
+        <message kind="warning" line="23" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
+      </compile>
+      <run class="G">
+        <stderr>
+          <line text="foo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137496" title="pointcuts and generics - H">
+      <compile files="H.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'method-call(java.lang.Object C.pm(java.lang.Object))' in Type 'H' (H.java:20) advised by around advice from 'X' (H.java:26)"/>
+      </compile>
+      <run class="H">
+        <stderr>
+          <line text="advice"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/binaryDecp" title="incorrect overrides evaluation - 1.3">
+      <compile files="SubClassLoader.java,SubSubClassLoader.java" options="-1.3" outjar="lib.jar"/>
+      <compile files="X.aj" inpath="lib.jar" options="-showWeaveInfo">
+        <message kind="weave" text="Setting superclass of type 'SubSubClassLoader' (SubSubClassLoader.java) to 'SubClassLoader' (X.aj)"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/binaryDecp" title="incorrect overrides evaluation - 1.4">
+      <compile files="IsItSynthetic.java" options="-1.5"/>
+      <compile files="Top.java" options="-source 1.5 -target 1.5" outjar="a.jar"/>
+      <compile files="Bottom.java" classpath="$sandbox/a.jar" options="-source 1.4 -target 1.4" outjar="b.jar"/>
+      <compile files="Middle.java" classpath="$sandbox/a.jar" options="-source 1.4 -target 1.4" outjar="c.jar"/>
+      <compile files="X2.aj" classpath="$sandbox/a.jar;$sandbox/b.jar;$sandbox/c.jar" options="-Xlint:ignore" outjar="x.jar"/>
+      <run class="Bottom" classpath="a.jar;b.jar;c.jar;x.jar" ltw="aop.xml"/>
+        <!--message kind="weave" text="Setting superclass of type 'Bottom' (Bottom.java) to 'Middle' (X2.aj)"/-->
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/binaryDecp" title="incorrect overrides evaluation - 1.5">
+      <compile files="SubClassLoader.java,SubSubClassLoader.java" options="-1.5" outjar="lib.jar"/>
+      <compile files="X.aj" inpath="lib.jar" options="-showWeaveInfo">
+        <message kind="weave" text="Setting superclass of type 'SubSubClassLoader' (SubSubClassLoader.java) to 'SubClassLoader' (X.aj)"/>
+      </compile>
+    </ajc-test>
+    
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 1">
+      <compile files="MethodExecution.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="30" text="The declared exception SQLException is not actually thrown by the method needsToThrow() from type C"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 2">
+      <compile files="MethodCall.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="36" text="The declared exception FileNotFoundException is not actually thrown by the method m4() from type C1"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 3">
+      <compile files="InnerMethodCall.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="44" text="The declared exception FileNotFoundException is not actually thrown by the method m4() from type C1"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 4">
+      <compile files="AdviceExecution.aj" options="-1.5 -warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 5">
+      <compile files="ExceptionHandler.aj" options="-warn:+unusedThrown">
+		<message kind="warning" line="34" text="The declared exception MyException is not actually thrown by the method throwingMethod2() from type C"/>
+	  </compile>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 6">
+      <compile files="Initialization.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 7">
+      <compile files="ConstructorCall.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 8">
+      <compile files="ConstructorExecution.aj" options="-warn:+unusedThrown"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 9">
+      <compile files="MethodCallInDiffClass.aj" options="-warn:+unusedThrown"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr129282" title="no unnecessary declaration of thrown exception warning - 10">
+      <compile files="InnerMethodCall2.aj" options="-warn:+unusedThrown"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr138215" pr="138215" title="Reference pointcut fails inside @DeclareWarning">
+      <compile files="pr138215.aj" options="-1.5">
+        <message kind="warning" line="17" text="no foos please"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138219" pr="138219" title="Can't use a FQ Reference pointcut in any pointcut expression referenced by a per-clause">
+      <compile files="PerThisWithReference.aj,SomeOtherType.aj,RegularPCWithReference.aj" options="-1.5">
+      </compile>
+      <run class="PerThisWithReference">
+        <stdout>
+         <line text="before PerThisWithReference:1"/>
+         <line text="before PerThisWithReference:2"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr130722" pr="130722" title="FQ Reference pointcut from perclause ref pc">
+      <compile files="test/Test.java,test/PointcutConsumer.aj,test1/PointcutProvider.aj"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr138220" pr="138220" title="@Aspect with reference pointcut in perclause">
+      <compile files="AtAspectWithPerClause.aj" options="-1.5">
+      </compile>
+    </ajc-test>
+    
+   <ajc-test dir="bugs152/pr144465" title="ltw with serialversionUID creation">
+      <compile files="BigHorribleClass.java"/>
+      <compile files="AnAspect.java" options="-1.4"/>
+      <run class="BigHorribleClass" ltw="aop1.xml">
+        <stderr>
+          <line text="weaveinfo Join point 'staticinitialization(void BigHorribleClass.&lt;clinit&gt;())'"/>
+          <line text="SerialVersionUID is "/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr125480" title="aop.xml aspect inheriting abstract method ">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stdout>
+            <line text="advice running"/>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr125480/case2" title="aop.xml aspect inheriting abstract method - code style">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stdout>
+            <line text="advice running"/>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr142466" title="aop.xml aspect inheriting but not concretizing abstract method">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stderr>
+            <line text="error Abstract method 'void ConcreteMethods.foo(int)' cannot be concretized in XML:"/>
+            <line text="error Concrete-aspect 'TraceHelloWorld' could not be registered"/>
+            <line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
+          </stderr>
+          <stdout>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>
+     
+    <ajc-test dir="bugs152/pr142466/case2" title="aop.xml aspect inheriting but not concretizing abstract method - 2">
+        <compile files="HelloWorld.java"/>
+        <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
+        <run class="HelloWorld" ltw="aop-tracing.xml">
+          <stderr>
+            <line text="error Abstract method 'void AbstractMethods.test()' cannot be concretized in XML"/>
+            <line text="error Concrete-aspect 'TraceHelloWorld' could not be registered"/>
+            <line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
+          </stderr>
+          <stdout>
+            <line text="Hello World!"/>
+          </stdout>
+        </run>
+    </ajc-test>   
+
+    <ajc-test dir="bugs152/pr138223" pr="138223" title="Double at annotation matching (no binding)">
+      <compile files="DoubleAnnotationMatching.aj" options="-1.5">
+      </compile>
+      <run class="DoubleAnnotationMatching">
+        <stderr>
+          <line text="advice running at execution(void Foo.a())"/>
+          <line text="advice running at execution(void TxTrueFoo.a())"/>
+          <line text="advice running at execution(void TxTrueFoo.b())"/>
+          <line text="advice running at execution(void TxTrueFoo.c())"/>
+          <line text="advice running at execution(void TxFalseFoo.a())"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr138286" pr="138286" title="No ClassCastException with perThis">
+      <compile files="A.aj" options="-1.5 -showWeaveInfo">      
+	    <message kind="weave" text="Join point 'initialization(void A.&lt;init&gt;())' in Type 'A' (A.aj:9) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Soo.&lt;init&gt;())' in Type 'Soo' (A.aj:31) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Goo.&lt;init&gt;())' in Type 'Goo' (A.aj:27) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Foo.&lt;init&gt;())' in Type 'Foo' (A.aj:25) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+	    <message kind="weave" text="Join point 'initialization(void Boo.&lt;init&gt;())' in Type 'Boo' (A.aj:29) advised by before advice from 'A' (A.aj:13) [with runtime test]"/>
+      </compile>
+      <run class="A">
+        <stderr>
+          <line text="class Foo"/>
+          <line text="class Boo"/>
+          <line text="class Boo"/> <!-- this one is because of the super() call in Soo's default ctor -->
+          <line text="class Soo"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr139749" pr="139749" title="Super calls in @AspectJ advice">
+	  <compile files="AroundAdvicePassingPjpAsArgToSuper.java" options="-1.5">
+	  </compile>
+	  <run class="a.b.c.AroundAdvicePassingPjpAsArgToSuper"/>
+	</ajc-test>
+	
+	  <ajc-test dir="bugs152/pr137235"  pr="137235"
+		title="directory with .jar extension: source and outjar">
+	    <compile files="directory.jar/Hello.java" outjar="directory.jar/run.custom"/>
+        <run class="Hello" classpath="$sandbox/directory.jar/run.custom">
+          <stdout>
+            <line text="Hello Java"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr137235"  pr="137235"
+		title="directory with .jar extension"  >
+	    <compile files="directory.jar/Before.java" outjar="directory.jar/inOne.custom" options="-1.4"/>
+	    <compile files="directory.jar/BeforeExec.aj" outjar="directory.jar/inTwo" options="-1.4"/>
+	    <compile files="directory.jar/Rename.aj" outjar="directory.jar/weave.jar" options="-1.4"/>
+	    <compile files="directory.jar/Hello.java" inpath="directory.jar/inOne.custom,directory.jar/inTwo" aspectpath="directory.jar/weave.jar" outjar="directory.jar/outJar.jar"/>
+        <run class="Hello" classpath="$sandbox/directory.jar/outJar.jar,$sandbox/directory.jar/weave.jar">
+          <stdout>
+            <line text="Before call"/>
+            <line text="Before execution"/>
+            <line text="Hello AspectJ not just Java"/>
+          </stdout>
+        </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr136393" title="NPE in makePreMethod">
+	  <compile files="World.aj" options="-1.5">
+  	    <message kind="warning" line="10" text="this affected type is not exposed to the weaver: java.lang.String [Xlint:typeNotExposedToWeaver]"/>
+	    <message kind="error" line="11" text="h cannot be resolved"/>
+	    <message kind="error" line="16" text="Stystems cannot be resolved"/>
+	  </compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror">
+	    <compile files="C.java,Ajava.java" options="-1.5 -XnoInline"/>
+	    <run class="C"/>
+    </ajc-test>
+    
+    	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 2">
+	    <compile files="C2.java,Ajava2.java" options="-1.5 -XnoInline">
+	      <message kind="error" line="13" text="advice can not be declared static"/>
+	    </compile>
+    </ajc-test>
+    
+    	<ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 3">
+	    <compile files="t/C.java" options="-1.5"/>
+        <compile files="t/Ajava.java" options="-1.5">
+          <message kind="warning" line="13" text="advice defined"/>
+        </compile>
+        <run class="t.C" ltw="aop.xml"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr135068" title="ltw verifyerror - 4">
+	    <compile files="t/C2.java" options="-1.5"/>
+        <compile files="t/Ajava2.java" options="-1.5">
+	      <message kind="error" line="13" text="advice can not be declared static"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr142165" title="broken concretization">
+      <compile files="C.java" options="-1.5"/>
+      <compile files="A.java" options="-1.5"/>
+      <run class="C" ltw="aop.xml">
+        <stderr>
+          <line text="warning at Type 'AA' (no debug info available)::0 no match for this type name: SomeType [Xlint:invalidAbsoluteTypeName]"/>        
+          <line text="foo running"/>
+ 	    </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr142165" title="broken concretization - 2">
+      <compile files="C.java" options="-1.5"/>
+      <compile files="A.java" options="-1.5"/>
+      <run class="C" ltw="aop2.xml">
+        <stderr>
+           <line text="foo running"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr142165" title="broken concretization - 3">
+      <compile files="C.java" options="-1.5"/>
+      <compile files="A.java" options="-1.5"/>
+      <run class="C" ltw="aop3.xml">
+        <stderr>
+           <line text="advice"/>
+           <line text="foo running"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr134425" title="super ITDs">
+      <compile files="Derived.aj" options="-1.5"/>
+      <run class="Derived"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr128443" title="covariance and decp - 1">
+      <compile files="Covariance.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored">
+      <compile files="TestBean.java" options="-1.5"/>
+      <run class="a.b.c.TestBean"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored - 2">
+      <compile files="TestBean2.java" options="-1.5"/>
+      <run class="a.b.c.TestBean2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs152/pr147701" title="package for exception ignored - 3">
+      <compile files="TestBean3.java" options="-1.5">
+        <message kind="error" text="@DeclareParents: defaultImpl=&quot;a.b.c.Impl&quot; does not implement the interface 'a.b.c.I'"/>
+      </compile>
+    </ajc-test>
+
+    <!-- wont work whilst the compiler BuildArgParser.setDebugOptions is always switching debug on -->
+    <ajc-test dir="bugs152/pr129408" title="long winded ataj messages">
+      <compile files="AtAj.java" options="-XterminateAfterCompilation -g:none -1.5"/>
+      <compile files="C.java" options="-g:none -1.5"/>
+      <run class="C" ltw="aop.xml">
+         <!-- should check for expected stderr output here -->
+      </run>
+    </ajc-test>
+
+	<ajc-test dir="ltw"
+      title="Ensure no weaving without included aspects"
+      keywords="reweavable">
+        <compile
+        	files="TestMain.java, Main.java"
+        >
+        </compile>	
+        <run class="TestMain" ltw="aop-optionsonly.xml">
+        	<stdout>
+                <line text="Main.main"/>
+                <line text="Main.test1"/>
+                <line text="Main.test2"/>
+            </stdout>
+        	<stderr>
+				<line text="info AspectJ Weaver Version"/>
+				<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+				<line text="info using"/>
+				<line text="info no aspects registered. Disabling weaver for class loader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+   <ajc-test dir="ltw" title="weaveinfo messages with include and exclude">
+      <compile files="EmptyTest1.java, EmptyTest2.java"/>
+      <compile files="EmptyAspect.aj"/>
+      <run class="EmptyTest1" ltw="aop-emptytests.xml">
+        	<stdout>
+                <line text="EmptyTest1.main()"/>
+                <line text="EmptyTest2.main()"/>
+            </stdout>
+        <stderr>
+			<line text="info AspectJ Weaver Version"/>
+			<line text="info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
+			<line text="info using configuration"/>
+			<line text="info register aspect EmptyAspect"/>
+			<line text="debug weaving"/>
+            <line text="debug not weaving"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr147845" title="Generic abstract aspect hierarchy with bounds">
+      <compile files="GenericAspectHierarchy.aj" options="-1.5">
+        <message kind="warning" line="25" text="a match"/>
+        <message kind="warning" line="27" text="a match"/>     
+      </compile>
+    </ajc-test>
+    
+   <ajc-test dir="bugs152/pr147801" title="duplicate bridge methods">
+      <compile files="Advisor.aj" inpath="foo.jar" options="-1.5"/>
+      <run class="Foo">
+        <stderr>
+          <line text="x"/>
+          <line text="1) public Sub Foo.getParameterMetaData() throws MyException"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs152/pr148007" title="jrockit boolean fun">
+		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.aj"/>
+		<run class="test.BooleanUnitTest"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs152/pr148007/purejava" title="jrockit boolean fun (no aspects)">
+		<compile files="test/BooleanUnitTest.java, test/LoggingAspect.java" options="-inlineJSR"/>
+		<run class="test.BooleanUnitTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synthetic" title="synthetic ajc$ members">
+        <compile files="TheWholeShow.aj" options="-1.5"/>
+        <run class="TheWholeShow"/>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs152/pr148786" title="freaky new array joinpoint">
+        <compile files="A.java" options="-Xjoinpoints:arrayconstruction"/>
+        <run class="A">
+          <stderr>
+            <line text="new array: class [[B"/>
+          </stderr>
+        </run>
+    </ajc-test>    
+    
+    <ajc-test dir="bugs152/pr148727"  pr="148727"
+		title="integrated compilation calling aspectOf and hasAspect"  >
+	    <compile files="Asp.aj, Client.java" options="-source 1.4"/>
+        <run class="Client">
+          <stdout>
+            <line text="Can call aspectOf? Asp@"/>
+          </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs152/pr148727"  pr="148727"
+		title="separate compilation calling aspectOf and hasAspect"  >
+	    <compile files="Asp.aj" outjar="asp.jar"/>
+	    <compile files="Client.java" classpath="asp.jar" options="-source 1.4"/>
+        <run class="Client">
+          <stdout>
+            <line text="Can call aspectOf? Asp@"/>
+          </stdout>
+        </run>
+    </ajc-test>
+
+
+   <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures">
+      <compile files="pr141730a.java" options="-emacssym -Xset:minimalModel=false"/>
+    </ajc-test>
+
+   <ajc-test dir="bugs152" title="new iprogramelement method getParameterSignatures with generics">
+      <compile files="pr141730b.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
+    </ajc-test>
+</suite>

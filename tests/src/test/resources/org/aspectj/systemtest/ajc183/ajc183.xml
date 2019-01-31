@@ -1,0 +1,182 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs183/443355" title="super calls">
+		<compile options="-1.8" files="Demo.java"/>
+		<run class="Demo">
+	        <stdout>
+	        <line text="HW"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs183/436653/abstract" title="suppress type not found - abstract 2">
+		<compile options="-1.8 -Xlint:ignore" files="A.java" outjar="codeA.jar"/>
+		<compile options="-1.8" files="X.java AA.java" classpath="codeA.jar" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar"/>
+		<run class="Code">
+		<stdout>
+		<!--
+		 These don't come out because AA is missing required type A in the last compile step
+		<line text="X.before"/>
+		<line text="X.before"/>
+		-->
+		<line text="Code.m()"/>
+		</stdout>
+		</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs183/436653/abstract" title="suppress type not found - abstract 1">
+		<compile options="-1.8 -Xlint:ignore" files="A.java" outjar="codeA.jar"/>
+		<compile options="-1.8" files="AA.java X.java" classpath="codeA.jar" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar"/>
+		<run class="Code">
+		<stdout>
+		<!--
+		 These don't come out because AA is missing required type A in the last compile step.
+		 Difference between this test and the previous one is that this is a different order
+		 of aspects (addOrReplaceAspects called with the abstract aspect first here).
+		<line text="X.before"/>
+		<line text="X.before"/>
+		-->
+		<line text="Code.m()"/>
+		</stdout>
+		</run>
+    </ajc-test>
+    
+	<ajc-test dir="bugs183/436653" title="suppress type not found 4">
+		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop.xml">
+	        <stdout>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs183/436653" title="suppress type not found 5">
+		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
+		<compile class="-1.8" files="A.java"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop.xml">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, missing type so deactivated -->
+   	<ajc-test dir="bugs183/436653" title="suppress type not found 6">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop2.xml">
+	        <stdout>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, type not missing so not deactivated -->
+    <ajc-test dir="bugs183/436653" title="suppress type not found 7">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
+		<compile options="-1.8" files="Runner.java"/>
+		<run class="Runner" ltw="aop2.xml">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+    
+    <!-- annotation style aspect, type not missing so not deactivated -->
+    <ajc-test dir="bugs183/436653" title="suppress type not found 8">
+		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
+		<compile options="-1.8 -showWeaveInfo" files="Runner.java" aspectpath="aspects.jar">
+			<message kind="weave" text="Join point 'method-execution(void Code.m())' in Type 'Code' (Runner.java:8) advised by before advice from 'X' (aspects.jar!AnnoX.class(from AnnoX.java))"/>
+		</compile>
+		<run class="Runner">
+	        <stdout>
+	        <line text="x"/>
+	        <line text="Code.m() running"/>
+	        </stdout>
+	    </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs183/436653" title="suppress type not found 3">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<compile options="-1.8" files="B.java" outjar="typeB.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA3.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8 -verbose" files="Code.java" classpath="typeA.jar" aspectpath="aspects.jar">
+			<!-- '*' is a hint that we care about only this message, not other messages. avoids needing to list them all -->
+			<message kind="info" text="*deactivating aspect 'XA2' as it requires type 'B' which cannot be found on the classpath"/>
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/436653" title="suppress type not found 2">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA2.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/436653" title="suppress type not found">
+		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
+		<!-- adviceDidNotMatch messages are suppressed here -->
+		<compile options="-1.8" files="XA.java XCode.java" outjar="aspects.jar" classpath="typeA.jar"/>
+		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar">
+		  <message kind="error" text="can't determine modifiers of missing type A"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs183/445395" title="constant pool 0">
+		<compile options="-1.8" files="Code.java">
+		</compile>
+		<run class="Code">
+		<stdout>
+		<line text="4"/>
+		<line text="5"/>
+		<line text="6"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs183/445395" title="constant pool">
+		<compile options="-1.8" files="ControlFlow.java ForReplacer.java ControlFlowCommand.java ControlFlowDriver.java">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/444398" title="abstract aspect npe">
+		<compile options="-1.8" files="Bottom.java Middle.java Top.java">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/442425" title="anno style decp">
+		<compile options="-1.8" files="EntityController.java IEntityController.java MyAnnotatedController.java EntityControllerAspect.java EntityMongoController.java">
+			<message kind="error" line="23" text="Type mismatch: cannot convert from MyAnnotatedController&lt;String&gt; to IEntityController&lt;String&gt;"/>
+			<message kind="error" line="30" text="Cannot infer type arguments for MyAnnotatedController&lt;&gt;"/>
+		</compile>
+		<!--
+		<run class="de.scrum_master.app.MyAnnotatedController">
+		<stdout>
+		<line text="Doing something"/>
+		<line text="public static void de.scrum_master.app.MyAnnotatedController.main(java.lang.String[])"/>
+		<line text="public void de.scrum_master.app.MyAnnotatedController.doSomething()"/>
+		<line text="public java.lang.Object de.scrum_master.app.MyAnnotatedController.getEntity()"/>
+		<line text="public void de.scrum_master.app.MyAnnotatedController.setEntity(java.lang.Object)"/>
+		<line text="Entity value = foo"/>
+		<line text="Entity value = 123"/>
+		</stdout>
+		</run>
+		-->
+	</ajc-test>
+	
+	<ajc-test dir="bugs183/443477" title="verifyerror">
+	  <compile options="-1.7" files="Coo.java"/>
+	  <run class="Coo"/>
+	</ajc-test>
+	
+</suite>

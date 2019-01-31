@@ -1,0 +1,198 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 1">
+<compile files="One.java" options="-1.8"/>
+<run class="One">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 2">
+<compile files="Two.java" options="-1.8"/>
+<run class="Two">
+  <stdout>
+  <line text="In instance check method, count=1 so doit returns false"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=2 so doit returns true"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=3 so doit returns false"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=4 so doit returns true"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 3">
+<compile files="Three.java" options="-1.8"/>
+<run class="Three">
+  <stdout>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=1 so doit returns false"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=2 so doit returns true"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=3 so doit returns false"/>
+  <line text="Method m() running"/>
+  <line text="In instance check method, count=4 so doit returns true"/>
+  <line text="In advice()"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 4">
+<compile files="Four.java" options="-1.8"/>
+<run class="Four">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice() execution(void Four.m())"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 5">
+<compile files="Five.java" options="-1.8"/>
+<run class="Five">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice() arg0=abc"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 6">
+<compile files="Six.java" options="-1.8"/>
+<run class="Six">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice() execution(void Six.main(String[]))"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 7">
+<compile files="Seven.java" options="-1.8"/>
+<run class="Seven">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice() call(void Seven.m()) execution(void Seven.main(String[]))"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 8">
+<compile files="Eight.java" options="-1.8"/>
+<run class="Eight">
+  <stdout>
+  <line text="in doit(): class=X"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 9">
+<compile files="Nine.java" options="-1.8"/>
+<run class="Nine">
+  <stdout>
+  <line text="in doit(): class=X"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 10">
+<compile files="Ten.java" options="-1.8"/>
+<run class="com.foo.bar.Ten">
+  <stdout>
+  <line text="In instance check method doit() class=com.foo.bar.X"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 11">
+<compile files="Eleven.java" options="-1.8">
+<message kind="error" text="thisAspectInstance can only be used inside an if() clause for singleton aspects (compiler limitation)"/>
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs184/449739" title="is final">
+<compile files="Code.java" options="-1.8"/>
+<run class="Code">
+  <stdout>
+  <line text="execution(void Code.run())"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs184/449739" title="is final - 2">
+<compile files="Code2.java" options="-1.8"/>
+<run class="Code2">
+  <stdout>
+  <line text="execution(void Helper.run())"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 12">
+<compile files="Twelve.java" options="-1.8"/>
+<run class="Twelve">
+  <stdout>
+  <line text="In instance check method doit()"/>
+  <line text="In advice() arg=abc tjpsp=execution(void Twelve.m(String))"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 13">
+<compile files="Thirteen.java" options="-1.8"/>
+<run class="Thirteen">
+  <stdout>
+  <line text="instance is X"/>
+  <line text="In advice() arg=abc tjpsp=execution(void Thirteen.m(String))"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 14">
+<compile files="Fourteen.java" options="-1.8"/>
+<run class="Fourteen">
+  <stdout>
+  <line text="instance is X"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 15">
+<compile files="Fifteen.java" options="-1.8"/>
+<run class="Fifteen">
+  <stdout>
+  <line text="in doit(): class=X"/>
+  <line text="In advice()"/>
+  <line text="Method m() running"/>
+  </stdout>
+</run>
+</ajc-test>
+
+</suite>

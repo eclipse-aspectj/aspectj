@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs185/456357" title="unresolvable member">
+<compile files="DummyClass.java LogMe.java SampleAspect.java SampleUtil.java" options="-1.7">
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs185/455608" title="bad annos">
+<compile files="Code2.java" options="-1.8 -proceedOnError">
+  <message kind="error" text="String cannot be resolved to a variable"/>
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs185/455608" title="bad annos 2">
+<compile files="Code3.java" options="-1.8 -proceedOnError">
+  <message kind="error" text="String cannot be resolved to a variable"/>
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs185/451966" title="itd interface">
+<compile files="Code.java" options="-1.8"/>
+<run class="Code">
+</run>
+</ajc-test>
+
+<ajc-test dir="bugs185/451966" title="itd interface - 2">
+<compile files="Code2.java" options="-1.8"/>
+<run class="Code2">
+</run>
+</ajc-test>
+
+</suite>

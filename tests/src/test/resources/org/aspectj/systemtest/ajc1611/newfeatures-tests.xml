@@ -1,0 +1,139 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.11 Tests -->
+<suite>
+
+  <ajc-test dir="features1611/declareMinus" title="adding and removing - 3">
+  	<compile files="OnOffITD.java" options="-1.5 -showWeaveInfo">
+  	  <message kind="weave" text="'public int field2' of type 'OnOffITD' (OnOffITD.java) is annotated with @Anno field annotation from 'Foo' (OnOffITD.java:12)"/>
+  	  <message kind="weave" text="'public int field2' of type 'OnOffITD' (OnOffITD.java) has had @Anno field annotation removed by 'Foo' (OnOffITD.java:13)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOffITD' (OnOffITD.java) is annotated with @Anno field annotation from 'Foo' (OnOffITD.java:9)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOffITD' (OnOffITD.java) has had @Anno field annotation removed by 'Foo' (OnOffITD.java:8)"/>
+  	  <message kind="weave" text="Type 'OnOffITD' (OnOffITD.java) has intertyped field from 'B' (OnOffITD.java:'int OnOffITD.field')"/>
+  	  <message kind="weave" text="Type 'OnOffITD' (OnOffITD.java) has intertyped field from 'B' (OnOffITD.java:'int OnOffITD.field2')"/>
+  	</compile>
+  	<run class="OnOffITD">
+  	  <stdout>
+  		<line text="field annotated? no"/>
+  		<line text="field2 annotated? no"/>
+  	  </stdout>
+  	</run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="adding and removing">
+  	<compile files="OnOff.java" options="-1.5 -showWeaveInfo">
+  	  <message kind="weave" text="'public int field2' of type 'OnOff' (OnOff.java) is annotated with @Anno field annotation from 'Foo' (OnOff.java:12)"/>
+  	  <message kind="weave" text="'public int field2' of type 'OnOff' (OnOff.java) has had @Anno field annotation removed by 'Foo' (OnOff.java:13)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOff' (OnOff.java) is annotated with @Anno field annotation from 'Foo' (OnOff.java:9)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOff' (OnOff.java) has had @Anno field annotation removed by 'Foo' (OnOff.java:8)"/>
+  	</compile>
+  	<run class="OnOff">
+  	  <stdout>
+  		<line text="field annotated? no"/>
+  		<line text="field2 annotated? no"/>
+  	  </stdout>
+  	</run>
+  </ajc-test>
+  
+  
+  <ajc-test dir="features1611/declareMinus" title="adding and removing - 2">
+  	<compile files="OnOff2.java" options="-1.5 -showWeaveInfo">
+  	  <message kind="weave" text="'public int field2' of type 'OnOff2' (OnOff2.java) is annotated with @Anno field annotation from 'Foo' (OnOff2.java:8)"/>
+  	  <message kind="weave" text="'public int field2' of type 'OnOff2' (OnOff2.java) has had @Anno field annotation removed by 'Foo' (OnOff2.java:7)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOff2' (OnOff2.java) is annotated with @Anno field annotation from 'Foo' (OnOff2.java:8)"/>
+  	  <message kind="weave" text="'public static int field' of type 'OnOff2' (OnOff2.java) has had @Anno field annotation removed by 'Foo' (OnOff2.java:7)"/>
+  	</compile>
+  	<run class="OnOff2">
+  	  <stdout>
+  		<line text="field annotated? no"/>
+  		<line text="field2 annotated? no"/>
+  	  </stdout>
+  	</run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - 1">
+  	<compile files="Code.java" options="-1.5"/>
+  	<run class="Code"> 	<stdout>
+  	<line text="no annotation"/>
+  	</stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - itd">
+  	<compile files="Code2.java" options="-1.5"/>
+  	<run class="Code2">
+  	<stdout>
+  	<line text="no annotation"/>
+  	</stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - 2 annos">
+  	<compile files="Code3.java" options="-1.5"/>
+  	<run class="Code3">
+  	<stdout>
+  	<line text="no Anno"/>
+  	<line text="has AnnoB"/>
+  	</stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - multifiles">
+  	<compile files="aspectjtest/AnnotationA.java aspectjtest/AnnotationB.java aspectjtest/ExampleItd.aj aspectjtest/HelloTest.java aspectjtest/MyEntity.java" options="-1.5"/>
+  	<run class="aspectjtest.HelloTest">
+  	<stdout>
+  	<line text="1"/>
+  	<line text="interface aspectjtest.AnnotationB"/>
+  	</stdout></run>
+  </ajc-test>
+  
+  <!--  different ordering -->
+  <ajc-test dir="features1611/declareMinus" title="declare minus - multifiles - 2">
+  	<compile files="aspectjtest/MyEntity.java aspectjtest/AnnotationA.java aspectjtest/AnnotationB.java aspectjtest/ExampleItd.aj aspectjtest/HelloTest.java" options="-1.5"/>
+  	<run class="aspectjtest.HelloTest">
+  	<stdout>
+  	<line text="1"/>
+  	<line text="interface aspectjtest.AnnotationB"/>
+  	</stdout></run>
+  </ajc-test>
+
+  <!--  different ordering -->
+  <ajc-test dir="features1611/declareMinus" title="declare minus - multifiles - 3">
+  	<compile files="aspectjtest/ExampleItd.aj aspectjtest/AnnotationA.java aspectjtest/AnnotationB.java aspectjtest/MyEntity.java  aspectjtest/HelloTest.java" options="-1.5"/>
+  	<run class="aspectjtest.HelloTest">
+  	<stdout>
+  	<line text="1"/>
+  	<line text="interface aspectjtest.AnnotationB"/>
+  	</stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - with values">
+    <compile files="WithValues.java" options="-1.5"/>
+    <run class="WithValues">
+    <stdout>
+    <line text="i does not have Anno"/>
+    <line text="j has Banno:@Banno(hoo=abc)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+    <line text="j has Banno:@Banno(hoo=&quot;abc&quot;)" vm="9+"/>
+    <line text="j does not have Anno"/>
+    </stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="declare minus - unsupported">
+    <compile files="Unsupported.java" options="-1.5">
+        <message kind="error" line="19" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="20" text="Annotation removal only supported for declare @field (compiler limitation)"/>
+        <message kind="error" line="21" text="Annotation removal does not allow values to be specified for the annotation (compiler limitation)"/>
+    </compile>
+  </ajc-test>
+  
+  <ajc-test dir="features1611/declareMinus" title="binary weaving">
+    <compile files="aspectjtest/AnnotationA.java aspectjtest/AnnotationB.java aspectjtest/MyEntity.java aspectjtest/HelloTest.java" outjar="code.jar" options="-1.5"/>
+    <compile files="aspectjtest/ExampleItd.aj" inpath="code.jar" options="-1.5 -showWeaveInfo">
+    <message kind="weave" text="'private String myField [RuntimeVisibleAnnotations]' of type 'aspectjtest.MyEntity' (MyEntity.java) has had @AnnotationA field annotation removed by"/>
+    <message kind="weave" text="'private String myField [RuntimeVisibleAnnotations]' of type 'aspectjtest.MyEntity' (MyEntity.java) is annotated with @AnnotationB field"/>
+    </compile>
+  	<run class="aspectjtest.HelloTest">
+  	<stdout>
+  	<line text="1"/>
+  	<line text="interface aspectjtest.AnnotationB"/>
+  	</stdout></run>
+  </ajc-test>
+  
+</suite>

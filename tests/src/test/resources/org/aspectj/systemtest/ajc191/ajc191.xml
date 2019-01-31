@@ -1,0 +1,36 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs191/var" title="var 1">
+    <compile files="Code1.java" options="-10">
+	</compile>
+	<run class="Code1">
+	<stdout>
+	<line text="class java.lang.String"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs191/var" title="var 2">
+    <compile files="Code2.java" options="-10">
+	</compile>
+	<run class="Code2">
+	<stdout>
+	<line text="class java.util.ArrayList"/>
+	</stdout>
+	</run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs191/var" title="var 3">
+    <compile files="Code3.java" options="-10">
+	</compile>
+	<run class="Code3">
+	<stdout>
+	<line text="call(Class java.lang.Object.getClass())"/>
+	<line text="class java.lang.String"/>
+	</stdout>
+	</run>
+  </ajc-test>
+
+</suite>

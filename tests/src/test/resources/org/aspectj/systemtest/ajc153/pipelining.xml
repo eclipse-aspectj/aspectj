@@ -1,0 +1,72 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- Pipelining tests -->
+<suite>
+
+    <!-- testing the very very basics of pipelining -->
+    <ajc-test dir="features153/pipelining" title="build two classes">
+      <compile files="ClassOne.java,ClassTwo.java" options="-verbose"/>
+    </ajc-test>
+    
+    <!-- testing the basics when an aspect is included, it is placed at the front deliberately -->
+    <ajc-test dir="features153/pipelining" title="build one aspect and two classes">
+      <compile files="SimpleAspect.java,ClassOne.java,ClassTwo.java" options="-verbose -showWeaveInfo">
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect.&lt;clinit&gt;())' in Type 'SimpleAspect' (SimpleAspect.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassOne.&lt;clinit&gt;())' in Type 'ClassOne' (ClassOne.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassTwo.&lt;clinit&gt;())' in Type 'ClassTwo' (ClassTwo.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+      </compile>        
+    </ajc-test>
+    
+    <!-- testing the basics when an aspect is included, aspect should be moved to the front after diet parsing -->
+    <ajc-test dir="features153/pipelining" title="build two classes and one aspect">
+      <compile files="ClassOne.java,ClassTwo.java,SimpleAspect.java" options="-verbose -showWeaveInfo">
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect.&lt;clinit&gt;())' in Type 'SimpleAspect' (SimpleAspect.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassOne.&lt;clinit&gt;())' in Type 'ClassOne' (ClassOne.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassTwo.&lt;clinit&gt;())' in Type 'ClassTwo' (ClassTwo.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+      </compile>        
+    </ajc-test>
+    
+    <!-- just building aspects, no classes around - will the sorting behave -->
+    <ajc-test dir="features153/pipelining" title="build two aspects">
+      <compile files="SimpleAspect.java,SimpleAspect2.java" options="-verbose -showWeaveInfo">
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect.&lt;clinit&gt;())' in Type 'SimpleAspect' (SimpleAspect.java:1) advised by before advice from 'SimpleAspect2' (SimpleAspect2.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect.&lt;clinit&gt;())' in Type 'SimpleAspect' (SimpleAspect.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect2.&lt;clinit&gt;())' in Type 'SimpleAspect2' (SimpleAspect2.java:1) advised by before advice from 'SimpleAspect2' (SimpleAspect2.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void SimpleAspect2.&lt;clinit&gt;())' in Type 'SimpleAspect2' (SimpleAspect2.java:1) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+      </compile>        
+    </ajc-test>
+    
+    <!-- pointcut in a superclass, subaspect extends the class - pointcut class is supplied after the superclass -->
+    <ajc-test dir="features153/pipelining" title="aspect extends class">
+      <compile files="ClassOne.java,SubAspect.java,ClassTwo.java,SuperClass.java" options="-verbose -showWeaveInfo">
+        <message kind="weave" text="Join point 'staticinitialization(void SubAspect.&lt;clinit&gt;())' in Type 'SubAspect' (SubAspect.java:1) advised by before advice from 'SubAspect' (SubAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassOne.&lt;clinit&gt;())' in Type 'ClassOne' (ClassOne.java:1) advised by before advice from 'SubAspect' (SubAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void ClassTwo.&lt;clinit&gt;())' in Type 'ClassTwo' (ClassTwo.java:1) advised by before advice from 'SubAspect' (SubAspect.java:2)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void SuperClass.&lt;clinit&gt;())' in Type 'SuperClass' (SuperClass.java:1) advised by before advice from 'SubAspect' (SubAspect.java:2)"/>
+      </compile>        
+    </ajc-test>
+    
+    <!-- testing eclipse to aspectj annotation transformation -->
+    <ajc-test dir="features153/pipelining/annotations" title="annotation transformation">
+      <compile files="AnAspect.java,Foo.java,DecoratedClass.java" options="-1.5 -verbose"/>
+    </ajc-test>
+
+    <!-- does the aspect sorter recognize annotation style aspects, pass the aspects last  -->
+    <ajc-test dir="features153/pipelining" title="recognizing annotation style aspects - 1">
+      <compile files="ClassOne.java,AtAJAspect.java" options="-1.5 -verbose"/>
+    </ajc-test>
+    
+    <!-- does the aspect sorter recognize annotation style aspects (inner type), pass the aspects last -->
+    <ajc-test dir="features153/pipelining" title="recognizing annotation style aspects - 2">
+      <compile files="ClassOne.java,AtInnerAJAspect.java" options="-1.5 -verbose"/>
+    </ajc-test>
+    
+    <!-- the aspect is multiple layers down in the class... -->
+    <ajc-test dir="features153/pipelining" title="build one class and deeply nested aspect">
+      <compile files="ClassOne.java,DeepAspect.java" options="-1.5 -verbose -showWeaveInfo">
+        <message kind="weave" text="Join point 'staticinitialization(void ClassOne.&lt;clinit&gt;())' in Type 'ClassOne' (ClassOne.java:1) advised by before advice from 'DeepAspect$Inner$SimpleAspect' (DeepAspect.java:4)"/>
+      </compile>
+    </ajc-test>
+    
+
+</suite>

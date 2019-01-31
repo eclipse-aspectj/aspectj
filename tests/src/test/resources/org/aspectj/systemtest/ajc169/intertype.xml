@@ -1,0 +1,249 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+    <ajc-test dir="features169/itdInnerTypes/separate" title="separate compilation">
+     <compile files="Basic.java" options="-1.5"/>
+     <compile files="Basic2.java"/>
+     <run class="Basic2">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+    <ajc-test dir="features169/itdInnerTypes/separate2" title="separate compilation - 2">
+     <compile files="Basic.java" options="-1.5"/>
+     <compile files="Basic2.java"/>
+     <run class="Basic2">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="features169/itdInnerTypes/eleven" title="already has it">
+     <compile files="Target.java Aspect1.java" options="-1.5">
+     <message kind="error" text="Duplicate nested type Inner"/>
+     <message kind="error" text="target type already declares a "/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction4">
+     <compile files="Construction4.java" options="-1.5"/>
+     <run class="Construction4">
+       <stdout>
+       <line text="abc"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction3">
+     <compile files="Construction3.java" options="-1.5"/>
+     <run class="Construction3">
+       <stdout>
+       <line text="abc"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/ten" title="construction2">
+     <compile files="Construction.java Aspect1.java Aspect2.java" options="-1.5"/>
+     <run class="Construction">
+       <stdout>
+       <line text="abcde"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="construction">
+     <compile files="Construction.java" options="-1.5"/>
+     <run class="Construction">
+       <stdout>
+       <line text="done"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/nine" title="vote - itd mixture 2">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/eight" title="vote - itd mixture">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/seven" title="vote - method reference">
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/six" title="vote - field reference">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/five" title="vote - inner inner">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/four" title="vote - reference via annotation - two">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/three" title="vote - reference via annotation">
+     <compile files="Vote.java Vote_Amender.aj Runner.java RelatedType.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/two" title="vote - construction">
+     <compile files="Vote.java Vote_Amender.aj Runner.java" options="-1.5"/>
+     <run class="a.b.c.Runner">
+       <stdout>
+       <line text="wibble"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes/one" title="vote - basic">
+     <compile files="Vote.java Vote_Amender.aj Runner.java" options="-1.5"/>
+     <run class="a.b.c.Runner"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice - generics 1">
+     <compile files="ChoiceGenerics1.java" options="-1.5"/>
+   </ajc-test>
+
+   <ajc-test dir="features169/itdInnerTypes" title="choice - generics 2">
+     <compile files="ChoiceGenerics2.java" options="-1.5">
+       <message kind="error" text="Type mismatch: cannot convert from String to Integer"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice">
+     <compile files="Choice.java" options="-1.5"/>
+     <run class="Choice">
+       <stdout>
+       <line text="null"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice - weaveinfo">
+     <compile files="Choice.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Type 'Choice' (Choice.java) has intertyped member class from 'X' (Choice.java)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice - model">
+     <compile files="Choice.java" options="-1.5 -emacssym"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="choice2">
+     <compile files="Choice2.java" options="-1.5"/>
+     <run class="Choice2">
+       <stdout>
+       <line text="null"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="field access">
+     <compile files="FieldAccess.java" options="-1.5"/>
+     <run class="FieldAccess">
+       <stdout>
+       <line text="42"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="method access">
+     <compile files="MethodCall.java" options="-1.5"/>
+     <run class="MethodCall">
+       <stdout>
+       <line text="42"/>
+       </stdout></run>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="only static">
+     <compile files="OnlyStatic.java" options="-1.5">
+     	<message kind="error" line="5" text="Intertype declared member types can only be static (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on interface">
+     <compile files="OnInterface.java" options="-1.5">
+     	<message kind="error" line="5" text="Cannot declare new member type on 'OnInterface'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on enum">
+     <compile files="OnEnum.java" options="-1.5">
+     	<message kind="error" line="6" text="Cannot declare new member type on 'EEE'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="on annotation">
+     <compile files="OnAnnotation.java" options="-1.5">
+     	<message kind="error" line="8" text="Cannot declare new member type on 'Anno'. New member types can only be specified on classes (compiler limitation)"/>
+     </compile>
+   </ajc-test>
+   
+   <!-- 
+   <ajc-test dir="features169/itdInnerTypes" title="simplest 3">
+     <compile files="Simplest3.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="simplest 2">
+     <compile files="Simplest2.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features169/itdInnerTypes" title="simplest">
+     <compile files="Simplest.java" options="-1.5"/>
+   </ajc-test>
+   -->
+   
+</suite>

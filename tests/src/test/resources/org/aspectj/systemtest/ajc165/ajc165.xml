@@ -1,0 +1,117 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="bugs165/pr277959" title="verifyerror">
+     <compile files="AOPTest.java  CodeAspect.java" options="-1.5"/>
+     <run class="example.AOPTest"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr277508" title="if method names">
+     <compile files="Basic.java" options="-1.5"/>
+     <run class="Basic">
+       <stdout>
+         <line text="if method: public static final boolean X.ajc$if$1ba()"/>
+         <line text="if method: public static final boolean X.ajc$if$177()"/>
+         <line text="if method: public static final boolean X.ajc$if$165()"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr277508" title="if method names - 2">
+     <compile files="Basic2.java" options="-1.5"/>
+     <run class="Basic2">
+       <stdout>
+         <line text="if method: public static final boolean X.ajc$if$16d()"/>
+         <line text="if method: public static final boolean X.ajc$if$17f()"/>
+         <line text="if method: public static final boolean X.ajc$if$1c0()"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275625" title="dec anno method">
+     <compile files="A.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275625" title="dec anno field">
+     <compile files="F.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032" title="itd default ctor">
+     <compile files="A.java X.java" options="-1.5 -Xlint:ignore"/>
+     <run class="A">
+       <stdout>
+         <line text="itd ctor"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032/c2" title="itd default ctor - 2">
+     <compile files="A.java X.java" options="-1.5 -Xlint:ignore">
+	     <message kind="error" text="inter-type declaration from X conflicts with existing"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032/c2" title="itd default ctor - 3">
+     <compile files="A.java" options="-outjar foo.jar"/>
+     <compile files="X.java" options="-1.5 -Xlint:ignore"  inpath="foo.jar">
+	     <message kind="error" text="inter-type declaration from X conflicts with existing"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr275032" title="itd default ctor - 4">
+     <compile files="A.java" options="-outjar foo.jar"/>
+     <compile files="X.java" options="-1.5" inpath="foo.jar">
+     </compile>
+     <run class="A">
+       <stdout>
+         <line text="itd ctor"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr272233" title="funky pointcut">
+     <compile files="Iffy.java" options="-1.5">
+       <message kind="warning" text="void is not a generic type"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr272233" title="funky pointcut 2">
+     <compile files="Iffy2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:11)"/>
+       <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:8)"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr265356" title="annotation style message positions">
+     <compile files="Main.java" options="-1.5">
+       <message kind="warning" line="11"/>
+       <message kind="warning" line="13"/>
+       <message kind="warning" line="14"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs165/pr271169" title="around call npe">
+     <compile files="HypChecksums.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs165/pr273628" title="verifyerror on anno bind">
+     <compile files="AnnotationAspect.java ApiDescriptor.java AspectTargetClass.java MonitorableMethod.java TestPointcutAnnotationAspect.java" options="-1.5"/>
+     <run class="p.TestPointcutAnnotationAspect"/>
+   </ajc-test>
+
+   <ajc-test dir="bugs165/pr272825" title="generic ITD">
+     <compile files="Concrete.java GenericSuper.java ITDOfMethod.aj Main.java" options="-1.5"/>
+     <run class="Main">
+       <stdout>
+         <line text="In normal method"/>
+         <line text="else"/>
+         <line text="1"/>
+         <line text="In ITD method"/>
+         <line text="with"/>
+         <line text="2"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+</suite>

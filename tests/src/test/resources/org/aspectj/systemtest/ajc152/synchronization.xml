@@ -1,0 +1,650 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.5.1 Tests -->
+<suite>
+    
+    <ajc-test dir="features152/synchronization" title="basic">
+        <compile files="Basic.java" options="-1.5 -showWeaveInfo -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Basic">
+          <stderr>
+             <line text="methodWithSyncBlock1"/>
+             <line text="staticMethodWithSyncBlock1"/>
+             <line text="methodWithSyncBlock2"/>
+             <line text="staticMethodWithSyncBlock2"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="basic - within">
+        <compile files="Basic2.java" options="-1.5 -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Basic2">
+          <stderr>
+             <line text="methodWithSyncBlock1"/>
+             <line text="Advice running at lock(Object)"/>
+             <line text="Advice running at unlock(Object)"/>
+             <line text="staticMethodWithSyncBlock1"/>
+             <line text="Advice running at lock(Object)"/>
+             <line text="Advice running at unlock(Object)"/>
+             <line text="methodWithSyncBlock2"/>
+             <line text="Advice running at lock(Object)"/>
+             <line text="Advice running at unlock(Object)"/>
+             <line text="staticMethodWithSyncBlock2"/>
+             <line text="Advice running at lock(Object)"/>
+             <line text="Advice running at unlock(Object)"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="basic - within plus args">
+        <compile files="Basic3.java" options="-1.5 -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Basic3">
+          <stderr>
+			<line text="methodWithSyncBlock1"/>
+			<line text="Advice running at lock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="Advice running at unlock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="staticMethodWithSyncBlock1"/>
+			<line text="Advice running at lock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="Advice running at unlock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="methodWithSyncBlock2"/>
+			<line text="Advice running at lock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="Advice running at unlock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="staticMethodWithSyncBlock2"/>
+			<line text="Advice running at lock(Object) with this of type class Basic3 with value Basic3@"/>
+			<line text="Advice running at unlock(Object) with this of type class Basic3 with value Basic3@"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="basic - within plus this">
+        <compile files="Basic4.java" options="-1.5 -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Basic4">
+          <stderr>
+			<line text="methodWithSyncBlock1"/>
+			<line text="Advice running at lock(Object) with args of type class Basic4 with value Basic4@"/>
+			<line text="Advice running at unlock(Object) with args of type class Basic4 with value Basic4@"/>
+			<line text="staticMethodWithSyncBlock1"/>
+			<line text="Advice running at lock(Object) with args of type class java.lang.Class with value class Basic4"/>
+			<line text="Advice running at unlock(Object) with args of type class java.lang.Class with value class Basic4"/>
+			<line text="methodWithSyncBlock2"/>
+			<line text="Advice running at lock(Object) with args of type class Basic4 with value Basic4@"/>
+			<line text="Advice running at unlock(Object) with args of type class Basic4 with value Basic4@"/>
+			<line text="staticMethodWithSyncBlock2"/>
+			<line text="Advice running at lock(Object) with args of type class java.lang.Class with value class Basic4"/>
+			<line text="Advice running at unlock(Object) with args of type class java.lang.Class with value class Basic4"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="basic - within plus target">
+        <compile files="Basic5.java" options="-1.5 -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Basic5">
+          <stderr>
+			<line text="Advice running at void Basic5.methodWithSyncBlock1() with target of type class Basic5 with value Basic5@"/>
+			<line text="Advice running at void Basic5.methodWithSyncBlock1() with target of type class Basic5 with value Basic5@"/>
+			<line text="methodWithSyncBlock1"/>
+			<line text="Advice running at void Basic5.staticMethodWithSyncBlock1() with target of type class Basic5 with value Basic5@"/>
+			<line text="Advice running at void Basic5.staticMethodWithSyncBlock1() with target of type class Basic5 with value Basic5@"/>
+			<line text="staticMethodWithSyncBlock1"/>
+			<line text="Advice running at void Basic5.methodWithSyncBlock2() with target of type class Basic5 with value Basic5@"/>
+			<line text="Advice running at void Basic5.methodWithSyncBlock2() with target of type class Basic5 with value Basic5@"/>
+			<line text="methodWithSyncBlock2"/>
+			<line text="Advice running at void Basic5.staticMethodWithSyncBlock2() with target of type class Basic5 with value Basic5@"/>
+			<line text="Advice running at void Basic5.staticMethodWithSyncBlock2() with target of type class Basic5 with value Basic5@"/>
+			<line text="staticMethodWithSyncBlock2"/>
+          </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization" title="a useful program">
+        <compile files="Useful1.java" options="-1.5 -Xjoinpoints:synchronization">
+        </compile>
+        <run class="Useful1">
+          <stderr>
+             <line text="Average lock taking time over 2000"/>
+             <line text="We did time something!"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing - lock">
+        <compile files="Parsing1.java" options="-1.5 -Xjoinpoints:synchronization">
+          <message kind="warning" line="5" text="advice defined in Parsing1 has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing - unlock">
+        <compile files="Parsing2.java" options="-1.5 -Xjoinpoints:synchronization">
+          <message kind="warning" line="5" text="advice defined in Parsing2 has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing - error - lock">
+        <compile files="Parsing1.java" options="-1.5">
+          <message kind="warning" line="5" text="advice defined in Parsing1 has not been applied [Xlint:adviceDidNotMatch]"/>
+          <!-- this next warning comes out twice because we unpack the attributes twice... -->
+          <message kind="warning" line="5" text="lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing - error - unlock">
+        <compile files="Parsing2.java" options="-1.5">
+          <message kind="warning" line="5" text="advice defined in Parsing2 has not been applied [Xlint:adviceDidNotMatch]"/>
+          <!-- this next warning comes out twice because we unpack the attributes twice... -->
+          <message kind="warning" line="5" text="unlock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing and matching - lock and static context">
+        <compile files="ParsingAndMatching1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ParsingAndMatching1">
+          <stderr>
+            <line text="Advice running at ParsingAndMatching1.java:14"/>
+            <line text="static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="using lock with LTW - missing flag">
+        <compile files="LockAspect1.java" options="-1.5">
+          <message kind="warning" line="6" text="lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
+        </compile>
+        <compile files="BasicProgram1.java" options="-1.5"/>
+        <run class="BasicProgram1" ltw="aop1.xml">
+        	<stderr>
+        	  <!-- warning is something like 'warning at C:\temp\ajcSandbox\ajcTest61975.tmp\LockAspect1.java:6::0 lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization'/-->
+        	  <line text="warning at "/>
+			  <line text="nonstatic method running"/>
+			  <line text="static method running"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="transform with LTW">
+        <compile files="CaptureLock.aj" options="-1.5"/>
+        <compile files="Program.java" options="-1.5"/>
+        <run class="Program" ltw="aop1.xml">
+        	<stdout>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from b()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="bang in c()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from d()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="hello from block in d()"/>
+        	  <line text="Before a lock or unlock"/>
+        	  <line text="Before a lock or unlock"/>
+            </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="using lock with LTW">
+        <compile files="LockAspect1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="BasicProgram1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="BasicProgram1" ltw="aop3.xml">
+        	<stderr>
+        	  <line text="weaveinfo Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:11) advised by before advice from 'LockAspect1' (LockAspect1.java:6)"/>
+			  <line text="weaveinfo Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:17) advised by before advice from 'LockAspect1' (LockAspect1.java:6)"/>
+			  <line text="Lock advice running at BasicProgram1.java:17"/>
+			  <line text="nonstatic method running"/>
+			  <line text="Lock advice running at BasicProgram1.java:11"/>
+		      <line text="static method running"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="using unlock with LTW">
+        <compile files="UnlockAspect1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="BasicProgram1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="BasicProgram1" ltw="aop4.xml">
+        	<stderr>
+			  <line text="weaveinfo Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:11) advised by before advice from 'UnlockAspect1' (UnlockAspect1.java:6)"/>
+			  <line text="weaveinfo Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:17) advised by before advice from 'UnlockAspect1' (UnlockAspect1.java:6)"/>
+			  <line text="nonstatic method running"/>
+			  <line text="Unlock advice running at BasicProgram1.java:17"/>
+			  <line text="static method running"/>
+			  <line text="Unlock advice running at BasicProgram1.java:11"/>
+            </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="using unlock with LTW - missing flag">
+        <compile files="UnlockAspect1.java" options="-1.5">
+          <message kind="warning" line="6" text="unlock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
+        </compile>
+        <compile files="BasicProgram1.java" options="-1.5"/>
+        <run class="BasicProgram1" ltw="aop2.xml">
+        	<stderr>
+        	  <line text="warning at "/>
+			  <line text="nonstatic method running"/>
+			  <line text="static method running"/>
+            </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization" title="parsing and matching - unlock and static context">
+        <compile files="ParsingAndMatching2.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ParsingAndMatching2">
+          <stderr>
+            <line text="static method running"/>
+            <line text="Advice running at ParsingAndMatching2.java:14"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="parsing and matching - lock and non-static context">
+        <compile files="ParsingAndMatching3.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ParsingAndMatching3">
+          <stderr>
+            <line text="Advice running at ParsingAndMatching3.java:15"/>
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization" title="parsing and matching - unlock and non-static context">
+        <compile files="ParsingAndMatching4.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ParsingAndMatching4">
+          <stderr>
+            <line text="non-static method running"/>
+            <line text="Advice running at ParsingAndMatching4.java:15"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="a useful program - with lock">
+        <compile files="Useful2.java" options="-1.5 -showWeaveInfo -Xjoinpoints:synchronization">
+        	<message kind="weave" text="Join point 'method-execution(void Useful2.main(java.lang.String[]))' in Type 'Useful2' (Useful2.java:33) advised by afterReturning advice from 'LockMonitor' (Useful2.java:25)"/>
+        	<message kind="weave" text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'Useful2' (Useful2.java:42) advised by before advice from 'LockMonitor' (Useful2.java:9) [with runtime test]"/>
+        	<message kind="weave" text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'Useful2' (Useful2.java:42) advised by after advice from 'LockMonitor' (Useful2.java:14) [with runtime test]"/>
+        	<!-- hope we aren't getting double messages out -->
+        </compile>
+        <run class="Useful2">
+          <stderr>
+             <line text="Average time spent with lock over"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="combining pcds - lock and this">
+        <compile files="CombiningPCDs1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="CombiningPCDs1">
+          <stderr>
+            <line text="static method running"/>
+            <line text="advice running at CombiningPCDs1.java:17"/>
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="combining pcds - unlock and this">
+        <compile files="CombiningPCDs2.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="CombiningPCDs2">
+          <stderr>
+            <line text="static method running"/>
+            <line text="non-static method running"/>
+            <line text="advice running at CombiningPCDs2.java:17"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="thisjoinpoint - monitor entry">
+        <compile files="ThisJoinPointLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ThisJoinPointLock">
+          <stderr>
+            <line text="match.toString(): lock(lock(Object))"/>
+			<line text="match.toShortString(): lock(lock(Object))"/>
+			<line text="match.toLongString(): lock(lock(java.lang.Object))"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="thisjoinpoint - monitor exit">
+        <compile files="ThisJoinPointUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="ThisJoinPointUnlock">
+          <stderr>
+            <line text="match.toString(): unlock(unlock(Object))"/>
+			<line text="match.toShortString(): unlock(unlock(Object))"/>
+			<line text="match.toLongString(): unlock(unlock(java.lang.Object))"/>
+          </stderr>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="prevent double unlock weaving messages and model contents">
+        <compile files="ThisJoinPointUnlock.java" options="-1.5 -Xjoinpoints:synchronization -showWeaveInfo -emacssym">
+          <message kind="weave" text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
+          <message kind="weave" text="Join point 'method-call(void ThisJoinPointUnlock.staticMethod())' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:39) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
+          <message kind="weave" text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="before advice - lock">
+        <compile files="BeforeLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="BeforeLock">
+          <stderr>
+            <line text="before() lock: advice running at BeforeLock.java:26"/>
+            <line text="static method running"/>
+            <line text="before(Foo) lock: advice running at BeforeLock.java:21"/>
+            <line text="before() lock: advice running at BeforeLock.java:21"/>
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization" title="before advice - unlock">
+        <compile files="BeforeUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="BeforeUnlock">
+          <stderr>
+            <line text="static method running"/>
+            <line text="before() unlock: advice running at BeforeUnlock.java:26"/>
+            <line text="non-static method running"/>
+            <line text="before(Foo) unlock: advice running at BeforeUnlock.java:21"/>
+            <line text="before() unlock: advice running at BeforeUnlock.java:21"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization" title="after advice - lock">
+        <compile files="AfterLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="AfterLock">
+          <stderr>
+            <line text="after() lock: advice running at AfterLock.java:26"/>
+            <line text="static method running"/>
+            <line text="after(Foo) lock: advice running at AfterLock.java:21"/>
+            <line text="after() lock: advice running at AfterLock.java:21"/>
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization" title="after advice - unlock">
+        <compile files="AfterUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <run class="AfterUnlock">
+          <stderr>
+            <line text="static method running"/>
+            <line text="after() unlock: advice running at AfterUnlock.java:26"/>
+            <line text="non-static method running"/>
+            <line text="after(Foo) unlock: advice running at AfterUnlock.java:21"/>
+            <line text="after() unlock: advice running at AfterUnlock.java:21"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization" title="around advice - lock">
+        <compile files="AroundLock.java" options="-1.5 -Xjoinpoints:synchronization">
+          <message kind="warning" line="11" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="17" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="31" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="36" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+		  <message kind="warning" line="11" text="advice defined in AroundLock has not been applied [Xlint:adviceDidNotMatch]"/>
+		  <message kind="warning" line="17" text="advice defined in AroundLock has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+        <run class="AroundLock">
+          <stderr>
+            <!--line text="around() lock: advice running at AroundLock.java:26"/-->
+            <line text="static method running"/>
+            <!--line text="around(Foo) lock: advice running at AroundLock.java:21"/>
+            <line text="around() lock: advice running at AroundLock.java:21"/-->
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization" title="around advice - unlock">
+        <compile files="AroundUnlock.java" options="-1.5 -Xjoinpoints:synchronization">
+          <message kind="warning" line="5" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="10" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="23" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+          <message kind="warning" line="28" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
+		  <message kind="warning" line="5" text="advice defined in AroundUnlock has not been applied [Xlint:adviceDidNotMatch]"/>
+		  <message kind="warning" line="10" text="advice defined in AroundUnlock has not been applied [Xlint:adviceDidNotMatch]"/>
+        </compile>
+        <run class="AroundUnlock">
+          <stderr>
+            <!--line text="around() unlock: advice running at AroundUnlock.java:26"/-->
+            <line text="static method running"/>
+            <!--line text="around(Foo) unlock: advice running at AroundUnlock.java:21"/-->
+            <!--line text="around() unlock: advice running at AroundUnlock.java:21"/-->
+            <line text="non-static method running"/>
+          </stderr>
+        </run>
+    </ajc-test>   
+    
+    <ajc-test dir="features152/synchronization/transformed" title="investigation">
+      <compile files="Investigation.java">
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="One">
+      <compile files="One.java -Xjoinpoints:synchronization">
+      </compile>
+      <run class="One"/><!-- will check verification ... -->
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Two">
+      <compile files="Two.java -Xjoinpoints:synchronization">
+        <message kind="warning" line="14" text="advice matching the synchronized method shadow 'method-execution(void C.ma())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
+      </compile>
+      <run class="Two">
+        <stderr>
+          <line text="execution advice running"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Two - xlintoff">
+      <compile files="Two.java -Xjoinpoints:synchronization -Xlint:ignore"/>
+      <run class="Two">
+        <stderr>
+          <line text="execution advice running"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Three">
+      <compile files="Three.java -Xjoinpoints:synchronization">
+        <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m3())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
+        <message kind="warning" line="24" text="advice matching the synchronized method shadow 'method-execution(void C.m32())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>        
+      </compile>
+      <run class="Three">
+        <stderr>
+          <line text="hello"/>
+          <line text="execution advice running"/>
+          <line text="hello"/>
+          <line text="execution advice running2"/>
+          <line text="hello"/>
+          <line text="execution advice running3"/>
+          <line text="hello"/>
+          <line text="execution advice running4"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Four">
+      <compile files="Four.java -Xjoinpoints:synchronization">
+         <message kind="warning" line="16" text="advice matching the synchronized method shadow 'method-execution(void C.m())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
+         <message kind="warning" line="20" text="advice matching the synchronized method shadow 'method-execution(void C.m2())' will be executed outside the lock rather than inside (compiler limitation) [Xlint"/>
+      </compile>
+      <run class="Four">
+        <stderr>
+          <line text="hello"/>
+          <line text="execution advice running"/>
+          <line text="hello"/>
+          <line text="execution advice running2"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Five - Java5">
+      <compile files="Five.java -1.5 -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Five">
+        <stderr>
+          <line text="test"/>
+          <line text="hello"/>
+          <line text="test"/>
+          <line text="hello"/>
+          <line text="test"/>
+          <line text="hello"/>
+          <line text="test"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="Six - preJava5">
+      <compile files="Six.java -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Six">
+        <stderr>
+          <line text="test"/>
+          <line text="hello"/>
+          <line text="test"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="lock pcd on transformed non-static method">
+      <compile files="Seven.java -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Seven">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Seven.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization/transformed" title="unlock pcd on transformed non-static method">
+      <compile files="Eight.java -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Eight">
+        <stderr>
+          <line text="hello"/>
+          <line text="Unlocking occurring at unlock(unlock(Object))"/>
+          <line text="Eight.java"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="lock pcd on transformed static method - J5">
+      <compile files="Nine.java -1.5 -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Nine">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Nine.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization/transformed" title="unlock pcd on transformed static method - J5">
+      <compile files="Ten.java -1.5 -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Ten">
+        <stderr>
+          <line text="hello"/>
+          <line text="Unlocking occurring at unlock(unlock(Object))"/>
+          <line text="Ten.java"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="lock pcd on transformed static method - preJ5">
+      <compile files="Eleven.java -Xjoinpoints:synchronization">
+      </compile>
+      <run class="Eleven">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Eleven.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="features152/synchronization/transformed" title="unlock pcd on transformed static method - preJ5">
+      <compile files="Twelve.java" options="-Xjoinpoints:synchronization">
+      </compile>
+      <run class="Twelve">
+        <stderr>
+          <line text="hello"/>
+          <line text="Unlocking occurring at unlock(unlock(Object))"/>
+          <line text="Twelve.java"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="features152/synchronization/transformed" title="transform static method - preJ5">
+      <compile files="Fifteen.java" options="-Xjoinpoints:synchronization -1.4">
+      </compile>
+      <run class="Fifteen">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Fifteen.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="features152/synchronization/transformed" title="transform static method - packages - preJ5">
+      <compile files="Sixteen.java" options="-Xjoinpoints:synchronization -1.4">
+      </compile>
+      <run class="a.b.c.d.Sixteen">
+        <stderr>
+          <line text="Locking occurring at lock(lock(Object))"/>
+          <line text="Sixteen.java"/>
+          <line text="hello"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization" title="obtaining locked object through getArgs">
+      <compile files="LockingWithTJP.java" options="-Xjoinpoints:synchronization">
+      </compile>
+      <run class="LockingWithTJP">
+        <stderr>
+          <line text="before() lock: advice running at LockingWithTJP.java:18"/>
+          <line text="Locked on LockingWithTJP$Foo"/>
+          <line text="non-static method running"/>
+          <line text="before() lock: advice running at LockingWithTJP.java:23"/>
+          <line text="Locked on class java.lang.String"/>
+          <line text="static method running"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features152/synchronization/transformed" title="other targeters">
+      <compile files="OtherTargeters.java" options="-Xjoinpoints:synchronization">
+         <message kind="warning" line="8" text="advice matching the synchronized "/>
+      </compile>
+      <run class="OtherTargeters">
+        <stderr>
+          <line text="advice running"/>
+          <line text="foo() running"/>
+        </stderr>
+      </run>
+    </ajc-test>
+    
+    
+    <ajc-test dir="features152/synchronization/transformed" title="joinpoints enabled but no lock">
+      <compile files="Fourteen.java" options="-Xjoinpoints:synchronization">
+         <!--message kind="warning" line="8" text="advice matching the synchronized "/-->
+      </compile>
+      <run class="Fourteen"/>
+    </ajc-test>
+
+</suite>

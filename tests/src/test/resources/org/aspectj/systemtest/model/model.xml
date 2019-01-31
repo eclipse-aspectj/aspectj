@@ -1,0 +1,115 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- Model and Hierarchy Tests -->
+<suite>
+<!-- non-AspectJ 5 specific tests -->
+
+    <ajc-test dir="model/pr238054" title="multiple identical jps on one line">
+        <compile files="pr238054.aj" options="-emacssym"/>
+    </ajc-test> 
+
+
+
+    <ajc-test dir="model/pr77269_1" title="advice in structure model with anonymous inner class">
+        <compile files="pack/pr77269.aj" options="-emacssym -Xset:minimalModel=false"/>
+    </ajc-test> 
+
+    <ajc-test dir="model/pr77269_2" title="advice in structure model with named inner class">
+        <compile files="pr77269b.aj" options="-emacssym -Xset:minimalModel=false"/>
+    </ajc-test> 
+
+    <ajc-test dir="model/pr77269_3" title="declare warning in structure model with anonymous inner class">
+        <compile files="pack/pr77269c.aj" options="-emacssym -Xset:minimalModel=false">
+        	<message kind="warning" line="8" text="blah blah blah"/>
+        </compile>
+    </ajc-test> 
+
+    <ajc-test dir="model/pr145963_1" title="sourcelocation and jar file">
+      <compile files="C.java, SourceAspect.aj" aspectpath="simple.jar" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="model/pr145963_2" title="sourcelocation and class file">
+      <compile files="C.java, SourceAspect.aj" aspectpath="pkg" options="-emacssym">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	  </compile>
+    </ajc-test>
+
+   <ajc-test dir="model/pr145963_3" title="aspect in default package">
+      <compile files="C.java" aspectpath="simple.jar" options="-emacssym -Xset:minimalModel=false">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	</compile>
+    </ajc-test>
+
+   <ajc-test dir="model/pr145963_4" title="aspect in java file">
+      <compile files="C.java" aspectpath="simple.jar" options="-emacssym -Xset:minimalModel=false">
+		<message kind="warning" line="6" text="There should be no printlns"/>
+	</compile>
+    </ajc-test>
+    
+    <ajc-test dir="model/pr141730_1" title="new iprogramelement methods">
+      <compile files="pr141730.aj" options="-emacssym"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr141730_3" title="ensure aspectpath injar relationships are correct when not filling in model">
+      <compile files="MyFoo.java" aspectpath="aspectpath.jar" options="-emacssym"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr148027" title="ensure pcd declare in class appears in model">
+      <compile files="A.aj, C.aj" options="-emacssym"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr160469_1" title="ensure advice from abstract aspects appear correctly in the model">
+      <compile files="Simple.java" options="-emacssym" aspectpath="aspects.jar"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr160469_2" title="ensure deow from abstract aspects appear correctly in the model">
+      <compile files="Simple.java" options="-emacssym -Xset:minimalModel=false" aspectpath="aspects.jar">
+		<message kind="warning" line="5" text="warning"/>
+      </compile>
+    </ajc-test>
+
+<!-- AspectJ 5 specific tests -->
+
+	<ajc-test dir="model/pr115607" title="declare at type appears correctly in structure model">
+        <compile files="pr115607.java" options="-1.5,-emacssym,-Xset:minimalModel=false"/>
+    </ajc-test>
+
+    <ajc-test dir="model/pr131932" title="structure model for generic itd">
+        <compile files="pr131932.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
+
+    <ajc-test dir="model/pr132130" title="declare annotation appears in structure model when in same file">
+        <compile files="pr132130.aj" options="-1.5 -emacssym -Xset:minimalModel=false"/>
+    </ajc-test>
+    
+    <ajc-test dir="model/pr120356" title="@AJ deow appear correctly when structure model is generated">
+        <compile files="C.java, A.java" options="-1.5, -emacssym -Xset:minimalModel=false">
+         <message kind="error" line="8" text="error"/>
+         <message kind="warning" line="5" text="warning"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="model/pr143924" title="declare @method relationship">
+     <compile files="pr143924.aj" options="-1.5 -showWeaveInfo -emacssym -Xset:minimalModel=false">
+        <message kind="weave" text="'public void BankAccount.debit(String,long)' (pr143924.aj:7) is annotated with @Secured"/>
+     </compile>
+    </ajc-test>
+    
+    <ajc-test dir="model/pr141730_2" title="new iprogramelement methods for generics">
+      <compile files="pr141730.aj" options="-1.5 -emacssym"/>
+    </ajc-test>
+
+	<ajc-test dir="model/pr141730_4" title="ensure inpath injar relationships are correct when not filling in model">
+      <compile files="MyBar.aj, MyAnnotation.java, NewClass.java" inpath="inpath.jar" options="-1.5 -emacssym -Xset:minimalModel=false">
+			<message kind="warning" line="20" text="System.out should not be called"/>
+	  </compile>
+    </ajc-test>
+    
+    <ajc-test dir="model/prX" title="inpath advised elements">
+      <compile files="X.java" inpath="inpath.jar" options="-1.5 -emacssym"/>
+    </ajc-test>
+
+
+</suite>

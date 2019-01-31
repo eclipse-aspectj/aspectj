@@ -1,0 +1,41 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+   
+   <ajc-test dir="features167/intertype" title="simple">
+     <compile files="Simple.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features167/intertype" title="simple with field">
+     <compile files="Two.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features167/intertype" title="simple with field2">
+     <compile files="Three.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features167/intertype" title="new instance">
+     <compile files="Four.java" options="-1.5"/>
+   </ajc-test>
+   
+   <ajc-test dir="features167/intertype" title="new instance and access">
+     <compile files="Five.java" options="-1.5"/>
+     <run class="Five">
+       <stdout>
+         <line text="5"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features167/intertype" title="new instance and access to two fields">
+     <compile files="Six.java" options="-1.5"/>
+     <run class="Six">
+       <stdout>
+         <line text="5"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   
+
+</suite>

@@ -1,0 +1,99 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- Tracing Tests -->
+<suite>
+
+	<ajc-test dir="tracing" title="Tracing" keywords="tracing">
+        <compile
+        	files="TracingTest.java"
+        />
+        <ant file="ant.xml" target="Tracing" verbose="true">
+        	<stdout>
+                <line text="? TracingTest.main() trace="/>
+            </stdout>
+		</ant>      
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="Default tracing" keywords="tracing">
+        <compile
+        	files="DefaultTracingTest.java"
+        />
+        <ant file="ant.xml" target="Default tracing" verbose="true">
+        	<stdout>
+                <line text="? DefaultTracingTest.main() trace=org.aspectj.weaver.tools.DefaultTrace"/>
+            </stdout>
+		</ant>        
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="Trace messages" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile
+        	files="IncludedAspect.aj, ExcludedAspect.aj"
+        />
+		<ant file="ant.xml" target="Trace messages" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+            <!-- 
+            	Always get info messages even without -verbose because output determined
+                by tracing infrastructure.
+                 
+                Duplicate warning and error messages: first through trace then message 
+                writer
+            -->
+        	<stderr>
+	  	    	<line text="info AspectJ Weaver Version"/>
+	  	    	<line text="info register classloader"/>
+	  	    	<line text="info using configuration"/>
+	  	    	<line text="info register aspect IncludedAspect"/>
+	  	    	<line text="warning aspect ExcludedAspect exluded"/>
+	  	    	<line text="warning aspect ExcludedAspect exluded"/>
+	  	    	<line text="info define aspect IncludedMissingAspect"/>
+	  	    	<line text="error Cannot find parent aspect"/>
+	  	    	<line text="error Cannot find parent aspect"/>
+	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
+	  	    	<line text="error Concrete-aspect 'IncludedMissingAspect' could not be registered"/>
+	  	    	<line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
+	  	    	<line text="warning failure(s) registering aspects. Disabling weaver for class loader"/>
+            </stderr>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="Trace everything" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
+		<ant file="ant.xml" target="Trace everything" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="JDK 1.4 tracing" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
+		<ant file="ant.xml" target="JDK 1.4 tracing" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        </ant>
+    </ajc-test>
+
+	<ajc-test dir="tracing" title="Tracing file System Property" keywords="tracing">
+        <compile
+        	files="HelloWorld.java"
+        />
+        <compile files="Aspect.aj" options="-outxml -1.4"/>
+		<ant file="ant.xml" target="Tracing file System Property" verbose="true">
+        	<stdout>
+                <line text="Hello World!"/>
+            </stdout>
+        </ant>
+    </ajc-test>
+</suite>

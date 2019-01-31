@@ -1,0 +1,116 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs171/pr384401" title="npe">
+      <compile files="X.java" options="-1.5">
+      	<message kind="error" line="9" text="the advice annotation must specify a pointcut value"/>
+      </compile>
+    </ajc-test>
+
+	<ajc-test dir="bugs171/pr387444" title="soft 17">
+      <compile files="Code.java" options="-1.7"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs171/pr387444" title="soft 17 2">
+      <compile files="Code2.java" options="-1.7"/>
+      <run class="Code2">
+        <stdout>
+          <line text="foo"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+	<ajc-test dir="bugs171/pr387568" title="unresolvable enum">
+      <compile files="Color.java Code.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs171/pr386049" title="itd abstract">
+      <compile files="de/scrum_master/galileo/filter/BasicFilter.java de/scrum_master/galileo/filter/JsoupFilter.java de/scrum_master/galileo/LoggingAspect.aj" options="-1.5"/>
+      <run class="de.scrum_master.galileo.filter.JsoupFilter">
+        <stdout>
+          <line text="JsoupFilter.getLogMessage()"/>
+          <line text="run()"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs171/pr73507" title="public ITDfs - 1">
+      <compile files="Case1.java" options="-1.5"/>
+      <run class="Case1">
+        <stdout>
+          <line text="Found a field called i"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs171/pr73507" title="public ITDfs - 2">
+      <compile files="Case2.java" options="-1.5"/>
+      <run class="Case2">
+        <stdout>
+          <line text="Value of C.i is 1"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+     <ajc-test dir="bugs171/pr73507" title="public ITDfs - 3">
+      <compile files="Case3.java" options="-1.5"/>
+      <run class="Case3">
+        <stdout>
+          <line text="Value of C.i is 1"/>
+          <line text="Value of C.j is 1"/>
+          <line text="Value of C.k is 5"/>
+          <line text="Value of I.i is 1"/>
+          <line text="Value of I.j is 1"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+     <ajc-test dir="bugs171/pr73507" title="public ITDfs - 4">
+      <compile files="Case4.java" options="-1.5">
+        <message kind="error" line="13" text="can't override java.lang.String I.i with int C.i return types don't match"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs171/pr73507" title="public ITDfs - 5">
+      <compile files="Case5.java" options="-1.5"/>
+      <run class="Case5">
+        <stdout>
+          <line text="public java.lang.String C.str"/>
+        </stdout>
+      </run>
+    </ajc-test>
+	
+	<ajc-test dir="bugs171/pr384398" title="generics itds">
+		<compile files="A.java B.java BAspect.aj" options="-1.5">
+		<!-- 
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		-->
+		</compile>
+		<!-- 
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run> -->
+	</ajc-test>
+	
+	<ajc-test dir="bugs171/pr384398_2" title="generics itds 2">
+		<compile files="A.java B.java BAspect.aj" options="-1.5">
+		<!-- 
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		-->
+		</compile>
+		<!-- 
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run> -->
+	</ajc-test>
+   
+</suite>

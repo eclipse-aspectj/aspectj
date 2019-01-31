@@ -1,0 +1,101 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+    <ajc-test dir="apt/test1" title="annotation processing with specified processor">
+        <compile options="-1.8" files="Event.java SimpleProcessor.java"
+                 outjar="annotation_processor.jar"/>
+        <!--
+                SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
+                    - {className}EventsAspect.aj - this file describes aspect with advices to weaving method annotated with @Event.
+                    - {className}Callbacks.java - this file contains callback interfaces for methods annotated with @Event. Example:
+                            public final class SomeCallbacks {
+                                public interface OnMethod1 {
+                                    void changed(Some emmiter);
+                                }
+                            }
+         -->
+         <!--  believe fails on JDK9 because of split packages and unable to find @Generated -->
+        <compile options="-1.8 -processor test.SimpleProcessor -s generated -showWeaveInfo" files="Some.java"
+                 classpath="annotation_processor.jar" outjar="code.jar">
+            <message kind="weave"
+                     text="Type 'test.Some' (Some.java) has intertyped field from 'test.SomeEventsAspect' (SomeEventsAspect.aj:'test.SomeEventsAspect$SomeOnMethod1Event test.Some.OnMethod1Event')"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void test.Some.method1())' in Type 'test.Some' (Some.java:14) advised by before advice from 'test.SomeEventsAspect' (SomeEventsAspect.aj:44)"/>
+        </compile>
+        <run class="test.Some">
+            <stdout>
+                <line text="callback registered from before aspect"/>
+                <line text="method1 is invoked"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="apt/test1" title="annotation processing in action using SPI">
+        <!--
+        what is SPI is described here - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
+        -->
+        <!--<compile options="-1.8" files="Event.java SimpleProcessor.java" outjar="annotation_processors_with_spi.jar"/>-->
+        <compile options="-1.8" files="Event.java SimpleProcessor.java" outjar="annotation_processor.jar"/>
+        <!--
+                SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
+                    - {className}EventsAspect.aj - this file describes aspect with advices to weaving method annotated with @Event.
+                    - {className}Callbacks.java - this file contains callback interfaces for methods annotated with @Event. Example:
+                            public final class SomeCallbacks {
+                                public interface OnMethod1 {
+                                    void changed(Some emitter);
+                                }
+                            }
+         -->
+
+        <!--apt_service_description.jar contains only SPI description file - META-INF/services/javax.annotation.processing.Processor-->
+        <compile options="-1.8 -s generated -showWeaveInfo" files="Some.java"
+                 classpath="annotation_processor.jar;apt_service_description.jar" outjar="code.jar">
+            <message kind="weave"
+                     text="Type 'test.Some' (Some.java) has intertyped field from 'test.SomeEventsAspect' (SomeEventsAspect.aj:'test.SomeEventsAspect$SomeOnMethod1Event test.Some.OnMethod1Event')"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void test.Some.method1())' in Type 'test.Some' (Some.java:14) advised by before advice from 'test.SomeEventsAspect' (SomeEventsAspect.aj:44)"/>
+        </compile>
+
+        <run class="test.Some">
+            <stdout>
+                <line text="callback registered from before aspect"/>
+                <line text="method1 is invoked"/>
+            </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="apt/test1" title="disabled annotation processing">
+        <compile options="-1.8" files="Event.java SimpleProcessor.java"
+                 outjar="annotation_processor.jar"/>
+        <!--
+                SimpleProcessor should generate 2 files for each java class that utilizes @Event annotation:
+                    - {className}EventsAspect.aj - this file describes aspect with advices to weaving method annotated with @Event.
+                    - {className}Callbacks.java - this file contains callback interfaces for methods annotated with @Event. Example:
+                            public final class SomeCallbacks {
+                                public interface OnMethod1 {
+                                    void changed(Some emmiter);
+                                }
+                            }
+         -->
+
+        <compile options="-1.8 -s generated -showWeaveInfo -proc:none" files="Some.java"
+                 classpath="annotation_processor.jar" outjar="code.jar">
+            <!--field was not injected, so error should occur-->
+            <message kind="error" text="OnMethod1Event cannot be resolved or is not a field"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="apt/test2" title="annotation processing generating java files with aspects">
+        <compile options="-1.6" files="DemoProcessor.java Marker.java" />
+        <compile options="-1.6 -showWeaveInfo -processor DemoProcessor" files="Code.java">
+            <message kind="warning" text="Generated aspect to advise too"/>
+            <message kind="warning" text="Generated aspect to advise boo"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.boo())' in Type 'Code' (Code.java:6) advised by before advice from 'Advise_boo' (Advise_boo.java:2)"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.too())' in Type 'Code' (Code.java:9) advised by before advice from 'Advise_too' (Advise_too.java:2)"/>
+        </compile>
+    </ajc-test>
+
+</suite>

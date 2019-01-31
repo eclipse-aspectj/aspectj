@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+<ajc-test dir="bugs186/lambdaBeans" title="lambda beans">
+<compile files="Foo.java Application.java" options="-1.8">
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs186/462821" title="missing method">
+<compile files="FooService.java AbstractLoggerAspect.java FooServiceLoggerAspect.java" options="-1.8">
+</compile>
+</ajc-test>
+
+<ajc-test dir="bugs186/romain" title="missing extends on generic target">
+<compile files="Code.java SubCode.java" options="-1.5" outjar="code.jar"/>
+<compile files="X.java Runner1.java" options="-1.5" inpath="code.jar"/>
+<run class="Runner1">
+<stdout>
+<line text="foo"/>
+</stdout>
+</run>
+</ajc-test>
+
+</suite>

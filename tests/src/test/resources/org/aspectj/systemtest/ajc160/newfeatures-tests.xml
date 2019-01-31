@@ -1,0 +1,37 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Tests -->
+<suite>
+
+    <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - no">
+      <compile files="A.java B.java" />
+      <compile files="X.aj" outjar="code.jar" options="-1.4"/>
+      <run class="javax.foo.A" classpath="code.jar" ltw="aop1.xml">
+      <stderr>
+      <line text="AspectJ Weaver Version"/>
+      <line text="register classloader"/>
+      <line text="using configuration"/>
+      <line text="register aspect X"/>
+      <line text="not being woven"/>
+      </stderr>
+        <stdout>
+           <line text="(A) method running"/>
+           <line text="(B) method running"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - yes">
+      <compile files="A.java B.java" />
+      <compile files="X.aj" outjar="code.jar" options="-1.4"/>
+      <run class="javax.foo.A" classpath="code.jar" ltw="aop2.xml">
+        <stdout>
+           <line text="advised"/>
+           <line text="(A) method running"/>
+           <line text="advised"/>
+           <line text="(B) method running"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+</suite>

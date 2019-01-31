@@ -1,0 +1,398 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs170/pr382723" title="generic aspect">
+		<compile files="FooAspect.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 2">
+		<compile files="FooAspect2.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 3">
+		<compile files="FooAspect3.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382723" title="generic aspect 4">
+		<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
+		</compile>
+		<run class="Foo">
+			<stdout>
+				<line text="superaspect getNumber returns -2"/>
+				<line text="Bar.method() running"/>
+				<line text="abstract method returns []"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	
+	<!-- no declare parents, only ITD -->
+	<ajc-test dir="bugs170/pr382189/one" title="covariant generics 1">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+	</ajc-test>
+	
+	<!-- now declare parents and ITD -->
+	<ajc-test dir="bugs170/pr382189/two" title="covariant generics 2">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+	</ajc-test>
+	
+	<!-- now run it -->
+	<ajc-test dir="bugs170/pr382189/three" title="covariant generics 3">
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+		<run class="A"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382435/one" title="covariant generic itds 1">
+		<compile files="bug/A.java" options="-1.5"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382435/two" title="covariant generic itds 2">
+		<compile files="bug/A.java" options="-1.5"/>
+		<run class="bug.A"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr382189" title="covariant generics">
+	<compile files="covbug/A.java covbug/A_ITD.aj covbug/B.java covbug/SuperA.java covbug/SuperB.java" options="-1.5"/>
+	<!-- <run class="Foo">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run> -->
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects">
+	<compile files="Foo.java" options="-1.5"/>
+	<run class="Foo">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects - 2">
+	<compile files="Foo2.java" options="-1.5"/>
+	<run class="Foo2">
+	<stdout>
+	<line text="@Anno()"/></stdout>
+	</run>
+	</ajc-test>
+
+ 	<ajc-test dir="bugs170/pr376351" title="attribute issue with J7">
+     <compile files="R.java R1.java" outjar="code.jar" options="-1.5"/>
+     <compile files="RAj.java" options="-1.7 -Xlint:ignore" outjar="aspects.jar" classpath="code.jar"/>
+     <compile inpath="code.jar" aspectpath="aspects.jar" options="-showWeaveInfo">
+     <message kind="weave" text="Join point 'constructor-call(void R.&lt;init&gt;())'"/>
+     </compile>
+     <!-- 
+     if we had a 1.7 vm we could use this:
+     <compile files="RAj.java" options="-1.7 -Xlint:ignore"/>
+     <run class="R" ltw="aop.xml">
+     <stderr>
+     <line text="org.aspectj.weaver.tools.Jdk14Trace error"/>
+     <line text="Unsupported major.minor version 51.0"/>
+     <line text="java.lang.UnsupportedClassVersionError: RAj :"/>
+     </stderr>
+     </run>
+     -->
+   </ajc-test>
+
+ 	<ajc-test dir="bugs170/pr376139" title="switch on enum">
+     <compile files="Code.java" options="-1.5"/>
+     <run class="Code"/>
+   </ajc-test>
+
+ 	<ajc-test dir="bugs170/ltw" title="dec at field ordering 1">
+     <compile files="Anno.java TriggerAll.java MyObject.java Main.java" options="-1.5"/>
+     <run class="ch.tests.Main">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/ltw" title="dec at field ordering 2">
+     <compile files="Anno.java Main.java TriggerAll.java  MyObject.java" options="-1.5"/>
+     <run class="ch.tests.Main">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/ltw" title="dec at field ordering ltw 1">
+     <compile files="Anno.java Main.java MyObject.java" options="-1.5"/>
+     <compile files="TriggerAll.java" options="-Xlint:ignore -1.5 "/>
+     <run class="ch.tests.Main" ltw="aop.xml">
+       <stdout>
+           <line text="Triggered"/>
+           <line text="Triggered"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method">
+     <compile files="Hello.java Anno.java" options="-1.5"/>
+     <run class="Hello" ltw="aop.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+           <line text="Annotations on sayHello? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method 2">
+     <compile files="Hello.java Anno2.java" options="-1.5"/>
+     <run class="Hello" ltw="aop2.xml">
+       <stdout>
+           <line text="Hello"/>
+           <line text="World"/>
+           <line text="Annotations on sayHello? false"/>
+       </stdout>
+       <stderr>
+       	<line text="info AspectJ Weaver"/>
+       	<line text="info register"/>
+       	<line text="info using configuration"/>
+       	<line text="info define aspect ConjuredUp"/>
+       	<line text="error declare is using an annotation type that does not have runtime retention: @Anno2"/>
+       	<line text="info weaver"/>
+       </stderr>
+     </run>
+   </ajc-test>
+   
+ 	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at field">
+     <compile files="Hello2.java Anno.java" options="-1.5"/>
+     <run class="Hello2" ltw="aop3.xml">
+       <stdout>
+           <line text="Annotations on i? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 1">
+     <compile files="Hello4.java Anno4.java" options="-1.5"/>
+     <run class="Hello4" ltw="aop4.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 4"/>
+           <line text="@AnnoBoolean(value=true, zzz=false)"/>
+           <line text="@AnnoClass(value=class java.lang.Integer, ccc=class java.lang.String)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoClass(value=java.lang.Integer.class, ccc=java.lang.String.class)" vm="9+"/>
+           <line text="@AnnoLong(value=999, jjj=111)"/>
+           <line text="@AnnoString(value=set from xml, sss=xyz)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoString(value=&quot;set from xml&quot;, sss=&quot;xyz&quot;)" vm="9+"/>
+           <line text="Annotations on field2? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@AnnoClass(value=class java.lang.String, ccc=class java.lang.String)"  vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoClass(value=java.lang.String.class, ccc=java.lang.String.class)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 2">
+     <compile files="Hello5.java Anno5.java" options="-1.5"/>
+     <run class="Hello5" ltw="aop5.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 4"/>
+           <line text="@AnnoChar(value=z, ccc=a)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoChar(value='z', ccc='a')" vm="9+"/>
+           <line text="@AnnoDouble(value=99.0, ddd=3.0)"/>
+           <line text="@AnnoFloat(value=6.0, fff=4.0)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoFloat(value=6.0f, fff=4.0f)" vm="9+"/>
+           <line text="@AnnoShort(value=8, sss=3)"/>
+           <line text="Annotations on field2? true"/>
+           <line text="Annotation count is 2"/>
+           <line text="@AnnoByte(value=88, bbb=66)"/>
+           <line text="@AnnoInt(iii=111, value=99)"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values">
+     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <run class="Hello6" ltw="aop6.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Annot(a=a, fred=false, value=abc)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@Annot(a='a', fred=false, value=&quot;abc&quot;)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values and spaces">
+     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <run class="Hello6" ltw="aop6a.xml">
+       <stdout>
+           <line text="Annotations on field1? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Annot(a=a, fred=false, value=abc)" vm="1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@Annot(a='a', fred=false, value=&quot;abc&quot;)" vm="9+"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - type">
+     <compile files="Hello7.java Anno7.java" options="-1.5"/>
+     <run class="Hello7" ltw="aop7.xml">
+       <stdout>
+           <line text="Annotations on Hello7? true"/>
+           <line text="Annotation count is 1"/>
+           <line text="@Anno"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/pr371998" title="BCException anno decp">
+     <compile files="AspectTest.java" options="-1.5 -showWeaveInfo">
+   	   <message kind="weave" text="Extending interface set for type 'Foo' (AspectTest.java) to include 'X' (AspectTest.java)"/>
+   	   <message kind="weave" text="Type 'Foo' (AspectTest.java) has intertyped method from 'AspectTest' (AspectTest.java:'void X.xxx()')"/>
+   	   <message kind="weave" text="Extending interface set for type 'Bar' (AspectTest.java) to include 'X' (AspectTest.java)"/>
+   	   <message kind="weave" text="Type 'Bar' (AspectTest.java) has intertyped method from 'AspectTest' (AspectTest.java:'void X.xxx()')"/>
+   	 </compile>
+   	 <run class="AspectTest"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/transientTjpFields" title="transient tjp fields">
+      <compile files="Code.java" options="-Xset:makeTjpFieldsTransient=true">
+      </compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="perthis">
+   	<compile files="PerThis.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="pertarget">
+   	<compile files="PerTarget.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="percflow">
+   	<compile files="PerCflow.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="pertypewithin">
+   	<compile files="PerTypeWithin.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="diamond 1">
+   	<compile files="Diamond.java" options="-1.5">
+   		<message kind="error" line="11" text="'&lt;&gt;' operator is not allowed for source level below 1.7"/>
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="diamond 2">
+   	<compile files="Diamond.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="diamond itd 1">
+   	<compile files="DiamondITD.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals 1">
+   	<compile files="Literals.java" options="-1.5">
+   		<message kind="error" line="8" text="Underscores can only be used with source level 1.7 or greater"/>
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals 2">
+   	<compile files="Literals.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="literals itd 1">
+   	<compile files="LiteralsITD.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="string switch 1">
+   	<compile files="StringSwitch.java" options="-1.5">
+   	<message kind="error" line="9" text="Cannot switch on a value of type String for source level below 1.7. Only convertible int values or enum variables are permitted"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="string switch 2">
+   	<compile files="StringSwitch.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch 1">
+   	<compile files="MultiCatch.java" options="-1.5">
+   		<message kind="error" line="6" text="Multi-catch parameters are not allowed for source level below 1.7"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="multi catch 2">
+   	<compile files="MultiCatch.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch with handler 1">
+   	<compile files="MultiCatchWithHandler.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch aspect 1">
+   	<compile files="MultiCatchAspect.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs170/language" title="try resources 1">
+   	<compile files="TryResources.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="try resources 2">
+   	<compile files="TryResourcesAspect.java" options="-1.7">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/language" title="multi catch with handler 2">
+   	<compile files="MultiCatchWithHandler2.java" options="-1.7">
+   	</compile>
+   	<run class="MultiCatchWithHandler2"></run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/sanity" title="sanity 1">
+   	<compile files="DeclareAtType.java" options="-1.5">
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/pr363979" title="missing impl">
+     <compile files="Example.java" options="-1.5"/>
+     <run class="Example">
+	     <stdout>
+	    	 <line text="yes"/>
+	     </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/pr363979" title="missing impl 2">
+     <compile files="Example2.java" options="-1.5"/>
+     <run class="Example2">
+	     <stdout>
+	    	 <line text="yes"/>
+	     </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="bugs170/pr364380" title="stackoverflow">
+     <compile files="X.aj" options="-1.5" outjar="foo.jar"/>
+     <compile files="C.java" options="-1.5" inpath="foo.jar">
+     <message kind="warning" text="An advice already exists for setting an owner"/>
+     </compile>
+   </ajc-test>
+   
+</suite>

@@ -1,0 +1,46 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<ajc-test dir="bugs1811/parameterizedWithInner" title="parameterized with inner">
+		<compile options="-1.8" files="Code.java"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1813/generics" title="generics">
+		<!-- this order works reliably -->
+		<compile options="-1.8 -showWeaveInfo" files="A.java AlreadyImplementsA.java BaseI.java BaseT.java BindInterfaceA.aj ConcreteIImpl.java ConcreteTImpl.java Runner.java">
+		<message kind="weave" text="Extending interface set for type 'AlreadyImplementsA' (AlreadyImplementsA.java) to include 'A&lt;ConcreteTImpl,ConcreteIImpl&gt;' (BindInterfaceA.aj)"/>
+		</compile>
+	
+		<!-- this order was failing -->
+		<compile options="-1.8 -showWeaveInfo" files="AlreadyImplementsA.java BaseI.java BaseT.java BindInterfaceA.aj ConcreteIImpl.java ConcreteTImpl.java A.java Runner.java ">
+		<message kind="weave" text="Extending interface set for type 'AlreadyImplementsA' (AlreadyImplementsA.java) to include 'A&lt;ConcreteTImpl,ConcreteIImpl&gt;' (BindInterfaceA.aj)"/>
+		</compile>
+		<run class="Runner">
+		<stdout>
+		<line text="ok"/>
+		</stdout>
+		</run>
+	</ajc-test>	
+
+	<ajc-test dir="bugs1811/509235" title="multiargs">
+		<compile options="-1.8" files="Code.java"/>
+		<run class="Code">
+			<stdout>
+				<line text="username = fooname"/>
+				<line text="username = barname"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs1811/509235" title="multiargs - no ellipsis">
+		<compile options="-1.8" files="Code2.java"/>
+		<run class="Code2">
+			<stdout>
+				<line text="username = fooname"/>
+				<line text="username = barname"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+</suite>

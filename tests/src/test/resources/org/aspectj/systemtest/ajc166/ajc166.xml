@@ -1,0 +1,147 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs166/pr286473" title="parents ltw - binary">
+    <compile files="Anno.java Top.java Middle.java Bottom.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
+    <compile files="Mark.java LTWTest.java" inpath="code.jar" options="-1.5 -showWeaveInfo">
+    	<message kind="weave" text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+		<message kind="weave" text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+		<message kind="weave" text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+    </compile>
+    <run class="LTWTest">
+      <stdout>
+        <line text="Bottom.getMethods()"/>
+        <line text="bottom : Bottom"/>
+        <line text="markMethod : Top"/>
+        <line text="middle : Middle"/>
+      </stdout>
+    </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr286473" title="parents ltw - ltw">
+    <compile files="Anno.java Top.java Middle.java Bottom.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
+    <compile files="Mark.java LTWTest.java" classpath="code.jar" options="-1.5">
+    </compile>
+    <run class="LTWTest" ltw="aop.xml">
+      <stderr>
+        <line text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+<!--
+        <line text="Extending interface set for type 'Bottom' (Bottom.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Bottom' (Bottom.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Type 'Mark$IMarker' (Mark.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Extending interface set for type 'Middle' (Middle.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Middle' (Middle.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        <line text="Extending interface set for type 'Top' (Top.java) to include 'Mark$IMarker' (Mark.java)"/>
+        <line text="Type 'Top' (Top.java) has intertyped method from 'Mark' (Mark.java:'java.lang.String Mark$IMarker.markMethod()')"/>
+        -->
+      </stderr>
+      <stdout>
+        <line text="Bottom.getMethods()"/>
+        <line text="bottom : Bottom"/>
+        <line text="markMethod : Top"/>
+        <line text="middle : Middle"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
+  <ajc-test dir="bugs166/pr290227" title="npe for javac built">
+    <compile files="" inpath="javacCode.jar" options="-1.5 -Xlint:ignore"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr288049" title="itd decanno">
+     <compile files="org/othtests/MyClass.java org/othtests/MySubClass.java org/othtests/AddSomeAnnotation.java" options="-1.5 -showWeaveInfo">
+     <message kind="weave" text="'public java.lang.String org.othtests.MySubClass.doOne()' (MySubClass.java:5) is annotated with"/>
+     <message kind="weave" text="'public java.lang.String org.othtests.MySubClass.doTwo()' (MySubClass.java:9) is annotated with"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr288712" title="verifyerror anno style">
+    <compile files="answers/Answer2h.java figures/FigureElement.java figures/Line.java figures/Point.java figures/ShapeFigureElement.java Main.java" options="-1.5"/>
+    <run class="Main"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr288635" title="munger cce - 2">
+     <compile files="AddAnnotation.java MakeItd.java InterceptTraceds.java TestClass.java Anno.java" options="-1.5 -XterminateAfterCompilation"/>
+     <run class="TestClass" ltw="aop1.xml">
+       <stdout>
+         <line text="Executing execution(int TestClass.doAnother()) on level debug"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr288635" title="munger cce">
+     <compile files="org/tests/atann/AddAnnotations.aj org/tests/atann/AddITDDoMethod.aj org/tests/atann/InterceptTraceds.aj org/tests/atann/TestClass.java org/tests/atann/Traced.java" options="-1.5"/>
+     <run class="org.tests.atann.TestClass">
+       <stdout>
+         <line text="Executing execution(String org.tests.atann.TestClass.doAnnotated()) on level debug"/>
+         <line text="Executing execution(int org.tests.atann.TestClass.doITDAnnotation()) on level debug"/>
+         <line text="Executing execution(int org.tests.atann.TestClass.doAnother()) on level debug"/>
+       </stdout>
+     </run>
+  </ajc-test>
+   
+  <ajc-test dir="bugs166/pr286375" title="npe on bad aspect decl">
+     <compile files="DatabaseOperationMonitor.java" options="-1.5" outjar="wibble.jar"/>
+     <compile files="" inpath="wibble.jar" options="-1.5"/>
+  </ajc-test>
+  
+  
+  <ajc-test dir="bugs166/pr290087" title="binary decp super rewrite">
+     <compile files="Bean.java BeanChild.java GenericParent.java" options="-1.5" outjar="base.jar"/>
+     <compile files="Interface.java InterfaceParent.java BeanHasInterface.java" inpath="base.jar" options="-1.5"/>
+     <run class="BeanChild"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr287597" title="anno modifier ordering - 1">
+     <compile files="A.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="foo"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr287613" title="dec anno compound expressions">
+     <compile files="DeclareAnnot.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember">
+     <compile files="InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj AnnotatedMethodInterface.java Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-1.5 -XhasMember"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember - 2">
+     <compile files="AnnotatedMethodInterface.java InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-1.5 -XhasMember"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs166/pr284862" title="npe hasmember - 3">
+     <compile files="AnnotatedMethodInterface.java InterfaceToAdd.java AnnotatedMethodImpl.aj AspectToMatch.aj Entity.java EntityClass.java PresentAnnotation.java SearchAnnotation.java" options="-Xset:pipelineCompilation=false -1.5 -XhasMember"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs165/pr279983" title="generics bridge">
+     <compile files="X.java" options="-1.5"/>
+     <run class="X"/>
+  </ajc-test>
+
+  <ajc-test dir="bugs166/pr282299" title="generics and decp">
+     <compile files="Code.java" options="-1.5"/>
+  </ajc-test>
+   
+  <ajc-test dir="bugs166/pr284297" title="generic signature problem">
+     <compile files="DomainLogic.java DomainObject.java FancyDomainLogic.java" options="-1.5" outjar="code.jar"/>
+     <compile files="FancyDomainLogicImpl.java" options="-1.5" classpath="code.jar"/>
+  </ajc-test>
+
+   <ajc-test dir="bugs166/pr283229" title="interfaces and serializable">
+     <compile files="Foo.java" options="-1.5 -XaddSerialVersionUID"/>
+     <run class="Foo">
+     <!--
+       <stdout>
+         <line text="if method: public static final boolean X.ajc$if$1ba()"/>
+         <line text="if method: public static final boolean X.ajc$if$177()"/>
+         <line text="if method: public static final boolean X.ajc$if$165()"/>
+       </stdout>
+       -->
+     </run> 
+   </ajc-test>
+
+</suite>

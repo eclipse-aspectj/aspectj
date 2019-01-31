@@ -1,0 +1,413 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+  <ajc-test dir="bugs169/pr318241" title="messy decp">
+    <compile files="PkItd.aj Two.aj SomeClass.java Pk.java SomeAnnotation.java" options="-1.5">
+    </compile>
+  </ajc-test>
+
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - method - 2">
+  	 <compile files="DAMethod2.java" options="-1.5 -showWeaveInfo">
+  	 	<message kind="weave" text="'public void Person.foo()' (DAMethod2.java:11) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public boolean Person.bar()' (DAMethod2.java:13) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public boolean Person.isSet()' (DAMethod2.java:17) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="public void Person.isNotReturningBoolean()' (DAMethod2.java:19) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:26)"/>
+  	 	<message kind="weave" text="'public void Person.getin()' (DAMethod2.java:21) is annotated with @Annot method annotation from 'DAMethod2' (DAMethod2.java:28)"/>
+  	 </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - method - 1">
+  	 <compile files="DAMethod1.java" options="-1.5 -showWeaveInfo">
+  	 	<message kind="weave" text="'public java.lang.String Person.getString()' (DAMethod1.java:9) is annotated with @Annot method annotation from 'DAMethod1' (DAMethod1.java:15)"/>
+  	 	<message kind="weave" text="'public boolean Person.isSet()' (DAMethod1.java:10) is annotated with @Annot method annotation from 'DAMethod1' (DAMethod1.java:15)"/>
+  	 </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr315820" title="multiple annos running - 1">
+  	 <compile files="MultiAnno2.java" options="-1.5"/>
+  	 <run class="MultiAnno2">
+  	 <stdout>
+  	 <line text="XXX"/>
+  	 </stdout>
+  	 </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr315820" title="multiple annos parsing">
+  	 <compile files="MultiAnno.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - fields - 2">
+  	 <compile files="Target.java" options="-1.5"/>
+  	 <run class="Target">
+  	 <stdout>
+  	 <line text="Field one"/>
+  	 <line text="@Annot1()"/>
+  	 <line text="@Annot1()"/>
+  	 <line text="Field two"/>
+  	 <line text="@Annot2()"/>
+  	 <line text="no annotations"/>
+  	 <line text="Field three"/>
+  	 <line text="@Annot3()"/>
+  	 <line text="@Annot3()"/>
+  	 </stdout></run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - fields - 1">
+  	 <compile files="DeclareAnnot.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr287613" title="compound declare patterns - methodctor - 1">
+  	 <compile files="DeclareAnnotMethodCtor.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr310506" title="optional aspects">
+     <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
+     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="Code.java" classpath="aspect.jar;aspect2.jar" options="-1.5"/>
+     <file deletefile="anno.jar"/>
+     <run class="Code" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
+     <stderr>
+     <line text="AspectJ Weaver Version"/>
+     <line text="register classloader"/>
+     <line text="using configuration"/>
+     <line text="register aspect"/>
+     <line text="deactivating aspect"/>
+     <line text="register aspect"/>     
+     <line text="processing reweavable"/>
+     </stderr>
+     <stdout>
+     <line text="staticinitialization"/>
+     <line text="abcde"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr310506" title="optional aspects 2">
+     <compile files="Anno.java" outjar="anno.jar" options="-1.5"/>
+     <compile files="AspectA.java" classpath="anno.jar" outjar="aspect.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="AspectB.java" outjar="aspect2.jar" options="-Xlint:ignore -1.5"/>
+     <compile files="Code.java Code2.java" classpath="anno.jar;aspect.jar;aspect2.jar" options="-1.5"/>
+     <run class="Code2" ltw="META-INF/aop.xml" classpath=".;aspect.jar;aspect2.jar">
+     <stderr>
+     <line text="AspectJ Weaver Version"/>
+     <line text="register classloader"/>
+     <line text="using configuration"/>
+     <line text="register aspect"/>
+     <line text="register aspect"/>     
+     <line text="processing reweavable"/>
+     <line text="processing reweavable"/>
+     </stderr>
+     <stdout>
+     <line text="staticinitialization"/>
+     <line text="A"/>
+     <line text="abcde"/>
+     </stdout>
+     </run>
+  </ajc-test>
+
+  <ajc-test dir="bugs169/pr315651" title="infinite loop">
+     <compile files="test/Profiling.aj test/Main.java" options="-1.5"/>
+     <run class="test.Main"/>
+  </ajc-test>
+
+  <ajc-test dir="bugs169/pr314965" title="anno typo">
+     <compile files="MinimalExample.java" options="-1.5">
+       <message kind="warning" text="no match for this type name: AnnotationWithParamAndTypo [Xlint:invalidAbsoluteTypeName]"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr314840" title="validate branch recursion">
+     <compile files="Arguments.aj Test1.java Test2.java Test.java" options="-1.5"/>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr313026/one" title="clashing declare annos">
+     <compile files="Target.java Asp.java Bsp.java Wibble.java Precedence1.java" options="-1.5 -Xlint:ignore"/>
+     <run class="Target">
+       <stdout>
+         <line text="@Wibble(value=abc)"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr312839/one" title="class file size - 1">
+     <compile files="Class.java X.aj" options="-1.5"/>
+     <run class="com.wibble.foo.Class">
+       <stdout>
+         <line text="Hello Andy"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 3">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop_none.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 1">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="intercepted class code.Code"/>
+     <line text="intercepted class runner.Runner"/>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr122460/one" title="scoping ltw - 2">
+     <compile files="A.java" options="-1.5 -Xlint:ignore" outjar="aspects.jar"/>
+     <compile files="Code.java Runner.java"/>
+     <run class="code.Code" ltw="aop_codeonly.xml" classpath="aspects.jar">
+     <stdout>
+     <line text="intercepted class code.Code"/>
+     <line text="running"/>
+     </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr307009" title="declare soft and call - 1">
+   	<compile files="Test.java Test2.java Ann.java Bug.aj" options="-1.5 -showWeaveInfo">
+   		<message kind="weave" text="Softening exceptions in type 'Test' (Test.java:4) as defined by aspect 'Bug' (Bug.aj:3)"/>
+   	</compile>
+   </ajc-test>
+
+   <ajc-test dir="bugs169/pr307009" title="declare soft and call - 2">
+   	<compile files="Test2.java Test.java Ann.java Bug.aj" options="-1.5 -showWeaveInfo">
+   		<message kind="weave" text="Softening exceptions in type 'Test' (Test.java:4) as defined by aspect 'Bug' (Bug.aj:3)"/>
+   	</compile>
+   </ajc-test>
+   
+   <ajc-test dir="bugs169/pr310043" title="rogue error">
+   	<compile files="B.java" classpath="code.jar" aspectpath="code.jar"/>
+   </ajc-test>
+   
+   <ajc-test dir="bugs169/pr309743" title="itd marker annotations - 1">
+     <compile files="A.java" options="-1.5"/>
+     <run class="A">
+       <stdout>
+         <line text="foo"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr309743" title="itd marker annotations - 2">
+     <compile files="B.java" options="-1.5"/>
+     <run class="B">
+       <stdout>
+         <line text="boo"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr309336" title="pipelining and generics">
+     <compile files="NoSystemStreams.aj UseOperators.java Operators.java" options="-1.5">
+       <message kind="warning" text="No system.out"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr308773" title="subtle generics problem">
+     <compile files="Aspy.aj Zzz.java Top.java Middle.java" options="-1.5"/>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr307147" title="advising privileged access method">
+     <compile files="B.java Test2.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'B' (B.java) has intertyped method from 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr307120" title="advising privileged access member">
+     <compile files="A.java Test.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.foo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr309440" title="crash param annos">
+     <compile files="foobar/ExportMode.java" classpath="jsr305.jar" options="-1.6"/>
+     <compile files="foobar/CrashAspectJCompiler.java" classpath="jsr305.jar" options="-1.6"/>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr307120" title="advising privileged access member - 2">
+     <compile files="Test.java A.java" options="-showWeaveInfo">
+       <message kind="weave" text="Type 'A' (A.java) has intertyped method from 'Test'"/> <!-- getFoo and getGoo -->
+       <message kind="weave" text="Join point 'field-get(int A.goo)' in Type 'Test'"/>
+       <message kind="weave" text="Join point 'field-get(int A.foo)' in Type 'Test'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr292262" title="if with statically recognizable code">
+     <compile files="A.java">
+       <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - class">
+     <compile files="SimpleClass.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void SimpleClass.&lt;clinit&gt;())' in Type 'SimpleClass'"/>
+       <message kind="weave" text="Join point 'staticinitialization(void Bar.&lt;clinit&gt;())' in Type 'Bar'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - interface">
+     <compile files="SimpleInterface.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Foo.&lt;clinit&gt;())' in Type 'Foo'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - enum">
+     <compile files="SimpleEnum.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Foo.&lt;clinit&gt;())' in Type 'Foo'"/>
+     </compile>
+  </ajc-test>
+   
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - annotation">
+     <compile files="SimpleAnnotation.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void WibbleAnno.&lt;clinit&gt;())' in Type 'WibbleAnno'"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr44365" title="type category type patterns - anonymous">
+     <compile files="SimpleAnonymous.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$1.&lt;clinit&gt;())' in Type 'Bar$1'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner">
+     <compile files="SimpleInner.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$Inner.&lt;clinit&gt;())' in Type 'Bar$Inner'"/>
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$1.&lt;clinit&gt;())' in Type 'Bar$1'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner - 2">
+     <compile files="SimpleInner2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void Bar$Inner.&lt;clinit&gt;())' in Type 'Bar$Inner'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - inner - 3">
+     <compile files="SimpleInner3.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void Bar$Inner.foo())' in Type 'Bar$Inner' (SimpleInner3.java:12) advised"/>
+     </compile>
+  </ajc-test>
+   
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - aspect">
+     <compile files="SimpleAspect.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'staticinitialization(void X.&lt;clinit&gt;())' in Type 'X'"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e1">
+     <compile files="Errors1.java" options="-1.5 -showWeaveInfo">
+       <message kind="error" text="Syntax error on token &quot;(&quot;, &quot;)"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e2">
+     <compile files="Errors5.java" options="-1.5 -showWeaveInfo">
+       <message kind="error" text="Syntax error on token &quot;)&quot;, &quot;(&quot; expected"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr44365" title="type category type patterns - e3">
+     <compile files="Errors2.java" options="-1.5 -showWeaveInfo">
+       <message kind="weave" text="Join point 'method-execution(void Errors2.is(java.lang.String))' in Type"/>
+     </compile>
+  </ajc-test>
+
+   <ajc-test dir="bugs169/pr48080" title="inserts in messages">
+     <compile files="Warnings.java" options="-1.5">
+       <message kind="warning" text="UNKNOWN_KEY{}foobar"/>
+       <message kind="warning" text="{}wibble"/>
+       <message kind="warning" text="signature name for method is m"/>
+       <message kind="warning" text="joinpoint declaring type is p.A"/>
+       <message kind="warning" text="joinpoint signature is void p.A.m()"/>
+       <message kind="warning" text="joinpoint line is '23'"/>
+       <message kind="warning" text="joinpoint kind is method-execution"/>
+       <message kind="warning" text="joinpoint kind is 'method-execution'"/>
+       <message kind="warning" text="joinpoint is method-execution(void p.A.m())"/>
+       <message kind="warning" text="joinpoint location is"/>
+       <message kind="warning" text="signature name for field is i"/>
+       <message kind="warning" text="joinpoint signature is int p.A.i"/>
+       <message kind="warning" text="aspect is p.Checker"/>
+       <message kind="warning" text="advice sourcelocation is"/>
+       <message kind="warning" text="test 18{}23"/>
+     </compile>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr299062" title="verifyerror on atAj">
+     <compile files="Test.java Work.java SmartAspect.java Idempotent.java" options="-1.5"/>
+     <run class="Test">
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr298665" title="ambiguous method">
+     <compile files="Main.java" options="-1.5"/>
+     <run class="Main">
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr298388" title="declare mixin and generics">
+     <compile files="PR298388.java" options="-1.5"/>
+     <run class="PR298388">
+       <stdout>
+         <line text="done"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr295491" title="model annotation npe">
+     <compile files="SpringConfigurableMixin.java" options="-1.5 -emacssym"/>
+  </ajc-test>
+  
+   <ajc-test dir="bugs169/pr292584" title="annotation around advice verifyerror">
+     <compile files="AbstractAspect.java,ClassWithJoinPoint.java,ConcreteAspect.java" options="-1.5"/>
+     <run class="ClassWithJoinPoint">
+       <stdout>
+         <line text="Testing annotation style (should print &quot;true&quot;):"/>
+         <line text="true"/>
+       </stdout>
+     </run>
+  </ajc-test>
+  
+  <!-- declare type warning -->
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 1">
+     <compile files="One.java" options="-1.5">
+       <message kind="warning" line="8" text="Nothing should be"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 2">
+     <compile files="Two.java" options="-1.5">
+       <message kind="warning" line="7" text="Missing foo()"/>
+       <message kind="warning" line="13" text="Missing foo()"/>
+     </compile>
+  </ajc-test>
+  
+  <!-- testing build of model with one of these in -->
+  <ajc-test dir="bugs169/pr291206" title="declare type warning - 3">
+     <compile files="Two.java" options="-1.5 -emacssym">
+       <message kind="warning" line="7" text="Missing foo()"/>
+       <message kind="warning" line="13" text="Missing foo()"/>
+     </compile>
+  </ajc-test>
+  
+  <ajc-test dir="bugs169/pr291206" title="declare type error - 1">
+     <compile files="Three.java" options="-1.5">
+       <message kind="error" line="7" text="Missing foo()"/>
+       <message kind="error" line="13" text="Missing foo()"/>
+     </compile>
+  </ajc-test>
+  
+</suite>

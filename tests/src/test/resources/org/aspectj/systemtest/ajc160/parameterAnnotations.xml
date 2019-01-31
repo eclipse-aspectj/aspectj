@@ -1,0 +1,149 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!-- AspectJ v1.6.0 Parameter Annotation Matching Tests -->
+<suite>
+
+   <ajc-test dir="features160/parameterAnnotationMatching" title="deow2">
+     <compile options="-1.5" files="Test2.java">
+       <message kind="warning" line="9" text="mOne"/>
+       <message kind="warning" line="13" text="mTwo"/>
+       <message kind="warning" line="15" text="mTwo"/>
+     </compile>
+   </ajc-test>
+
+   <ajc-test dir="features160/parameterAnnotationMatching" title="deow">
+     <compile options="-1.5" files="Test.java">
+       <message kind="warning" line="43" text="mOne"/>
+       <message kind="warning" line="45" text="mOne"/>
+       <message kind="warning" line="43" text="mTwo"/>
+       <message kind="warning" line="43" text="mThree"/> 
+       <message kind="warning" line="47" text="mFour"/> 
+       <message kind="warning" line="49" text="mFour"/> 
+       <message kind="warning" line="47" text="mFive"/> 
+       <message kind="warning" line="47" text="mSix"/> 
+       <message kind="warning" line="45" text="mSeven"/>
+       <message kind="warning" line="45" text="mEight"/>  
+       <message kind="warning" line="45" text="mNine"/> 
+       <message kind="warning" line="49" text="mTen"/> 
+       <message kind="warning" line="49" text="mEleven"/> 
+       <message kind="warning" line="49" text="mTwelve"/>
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features160/parameterAnnotationMatching" title="no xlint for wrong target">
+     <compile options="-1.5" files="NonNullAssertionForcer.java"/>
+   </ajc-test>
+
+   <ajc-test dir="features160/parameterAnnotationMatching" title="various combinations">
+     <compile options="-1.5 -showWeaveInfo" files="TestMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:4) advised by before advice from 'TestMatching' (TestMatching.aj:3)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:7) advised by before advice from 'TestMatching' (TestMatching.aj:6)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:11) advised by before advice from 'TestMatching' (TestMatching.aj:10)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:16) advised by before advice from 'TestMatching' (TestMatching.aj:15)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:22) advised by before advice from 'TestMatching' (TestMatching.aj:21)"/>
+
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:27) advised by before advice from 'TestMatching' (TestMatching.aj:26)"/>
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:31) advised by before advice from 'TestMatching' (TestMatching.aj:26)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:34) advised by before advice from 'TestMatching' (TestMatching.aj:33)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:40) advised by before advice from 'TestMatching' (TestMatching.aj:39)"/>
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:41) advised by before advice from 'TestMatching' (TestMatching.aj:39)"/>
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:42) advised by before advice from 'TestMatching' (TestMatching.aj:39)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:47) advised by before advice from 'TestMatching' (TestMatching.aj:46)"/>
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:48) advised by before advice from 'TestMatching' (TestMatching.aj:46)"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:53) advised by before advice from 'TestMatching' (TestMatching.aj:52)"/>
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:54) advised by before advice from 'TestMatching' (TestMatching.aj:52)"/>
+       
+       <message kind="warning" line="57" text="not been applied"/>
+       
+       <message kind="weave" text="'TestMatching' (TestMatching.aj:62) advised by before advice from 'TestMatching' (TestMatching.aj:61)"/>
+       
+     </compile>
+   </ajc-test>
+   
+    <ajc-test dir="features160/parameterAnnotationMatching" title="wildcarded matching">
+     <compile options="-1.5 -showWeaveInfo" files="WildcardedMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+       <!-- tbd -->
+     </compile>
+   </ajc-test>
+   
+   
+   <ajc-test dir="features160/parameterAnnotationMatching" title="various combinations - ctors">
+     <compile options="-1.5 -showWeaveInfo" files="TestMatchingCtors.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+       <message kind="weave" text="(TestMatchingCtors.aj:4) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:3)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:7) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:6)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:11) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:10)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:16) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:15)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:22) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:21)"/>
+
+       <message kind="weave" text="(TestMatchingCtors.aj:27) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:26)"/>
+       <message kind="weave" text="(TestMatchingCtors.aj:31) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:26)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:34) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:33)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:40) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:39)"/>
+       <message kind="weave" text="(TestMatchingCtors.aj:41) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:39)"/>
+       <message kind="weave" text="(TestMatchingCtors.aj:42) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:39)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:47) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:46)"/>
+       <message kind="weave" text="(TestMatchingCtors.aj:48) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:46)"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:53) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:52)"/>
+       <message kind="weave" text="(TestMatchingCtors.aj:54) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:52)"/>
+       
+       <message kind="warning" line="57" text="not been applied"/>
+       
+       <message kind="weave" text="(TestMatchingCtors.aj:62) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:61)"/>
+       
+     </compile>
+   </ajc-test>
+   
+   <ajc-test dir="features160/parameterAnnotationMatching" title="hasmethod">
+     <compile options="-1.5 -showWeaveInfo -XhasMember" files="HasMethodMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+       <message kind="weave" text="Extending interface set for type 'Target1' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
+       <message kind="weave" text="Extending interface set for type 'Target3' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
+       <message kind="weave" text="Extending interface set for type 'Target4' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
+     </compile>  
+     <run class="HasMethodMatching">
+       <stdout>
+         <line text="Target1? true"/>
+         <line text="Target2? false"/>
+         <line text="Target3? true"/>
+         <line text="Target4? true"/>
+         <line text="Target5? false"/>
+       </stdout>
+     </run>
+   </ajc-test>
+   
+   <ajc-test dir="features160/parameterAnnotationMatching" title="binary weaving">
+     <compile options="-1.5" files="SimpleType.java Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java AnnotatedWithBoth.java" outjar="code.jar"/>
+     <compile options="-1.5 -showWeaveInfo" files="SimpleAspect.java" inpath="code.jar">
+        <message kind="weave" text="(SimpleType.java:2) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+        <message kind="weave" text="(SimpleType.java:3) advised by before advice from 'SimpleAspect' (SimpleAspect.java:4)"/>
+        <message kind="weave" text="(SimpleType.java:4) advised by before advice from 'SimpleAspect' (SimpleAspect.java:6)"/>
+        <message kind="weave" text="(SimpleType.java:4) advised by before advice from 'SimpleAspect' (SimpleAspect.java:4)"/>
+        <message kind="weave" text="(SimpleType.java:4) advised by before advice from 'SimpleAspect' (SimpleAspect.java:3)"/>
+        <message kind="weave" text="(SimpleType.java:5) advised by before advice from 'SimpleAspect' (SimpleAspect.java:5)"/>
+        <message kind="weave" text="(SimpleType.java:5) advised by before advice from 'SimpleAspect' (SimpleAspect.java:4)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:7)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:6)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:5)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:4)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:3)"/>
+        <message kind="weave" text="(SimpleType.java:6) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
+     </compile>
+   </ajc-test>
+   
+   
+</suite>

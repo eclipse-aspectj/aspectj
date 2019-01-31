@@ -1,0 +1,326 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - control">
+        <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8">
+	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator' (MoodIndicator.java:'Mood MoodIndicator$Moody.getMood()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator' (MoodIndicator.java:21)"/>
+        </compile>
+        <run class="Code1">
+	        <stdout>
+	        <line text="I'm feeling HAPPY"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - reweaving">
+        <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
+	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator' (MoodIndicator.java:'Mood MoodIndicator$Moody.getMood()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator' (MoodIndicator.java:21)"/>
+        </compile>
+        <compile inpath="one.jar" options="-showWeaveInfo -1.8">
+	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator' (MoodIndicator.java:'Mood MoodIndicator$Moody.getMood()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator' (one.jar!MoodIndicator.class(from MoodIndicator.java))"/>
+        </compile>
+        <run class="Code1">
+	        <stdout>
+	        <line text="I'm feeling HAPPY"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - 1">
+        <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
+	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator' (MoodIndicator.java:'Mood MoodIndicator$Moody.getMood()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator' (MoodIndicator.java:21)"/>
+        </compile>
+        <compile files="MoodIndicator2.java" inpath="one.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
+        	<message kind="warning" text="advice defined in MoodIndicator has not been applied [Xlint:adviceDidNotMatch]"/>
+	        <message kind="weave" text="Mixing interface 'MoodIndicator2$Moody2' (MoodIndicator2.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator2' (MoodIndicator2.java:'Mood MoodIndicator2$Moody2.getMood2()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator2' (MoodIndicator2.java:20)"/>
+        </compile>
+        <run class="Code1">
+	        <stdout>
+	        <line text="I'm feeling SAD"/>
+	        <line text="I'm feeling HAPPY"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - 2">
+        <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
+	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator' (MoodIndicator.java:'Mood MoodIndicator$Moody.getMood()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator' (MoodIndicator.java:21)"/>
+        </compile>
+        <compile files="MoodIndicator3.java" inpath="one.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
+        	<message kind="warning" text="advice defined in MoodIndicator has not been applied [Xlint:adviceDidNotMatch]"/>
+	        <message kind="weave" text="Mixing interface 'MoodIndicator2$Moody2' (MoodIndicator2.java) into type 'Code1' (Code1.java)"/>
+	        <message kind="weave" text="Type 'Code1' (Code1.java) has intertyped method from 'MoodIndicator2' (MoodIndicator2.java:'Mood MoodIndicator2$Moody2.getMood2()')"/>
+	        <message kind="weave" text="Join point 'method-execution(void Code1.run())' in Type 'Code1' (Code1.java:2) advised by before advice from 'MoodIndicator2' (MoodIndicator2.java:20)"/>
+        </compile>
+        <run class="Code1">
+	        <stdout>
+	        <line text="I'm feeling SAD"/>
+	        <line text="I'm feeling HAPPY"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/543657" vm="1.8" title="mood indicator 4">
+        <compile files="MoodIndicator4.java" options="-1.8" outjar="one.jar">
+        </compile>
+        <compile inpath="one.jar" options="-1.8 -Xset:overWeaving=true">
+        </compile>
+        <run class="Code1">
+	        <stdout>
+	        <line text="I'm feeling SAD"/>
+	        <line text="I'm feeling HAPPY"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving atdecp - control">
+        <compile files="Basic3b.java" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Extending interface set for type 'Basic3b' (Basic3b.java) to include 'X$I' (Basic3b.java)"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m2()')"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m3()')"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m4()')"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'X' (Basic3b.java:33)"/>
+        </compile>
+        <compile files="Y.java" inpath="ow1.jar" options=" -1.8">
+        </compile>
+        <run class="Basic3b">
+	        <stdout>
+	        <!-- BUG: one of these should be YImpl -->
+	        <line text="X.IImpl.m2() ran"/>
+	        <line text="X.IImpl.m2() ran"/>
+	        <line text="Basic3b.main ran"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving atdecp">
+        <compile files="Basic3b.java" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Extending interface set for type 'Basic3b' (Basic3b.java) to include 'X$I' (Basic3b.java)"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m2()')"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m3()')"/>
+	        <message kind="weave" text="Type 'Basic3b' (Basic3b.java) has intertyped method from 'X' (Basic3b.java:'void X$I.m4()')"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'X' (Basic3b.java:33)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'X' (Basic3b.java:33)"/>
+        </compile>
+        <compile files="Y.java" inpath="ow1.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
+        
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'X' (ow1.jar!X.class(from Basic3b.java))"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Extending interface set for type 'Basic3b' (Basic3b.java) to include 'Y$I' (Y.java)"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:7) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:8) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:9) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m2())' in Type 'Basic3b' (Basic3b.java:1) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m3())' in Type 'Basic3b' (Basic3b.java:1) advised by before advice from 'Y' (Y.java:17)"/>
+	        <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:1) advised by before advice from 'Y' (Y.java:17)"/>
+        </compile>
+        <run class="Basic3b">
+	        <stdout>
+	        <!-- BUG: one of these should be YImpl -->
+	        <line text="X.IImpl.m2() ran"/>
+	        <line text="X.IImpl.m2() ran"/>
+	        <line text="Basic3b.main ran"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving">
+        <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+        </compile>
+        <compile files="OverWeave_2/src/MyAspect2.aj" options="-1.8" outjar="ow2.jar">
+        	<message kind="warning" text="advice defined in MyAspect2 has not been applied"/>
+        </compile>
+        <compile inpath="ow1.jar" aspectpath="ow2.jar" options="-1.8 -showWeaveInfo">
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (ow1.jar!MyAspect.class:2(from MyAspect.aj))"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (ow1.jar!MyAspect.class:2(from MyAspect.aj))"/>
+        </compile>
+        <run class="Application" classpath="ow2.jar">
+	        <stdout>
+	        <line text="MyAspect -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect2 -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="MyAspect2 -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="Hello world!"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving 2">
+        <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+        </compile>
+        <compile files="OverWeave_2/src/MyAspect2.aj" options="-1.8" outjar="ow2.jar">
+        	<message kind="warning" text="advice defined in MyAspect2 has not been applied"/>
+        </compile>
+        <compile inpath="ow1.jar" aspectpath="ow2.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
+        	<!-- this is a bit unfortunate, basically MyAspect is not being re-applied because of overweaving
+        	     so we get a message that it hasn't been applied. But really it doesn't need to be. -->
+        	<message kind="warning" text="advice defined in MyAspect has not been applied"/>
+<!-- These two don't come out because we are using overweaving to apply MyAspect2 where MyAspect is already applied.
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (ow1.jar!MyAspect.class:2(from MyAspect.aj))"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (ow1.jar!MyAspect.class:2(from MyAspect.aj))"/>
+-->
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+ 	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+        </compile>
+        <run class="Application" classpath="ow2.jar">
+	        <stdout>
+	        <!--  notice order change to overweaving usage -->
+	        <line text="MyAspect2 -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect2 -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="MyAspect -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="Hello world!"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving 3">
+        <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+        </compile>
+        <compile files="OverWeave_2/src/MyAspect2.aj" options="-1.8" outjar="ow2.jar">
+        	<message kind="warning" text="advice defined in MyAspect2 has not been applied"/>
+        </compile>
+        <compile files="OverWeave_4/src/MyAspect3.aj" options="-1.8" outjar="ow4.jar">
+        	<message kind="warning" text="advice defined in MyAspect3 has not been applied"/>
+        </compile>
+        <compile inpath="ow1.jar" aspectpath="ow2.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true" outjar="ow3.jar">
+        	<!-- this is a bit unfortunate, basically MyAspect is not being re-applied because of overweaving
+        	     so we get a message that it hasn't been applied. But really it doesn't need to be. -->
+        	<message kind="warning" text="advice defined in MyAspect has not been applied"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+ 	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+        </compile>
+         <compile inpath="ow3.jar" aspectpath="ow4.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
+        	<!-- this is a bit unfortunate, basically MyAspect is not being re-applied because of overweaving
+        	     so we get a message that it hasn't been applied. But really it doesn't need to be. -->
+        	<message kind="warning" text="advice defined in MyAspect has not been applied"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect3' (ow4.jar!MyAspect3.class:2(from MyAspect3.aj))"/>
+ 	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect3' (ow4.jar!MyAspect3.class:2(from MyAspect3.aj))"/>
+        </compile>
+        <run class="Application" classpath="ow2.jar">
+	        <stdout>
+	        <line text="MyAspect3 -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect2 -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect -> execution(void Application.main(String[]))"/>
+	        <line text="MyAspect3 -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="MyAspect2 -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="MyAspect -> execution(void Application.sayHelloTo(String))"/>
+	        <line text="Hello world!"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving 4">
+        <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
+        </compile>
+        <compile files="OverWeave_2/src/MyAspect2.aj" options="-1.8" outjar="ow2.jar">
+        	<message kind="warning" text="advice defined in MyAspect2 has not been applied"/>
+        </compile>
+        <compile files="OverWeave_4/src/MyAspect3.aj" options="-1.8" outjar="ow4.jar">
+        	<message kind="warning" text="advice defined in MyAspect3 has not been applied"/>
+        </compile>
+        <compile inpath="ow1.jar" aspectpath="ow2.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true" outjar="ow3.jar">
+        	<!-- this is a bit unfortunate, basically MyAspect is not being re-applied because of overweaving
+        	     so we get a message that it hasn't been applied. But really it doesn't need to be. -->
+        	<message kind="warning" text="advice defined in MyAspect has not been applied"/>
+	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+ 	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
+        </compile>
+         <compile inpath="ow3.jar" aspectpath="ow4.jar:ow2.jar" options="-1.8">
+	        <message kind="error" text="the type Application was previously subject to overweaving and after that can only be woven again in overweaving mode"/>
+ 	        <message kind="error" text="the type MyAspect was previously subject to overweaving and after that can only be woven again in overweaving mode"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs193/542682" vm="1.5" title="wildcard enum match in itd">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect04.aj" options="-1.5">
+            <message kind="warning" line="8" text="enum type SimpleEnum2 matches a declare parents type pattern but is being ignored"/>
+            <message kind="warning" line="8" text="enum type SimpleEnum matches a declare parents type pattern but is being ignored"/>
+        </compile>
+    </ajc-test>
+    
+	<ajc-test dir="bugs193/542682" title="declare mixin a">
+		<compile files="CaseA.java" options="-1.8">
+	        <message kind="warning" line="1" text="enum type Color matches a declare parents type pattern but is being ignored"/>
+		</compile>
+		<run class="CaseA">
+		  <stdout>
+		  <line text="Delegate factory invoked"/>
+		  <line text="methodOne running"/>
+		  </stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs193/isAbstractType" title="is abstract">
+	<compile files="Code.java" options="-1.8"/>
+	<run class="Code">
+	  <stdout>
+	  <line text="execution(void Code.run())"/>
+	  </stdout>
+	</run>
+	</ajc-test>
+	
+	<ajc-test dir="bugs193/isAbstractType" title="is abstract - 2">
+	<compile files="Code2.java" options="-1.8"/>
+	<run class="Code2">
+	  <stdout>
+	  <line text="execution(void Helper.run())"/>
+	  </stdout>
+	</run>
+	</ajc-test>
+
+<!-- 
+  <ajc-test dir="bugs191/var" title="var 3">
+    <compile files="Code3.java" options="-10">
+	</compile>
+	<run class="Code3">
+	<stdout>
+	<line text="call(Class java.lang.Object.getClass())"/>
+	<line text="class java.lang.String"/>
+	</stdout>
+	</run>
+  </ajc-test>
+-->
+
+</suite>

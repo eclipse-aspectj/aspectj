@@ -1,0 +1,354 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+     
+    
+    <ajc-test dir="bugs163/pr259279" title="ordering repetitive method">
+   	  <compile files="SomeServiceImpl.java SomeInterface.java Main.java GenericService.java GenericServiceImpl.java Aspect.java" options="-1.5"/>
+   	  <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr259279" title="ordering repetitive method - 2">
+   	  <compile files="GenericServiceImpl.java SomeServiceImpl.java SomeInterface.java Main.java GenericService.java Aspect.java" options="-1.5"/>
+   	  <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr258653" title="getNode">
+   	  <compile files="staticinit.java" options="-1.5 -emacssym"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor">
+   	  <compile files="A.java" options="-1.5"/>
+   	  <run class="A"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 2">
+   	  <compile files="ACode.java" options="-1.5"/>
+   	  <run class="ACode"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 3">
+   	  <compile files="B.java" options="-1.5"/>
+   	  <run class="B"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252722" title="extending AbstractSecurityInterceptor - 4">
+   	  <compile files="BCode.java" options="-1.5"/>
+   	  <run class="BCode"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr154427" title="getMethod returning null">
+   	  <compile files="AuthorizationImpl.java Authorization.java AuthorizationAdmin.java CallAndMethodSignatureAspect.java CallTest.java" options=""/>
+   	  <run class="CallTest">
+   	    <stdout>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform() executing"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform2(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract boolean AuthorizationAdmin.mayPerform2(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform2() executing"/>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String,java.lang.String)"/>
+   	      <line text="public abstract boolean Authorization.mayPerform(java.lang.String, java.lang.String)"/>
+   	      <line text="mayPerform() executing"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr128664" title="inherited annotations">
+   	  <compile files="Bug.java" options="-1.5 -showWeaveInfo">
+   	    <message kind="weave" text=""/>
+   	  </compile>
+   	  <run class="Bug"/>
+    </ajc-test>
+        
+    <ajc-test dir="bugs163/pr128664" title="inherited annotations - 2">
+   	  <compile files="Bug2.java" options="-1.5 -showWeaveInfo">
+   	    <message kind="weave" text=""/>
+   	  </compile>
+   	  <run class="Bug2"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr257754" title="decp anno style">
+   	  <compile files="Main.java" options="-1.5"/>
+   	  <run class="example.Main">
+   	  <stdout>
+   	  <line text="In doFoo class example.DefaultFoo"/>
+   	  <line text="Bar"/>
+   	  </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr257754" title="decp anno style - 2">
+   	  <compile files="Main2.java Foo.java DefaultFoo.java" options="-1.5">
+   	  <message kind="error" text="but it is of incorrect visibility"/>
+   	  </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style">
+   	  <compile files="Code.java" options="-1.5"/>
+   	  <run class="Code">
+   	    <stdout>
+   	    <line text="Catching mess. Argument was ewwww"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 2">
+   	  <compile files="Code2.java" options="-1.5"/>
+   	  <run class="Code2">
+   	    <stdout>
+   	    <line text="Catching mess. Argument was ewwww"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 3">
+   	  <compile files="Code3.java" options="-1.5"/>
+   	  <run class="Code3">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code3.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 4">
+   	  <compile files="Code4.java" options="-1.5"/>
+   	  <run class="Code4">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code4.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr219419" title="incorrect arg ordering anno style - 5">
+   	  <compile files="Code5.java" options="-1.5"/>
+   	  <run class="Code5">
+   	    <stdout>
+   	    <line text="afterReturningCreateBean advice input='s' ret=37"/>
+   	    <line text="Code5.main returned from call to createBean 37"/>
+   	    </stdout>
+   	  </run>
+    </ajc-test>
+    
+    
+    
+    <ajc-test dir="bugs163/pr256458" title="poor ataj if message - 1">
+   	  <compile files="Code.java" options="-1.5">
+   	    <message kind="error" text="in annotation style, if(...) pointcuts cannot contain code"/>
+   	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr256458" title="poor ataj if message - 2">
+   	  <compile files="Code2.java" options="-1.5">
+   	    <message kind="error" text="in annotation style, if(...) pointcuts cannot contain code"/>
+   	  </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr256937" title="fully qualified return type">
+   	  <compile files="Ship.java ShipAccessor.java" options="-emacssym -1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr213751" title="mixed styles">
+   	  <compile files="Foo.java" options="-emacssym -1.5"/>
+    </ajc-test> 
+    
+    <ajc-test dir="bugs163/pr249216" title="handles - escaped square brackets">
+   	  <compile files="Handles.java" options="-emacssym -1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr171042" title="itd on anonymous inner">
+   	  <compile files="TestClass.java Executable.java RunnableAspect.java" options=""/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr254207" title="ordering issue">
+      <compile files="Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>      
+      <compile files="Concrete.java Abstract.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr254207/case2" title="ordering issue - 2">
+      <compile files="Interface.java Clazz.java Abstract.java Concrete.java" options="-1.5 -proceedOnError -Xset:pipelineCompilation=false">
+        <message kind="error" line="1" text="Bound mismatch"/>
+      </compile>      
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs">
+      <compile files="Destination.java SimpleTest.java Introduction.java SomeAnnotation.java" options="-1.5"/>
+      <run class="SimpleTest">
+        <stdout>
+           <line text="Parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 2">
+      <compile files="Two.java" options="-1.5"/>
+      <run class="Two">
+        <stdout>
+           <line text="Parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 3">
+      <compile files="Three.java" options="-1.5"/>
+      <run class="Three">
+        <stdout>
+           <line text="Parameter 0 has 0 parameter annotations"/>
+           <line text="Parameter 1 has 1 parameter annotations"/>
+           <line text="Parameter 2 has 0 parameter annotations"/>
+           <line text="Parameter 3 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr256669" title="parameter annotations on ITDs - 4">
+      <compile files="Four.java" options="-1.5"/>
+      <run class="Four">
+        <stdout>
+           <line text="Class D parameter 0 has 1 parameter annotations"/>
+           <line text="Interface I parameter 0 has 1 parameter annotations"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 1">
+      <compile files="CodeOne.java" options="-1.5">
+        <message kind="warning" line="4" text="has not been applied"/>
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr257833" title="param annos and at args">
+      <compile files="NotNull.java NotNullAspect.java NotNullTest.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="Join point 'constructor-execution(void patterntesting.check.runtime.NotNullTest.&lt;init&gt;(java.lang.String))' in Type"/>
+      </compile>
+      <run class="patterntesting.check.runtime.NotNullTest"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 2">
+      <compile files="CodeTwo.java" options="-1.5"/>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 3">
+      <compile files="CodeThree.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:4)"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:5) [with runtime test]"/>
+        <message kind="warning" line="6" text="has not been applied"/>
+        <message kind="warning" line="7" text="has not been applied"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:8)"/>
+        <message kind="weave" text="advised by before advice from 'CodeThree' (CodeThree.java:9) [with runtime test]"/> 
+        <message kind="warning" line="5" text="unchecked"/>        
+        <message kind="warning" line="9" text="unchecked"/>        
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 4">
+      <compile files="CodeFour.java" options="-1.5">
+        <message kind="warning" text="has not been applied"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr255856" title="attarget with plus">
+      <compile files="Bug.java" options="-1.5">
+      <message kind="error" text="unexpected pointcut element"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr253109" title="generic pointcuts - 5">
+      <compile files="CodeFive.java" options="-1.5 -showWeaveInfo">
+        <message kind="weave" line="55" text="advised by around advice"/>
+      </compile>
+    </ajc-test>
+    
+
+    <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface">
+      <compile files="Code.java" options="-1.4">
+        <message kind="warning" text="The joinpoint 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' cannot be advised"/>
+      </compile>      
+      <run class="Code"/>
+    </ajc-test>
+    
+     <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface - 2">
+      <compile files="Code.java" options="-1.4 -XnoInline">
+        <message kind="warning" text="The joinpoint 'method-call(java.lang.Class java.lang.Class.forName(java.lang.String))' cannot be advised"/>
+      </compile>      
+      <run class="Code"/>
+    </ajc-test>
+    
+     <ajc-test dir="bugs163/pr163005" title="do not add method bodies to an interface - 3">
+      <compile files="Code2.java" options="-1.4">
+        <message kind="warning" text="The joinpoint 'constructor-call(void java.lang.Object.&lt;init&gt;())' cannot be advised"/>
+      </compile>      
+      <run class="Code2"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr250091" title="itd cce">
+      <compile files="Demo.java" options="-1.5"/>
+      <run class="Demo">
+        <stdout>
+          <line text="class A (false)"/>
+          <line text="class A (false)"/>
+          <line text="class Base (false)"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr226163" title="breaking recovery">
+      <compile files="Code.java" options="-1.5">
+        <message kind="error" line="4" text="Syntax error"/>
+      </compile>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr173978" title="missing local variable table on around advice">
+      <compile files="Test.java TestAroundAspect.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr249710" title="terminateAfterCompilation">
+      <compile files="Foo.java" options="-1.5">
+      </compile>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr250632" title="type conversion in generic itd">
+      <compile files="MyAspect.java" options="-1.5"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr250493" title="bridge methods for generic itds">
+      <compile files="Bridged.java" options="-1.5"/>
+      <run class="Bridged">
+        <stdout>
+          <line text="getterA()java.lang.Object  isBridged?true"/>
+          <line text="getterA()java.lang.String  isBridged?false"/>
+          <line text="getterB()java.lang.Object  isBridged?true"/>
+          <line text="getterB()java.lang.String  isBridged?false"/>
+        </stdout>
+      </run>
+    </ajc-test>
+    
+    <ajc-test dir="bugs163/pr252285" title="bridge methods for generic itd fields">
+      <compile files="Bridged.java" options="-1.5"/>
+      <run class="Bridged">
+        <stdout>
+          <line text="ajc$interFieldGet$X$Super$getterA()java.lang.Integer isBridged?false"/>
+          <line text="ajc$interFieldGet$X$Super$getterA()java.lang.Number isBridged?true"/>
+          <line text="ajc$interFieldSet$X$Super$getterA()void isBridged?false"/>
+          <line text="ajc$interFieldSet$X$Super$getterA()void isBridged?true"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+    <ajc-test dir="bugs163/pr251326" title="itd anonymous inner class in wrong package">
+      <compile files="pkgA/Listener.java pkgA/Target.java pkgB/InferListener.aj" options="-1.5"/>
+      <run class="pkgA.Target">
+        <stdout>
+          <line text="Simple A"/>
+          <line text="Inferred B"/>
+        </stdout>
+      </run>
+    </ajc-test>
+
+</suite>
