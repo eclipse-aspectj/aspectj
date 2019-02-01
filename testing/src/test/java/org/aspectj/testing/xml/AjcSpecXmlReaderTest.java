@@ -87,9 +87,9 @@ public class AjcSpecXmlReaderTest extends TestCase {
 		}
         
     }
-    public void testAjcTests() throws IOException { 
-        checkXmlRoundTrip("../tests/ajcTests");
-    }
+//    public void testAjcTests() throws IOException { 
+//        checkXmlRoundTrip("../tests/ajcTests");
+//    }
 
     public void testAjcTests10() throws IOException { 
         checkXmlRoundTrip("../tests/ajcTests10");
