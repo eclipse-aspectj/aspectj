@@ -62,7 +62,7 @@ public class BuildModuleTests extends TestCase {
     }
 
     final static List<String> SOURCE_NAMES = Collections.unmodifiableList(
-            Arrays.asList(new String[]{"src", "testsrc", "java5-src", "java5-testsrc", "aspectj-src"}));
+            Arrays.asList(new String[]{"src/main/java", "src/test/java" }));
 
     /**
      * @param moduleDir
@@ -140,11 +140,12 @@ public class BuildModuleTests extends TestCase {
     public void testLicense_util() {
         checkLicense("util");    
     }
+    
     public void testLicense_weaver() {
         String module = "weaver";
         // skip (testdata) packages fluffy, reflect
-        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "src"})), module);
-        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "testsrc", "org"})), module);
+        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "src","main","java"})), module);
+        checkSourceDirectory(new File(Util.path(new String[] {"..", module, "src","test","java", "org"})), module);
     }
     
     public void testLicense_ajdoc() {
@@ -167,6 +168,7 @@ public class BuildModuleTests extends TestCase {
         File moduleDir = new File(Util.path("..", module));
         File[] srcDirs = findSourceRoots(moduleDir);
         for (int i = 0; i < srcDirs.length; i++) {
+        	System.out.println(srcDirs[i]);
             checkSourceDirectory(srcDirs[i], module);
         }
     }
@@ -195,9 +197,10 @@ public class BuildModuleTests extends TestCase {
         }
         
         // separate check to verify all file types (suffixes) are known
-        if (!"testsrc".equals(srcDir.getName())) {
+        if (!isTestFolder(srcDir)) {
             ArrayList<File> unknownFiles = new ArrayList<File>();
             UnknownFileCheck.SINGLETON.unknownFiles(srcDir, unknownFiles);
+            System.out.println(unknownFiles);
             if (!unknownFiles.isEmpty()) {
                 String s = "unknown files (see readme-build-module.html to "
                     + "update Builder.properties resource patterns): ";
@@ -205,6 +208,11 @@ public class BuildModuleTests extends TestCase {
             }
         }
     }
+    
+    private boolean isTestFolder(File dir) {
+    	return dir.toString().contains("src/test/java");
+    }
+    
     /**
      * Check tree for files not managed by the build system
      * (either source files or managed as resources).  

@@ -172,7 +172,8 @@ public class BuildModuleTest extends TestCase {
 //        System.out.println("results: " + Arrays.asList(results));
 //        deleteTempFiles();
 //    }
-    public void testNoDuplicates() {
+
+    public void xtestNoDuplicates() {
         File weaverAllJar = null;
         try {
             weaverAllJar = doTask("weaver",true, true, true);
