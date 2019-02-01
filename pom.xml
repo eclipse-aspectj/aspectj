@@ -4,20 +4,39 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectj-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>${revision}</version>
-    <name>AspectJ Parent Project</name>
-    
     <properties>
         <revision>1.9.3.BUILD-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectj-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.9.3.BUILD-SNAPSHOT</version>
+    <name>AspectJ Parent Project</name>
+
     <modules>
 	<module>util</module>
-        <module>bcel</module>
+	<module>bridge</module>
+	<module>testing-util</module>
+	<module>org.aspectj.matcher</module>
+	<module>asm</module>
+	<module>testing-client</module>
+	<module>runtime</module>
+        <module>bcel-builder</module>
+        <module>weaver</module>
+	<module>loadtime</module>
+	<module>org.eclipse.jdt.core</module>
+	<module>org.aspectj.ajdt.core</module>
+	<module>ajde.core</module>
+	<module>ajde</module>
+	<module>ajdoc</module>
+	<module>taskdefs</module>
+	<module>testing</module>
+	<module>testing-drivers</module>
+	<module>tests</module>
+	<module>build</module>
+	<module>run-all-junit-tests</module>
     </modules>
 
     <build>
@@ -36,11 +55,28 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <testFailureIgnore>true</testFailureIgnore>
+<excludes>
+<exclude>**/*ModuleTests.java</exclude>
+</excludes>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
-    </build>
+    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-jar-plugin</artifactId>
+       <version>2.2</version>
+       <executions>
+         <execution>
+           <goals>
+             <goal>test-jar</goal>
+           </goals>
+         </execution>
+       </executions>
+     </plugin>
+    </plugins>
+  </build>
 
     <dependencies>
         <dependency>
