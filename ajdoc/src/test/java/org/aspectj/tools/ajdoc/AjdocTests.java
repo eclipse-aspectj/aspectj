@@ -32,22 +32,5 @@ public class AjdocTests {//extends TestCase {
                 "../runtime/bin"};
         ASPECTJRT_PATH = FileUtil.getBestFile(paths);
     }
-//
-//    public static Test suite() {
-//        TestSuite suite = new TestSuite(AjdocTests.class.getName());
-//        //$JUnit-BEGIN$
-//        suite.addTestSuite(DeclareFormsTest.class);
-//        suite.addTestSuite(SpacewarTestCase.class);
-//        suite.addTestSuite(PatternsTestCase.class);
-//        suite.addTestSuite(CoverageTestCase.class); 
-//        suite.addTestSuite(ITDTest.class);
-//        suite.addTestSuite(FullyQualifiedArgumentTest.class);
-//        suite.addTestSuite(EnumTest.class);
-//        suite.addTestSuite(PointcutVisibilityTest.class);
-//        suite.addTestSuite(ExecutionTestCase.class); 
-//        suite.addTestSuite(BugTest.class);
-//        //$JUnit-END$
-//        return suite;
-//    }
 
 }
