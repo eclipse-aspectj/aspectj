@@ -23,6 +23,7 @@ import org.aspectj.systemtest.AllTests18;
 import org.aspectj.systemtest.AllTests19;
 import org.aspectj.util.LangUtil;
 
+// missing 'e' so maven don't pick it up ;)
 public class TestsModuleTests extends TestCase {
 
 	public static Test suite() {
