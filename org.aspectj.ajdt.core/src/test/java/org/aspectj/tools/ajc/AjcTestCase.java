@@ -54,7 +54,7 @@ import junit.framework.TestCase;
  * @see org.aspectj.tools.ajc.AjcTestCaseTest
  * @see org.aspectj.testing.XMLBasedAjcTestCase
  */
-public class AjcTestCase extends TestCase {
+public abstract class AjcTestCase extends TestCase {
 
 	private RunResult lastRunResult;
 
@@ -571,9 +571,6 @@ public class AjcTestCase extends TestCase {
 
 	public RunResult getLastRunResult() {
 		return lastRunResult;
-	}
-
-	public void testNothingForAntJUnit() {
 	}
 
 	/**
