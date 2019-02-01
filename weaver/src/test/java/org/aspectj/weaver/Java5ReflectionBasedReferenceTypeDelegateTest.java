@@ -12,9 +12,6 @@
 
 package org.aspectj.weaver;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -22,12 +19,6 @@ import java.lang.reflect.Field;
 import org.aspectj.weaver.reflect.ReflectionBasedReferenceTypeDelegateTest;
 
 public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBasedReferenceTypeDelegateTest {
-
-	public static Test suite() {
-		TestSuite suite = new TestSuite("TestJava5ReflectionBasedReferenceTypeDelegate");
-		suite.addTestSuite(Java5ReflectionBasedReferenceTypeDelegateTest.class);
-		return suite;
-	}
 
 	/**
 	 * Let's play about with a generic type and ensure we can work with it in a reflective world.
