@@ -1,4 +1,3 @@
-package org.aspectj.testing;
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
@@ -11,24 +10,18 @@ package org.aspectj.testing;
  * Contributors: 
  *     Xerox/PARC     initial implementation 
  * ******************************************************************/
-
-
-// default package
-
-import org.aspectj.testing.drivers.DriversTests;
+package org.aspectj.testing.drivers;
 
 import junit.framework.*;
 import junit.framework.Test;
 
-/**
- * TODO weaver dumping ajcore files when using this interface
- */
 public class TestingDriversModuleTests extends TestCase {
 
     public static Test suite() { 
         TestSuite suite = new TestSuite(TestingDriversModuleTests.class.getName());
-        suite.addTest(DriversTests.suite()); 
-        return suite;
+        suite.addTestSuite(HarnessSelectionTest.class); 
+        suite.addTest(AjcHarnessTestsUsingJUnit.suite()); 
+        return suite;  
     }
 
     public TestingDriversModuleTests(String name) { super(name); }
