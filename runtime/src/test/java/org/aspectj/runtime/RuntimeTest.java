@@ -21,9 +21,9 @@ import org.aspectj.runtime.reflect.SignatureTest;
 
 import junit.framework.*;
 
-public class RuntimeModuleTest extends TestCase {
+public class RuntimeTest extends TestCase {
 
-    public RuntimeModuleTest(String name) { super(name); }
+    public RuntimeTest(String name) { super(name); }
     
     public void testNoAspectBoundException() {
         RuntimeException fun = new RuntimeException("fun");
