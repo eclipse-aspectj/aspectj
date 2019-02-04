@@ -1,0 +1,57 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+  <id>aspectjrt</id>
+
+  <formats><format>jar</format></formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+   <fileSet>
+<!--
+    <directory>${basedir}/../runtime/target/classes</directory>
+-->
+    <directory>../runtime/target/classes</directory>
+<outputDirectory>.</outputDirectory>
+<!--
+<excludes>
+<exclude>MANIFEST.MF</exclude>
+</excludes>
+    <includes>
+     <include>*</include>
+    </includes>
+-->
+   </fileSet>
+  </fileSets>
+
+<!--
+<files>
+<file>
+<source>runtime.manifest.mf</source>
+<outputDirectory>META-INF</outputDirectory>
+<destName>MANIFEST.MF</destName>
+<filtered>true</filtered>
+</file>
+</files>
+-->
+
+
+<!--
+  <moduleSets>
+   <moduleSet>
+    <useAllReactorProjects>true</useAllReactorProjects>
+    <includes>
+      <include>org.aspectj:runtime:jar:</include>
+    </includes>
+    <binaries>
+      <outputDirectory>modules/maven-assembly-plugin</outputDirectory>
+      <unpack>true</unpack>
+    </binaries>
+   </moduleSet>
+  </moduleSets>
+-->
+
+
+</assembly>
+
