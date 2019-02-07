@@ -18,7 +18,7 @@ package org.aspectj.lang.reflect;
 public interface PointcutExpression {
 
 	/**
-	 * Returns a String representation of the pointcut expression 
+	 * @return a string representation of the pointcut expression 
 	 */
 	String asString();
 }

@@ -47,37 +47,22 @@ public class DeclareAnnotationImpl implements DeclareAnnotation {
 		this.annText = annText;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareAnnotation#getDeclaringType()
-	 */
 	public AjType<?> getDeclaringType() {
 		return this.declaringType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareAnnotation#getKind()
-	 */
 	public Kind getKind() {
 		return this.kind;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareAnnotation#getSignaturePattern()
-	 */
 	public SignaturePattern getSignaturePattern() {
 		return this.signaturePattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareAnnotation#getTypePattern()
-	 */
 	public TypePattern getTypePattern() {
 		return this.typePattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareAnnotation#getAnnotation()
-	 */
 	public Annotation getAnnotation() {
 		return this.theAnnotation;
 	}

@@ -17,35 +17,35 @@ package org.aspectj.lang.reflect;
 public interface Pointcut {
 	
 	/**
-	 * The declared name of the pointcut.
+	 * @return the declared name of the pointcut.
 	 */
 	String getName();
 	
 	/**
-	 * The modifiers associated with the pointcut declaration. 
+	 * @return the modifiers associated with the pointcut declaration. 
 	 * Use java.lang.reflect.Modifier to interpret the return value
 	 */
 	int getModifiers();
 	
 	/**
-	 * The pointcut parameter types.
+	 * @return the pointcut parameter types.
 	 */
 	AjType<?>[] getParameterTypes();
 	
 	/**
-	 * The pointcut parameter names. Returns an array of empty strings
+	 * @return the pointcut parameter names. Returns an array of empty strings
 	 * of length getParameterTypes().length if parameter names are not
 	 * available at runtime.
 	 */
 	String[] getParameterNames();
 	
 	/**
-	 * The type that declared this pointcut
+	 * @return the type that declared this pointcut
 	 */
 	AjType getDeclaringType();
 
 	/**
-	 * The pointcut expression associated with this pointcut.
+	 * @return the pointcut expression associated with this pointcut.
 	 */
 	PointcutExpression getPointcutExpression();
 

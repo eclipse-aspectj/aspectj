@@ -89,29 +89,24 @@ public final class Factory {
 	}
 
 	
-	/**
-	 * Create a signature and build a JoinPoint in one step.  Prior to 1.6.10 this was done as a two step operation in the generated
-	 * code but merging these methods in the runtime library enables the generated code to be shorter.  Generating code that
-	 * uses this method requires the weaver to be invoked with <tt>-Xset:targetRuntime1_6_10=true</tt>.
-	 * 
-	 * @since 1.6.10
-	 */
+	//
+	// Create a signature and build a JoinPoint in one step.  Prior to 1.6.10 this was done as a two step operation in the generated
+	// code but merging these methods in the runtime library enables the generated code to be shorter.  Generating code that
+	// uses this method requires the weaver to be invoked with <tt>-Xset:targetRuntime1_6_10=true</tt>.
+	// @since 1.6.10
 	public JoinPoint.StaticPart makeSJP(String kind, String modifiers, String methodName, String declaringType, String paramTypes,
 			String paramNames, String exceptionTypes, String returnType, int l) {
 		Signature sig = this.makeMethodSig(modifiers, methodName, declaringType, paramTypes, paramNames, exceptionTypes, returnType);
 		return new JoinPointImpl.StaticPartImpl(count++, kind, sig, makeSourceLoc(l, -1));
 	}
 	
-	/**
-	 * Create a signature and build a JoinPoint in one step.  Prior to 1.6.10 this was done as a two step operation in the generated
-	 * code but merging these methods in the runtime library enables the generated code to be shorter.  Generating code that
-	 * uses this method requires the weaver to be invoked with <tt>-Xset:targetRuntime1_6_10=true</tt>.
-	 * <p>
-	 * This method differs from the previous one in that it includes no exceptionTypes parameter - it is an optimization for the
-	 * case where there are no exceptions.  The generated code won't build an empty string and will not pass it into here.
-	 * 
-	 * @since 1.6.10
-	 */
+	// Create a signature and build a JoinPoint in one step.  Prior to 1.6.10 this was done as a two step operation in the generated
+	// code but merging these methods in the runtime library enables the generated code to be shorter.  Generating code that
+	// uses this method requires the weaver to be invoked with <tt>-Xset:targetRuntime1_6_10=true</tt>.
+	// This method differs from the previous one in that it includes no exceptionTypes parameter - it is an optimization for the
+	// case where there are no exceptions.  The generated code won't build an empty string and will not pass it into here.
+	// 
+	// @since 1.6.10
 	public JoinPoint.StaticPart makeSJP(String kind, String modifiers, String methodName, String declaringType, String paramTypes,
 			String paramNames, String returnType, int l) {
 		Signature sig = this.makeMethodSig(modifiers, methodName, declaringType, paramTypes, paramNames, "", returnType);

@@ -39,24 +39,15 @@ public class DeclareSoftImpl implements DeclareSoft {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareSoft#getDeclaringType()
-	 */
 	public AjType getDeclaringType() {
 		return this.declaringType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareSoft#getSoftenedExceptionType()
-	 */
 	public AjType getSoftenedExceptionType() throws ClassNotFoundException {
 		if (this.missingTypeName != null) throw new ClassNotFoundException(this.missingTypeName);
 		return this.exceptionType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareSoft#getPointcutExpression()
-	 */
 	public PointcutExpression getPointcutExpression() {
 		return this.pointcut;
 	}

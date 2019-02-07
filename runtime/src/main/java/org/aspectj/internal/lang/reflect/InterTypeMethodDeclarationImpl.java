@@ -35,11 +35,6 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 	private Type genericReturnType;
 	private AjType<?>[] exceptionTypes;
 	
-	/**
-	 * @param decType
-	 * @param target
-	 * @param mods
-	 */
 	public InterTypeMethodDeclarationImpl(AjType<?> decType, String target,
 			int mods, String name, Method itdInterMethod) {
 		super(decType, target, mods);
@@ -54,23 +49,14 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 		this.baseMethod = base;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getName()
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getReturnType()
-	 */
 	public AjType<?> getReturnType() {
 		return AjTypeSystem.getAjType(baseMethod.getReturnType());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getGenericReturnType()
-	 */
 	public Type getGenericReturnType() {
 		Type gRet = baseMethod.getGenericReturnType();
 		if (gRet instanceof Class) {
@@ -79,9 +65,6 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 		return gRet;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getParameters()
-	 */
 	public AjType<?>[] getParameterTypes() {
 		Class<?>[] baseTypes = baseMethod.getParameterTypes();
 		AjType<?>[] ret = new AjType<?>[baseTypes.length -parameterAdjustmentFactor];
@@ -91,9 +74,6 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getGenericParameters()
-	 */
 	public Type[] getGenericParameterTypes() {
 		Type[] baseTypes = baseMethod.getGenericParameterTypes();
 		Type[] ret = new AjType<?>[baseTypes.length-parameterAdjustmentFactor];
@@ -107,9 +87,6 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeMethodDeclaration#getTypeParameters()
-	 */
 	public TypeVariable<Method>[] getTypeParameters() {
 		return baseMethod.getTypeParameters();
 	}

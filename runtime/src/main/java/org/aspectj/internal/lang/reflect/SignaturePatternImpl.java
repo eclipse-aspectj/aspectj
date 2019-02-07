@@ -25,9 +25,6 @@ public class SignaturePatternImpl implements SignaturePattern {
 		this.sigPattern = pattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.SignaturePattern#asString()
-	 */
 	public String asString() {
 		return sigPattern;
 	}

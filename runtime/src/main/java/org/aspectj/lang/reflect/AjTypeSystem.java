@@ -21,7 +21,7 @@ import org.aspectj.internal.lang.reflect.AjTypeImpl;
 /**
  * This is the anchor for the AspectJ runtime type system. 
  * Typical usage to get the AjType representation of a given type
- * at runtime is to call <code>AjType<Foo> fooType = AjTypeSystem.getAjType(Foo.class);</code>
+ * at runtime is to call <code>AjType&lt;Foo&gt; fooType = AjTypeSystem.getAjType(Foo.class);</code>
  */
 public class AjTypeSystem {
 	
@@ -34,6 +34,9 @@ public class AjTypeSystem {
 		 * and other AspectJ type members. AjType is the recommended reflection API for
 		 * AspectJ programs as it offers everything that java.lang.reflect does, with 
 		 * AspectJ-awareness on top.
+		 * @param <T> the expected type associated with the returned AjType
+		 * @param fromClass the class for which to discover the AjType
+		 * @return the AjType corresponding to the input class
 		 */
 		public static <T> AjType<T> getAjType(Class<T> fromClass) {
 			WeakReference<AjType> weakRefToAjType =  ajTypes.get(fromClass);

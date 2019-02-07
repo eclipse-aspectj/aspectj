@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface CodeGenerationHint {
 
 	/**
-	 * Defines the name suffix to use for a generated member representing an if pointcut (prefix will be 'ajc$if$').
+	 * @return the name suffix to use for a generated member representing an if pointcut (prefix will be 'ajc$if$').
 	 * If left blank, a suffix will be generated.
 	 */
     String ifNameSuffix() default "";

@@ -25,9 +25,6 @@ public class TypePatternImpl implements TypePattern {
 		this.typePattern = pattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.TypePattern#asString()
-	 */
 	public String asString() {
 		return this.typePattern;
 	}

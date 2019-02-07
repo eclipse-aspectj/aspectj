@@ -18,22 +18,22 @@ package org.aspectj.lang.reflect;
 public interface DeclareErrorOrWarning {
 	
 	/**
-	 * The type that declared this declare warning or declare error member. 
+	 * @return the type that declared this declare warning or declare error member. 
 	 */
 	AjType getDeclaringType();
 	
 	/**
-	 * The pointcut expression associated with the warning or error
+	 * @return the pointcut expression associated with the warning or error
 	 */
 	PointcutExpression getPointcutExpression();
 	
 	/**
-	 * The message associated with the declare warning / declare error
+	 * @return the message associated with the declare warning / declare error
 	 */
 	String getMessage();
 	
 	/**
-	 * True if this is a declare error member, false if it is declare warning
+	 * @return true if this is a declare error member, false if it is declare warning
 	 */
 	boolean isError();
 	

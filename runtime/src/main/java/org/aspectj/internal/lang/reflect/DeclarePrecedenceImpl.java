@@ -41,16 +41,10 @@ public class DeclarePrecedenceImpl implements DeclarePrecedence {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclarePrecedence#getDeclaringType()
-	 */
 	public AjType getDeclaringType() {
 		return this.declaringType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclarePrecedence#getPrecedenceOrder()
-	 */
 	public TypePattern[] getPrecedenceOrder() {
 		return this.precedenceList;
 	}

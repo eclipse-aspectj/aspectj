@@ -20,7 +20,6 @@ import java.lang.reflect.Modifier;
  * For users working on a level of Java prior to Java5, Aspects14 handles generic aspectOf methods when they 
  * are not available in the aspects but added later on through load time weaving.  Users on Java5 should use
  * the class Aspects instead.
- * <p/>
  * Aspects14.aspectOf(..) is doing reflective calls to the aspect aspectOf, so for better performance
  * consider using ajc compilation of the aspects and using them as a binary dependancies in your project.
  */
@@ -73,7 +72,7 @@ public class Aspects14 {
      * Returns the pertypewithin aspect
      * @param aspectClass aspect class for which to discover the aspect instance
      * @param perTypeWithin class
-     * @return
+     * @return the aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
     public static Object aspectOf(Class aspectClass, Class perTypeWithin) throws NoAspectBoundException {
@@ -91,7 +90,7 @@ public class Aspects14 {
      * Returns true if singleton aspect or percflow / percflowbelow aspect is bound
      *
      * @param aspectClass aspect class for which to check the aspect instance
-     * @return
+     * @return true if an aspect instance is bound
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class aspectClass) throws NoAspectBoundException {
@@ -105,7 +104,7 @@ public class Aspects14 {
     /**
      * Returns true if the perthis / pertarget aspect is bound
      * @param aspectClass aspect class for which to check the aspect instance
-     * @param perObject
+     * @param perObject the this/target for which to check for an aspect
      * @return true if aspect instance exists for the class/object combination
      * @throws NoAspectBoundException if not bound
      */

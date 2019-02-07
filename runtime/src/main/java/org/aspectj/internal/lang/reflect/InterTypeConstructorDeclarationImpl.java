@@ -27,20 +27,12 @@ public class InterTypeConstructorDeclarationImpl extends
 
 	private Method baseMethod;
 	
-	/**
-	 * @param decType
-	 * @param target
-	 * @param mods
-	 */
 	public InterTypeConstructorDeclarationImpl(AjType<?> decType,
 			String target, int mods, Method baseMethod) {
 		super(decType, target, mods);
 		this.baseMethod = baseMethod;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeConstructorDeclaration#getParameters()
-	 */
 	public AjType<?>[] getParameterTypes() {
 		Class<?>[] baseTypes = baseMethod.getParameterTypes();
 		AjType<?>[] ret = new AjType<?>[baseTypes.length-1];
@@ -50,9 +42,6 @@ public class InterTypeConstructorDeclarationImpl extends
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeConstructorDeclaration#getGenericParameters()
-	 */
 	public Type[] getGenericParameterTypes() {
 		Type[] baseTypes = baseMethod.getGenericParameterTypes();
 		Type[] ret = new AjType<?>[baseTypes.length-1];
@@ -66,9 +55,6 @@ public class InterTypeConstructorDeclarationImpl extends
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeConstructorDeclaration#getDeclaredExceptionTypes()
-	 */
 	public AjType<?>[] getExceptionTypes() {
 		Class<?>[] baseTypes = baseMethod.getExceptionTypes();
 		AjType<?>[] ret = new AjType<?>[baseTypes.length];

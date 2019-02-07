@@ -43,24 +43,15 @@ public class InterTypeDeclarationImpl implements InterTypeDeclaration {
 		this.modifiers = mods;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeDeclaration#getDeclaringType()
-	 */
 	public AjType<?> getDeclaringType() {
 		return this.declaringType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeDeclaration#getTargetType()
-	 */
 	public AjType<?> getTargetType() throws ClassNotFoundException {
 		if (this.targetType == null) throw new ClassNotFoundException(this.targetTypeName);
 		return this.targetType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeDeclaration#getModifiers()
-	 */
 	public int getModifiers() {
 		return this.modifiers;
 	}

@@ -20,11 +20,10 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Handles generic aspectOf method when those are not available in the aspects but added later on
  * thru load time weaving.
- * <p/>
  * Aspects.aspectOf(..) is doing reflective calls to the aspect aspectOf, so for better performance
  * consider using ajc compilation of the aspects and using them as a binary dependancies in your project.
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 public class Aspects {
 
@@ -36,10 +35,9 @@ public class Aspects {
     private final static String HASASPECT = "hasAspect";
 
     /**
-     * Returns the singleton aspect or the percflow / percflowbelow associated with the current thread
-     *
-     * @param aspectClass
-     * @return
+     * @param <T> the expected class of the aspect
+     * @param aspectClass the aspect class 
+     * @return the singleton aspect or the percflow / percflowbelow associated with the current thread
      * @throws NoAspectBoundException if no such aspect
      */
     public static <T> T aspectOf(Class<T> aspectClass) throws NoAspectBoundException {
@@ -54,10 +52,10 @@ public class Aspects {
     }
 
     /**
-     * Returns the perthis / pertarget aspect
-     * @param aspectClass
-     * @param perObject
-     * @return
+     * @param <T> the expected class of the aspect
+     * @param aspectClass the aspect class 
+     * @param perObject the this/target object for which to look for an aspect instance
+     * @return the associated perthis / pertarget aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
     public static <T> T aspectOf(Class<T> aspectClass, Object perObject) throws NoAspectBoundException {
@@ -72,10 +70,10 @@ public class Aspects {
     }
 
     /**
-     * Returns the pertypewithin aspect
-     * @param aspectClass
-     * @param perTypeWithin class
-     * @return
+     * @param <T> the expected class of the aspect
+     * @param aspectClass the aspect class 
+     * @param perTypeWithin the class for which to search for an aspect instance
+     * @return the associated aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
     public static <T> T aspectOf(Class<T> aspectClass, Class<?> perTypeWithin) throws NoAspectBoundException {
@@ -90,10 +88,8 @@ public class Aspects {
     }
 
     /**
-     * Returns true if singleton aspect or percflow / percflowbelow aspect is bound
-     *
-     * @param aspectClass
-     * @return
+     * @param aspectClass the aspect class 
+     * @return true if singleton aspect or percflow / percflowbelow aspect is bound
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class<?> aspectClass) throws NoAspectBoundException {
@@ -105,10 +101,9 @@ public class Aspects {
     }
 
     /**
-     * Returns true if the perthis / pertarget aspect is bound
-     * @param aspectClass
-     * @param perObject
-     * @return
+     * @param aspectClass the aspect class 
+     * @param perObject the this/target object for which to look for an aspect instance
+     * @return true if the perthis / pertarget aspect is bound
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class<?> aspectClass, Object perObject) throws NoAspectBoundException {
@@ -120,10 +115,9 @@ public class Aspects {
     }
 
     /**
-     * Returns true if the pertypewithin aspect is bound
-     * @param aspectClass
+     * @param aspectClass the aspect class 
      * @param perTypeWithin class
-     * @return
+     * @return true if the pertypewithin aspect is bound
      * @throws NoAspectBoundException if not bound
      */
     public static boolean hasAspect(Class<?> aspectClass, Class<?> perTypeWithin) throws NoAspectBoundException {

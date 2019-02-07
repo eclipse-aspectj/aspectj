@@ -16,32 +16,31 @@ import org.aspectj.runtime.internal.AroundClosure;
 /**
  * ProceedingJoinPoint exposes the proceed(..) method in order to support around advice in @AJ aspects
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 public interface ProceedingJoinPoint extends JoinPoint {
 
     /**
-     * The joinpoint needs to know about its closure so that proceed can delegate to closure.run()
-     * <p/>
+     * The joinpoint needs to know about its closure so that proceed can delegate to closure.run().
      * This internal method should not be called directly, and won't be visible to the end-user when
-     * packed in a jar (synthetic method)
+     * packed in a jar (synthetic method).
      *
-     * @param arc
+     * @param arc the around closure to associate with this joinpoint
      */
     void set$AroundClosure(AroundClosure arc);
 
     /**
      * Proceed with the next advice or target method invocation
      *
-     * @return
-     * @throws Throwable
+     * @return the result of proceeding
+     * @throws Throwable if the invoked proceed throws anything
      */
     public Object proceed() throws Throwable;
 
     /**
-     * Proceed with the next advice or target method invocation
-     * <p/>
-     * <p>Unlike code style, proceed(..) in annotation style places different requirements on the 
+     * Proceed with the next advice or target method invocation.
+     *
+     * Unlike code style, proceed(..) in annotation style places different requirements on the 
      * parameters passed to it.  The proceed(..) call takes, in this order:
      * <ul>
      * <li> If 'this()' was used in the pointcut for binding, it must be passed first in proceed(..).
@@ -52,14 +51,13 @@ public interface ProceedingJoinPoint extends JoinPoint {
      * if a subset of arguments were bound or the ordering was changed in the advice signature, 
      * the proceed(..) calls takes all of them in the right order for the join point. 
      * </ul>
-     * <p>Since proceed(..) in this case takes an Object array, AspectJ cannot do as much 
+     * Since proceed(..) in this case takes an Object array, AspectJ cannot do as much 
      * compile time checking as it can for code style. If the rules above aren't obeyed 
      * then it will unfortunately manifest as a runtime error. 
-     * </p>
      *
-     * @param args
-     * @return
-     * @throws Throwable
+     * @param args the arguments to proceed with
+     * @return the result of proceeding
+     * @throws Throwable if the invoked proceed throws anything
      */
     public Object proceed(Object[] args) throws Throwable;
 

@@ -29,9 +29,6 @@ public class TypePatternBasedPerClauseImpl extends PerClauseImpl implements
 		this.typePattern = new TypePatternImpl(pattern);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.TypePatternBasedPerClause#getTypePattern()
-	 */
 	public TypePattern getTypePattern() {
 		return this.typePattern;
 	}

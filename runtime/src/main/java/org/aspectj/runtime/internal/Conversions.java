@@ -129,11 +129,9 @@ public final class Conversions {
 		}
 	}
 	
-	/** 
-	 * identity function for now.  This is not typed to "void" because we happen
-	 * to know that in Java, any void context (i.e., {@link ExprStmt})
-	 *  can also handle a return value.
-	 */
+	// identity function for now.  This is not typed to "void" because we happen
+	// to know that in Java, any void context (i.e., {@link ExprStmt})
+	// can also handle a return value.
 	public static Object voidValue(Object o) {
 		if (o == null) {
 			return o;

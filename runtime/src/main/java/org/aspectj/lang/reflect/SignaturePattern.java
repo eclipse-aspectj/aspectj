@@ -17,7 +17,7 @@ package org.aspectj.lang.reflect;
  */
 public interface SignaturePattern {
 
-	/** return a String representation of this pattern */
+	/** @return a string representation of this pattern */
 	String asString();
 	
 }

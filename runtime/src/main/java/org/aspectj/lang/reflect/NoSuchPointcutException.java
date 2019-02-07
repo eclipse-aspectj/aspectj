@@ -25,7 +25,7 @@ public class NoSuchPointcutException extends Exception {
 	}
 	
 	/**
-	 * The name of the pointcut that could not be found.
+	 * @return the name of the pointcut that could not be found.
 	 */
 	public String getName() {
 		return name;

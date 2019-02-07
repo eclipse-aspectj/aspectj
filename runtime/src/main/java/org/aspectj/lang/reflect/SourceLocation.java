@@ -24,6 +24,7 @@ public interface SourceLocation {
     /**
      * @deprecated can not be implemented for bytecode weaving, may
      * be removed in 1.1gold.
+     * @return the column
      */
     int getColumn();
 }

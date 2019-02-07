@@ -22,33 +22,33 @@ public interface DeclareAnnotation {
 	public enum Kind { Field, Method, Constructor, Type };
 	
 	/**
-	 * The aspect that declared this member.
+	 * @return the aspect that declared this member.
 	 */
 	AjType<?> getDeclaringType();
 	
 	/**
-	 * The target element kind
+	 * @return the target element kind
 	 */
 	Kind getKind();
 	
 	/**
-	 * The target signature pattern. Returns null if getKind() == Type 
+	 * @return the target signature pattern. Returns null if getKind() == Type 
 	 */
 	SignaturePattern getSignaturePattern();
 	
 	/**
-	 * The target type pattern. Returns null if getKind() != Type
+	 * @return the target type pattern. Returns null if getKind() != Type
 	 */
 	TypePattern getTypePattern();
 	
 	/**
-	 * The declared annotation. If the declared annotation does not have runtime retention,
+	 * @return the declared annotation. If the declared annotation does not have runtime retention,
 	 * this method returns null.
 	 */
 	Annotation getAnnotation();
 	
 	/**
-	 * Returns the text of the annotation as declared in this member. Available for
+	 * @return the text of the annotation as declared in this member. Available for
 	 * both runtime and class-file retention annotations
 	 */
 	String getAnnotationAsText();

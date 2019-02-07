@@ -19,17 +19,17 @@ import java.lang.reflect.Type;
 public interface InterTypeFieldDeclaration extends InterTypeDeclaration {
 	
 	/**
-	 * The field name
+	 * @return the field name
 	 */
 	String getName();
 	
 	/**
-	 * The field type
+	 * @return the field type
 	 */
 	AjType<?> getType();
 	
 	/**
-	 * The generic field type
+	 * @return the generic field type
 	 */
 	Type getGenericType();
 

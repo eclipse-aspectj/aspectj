@@ -24,7 +24,7 @@ package org.aspectj.lang;
  * aspect Logging {
  *     Logger logger = Logger.getLogger("MethodEntries");
  * 
- *     before(): within(com.bigboxco..*) && execution(public * *(..)) {
+ *     before(): within(com.bigboxco..*) &amp;&amp; execution(public * *(..)) {
  *         Signature sig = thisJoinPoint.getSignature();
  *         logger.entering(sig.getDeclaringType().getName(),
  *                         sig.getName());
@@ -43,19 +43,20 @@ package org.aspectj.lang;
  */
 public interface Signature {
     String toString();
+
     /**
-     * Returns an abbreviated string representation of this signature.
+     * @return an abbreviated string representation of this signature.
      */
     String toShortString();
 
     /**
-     * Returns an extended string representation of this signature.
+     * @return an extended string representation of this signature.
      */
     String toLongString();
 
 
     /**
-     * Returns the identifier part of this signature.  For methods this
+     * @return the identifier part of this signature.  For methods this
      * will return the method name.
      * 
      * @see java.lang.reflect.Member#getName
@@ -74,6 +75,7 @@ public interface Signature {
      *     java.lang.reflect.Modifier.toString(sig.getModifiers());
      * </pre>
      * 
+     * @return the modifiers on this signature represented as an int
      * @see java.lang.reflect.Member#getModifiers
      * @see java.lang.reflect.Modifier
      */
@@ -89,14 +91,16 @@ public interface Signature {
      * <p>For consistency with <code>java.lang.reflect.Member</code>, this
      * method should have been named <code>getDeclaringClass()</code>.</p>
      * 
+     * @return the class, interface or aspect that declared this member
      * @see java.lang.reflect.Member#getDeclaringClass
      */
     Class  getDeclaringType();
     
     /**
-     * Returns the fully-qualified name of the declaring type. This is
-     * equivalent to calling getDeclaringType().getName(), but caches
+     * This is equivalent to calling getDeclaringType().getName(), but caches
      * the result for greater efficiency.
+     * 
+     * @return the fully qualified name of the declaring type
      */
     String getDeclaringTypeName();
 }

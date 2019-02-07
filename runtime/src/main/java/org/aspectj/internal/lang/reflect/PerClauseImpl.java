@@ -26,9 +26,6 @@ public class PerClauseImpl implements PerClause {
 		this.kind = kind;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.PerClause#getKind()
-	 */
 	public PerClauseKind getKind() {
 		return kind;
 	}

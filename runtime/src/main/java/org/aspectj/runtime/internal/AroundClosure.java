@@ -46,14 +46,17 @@ public abstract class AroundClosure {
 	}
 
 	/**
-	 * This takes in the same arguments as are passed to the proceed
-	 * call in the around advice (with primitives coerced to Object types)
+	 * @param args the same arguments as passed to the proceed (with primitives coerced to Object types)
+	 * @return the result of the invocation with those arguments
+	 * @throws Throwable if underlying invoked code throws an exception
 	 */
     public abstract Object run(Object[] args) throws Throwable;
 
     /**
      * This method is called to implicitly associate the closure with the joinpoint
      * as required for @AJ aspect proceed()
+     *      
+     * @return the associated ProceedingJoinPoint
      */
     public ProceedingJoinPoint linkClosureAndJoinPoint() {
         //TODO is this cast safe ?
@@ -65,6 +68,9 @@ public abstract class AroundClosure {
     /**
      * This method is called to implicitly associate the closure with the joinpoint
      * as required for @AJ aspect proceed()
+     * 
+     * @param flags indicating whether this/target found at joinpoint and bound
+     * @return the associated ProceedingJoinPoint
      */
     public ProceedingJoinPoint linkClosureAndJoinPoint(int flags) {
         //TODO is this cast safe ?

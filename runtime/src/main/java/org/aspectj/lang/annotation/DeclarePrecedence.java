@@ -19,14 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Aspect precedence declaration
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DeclarePrecedence {
 
     /**
-     * The precedence pattern list
+     * @return the precedence pattern list
      */
     String value();
 

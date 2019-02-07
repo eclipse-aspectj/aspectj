@@ -14,12 +14,11 @@ package org.aspectj.lang.reflect;
 /**
  * Representation of a pointcut based per-clause associated with an aspect
  * (perthis/target/cflow/cflowbelow)
- *
  */
 public interface PointcutBasedPerClause extends PerClause {
 
 	/**
-	 * Get the associated pointcut expression
+	 * @return the associated pointcut expression
 	 */
 	PointcutExpression getPointcutExpression();
 }

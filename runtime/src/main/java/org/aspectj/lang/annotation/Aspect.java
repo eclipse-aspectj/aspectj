@@ -19,15 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Aspect declaration
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Aspect {
 
     /**
-     * Per clause expression, defaults to singleton aspect
-     * <p/>
+     * @return the per clause expression, defaults to singleton aspect.
      * Valid values are "" (singleton), "perthis(...)", etc
      */
     public String value() default "";

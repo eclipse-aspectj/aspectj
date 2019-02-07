@@ -17,17 +17,18 @@ package org.aspectj.lang.reflect;
 public interface InterTypeDeclaration {
 
 	/**
-	 * The declaring aspect
+	 * @return the declaring aspect
 	 */
 	AjType<?> getDeclaringType();
 	
 	/**
-	 * The target type of this ITD
+	 * @return the target type of this ITD
+	 * @throws ClassNotFoundException if the type cannot be found
 	 */
 	AjType<?> getTargetType() throws ClassNotFoundException;
 	
 	/**
-	 * Member modifiers, can be interpreted using java.lang.reflect.Modifier
+	 * @return member modifiers, can be interpreted using java.lang.reflect.Modifier
 	 */
 	int getModifiers();
 }

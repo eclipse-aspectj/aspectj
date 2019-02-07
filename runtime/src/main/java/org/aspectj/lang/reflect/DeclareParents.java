@@ -19,28 +19,29 @@ import java.lang.reflect.Type;
 public interface DeclareParents {
 
 	/**
-	 * The declaring aspect
+	 * @return the declaring aspect
 	 */
 	AjType getDeclaringType();
 	
 	/**
-	 * The target type pattern
+	 * @return the target type pattern
 	 */
 	TypePattern getTargetTypesPattern();
 	
 	/**
-	 * True if this is a declare parents...extends member declaration
+	 * @return true if this is a declare parents...extends member declaration
 	 */
 	boolean isExtends();
 	
 	/**
-	 * True if this is a declare parents...implements member declaration
+	 * @return true if this is a declare parents...implements member declaration
 	 */
 	boolean isImplements();
 	
 	/**
-	 * The set of types that the types matching getTargetTypesPattern are 
+	 * @return the set of types that the types matching getTargetTypesPattern are 
 	 * declared to implement or extend
+	 * @throws ClassNotFoundException if any types cannot be found
 	 */
 	Type[] getParentTypes() throws ClassNotFoundException;
 	

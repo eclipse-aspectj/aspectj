@@ -19,24 +19,24 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * After returning advice
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AfterReturning {
 
     /**
-     * The pointcut expression where to bind the advice
+     * @return the pointcut expression where to bind the advice
      */
     String value() default "";
 
     /**
-     * The pointcut expression where to bind the advice, overrides "value" when specified
+     * @return the pointcut expression where to bind the advice, overrides "value" when specified
      */
     String pointcut() default "";
 
     /**
-     * The name of the argument in the advice signature to bind the returned value to
+     * @return the name of the argument in the advice signature to bind the returned value to
      */
     String returning() default "";
     
@@ -46,6 +46,7 @@ public @interface AfterReturning {
      * Under these circumstances only, it is necessary to provide the arg names in 
      * the annotation - these MUST duplicate the names used in the annotated method.
      * Format is a simple comma-separated list.
+     * @return the argument names (that should match names used in the annotated method)
      */
     String argNames() default "";
 

@@ -17,17 +17,18 @@ package org.aspectj.lang.reflect;
 public interface DeclareSoft {
 	
 	/**
-	 * The aspect that declared this member
+	 * @return the aspect that declared this member
 	 */
 	AjType getDeclaringType();
 	
 	/**
-	 * The softened exception type
+	 * @return the softened exception type
+	 * @throws ClassNotFoundException if exception type cannot be found
 	 */
 	AjType getSoftenedExceptionType() throws ClassNotFoundException;
 	
 	/**
-	 * The pointcut determining the join points at which the exception is to be softened.
+	 * @return the pointcut determining the join points at which the exception is to be softened.
 	 */
 	PointcutExpression getPointcutExpression();
 

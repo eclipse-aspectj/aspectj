@@ -20,17 +20,17 @@ import java.lang.reflect.Type;
 public interface InterTypeConstructorDeclaration extends InterTypeDeclaration {
 
 	/**
-	 * The constructor parameters
+	 * @return the constructor parameters
 	 */
 	AjType<?>[] getParameterTypes();
 	
 	/**
-	 * The generic constructor parameters
+	 * @return the generic constructor parameters
 	 */
 	Type[] getGenericParameterTypes();
 	
 	/**
-	 * The declared exceptions thrown by this constructor
+	 * @return the declared exceptions thrown by this constructor
 	 */
 	AjType<?>[] getExceptionTypes();
 }

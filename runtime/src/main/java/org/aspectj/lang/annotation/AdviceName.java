@@ -25,7 +25,7 @@ import java.lang.annotation.ElementType;
 public @interface AdviceName {
 
     /**
-     * The name of the advice
+     * @return the name of the advice
      */
     String value();
 }

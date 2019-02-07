@@ -19,14 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Before advice
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Before {
 
     /**
-     * The pointcut expression where to bind the advice
+     * @return the pointcut expression where to bind the advice
      */
     String value();
     
@@ -36,6 +36,8 @@ public @interface Before {
      * Under these circumstances only, it is necessary to provide the arg names in 
      * the annotation - these MUST duplicate the names used in the annotated method.
      * Format is a simple comma-separated list.
+     * 
+     * @return the argument names (should match the annotated method parameter names)
      */
     String argNames() default "";
 

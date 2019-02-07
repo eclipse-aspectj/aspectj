@@ -604,9 +604,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return this.declaredITDMethods;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDMethod(java.lang.String, java.lang.Class, java.lang.Class...)
-	 */
 	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target,
 			AjType<?>... parameterTypes) 
 	throws NoSuchMethodException {
@@ -632,9 +629,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		throw new NoSuchMethodException(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDMethods()
-	 */
 	public InterTypeMethodDeclaration[] getITDMethods() {
 		if (this.itdMethods == null) {
 			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
@@ -685,9 +679,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructor(java.lang.Class, java.lang.Class...)
-	 */
 	public InterTypeConstructorDeclaration getDeclaredITDConstructor(
 			AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException {
 		InterTypeConstructorDeclaration[] itdcs = getDeclaredITDConstructors();
@@ -711,9 +702,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		throw new NoSuchMethodException();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDConstructors()
-	 */
 	public InterTypeConstructorDeclaration[] getDeclaredITDConstructors() {
 		if (this.declaredITDCons == null) {
 			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
@@ -733,9 +721,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return this.declaredITDCons;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDConstructor(java.lang.Class, java.lang.Class...)
-	 */
 	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target,
 			AjType<?>... parameterTypes) throws NoSuchMethodException {
 		InterTypeConstructorDeclaration[] itdcs = getITDConstructors();
@@ -759,9 +744,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		throw new NoSuchMethodException();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDConstructors()
-	 */
 	public InterTypeConstructorDeclaration[] getITDConstructors() {
 		if (this.itdCons == null) {
 			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
@@ -781,9 +763,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		}
 		return this.itdCons;	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDField(java.lang.String, java.lang.Class)
-	 */
 	public InterTypeFieldDeclaration getDeclaredITDField(String name,
 			AjType<?> target) throws NoSuchFieldException {
 		InterTypeFieldDeclaration[] itdfs = getDeclaredITDFields();
@@ -800,9 +779,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		throw new NoSuchFieldException(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclaredITDFields()
-	 */
 	public InterTypeFieldDeclaration[] getDeclaredITDFields() {
 		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
 		if (this.declaredITDFields == null) {
@@ -833,9 +809,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return this.declaredITDFields;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDField(java.lang.String, java.lang.Class)
-	 */
 	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) 
 	throws NoSuchFieldException {
 		InterTypeFieldDeclaration[] itdfs = getITDFields();
@@ -852,9 +825,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		throw new NoSuchFieldException(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getITDFields()
-	 */
 	public InterTypeFieldDeclaration[] getITDFields() {
 		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
 		if (this.itdFields == null) {
@@ -886,9 +856,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return this.itdFields;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclareErrorOrWarnings()
-	 */
 	public DeclareErrorOrWarning[] getDeclareErrorOrWarnings() {
 		List<DeclareErrorOrWarning> deows = new ArrayList<DeclareErrorOrWarning>();
 		for (Field field : clazz.getDeclaredFields()) {
@@ -926,9 +893,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclareParents()
-	 */
 	public DeclareParents[] getDeclareParents() {
 		List<DeclareParents> decps = new ArrayList<DeclareParents>();
 		for (Method method : clazz.getDeclaredMethods()) {
@@ -969,9 +933,6 @@ public class AjTypeImpl<T> implements AjType<T> {
         }
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclareSofts()
-	 */
 	public DeclareSoft[] getDeclareSofts() {
 		List<DeclareSoft> decs = new ArrayList<DeclareSoft>();
 		for (Method method : clazz.getDeclaredMethods()) {
@@ -993,9 +954,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclareAnnotations()
-	 */
 	public DeclareAnnotation[] getDeclareAnnotations() {
 		List<DeclareAnnotation> decAs = new ArrayList<DeclareAnnotation>();
 		for (Method method : clazz.getDeclaredMethods()) {
@@ -1029,9 +987,6 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getDeclarePrecedence()
-	 */
 	public DeclarePrecedence[] getDeclarePrecedence() {
 		List<DeclarePrecedence> decps = new ArrayList<DeclarePrecedence>();
 		
@@ -1065,79 +1020,46 @@ public class AjTypeImpl<T> implements AjType<T> {
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getEnumConstants()
-	 */
 	public T[] getEnumConstants() {
 		return clazz.getEnumConstants();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#getTypeParameters()
-	 */
 	public TypeVariable<Class<T>>[] getTypeParameters() {
 		return clazz.getTypeParameters();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isEnum()
-	 */
 	public boolean isEnum() {
 		return clazz.isEnum();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isInstance(java.lang.Object)
-	 */
 	public boolean isInstance(Object o) {
 		return clazz.isInstance(o);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isInterface()
-	 */
 	public boolean isInterface() {
 		return clazz.isInterface();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isLocalClass()
-	 */
 	public boolean isLocalClass() {
 		return clazz.isLocalClass() && !isAspect();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isMemberClass()
-	 */
 	public boolean isMemberClass() {
 		return clazz.isMemberClass() && !isAspect();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isArray()
-	 */
 	public boolean isArray() {
 		return clazz.isArray();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isPrimitive()
-	 */
 	public boolean isPrimitive() {
 		return clazz.isPrimitive();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isAspect()
-	 */
 	public boolean isAspect() {
 		return clazz.getAnnotation(Aspect.class) != null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.AjType#isMemberAspect()
-	 */
 	public boolean isMemberAspect() {
 		return clazz.isMemberClass() && isAspect();
 	}

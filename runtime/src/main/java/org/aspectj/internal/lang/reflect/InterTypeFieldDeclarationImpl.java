@@ -29,11 +29,6 @@ public class InterTypeFieldDeclarationImpl extends InterTypeDeclarationImpl
 	private AjType<?> type;
 	private Type genericType;
 	
-	/**
-	 * @param decType
-	 * @param target
-	 * @param mods
-	 */
 	public InterTypeFieldDeclarationImpl(AjType<?> decType, String target,
 			int mods, String name, AjType<?> type, Type genericType) {
 		super(decType, target, mods);
@@ -54,23 +49,14 @@ public class InterTypeFieldDeclarationImpl extends InterTypeDeclarationImpl
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeFieldDeclaration#getName()
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeFieldDeclaration#getType()
-	 */
 	public AjType<?> getType() {
 		return this.type;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.InterTypeFieldDeclaration#getGenericType()
-	 */
 	public Type getGenericType() {
 		return this.genericType;
 	}

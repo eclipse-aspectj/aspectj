@@ -12,11 +12,13 @@
 package org.aspectj.lang.reflect;
 
 /**
- * AspectJ runtime representation of a type pattern as used in member declarations
- * such as declare parents.
+ * AspectJ runtime representation of a type pattern as used in member
+ * declarations such as declare parents.
  */
 public interface TypePattern {
 
-	/** a string representation of the pattern */
+	/**
+	 * @return a string representation of the pattern
+	 */
 	String asString();
 }

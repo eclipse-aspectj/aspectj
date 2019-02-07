@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface DeclareWarning {
     /**
-     * The pointcut expression where to bind the error (don't use if, formal bindings, cflow etc)
+     * @return the pointcut expression where to bind the error (don't use if, formal bindings, cflow etc)
      */
 	String value();
 }

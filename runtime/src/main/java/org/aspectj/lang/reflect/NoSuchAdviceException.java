@@ -25,7 +25,7 @@ public class NoSuchAdviceException extends Exception {
 	}
 	
 	/**
-	 * The advice name that could not be found.
+	 * @return the advice name that could not be found.
 	 */
 	public String getName() {
 		return name;

@@ -21,37 +21,37 @@ import java.lang.reflect.TypeVariable;
 public interface InterTypeMethodDeclaration extends InterTypeDeclaration {
 
 	/**
-	 * The name of this method
+	 * @return the name of this method
 	 */
 	String getName();
 	
 	/**
-	 * The method return type
+	 * @return the method return type
 	 */
 	AjType<?> getReturnType();
 	
 	/**
-	 * The generic return type
+	 * @return the generic return type
 	 */
 	Type getGenericReturnType();
 	
 	/**
-	 * The method parameters
+	 * @return the method parameters
 	 */
 	AjType<?>[] getParameterTypes();
 	
 	/**
-	 * The generic method parameters
+	 * @return the generic method parameters
 	 */
 	Type[] getGenericParameterTypes();
 	
 	/**
-	 * The type variables declared by this method 
+	 * @return the type variables declared by this method 
 	 */
 	TypeVariable<Method>[] getTypeParameters();
 	
 	/**
-	 * The declared exceptions thrown by this method
+	 * @return the declared exceptions thrown by this method
 	 */
 	AjType<?>[] getExceptionTypes();
 }

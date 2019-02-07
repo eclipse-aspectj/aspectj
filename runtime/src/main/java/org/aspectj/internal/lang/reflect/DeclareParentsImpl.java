@@ -31,10 +31,9 @@ public class DeclareParentsImpl implements DeclareParents {
 	private boolean isExtends;
 	private boolean parentsError = false;
 	
-	/**
-	 * Parents arg is a comma-separate list of type names that needs to be turned into 
-	 * AjTypes 
-	 */
+	
+	// Parents arg is a comma-separate list of type names that needs to be turned into 
+	// AjTypes 
 	public DeclareParentsImpl(String targets, String parentsAsString, boolean isExtends, AjType<?> declaring) 
 	{
 		this.targetTypesPattern = new TypePatternImpl(targets);
@@ -49,37 +48,22 @@ public class DeclareParentsImpl implements DeclareParents {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareParents#getDeclaringType()
-	 */
 	public AjType getDeclaringType() {
 		return this.declaringType;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareParents#getTargetTypesPattern()
-	 */
 	public TypePattern getTargetTypesPattern() {
 		return this.targetTypesPattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareParents#isExtends()
-	 */
 	public boolean isExtends() {
 		return this.isExtends;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareParents#isImplements()
-	 */
 	public boolean isImplements() {
 		return !this.isExtends;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareParents#getParentTypes()
-	 */
 	public Type[] getParentTypes() throws ClassNotFoundException {
 		if (parentsError) {
 			throw new ClassNotFoundException(this.firstMissingTypeName);

@@ -25,289 +25,332 @@ import java.lang.reflect.TypeVariable;
 public interface AjType<T> extends Type, AnnotatedElement {
 	
 	/**
-	 * The name of this type, in the same format as returned by Class.getName()
+	 * @return the name of this type, in the same format as returned by Class.getName()
 	 */
 	public String getName();
 	
 	/**
-	 * The package in which this type is declared
+	 * @return the package in which this type is declared
 	 */
 	public Package getPackage();
 	
 	/**
-	 * The interfaces implemented by this type
+	 * @return the interfaces implemented by this type
 	 */
 	public AjType<?>[] getInterfaces();
 		
 	/**
-	 * The modifiers declared for this type. The return value can be interpreted
+	 * @return the modifiers declared for this type. The return value can be interpreted
 	 * using java.lang.reflect.Modifier
 	 */
 	public int getModifiers();
 	
 	/**
-	 * The java.lang.Class that corresponds to this AjType
+	 * @return the java.lang.Class that corresponds to this AjType
 	 */
 	public Class<T> getJavaClass();
 
 	// scope
 	
 	/**
-	 * The supertype of this type. If this type represents Object or a primitive type
+	 * @return the supertype of this type. If this type represents Object or a primitive type
 	 * then null is returned.
 	 */
 	public AjType<?> getSupertype();
 
 	/**
-	 * The generic supertype of this type, as defined by Class.getGenericSupertype
+	 * @return the generic supertype of this type, as defined by Class.getGenericSupertype
 	 */
 	public Type getGenericSupertype();
 
 	/**
-	 * If this type represents a local or anonymous type declared within a method, return 
-	 * then enclosing Method object.
+	 * @return the enclosing Method if this type represents a local or anonymous type declared within a method
 	 */
 	public Method getEnclosingMethod();
 	
 	/**
-	 * If this type represents a local or anonymous type declared within a constructor, return 
-	 * then enclosing Method object.
+	 * @return the enclosing Method if this type represents a local or anonymous type declared within a constructor
 	 */
 	public Constructor getEnclosingConstructor();
 
 	/**
-	 * Returns the immediately enclosing type of this type.
+	 * @return the immediately enclosing type of this type.
 	 */
 	public AjType<?> getEnclosingType();
 	
 	/**
-	 * If this type is a member of another type, return the AjType representing the type
-	 * in which it was declared.
+	 * @return the AjType representing the typei n which it was declared (if this type is a member of another type)
 	 */
 	public AjType<?> getDeclaringType();
 
 	/**
-	 * If this type represents an aspect, returns the associated per-clause.
-	 * Returns null for non-aspect types.
+	 * @return the per-clause if this is an aspect, otherwise null
 	 */
 	public PerClause getPerClause(); 
 	
 	// inner types
 	/**
-	 * Returns an array containing all the public types that are members of this type
+	 * @return an array containing all the public types that are members of this type
 	 */
 	public AjType<?>[] getAjTypes();
 	
 	/**
-	 * Returns an array containing all the types declared by this type
+	 * @return an array containing all the types declared by this type
 	 */
 	public AjType<?>[] getDeclaredAjTypes();
 	
 	// constructors
 	
 	/**
-	 * Returns the constructor object for the specified public constructor of this type
+	 * @param parameterTypes the types of the constructor parameters
+	 * @return the constructor object for the specified public constructor of this type
+	 * @throws NoSuchMethodException if constructor not found
 	 */
 	public Constructor getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Returns all of the public constructors of this type
+	 * @return all of the public constructors of this type
 	 */
 	public Constructor[] getConstructors();
 	
 	/**
-	 * Returns the constructor object for the specified constructor of this type
+	 * @param parameterTypes the types of the constructor parameters
+	 * @return the constructor object for the specified constructor of this type
+	 * @throws NoSuchMethodException if constructor not found
 	 */
 	public Constructor getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
 
 	/**
-	 * Returns all the constructors declared in this type
+	 * @return all the constructors declared in this type
 	 */
 	public Constructor[] getDeclaredConstructors();
 	
 	// fields
 	
 	/**
-	 * Return the field declared in this type with the given name
+	 * @param name the field name
+	 * @return the declared field
+	 * @throws NoSuchFieldException if no field of that name is found
 	 */
 	public Field getDeclaredField(String name) throws NoSuchFieldException;
 	
 	/** 
-	 * Returns all the fields declared in this type
+	 * @return all the fields declared in this type
 	 */
 	public Field[] getDeclaredFields();
 	
 	/**
-	 * Return the public field with the given name 
+	 * @param name the field name
+	 * @return the public field with the given name 
+	 * @throws NoSuchFieldException if field not found
 	 */
 	public Field getField(String name) throws NoSuchFieldException;
 	
 	/**
-	 * Return the public fields declared by this type
+	 * @return the public fields declared by this type
 	 */
 	public Field[] getFields();
 	
 	// methods
 
 	/**
-	 * Return the method object for the specified method declared in this type
+	 * @param name the method name
+	 * @param parameterTypes the types of the method parameters
+	 * @return the method object for the specified method declared in this type
+	 * @throws NoSuchMethodException if the method cannot be found
 	 */
 	public Method getDeclaredMethod(String name, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Return the method object for the specified public method declared in this type 
+	 * @param name the method name
+	 * @param parameterTypes the types of the method parameters
+	 * @return the method object for the specified public method declared in this type 
+	 * @throws NoSuchMethodException if the method cannot be found
 	 */
 	public Method getMethod(String name, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Return all the methods declared by this type
+	 * @return all the methods declared by this type
 	 */
 	public Method[] getDeclaredMethods();
 	
 	/**
-	 * Returns all the public methods of this type
+	 * @return all the public methods of this type
 	 */
 	public Method[] getMethods();
 	
 	// pointcuts
 	
 	/**
-	 * Return the pointcut object representing the specified pointcut declared by this type
+	 * @param name the pointcut name
+	 * @return the pointcut object representing the specified pointcut declared by this type
+	 * @throws NoSuchPointcutException if no pointcut of that name can be found
 	 */
 	public Pointcut getDeclaredPointcut(String name) throws NoSuchPointcutException;
 	
 	/**
-	 * Return the pointcut object representing the specified public pointcut
+	 * @param name the pointcut name
+	 * @return the pointcut object representing the specified public pointcut
+	 * @throws NoSuchPointcutException if no pointcut of that name can be found
 	 */
 	public Pointcut getPointcut(String name) throws NoSuchPointcutException;
 
 	/**
-	 * Returns all of the pointcuts declared by this type
+	 * @return all of the pointcuts declared by this type
 	 */
 	public Pointcut[] getDeclaredPointcuts();
 
 	/**
-	 * Returns all of the public pointcuts of this type
+	 * @return all of the public pointcuts of this type
 	 */
 	public Pointcut[] getPointcuts();
 	
 	// advice
 
 	/**
-	 * Returns all of the advice declared by this type, of an advice kind contained in the
+	 * @param ofTypes the {@link AdviceKind}s of interest
+	 * @return all of the advice declared by this type, of an advice kind contained in the
 	 * parameter list.
 	 */
 	public Advice[] getDeclaredAdvice(AdviceKind... ofTypes);
 	
 	/**
-	 * Returns all of the advice for this type, of an advice kind contained in the parameter
+	 * @param ofTypes the {@link AdviceKind}s of interest
+	 * @return all of the advice for this type, of an advice kind contained in the parameter
 	 * list. 
 	 */
 	public Advice[] getAdvice(AdviceKind... ofTypes);
 	
 	/**
-	 * Returns the advice with the given name. For an @AspectJ declared advice member,
+	 * For an annotation style advice member,
 	 * this is the name of the annotated method. For a code-style advice declaration, this
 	 * is the name given in the @AdviceName annotation if present.
+	 * 
+	 * @param name the advice name
+	 * @return the advice with the given name.
+	 * @throws NoSuchAdviceException if no advice can be found with that name
 	 */
 	public Advice getAdvice(String name) throws NoSuchAdviceException;
 	
-	/**
-	 * Returns the advice declared in this type with the given name. For an @AspectJ declared advice member,
+	/** For an annotation style advice member,
 	 * this is the name of the annotated method. For a code-style advice declaration, this
 	 * is the name given in the @AdviceName annotation if present.
+	 * 
+	 * @param name the advice name
+	 * @return the advice declared in this type with the given name.
+	 * @throws NoSuchAdviceException if no advice can be found with that name
 	 */
 	public Advice getDeclaredAdvice(String name) throws NoSuchAdviceException;
 		
 	// inter-type declarations
 	
 	/**
-	 * Return the inter-type method declared by this type matching the given specification
+	 * @param name the method name
+	 * @param target the target of the inter-type declaration
+	 * @param parameterTypes the types of the inter-type method declaration
+	 * @return the inter-type method declared by this type matching the given specification
+	 * @throws NoSuchMethodException if the inter-type declaration cannot be found
 	 */
 	public InterTypeMethodDeclaration getDeclaredITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Return all of the inter-type methods declared by this type
+	 * @return all of the inter-type methods declared by this type
 	 */
 	public InterTypeMethodDeclaration[] getDeclaredITDMethods();
 
 	/**
-	 * Return the public inter-type method of this type matching the given specification
+	 * @param name the method name
+	 * @param target the target of the inter-type declaration
+	 * @param parameterTypes the types of the inter-type method declaration
+	 * @return the public inter-type method of this type matching the given specification
+	 * @throws NoSuchMethodException if the inter-type declaration cannot be found
 	 */
 	public InterTypeMethodDeclaration getITDMethod(String name, AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Return all of the public inter-type declared methods of this type
+	 * @return all of the public inter-type declared methods of this type
 	 */
 	public InterTypeMethodDeclaration[] getITDMethods();
 		
 	/**
-	 * Return the inter-type constructor declared by this type matching the given specification
+	 * @param target the target of the inter-type constructor of interest
+	 * @param parameterTypes the types of the parameter of the inter-type constructor of interest
+	 * @return the inter-type constructor declared by this type matching the given specification
+	 * @throws NoSuchMethodException if the inter-type declaration cannot be found
 	 */
 	public InterTypeConstructorDeclaration getDeclaredITDConstructor(AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 	
 	/**
-	 * Returns all of the inter-type constructors declared by this type
+	 * @return all of the inter-type constructors declared by this type
 	 */
 	public InterTypeConstructorDeclaration[] getDeclaredITDConstructors();
 
 	/**
-	 * Return the public inter-type constructor matching the given specification
+	 * @param target the target of the inter-type constructor of interest
+	 * @param parameterTypes the types of the parameter of the inter-type constructor of interest
+	 * @return the public inter-type constructor matching the given specification
+	 * @throws NoSuchMethodException if the inter-type declaration cannot be found
 	 */
 	public InterTypeConstructorDeclaration getITDConstructor(AjType<?> target, AjType<?>... parameterTypes) throws NoSuchMethodException;
 
 	/**
-	 * Return all of the public inter-type constructors of this type
+	 * @return all of the public inter-type constructors of this type
 	 */
 	public InterTypeConstructorDeclaration[] getITDConstructors();
 
 	/**
-	 * Return the inter-type field declared in this type with the given specification
+	 * @param name the field name
+	 * @param target the target type for the inter-type declaration
+	 * @return the inter-type field declared in this type with the given specification
+	 * @throws NoSuchFieldException if the inter-type declaration cannot be found
 	 */
 	public InterTypeFieldDeclaration getDeclaredITDField(String name, AjType<?> target) throws NoSuchFieldException;
 
 	/**
-	 * Return all of the inter-type fields declared in this type
+	 * @return all of the inter-type fields declared in this type
 	 */
 	public InterTypeFieldDeclaration[] getDeclaredITDFields();
 
 	/**
-	 * Return the public inter-type field matching the given specification
+	 * @param name the field name
+	 * @param target the target type for the inter-type declaration
+	 * @return the public inter-type field matching the given specification
+	 * @throws NoSuchFieldException if the inter-type declaration cannot be found
 	 */
 	public InterTypeFieldDeclaration getITDField(String name, AjType<?> target) throws NoSuchFieldException;
 
 	/**
-	 * Return all of the public inter-type fields for this type
+	 * @return all of the public inter-type fields for this type
 	 */
 	public InterTypeFieldDeclaration[] getITDFields();
 		
 	// declare statements
 	/**
-	 * Returns all of the declare error and declare warning members of this type,
+	 * @return all of the declare error and declare warning members of this type,
 	 * including declare error/warning members inherited from super-types
 	 */
 	public DeclareErrorOrWarning[] getDeclareErrorOrWarnings();
 	
 	/**
-	 * Returns all of the declare parents members of this type, including
+	 * @return all of the declare parents members of this type, including
 	 * declare parent members inherited from super-types
 	 */
 	public DeclareParents[] getDeclareParents();
 	
 	/**
-	 * Return all of the declare soft members of this type, including declare
+	 * @return all of the declare soft members of this type, including declare
 	 * soft members inherited from super-types
 	 */
 	public DeclareSoft[] getDeclareSofts();
 
 	/**
-	 * Return all of the declare annotation members of this type, including declare
+	 * @return all of the declare annotation members of this type, including declare
 	 * annotation members inherited from super-types
 	 */
 	public DeclareAnnotation[] getDeclareAnnotations();
 	
 	/**
-	 * Return all of the declare precedence members of this type, including declare
+	 * @return all of the declare precedence members of this type, including declare
 	 * precedence members inherited from super-types
 	 */
 	public DeclarePrecedence[] getDeclarePrecedence();
@@ -315,65 +358,66 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	// misc
 	
 	/**
-	 * Returns the elements of this enum class, or null if this type does not represent
+	 * @return the elements of this enum class, or null if this type does not represent
 	 * an enum type.
 	 */
     public T[] getEnumConstants();
 	
     /**
-     * Returns an array of TypeVariable objects that represent the type variables declared by
+     * @return an array of TypeVariable objects that represent the type variables declared by
      * this type (if any)
      */
 	public TypeVariable<Class<T>>[] getTypeParameters();
 
 	/**
-	 * True if this is an enum type
+	 * @return true if this is an enum type
 	 */
 	public boolean isEnum();
 
 	/**
-	 * True if the given object is assignment-compatible with an object of the type represented
+	 * @param o the object to check for assignment compatibility
+	 * @return true if the given object is assignment-compatible with an object of the type represented
 	 * by this AjType
 	 */
 	public boolean isInstance(Object o);
 
 	/**
-	 * True if this is an interface type
+	 * @return true if this is an interface type
 	 */
 	public boolean isInterface();
 
 	/**
-	 * Returns true if and only if the underlying type is a local class
+	 * @return true if and only if the underlying type is a local class
 	 */
 	public boolean isLocalClass();
 	
 	/**
-	 * Returns true if and only if the underlying type is a member class
+	 * @return true if and only if the underlying type is a member class
 	 */
 	public boolean isMemberClass();
 	
 	/**
-	 * Return true if this is an array type
+	 * @return true if this is an array type
 	 */
 	public boolean isArray();
 
 	/**
-	 * Return true if this object represents a primitive type
+	 * @return true if this object represents a primitive type
 	 */
 	public boolean isPrimitive();
 
 	/**
-	 * Return true if this is an aspect type
+	 * @return true if this is an aspect type
 	 */
 	public boolean isAspect();
 	
 	/**
-	 * Returns true if and only if the underlying type is a member aspect
+	 * @return true if and only if the underlying type is a member aspect
 	 */
 	public boolean isMemberAspect();
 
 	/**
-	 * Returns true if and only if the underlying type is a privileged aspect
+	 * @return true if and only if the underlying type is a privileged aspect
 	 */
 	public boolean isPrivileged();
 	

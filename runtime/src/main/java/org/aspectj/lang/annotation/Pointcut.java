@@ -19,14 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Pointcut declaration
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Pointcut {
 
     /**
-     * The pointcut expression
+     * @return the pointcut expression
      * We allow "" as default for abstract pointcut
      */
     String value() default "";
@@ -37,6 +37,8 @@ public @interface Pointcut {
      * Under these circumstances only, it is necessary to provide the arg names in 
      * the annotation - these MUST duplicate the names used in the annotated method.
      * Format is a simple comma-separated list.
+     * 
+     * @return argNames the argument names (should match those in the annotated method)
      */
     String argNames() default "";
 }

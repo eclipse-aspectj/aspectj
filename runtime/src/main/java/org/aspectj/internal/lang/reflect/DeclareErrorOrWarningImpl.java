@@ -35,23 +35,14 @@ public class DeclareErrorOrWarningImpl implements DeclareErrorOrWarning {
 	
 	public AjType getDeclaringType() { return this.declaringType; }
 	
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareErrorOrWarning#getPointcutExpression()
-	 */
 	public PointcutExpression getPointcutExpression() {
 		return pc;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareErrorOrWarning#getMessage()
-	 */
 	public String getMessage() {
 		return msg;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aspectj.lang.reflect.DeclareErrorOrWarning#isError()
-	 */
 	public boolean isError() {
 		return isError;
 	}

@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface DeclareParents {
 
     /**
-     * The target types expression
+     * @return the target types expression
      */
     String value();
 
@@ -33,6 +33,8 @@ public @interface DeclareParents {
      * of interface members (equivalent to defining
      * a set of interface member ITDs for the
      * public methods of the interface).
+     * 
+     * @return define the default implementation of interface members (should always be specified)
      */
     Class defaultImpl() default DeclareParents.class;
 

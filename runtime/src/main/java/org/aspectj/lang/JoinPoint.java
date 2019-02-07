@@ -25,7 +25,7 @@ import org.aspectj.lang.reflect.SourceLocation;
  *
  * <pre>
  * aspect Logging {
- *     before(): within(com.bigboxco..*) && execution(public * *(..)) {
+ *     before(): within(com.bigboxco..*) &amp;&amp; execution(public * *(..)) {
  *         System.err.println("entering: " + thisJoinPoint);
  *         System.err.println("  w/args: " + thisJoinPoint.getArgs());
  *         System.err.println("      at: " + thisJoinPoint.getSourceLocation());
@@ -38,12 +38,12 @@ public interface JoinPoint {
     String toString();
 
     /**
-     * Returns an abbreviated string representation of the join point.
+     * @return an abbreviated string representation of the join point.
      */
     String toShortString();
 
     /**
-     * Returns an extended string representation of the join point.
+     * @return an extended string representation of the join point.
      */
     String toLongString();
 
@@ -56,46 +56,51 @@ public interface JoinPoint {
      *
      * <p> Returns null when there is no currently executing object available.
      * This includes all join points that occur in a static context.</p>
+     * 
+     * @return the currently executing object (or null if not available - e.g. static context)
      */
     Object getThis();
 
     /**
-     * <p> Returns the target object.  This will always be
+     * Returns the target object.  This will always be
      * the same object as that matched by the <code>target</code> pointcut
      * designator.  Unless you specifically need this reflective access,
      * you should use the <code>target</code> pointcut designator to
-     * get at this object for better static typing and performance.</p>
+     * get at this object for better static typing and performance.
      *
-     * <p> Returns null when there is no target object.</p>
-
+     * Returns null when there is no target object
+     * 
+     * @return the target object (or null if there isn't one)
      */
     Object getTarget();
 
     /**
-     * <p>Returns the arguments at this join point.</p>
+     * @return the arguments at this join point
      */
     Object[] getArgs();
 
-    /** Returns the signature at the join point.
-     *
+    /**
      * <code>getStaticPart().getSignature()</code> returns the same object
+     * @return the signature at the join point.
      */
     Signature getSignature();
 
-    /** <p>Returns the source location corresponding to the join point.</p>
+    /** 
      *
      *  <p>If there is no source location available, returns null.</p>
      *
      *  <p>Returns the SourceLocation of the defining class for default constructors.</p>
      *
      *  <p> <code>getStaticPart().getSourceLocation()</code> returns the same object. </p>
+     * 
+     * @return the source location corresponding to the join point.
      */
     SourceLocation getSourceLocation();
 
-    /** Returns a String representing the kind of join point.  This
-     *       String is guaranteed to be
-     *       interned. <code>getStaticPart().getKind()</code> returns
-     *       the same object.
+    /** This string is guaranteed to be interned.
+     * <code>getStaticPart().getKind()</code> returns the same object.
+     *       
+     * @return a string representing the kind of join point.
      */
     String getKind();
 
@@ -125,19 +130,19 @@ public interface JoinPoint {
      * @see JoinPoint#getStaticPart()
      */
     public interface StaticPart {
-        /** Returns the signature at the join point.  */
+        /** @return the signature at the join point.  */
         Signature getSignature();
 
-        /** <p>Returns the source location corresponding to the join point.</p>
+        /** Returns the source location corresponding to the join point.
         *
-        *  <p>If there is no source location available, returns null.</p>
+        *  If there is no source location available, returns null.
         *
-        *  <p>Returns the SourceLocation of the defining class for default constructors.</p>
+        *  @return the SourceLocation of the defining class for default constructors
         */
         SourceLocation getSourceLocation();
 
-        /** <p> Returns a String representing the kind of join point.  This String
-        *       is guaranteed to be interned</p>
+        /** @return a string representing the kind of join point.  This String
+        *       is guaranteed to be interned
         */
         String getKind();
         
@@ -165,12 +170,12 @@ public interface JoinPoint {
         String toString();
 
         /**
-        * Returns an abbreviated string representation of the join point
+        * @return an abbreviated string representation of the join point
         */
         String toShortString();
 
         /**
-        * Returns an extended string representation of the join point
+        * @return an extended string representation of the join point
         */
         String toLongString();
     }
@@ -178,7 +183,7 @@ public interface JoinPoint {
     public interface EnclosingStaticPart extends StaticPart {}
 
     /**
-     * Returns an object that encapsulates the static parts of this join point.
+     * @return an object that encapsulates the static parts of this join point.
      */
     StaticPart getStaticPart();
 

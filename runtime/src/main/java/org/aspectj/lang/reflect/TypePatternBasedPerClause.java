@@ -19,7 +19,7 @@ package org.aspectj.lang.reflect;
 public interface TypePatternBasedPerClause {
 
 	/**
-	 * Get the associated type pattern
+	 * @return the associated type pattern
 	 */
 	TypePattern getTypePattern();
 	

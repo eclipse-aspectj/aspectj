@@ -18,12 +18,12 @@ package org.aspectj.lang.reflect;
 public interface DeclarePrecedence {
 
 	/**
-	 * The declaring aspect
+	 * @return the declaring aspect
 	 */
 	AjType getDeclaringType();
 	
 	/**
-	 * Returns an ordered set of type patterns. An aspect matching
+	 * @return an ordered set of type patterns. An aspect matching
 	 * a type pattern at a lower index in the array takes precedence
 	 * over an aspect that only matches a type pattern at a higher
 	 * index in the array.
