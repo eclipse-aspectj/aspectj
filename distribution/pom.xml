@@ -63,6 +63,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -73,6 +74,8 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>aspectjrt-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 							<archive>
 								<manifestEntries>
 									<Automatic-Module-Name>org.aspectj.runtime</Automatic-Module-Name>
@@ -114,6 +117,8 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>aspectjweaver-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 							<archive>
 								<manifestEntries>
 									<Automatic-Module-Name>org.aspectj.weaver</Automatic-Module-Name>
@@ -159,6 +164,8 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>aspectjtools-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 							<archive>
 								<manifestEntries>
 									<Automatic-Module-Name>org.aspectj.tools</Automatic-Module-Name>
@@ -189,6 +196,26 @@
 
 							<descriptors>
 								<descriptor>aspectjtools-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>aspectjinstaller-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>aspectj-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifestEntries>
+								<Main-Class>$installer$.org.aspectj.Main</Main-Class>
+								</manifestEntries>
+							</archive>
+							<descriptors>
+								<descriptor>aspectjinstaller-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
