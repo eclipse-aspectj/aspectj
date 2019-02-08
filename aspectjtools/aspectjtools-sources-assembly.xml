@@ -1,0 +1,85 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+	<id>sources</id>
+
+	<formats>
+		<format>jar</format>
+	</formats>
+
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>../weaver/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../runtime/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../util/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../bridge/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../asm/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../org.aspectj.matcher/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../bcel-builder/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../loadtime/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<!-- 
+		<fileSet>
+			<directory>target/asm-unzipped</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		 -->
+		 
+		<!-- tools -->
+		<fileSet>
+			<directory>../ajbrowser/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../ajde/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../ajde.core/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../ajdoc/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../org.aspectj.ajdt.core/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../taskdefs/src/main/java</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>target/jdtcore-unzipped-src</directory>
+			<outputDirectory>.</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+</assembly>
+

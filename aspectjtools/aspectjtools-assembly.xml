@@ -1,0 +1,136 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+	<id>aspectjtools</id>
+	
+	<formats>
+		<format>jar</format>
+	</formats>
+
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<!-- runtime -->
+		<fileSet>
+			<directory>../runtime/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+
+		<!-- weaver -->
+		<fileSet>
+			<directory>../weaver/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../util/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../bridge/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../asm/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../org.aspectj.matcher/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../bcel-builder/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../loadtime/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>target/asm-unzipped</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+				<exclude>org/**</exclude>
+				<exclude>META-INF/MANIFEST.MF</exclude>
+			</excludes>
+		</fileSet>
+		
+		<!-- tools -->
+		<fileSet>
+			<directory>../ajbrowser/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ajde/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ajde.core/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ajdoc/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../org.aspectj.ajdt.core/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../taskdefs/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/maven/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>target/jdtcore-unzipped</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>META-INF/MANIFEST.MF</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+
+</assembly>
+
