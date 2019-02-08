@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectj-parent</artifactId>
+		<version>1.9.3.BUILD-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>aspectjrt</artifactId>
+	<packaging>pom</packaging>
+	<name>AspectJ Runtime</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>runtime</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<!-- skip creation of test-jar in here -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>test-jar</id>
+						<phase></phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>aspectjrt-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>aspectjrt-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifestEntries>
+									<Automatic-Module-Name>org.aspectj.runtime</Automatic-Module-Name>
+								</manifestEntries>
+
+								<manifestSections>
+									<manifestSection>
+										<name>org/aspectj/lang/</name>
+										<manifestEntries>
+
+											<Specification-Title>AspectJ Runtime Classes</Specification-Title>
+											<Specification-Version>${project.version}</Specification-Version>
+											<Specification-Vendor>https://www.eclipse.org/aspectj/</Specification-Vendor>
+
+											<Implementation-Title>org.aspectj.runtime</Implementation-Title>
+											<Implementation-Version>${project.version}</Implementation-Version>
+											<Implementation-Vendor>https://www.eclipse.org/aspectj/</Implementation-Vendor>
+
+											<Bundle-Name>AspectJ Runtime</Bundle-Name>
+											<Bundle-Version>${project.version}</Bundle-Version>
+											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation,
+												2002 Palo Alto Research Center, Incorporated (PARC),
+												2003-2019 Contributors. All Rights Reserved</Bundle-Copyright>
+										</manifestEntries>
+									</manifestSection>
+								</manifestSections>
+							</archive>
+
+							<descriptors>
+								<descriptor>aspectjrt-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>aspectjrt-src-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<classifier>sources</classifier>
+							<finalName>aspectjrt-${project.version}</finalName>
+							<archive>
+							</archive>
+							<descriptors>
+								<descriptor>aspectjrt-sources-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
