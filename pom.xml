@@ -1,90 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <revision>1.9.3.BUILD-SNAPSHOT</revision>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<revision>1.9.3.BUILD-SNAPSHOT</revision>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectj-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>1.9.3.BUILD-SNAPSHOT</version>
-    <name>AspectJ Parent Project</name>
+	<groupId>org.aspectj</groupId>
+	<artifactId>aspectj-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.9.3.BUILD-SNAPSHOT</version>
+	<name>AspectJ Parent Project</name>
 
-    <modules>
-	<module>util</module>
-	<module>bridge</module>
-	<module>testing-util</module>
-	<module>org.aspectj.matcher</module>
-	<module>asm</module>
-	<module>testing-client</module>
-	<module>runtime</module>
-        <module>bcel-builder</module>
-        <module>weaver</module>
-	<module>loadtime</module>
-	<module>org.eclipse.jdt.core</module>
-	<module>org.aspectj.ajdt.core</module>
-	<module>ajde.core</module>
-	<module>ajde</module>
-	<module>ajdoc</module>
-	<module>taskdefs</module>
-	<module>testing</module>
-	<module>testing-drivers</module>
-	<module>tests</module>
-	<module>build</module>
-	<module>run-all-junit-tests</module>
-    </modules>
+	<modules>
+		<module>util</module>
+		<module>bridge</module>
+		<module>testing-util</module>
+		<module>org.aspectj.matcher</module>
+		<module>asm</module>
+		<module>testing-client</module>
+		<module>runtime</module>
+		<module>bcel-builder</module>
+		<module>weaver</module>
+		<module>loadtime</module>
+		<module>org.eclipse.jdt.core</module>
+		<module>org.aspectj.ajdt.core</module>
+		<module>ajde.core</module>
+		<module>ajde</module>
+		<module>ajdoc</module>
+		<module>taskdefs</module>
+		<module>testing</module>
+		<module>testing-drivers</module>
+		<module>tests</module>
+		<module>build</module>
+		<module>run-all-junit-tests</module>
+		<module>docs</module>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <testFailureIgnore>true</testFailureIgnore>
-<excludes>
-<exclude>**/*ModuleTests.java</exclude>
-</excludes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    <plugins>
-     <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
-       <executions>
-         <execution>
-           <goals>
-             <goal>test-jar</goal>
-           </goals>
-         </execution>
-       </executions>
-     </plugin>
-    </plugins>
-  </build>
+		<!-- create the important artifacts we care about -->
+		<module>aspectjrt</module>
+		<module>aspectjweaver</module>
+		<module>aspectjtools</module>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<!-- build the java -jar'able installer -->
+		<module>installer</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<testFailureIgnore>true</testFailureIgnore>
+						<excludes>
+							<exclude>**/*ModuleTests.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+<id>test-jar</id>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> <version>3.1.1</version> 
+				<configuration> <descriptors> <descriptor>assembly.xml</descriptor> </descriptors> 
+				</configuration> </plugin> -->
+
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>.</directory>
+							<includes>
+<include>**/ajcore.*.txt</include> 
+
+								</includes> 
+<!--
+<excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude> 
+								</excludes> -->
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>aj-build</directory>
+							<!-- <includes> <include>**/*.tmp</include> <include>**/*.log</include> 
+								</includes> <excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude> 
+								</excludes> -->
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 </project>

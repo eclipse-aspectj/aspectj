@@ -1,0 +1,49 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+	<id>aspectjinstaller</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>../build/target/classes</directory>
+			<outputDirectory>.</outputDirectory>
+			<excludes>
+				<exclude>org/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../aj-build/dist/docs</directory>
+			<outputDirectory>files</outputDirectory>
+		</fileSet>
+		
+		<fileSet>
+			<directory>../runtime/target/site/apidocs</directory>
+			<outputDirectory>files/doc/runtime-apidocs</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+	<files>
+		<file>
+			<source>../aspectjrt/target/aspectjrt-${project.version}.jar</source>
+			<outputDirectory>files/lib</outputDirectory>
+			<destName>aspectjrt.jar</destName>
+		</file>
+		<file>
+			<source>../aspectjweaver/target/aspectjweaver-${project.version}.jar</source>
+			<outputDirectory>files/lib</outputDirectory>
+			<destName>aspectjweaver.jar</destName>
+		</file>
+		<file>
+			<source>../aspectjtools/target/aspectjtools-${project.version}.jar</source>
+			<outputDirectory>files/lib</outputDirectory>
+			<destName>aspectjtools.jar</destName>
+		</file>
+	</files>
+
+</assembly>
+

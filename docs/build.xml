@@ -56,7 +56,7 @@
         <!-- must specify (not *.gif) to not delete other gifs during build-in-place -->
         <!-- to find refs: gp ax imagedata | sed -n 's|.*\=\"\(..*\)\".*|\1|p' -->
         <property name="devguide.icons.dir"
-                  location="${aspectj.modules.dir}/ajde/src/org/aspectj/ajde/resources/actions"
+                  location="${aspectj.modules.dir}/ajde/src/main/resources/org/aspectj/ajde/resources/actions"
         />
         <property name="include.devguide.icons"
                   value="build.gif,openConfig.gif,browseroptions.gif"
@@ -203,9 +203,12 @@
     </target>
 
     <target name="do-local-dist"
-            depends="init,init-filters,api,faq,devguide,progguide, adk15guide, pdguide"
+            depends="init,init-filters,faq,devguide,progguide, adk15guide, pdguide"
             description="finish products by copying dist files and library sources"
     >
+<!--
+            depends="init,init-filters,api,faq,devguide,progguide, adk15guide, pdguide"
+-->
 
         <copy todir="${docs.dist.dir}" filtering="on">
             <fileset dir="${docs.src.dir}/dist"

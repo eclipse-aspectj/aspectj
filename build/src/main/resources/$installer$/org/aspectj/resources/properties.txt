@@ -1,0 +1,7 @@
+installer.main.class: $installer$.org.aspectj.ToolsInstaller
+installer.basedir: aspectj${build.version.majorminor}
+build.version.long: ${project.version}
+build.version.short: ${project.version}
+build.date: ${build.date}
+build.time: ${build.time}
+copyright.allRights.from1998: Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-${build.year} Contributors.  All rights reserved.

@@ -1,7 +1,0 @@
-installer.main.class: @installer.main.class@
-installer.basedir: aspectj@build.version.majorminor@
-build.version.long: @build.version.long@
-build.version.short: @build.version.short@
-build.date: @build.date@
-build.time: @build.time@
-copyright.allRights.from1998: @copyright.allRights.from1998@

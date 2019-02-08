@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 import junit.framework.TestCase;
 
@@ -53,6 +54,10 @@ public class JRockitAgentTest extends TestCase {
 	}
 
 	public void testJrockitRecursionProtection() {
+		if (LangUtil.is11VMOrGreater()) {
+			// Skip test, not castable to URLClassLoader
+			return;
+		}
 		URLClassLoader thisLoader = (URLClassLoader) getClass().getClassLoader();
 		URL jrockit = FileUtil.getFileURL(new File("../lib/ext/jrockit/jrockit.jar"));
 		URL[] urls = new URL[] {jrockit};

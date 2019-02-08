@@ -1,33 +1,125 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectj-parent</artifactId>
-    <version>1.9.3.BUILD-SNAPSHOT</version>
-    <relativePath>..</relativePath>
-  </parent>
+	<parent>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectj-parent</artifactId>
+		<version>1.9.3.BUILD-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 
-  <artifactId>build</artifactId>
-  <packaging>jar</packaging>
-  <name>build</name>
+	<artifactId>build</artifactId>
+	<packaging>jar</packaging>
+	<name>build</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>testing-util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-    <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
-    </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.9.1</version>
+				<executions>
+					<execution>
+						<id>build.date</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<name>build.date</name>
+							<pattern>E MMM d, YYYY</pattern>
+							<timeZone>Europe/Zurich</timeZone>
+							<!-- build.date: Monday Feb 4, 2019 -->
+							<timeZone>America/Los_Angeles</timeZone>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build.time</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<name>build.time</name>
+							<pattern>E MMM d, YYYY 'at' HH:MM:SS z</pattern>
+							<timeZone>America/Los_Angeles</timeZone>
+							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
+						</configuration>
+					</execution>
+					<execution>
+						<id>year</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<name>build.year</name>
+							<pattern>YYYY</pattern>
+							<timeZone>America/Los_Angeles</timeZone>
+							<!-- year: 2019 -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.9.1,)
+										</versionRange>
+										<goals>
+											<goal>
+												timestamp-property
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 </project>

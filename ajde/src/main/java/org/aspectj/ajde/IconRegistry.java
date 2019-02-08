@@ -14,6 +14,8 @@
 
 package org.aspectj.ajde;
 
+import java.net.URL;
+
 import javax.swing.*;
 
 import org.aspectj.ajde.ui.*;
@@ -149,10 +151,16 @@ public class IconRegistry extends AbstractIconRegistry {
 	}
 
 	protected AbstractIcon createIcon(String path) {
-		return new AbstractIcon(new ImageIcon(ClassLoader.getSystemResource(path)));		
+		URL resource = IconRegistry.class.getClassLoader().getResource(path);
+		if (resource == null) {
+			throw new IllegalStateException("Unable to find icon resource: "+path);
+		}
+		return new AbstractIcon(new ImageIcon(resource));		
+//		return new AbstractIcon(new ImageIcon(ClassLoader.getSystemResource(path)));		
 	}
 
     protected Icon makeIcon(String iconPath) {
-        return new ImageIcon(ClassLoader.getSystemResource(RESOURCE_PATH + iconPath));
+      return new ImageIcon(IconRegistry.class.getClassLoader().getResource(RESOURCE_PATH + iconPath));
+//        return new ImageIcon(ClassLoader.getSystemResource(RESOURCE_PATH + iconPath));
     }
 }
