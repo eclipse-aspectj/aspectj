@@ -146,7 +146,7 @@ public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(SanityTests19.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("sanity-tests-19.xml");
 	}
 

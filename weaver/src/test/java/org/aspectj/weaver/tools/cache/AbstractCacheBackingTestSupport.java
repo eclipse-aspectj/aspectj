@@ -98,9 +98,19 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
     protected File detectTargetFolder () throws IllegalStateException {
     	synchronized(TEMP_SUBFOLDER_NAME) {
     		if (targetFolder == null) {
-    			if ((targetFolder=detectTargetFolder(getClass())) == null) {
-    				throw new IllegalStateException("Failed to detect target folder");
-    			}
+			try {
+				File targetFolder = File.createTempFile("ajc", "TmpCacheDir");
+				targetFolder.delete();
+				targetFolder.mkdirs();
+			} catch (IOException e) {
+				throw new IllegalStateException("Unable to create cache dir",e);
+			}
+
+			
+//    			if ((targetFolder=detectTargetFolder(getClass())) == null) {
+//    				
+////    				throw new IllegalStateException("Failed to detect target folder");
+//    			}
     		}
     	}
 

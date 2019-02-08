@@ -15,7 +15,7 @@ public class RuntimeAnnotations extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(RuntimeAnnotations.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc150.xml");
 	}
 

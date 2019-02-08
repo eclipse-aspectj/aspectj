@@ -19,7 +19,7 @@ public class OptionsTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(OptionsTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("options.xml");
   }
 

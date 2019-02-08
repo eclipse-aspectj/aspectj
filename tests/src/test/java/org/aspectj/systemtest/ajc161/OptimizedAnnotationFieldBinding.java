@@ -66,7 +66,7 @@ public class OptimizedAnnotationFieldBinding extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(OptimizedAnnotationFieldBinding.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 	    return getClassResource("annotationFieldBinding.xml");
 	}
 }

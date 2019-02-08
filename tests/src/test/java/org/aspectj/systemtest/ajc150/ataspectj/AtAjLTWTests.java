@@ -12,6 +12,7 @@
 package org.aspectj.systemtest.ajc150.ataspectj;
 
 import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -27,7 +28,7 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
     return getClassResource("ltw.xml");
 	}
 

@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -26,7 +27,7 @@ public class AnnotationPointcutsTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(AnnotationPointcutsTests.class);
 	  }
 
-	  protected File getSpecFile() {
+	  protected URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
 	  

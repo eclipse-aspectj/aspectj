@@ -58,7 +58,7 @@ public class AptTests extends XMLBasedAjcTestCase {
   }
 
   @Override
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("apt-spec.xml");
   }
 

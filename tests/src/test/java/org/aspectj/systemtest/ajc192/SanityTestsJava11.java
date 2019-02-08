@@ -92,7 +92,7 @@ public class SanityTestsJava11 extends XMLBasedAjcTestCaseForJava11OrLater {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("sanity-tests-11.xml");
 	}
 

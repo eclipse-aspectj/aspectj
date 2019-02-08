@@ -1,6 +1,7 @@
 package org.aspectj.systemtest.ajc150.ataspectj.coverage;
 
 import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 import junit.framework.TestResult;
@@ -35,9 +36,10 @@ public class CoverageTests extends
                 .loadSuite(CoverageTests.class);
     }
 
-    protected File getSpecFile() {
-        return new File(
-                "../tests/src/org/aspectj/systemtest/ajc150/ataspectj/coverage/coverage.xml");
+    protected URL getSpecFile() {
+    	return getClassResource("coverage.xml");
+//        return new File(
+//                "../tests/src/org/aspectj/systemtest/ajc150/ataspectj/coverage/coverage.xml");
     }
 
 }

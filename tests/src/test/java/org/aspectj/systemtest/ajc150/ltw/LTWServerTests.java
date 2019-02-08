@@ -12,7 +12,7 @@ public class LTWServerTests extends XMLBasedAjcTestCase {
 		return loadSuite(LTWServerTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("ltw.xml");
 	}
     

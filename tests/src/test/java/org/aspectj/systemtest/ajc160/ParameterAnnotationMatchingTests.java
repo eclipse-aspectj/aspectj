@@ -92,7 +92,7 @@ public class ParameterAnnotationMatchingTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(ParameterAnnotationMatchingTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 	    return getClassResource("parameterAnnotations.xml");
 	}
 }

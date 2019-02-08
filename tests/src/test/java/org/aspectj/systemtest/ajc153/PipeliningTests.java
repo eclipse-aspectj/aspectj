@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc153;
 
 import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -83,7 +84,7 @@ public class PipeliningTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(PipeliningTests.class);
   }
-  protected File getSpecFile() {
+  protected URL getSpecFile() {
     return getClassResource("pipelining.xml");
   }
 }

@@ -36,7 +36,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc150.xml");
 	}
 

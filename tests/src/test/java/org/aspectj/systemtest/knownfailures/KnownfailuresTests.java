@@ -24,8 +24,9 @@ public class KnownfailuresTests extends org.aspectj.testing.XMLBasedAjcTestCase 
    return XMLBasedAjcTestCase.loadSuite(KnownfailuresTests.class);
  }
 
- protected File getSpecFile() {
-   return new File("../tests/src/org/aspectj/systemtest/knownfailures/knownfailures.xml");
+ protected java.net.URL getSpecFile() {
+	 return getClassResource("knownFailures.xml");
+//   return new File("../tests/src/org/aspectj/systemtest/knownfailures/knownfailures.xml").toURI().toURL();
  }
 
 

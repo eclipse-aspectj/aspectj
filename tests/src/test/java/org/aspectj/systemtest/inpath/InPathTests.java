@@ -19,7 +19,7 @@ public class InPathTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(InPathTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("inpath.xml");
   }
 

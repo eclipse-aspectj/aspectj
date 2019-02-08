@@ -1,10 +1,413 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[
-<!ENTITY tests SYSTEM "../tests/src/org/aspectj/systemtest/incremental/incremental-junit-tests.xml">
-]>
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 <!-- Incremental compilation Tests -->
-
 <suite>
 
-&tests;	
+     <ajc-test dir="incrementalju/initialTests/classAdded" 
+    	title="expect class added in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="src"/>
+        <run class="main.Main"/>
+        <!--
+        <inc-compile tag="20" >
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"  skipTester="true"/>
+        -->
+    </ajc-test>
+
+    <ajc-test dir="incrementalju/initialTests/classRemoved" 
+    	title="expect class removed in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="main.Main"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"/>
+        -->
+    </ajc-test>
+
+    <ajc-test dir="incrementalju/initialTests/classUpdated" 
+    	title="expect class updated in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="src"/>
+        <run class="main.Main"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+        -->
+    </ajc-test>
+
+     <ajc-test dir="incrementalju/initialTests/sourceAdded" 
+    	title="add file with class"
+    	comment="only expecting pickup if sourceroots"    
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="src"/>
+        <run class="main.Main"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <inc-compile tag="30">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+        -->
+    </ajc-test>
+
+    <ajc-test dir="incrementalju/initialTests/sourceDeleted" 
+        title="delete source file before incremental compile"
+        comment="build config should permit file deletions for incremental (sourceroots)"
+        keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="src"/>
+        <run class="delete.Main"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="delete.DeleteMe"/>
+        	<message kind="error" line="6" file="delete/Target.java"/>
+        </inc-compile>
+        <inc-compile tag="30"/> 
+        <run class="delete.Main"/>
+        -->
+    </ajc-test>
+    
+    <ajc-test dir="incrementalju/initialTests/defaultPackage" 
+    	title="do everything in default package (sourceroots)" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="src"/>
+        <run class="Main"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Target"/>
+        </inc-compile>
+        <run class="Target" skipTester="true"/>
+        <inc-compile tag="30">
+            <dir-changes updated="Main"/>
+        </inc-compile>
+        <run class="Main" skipTester="true"/>
+        <inc-compile tag="40"> 
+			<message kind="error" line="6" file="Main.java"/>
+        </inc-compile>
+        <inc-compile tag="50"/>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+  <ajc-test dir="incrementalju/defaultPackage"
+    keywords="incremental-test"
+   	title="change sources in default package">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="Main"/>
+        <!--
+        <inc-compile tag="20"/>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+   <ajc-test dir="incrementalju/interPackage"
+    keywords="incremental-test"
+   	title="change source">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="app.Main"/>
+        <!--
+        <inc-compile tag="20"/>
+        <run class="app.Main"/>
+        -->
+    </ajc-test>
+
+     <ajc-test dir="incrementalju/stringliteral"
+    	keywords="incremental-test"
+		title="incrementally change only string literal, still expect advice">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),before main packageOne.Main"/>
+        <!--
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        -->
+    </ajc-test>
+
+	<ajc-test dir="incrementalju/initialTests/aspectSourceAdded" 
+    	title="add aspect source file and check world is rewoven"
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="src"/>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Detour"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+    
+    <ajc-test dir="incrementalju/initialTests/classWAroundClosureRemoved"
+      title="make sure additional classes generated during weave are deleted with src class file"
+      keywords="incremental-test">
+      <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="src"/>
+        <!--
+        <inc-compile tag="20" >
+            <dir-changes removed="AdviceOnIntroduced$AjcClosure1"/>
+        </inc-compile>
+        -->
+    </ajc-test>
+
+  <ajc-test dir="incrementalju/full-rebuild"
+    	pr="59895"
+		title="incremental with aspect-driven full rebuild">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental">
+        	<message kind="error" line="3" file="Aspect.java"/>
+        	</compile>
+        <!--
+        <inc-compile tag="20">
+        	<message kind="warning" line="3" file="Main.java"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+	
+	 <ajc-test dir="incrementalju/resourceTests/resourceAdded"
+    	pr="54622"
+		title="incremental with addition of resource to inpath directory">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	 <ajc-test dir="incrementalju/resourceTests/resourceAdded"
+    	pr="54622"
+		title="incremental with addition of resource to inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="AResourceFile.txt"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/resourceTests/resourceRemoved"
+    	pr="54622"
+		title="incremental with removal of resource from inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="AResourceFile.txt"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	 <ajc-test dir="incrementalju/injarTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/injarTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from inpath jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+   <ajc-test dir="incrementalju/injarTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to injar jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental,-injars,MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/injarTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from injar jar">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental,-injars,MyJar.jar"
+			inpath="MyJar.jar">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+
+	 <ajc-test dir="incrementalju/inpathDirTests/classAdded"
+    	pr="54621"
+		title="incremental with addition of class to inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes added="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+
+	<ajc-test dir="incrementalju/inpathDirTests/classRemoved"
+    	pr="54621"
+		title="incremental with removal of class from inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+            <dir-changes removed="Hello2"/>
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+
+	 <ajc-test dir="incrementalju/inpathDirTests/classUpdated"
+    	pr="54621"
+		title="incremental with update of class in inpath dir">
+        <compile 
+			staging="true" 
+			sourceroots="src"
+			options="-incremental"
+			inpath="indir">
+       	</compile>
+        <!--
+        <inc-compile tag="20">
+        </inc-compile>
+        <run class="Main"/>
+        -->
+    </ajc-test>
+    
+    <ajc-test dir="incremental/structureModel"
+      pr="90806"
+      keywords="incremental-test"
+   	  title="NPE in genHandleIdentifier">
+        <compile staging="true"	options="-incremental,-verbose,-emacssym,-1.4" sourceroots="src"/>
+        <!--inc-compile tag="20"/-->
+    </ajc-test>
+    	 
+   <ajc-test dir="bugs/incremental-declare-error" pr="84033"
+   	 title="incremental declare error persists after fix">
+        <compile staging="true" 
+        	options="-incremental,-verbose"
+        	sourceroots="src">
+			<message kind="error" line="6" text="main"/>
+		</compile>
+        <!--inc-compile tag="20"/-->
+        <!--run class="pack.Main"/-->
+    </ajc-test>
+
+   <ajc-test dir="bugs153/pr154054" pr="154054"
+   	 title="incremental update of body in around advice">
+        <compile staging="true" 
+        	options="-incremental,-verbose"
+        	sourceroots="src"/>
+        <!--inc-compile tag="20"/-->
+        <!--run class="MyClass"/-->
+    </ajc-test>
+
+   <ajc-test dir="bugs153/pr154054_2" pr="154054"
+   	 title="incremental update of body in around advice with string">
+        <compile staging="true" 
+        	options="-incremental,-verbose"
+        	sourceroots="src"/>
+        <!--inc-compile tag="30"/-->
+        <!--run class="MyClass"/-->
+    </ajc-test>
+	
 
 </suite>

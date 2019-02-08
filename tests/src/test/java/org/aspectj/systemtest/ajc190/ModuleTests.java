@@ -172,7 +172,7 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc190.xml");
 	}
 

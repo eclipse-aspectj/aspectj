@@ -19,7 +19,7 @@ public class DesignTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(DesignTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("design.xml");
   }
 

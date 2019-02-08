@@ -145,7 +145,7 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return getClassFrom(ajc.getSandboxDirectory(), className);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("newfeatures-tests.xml");
 	}
 

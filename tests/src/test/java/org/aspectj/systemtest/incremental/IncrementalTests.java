@@ -24,14 +24,10 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(IncrementalTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("incremental.xml");
   }
 
-
-    /* (non-Javadoc)
-	 * @see org.aspectj.testing.XMLBasedAjcTestCase#setUp()
-	 */
 	protected void setUp() throws Exception {
 		super.setUp();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;

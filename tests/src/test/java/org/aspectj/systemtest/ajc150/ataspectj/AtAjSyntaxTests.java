@@ -28,7 +28,7 @@ public class AtAjSyntaxTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(AtAjSyntaxTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("syntax.xml");
 	}
 

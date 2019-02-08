@@ -129,7 +129,7 @@ public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("newarray_joinpoint.xml");
 	}
 

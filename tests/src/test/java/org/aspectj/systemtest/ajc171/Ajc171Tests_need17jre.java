@@ -36,8 +36,9 @@ public class Ajc171Tests_need17jre extends org.aspectj.testing.XMLBasedAjcTestCa
 	}
 
 	@Override
-	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc171/ajc171.xml");
+	protected java.net.URL getSpecFile() {
+		return getClassResource("ajc171.xml");
+//		return new File("../tests/src/org/aspectj/systemtest/ajc171/ajc171.xml");
 	}
 
 }

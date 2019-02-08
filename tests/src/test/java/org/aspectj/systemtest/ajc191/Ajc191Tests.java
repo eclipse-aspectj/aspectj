@@ -41,7 +41,7 @@ public class Ajc191Tests extends XMLBasedAjcTestCaseForJava10OrLater {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
         return getClassResource("ajc191.xml");
 	}
 

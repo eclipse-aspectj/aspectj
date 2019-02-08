@@ -22,7 +22,7 @@ public class SuppressedWarnings extends XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(SuppressedWarnings.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("ajc150.xml");
   }
   

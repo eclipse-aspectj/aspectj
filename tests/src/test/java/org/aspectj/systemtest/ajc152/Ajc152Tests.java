@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import junit.framework.Test;
@@ -377,7 +378,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc152Tests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
 		return getClassResource("ajc152.xml");
 	}
 

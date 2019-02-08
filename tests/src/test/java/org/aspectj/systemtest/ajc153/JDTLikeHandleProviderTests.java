@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc153;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -546,7 +547,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(JDTLikeHandleProviderTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
 		return getClassResource("jdtlikehandleprovider.xml");
 	}
 

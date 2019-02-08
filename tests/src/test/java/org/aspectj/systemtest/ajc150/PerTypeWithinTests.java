@@ -25,7 +25,7 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(PerTypeWithinTests.class);
 	  }
 
-	  protected File getSpecFile() {
+	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
   

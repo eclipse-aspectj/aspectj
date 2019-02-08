@@ -26,7 +26,7 @@ public class Autoboxing extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(Autoboxing.class);
 	  }
 
-	  protected File getSpecFile() {
+	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
 	

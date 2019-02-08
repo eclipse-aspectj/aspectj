@@ -23,7 +23,7 @@ public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCa
 		return XMLBasedAjcTestCase.loadSuite(IncrementalModelTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("incremental-model.xml");
 	}
 

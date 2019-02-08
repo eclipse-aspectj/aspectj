@@ -86,7 +86,7 @@ public class Model5Tests extends ModelTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Model5Tests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("model.xml");
 	}
 

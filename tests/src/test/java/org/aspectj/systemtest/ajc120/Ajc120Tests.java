@@ -19,7 +19,7 @@ public class Ajc120Tests extends XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(Ajc120Tests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("ajc120.xml");
   }
 

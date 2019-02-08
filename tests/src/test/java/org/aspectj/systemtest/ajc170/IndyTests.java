@@ -49,8 +49,9 @@ public class IndyTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc170/indy.xml");
+	protected java.net.URL getSpecFile() {
+		return getClassResource("indy.xml");
+//		return new File("../tests/src/org/aspectj/systemtest/ajc170/indy.xml");
 	}
 
 }

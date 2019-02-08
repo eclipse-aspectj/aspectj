@@ -207,7 +207,7 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("intertype.xml");
 	}
 

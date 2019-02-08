@@ -59,7 +59,8 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
             System.out.println("LOADING SUITE: " + wired.getSpecFile().getPath());
             Digester d = wired.getDigester();
             try {
-                InputStreamReader isr = new InputStreamReader(new FileInputStream(wired.getSpecFile()));
+            	InputStreamReader isr = new InputStreamReader(wired.getSpecFile().openStream());
+//                InputStreamReader isr = new InputStreamReader(new FileInputStream(wired.getSpecFile()));
                 d.parse(isr);
             } catch (Exception ex) {
                 fail("Unable to load suite " + wired.getSpecFile().getPath() + " : " + ex);

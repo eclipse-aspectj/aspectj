@@ -49,7 +49,7 @@ public class AnnotationValueMatchingTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(AnnotationValueMatchingTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 	    return getClassResource("annotationValueMatching.xml");
 	}
 }

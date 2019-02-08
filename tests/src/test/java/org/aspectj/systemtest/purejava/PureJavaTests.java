@@ -19,8 +19,9 @@ public class PureJavaTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(PureJavaTests.class);
   }
 
-  protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/pureJava/pureJava.xml");
+  protected java.net.URL getSpecFile() {
+	  return getClassResource("pureJava.xml");
+//    return new File("../tests/src/org/aspectj/systemtest/pureJava/pureJava.xml");
   }
 
 

@@ -21,7 +21,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class AtAjMisuseTests extends XMLBasedAjcTestCase {
 
-    protected File getSpecFile() {
+    protected java.net.URL getSpecFile() {
         return getClassResource("misuse.xml");
     }
 

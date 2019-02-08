@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc152;
 
 import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -254,7 +255,7 @@ public class SynchronizationTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(SynchronizationTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
 		return getClassResource("synchronization.xml");
 	}
 

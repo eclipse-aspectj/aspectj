@@ -39,9 +39,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -1478,17 +1482,37 @@ class CurrentJarUnpacker {
 		writeStream(getClass().getResourceAsStream("/" + name), outputFile);
 	}
 
+	public void writeResource(JarFile jarFile, JarEntry entry, File outputDir) throws IOException {
+		String name = entry.getName().substring(6);
+		File outputFile = makeOutputFile(name, outputDir);
+		//System.out.println("finding name: " + name);
+//		writeStream(getClass().getResourceAsStream("/" + name), outputFile);
+		writeStream(jarFile.getInputStream(entry), outputFile);
+	}
+
 	public void unpack(String contentsName, File outputDir) throws IOException {
 		URL url = getClass().getResource(contentsName);
-		InputStream stream = url.openStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
-
-		String line = reader.readLine();
-		installPane.nBytes = Integer.parseInt(line);
-
-		while ((line = reader.readLine()) != null) {
-			writeResource(line, outputDir);
+		
+		// Process everything under 'files/**' copying to the target
+		// install directory with 'files/' removed
+		JarURLConnection juc = (JarURLConnection) url.openConnection();
+		JarFile jf = juc.getJarFile();
+		Enumeration<JarEntry> entries = jf.entries();
+		while (entries.hasMoreElements()) {
+			JarEntry je = entries.nextElement();
+			if (je.getName().startsWith("files/") && !je.getName().endsWith("/")) {
+				writeResource(jf, je, outputDir);
+			}
 		}
+		
+//		InputStream stream = url.openStream();
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
+//		String line = reader.readLine();
+//		installPane.nBytes = Integer.parseInt(line);
+//
+//		while ((line = reader.readLine()) != null) {
+//			writeResource(line, outputDir);
+//		}
 
 		installPane.progressMessage("done writing");
 	}

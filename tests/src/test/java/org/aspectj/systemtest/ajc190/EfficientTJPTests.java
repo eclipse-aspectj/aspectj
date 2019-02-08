@@ -101,7 +101,7 @@ public class EfficientTJPTests extends XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("features190.xml");
 	}
 	

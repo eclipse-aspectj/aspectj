@@ -14,6 +14,7 @@ package org.aspectj.testing.taskdefs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.aspectj.bridge.*;
 import org.aspectj.bridge.MessageHandler;
@@ -138,7 +139,8 @@ public class AjcTaskCompileCommandTest extends TestCase {
         final boolean pass = (result == expectPass);
         if (!pass) {
             String m = expectPass ? "pass" : "fail";
-            assertTrue("expected " + m + ": " + args, false);
+        
+            assertTrue("expected " + m + ": " + args+"\n Messages:"+handler.getUnmodifiableListView(), false);
         }
     }
 

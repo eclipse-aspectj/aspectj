@@ -150,7 +150,7 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(DeclareMixinTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("declareMixin.xml");
 	}
 

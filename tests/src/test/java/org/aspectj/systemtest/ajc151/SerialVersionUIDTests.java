@@ -30,7 +30,7 @@ public class SerialVersionUIDTests extends XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(SerialVersionUIDTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("serialversionuid.xml");
   }
 	

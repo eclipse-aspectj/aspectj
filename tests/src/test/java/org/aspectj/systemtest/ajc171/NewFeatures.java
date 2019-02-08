@@ -66,8 +66,9 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	@Override
-	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc171/newfeatures-tests.xml");
+	protected java.net.URL getSpecFile() {
+		return getClassResource("newfeatures-tests.xml");
+//		return new File("../tests/src/org/aspectj/systemtest/ajc171/newfeatures-tests.xml");
 	}
 
 }

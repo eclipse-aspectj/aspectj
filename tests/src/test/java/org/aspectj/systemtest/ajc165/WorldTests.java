@@ -37,8 +37,9 @@ public class WorldTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(WorldTests.class);
 	}
 
-	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc165/world.xml");
+	protected java.net.URL getSpecFile() {
+		return getClassResource("world.xml");
+//		return new File("../tests/src/org/aspectj/systemtest/ajc165/world.xml");
 	}
 
 }

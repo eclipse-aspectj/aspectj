@@ -19,8 +19,9 @@ public class KnownLimitationsTests extends org.aspectj.testing.XMLBasedAjcTestCa
     return XMLBasedAjcTestCase.loadSuite(KnownLimitationsTests.class);
   }
 
-  protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/knownlimitations/knownlimitations.xml");
+  protected java.net.URL getSpecFile() {
+	  return getClassResource("knownlimitations.xml");
+//    return new File("../tests/src/org/aspectj/systemtest/knownlimitations/knownlimitations.xml");
   }
 
 

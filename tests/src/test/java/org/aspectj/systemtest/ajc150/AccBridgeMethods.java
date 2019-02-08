@@ -48,7 +48,7 @@ public class AccBridgeMethods extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(AccBridgeMethods.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("ajc150.xml");
   }
 

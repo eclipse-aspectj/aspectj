@@ -16,6 +16,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
 import org.aspectj.ajde.core.IOutputLocationManager;
@@ -67,12 +68,13 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 			sb.append(File.pathSeparator + dir.getAbsolutePath());
 		}
 		String cp = sb.toString() + File.pathSeparator + new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator
-				+ System.getProperty("sun.boot.class.path") + File.pathSeparator + "../runtime/bin" + File.pathSeparator
+				+ System.getProperty("sun.boot.class.path") + File.pathSeparator + "../runtime/target/classes" + File.pathSeparator
 				+ this.classPath + File.pathSeparator + System.getProperty("aspectjrt.path") + File.pathSeparator
 				+ "../lib/junit/junit.jar" + "c:/batik/batik-1.6/lib/batik-util.jar;"
 				+ "c:/batik/batik-1.6/lib/batik-awt-util.jar;" + "c:/batik/batik-1.6/lib/batik-dom.jar;"
 				+ "c:/batik/batik-1.6/lib/batik-svggen.jar;" + File.pathSeparator + ".." + File.separator + "lib" + File.separator
 				+ "test" + File.separator + "aspectjrt.jar";
+		verifyClasspath(cp);
 		if (LangUtil.is19VMOrGreater()) {
 			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
 		}
@@ -85,6 +87,14 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		}
 		// System.err.println("For project "+projectPath+" getClasspath() returning "+cp);
 		return cp;
+	}
+
+	public static void verifyClasspath(String cp) {
+		StringTokenizer st = new StringTokenizer(cp,File.pathSeparator);
+		while (st.hasMoreElements()) {
+			String cpElement = st.nextToken();
+			System.out.println("Checking: "+cpElement+" exists? "+new File(cpElement).exists());
+		}
 	}
 
 	public Set<File> getInpath() {

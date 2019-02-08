@@ -25,8 +25,9 @@ public class BringUpTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(BringUpTests.class);
   }
 
-  protected File getSpecFile() {
-    return new File("../tests/src/org/aspectj/systemtest/bringup/bringup.xml");
+  protected java.net.URL getSpecFile() {
+	  return getClassResource("bringup.xml");
+//    return new File("../tests/src/org/aspectj/systemtest/bringup/bringup.xml");
   }
 
   public void testEmptyClass() {

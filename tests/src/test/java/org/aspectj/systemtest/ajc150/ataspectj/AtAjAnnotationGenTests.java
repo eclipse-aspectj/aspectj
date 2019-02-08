@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -27,7 +27,7 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(AtAjAnnotationGenTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
 	  return getClassResource("annotationgen.xml");
 	}
 	

@@ -9,7 +9,7 @@
  * ******************************************************************/
 package org.aspectj.systemtest.ajc121;
 
-import java.io.File;
+import java.net.URL;
 
 import junit.framework.Test;
 
@@ -21,7 +21,7 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(Ajc121Tests.class);
   }
 
-  protected File getSpecFile() {
+  protected URL getSpecFile() {
     return getClassResource("ajc121.xml");
   }
 

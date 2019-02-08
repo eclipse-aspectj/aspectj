@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -100,7 +101,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	/**
 	 * The file containing the XML specification for the tests.
 	 */
-	protected abstract File getSpecFile();
+	protected abstract URL getSpecFile();
 
 	/*
 	 * Return a map from (String) test title -> AjcTest
@@ -272,7 +273,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 			System.out.println("LOADING SUITE: " + getSpecFile().getPath());
 			Digester d = getDigester();
 			try {
-				InputStreamReader isr = new InputStreamReader(new FileInputStream(getSpecFile()));
+				InputStreamReader isr = new InputStreamReader(getSpecFile().openConnection().getInputStream());
 				d.parse(isr);
 			} catch (Exception ex) {
 				fail("Unable to load suite " + getSpecFile().getPath() + " : " + ex);
@@ -486,8 +487,8 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		return null;
 	}
 
-  protected File getClassResource(String resourceName) {
-    return new File(getClass().getResource(resourceName).getFile());
+  protected URL getClassResource(String resourceName) {
+    return getClass().getResource(resourceName);
   }
 
 	protected Method findMethod(JavaClass jc, String string) {

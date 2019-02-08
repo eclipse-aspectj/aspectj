@@ -62,7 +62,7 @@ public class CovarianceTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(CovarianceTests.class);
 	  }
 
-	  protected File getSpecFile() {
+	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
 	private boolean verbose = false;

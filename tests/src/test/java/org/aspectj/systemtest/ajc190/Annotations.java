@@ -27,7 +27,7 @@ public class Annotations extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Annotations.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
         return getClassResource("ajc190_from150.xml");
 	}
 

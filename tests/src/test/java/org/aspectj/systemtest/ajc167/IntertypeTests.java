@@ -70,8 +70,9 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(IntertypeTests.class);
 	}
 
-	protected File getSpecFile() {
-		return new File("../tests/src/org/aspectj/systemtest/ajc167/intertype.xml");
+	protected java.net.URL getSpecFile() {
+		return getClassResource("intertype.xml");
+//		return new File("../tests/src/org/aspectj/systemtest/ajc167/intertype.xml");
 	}
 
 }

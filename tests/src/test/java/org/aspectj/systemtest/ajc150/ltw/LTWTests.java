@@ -26,7 +26,7 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(LTWTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
 	    return getClassResource("ltw.xml");
   }
   

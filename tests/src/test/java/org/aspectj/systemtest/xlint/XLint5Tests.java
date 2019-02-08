@@ -22,7 +22,7 @@ public class XLint5Tests  extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(XLint5Tests.class);
 	}
 
-	protected File getSpecFile() {
+	protected java.net.URL getSpecFile() {
 		return getClassResource("xlint.xml");
 	}
 	  

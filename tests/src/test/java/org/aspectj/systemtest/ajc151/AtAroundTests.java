@@ -82,7 +82,7 @@ public class AtAroundTests extends XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(AtAroundTests.class);
   }
 
-  protected File getSpecFile() {
+  protected java.net.URL getSpecFile() {
     return getClassResource("ataround.xml");
   }
 	

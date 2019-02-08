@@ -26,7 +26,7 @@ public class MigrationTests extends XMLBasedAjcTestCase {
 	    return XMLBasedAjcTestCase.loadSuite(MigrationTests.class);
 	  }
 
-	  protected File getSpecFile() {
+	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
   /**

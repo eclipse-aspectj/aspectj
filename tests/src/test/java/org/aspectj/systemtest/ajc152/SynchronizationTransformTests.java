@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -299,7 +300,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(SynchronizationTransformTests.class);
 	}
 
-	protected File getSpecFile() {
+	protected URL getSpecFile() {
     return getClassResource("synchronization.xml");
 	}
 
