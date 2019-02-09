@@ -40,26 +40,26 @@ public class BuildClasspathTest extends TestCase {
             fail("expected \"" + name + "\" got \"" + kind + "\"");
         }
     }
-    public void testClasspath() {
-        Messager handler = new Messager();
-        File baseDir = new File("..");
-        File jarDir = new File("../aj-build/jars");
-        Modules modules = new Modules(baseDir, jarDir, handler);
-        Module module = modules.getModule("ajbrowser");
-        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
-        Result result = module.getResult(kind);
-        print(result);
-    }
-    public void testBuildClasspath() {
-        Messager handler = new Messager();
-        File baseDir = new File("..");
-        File jarDir = new File("../aj-build/jars");
-        Modules modules = new Modules(baseDir, jarDir, handler);
-        Module module = modules.getModule("build");
-        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
-        Result result = module.getResult(kind);
-        print(result);
-    }
+//    public void testClasspath() {
+//        Messager handler = new Messager();
+//        File baseDir = new File("..");
+//        File jarDir = new File("../aj-build/jars");
+//        Modules modules = new Modules(baseDir, jarDir, handler);
+//        Module module = modules.getModule("ajbrowser");
+//        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
+//        Result result = module.getResult(kind);
+//        print(result);
+//    }
+//    public void testBuildClasspath() {
+//        Messager handler = new Messager();
+//        File baseDir = new File("..");
+//        File jarDir = new File("../aj-build/jars");
+//        Modules modules = new Modules(baseDir, jarDir, handler);
+//        Module module = modules.getModule("build");
+//        Kind kind = Result.kind(Result.NORMAL, !Result.ASSEMBLE);
+//        Result result = module.getResult(kind);
+//        print(result);
+//    }
     private void print(Result result) {
         System.out.println(result + " libjars" + result.getLibJars());
         System.out.println(result + " required" + result.getRequired());

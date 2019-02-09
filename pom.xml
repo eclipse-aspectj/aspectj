@@ -22,6 +22,7 @@
 		<module>org.aspectj.matcher</module>
 		<module>asm</module>
 		<module>testing-client</module>
+		<module>ajbrowser</module>
 		<module>runtime</module>
 		<module>bcel-builder</module>
 		<module>weaver</module>
@@ -63,7 +64,9 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration>
+<!--
 						<testFailureIgnore>true</testFailureIgnore>
+-->
 						<excludes>
 							<exclude>**/*ModuleTests.java</exclude>
 						</excludes>
