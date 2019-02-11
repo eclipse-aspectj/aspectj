@@ -67,6 +67,7 @@ public class StructureModelUtilTest extends AjdeCoreTestCase {
 	}
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		initialiseProject("figures-coverage");
 		TestCompilerConfiguration compilerConfig = (TestCompilerConfiguration) getCompiler().getCompilerConfiguration();
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));

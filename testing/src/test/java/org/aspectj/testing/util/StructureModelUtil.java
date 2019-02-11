@@ -144,9 +144,9 @@ public class StructureModelUtil {
 	 * @return the set of aspects with advice that affects the specified package
 	 */
 	public static Set getAspectsAffectingPackage(IProgramElement packageNode) {
-		List files = StructureModelUtil.getFilesInPackage(packageNode);
+		List<IProgramElement> files = StructureModelUtil.getFilesInPackage(packageNode);
 		Set aspects = new HashSet();
-		for (Iterator it = files.iterator(); it.hasNext();) {
+		for (Iterator<IProgramElement> it = files.iterator(); it.hasNext();) {
 			IProgramElement fileNode = (IProgramElement) it.next();
 			Map adviceMap = getLinesToAspectMap(fileNode.getSourceLocation().getSourceFile().getAbsolutePath());
 			Collection values = adviceMap.values();
@@ -243,15 +243,15 @@ public class StructureModelUtil {
 	/**
 	 * @return all of the AspectJ and Java source files in a package
 	 */
-	public static List getFilesInPackage(IProgramElement packageNode) {
-		List packageContents;
+	public static List<IProgramElement> getFilesInPackage(IProgramElement packageNode) {
+		List<IProgramElement> packageContents;
 		if (packageNode == null) {
 			return null;
 		} else {
 			packageContents = packageNode.getChildren();
 		}
-		List files = new ArrayList();
-		for (Iterator it = packageContents.iterator(); it.hasNext();) {
+		List<IProgramElement> files = new ArrayList<IProgramElement>();
+		for (Iterator<IProgramElement> it = packageContents.iterator(); it.hasNext();) {
 			IProgramElement packageItem = (IProgramElement) it.next();
 			if (packageItem.getKind() == IProgramElement.Kind.FILE_JAVA
 					|| packageItem.getKind() == IProgramElement.Kind.FILE_ASPECTJ) {
