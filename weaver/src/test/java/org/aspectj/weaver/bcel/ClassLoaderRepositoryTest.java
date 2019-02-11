@@ -167,7 +167,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 				String clazzname = classfileName.substring(0,classfileName.length()-6).replace('/','.');
 				
 				rep.loadClass(clazzname);
-				assertEquals("expected one entry in shared URL cache "+map.size(), 1, map.size());
+				assertEquals("expected one entry in shared URL cache "+map.size()+": "+map, 1, map.size());
 				ref = (Reference)map.values().iterator().next();
 				ref.clear();
 				ref.enqueue();
