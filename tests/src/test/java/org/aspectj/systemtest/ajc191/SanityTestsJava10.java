@@ -7,8 +7,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc191;
 
-import java.io.File;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 

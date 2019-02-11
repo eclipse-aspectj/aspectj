@@ -7,8 +7,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
-import java.io.File;
-
 import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;

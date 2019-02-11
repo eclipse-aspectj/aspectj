@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc192;
 
-import java.io.File;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.NestHost;
 import org.aspectj.apache.bcel.classfile.NestMembers;
