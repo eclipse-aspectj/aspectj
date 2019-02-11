@@ -150,8 +150,8 @@ public class BridgeUtil {
          * 
          * Use only for sorts, not to maintain maps.
          */
-        public static final Comparator WEAK_File = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<File> WEAK_File = new Comparator<File>() {
+            public int compare(File o1, File o2) {
                 if ((o1 == o2) 
                     || (o1 == ISourceLocation.NO_FILE) 
                     || (o2 == ISourceLocation.NO_FILE) ) {
@@ -182,8 +182,8 @@ public class BridgeUtil {
          * Ordering only uses line number.
          * Use only for sorts, not to maintain maps.
          */
-        public static final Comparator WEAK_ISourceLocation = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<ISourceLocation> WEAK_ISourceLocation = new Comparator<ISourceLocation>() {
+            public int compare(ISourceLocation o1, ISourceLocation o2) {
                 if (o1 == o2) {
                     return 0;
                 }
@@ -204,8 +204,8 @@ public class BridgeUtil {
          * uses WEAK_FILE on the sourceFile.
          * Use only for sorts, not to maintain maps.
          */
-        public static final Comparator MEDIUM_ISourceLocation = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<ISourceLocation> MEDIUM_ISourceLocation = new Comparator<ISourceLocation>() {
+            public int compare(ISourceLocation o1, ISourceLocation o2) {
                 int result = WEAK_ISourceLocation.compare(o1, o2);
                 if (0 != result) {
                     return result;
@@ -229,8 +229,8 @@ public class BridgeUtil {
          * and ignores message
          * so use only for sorts, not to maintain maps
          */
-        public static final Comparator WEAK_IMessage = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<IMessage> WEAK_IMessage = new Comparator<IMessage>() {
+            public int compare(IMessage o1, IMessage o2) {
                 if (o1 == o2) {
                     return 0;
                 }
@@ -258,8 +258,8 @@ public class BridgeUtil {
      *  or if either is empty, i.e., none specified).
      * so use only for sorts, not to maintain maps
      */
-    public static final Comparator MEDIUM_IMessage = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    public static final Comparator<IMessage> MEDIUM_IMessage = new Comparator<IMessage>() {
+        public int compare(IMessage o1, IMessage o2) {
             int result = WEAK_IMessage.compare(o1, o2);
             if (0 != result) {
                 return result;

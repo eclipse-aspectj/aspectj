@@ -157,10 +157,10 @@ public class LinkCheck {
     
     private final Messages messages;
     private final HTMLEditorKit.Parser parser; // XXX untested - stateful
-    private final ArrayList linksToCheck; // Link
-    private final ArrayList checkedUrls;  // String (URL.toString)
-    private final ArrayList validRefs;  // String (URL.toString)
-    private final ArrayList refsToCheck;  // String (URL.toString)
+    private final ArrayList<Link> linksToCheck;
+    private final ArrayList<String> checkedUrls;  // String (URL.toString)
+    private final ArrayList<String> validRefs;  // String (URL.toString)
+    private final ArrayList<String> refsToCheck;  // String (URL.toString)
     
     private final Link.Check checkExists;
     private final Link.Check checkContents;
@@ -172,10 +172,10 @@ public class LinkCheck {
         LangUtil.throwIaxIfNull(checkExists, "checkExists");
         LangUtil.throwIaxIfNull(checkContents, "checkContents");
         this.messages = new Messages(handler);
-        linksToCheck = new ArrayList();
-        checkedUrls = new ArrayList();
-        refsToCheck = new ArrayList();
-        validRefs = new ArrayList();
+        linksToCheck = new ArrayList<Link>();
+        checkedUrls = new ArrayList<String>();
+        refsToCheck = new ArrayList<String>();
+        validRefs = new ArrayList<String>();
         parser = new HTMLEditorKit() {
             public HTMLEditorKit.Parser getParser() {
                 return super.getParser();
@@ -207,13 +207,13 @@ public class LinkCheck {
     }
 
     public synchronized void run() {
-        ArrayList list = new ArrayList();
+        ArrayList<Link> list = new ArrayList<Link>();
         while (0 < linksToCheck.size()) {
             messages.checkingLinks(linksToCheck.size());
             list.clear();
             list.addAll(linksToCheck);
-            for (Iterator iter = list.iterator(); iter.hasNext();) {
-                final Link link = (Link) iter.next();
+            for (Iterator<Link> iter = list.iterator(); iter.hasNext();) {
+                final Link link = iter.next();
                 String urlString = link.url.toString();
                 if (!checkedUrls.contains(urlString)) {
                     checkedUrls.add(urlString);
@@ -224,8 +224,8 @@ public class LinkCheck {
             linksToCheck.removeAll(list);
         }
         // now check that all named references are accounted for
-        for (Iterator iter = refsToCheck.iterator(); iter.hasNext();) {
-            String ref = (String) iter.next();
+        for (Iterator<String> iter = refsToCheck.iterator(); iter.hasNext();) {
+            String ref = iter.next();
             if (!validRefs.contains(ref)) {
                 messages.namedReferenceNotFound(ref);
             }

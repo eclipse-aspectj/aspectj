@@ -69,12 +69,12 @@ public class Diffs {
 	/**
 	 * Compare IMessages based on kind and source location line (only).
 	 */
-	public static final Comparator MESSAGE_LINEKIND = new Comparator() {
+	public static final Comparator<IMessage> MESSAGE_LINEKIND = new Comparator<IMessage>() {
 		/**
 		 * Compare IMessages based on kind and source location line (only).
 		 * @throws NullPointerException if anything is null
 		 */
-		public int compare(Object lhs, Object rhs) {
+		public int compare(IMessage lhs, IMessage rhs) {
 			IMessage lm = (IMessage) lhs;
 			IMessage rm = (IMessage) rhs;
             ISourceLocation ls = (lm == null ? null : lm.getSourceLocation());
@@ -444,7 +444,7 @@ public class Diffs {
 	private static ArrayList getExcept(
 		IMessage[] source,
 		IMessage.Kind[] skip) {
-		ArrayList sink = new ArrayList();
+		ArrayList<IMessage> sink = new ArrayList<IMessage>();
 		if (LangUtil.isEmpty(source)) {
 			return sink;
 		}

@@ -329,9 +329,9 @@ public class FileUtil {
      * @throws IllegalArgumentException if null == dir 
      * @return a Collection of String of paths, including paths inside jars
      */
-    public static Collection directoryToString(File dir, Collection results) {
+    public static Collection<String> directoryToString(File dir, Collection results) {
         if (null == dir) throw new IllegalArgumentException("null dir");
-        final Collection result = (results != null? results : new Vector());
+        final Collection<String> result = (results != null? results : new Vector());
         if (isZipFile(dir)) {
             zipFileToString(dir, result);
         } else if (!dir.isDirectory()) {
