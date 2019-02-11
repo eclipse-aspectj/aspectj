@@ -13,9 +13,12 @@
 
 package org.aspectj.bridge;
 
+import java.io.IOException;
+import java.net.URL;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 /** release-specific version information */
 public class Version {
@@ -29,16 +32,19 @@ public class Version {
     /** default time value for development version */
     public static final long NOTIME = 0L;
     
+    public static final String UNREPLACED_TEXT = "${project.version}";
+    public static final String UNREPLACED_TIME_TEXT = "${version.time_text}";
+    
     /** set by build script */
-    public static final String text = "DEVELOPMENT";
+    private static String text;// = "DEVELOPMENT";
     // VersionUptodate.java scans for "static final String text = "
     
     /** 
       * Time text set by build script using SIMPLE_DATE_FORMAT.
       * (if DEVELOPMENT version, invalid)
       */
-    public static final String time_text = "Tuesday Jan 15, 2019 at 00:53:54 GMT";
-
+    private static String time_text;// = "Tuesday Jan 15, 2019 at 00:53:54 GMT";
+    
     /** 
       * time in seconds-since-... format, used by programmatic clients.
       * (if DEVELOPMENT version, NOTIME)
@@ -47,6 +53,25 @@ public class Version {
     
 	/** format used by build script to set time_text */
     public static final String SIMPLE_DATE_FORMAT = "EEEE MMM d, yyyy 'at' HH:mm:ss z";
+    
+    static {
+    	try {
+	    	URL resource = Version.class.getResource("version.properties");
+	    	Properties p = new Properties();
+			p.load(resource.openStream());
+			text = p.getProperty("version.text","");
+			if (text.equals(UNREPLACED_TEXT)) {
+				text="DEVELOPMENT";
+			}
+			time_text = p.getProperty("version.time_text","");
+			if (time_text.equals(UNREPLACED_TIME_TEXT)) {
+				time_text="";
+			}
+		} catch (IOException e) {
+			text="DEVELOPMENT";
+			time_text = "";
+		}    	
+    }
     
     public static long getTime() {
     	if (time==-1) {
@@ -81,6 +106,14 @@ public class Version {
             }
         }
     }
+
+	public static String getTimeText() {
+		return time_text;
+	}
+
+	public static String getText() {
+		return text;
+	}
 }
     
 

@@ -239,7 +239,7 @@ public class WeavingAdaptor implements IMessageContext {
 		if (Boolean.getBoolean(SHOW_WEAVE_INFO_PROPERTY)) {
 			messageHandler.dontIgnore(IMessage.WEAVEINFO);
 		}
-		info("AspectJ Weaver Version " + Version.text + " built on " + Version.time_text); //$NON-NLS-1$
+		info("AspectJ Weaver Version " + Version.getText() + " built on " + Version.getTimeText()); //$NON-NLS-1$
 	}
 
 	protected IMessageHandler getMessageHandler() {

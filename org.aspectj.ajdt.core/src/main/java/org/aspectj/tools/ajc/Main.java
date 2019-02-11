@@ -60,7 +60,7 @@ import org.aspectj.weaver.Dump;
  */
 public class Main {
 	/** Header used when rendering exceptions for users */
-	public static final String THROWN_PREFIX = "Exception thrown from AspectJ " + Version.text + LangUtil.EOL + "" + LangUtil.EOL
+	public static final String THROWN_PREFIX = "Exception thrown from AspectJ " + Version.getText() + LangUtil.EOL + "" + LangUtil.EOL
 			+ "This might be logged as a bug already -- find current bugs at" + LangUtil.EOL
 			+ "  http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler" + LangUtil.EOL + "" + LangUtil.EOL
 			+ "Bugs for exceptions thrown have titles File:line from the top stack, " + LangUtil.EOL
@@ -70,7 +70,7 @@ public class Main {
 			+ "To make the bug a priority, please include a test program" + LangUtil.EOL + "that can reproduce this exception."
 			+ LangUtil.EOL;
 
-	private static final String OUT_OF_MEMORY_MSG = "AspectJ " + Version.text + " ran out of memory during compilation:"
+	private static final String OUT_OF_MEMORY_MSG = "AspectJ " + Version.getText() + " ran out of memory during compilation:"
 			+ LangUtil.EOL + LangUtil.EOL + "Please increase the memory available to ajc by editing the ajc script " + LangUtil.EOL
 			+ "found in your AspectJ installation directory. The -Xmx parameter value" + LangUtil.EOL
 			+ "should be increased from 64M (default) to 128M or even 256M." + LangUtil.EOL + LangUtil.EOL

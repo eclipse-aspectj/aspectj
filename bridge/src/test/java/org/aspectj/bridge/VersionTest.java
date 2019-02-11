@@ -48,13 +48,13 @@ public class VersionTest extends TestCase {
 		if (LangUtil.is11VMOrGreater()) {
 			return;
 		}
-		if (Version.time_text.equals("")) {
+		if (Version.getTimeText().equals("")) {
 			return; // dev build, we can only test this on the build server.
 		}
 		Date date = new Date(Version.getTime());
 		SimpleDateFormat format = new SimpleDateFormat(Version.SIMPLE_DATE_FORMAT, Locale.getDefault());
-		format.setTimeZone(TimeZone.getTimeZone("GMT"));
+		format.setTimeZone(TimeZone.getTimeZone("PST"));
 		String timeString = format.format(date);
-		assertEquals(Version.time_text, timeString);
+		assertEquals(Version.getTimeText(), timeString);
 	}
 }

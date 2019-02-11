@@ -1331,7 +1331,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 */
 	private String checkRtJar(AjBuildConfig buildConfig) {
 		// omitting dev info
-		if (Version.text.equals(Version.DEVELOPMENT)) {
+		if (Version.getText().equals(Version.DEVELOPMENT) || Version.getText().endsWith("BUILD-SNAPSHOT")) {
 			// in the development version we can't do this test usefully
 			// MessageUtil.info(holder, "running development version of aspectj compiler");
 			return null;
@@ -1342,7 +1342,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 
 		String ret = null;
-		for (Iterator it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
+		for (Iterator<String> it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
 			File p = new File((String) it.next());
 			// pr112830, allow variations on aspectjrt.jar of the form aspectjrtXXXXXX.jar
 			if (p.isFile() && p.getName().startsWith("aspectjrt") && p.getName().endsWith(".jar")) {
@@ -1351,7 +1351,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					String version = null;
 					Manifest manifest = new JarFile(p).getManifest();
 					if (manifest == null) {
-						ret = "no manifest found in " + p.getAbsolutePath() + ", expected " + Version.text;
+						ret = "no manifest found in " + p.getAbsolutePath() + ", expected " + Version.getText();
 						continue;
 					}
 					Attributes attr = manifest.getAttributes("org/aspectj/lang/");
@@ -1367,8 +1367,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						// "running with development version of aspectjrt.jar in " +
 						// p.getAbsolutePath());
 						return null;
-					} else if (!Version.text.equals(version)) {
-						ret = "bad version number found in " + p.getAbsolutePath() + " expected " + Version.text + " found "
+					} else if (!Version.getText().equals(version)) {
+						ret = "bad version number found in " + p.getAbsolutePath() + " expected " + Version.getText() + " found "
 								+ version;
 						continue;
 					}

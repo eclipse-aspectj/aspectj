@@ -112,7 +112,7 @@ public class OptionsFrame extends JFrame {
             this.setSize(500, 500);
             this.setLocation(200, 100);
 
-			version_label.setText("Version: " + Version.text);
+			version_label.setText("Version: " + Version.getText());
 			built_label.setText("Built: " + new Date(Version.getTime()).toString());
        }
         catch(Exception e) {

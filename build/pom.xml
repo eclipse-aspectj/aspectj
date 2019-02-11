@@ -57,7 +57,10 @@
 						</goals>
 						<configuration>
 							<name>build.time</name>
+							<!-- 
 							<pattern>E MMM d, YYYY 'at' HH:MM:SS z</pattern>
+							 -->
+							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
 							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
 						</configuration>

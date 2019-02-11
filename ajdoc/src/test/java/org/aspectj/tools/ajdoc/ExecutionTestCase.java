@@ -23,7 +23,7 @@ public class ExecutionTestCase extends AjdocTestCase {
 	
 	public void testVersionMatch() {
 		String ajdocVersion = Main.getVersion();
-		String compilerVersion = Version.text;
+		String compilerVersion = Version.getText();
 		assertTrue("version check", ajdocVersion.endsWith(compilerVersion));
 	}
 	

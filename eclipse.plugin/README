@@ -1,6 +1,0 @@
-This project contains the files needed to build the Eclipse library and doc plugins for AspectJ.
-The plugins themselves can only be built as the result of a master AspectJ build (../build/build.xml).
-
-During a build the docs are copied into the doc subdir of the doc plugin,
-the built libraries are copied into the ajde plugin, and the source jars
-are created and placed in the scr dir of the source plugin.

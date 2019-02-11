@@ -335,7 +335,7 @@ public class Dump {
 
 	private void dumpAspectJProperties() {
 		println("---- AspectJ Properties ---");
-		println("AspectJ Compiler " + Version.text + " built on " + Version.time_text);
+		println("AspectJ Compiler " + Version.getText() + " built on " + Version.getTimeText());
 	}
 
 	private void dumpDumpConfiguration() {

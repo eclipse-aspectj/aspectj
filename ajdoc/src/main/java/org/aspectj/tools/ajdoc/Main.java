@@ -799,7 +799,7 @@ public class Main implements Config {
 	}
 
 	static String getVersion() {
-		return "ajdoc version " + Version.text;
+		return "ajdoc version " + Version.getText();
 	}
 
 	public static boolean hasAborted() {
