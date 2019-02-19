@@ -62,7 +62,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public static final UnresolvedType JOINPOINT_STATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$StaticPart;");
 	public static final UnresolvedType JOINPOINT_ENCLOSINGSTATICPART = forSignature("Lorg/aspectj/lang/JoinPoint$EnclosingStaticPart;");
 	public static final UnresolvedType AJC_PRIVILEGED = forSignature("Lorg/aspectj/internal/lang/annotation/ajcPrivileged;");
-
+	public static final UnresolvedType PROCEEDING_JOINPOINT = forSignature("Lorg/aspectj/lang/ProceedingJoinPoint;");
 	public static final UnresolvedType BOOLEAN = forPrimitiveType("Z");
 	public static final UnresolvedType BYTE = forPrimitiveType("B");
 	public static final UnresolvedType CHAR = forPrimitiveType("C");
