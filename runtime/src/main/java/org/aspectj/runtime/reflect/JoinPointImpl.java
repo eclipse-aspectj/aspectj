@@ -13,6 +13,8 @@
 
 package org.aspectj.runtime.reflect;
 
+import java.util.Stack;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -134,47 +136,73 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		return staticPart.toLongString();
 	}
 
-	// To proceed we need a closure to proceed on
-	private AroundClosure arc;
+	// To proceed we need a closure to proceed on. Generated code
+	// will either be using arc or arcs but not both. arcs being non-null
+	// indicates it is in use (even if an empty stack)
+	private AroundClosure arc = null;	
+	private Stack<AroundClosure> arcs = null;
 
 	public void set$AroundClosure(AroundClosure arc) {
 		this.arc = arc;
 	}
 
+ 	public void stack$AroundClosure(AroundClosure arc) {
+		// If input parameter arc is null this is the 'unlink' call from AroundClosure
+		if (arcs == null) {
+			arcs = new Stack<AroundClosure>();
+		}
+		if (arc==null) {
+			this.arcs.pop();
+		} else {
+			this.arcs.push(arc);
+		}
+ 	}
+
 	public Object proceed() throws Throwable {
 		// when called from a before advice, but be a no-op
-		if (arc == null)
-			return null;
-		else
-			return arc.run(arc.getState());
+		if (arcs == null) {
+			if (arc == null) {
+				return null;
+			} else {
+				return arc.run(arc.getState());
+			}
+		} else {
+			return arcs.peek().run(arcs.peek().getState());			
+		}
 	}
 
 	public Object proceed(Object[] adviceBindings) throws Throwable {
 		// when called from a before advice, but be a no-op
-		if (arc == null)
+		AroundClosure ac = null;
+		if (arcs == null) {
+			ac = arc;
+		} else {
+			ac = arcs.peek();
+		}
+		
+		if (ac == null) {
 			return null;
-		else {
-
+		} else {
 			// Based on the bit flags in the AroundClosure we can determine what to
 			// expect in the adviceBindings array. We may or may not be expecting
 			// the first value to be a new this or a new target... (see pr126167)
-			int flags = arc.getFlags();
+			int flags = ac.getFlags();
 			boolean unset = (flags & 0x100000) != 0;
 			boolean thisTargetTheSame = (flags & 0x010000) != 0;
 			boolean hasThis = (flags & 0x001000) != 0;
 			boolean bindsThis = (flags & 0x000100) != 0;
 			boolean hasTarget = (flags & 0x000010) != 0;
 			boolean bindsTarget = (flags & 0x000001) != 0;
-
+	
 			// state is always consistent with caller?,callee?,formals...,jp
-			Object[] state = arc.getState();
-
+			Object[] state = ac.getState();
+	
 			// these next two numbers can differ because some join points have a this and
 			// target that are the same (eg. call) - and yet you can bind this and target
 			// separately.
-
+	
 			// In the state array, [0] may be this, [1] may be target
-
+	
 			int firstArgumentIndexIntoAdviceBindings = 0;
 			int firstArgumentIndexIntoState = 0;
 			firstArgumentIndexIntoState += (hasThis ? 1 : 0);
@@ -202,8 +230,8 @@ class JoinPointImpl implements ProceedingJoinPoint {
 						// This previous variant doesn't seem to cope with only binding target at a joinpoint
 						// which has both this and target. It forces you to supply this even if you didn't bind
 						// it.
-//						firstArgumentIndexIntoAdviceBindings = (hasThis ? 1 : 0) + 1;
-//						state[hasThis ? 1 : 0] = adviceBindings[hasThis ? 1 : 0];
+	//						firstArgumentIndexIntoAdviceBindings = (hasThis ? 1 : 0) + 1;
+	//						state[hasThis ? 1 : 0] = adviceBindings[hasThis ? 1 : 0];
 						
 						int targetPositionInAdviceBindings = (hasThis && bindsThis) ? 1 : 0;
 						firstArgumentIndexIntoAdviceBindings = ((hasThis&&bindsThis)?1:0)+((hasTarget&&bindsTarget&&!thisTargetTheSame)?1:0);
@@ -213,12 +241,12 @@ class JoinPointImpl implements ProceedingJoinPoint {
 					// leave state[0]/state[1] alone, they are OK
 				}
 			}
-
+	
 			// copy the rest across
 			for (int i = firstArgumentIndexIntoAdviceBindings; i < adviceBindings.length; i++) {
 				state[firstArgumentIndexIntoState + (i - firstArgumentIndexIntoAdviceBindings)] = adviceBindings[i];
 			}
-
+	
 			// old code that did this, didnt allow this/target overriding
 			// for (int i = state.length-2; i >= 0; i--) {
 			// int formalIndex = (adviceBindings.length - 1) - (state.length-2) + i;
@@ -226,7 +254,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 			// state[i] = adviceBindings[formalIndex];
 			// }
 			// }
-			return arc.run(state);
+			return ac.run(state);
 		}
 	}
 

@@ -46,7 +46,8 @@ public abstract class Shadow {
 	private ResolvedMember resolvedSignature;
 	protected final Shadow enclosingShadow;
 	protected List<ShadowMunger> mungers = Collections.emptyList();
-
+	protected boolean needAroundClosureStacking = false;
+	
 	public int shadowId = nextShadowID++; // every time we build a shadow, it gets a new id
 
 	// ----
@@ -628,6 +629,20 @@ public abstract class Shadow {
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
 		World world = getIWorld(); 
+		needAroundClosureStacking = false;
+		int annotationStyleWithAroundAndProceedCount = 0;
+		for (ShadowMunger munger: mungers) {
+			if (munger.getDeclaringType()!= null && 
+				munger.getDeclaringType().isAnnotationStyleAspect() &&
+				munger.isAroundAdvice() &&
+				munger.bindsProceedingJoinPoint()) {
+				annotationStyleWithAroundAndProceedCount++;
+				if (annotationStyleWithAroundAndProceedCount>1) {
+					needAroundClosureStacking = true;
+					break;
+				}
+			}
+		}
 		for (ShadowMunger munger : mungers) {
 			if (munger.implementOn(this)) {
 				world.reportMatch(munger, this);

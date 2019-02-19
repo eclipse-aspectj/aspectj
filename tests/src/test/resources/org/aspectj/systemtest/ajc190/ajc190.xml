@@ -77,8 +77,8 @@
   </ajc-test>
 
   <ajc-test dir="bugs190/modules/fff" title="compile module including aspects">
-    <compile files="module-info.java pkg/Demo.java otherpkg/Azpect.java" modulepath="$runtime" outjar="demomodule.jar" options="-1.9"/>
-    <run modulepath="$runtime:demomodule.jar" module="demo/pkg.Demo">
+    <compile files="module-info.java pkg/Demo.java otherpkg/Azpect.java" modulepath="$runtimemodule" outjar="demomodule.jar" options="-1.9"/>
+    <run modulepath="$runtimemodule:demomodule.jar" module="demo/pkg.Demo">
       <stdout>
       <line text="Azpect running"/>
       <line text="Demo running"/>

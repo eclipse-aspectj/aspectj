@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.aspectj.systemtest.ajc193;
+package org.aspectj.systemtest.ajc193; 
 
 import java.io.File;
 
@@ -18,8 +18,12 @@ import junit.framework.Test;
 
 /**
  * @author Andy Clement
- */
+ */ 
 public class Ajc193Tests extends XMLBasedAjcTestCaseForJava10OrLater {
+
+	public void testNestedAroundProceed() {
+		runTest("nested around proceed");
+	}
 
 	public void testDeclareMixinOverweavingControl() {
 		runTest("overweaving decm - control");

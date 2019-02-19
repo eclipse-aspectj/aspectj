@@ -2,6 +2,42 @@
 
 <suite>
 
+    <ajc-test dir="bugs193/333274" vm="1.8" title="nested around proceed">
+        <compile files="ma/aspect2/Aspect2.java,ma/aspect2/Annotation2.java,ma/aspect3/Aspect3.java,ma/aspect3/Annotation3.java,ma/Precedence.java,ma/Main.java,ma/aspect1/Aspect1.java,ma/aspect1/Annotation1.java" options="-showWeaveInfo -1.8 -XnoInline">
+	        <message kind="weave" text="Join point 'method-execution(int ma.Main$Dummy.retryTranslateAndTimeLimited())' in Type 'ma.Main$Dummy' (Main.java:16) advised by around advice from 'ma.aspect3.Aspect3' (Aspect3.java:11)"/>
+	        <message kind="weave" text="Join point 'method-execution(int ma.Main$Dummy.retryTranslateAndTimeLimited())' in Type 'ma.Main$Dummy' (Main.java:16) advised by around advice from 'ma.aspect2.Aspect2' (Aspect2.java:11)"/>
+	        <message kind="weave" text="Join point 'method-execution(int ma.Main$Dummy.retryTranslateAndTimeLimited())' in Type 'ma.Main$Dummy' (Main.java:16) advised by around advice from 'ma.aspect1.Aspect1' (Aspect1.java:12)"/>
+        </compile>
+        <!-- 
+        >In Aspect1
+>In Aspect2
+>In Aspect3
+Method call
+<In Aspect3
+<In Aspect2
+=In Aspect1
+Method call
+<In Aspect1
+ -->
+        <run class="ma.Main">
+	        <stdout>
+	        <line text="&gt;In Aspect1"/>
+	        <line text="&gt;In Aspect2"/>
+	        <line text="&gt;In Aspect3"/>
+	        <line text="Method call"/>
+	        <line text="&lt;In Aspect3"/>
+	        <line text="&lt;In Aspect2"/>
+	        <line text="=In Aspect1"/>
+	        <line text="&gt;In Aspect2"/>
+	        <line text="&gt;In Aspect3"/>
+	        <line text="Method call"/>
+	        <line text="&lt;In Aspect3"/>
+	        <line text="&lt;In Aspect2"/>
+			<line text="&lt;In Aspect1"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - control">
         <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8">
 	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>

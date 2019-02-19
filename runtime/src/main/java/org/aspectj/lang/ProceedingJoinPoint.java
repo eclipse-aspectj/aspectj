@@ -30,6 +30,19 @@ public interface ProceedingJoinPoint extends JoinPoint {
     void set$AroundClosure(AroundClosure arc);
 
     /**
+     * The joinpoint needs to know about its closure so that proceed can delegate to closure.run().
+     * This internal method should not be called directly, and won't be visible to the end-user when
+     * packed in a jar (synthetic method). This should maintain a stack of closures as multiple around
+     * advice with proceed are targeting a joinpoint and the stack will need to be unwound when
+     * exiting nested advice. Passing a non null arc indicates a push, passing null indicates a pop.
+     *
+     * @param arc the around closure to associate with this joinpoint
+     */
+     default void stack$AroundClosure(AroundClosure arc) {
+    	 throw new UnsupportedOperationException();
+     }
+
+    /**
      * Proceed with the next advice or target method invocation
      *
      * @return the result of proceeding

@@ -83,6 +83,10 @@ public abstract class Advice extends ShadowMunger {
 		ret.concreteAspect = inAspect;
 		return ret;
 	}
+	
+	public boolean isAroundAdvice() {
+		return attribute.getKind() == AdviceKind.Around;
+	}
 
 	public static Advice makeSoftener(World world, Pointcut entry, TypePattern exceptionType, ResolvedType inAspect,
 			IHasSourceLocation loc) {

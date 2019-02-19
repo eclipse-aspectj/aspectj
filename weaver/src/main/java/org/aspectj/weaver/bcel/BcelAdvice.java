@@ -76,7 +76,17 @@ class BcelAdvice extends Advice {
 		super(attribute, pointcut, simplify(attribute.getKind(), adviceSignature));
 		this.concreteAspect = concreteAspect;
 	}
-
+	
+	public boolean bindsProceedingJoinPoint() {
+		UnresolvedType[] parameterTypes = signature.getParameterTypes();
+		for (int i=0;i<parameterTypes.length;i++) {
+			if (parameterTypes[i].equals(UnresolvedType.PROCEEDING_JOINPOINT)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * A heavyweight BcelMethod object is only required for around advice that will be inlined. For other kinds of advice it is
 	 * possible to save some space.
@@ -603,6 +613,7 @@ class BcelAdvice extends Advice {
 							} else {
 								previousIsClosure = true;
 								il.append(closureInstantiation.copy());
+								shadow.closureVarInitialized = true;
 							}
 						}
 					} else if ("Lorg/aspectj/lang/JoinPoint$StaticPart;".equals(getSignature().getParameterTypes()[i]

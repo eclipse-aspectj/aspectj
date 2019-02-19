@@ -303,5 +303,13 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	// }
 	// newShadowMunger.binaryFile = null;
 	// }
+	
+	public boolean bindsProceedingJoinPoint() {
+		return false;
+	}
+	
+	public boolean isAroundAdvice() {
+		return false;
+	}
 
 }

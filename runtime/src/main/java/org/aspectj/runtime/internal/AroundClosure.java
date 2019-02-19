@@ -72,6 +72,21 @@ public abstract class AroundClosure {
      * @param flags indicating whether this/target found at joinpoint and bound
      * @return the associated ProceedingJoinPoint
      */
+    public ProceedingJoinPoint linkStackClosureAndJoinPoint(int flags) {
+        //TODO is this cast safe ?
+        ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
+        jp.stack$AroundClosure(this);
+        this.bitflags = flags;
+        return jp;
+    }
+
+    /**
+     * This method is called to implicitly associate the closure with the joinpoint
+     * as required for @AJ aspect proceed()
+     * 
+     * @param flags indicating whether this/target found at joinpoint and bound
+     * @return the associated ProceedingJoinPoint
+     */
     public ProceedingJoinPoint linkClosureAndJoinPoint(int flags) {
         //TODO is this cast safe ?
         ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
@@ -79,4 +94,10 @@ public abstract class AroundClosure {
         this.bitflags = flags;
         return jp;
     }
+
+    public void unlink() {
+    	ProceedingJoinPoint jp = (ProceedingJoinPoint)state[state.length-1];
+    	jp.stack$AroundClosure(null);
+    }
+
 }

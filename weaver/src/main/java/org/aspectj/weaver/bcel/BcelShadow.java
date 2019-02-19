@@ -70,6 +70,7 @@ import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;
 import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 
+
 /*
  * Some fun implementation stuff:
  * 
@@ -881,6 +882,12 @@ public class BcelShadow extends Shadow {
 	private Map<ResolvedType, AnnotationAccessVar> withinAnnotationVars = null;
 	private Map<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
 	private boolean allArgVarsInitialized = false;
+	
+	// If in annotation style and the relevant advice is using PJP then this will 
+	// be set to true when the closure variable is initialized - if it gets set
+	// (which means link() has been called) then we will need to call unlink()
+	// after the code has been run.
+	boolean closureVarInitialized = false;
 
 	@Override
 	public Var getThisVar() {
@@ -2836,6 +2843,8 @@ public class BcelShadow extends Shadow {
 		}
 	}
 
+	BcelVar aroundClosureInstance = null;
+
 	public void weaveAroundClosure(BcelAdvice munger, boolean hasDynamicTest) {
 		InstructionFactory fact = getFactory();
 
@@ -2934,21 +2943,66 @@ public class BcelShadow extends Shadow {
 			bitflags |= 0x000001;
 		}
 
+		closureVarInitialized = false;
+		
 		// ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
 		if (munger.getConcreteAspect() != null && munger.getConcreteAspect().isAnnotationStyleAspect()
 				&& munger.getDeclaringAspect() != null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
+
+			aroundClosureInstance = genTempVar(AjcMemberMaker.AROUND_CLOSURE_TYPE);
+			closureInstantiation.append(fact.createDup(1));
+			aroundClosureInstance.appendStore(closureInstantiation, fact);
+			
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
 			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
-			closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
-					new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
-							Modifier.PUBLIC, "linkClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));
+			if (needAroundClosureStacking) {
+				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
+						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
+								Modifier.PUBLIC, "linkStackClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));
+				
+			} else {
+				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
+						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
+								Modifier.PUBLIC, "linkClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));				
+			}
+
 		}
 
 		InstructionList advice = new InstructionList();
 		advice.append(munger.getAdviceArgSetup(this, null, closureInstantiation));
 
 		// invoke the advice
-		advice.append(munger.getNonTestAdviceInstructions(this));
+		InstructionHandle tryUnlinkPosition  = advice.append(munger.getNonTestAdviceInstructions(this));
+		
+		if (needAroundClosureStacking) {
+			// Call AroundClosure.unlink() in a 'finally' block
+			if (munger.getConcreteAspect() != null && munger.getConcreteAspect().isAnnotationStyleAspect()
+					&& munger.getDeclaringAspect() != null
+					&& munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()
+					&& closureVarInitialized) {
+				
+				// Call unlink when 'normal' flow occurring
+				aroundClosureInstance.appendLoad(advice, fact);
+				InstructionHandle unlinkInsn = advice.append(Utility.createInvoke(getFactory(), getWorld(), new MemberImpl(Member.METHOD, UnresolvedType
+						.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "unlink",
+						"()V")));
+				
+				InstructionHandle jumpOverHandler = advice.append(InstructionConstants.NOP);
+				
+				// Call unlink in finally block
+				InstructionHandle handlerStart = advice.append(InstructionConstants.POP);
+				aroundClosureInstance.appendLoad(advice, fact);
+				advice.append(Utility.createInvoke(getFactory(), getWorld(), new MemberImpl(Member.METHOD, UnresolvedType
+						.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "unlink",
+						"()V")));
+				advice.append(InstructionConstants.ACONST_NULL);
+				advice.append(InstructionConstants.ATHROW);
+				InstructionHandle jumpTarget = advice.append(InstructionConstants.NOP);
+				jumpOverHandler.setInstruction(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
+				enclosingMethod.addExceptionHandler(tryUnlinkPosition, unlinkInsn, handlerStart, null/* ==finally */, false);
+			}	
+		}
+		
 		advice.append(returnConversionCode);
 		if (getKind() == Shadow.MethodExecution && linenumber > 0) {
 			advice.getStart().addTargeter(new LineNumberTag(linenumber));

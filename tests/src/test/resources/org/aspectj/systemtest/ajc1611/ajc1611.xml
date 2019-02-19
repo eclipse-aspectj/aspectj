@@ -117,7 +117,7 @@
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr333274" title="code style advice chain">
-  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 "/>
+  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 -XnoInline"/>
   <run class="ma2.Main">
   <stdout>
   <line text="&gt;In Aspect1"/>
