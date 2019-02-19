@@ -72,13 +72,16 @@ public final class TestUtil {
 	private static final Properties LIB_RPATHS;
 	private static final Map LIB_ENTRIES;
 	private static File ASPECTJRT_PATH;
+	private static File ASPECTJRTJAR_PATH;
 	static {
 		{
-			String[] paths = { "sp:aspectjrt.path", "sp:aspectjrt.jar"
-					,"../lib/test/aspectjrt.jar", "../runtime/target/classes"
-//					,"../aj-build/jars/aspectj5rt-all.jar", "../aj-build/jars/runtime.jar", "../runtime/bin"
-					};
+			String[] paths = {
+					"sp:aspectjrt.path",
+					"sp:aspectjrt.jar",
+					"../runtime/target/classes",
+					"../lib/test/aspectjrt.jar"};
 			ASPECTJRT_PATH = FileUtil.getBestFile(paths);
+			ASPECTJRTJAR_PATH = FileUtil.getBestFile(paths, true);
 		}
 		{
 			boolean j5 = false;
@@ -157,6 +160,15 @@ public final class TestUtil {
 
 	public static File aspectjrtPath() {
 		return ASPECTJRT_PATH;
+	}
+
+	// needsJar for module packaged runtime
+	public static File aspectjrtPath(boolean needsJar) {
+		if (needsJar) {
+			return ASPECTJRTJAR_PATH;
+		} else {
+			return ASPECTJRT_PATH;
+		}
 	}
 
 	public static URL fileToURL(File file) {

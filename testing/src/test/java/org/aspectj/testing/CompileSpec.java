@@ -303,6 +303,7 @@ public class CompileSpec implements ITestStep {
 	}
 	
 	private String rewrite(String path) {
+		path = path.replace("$runtimemodule", TestUtil.aspectjrtPath(true).toString());
 		path = path.replace("$runtime", TestUtil.aspectjrtPath().toString());
 		return path;
 	}

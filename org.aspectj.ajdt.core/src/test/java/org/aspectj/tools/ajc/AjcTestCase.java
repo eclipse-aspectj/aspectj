@@ -670,6 +670,9 @@ public abstract class AjcTestCase extends TestCase {
 				vmargs ="";
 			}
 			try {
+				if (mp.indexOf("$runtimemodule") != -1) {
+					mp = mp.replace(mp.indexOf("$runtimemodule"),"$runtimemodule".length(),TestUtil.aspectjrtPath(true).toString());
+				}
 				if (mp.indexOf("$runtime") != -1) {
 					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
 				}
@@ -930,7 +933,7 @@ public abstract class AjcTestCase extends TestCase {
         if (-1 == cpIndex) {
                 String[] newargs = new String[args.length + 2];
                 newargs[0] = "-classpath";
-                newargs[1] = TestUtil.aspectjrtPath().getPath();
+                newargs[1] = TestUtil.aspectjrtPath(false).getPath();
                 System.arraycopy(args, 0, newargs, 2, args.length);
                 args = newargs;
                 cpIndex = 1;
