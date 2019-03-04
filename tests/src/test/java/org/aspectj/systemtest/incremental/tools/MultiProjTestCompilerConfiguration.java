@@ -93,7 +93,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		StringTokenizer st = new StringTokenizer(cp,File.pathSeparator);
 		while (st.hasMoreElements()) {
 			String cpElement = st.nextToken();
-			System.out.println("Checking: "+cpElement+" exists? "+new File(cpElement).exists());
+//			System.out.println("Checking: "+cpElement+" exists? "+new File(cpElement).exists());
 		}
 	}
 

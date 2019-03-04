@@ -15,6 +15,7 @@ package org.aspectj.weaver.loadtime;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -22,6 +23,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.aspectj.bridge.AbortException;
+import org.aspectj.testing.util.TestUtil;
 import org.aspectj.testing.util.TestUtil.TestError;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.tools.WeavingAdaptor;
@@ -348,8 +350,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	 * Aspects on ASPECTPATH but missing from CLASSPATH
 	 */
 	public void testIncompletePath() {
-		URL aspectjrt = FileUtil.getFileURL(new File(ASPECTJRT));
-		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, ADVICE_ASPECTS+File.pathSeparator+aspectjrt.toString());
+		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, ADVICE_ASPECTS+File.pathSeparator+new File(ASPECTJRT).toString());
 		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH, CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
 
