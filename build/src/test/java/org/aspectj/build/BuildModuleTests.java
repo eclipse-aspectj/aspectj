@@ -210,7 +210,7 @@ public class BuildModuleTests extends TestCase {
     }
     
     private boolean isTestFolder(File dir) {
-    	return dir.toString().contains("src/test/java");
+    	return dir.toString().contains("src"+File.separator+"test"+File.separator+"java");
     }
     
     /**
