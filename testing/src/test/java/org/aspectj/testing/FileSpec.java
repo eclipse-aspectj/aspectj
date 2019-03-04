@@ -55,7 +55,10 @@ public class FileSpec implements ITestStep {
 		if (toDelete != null) {
 			File targetForDeletion = new File(sandbox, toDelete);
 			if (targetForDeletion.isFile()) {
-				targetForDeletion.delete();
+				boolean b = targetForDeletion.delete();
+				if (!b) {
+					throw new IllegalStateException("Failed to delete "+targetForDeletion);
+				}
 			} else {
 				recursiveDelete(targetForDeletion);
 			}

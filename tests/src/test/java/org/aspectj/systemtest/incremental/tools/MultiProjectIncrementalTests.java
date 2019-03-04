@@ -3579,11 +3579,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("456801");
 		build("456801");
 		String output = runMethod("456801", "Code", "run");
-		assertEquals("advice runnning\nrun() running\n",output);
+		assertEquals("advice runnning\nrun() running\n",output.replace("\r",""));
 		alter("456801", "inc1");
 		build("456801");
 		output = runMethod("456801", "Code", "run");
-		assertEquals("advice running\nrun() running\n",output);
+		assertEquals("advice running\nrun() running\n",output.replace("\r",""));
 		checkCompileWeaveCount("456801", 1, 1);
 		checkWasntFullBuild();
 	}

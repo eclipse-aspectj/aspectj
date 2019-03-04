@@ -56,7 +56,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		checkCompiledFiles("ProcessorConsumer1","Advise_ccc.java","Advise_aaa.java","Code.java");
 		assertEquals(2,getWeavingMessages("ProcessorConsumer1").size());
 		String out = runMethod("ProcessorConsumer1", "Code", "runner");
-		assertEquals("aaa running\nccc running\n",out);
+		assertEquals("aaa running\nccc running\n",out.replace("\r",""));
 	}
 	
 	// services file in processor project
@@ -84,7 +84,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		checkCompiledFiles("ProcessorConsumer2","Advise_ccc.java","Advise_aaa.java","Code.java");
 		assertEquals(2,getWeavingMessages("ProcessorConsumer2").size());
 		String out = runMethod("ProcessorConsumer2", "Code", "runner");
-		assertEquals("aaa running\nccc running\n",out);
+		assertEquals("aaa running\nccc running\n",out.replace("\r",""));
 	}
 	
 	// Two processors
@@ -122,7 +122,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		checkCompiledFiles("ProcessorConsumer1","Advise_ccc.java","Advise_aaa.java","Code.java","AroundAdvise_ccc.java","AroundAdvise_aaa.java");
 		assertEquals(4,getWeavingMessages("ProcessorConsumer1").size());
 		String out = runMethod("ProcessorConsumer1", "Code", "runner");
-		assertEquals("aaa running\nAround advice on aaa running\nccc running\nAround advice on ccc running\n",out);
+		assertEquals("aaa running\nAround advice on aaa running\nccc running\nAround advice on ccc running\n",out.replace("\r",""));
 	}
 	
 	// Tests:
@@ -151,7 +151,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		for (String expectedCompiledFile: expectedCompiledFiles) {
 			String toRemove = null;
 			for (String compiledFile: compiledFiles) {
-				String cfile = compiledFile.substring(compiledFile.lastIndexOf("/")+1);
+				String cfile = compiledFile.substring(compiledFile.lastIndexOf(File.separator)+1);
 				if (cfile.equals(expectedCompiledFile)) {
 					toRemove = compiledFile;
 					break;
