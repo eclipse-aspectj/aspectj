@@ -1,0 +1,2 @@
+Generates a modular, multi-release JAR. To regenerate, run `gradle jar`. The output
+is `build/libs/IgnoreJava9JarElements.jar`.

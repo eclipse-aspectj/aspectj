@@ -1,0 +1,54 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Contributors
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
+apply plugin: 'java-library'
+
+if (!JavaVersion.current().isJava11Compatible()) {
+   throw new GradleException("Run with with JDK 11 or newer.")
+}
+
+sourceSets {
+   java11 {
+      java {
+       srcDirs = ['src/main/java11']
+      }
+   }
+   moduleInfo {
+      java {
+         srcDirs = ['src/main/module-info']
+      }
+   }
+}
+
+compileJava {
+   sourceCompatibility = 8
+   targetCompatibility = 8
+}
+
+compileJava11Java {
+   sourceCompatibility = 11
+   targetCompatibility = 11
+}
+
+compileModuleInfoJava {
+   sourceCompatibility = 11
+   targetCompatibility = 11
+}
+
+jar {
+   into('META-INF/versions/11') {
+      from sourceSets.java11.output
+   }
+   into('') {
+      from sourceSets.moduleInfo.output
+   }
+   manifest.attributes(
+      'Multi-Release': 'true',
+      'Main-Class': 'org.aspectj.JdkSpecific'
+   )
+}

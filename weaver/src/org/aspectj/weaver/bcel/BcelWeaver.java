@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2002-2010 Contributors
+ * Copyright (c) 2002-2019 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
@@ -100,6 +100,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * @author PARC
  * @author Andy Clement
  * @author Alexandre Vasseur
+ * @author Eric Edens
  */
 public class BcelWeaver {
 
@@ -388,15 +389,23 @@ public class BcelWeaver {
 
 					while (entries.hasMoreElements()) {
 						JarEntry entry = (JarEntry) entries.nextElement();
+						String filename = entry.getName();
+						String filenameLowercase = filename.toLowerCase();
+
+						// Ignore class files that Java 8 won't understand (multi-release and module-info)
+						if (filenameLowercase.startsWith("meta-inf")
+								|| filenameLowercase.endsWith("module-info.class")) {
+							continue;
+						}
+
 						InputStream inStream = inJar.getInputStream(entry);
 
 						byte[] bytes = FileUtil.readAsByteArray(inStream);
-						String filename = entry.getName();
 						// System.out.println("? addJarFile() filename='" + filename
 						// + "'");
 						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
-						if (filename.endsWith(".class")) {
+						if (filenameLowercase.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile, false);
 							StringBuffer sb = new StringBuffer();
 							sb.append(inFile.getAbsolutePath());

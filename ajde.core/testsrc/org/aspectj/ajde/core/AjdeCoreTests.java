@@ -18,6 +18,7 @@ import org.aspectj.ajde.core.tests.AjConfigTests;
 import org.aspectj.ajde.core.tests.BuildCancellingTests;
 import org.aspectj.ajde.core.tests.CompilerMessagesTests;
 import org.aspectj.ajde.core.tests.DuplicateManifestTests;
+import org.aspectj.ajde.core.tests.IgnoreJava9JarElements;
 import org.aspectj.ajde.core.tests.InpathTests;
 import org.aspectj.ajde.core.tests.JarManifestTests;
 import org.aspectj.ajde.core.tests.OutxmlTests;
@@ -48,6 +49,7 @@ public class AjdeCoreTests extends TestCase {
 		suite.addTestSuite(JarManifestTests.class);
 		suite.addTestSuite(OutxmlTests.class);
 		suite.addTestSuite(AjConfigTests.class);
+		suite.addTestSuite(IgnoreJava9JarElements.class);
 
 		// $JUnit-END$
 		return suite;
