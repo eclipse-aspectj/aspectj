@@ -123,19 +123,19 @@ public class Ajctest extends Task implements PropertyChangeListener {
 
     //fields
     private String testId = NO_TESTID;
-    private List<Argument> args = new Vector<>();
-    private List<Testset> testsets = new Vector<>();
+    private List<Argument> args = new Vector<Argument>();
+    private List<Testset> testsets = new Vector<Testset>();
     private Path classpath;
     private Path internalclasspath;
     private File destdir;
     private File dir;
     private File errorfile;
-    private List<Run> testclasses = new Vector<>();
+    private List<Run> testclasses = new Vector<Run>();
     private boolean nocompile;
     private Ajdoc ajdoc = null;
     private boolean noclean;
     private boolean noverify;
-    private List<String> depends = new Vector<>();
+    private List<String> depends = new Vector<String>();
     //end-fields
 
     public Argfile createArgfile() {
@@ -321,7 +321,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 
     public static class Argument {
         private String name;
-        private List<String> values = new Vector<>();
+        private List<String> values = new Vector<String>();
         private boolean always = true;
         final boolean isj;
         public Argument(boolean isj) {
@@ -332,14 +332,14 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 ("-" + (str.startsWith("J") ? str.substring(1) : str));
         }
         public void setValues(String str) {
-            values = new Vector<>();
+            values = new Vector<String>();
             StringTokenizer tok = new StringTokenizer(str, ", ", false);
             while (tok.hasMoreTokens()) {
                 values.add(tok.nextToken().trim());
             }
         }
         public void setValue(String value) {
-            (values = new Vector<>()).add(value);
+            (values = new Vector<String>()).add(value);
         }
         public void setAlways(boolean always) {
             this.always = always;
@@ -401,19 +401,19 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     public class Testset extends FileSet {
-        private List<Argfile> argfileNames = new Vector<>();
+        private List<Argfile> argfileNames = new Vector<Argfile>();
         public List<File> argfiles;
         public List<File> files;
-        public List<Argument> args = new Vector<>();
+        public List<Argument> args = new Vector<Argument>();
         public String classname;
         private boolean havecludes = false;
-        private List<Run> testclasses = new Vector<>();
+        private List<Run> testclasses = new Vector<Run>();
         private Path classpath;
         private Path internalclasspath;
         private Ajdoc ajdoc = null;
         private boolean fork = false;
         private boolean noclean;
-        private List<String> depends = new Vector<>();
+        private List<String> depends = new Vector<String>();
         public String toString() {
             String str = "";
             if (files.size() > 0) {
@@ -578,8 +578,8 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public void resolve() throws BuildException {
             if (dir != null) this.setDir(dir);
             File src = getDir(project);
-            argfiles = new Vector<>();
-            files = new Vector<>();
+            argfiles = new Vector<File>();
+            files = new Vector<File>();
             for(Iterator<Argfile> iter = argfileNames.iterator(); iter.hasNext();) {
                 String name = iter.next().name;
                 File argfile = new File(src, name);
@@ -807,11 +807,11 @@ public class Ajctest extends Task implements PropertyChangeListener {
         prepare();
         log(testsets.size() + " testset" + s(testsets),
             Project.MSG_VERBOSE);
-        Map<Testset,List<List<Arg>>> testsetToArgcombo = new HashMap<>();
-        List<Integer> argcombos = new Vector<>();
+        Map<Testset,List<List<Arg>>> testsetToArgcombo = new HashMap<Testset,List<List<Arg>>>();
+        List<Integer> argcombos = new Vector<Integer>();
         for (Testset testset: testsets) {
             testset.resolve();
-            List<Argument> bothargs = new Vector<>(args);
+            List<Argument> bothargs = new Vector<Argument>(args);
             bothargs.addAll(testset.args);
             List<List<Arg>> argcombo = argcombo(bothargs);
             argcombos.add(new Integer(argcombo.size()));
@@ -1079,7 +1079,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 //    }
 
     private static List allErrors = new Vector();
-    private List<Failure> errors = new Vector<>();
+    private List<Failure> errors = new Vector<Failure>();
 
     private void post(Testset testset, List args,
                       String msgs, int exit, String type) {
@@ -1285,8 +1285,8 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     private List<List<Arg>> argcombo(List<Argument> arguments) {
-        List<Argument> combos = new Vector<>();
-        List<Arg> always = new Vector<>();
+        List<Argument> combos = new Vector<Argument>();
+        List<Arg> always = new Vector<Arg>();
         for (Iterator<Argument> iter = arguments.iterator(); iter.hasNext();) {
             Argument arg = iter.next();
             if (arg.values.size() == 0) arg.values.add("");
@@ -1619,7 +1619,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     private List<List<Arg>> combinations(List<Argument> arglist) {
-        List<List<Arg>> result = new Vector<>();
+        List<List<Arg>> result = new Vector<List<Arg>>();
         result.add(new Vector<Arg>());
         for (Iterator<Argument> iter = arglist.iterator(); iter.hasNext();) {
             Argument arg = iter.next();
@@ -1627,7 +1627,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             for (int i = 0; i < N; i++) {
                 List<Arg> to = result.remove(0);
                 for (Iterator<String> valiter = arg.values.iterator(); valiter.hasNext();) {
-                    List<Arg> newlist = new Vector<>(to);
+                    List<Arg> newlist = new Vector<Arg>(to);
                     Object val = valiter.next();
                     if (val != null) newlist.add(new Arg(arg.name, val+"", arg.isj));
                     result.add(newlist);

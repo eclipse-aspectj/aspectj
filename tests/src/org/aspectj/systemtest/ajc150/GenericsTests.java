@@ -874,7 +874,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * bridge methods have been created.
 	 */
 	public void checkMethodsExist(String classname,String[] methods) {
-		Set<String> methodsFound = new HashSet<>();
+		Set<String> methodsFound = new HashSet<String>();
 		StringBuffer debugString = new StringBuffer();
 		try {
 			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURL()});

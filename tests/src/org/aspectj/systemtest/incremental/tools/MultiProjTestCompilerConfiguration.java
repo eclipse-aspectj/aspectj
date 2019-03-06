@@ -42,8 +42,8 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	private String nonstandardoptions;
 	private List<File> modifiedFiles;
 	private List<String> modifiedDirs;
-	private List<String> projectSourceFiles = new ArrayList<>();
-	private List<String> xmlConfigFiles = new ArrayList<>();
+	private List<String> projectSourceFiles = new ArrayList<String>();
+	private List<String> xmlConfigFiles = new ArrayList<String>();
 	private String projectPath;
 
 	int changed;

@@ -233,7 +233,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 			// Load the file in
 			fr = new BufferedReader(new FileReader(f));
 			String line = null;
-			List<String> originalFileContents = new ArrayList<>();
+			List<String> originalFileContents = new ArrayList<String>();
 			while ((line = fr.readLine()) != null)
 				originalFileContents.add(line);
 			String[] fileContents = (String[]) originalFileContents.toArray(new String[] {});

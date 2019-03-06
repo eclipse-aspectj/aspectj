@@ -32,7 +32,7 @@ public class TestServer implements Runnable {
 	private boolean exitOnError = true;
 	private File workingDirectory;
 	private ClassLoader rootLoader;
-	private Map<String,ClassLoader> loaders = new HashMap<>();
+	private Map<String,ClassLoader> loaders = new HashMap<String,ClassLoader>();
 
 	private String mainClass = "UnknownClass";
 	private String mainLoader = "UnknownLoader";
@@ -75,7 +75,7 @@ public class TestServer implements Runnable {
 			if (parent == null) error("No such loader: " + parentName);
 		}
 
-		List<URL> urlList = new ArrayList<>();
+		List<URL> urlList = new ArrayList<URL>();
 		st = new StringTokenizer(classpath,";");
 		while (st.hasMoreTokens()) {
 			String fileName = st.nextToken();

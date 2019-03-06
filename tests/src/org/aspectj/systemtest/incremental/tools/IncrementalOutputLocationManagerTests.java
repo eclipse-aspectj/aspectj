@@ -74,7 +74,7 @@ public class IncrementalOutputLocationManagerTests extends AbstractMultiProjectI
 
 		public List<File> getAllOutputLocations() {
 			if (allOutputDirs == null) {
-				allOutputDirs = new ArrayList<>();
+				allOutputDirs = new ArrayList<File>();
 				for (int i = 0; i < numberOfSrcDirs + 1; i++) {
 					File f = null;
 					if (i == 0) {

@@ -27,8 +27,8 @@ import org.aspectj.weaver.patterns.TypePattern;
  */
 public class VisitorTestCase extends TestCase {
 
-    private Set<String> pointcuts = new HashSet<>();
-    private Set<String> typePatterns = new HashSet<>();
+    private Set<String> pointcuts = new HashSet<String>();
+    private Set<String> typePatterns = new HashSet<String>();
 
     protected void setUp() throws Exception {
         super.setUp();

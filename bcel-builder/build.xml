@@ -1,190 +1,238 @@
 <project name="bcel-builder" default="packageAndPush" basedir=".">
 
-    <path id="bcel-builder.test.src.path">
-        <fileset dir="${basedir}/../lib">
-            <include name="junit/*.jar"/>
-        </fileset>
-        <path refid="bcel-builder.src.path"/>
-    </path>
+	<path id="bcel-builder.test.src.path">
+		<fileset dir="${basedir}/../lib">
+			<include name="junit/*.jar"/>
+		</fileset>
+		<path refid="bcel-builder.src.path"/>
+	</path>
 
-    <path id="bcel-builder.src.path">
-        <fileset dir="${basedir}/../lib">
-            <include name="regexp/*.jar"/>
-        </fileset>
-    </path>
+	<path id="bcel-builder.src.path">
+		<fileset dir="${basedir}/../lib">
+			<include name="regexp/*.jar"/>
+		</fileset>
+	</path>
 
-    <target name="cleanall" depends="clean">
-        <delete dir="bin"/>
-        <delete dir="bintest"/>
-        <mkdir dir="bin"/>
-    </target>
+	<path id="bcel-builder.ver.classpath">
+		<pathelement path="bin"/>
+		<path refid="bcel-builder.src.path"/>
+	</path>
 
-    <target name="init"/>
+	<target name="cleanall" depends="clean">
+		<delete dir="bin"/>
+		<delete dir="bintest"/>
+		<delete dir="bin-ver"/>
+		<mkdir dir="bin"/>
+	</target>
 
-    <target name="compile" depends="init">
-        <srccompile project="bcel-builder" path="bcel-builder.src.path"/>
-    </target>
+	<target name="init"/>
 
-    <target name="test:compile" depends="compile">
-        <testcompile project="bcel-builder" path="bcel-builder.test.src.path"/>
-    </target>
+	<target name="compile" depends="init">
+		<!-- srccompile project="bcel-builder" path="bcel-builder.src.path"/ -->
+		<javac destdir="bin" source="1.6" target="1.6">
+			<src path="src"/>
+			<exclude name="**/Test*.java"/>
+			<!-- classpath refid="class.path"/ -->
+		</javac>
+	</target>
 
-    <target name="test" depends="test:compile">
-        <testrun project="bcel-builder" path="bcel-builder.test.src.path" suite="org.aspectj.apache.bcel.classfile.tests.AllTests"/>
-    </target>
-    <!-- *********************************************************************** -->
+	<target name="compile-ver" depends="init">
+		<!-- srccompile project="bcel-builder" path="bcel-builder.src.path"/ -->
+		<mkdir dir="bin-ver"/>
+		<javac destdir="bin-ver" source="1.6" target="1.6">
+			<src path="verifier-src"/>
+			<exclude name="**/Test*.java"/>
+			<!-- classpath refid="class.path"/ -->
+			<!--
+			<classpath refid="bcel-builder.src.path"/>
+			-->
+			<classpath refid="bcel-builder.ver.classpath"/>
+		</javac>
+	</target>
+
+	<target name="test:compile" depends="compile">
+		<testcompile project="bcel-builder" path="bcel-builder.test.src.path"/>
+	</target>
+
+	<target name="test" depends="test:compile">
+		<testrun project="bcel-builder" path="bcel-builder.test.src.path" suite="org.aspectj.apache.bcel.classfile.tests.AllTests"/>
+	</target>
+	<!-- *********************************************************************** -->
 
 
 
-  <!-- top-level -->
-  <target name="extractAndPatchAndJar" depends="extractAndPatch,jar,srcjar" />
+	<!-- top-level -->
+	<target name="extractAndPatchAndJar" depends="extractAndPatch,jar,srcjar" />
 
-  <target name="extractAndPatch" depends="unzipSource,createPatchedSource" />
-  
+	<target name="extractAndPatch" depends="unzipSource,createPatchedSource" />
+
 	<target name="packageAndPush" depends="buildTheJars,push"/>
-	
-  <target name="jar" depends="pack">
-      <!-- FIXME AV: someone fix this target since it is broken... looks for bcel/build.xml that does not exist -->
-<!--    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"-->
-<!--        tofile="bcel/lib/Regex.jar" />-->
-<!--    <ant dir="bcel" target="jar" />-->
-<!--    <copy file="bcel/bin/bcel.jar" toDir="." />-->
-  </target>
-  
-  <target name="srcjar" depends="pack">
-    <zip basedir="bcel" destfile="bcel-src.zip" includes="*/**" excludes="bin/**,lib/**"/>
-  </target>
-  
-  <target name="push">
-    <copy file="bcel.jar" todir="../lib/bcel" />
-    <copy file="bcel-verifier.jar" todir="../lib/bcel" />
-    <copy file="bcel-src.zip" todir="../lib/bcel" />
-    <copy file="bcel-verifier-src.zip" todir="../lib/bcel" />
-  	<delete file="bcel.jar"/>
-  	<delete file="bcel-verifier.jar"/>
-  	<delete file="bcel-src.zip"/>
-  	<delete file="bcel-verifier-src.zip"/>
-  </target>
-	
-  <target name="buildTheJars">
-  	<zip file="bcel.jar" basedir="bin" includes="**/*" excludes="**/tests/*,**/verifier/**/*,**/tests"/>
-  	<zip file="bcel-verifier.jar" basedir="bin" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
-  	<zip file="bcel-src.zip" basedir="src" includes="**/*" excludes="**/tests/*.java,**/verifier/**/*"/>
-  	<zip file="bcel-verifier-src.zip" basedir="verifier-src" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
-  </target>
-  
-  <target name="diff" depends="transformFromAJ,pack">
-  
-    <!-- Wipe out some of the rubbish that can arise due to doing a 'ant jar' before doing the diff -->
-    <delete dir="bcel/bin"/>
-    <delete dir="bcel/lib"/>
 
-    <exec dir="." executable="diff.exe" output="patch.txt">
-      <arg line="-N"/> <!-- Treat absent files as empty -->
-      <arg line="-a"/> <!-- Treat all files as text -->
-      <arg line="-u"/> <!-- Output (default 3) lines of unified context -->
-      <arg line="-r"/> <!-- Recursively compare any subdirectories found -->
-      <arg line="-b"/> <!-- Ignore changes in the amount of white space -->
-      <arg line="bcel-5.1" />
-      <arg line="bcel" />
-    </exec>
-  </target>
- 
-  <target name="clean">
-    <delete dir="bcel-5.1" />
-    <delete dir="bcel" />
-    <delete file="bcel.jar" />
-    <delete file="bcel-src.zip" />
-    <!--delete dir="src" /-->
-    <mkdir dir="src" /> <!-- empty src dir -->
-  </target>
- 
-  <!-- internals -->
+	<target name="jar" depends="pack">
+		<!-- FIXME AV: someone fix this target since it is broken... looks for bcel/build.xml that does not exist -->
+		<!--    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"-->
+		<!--        tofile="bcel/lib/Regex.jar" />-->
+		<!--    <ant dir="bcel" target="jar" />-->
+		<!--    <copy file="bcel/bin/bcel.jar" toDir="." />-->
+		<jar destfile="bcel.jar" basedir="bin"/>
+		<copy file="bcel.jar" todir="../lib/bcel" />
+	</target>
 
-  <target name="unzipSource">
-    <delete dir="bcel-5.1" />
-    <unzip src="bcel-5.1-src.zip" dest="." />
-  </target>
-  
-  <target name="createPatchedSource" depends="patch,unpack,transformToAJ" />
+	<target name="jar_bcel_and_push" depends="compile">
+		<!-- FIXME AV: someone fix this target since it is broken... looks for bcel/build.xml that does not exist -->
+		<!--    <copy file="../lib/regexp/jakarta-regexp-1.2.jar"-->
+		<!--        tofile="bcel/lib/Regex.jar" />-->
+		<!--  <ant dir="bcel" target="jar" />-->
+		<!--    <copy file="bcel/bin/bcel.jar" toDir="." />-->
+		<jar destfile="bcel.jar" basedir="bin"/>
+		<copy file="bcel.jar" todir="../lib/bcel" />
+	</target>
 
-  <target name="patch">
-    <delete dir="bcel" />
-    <copy todir="bcel">
-      <fileset dir="bcel-5.1" />
-    </copy>
-    <patch patchfile="patch.txt" strip="1" dir="bcel" />
-  </target>
+	<target name="jar_bcelvar_and_push" depends="jar_bcel_and_push, compile-ver">
+		<jar destfile="bcel-verifier.jar" basedir="bin-ver"/>
+		<copy file="bcel-verifier.jar" todir="../lib/bcel" />
+	</target>
 
-  <target name="pack">
-    <delete dir="bcel/src/java" />
-    <copy toDir="bcel/src/java">
-      <fileset dir="src" />
-    </copy>
-  </target>
+	<target name="srcjar" depends="pack">
+		<zip basedir="bcel" destfile="bcel-src.zip" includes="*/**" excludes="bin/**,lib/**"/>
+	</target>
 
-  <target name="unpack">
-    <delete dir="src" />
-    <copy toDir="src">
-      <fileset dir="bcel/src/java" >
-      </fileset>
-    </copy>
-  </target>
-	
-	  <target name="transformFromAJ">
-	    <delete dir="src-temp" />
-	  	
-	  	<echo message="Copying 'src' to 'src-temp' and modifying file names to remove aspectj"/>
-	  	
-	    <copy toDir="src-temp">
-	      <fileset dir="src"/>
-	      <mapper type="regexp" from="^(.*)aspectj\\apache(.*)$" to="\1apache\2"/>
-	    </copy>
-	  	
-	  	<delete dir="src"/>
-	  	
-	  	<echo message="Modifying file contents to change refs from 'org.aspectj.apache.bcel' to 'org.apache.bcel'"/>
-	  	<replaceregexp byline="true" flags="g">
-	  		<regexp pattern="org.aspectj.apache.bcel"/>
+	<target name="push">
+		<copy file="bcel.jar" todir="../lib/bcel" />
+		<copy file="bcel-verifier.jar" todir="../lib/bcel" />
+		<copy file="bcel-src.zip" todir="../lib/bcel" />
+		<copy file="bcel-verifier-src.zip" todir="../lib/bcel" />
+		<delete file="bcel.jar"/>
+		<delete file="bcel-verifier.jar"/>
+		<delete file="bcel-src.zip"/>
+		<delete file="bcel-verifier-src.zip"/>
+	</target>
+
+	<target name="buildTheJars">
+		<zip file="bcel.jar" basedir="bin" includes="**/*" excludes="**/tests/*,**/verifier/**/*,**/tests"/>
+		<zip file="bcel-verifier.jar" basedir="bin" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
+		<zip file="bcel-src.zip" basedir="src" includes="**/*" excludes="**/tests/*.java,**/verifier/**/*"/>
+		<zip file="bcel-verifier-src.zip" basedir="verifier-src" includes="**/verifier/**/*" excludes="**/tests,**/tests/*"/>
+	</target>
+
+	<target name="diff" depends="transformFromAJ,pack">
+
+		<!-- Wipe out some of the rubbish that can arise due to doing a 'ant jar' before doing the diff -->
+		<delete dir="bcel/bin"/>
+		<delete dir="bcel/lib"/>
+
+		<exec dir="." executable="diff.exe" output="patch.txt">
+			<arg line="-N"/>
+			<!-- Treat absent files as empty -->
+			<arg line="-a"/>
+			<!-- Treat all files as text -->
+			<arg line="-u"/>
+			<!-- Output (default 3) lines of unified context -->
+			<arg line="-r"/>
+			<!-- Recursively compare any subdirectories found -->
+			<arg line="-b"/>
+			<!-- Ignore changes in the amount of white space -->
+			<arg line="bcel-5.1" />
+			<arg line="bcel" />
+		</exec>
+	</target>
+
+	<target name="clean">
+		<delete dir="bcel-5.1" />
+		<delete dir="bcel" />
+		<delete file="bcel.jar" />
+		<delete file="bcel-src.zip" />
+		<!--delete dir="src" /-->
+		<mkdir dir="src" />
+		<!-- empty src dir -->
+	</target>
+
+	<!-- internals -->
+
+	<target name="unzipSource">
+		<delete dir="bcel-5.1" />
+		<unzip src="bcel-5.1-src.zip" dest="." />
+	</target>
+
+	<target name="createPatchedSource" depends="patch,unpack,transformToAJ" />
+
+	<target name="patch">
+		<delete dir="bcel" />
+		<copy todir="bcel">
+			<fileset dir="bcel-5.1" />
+		</copy>
+		<patch patchfile="patch.txt" strip="1" dir="bcel" />
+	</target>
+
+	<target name="pack">
+		<delete dir="bcel/src/java" />
+		<copy toDir="bcel/src/java">
+			<fileset dir="src" />
+		</copy>
+	</target>
+
+	<target name="unpack">
+		<delete dir="src" />
+		<copy toDir="src">
+			<fileset dir="bcel/src/java" >
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="transformFromAJ">
+		<delete dir="src-temp" />
+
+		<echo message="Copying 'src' to 'src-temp' and modifying file names to remove aspectj"/>
+
+		<copy toDir="src-temp">
+			<fileset dir="src"/>
+			<mapper type="regexp" from="^(.*)aspectj\\apache(.*)$" to="\1apache\2"/>
+		</copy>
+
+		<delete dir="src"/>
+
+		<echo message="Modifying file contents to change refs from 'org.aspectj.apache.bcel' to 'org.apache.bcel'"/>
+		<replaceregexp byline="true" flags="g">
+			<regexp pattern="org.aspectj.apache.bcel"/>
 			<substitution expression="org.apache.bcel"/>
 			<fileset dir="src-temp">
-	  			<include name="**/*"/>
-	  		</fileset>			
-	  	</replaceregexp>
-	  	
-	  	<echo message="Copying from 'src-temp' back to 'src'"/>
-	  	<copy toDir="src">
-		   <fileset dir="src-temp"/>
-	  	</copy>
-	  	<delete dir="src-temp"/>
-	  </target>
-	
-	  <target name="transformToAJ">
-	    <delete dir="src-temp" />
-	  	
-	  	<echo message="Copying 'src' to 'src-temp' and modifying file names to include aspectj"/>
-	  	
-	    <copy toDir="src-temp">
-	      <fileset dir="src"/>
-	      <mapper type="regexp" from="^(.*)apache(.*)$" to="\1aspectj\\apache\2"/>
-	    </copy>
-	  	
-	  	<delete dir="src"/>
-	  	
-	  	<echo message="Modifying file contents to change refs from 'org.apache.bcel' to 'org.aspectj.apache.bcel'"/>
-	  	<replaceregexp byline="true" flags="g">
-	  		<regexp pattern="org.apache.bcel"/>
+				<include name="**/*"/>
+			</fileset>
+		</replaceregexp>
+
+		<echo message="Copying from 'src-temp' back to 'src'"/>
+		<copy toDir="src">
+			<fileset dir="src-temp"/>
+		</copy>
+		<delete dir="src-temp"/>
+	</target>
+
+	<target name="transformToAJ">
+		<delete dir="src-temp" />
+
+		<echo message="Copying 'src' to 'src-temp' and modifying file names to include aspectj"/>
+
+		<copy toDir="src-temp">
+			<fileset dir="src"/>
+			<mapper type="regexp" from="^(.*)apache(.*)$" to="\1aspectj\\apache\2"/>
+		</copy>
+
+		<delete dir="src"/>
+
+		<echo message="Modifying file contents to change refs from 'org.apache.bcel' to 'org.aspectj.apache.bcel'"/>
+		<replaceregexp byline="true" flags="g">
+			<regexp pattern="org.apache.bcel"/>
 			<substitution expression="org.aspectj.apache.bcel"/>
 			<fileset dir="src-temp">
-	  			<include name="**/*"/>
-	  		</fileset>			
-	  	</replaceregexp>
-	  	
-	  	<echo message="Copying from 'src-temp' back to 'src'"/>
-	  	<copy toDir="src">
-		   <fileset dir="src-temp"/>
-	  	</copy>
-	  	<delete dir="src-temp"/>
-	  </target>
+				<include name="**/*"/>
+			</fileset>
+		</replaceregexp>
+
+		<echo message="Copying from 'src-temp' back to 'src'"/>
+		<copy toDir="src">
+			<fileset dir="src-temp"/>
+		</copy>
+		<delete dir="src-temp"/>
+	</target>
 
 </project>

@@ -167,8 +167,8 @@ public class TesterTest extends TestCase {
      * @author isberg
      */
     public static class MyTestReporter implements IMessageHandler {
-        public ArrayList<IMessage> failures = new ArrayList<>();
-        public ArrayList<IMessage> passes = new ArrayList<>();
+        public ArrayList<IMessage> failures = new ArrayList<IMessage>();
+        public ArrayList<IMessage> passes = new ArrayList<IMessage>();
 
         public void clear() {
             failures.clear();

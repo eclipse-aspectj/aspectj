@@ -269,7 +269,7 @@ public class AjcMessageHandler extends MessageHandler {
 	private IMessage[] getMessagesWithoutExpectedFails() {
 		IMessage[] result = super.getMessages(null, true);
 		// remove all expected fail+ (COSTLY)
-		ArrayList<IMessage> list = new ArrayList<>();
+		ArrayList<IMessage> list = new ArrayList<IMessage>();
 		int leftToFilter = numExpectedFailed;
 		for (int i = 0; i < result.length; i++) {
 			if ((0 == leftToFilter)

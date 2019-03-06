@@ -51,10 +51,10 @@ public class Tester {
     private static Set notes;
     
     /** <code>List</code> to hold events submitted. */
-    private static List<String> actualEvents = new ArrayList<>();
+    private static List<String> actualEvents = new ArrayList<String>();
     
     /** <code>List</code> to hold events we expect. */
-    private static List<String> expectedEvents = new ArrayList<>();
+    private static List<String> expectedEvents = new ArrayList<String>();
 
     static {
         setBASEDIR(new File("."));
@@ -103,8 +103,8 @@ public class Tester {
 
     /** XXX deprecated #clear() */
     public static void clearEvents() { 
-        actualEvents = new ArrayList<>(); 
-        expectedEvents = new ArrayList<>();     
+        actualEvents = new ArrayList<String>(); 
+        expectedEvents = new ArrayList<String>();     
     }
     
 
@@ -709,8 +709,8 @@ public class Tester {
     /** @return String[] of differences '{un}expected msg "..." {not} found' */
     private static String[] diffIgnoreDups(Collection<String> set, String[] expected, String msg, 
         boolean ignoreDups) {
-        ArrayList<String> result = new ArrayList<>();
-        ArrayList<String> actual = new ArrayList<>(set);
+        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> actual = new ArrayList<String>(set);
         BitSet hits = new BitSet();
         for (int i = 0; i < expected.length; i++) {
             if (!actual.remove(expected[i])) {

@@ -49,7 +49,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeJar0() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/tracing.jar");
 
@@ -63,7 +63,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeJar1() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/megatrace.jar");
 
@@ -78,7 +78,7 @@ public class BcweaverJarMaker {
 	
 	
 	public static void makeJarObviousNothing() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/megatrace0easy.jar");
 
@@ -92,7 +92,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeJarHardNothing() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/megatrace0hard.jar");
 
@@ -107,7 +107,7 @@ public class BcweaverJarMaker {
 	
 	
 	public static void makeJar1a() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/megatraceNoweave.jar");
 
@@ -124,7 +124,7 @@ public class BcweaverJarMaker {
 	
 	
 	public static void makeJar2() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add("../weaver/testdata/dummyAspect.jar");
 
@@ -137,7 +137,7 @@ public class BcweaverJarMaker {
 	}	
 	
 	public static void makeTestJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
@@ -148,7 +148,7 @@ public class BcweaverJarMaker {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		args = new ArrayList<>();
+		args = new ArrayList<String>();
 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
@@ -159,7 +159,7 @@ public class BcweaverJarMaker {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		args = new ArrayList<>();
+		args = new ArrayList<String>();
 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
@@ -170,7 +170,7 @@ public class BcweaverJarMaker {
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 		
-		args = new ArrayList();
+		args = new ArrayList<String>();
 
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
@@ -196,7 +196,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeURLWeavingClassLoaderJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		/*
 		 * Vanilla classes
@@ -213,7 +213,7 @@ public class BcweaverJarMaker {
 		/* 
 		 * Woven classes
 		 */
-		args = new ArrayList();
+		args = new ArrayList<String>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -302,7 +302,7 @@ public class BcweaverJarMaker {
 	
 	private static void buildJarWithClasspath(String outjar,String input,String deps,boolean nodebug) {
 		System.out.println("  Building "+outjar);
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		if (nodebug) args.add("-g:none");		
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
@@ -332,7 +332,7 @@ public class BcweaverJarMaker {
 	}	
 	
 	public static void makeDuplicateManifestTestJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		/*
 		 * injar
@@ -348,7 +348,7 @@ public class BcweaverJarMaker {
 		/*
 		 * aspectjar
 		 */
-		args = new ArrayList();
+		args = new ArrayList<String>();
 		args.add("-classpath"); 
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -360,7 +360,7 @@ public class BcweaverJarMaker {
 	}	
 	
 	public static void makeAspectPathTestJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		args.clear();
 		args.add("-classpath"); 
@@ -372,7 +372,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeAjc11TestJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		args.clear();
 		args.add("-classpath"); 
@@ -384,7 +384,7 @@ public class BcweaverJarMaker {
 	}
 	
 	public static void makeOutjarTestJars() throws IOException {
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 
 		/*
 		 * parent

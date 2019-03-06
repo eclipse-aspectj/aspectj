@@ -74,8 +74,8 @@ public class GraphicalVerifier {
   /** Constructor. */
   public GraphicalVerifier() {
     VerifierAppFrame frame = new VerifierAppFrame();
-    //Frames überprüfen, die voreingestellte Größe haben
-    //Frames packen, die nutzbare bevorzugte Größeninformationen enthalten, z.B. aus ihrem Layout
+    //Frames ueberpruefen, die voreingestellte Groesse haben
+    //Frames packen, die nutzbare bevorzugte Groesseninformationen enthalten, z.B. aus ihrem Layout
     if (packFrame) {
       frame.pack();
     }

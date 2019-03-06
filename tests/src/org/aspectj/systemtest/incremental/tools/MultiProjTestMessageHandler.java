@@ -36,11 +36,11 @@ public class MultiProjTestMessageHandler implements IBuildMessageHandler {
 	private List<Kind> ignoring;
 
 	public MultiProjTestMessageHandler() {
-		ignoring = new ArrayList<>();
+		ignoring = new ArrayList<Kind>();
 		errorMessages = new ArrayList<IMessage>();
 		warningMessages = new ArrayList<IMessage>();
 		weavingMessages = new ArrayList<IMessage>();
-		compilerErrors = new ArrayList<>();
+		compilerErrors = new ArrayList<String>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);
 	}

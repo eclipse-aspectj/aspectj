@@ -62,7 +62,7 @@ public class FileUtilTest extends TestCase {
 	 * @throws AssertionFailedError if any names are not in dir
 	 */
 	public static String[] dirContains(File dir, final String[] filenames) {
-		final ArrayList<String> sought = new ArrayList<>(LangUtil.arrayAsList(filenames));
+		final ArrayList<String> sought = new ArrayList<String>(LangUtil.arrayAsList(filenames));
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File d, String name) {
 				return !sought.remove(name);
@@ -388,7 +388,7 @@ public class FileUtilTest extends TestCase {
 	}
 
 	public void testRandomFileString() {
-		ArrayList<String> results = new ArrayList<>();
+		ArrayList<String> results = new ArrayList<String>();
 		for (int i = 0; i < 1000; i++) {
 			String s = FileUtil.randomFileString();
 			if (results.contains(s)) {
@@ -502,13 +502,13 @@ public class FileUtilTest extends TestCase {
 			tempFiles.add(file);
 		}
 		// now test
-		final ArrayList<String> errors = new ArrayList<>();
+		final ArrayList<String> errors = new ArrayList<String>();
 		final PrintStream errorSink = new PrintStream(System.err, true) {
 			public void println(String error) {
 				errors.add(error);
 			}
 		};
-		List<String> sourceList = new ArrayList<>();
+		List<String> sourceList = new ArrayList<String>();
 		sourceList.addAll(Arrays.asList(sources));
 		sourceList = Collections.unmodifiableList(sourceList);
 		for (int k = 0; k < sources.length; k++) {

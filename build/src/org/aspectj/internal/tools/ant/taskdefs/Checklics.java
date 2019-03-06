@@ -82,7 +82,7 @@ public class Checklics extends MatchingTask {
 		License MPL_ONLY = new License(MPL_ONLY_TAG, LIC_MPL);
 		License MPL_PARC = new License(MPL_PARC_TAG, LIC_MPL, PARC);
 		License PARC_COPYRIGHT = new License(PARC_COPYRIGHT_TAG, null, PARC);
-		LICENSES = new Hashtable<>();
+		LICENSES = new Hashtable<String,License>();
 		LICENSES.put(APL.tag, APL);
 		LICENSES.put(MPL.tag, MPL);
 		LICENSES.put(MPL_PARC.tag, MPL_PARC);
@@ -339,7 +339,7 @@ public class Checklics extends MatchingTask {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
 		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", 
-				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2001 ", "2000 ",
+				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2019", "2001 ", "2000 ",
 				"1999 " };
 		public final String tag;
 		public final String license;
@@ -463,7 +463,7 @@ class HeaderInfo {
 		this.lastLine = lastLine;
 		this.file = file;
 		this.hasLicense = hasLicense;
-		List<String> newYears = new ArrayList<>();
+		List<String> newYears = new ArrayList<String>();
 		newYears.addAll(years);
 		Collections.sort(newYears);
 		this.years = Collections.unmodifiableList(newYears);
@@ -611,7 +611,7 @@ class Header {
 	}
 
 	public static HeaderInfo checkFile(final File file) {
-		ArrayList<String> years = new ArrayList<>();
+		ArrayList<String> years = new ArrayList<String>();
 		int endLine = 0;
 		BufferedReader input = null;
 		int lineNum = 0;

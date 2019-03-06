@@ -484,10 +484,10 @@ public class DirChanges {
         final ArrayList<String> unchanged;
     
         public Spec() {
-            added = new ArrayList<>();
-            removed = new ArrayList<>();
-            updated = new ArrayList<>();
-            unchanged = new ArrayList<>();
+            added = new ArrayList<String>();
+            removed = new ArrayList<String>();
+            updated = new ArrayList<String>();
+            unchanged = new ArrayList<String>();
         }
         
         /**

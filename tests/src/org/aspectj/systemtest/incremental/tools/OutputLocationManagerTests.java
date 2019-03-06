@@ -50,7 +50,7 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 	}
 
 	public void testResourceCopying() {
-		Map<String,File> resourceMap = new HashMap<>();
+		Map<String,File> resourceMap = new HashMap<String,File>();
 		resourceMap.put("resourceOne.txt", new File(getFile(PROJECT_NAME, "srcRootOne/resourceOne.txt")));
 		resourceMap.put("resourceTwo.txt", new File(getFile(PROJECT_NAME, "srcRootTwo/resourceTwo.txt")));
 		configureResourceMap(PROJECT_NAME, resourceMap);
@@ -134,7 +134,7 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 
 		public List<File> getAllOutputLocations() {
 			if (allOutputDirs == null) {
-				allOutputDirs = new ArrayList<>();
+				allOutputDirs = new ArrayList<File>();
 				allOutputDirs.add(new File(projectHome, "target/main/classes"));
 				allOutputDirs.add(new File(projectHome, "target/test/classes"));
 				allOutputDirs.add(new File(projectHome, "target/anotherTest/classes"));

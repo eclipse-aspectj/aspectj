@@ -109,7 +109,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
 		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir + File.separator + "InpathClass.class");
-		List<String> fileNames = new ArrayList<>();
+		List<String> fileNames = new ArrayList<String>();
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
@@ -148,7 +148,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
 		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir + File.separator + "InpathClass.class");
-		List<String> fileNames = new ArrayList<>();
+		List<String> fileNames = new ArrayList<String>();
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
@@ -179,7 +179,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		assertFalse("expected there to be binary sources from the inpath setting but didn't find any", binarySources.isEmpty());
 
 		List<UnwovenClassFile> unwovenClassFiles = binarySources.get(inpathDir);
-		List<String> fileNames = new ArrayList<>();
+		List<String> fileNames = new ArrayList<String>();
 
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
 			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
@@ -309,7 +309,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			return;
 		}
 		File f = new File(entry);
-		Set<File> s = new HashSet<>();
+		Set<File> s = new HashSet<File>();
 		s.add(f);
 		configureInPath("inpathTesting", s);
 	}
@@ -329,7 +329,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 			this.testProjectOutputPath = testProjectPath + File.separator + "bin";
 			outputLoc = new File(testProjectOutputPath);
 
-			allOutputLocations = new ArrayList<>();
+			allOutputLocations = new ArrayList<File>();
 			allOutputLocations.add(outputLoc);
 		}
 

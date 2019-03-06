@@ -168,7 +168,7 @@ public abstract class ConditionalTask extends Task {
 
     protected List<String> getFalses() {
         Iterator<If> iter = ifs().iterator();
-        List<String> result = new Vector<>();
+        List<String> result = new Vector<String>();
         while (iter.hasNext()) {
             If next = (If) iter.next();
             String name = next.getName();

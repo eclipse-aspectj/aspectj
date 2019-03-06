@@ -103,7 +103,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 
 	public Hashtable<String,Field> getMeTheFields(String classname) {
 		JavaClass theClass = getClassFromDisk(ajc, classname);
-		Hashtable<String,Field> retval = new Hashtable<>();
+		Hashtable<String,Field> retval = new Hashtable<String,Field>();
 		org.aspectj.apache.bcel.classfile.Field[] fs = theClass.getFields();
 		for (int i = 0; i < fs.length; i++) {
 			Field field = fs[i];

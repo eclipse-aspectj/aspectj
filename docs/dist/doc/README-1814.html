@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html> <head>
+<title>AspectJ 1.8.14 Readme</title>
+<style type="text/css">
+<!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+-->
+</style>
+</head>
+
+<body>
+<div align="right"><small>
+&copy; Copyright 2019 Contributors.
+All rights reserved.
+</small></div>
+
+<h1>AspectJ 1.8.14 Readme</h1>
+
+<p>Small release that:</p>
+
+<ul>
+<li>Will skip module-info.class and classfiles under META-INF that you find in multi release jars
+(as described in https://bugs.eclipse.org/bugs/show_bug.cgi?id=545033).
+This enables some usage of AspectJ 8 operating on jars containing some of these features from later Java
+(but where the main set of classfiles in a jar are Java8 or lower). For proper
+treatment of Java9 code, please use AspectJ 1.9 or later.
+</ul>
+
+<p>1.8.14 available 6-Mar-2019
+
+</body>
+</html>

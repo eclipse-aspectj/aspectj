@@ -3058,7 +3058,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		alter("PR133117", "inc1");
 		build("PR133117");
 		List<IMessage> warnings = getWarningMessages("PR133117");
-		List<IMessage> noGuardWarnings = new ArrayList<>();
+		List<IMessage> noGuardWarnings = new ArrayList<IMessage>();
 		for (IMessage warning: warnings) {
 			if (warning.getMessage().indexOf("Xlint:noGuardForLazyTjp") != -1) {
 				noGuardWarnings.add(warning);

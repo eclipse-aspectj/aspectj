@@ -32,7 +32,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 	public void testJar1() throws IOException {
 		String library = getSandboxName() + "/lib.jar";
 		
-		List<String> args = new ArrayList<>();
+		List<String> args = new ArrayList<String>();
 		args.add("-outjar");
 		args.add(library);
 
