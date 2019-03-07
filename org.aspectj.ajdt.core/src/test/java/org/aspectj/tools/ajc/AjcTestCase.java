@@ -104,18 +104,11 @@ public abstract class AjcTestCase extends TestCase {
 			+ "org.aspectj.matcher.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
 			+ File.separator + "loadtime.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
 			+ File.separator + "weaver.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-			+ File.separator + "weaver5.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
 			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
 			+ File.separator + "testing-client.jar"
 			// hmmm, this next one should perhaps point to an aj-build jar...
 			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
-
-	public static final String JAVA5_CLASSPATH_ENTRIES = File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator
-			+ "bin" + File.pathSeparator + ".." + File.separator + "loadtime5" + File.separator + "bin" + File.pathSeparator + ".."
-			+ File.separator + "weaver5" + File.separator + "bin"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "aspectj5rt.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "loadtime5.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "weaver5.jar";
 
 	/*
 	 * Save reference to real stderr and stdout before starting redirection
@@ -631,7 +624,7 @@ public abstract class AjcTestCase extends TestCase {
 			 */
 			URL[] testUrls = new URL[0];//testLoader.getURLs();
 			// What are the URLs on java 8?
-			URL[] java5Urls = getURLs(DEFAULT_CLASSPATH_ENTRIES);//getURLs(JAVA5_CLASSPATH_ENTRIES);
+			URL[] java5Urls = getURLs(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = new URL[testUrls.length + java5Urls.length];
 			System.arraycopy(testUrls, 0, urls, 0, testUrls.length);
 			System.arraycopy(java5Urls, 0, urls, testUrls.length, java5Urls.length);
