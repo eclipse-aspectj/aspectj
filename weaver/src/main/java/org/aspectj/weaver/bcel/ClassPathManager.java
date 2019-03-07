@@ -106,7 +106,9 @@ public class ClassPathManager {
 			}
 			try {
 				if (lc.endsWith(LangUtil.JRT_FS)) { // Java9
-					entries.add(new JImageEntry());
+					if (LangUtil.is19VMOrGreater()) {
+						entries.add(new JImageEntry());
+					}
 				} else {
 					entries.add(new ZipFileEntry(f));
 				}
