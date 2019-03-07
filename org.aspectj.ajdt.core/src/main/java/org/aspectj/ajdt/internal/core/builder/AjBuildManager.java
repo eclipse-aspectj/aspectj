@@ -1340,6 +1340,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) {
 			return "no classpath specified";
 		}
+		
+		for (String s: buildConfig.getFullClasspath()) {
+			if (s.endsWith("runtime/target/classes")) {
+				// doing an AspectJ build
+				return null;
+			}
+		}
 
 		String ret = null;
 		for (Iterator<String> it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
@@ -1362,7 +1369,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						}
 					}
 					// assume that users of development aspectjrt.jar know what they're doing
-					if (Version.DEVELOPMENT.equals(version)) {
+					if (Version.DEVELOPMENT.equals(version) || version.endsWith("BUILD-SNAPSHOT")) {
 						// MessageUtil.info(holder,
 						// "running with development version of aspectjrt.jar in " +
 						// p.getAbsolutePath());

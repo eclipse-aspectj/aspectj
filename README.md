@@ -22,3 +22,6 @@ This will build all the modules, run all the tests and install the key artifacts
 Once you have imported all the projects using `m2e`, close the `org.eclipse.jdt.core` project (TOBEFIXED), then there is a special module called `run-all-junit-tests` and within that a `RunTheseBeforeYouCommitTests` class that can be run with the JUnit launcher. This will execute all the tests in each module plus the compiler tests in the `tests` module. When you close `org.eclipse.jdt.core` you might need to do a maven refresh on the `run-all-junit-tests` project.
 
  
+## Setting version for release:
+
+mvn versions:set -DgroupId=org.aspectj -DartifactId=* -DoldVersion=1.9.3.BUILD-SNAPSHOT -DnewVersion=1.9.3

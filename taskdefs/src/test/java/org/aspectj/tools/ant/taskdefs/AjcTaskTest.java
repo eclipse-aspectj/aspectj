@@ -1027,6 +1027,9 @@ public class AjcTaskTest extends TestCase {
 							holder,
 							kind + " expected " + num + " got " + actual);
 					}
+					if (num != actual){ 
+						System.out.println("===\n"+Arrays.toString(holder.getMessages(kind, false))+"\n===\n");
+					}
 					assertEquals(kind.toString(), num, actual);
 				}
 			}
