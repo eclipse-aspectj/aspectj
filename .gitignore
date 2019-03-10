@@ -1,11 +1,25 @@
-*/bin
-.attach_pid*
-pom.xml.versionsBackup
-log.txt
-.vscode
-.DS_Store
-aj-build/
+# Maven
 target/
+
+# Files + directories created during build
+aj-build/
+build/local.properties
+taskdefs/bin
+
+# Log files
+log.txt
+
+# Eclipse
 .classpath
 .project
 .settings
+
+# IntelliJ IDEA
+*.iml
+.idea/
+
+# Visual Studio Code
+.vscode
+
+# MacOS X Finder
+.DS_Store
