@@ -10,7 +10,7 @@
 
     <target name="compile:javac">
         <!-- compile only javac compilable stuff, exclude the one that needs other dependencies -->
-        <javac source="1.6" target="1.6" destdir="${aj.sandbox}" classpathref="aj.path"
+        <javac source="1.7" target="1.7" destdir="${aj.sandbox}" classpathref="aj.path"
             srcdir="${basedir}"
             includes="ataspectj/*"
             excludes="ataspectj/UnweavableTest.java"
@@ -75,7 +75,7 @@
 
     <target name="ltw.Aspect2MainTest">
         <!-- javac Aspect2 -->
-        <javac source="1.6" target="1.6" destdir="${aj.sandbox}" classpathref="aj.path"
+        <javac source="1.7" target="1.7" destdir="${aj.sandbox}" classpathref="aj.path"
             srcdir="${basedir}"
             includes="ataspectj/ltwreweavable/Aspect2.java"
             debug="true">
@@ -125,7 +125,7 @@
     </target>
 
     <target name="ltw.Unweavable">
-        <javac source="1.6" target="1.6"  destdir="${aj.sandbox}"
+        <javac source="1.7" target="1.7"  destdir="${aj.sandbox}"
             srcdir="${basedir}"
             includes="ataspectj/UnweavableTest.java, ataspectj/TestHelper.java"
             debug="true">
@@ -171,7 +171,7 @@
 
     <target name="ltw.Decp2">
         <!-- javac compile the 2nd aspect -->
-        <javac source="1.6" target="1.6"  destdir="${aj.sandbox}"
+        <javac source="1.7" target="1.7"  destdir="${aj.sandbox}"
             srcdir="${basedir}"
             includes="ataspectj/DeclareParentsImplementsReweavableTestAspect.java"
             debug="true">

@@ -87,7 +87,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
 	public void testAJdocHasAspectTitle() throws Exception {
 		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/A.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/A.html");
 		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
@@ -101,7 +101,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
 	public void testAJdocHasClassTitle() throws Exception {
 		File[] files = {new File(getAbsoluteProjectDir() + "/pkg/C.java")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C.html");
 		if (!htmlFile.exists()) {
 			fail("couldn't find " + htmlFile.getAbsolutePath()+ " - were there compilation errors?");
@@ -117,7 +117,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testInnerAspect() throws Exception {
     	File[] files = {file1, file2};
-        runAjdoc("private","1.6",files);
+        runAjdoc("private",AJDocConstants.VERSION,files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/ClassA.InnerAspect.html");
 		if (!htmlFile.exists()) {
@@ -205,7 +205,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdviceNamingCoverage() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdviceNamingCoverage.html");
 		if (!htmlFile.exists()) {
@@ -237,7 +237,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisesRelationshipCoverage() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdvisesRelationshipCoverage.html");
 		if (!htmlFile.exists()) {
@@ -290,7 +290,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByMethodExecution() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -321,7 +321,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByConstructorExecution() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -358,7 +358,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByMethodCall() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -389,7 +389,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByConstructorCall() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -420,7 +420,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByGet() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -451,7 +451,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedBySet() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -500,7 +500,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByInitialization() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -532,7 +532,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByStaticInitialization() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -553,7 +553,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testAdvisedByHandler() throws Exception {
     	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point.html");
 		if (!htmlFile.exists()) {
@@ -591,7 +591,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testTwoBeforeAdvice() throws Exception {
     	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/A2.aj")};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/C2.html");
 		if (!htmlFile.exists()) {
@@ -637,7 +637,7 @@ public class CoverageTestCase extends AjdocTestCase {
      */
     public void testNoSpuriousAdvisedByRels() throws Exception {
        	File[] files = {file4};
-    	runAjdoc("private","1.6",files);
+    	runAjdoc("private",AJDocConstants.VERSION,files);
     	
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/AdvisesRelationshipCoverage.html");
 		if (!htmlFile.exists()) {
@@ -666,7 +666,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
 	public void testNestedAspect() throws Exception {
 		File[] files = {file9};
-		runAjdoc("private","1.6",files);	
+		runAjdoc("private",AJDocConstants.VERSION,files);	
 		
 	       File htmlFile = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.NestedAspect.html");
 			if (!htmlFile.exists()) {
@@ -748,7 +748,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
 	public void testNestedAspectWithSimilarName() throws Exception {
     	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
-        runAjdoc("private","1.6",files);
+        runAjdoc("private",AJDocConstants.VERSION,files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
 		if (!htmlFile.exists()) {
@@ -829,7 +829,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
 	public void testAdviceInNestedAspect() throws Exception {
     	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
-        runAjdoc("private","1.6",files);
+        runAjdoc("private",AJDocConstants.VERSION,files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.NestedAspect.html");
 		if (!htmlFile.exists()) {
@@ -860,7 +860,7 @@ public class CoverageTestCase extends AjdocTestCase {
 	 */
 	public void testAdvisedByInNestedAspect() throws Exception {
     	File[] files = {new File(getAbsoluteProjectDir() + "/pkg/ClassWithNestedAspect.java")};
-        runAjdoc("private","1.6",files);
+        runAjdoc("private",AJDocConstants.VERSION,files);
             
         File htmlFile = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.html");
 		if (!htmlFile.exists()) {

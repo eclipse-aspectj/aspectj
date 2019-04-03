@@ -149,16 +149,6 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 		return false;
 	}
 
-	private void checkVersion(String classname, int major, int minor) throws ClassNotFoundException {
-		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
-		if (jc.getMajor() != major) {
-			fail("Expected major version to be " + major + " but was " + jc.getMajor());
-		}
-		if (jc.getMinor() != minor) {
-			fail("Expected minor version to be " + minor + " but was " + jc.getMinor());
-		}
-	}
-
 	// Check the stackmap stuff is removed when a method gets woven (for now...)
 	// public void testStackMapAttributesDeletedInWovenCode() {
 	// fail("Not implemented");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Contributors
+ * Copyright (c) 2018-2019 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +17,8 @@ public class AllTestsAspectJ193 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.3 tests");
-		// $JUnit-BEGIN$
 		suite.addTest(Ajc193Tests.suite());
-		// $JUnit-END$
+		suite.addTest(Java12Tests.suite());
 		return suite;
 	}
 }

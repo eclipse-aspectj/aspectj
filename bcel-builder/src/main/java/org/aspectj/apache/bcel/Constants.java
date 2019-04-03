@@ -86,6 +86,11 @@ public interface Constants {
 	public final static short MINOR_10 = 0;
 	public final static short MAJOR_11 = 55;
 	public final static short MINOR_11 = 0;
+	public final static short MAJOR_12 = 56;
+	public final static short MINOR_12 = 0;
+	
+	public final static int PREVIEW_MINOR_VERSION = 65535;
+	
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;

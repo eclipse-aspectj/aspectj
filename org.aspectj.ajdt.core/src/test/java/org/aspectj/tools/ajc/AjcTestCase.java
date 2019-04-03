@@ -687,7 +687,7 @@ public abstract class AjcTestCase extends TestCase {
 				e.printStackTrace();
 			}
 			return lastRunResult;
-		} else if (vmargs!=null && (vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") || vmargs.contains("--add-reads"))) {
+		} else if (vmargs!=null && (vmargs.contains("--enable-preview") || vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") || vmargs.contains("--add-reads"))) {
 			// If --add-modules supplied, need to fork the test
 			try {
 //				if (mp.indexOf("$runtime") != -1) {

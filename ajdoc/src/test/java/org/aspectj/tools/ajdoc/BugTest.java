@@ -69,7 +69,7 @@ public class BugTest extends AjdocTestCase {
 		initialiseProject("pr148906");
 		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
 		String[] ajOptions = {new String("-aspectpath"), new String(getAbsoluteProjectDir() + File.separator + "simple.jar")};
-		runAjdoc(files,"1.6",ajOptions);
+		runAjdoc(files,AJDocConstants.VERSION,ajOptions);
 		assertFalse("expected clean build of project but found that build aborted",Main.hasAborted());
 		File html = new File(getAbsolutePathOutdir() + File.separator + "C.html");
 		if (!html.exists()) {
@@ -90,7 +90,7 @@ public class BugTest extends AjdocTestCase {
 		initialiseProject("pr148906");
 		File[] files = {new File(getAbsoluteProjectDir() + "/C.java")};
 		String[] ajOptions = {new String("-outxml"),new String("-aspectpath"), new String(getAbsoluteProjectDir() + File.separator + "simple.jar")};
-		runAjdoc(files,"1.6",ajOptions);
+		runAjdoc(files,AJDocConstants.VERSION,ajOptions);
 		assertFalse("expected clean build of project but found that build aborted",Main.hasAborted());
 		File html = new File(getAbsolutePathOutdir() + File.separator + "C.html");
 		if (!html.exists()) {

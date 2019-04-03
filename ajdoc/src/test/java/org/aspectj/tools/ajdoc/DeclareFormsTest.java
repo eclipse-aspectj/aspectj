@@ -49,7 +49,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testDeclareStatments() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
 		if (!htmlFile.exists()) {
@@ -84,7 +84,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testDeclareWarning() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
 		if (!htmlFile.exists()) {
@@ -116,7 +116,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testMatchesDeclareCall() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Main2.html");
 		if (!htmlFile.exists()) {
@@ -148,7 +148,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testMatchesDeclareExecution() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point2.html");
 		if (!htmlFile.exists()) {
@@ -181,7 +181,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testDeclareParents() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
 		if (!htmlFile.exists()) {
@@ -212,7 +212,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testAspectDeclarations() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Point2.html");
 		if (!htmlFile.exists()) {
@@ -235,7 +235,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testDeclareSoft() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareCoverage2.html");
 		if (!htmlFile.exists()) {
@@ -266,7 +266,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testSoftenedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareCoverage2.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/Main2.html");
 		if (!htmlFile.exists()) {
@@ -305,7 +305,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testDeclareAnnotation() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareAtType.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 			
 		// Aspect AnnotationTest should contain within it's declare
 	    // detail and summary the declare annotation statement.
@@ -351,7 +351,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testMethodAnnotatedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareAtMethod.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
 		if (!htmlFile.exists()) {
@@ -384,7 +384,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testConstructorAnnotatedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareAtConstructor.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
 		if (!htmlFile.exists()) {
@@ -418,7 +418,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testFieldAnnotatedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareAtField.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
 		if (!htmlFile.exists()) {
@@ -452,7 +452,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testTypeAnnotatedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareAtType.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
 		if (!htmlFile.exists()) {
@@ -475,7 +475,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testMatchesDeclareAndAdvisedBy() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "A.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/C.html");
 		if (!htmlFile.exists()) {
@@ -521,7 +521,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	public void testTwoDeclareParents() throws Exception {
 		initialiseProject("declareForms");
 		File[] files = {new File(getAbsoluteProjectDir() + File.separatorChar + "DeclareParents.aj")};
-		runAjdoc("private","1.6",files);
+		runAjdoc("private",AJDocConstants.VERSION,files);
 		
         File htmlFile = new File(getAbsolutePathOutdir() + "/foo/DeclareParents.html");
 		if (!htmlFile.exists()) {

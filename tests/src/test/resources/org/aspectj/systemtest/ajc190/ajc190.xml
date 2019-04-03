@@ -111,8 +111,12 @@
     <!-- this fails because if you start working with modules you commit to the modules story and classpath
          becomes irrelevant -->
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" classpath="foo.jar">
-    <message kind="error" text="The import ddd cannot be resolved"/>
+    <message kind="error" text="The type ddd.D is not accessible"/>
     <message kind="error" text="D cannot be resolved"/>
+    <!-- 
+    <message kind="error" text="The import ddd cannot be resolved"/>
+    <message kind="error" text="package ddd is not visible"/>
+     -->
     </compile>
   </ajc-test>
   

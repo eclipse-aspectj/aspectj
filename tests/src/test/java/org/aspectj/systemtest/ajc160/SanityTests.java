@@ -10,15 +10,13 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc160;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /*
  * Some very trivial tests that help verify things are OK.
@@ -134,16 +132,6 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			}
 		}
 		return false;
-	}
-
-	private void checkVersion(String classname, int major, int minor) throws ClassNotFoundException {
-		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
-		if (jc.getMajor() != major) {
-			fail("Expected major version to be " + major + " but was " + jc.getMajor());
-		}
-		if (jc.getMinor() != minor) {
-			fail("Expected minor version to be " + minor + " but was " + jc.getMinor());
-		}
 	}
 
 	// Check the stackmap stuff is removed when a method gets woven (for now...)

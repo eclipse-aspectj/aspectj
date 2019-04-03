@@ -207,7 +207,7 @@ public class AntSpec implements ITestStep {
 		}
 		if (m_stdErrSpec != null) {
 			String stderr2 = stderr.toString();
-			// Working around this rediculous message that still comes out of Java7 builds:
+			// Working around this ridiculous message that still comes out of Java7 builds:
 			if (stderr2.indexOf("Class JavaLaunchHelper is implemented in both")!=-1 && stderr2.indexOf('\n')!=-1) {
 				stderr2 = stderr2.replaceAll("objc\\[[0-9]*\\]: Class JavaLaunchHelper is implemented in both [^\n]*\n","");
 			}
@@ -225,7 +225,11 @@ public class AntSpec implements ITestStep {
 				stderr2 = stderr2.replaceAll("WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\n","");
 				stderr2 = stderr2.replaceAll("WARNING: All illegal access operations will be denied in a future release\n","");
 			}
-
+			// J12
+			String msg = "Java HotSpot(TM) 64-Bit Server VM warning: Archived non-system classes are disabled because the java.system.class.loader property is specified (value = \"org.aspectj.weaver.loadtime.WeavingURLClassLoader\"). To use archived non-system classes, this property must not be set";
+			if (stderr2.contains(msg)) {
+				stderr2 = stderr2.replace(msg+"\n","");
+			}
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}

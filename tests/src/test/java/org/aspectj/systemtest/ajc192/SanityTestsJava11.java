@@ -74,15 +74,6 @@ public class SanityTestsJava11 extends XMLBasedAjcTestCaseForJava11OrLater {
 		checkVersion("A", 49, 0);
 	}
 
-	private void checkVersion(String classname, int major, int minor) throws ClassNotFoundException {
-		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
-		if (jc.getMajor() != major) {
-			fail("Expected major version to be " + major + " but was " + jc.getMajor());
-		}
-		if (jc.getMinor() != minor) {
-			fail("Expected minor version to be " + minor + " but was " + jc.getMinor());
-		}
-	}
 
 	// ///////////////////////////////////////
 	public static Test suite() {

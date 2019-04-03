@@ -208,6 +208,21 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		return result;
 	}
 
+	protected void checkVersion(String classname, int major, int minor)  {
+		JavaClass jc;
+		try {
+			jc = getClassFrom(ajc.getSandboxDirectory(), classname);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("Cannot find class "+classname,e);
+		}
+		if (jc.getMajor() != major) {
+			fail("Expected major version to be " + major + " but was " + jc.getMajor());
+		}
+		if (jc.getMinor() != minor) {
+			fail("Expected minor version to be " + minor + " but was " + jc.getMinor());
+		}
+	}
+
 	/*
 	 * The rules for parsing a suite spec file. The Digester using bean properties to match attributes in the XML document to
 	 * properties in the associated classes, so this simple implementation should be very easy to maintain and extend should you

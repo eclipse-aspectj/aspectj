@@ -11,6 +11,8 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
+import org.aspectj.util.LangUtil;
+
 /**
  * Makes sure tests are running on the right level of JDK.
  * 
@@ -20,9 +22,7 @@ public abstract class XMLBasedAjcTestCaseForJava11OrLater extends XMLBasedAjcTes
 
 	@Override
 	public void runTest(String title) {
-		// Check we are on Java11
-		String property = System.getProperty("java.version");
-		if (!property.startsWith("11")) {
+		if (!LangUtil.is11VMOrGreater()) {
 			throw new IllegalStateException("These tests should be run on Java 11 or later");
 		}
 		super.runTest(title);
