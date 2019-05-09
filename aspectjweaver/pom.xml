@@ -76,9 +76,9 @@
 							<archive>
 								<manifestEntries>
 									<Automatic-Module-Name>org.aspectj.weaver</Automatic-Module-Name>
-									<PremainClass>org.aspectj.weaver.loadtime.Agent</PremainClass>
-									<AgentClass>org.aspectj.weaver.loadtime.Agent</AgentClass>
-									<CanRedefineClasses>true</CanRedefineClasses>
+									<Premain-Class>org.aspectj.weaver.loadtime.Agent</Premain-Class>
+									<Agent-Class>org.aspectj.weaver.loadtime.Agent</Agent-Class>
+									<Can-Redefine-Classes>true</Can-Redefine-Classes>
 								</manifestEntries>
 
 
