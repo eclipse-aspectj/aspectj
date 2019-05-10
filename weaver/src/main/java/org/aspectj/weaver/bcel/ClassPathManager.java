@@ -17,7 +17,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -105,9 +108,9 @@ public class ClassPathManager {
 				return;
 			}
 			try {
-				if (lc.endsWith(LangUtil.JRT_FS)) { // Java9
-					if (LangUtil.is19VMOrGreater()) {
-						entries.add(new JImageEntry());
+				if (lc.endsWith(LangUtil.JRT_FS)) { // Java9+
+					if (LangUtil.is18VMOrGreater()) {
+						entries.add(new JImageEntry(lc));
 					}
 				} else {
 					entries.add(new ZipFileEntry(f));
@@ -316,24 +319,59 @@ public class ClassPathManager {
 	 * helps reduce memory usage but still gives reasonably fast lookup performance.
 	 */
 	static class JImageEntry extends Entry {
+				
+		// Map from a JRT-FS file to the cache state for that file
+		private static Map<String, JImageState> states = new HashMap<>();
 		
-		private static FileSystem fs = null;
+		private JImageState state;
 		
-		private final static Map<String, Path> fileCache = new SoftHashMap<String, Path>();
+		// TODO memory management here - is it held onto too long when LTW?
+		static class JImageState {
+			private final String jrtFsPath;
+			private final FileSystem fs;
+			Map<String,Path> fileCache = new SoftHashMap<String, Path>();
+			boolean packageCacheInitialized = false;
+			Map<String,Path> packageCache = new HashMap<String, Path>();
+			
+			public JImageState(String jrtFsPath, FileSystem fs) {
+				this.jrtFsPath = jrtFsPath;
+				this.fs = fs;
+			}
+		}
 
-		private final static Map<String, Path> packageCache = new HashMap<String, Path>();
-		
-		private static boolean packageCacheInitialized = false;
-
-		public JImageEntry() {
-			if (fs == null) {
-				try {
-					fs = FileSystems.getFileSystem(JRT_URI);
-				} catch (Throwable t) {
-					throw new IllegalStateException("Unexpectedly unable to initialize a JRT filesystem", t);
+		public JImageEntry(String jrtFsPath) {
+			state = states.get(jrtFsPath);
+			if (state == null) {
+				synchronized (states) {
+					if (state == null) {
+						URL jrtPath = null;
+						try {
+							jrtPath = new File(jrtFsPath).toPath().toUri().toURL();
+						} catch (MalformedURLException e) {
+							System.out.println("Unexpected problem processing "+jrtFsPath+" bad classpath entry? skipping:"+e.getMessage());
+							return;
+						}
+						String jdkHome = new File(jrtFsPath).getParentFile().getParent();
+						FileSystem fs = null;
+						try {
+							if (LangUtil.is19VMOrGreater()) {
+								HashMap<String, String> env = new HashMap<>();
+								env.put("java.home",  jdkHome);
+								fs = FileSystems.newFileSystem(JRT_URI, env);
+							} else {
+								URLClassLoader loader = new URLClassLoader(new URL[] { jrtPath });
+								HashMap<String, ?> env = new HashMap<>();
+								fs = FileSystems.newFileSystem(JRT_URI, env, loader);
+							}
+							state = new JImageState(jrtFsPath, fs);
+							states.put(jrtFsPath, state);
+							buildPackageMap();
+						} catch (Throwable t) {
+							throw new IllegalStateException("Unexpectedly unable to initialize a JRT filesystem", t);
+						}
+					}
 				}
 			}
-			buildPackageMap();
 		}
 		
 		class PackageCacheBuilderVisitor extends SimpleFileVisitor<Path> {
@@ -344,7 +382,7 @@ public class ClassPathManager {
 					if (fnc > 3) { // There is a package name - e.g. /modules/java.base/java/lang/Object.class
 						Path packagePath = file.subpath(2, fnc-1); // e.g. java/lang
 						String packagePathString = packagePath.toString();
-						packageCache.put(packagePathString, file.subpath(0, fnc-1)); // java/lang -> /modules/java.base/java/lang
+						state.packageCache.put(packagePathString, file.subpath(0, fnc-1)); // java/lang -> /modules/java.base/java/lang
 					}
 				}
 				return FileVisitResult.CONTINUE;
@@ -355,9 +393,9 @@ public class ClassPathManager {
 		 * Create a map from package names to the specific directory of the package members in the filesystem.
 		 */
 		private synchronized void buildPackageMap() {
-			if (!packageCacheInitialized) {
-				packageCacheInitialized = true;
-				Iterable<java.nio.file.Path> roots = fs.getRootDirectories();
+			if (!state.packageCacheInitialized) {
+				state.packageCacheInitialized = true;
+				Iterable<java.nio.file.Path> roots = state.fs.getRootDirectories();
 				PackageCacheBuilderVisitor visitor = new PackageCacheBuilderVisitor();
 				try {
 					for (java.nio.file.Path path : roots) {
@@ -392,7 +430,7 @@ public class ClassPathManager {
 					Path filePath = file.subpath(2, fnc);
 					String filePathString = filePath.toString();
 					if (filePathString.equals(name)) {
-						fileCache.put(filePathString, file);
+						state.fileCache.put(filePathString, file);
 						found = file;
 						return FileVisitResult.TERMINATE;
 					}
@@ -414,7 +452,7 @@ public class ClassPathManager {
 		@Override
 		public ClassFile find(String name) throws IOException {
 			String fileName = name.replace('.', '/') + ".class";
-			Path file = fileCache.get(fileName);
+			Path file = state.fileCache.get(fileName);
 			if (file == null) {
 				// Check the packages map to see if we know about this package
 				int idx = fileName.lastIndexOf('/');
@@ -426,7 +464,7 @@ public class ClassPathManager {
 				String packageName = null;
 				if (idx !=-1 ) {
 					packageName = fileName.substring(0, idx);
-					packageStart = packageCache.get(packageName);
+					packageStart = state.packageCache.get(packageName);
 					if (packageStart != null) {
 						file = searchForFileAndCache(packageStart, fileName);
 					}
@@ -440,12 +478,12 @@ public class ClassPathManager {
 			return cf;
 		}
 
-		static Map<String, Path> getPackageCache() {
-			return packageCache;
+		Map<String, Path> getPackageCache() {
+			return state.packageCache;
 		}
 		
-		static Map<String, Path> getFileCache() {
-			return fileCache;
+		Map<String, Path> getFileCache() {
+			return state.fileCache;
 		}
 
 	}

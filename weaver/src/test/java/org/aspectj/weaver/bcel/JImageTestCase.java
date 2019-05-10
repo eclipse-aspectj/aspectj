@@ -70,7 +70,7 @@ public class JImageTestCase extends TestCase {
 		if (!LangUtil.is19VMOrGreater()) return;
 		JImageEntry jie = getJImageEntry();
 		
-		Map<String, Path> packageCache = JImageEntry.getPackageCache();
+		Map<String, Path> packageCache = jie.getPackageCache();
 		assertTrue(packageCache.size()>0);
 		// Note: seems to be about 1625 entries in it for Java9
 		Path path = packageCache.get("java/lang");

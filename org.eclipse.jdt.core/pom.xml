@@ -33,7 +33,7 @@
                         <configuration>
                             <groupId>org.aspectj</groupId>
                             <artifactId>org.eclipse.jdt.core</artifactId>
-                            <version>1.9.3.BUILD-SNAPSHOT</version>
+                            <version>1.9.4.BUILD-SNAPSHOT</version>
                             <packaging>jar</packaging>
                             <file>${basedir}/jdtcore-for-aspectj.jar</file>
                             <createChecksum>true</createChecksum>
@@ -49,7 +49,7 @@
                         <configuration>
                             <groupId>org.aspectj</groupId>
                             <artifactId>org.eclipse.jdt.core</artifactId>
-                            <version>1.9.3.BUILD-SNAPSHOT</version>
+                            <version>1.9.4.BUILD-SNAPSHOT</version>
                             <packaging>jar</packaging>
                             <file>${basedir}/jdtcore-for-aspectj-src.zip</file>
                             <createChecksum>true</createChecksum>
