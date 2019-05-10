@@ -5,14 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<properties>
-		<revision>1.9.4.BUILD-SNAPSHOT</revision>
+		<revision>1.9.4</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.9.4.BUILD-SNAPSHOT</version>
+	<version>1.9.4</version>
 	<name>AspectJ Parent Project</name>
 
 	<modules>
