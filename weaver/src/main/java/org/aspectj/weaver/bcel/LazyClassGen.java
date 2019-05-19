@@ -1018,7 +1018,15 @@ public final class LazyClassGen {
 				NameMangler.AJC_PRE_CLINIT_NAME, Type.NO_ARGS, NO_STRINGS, this);
 		ajcPreClinit.getBody().insert(InstructionConstants.RETURN);
 		methodGens.add(ajcPreClinit);
-		getStaticInitializer().getBody().insert(Utility.createInvoke(fact, ajcPreClinit));
+		InstructionList clinitBody = getStaticInitializer().getBody();
+		clinitBody.insert(Utility.createInvoke(fact, ajcPreClinit));
+		if (serialVersionUIDRequiresInitialization) {
+			InstructionList il = new InstructionList();
+			il.append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
+			il.append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG,
+					Constants.PUTSTATIC));
+			clinitBody.insert(il);
+		}
 		return ajcPreClinit;
 	}
 
@@ -1204,31 +1212,12 @@ public final class LazyClassGen {
 	// }
 
 	private void addAjcInitializers() {
-		if (tjpFields.size() == 0 && !serialVersionUIDRequiresInitialization) {
+		if (tjpFields.size() == 0) {
 			return;
 		}
-		InstructionList[] il = null;
-
-		if (tjpFields.size() > 0) {
-			il = initializeAllTjps();
-		}
-
-		if (serialVersionUIDRequiresInitialization) {
-			InstructionList[] ilSVUID = new InstructionList[1];
-			ilSVUID[0] = new InstructionList();
-			ilSVUID[0].append(InstructionFactory.PUSH(getConstantPool(), calculatedSerialVersionUID));
-			ilSVUID[0].append(getFactory().createFieldAccess(getClassName(), "serialVersionUID", BasicType.LONG,
-					Constants.PUTSTATIC));
-			if (il == null) {
-				il = ilSVUID;
-			} else {
-				InstructionList[] newIl = new InstructionList[il.length + ilSVUID.length];
-				System.arraycopy(il, 0, newIl, 0, il.length);
-				System.arraycopy(ilSVUID, 0, newIl, il.length, ilSVUID.length);
-				il = newIl;
-			}
-		}
-
+		
+		InstructionList[] il = initializeAllTjps();
+		
 		LazyMethodGen prevMethod;
 		LazyMethodGen nextMethod = null;
 		if (this.isInterface()) { // Cannot sneak stuff into another static method in an interface
