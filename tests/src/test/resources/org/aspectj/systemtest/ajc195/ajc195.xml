@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+    <ajc-test dir="bugs195/333274" vm="1.8" title="around finally blocks and unlinking">
+        <compile files="Code.java" options="-showWeaveInfo -1.8 -XnoInline">
+			<message kind="weave" text="Join point 'method-call(void Code.print2(java.lang.String))' in Type 'Code' (Code.java:15) advised by around advice from 'Azpect' (Code.java:35)"/>
+			<message kind="weave" text="Join point 'method-call(void Code.print2(java.lang.String))' in Type 'Code' (Code.java:15) advised by around advice from 'Azpect' (Code.java:31)"/>
+        </compile>
+       
+        <run class="Code">
+	        <stdout>
+	        <line text="abc"/>
+	        <line text="Caught java.lang.IllegalStateException"/>
+	        </stdout>
+        </run>
+    </ajc-test>
+
+</suite>

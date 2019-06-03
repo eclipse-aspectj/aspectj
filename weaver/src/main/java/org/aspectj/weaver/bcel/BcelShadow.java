@@ -73,52 +73,52 @@ import org.aspectj.weaver.patterns.ThisOrTargetPointcut;
 
 /*
  * Some fun implementation stuff:
- * 
+ *
  *   * expressionKind advice is non-execution advice
- *     * may have a target. 
- *     * if the body is extracted, it will be extracted into 
- *       a static method.  The first argument to the static 
+ *     * may have a target.
+ *     * if the body is extracted, it will be extracted into
+ *       a static method.  The first argument to the static
  *       method is the target
  *     * advice may expose a this object, but that's the advice's
  *       consideration, not ours.  This object will NOT be cached in another
  *       local, but will always come from frame zero.
- * 
- *   * non-expressionKind advice is execution advice 
+ *
+ *   * non-expressionKind advice is execution advice
  *     * may have a this.
  *     * target is same as this, and is exposed that way to advice
  *       (i.e., target will not be cached, will always come from frame zero)
  *     * if the body is extracted, it will be extracted into a method
- *       with same static/dynamic modifier as enclosing method.  If non-static, 
- *       target of callback call will be this. 
+ *       with same static/dynamic modifier as enclosing method.  If non-static,
+ *       target of callback call will be this.
  *
- *   * because of these two facts, the setup of the actual arguments (including 
+ *   * because of these two facts, the setup of the actual arguments (including
  *     possible target) callback method is the same for both kinds of advice:
  *     push the targetVar, if it exists (it will not exist for advice on static
- *     things), then push all the argVars.  
- * 
+ *     things), then push all the argVars.
+ *
  * Protected things:
  *
  *   * the above is sufficient for non-expressionKind advice for protected things,
  *     since the target will always be this.
- * 
+ *
  *   * For expressionKind things, we have to modify the signature of the callback
  *     method slightly.  For non-static expressionKind things, we modify
  *     the first argument of the callback method NOT to be the type specified
  *     by the method/field signature (the owner), but rather we type it to
  *     the currentlyEnclosing type. We are guaranteed this will be fine,
  *     since the verifier verifies that the target is a subtype of the currently
- *     enclosingType. 
- * 
+ *     enclosingType.
+ *
  * Worries:
- * 
+ *
  *    * ConstructorCalls will be weirder than all of these, since they
  *      supposedly don't have a target (according to AspectJ), but they clearly
  *      do have a target of sorts, just one that needs to be pushed on the stack,
  *      dupped, and not touched otherwise until the constructor runs.
- *  
+ *
  * @author Jim Hugunin
  * @author Erik Hilsdale
- * 
+ *
  */
 
 public class BcelShadow extends Shadow {
@@ -210,7 +210,7 @@ public class BcelShadow extends Shadow {
 	 * The new/dup (or new/dup_x1/swap) are removed and will be readded later (after the advice call) by the caller of this method.
 	 * The groovy compiler produces unusual code where the new/dup isn't visible (when making a this() call from an existing ctor),
 	 * an aload_0 is used to load the uninitialized object (as an example see the ctors in grails.util.BuildSettings).
-	 * 
+	 *
 	 * @return true if managed to remove them
 	 */
 	private boolean deleteNewAndDup() {
@@ -630,7 +630,7 @@ public class BcelShadow extends Shadow {
 	/**
 	 * Create an initialization join point associated with a constructor, but not with any body of code yet. If this is actually
 	 * matched, it's range will be set when we inline self constructors.
-	 * 
+	 *
 	 * @param constructor The constructor starting this initialization.
 	 */
 	public static BcelShadow makeUnfinishedInitialization(BcelWorld world, LazyMethodGen constructor) {
@@ -882,8 +882,8 @@ public class BcelShadow extends Shadow {
 	private Map<ResolvedType, AnnotationAccessVar> withinAnnotationVars = null;
 	private Map<ResolvedType, AnnotationAccessVar> withincodeAnnotationVars = null;
 	private boolean allArgVarsInitialized = false;
-	
-	// If in annotation style and the relevant advice is using PJP then this will 
+
+	// If in annotation style and the relevant advice is using PJP then this will
 	// be set to true when the closure variable is initialized - if it gets set
 	// (which means link() has been called) then we will need to call unlink()
 	// after the code has been run.
@@ -1143,7 +1143,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Get the Var for the xxxxJpStaticPart, xxx = this or enclosing
-	 * 
+	 *
 	 * @param isEnclosingJp true to have the enclosingJpStaticPart
 	 * @return
 	 */
@@ -1165,7 +1165,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Get the Var for the enclosingJpStaticPart
-	 * 
+	 *
 	 * @return
 	 */
 	public BcelVar getThisEnclosingJoinPointStaticPartBcelVar() {
@@ -1702,11 +1702,11 @@ public class BcelShadow extends Shadow {
 	/**
 	 * The basic strategy here is to add a set of instructions at the end of the shadow range that dispatch the advice, and then
 	 * return whatever the shadow was going to return anyway.
-	 * 
+	 *
 	 * To achieve this, we note all the return statements in the advice, and replace them with code that: 1) stores the return value
 	 * on top of the stack in a temp var 2) jumps to the start of our advice block 3) restores the return value at the end of the
 	 * advice block before ultimately returning
-	 * 
+	 *
 	 * We also need to bind the return value into a returning parameter, if the advice specified one.
 	 */
 	public void weaveAfterReturning(BcelAdvice munger) {
@@ -1759,11 +1759,11 @@ public class BcelShadow extends Shadow {
 	 * making this the ultimate return. If the shadow has a non-void return type, we also create a temporary variable to hold the
 	 * return value, and load the value from this var before returning (see pr148007 for why we do this - it works around a JRockit
 	 * bug, and is also closer to what javac generates)
-	 * 
+	 *
 	 * Sometimes the 'last return' isnt the right one - some rogue code can include the real return from the body of a subroutine
 	 * that exists at the end of the method. In this case the last return is RETURN but that may not be correct for a method with a
 	 * non-void return type... pr151673
-	 * 
+	 *
 	 * @param returns list of all the return instructions in the shadow
 	 * @param returnInstructions instruction list into which the return instructions should be generated
 	 * @return the variable holding the return value, if needed
@@ -1802,7 +1802,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Get the list of instructions used to dispatch to the after advice
-	 * 
+	 *
 	 * @param munger
 	 * @param firstInstructionInReturnSequence
 	 * @return
@@ -1821,7 +1821,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * If the after() returning(Foo f) form is used, bind the return value to the parameter. If the shadow returns void, bind null.
-	 * 
+	 *
 	 * @param advice
 	 * @return
 	 */
@@ -1842,7 +1842,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Helper method for weaveAfterReturning
-	 * 
+	 *
 	 * Each return instruction in the method body is retargeted by calling this method. The return instruction is replaced by up to
 	 * three instructions: 1) if the shadow returns a value, and that value is bound to an after returning parameter, then we DUP
 	 * the return value on the top of the stack 2) if the shadow returns a value, we store it in the returnValueVar (it will be
@@ -2009,13 +2009,13 @@ public class BcelShadow extends Shadow {
 		}
 		ResolvedType aspectRT = munger.getConcreteAspect();
 		BcelWorld.getBcelObjectType(aspectRT);
-		
+
 		// Although matched, if the visibility rules prevent the aspect from seeing this type, don't
 		// insert any code (easier to do it here than try to affect the matching logic, unfortunately)
 		if (!(tResolved.canBeSeenBy(aspectRT) || aspectRT.isPrivilegedAspect())) {
 			return;
 		}
-		
+
 		final InstructionFactory fact = getFactory();
 
 		InstructionList entryInstructions = new InstructionList();
@@ -2130,25 +2130,25 @@ public class BcelShadow extends Shadow {
 
 	/*
 	 * Implementation notes:
-	 * 
+	 *
 	 * AroundInline still extracts the instructions of the original shadow into an extracted method. This allows inlining of even
 	 * that advice that doesn't call proceed or calls proceed more than once.
-	 * 
+	 *
 	 * It extracts the instructions of the original shadow into a method.
-	 * 
+	 *
 	 * Then it extracts the instructions of the advice into a new method defined on this enclosing class. This new method can then
 	 * be specialized as below.
-	 * 
+	 *
 	 * Then it searches in the instructions of the advice for any call to the proceed method.
-	 * 
+	 *
 	 * At such a call, there is stuff on the stack representing the arguments to proceed. Pop these into the frame.
-	 * 
+	 *
 	 * Now build the stack for the call to the extracted method, taking values either from the join point state or from the new
 	 * frame locs from proceed. Now call the extracted method. The right return value should be on the stack, so no cast is
 	 * necessary.
-	 * 
+	 *
 	 * If only one call to proceed is made, we can re-inline the original shadow. We are not doing that presently.
-	 * 
+	 *
 	 * If the body of the advice can be determined to not alter the stack, or if this shadow doesn't care about the stack, i.e.
 	 * method-execution, then the new method for the advice can also be re-lined. We are not doing that presently.
 	 */
@@ -2200,7 +2200,7 @@ public class BcelShadow extends Shadow {
 		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
 		List<String> parameterNames = new ArrayList<String>();
 		boolean shadowClassIsInterface = shadowClass.isInterface();
-		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName, 
+		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName,
 				shadowClassIsInterface?Modifier.PUBLIC:Modifier.PRIVATE,
 				munger.getSourceLocation(), parameterNames,shadowClassIsInterface);
 
@@ -2543,13 +2543,13 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Annotation style handling for inlining.
-	 * 
+	 *
 	 * Note: The proceedingjoinpoint is already on the stack (since the user was calling pjp.proceed(...)
-	 * 
+	 *
 	 * The proceed map is ignored (in terms of argument repositioning) since we have a fixed expected format for annotation style.
 	 * The aim here is to change the proceed() call into a call to the xxx_aroundBody0 method.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	private InstructionList getRedoneProceedCallForAnnotationStyle(InstructionFactory fact, LazyMethodGen callbackMethod,
 			BcelAdvice munger, LazyMethodGen localAdviceMethod, List<BcelVar> argVarList, boolean isProceedWithArgs) {
@@ -2852,7 +2852,7 @@ public class BcelShadow extends Shadow {
 
 		int linenumber = getSourceLine();
 		// MOVE OUT ALL THE INSTRUCTIONS IN MY SHADOW INTO ANOTHER METHOD!
-		
+
 		// callbackMethod will be something like: "static final void m_aroundBody0(I)"
 		boolean shadowClassIsInterface = getEnclosingClass().isInterface();
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(
@@ -2944,7 +2944,7 @@ public class BcelShadow extends Shadow {
 		}
 
 		closureVarInitialized = false;
-		
+
 		// ATAJ for @AJ aspect we need to link the closure with the joinpoint instance
 		if (munger.getConcreteAspect() != null && munger.getConcreteAspect().isAnnotationStyleAspect()
 				&& munger.getDeclaringAspect() != null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
@@ -2952,18 +2952,18 @@ public class BcelShadow extends Shadow {
 			aroundClosureInstance = genTempVar(AjcMemberMaker.AROUND_CLOSURE_TYPE);
 			closureInstantiation.append(fact.createDup(1));
 			aroundClosureInstance.appendStore(closureInstantiation, fact);
-			
+
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
 			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
 			if (needAroundClosureStacking) {
 				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
 						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
 								Modifier.PUBLIC, "linkStackClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));
-				
+
 			} else {
 				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
 						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
-								Modifier.PUBLIC, "linkClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));				
+								Modifier.PUBLIC, "linkClosureAndJoinPoint", String.format("%s%s", "(I)", "Lorg/aspectj/lang/ProceedingJoinPoint;"))));
 			}
 
 		}
@@ -2973,36 +2973,37 @@ public class BcelShadow extends Shadow {
 
 		// invoke the advice
 		InstructionHandle tryUnlinkPosition  = advice.append(munger.getNonTestAdviceInstructions(this));
-		
+
 		if (needAroundClosureStacking) {
 			// Call AroundClosure.unlink() in a 'finally' block
 			if (munger.getConcreteAspect() != null && munger.getConcreteAspect().isAnnotationStyleAspect()
 					&& munger.getDeclaringAspect() != null
 					&& munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()
 					&& closureVarInitialized) {
-				
+
 				// Call unlink when 'normal' flow occurring
 				aroundClosureInstance.appendLoad(advice, fact);
 				InstructionHandle unlinkInsn = advice.append(Utility.createInvoke(getFactory(), getWorld(), new MemberImpl(Member.METHOD, UnresolvedType
 						.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "unlink",
 						"()V")));
-				
+
 				InstructionHandle jumpOverHandler = advice.append(InstructionConstants.NOP);
-				
+
 				// Call unlink in finally block
-				InstructionHandle handlerStart = advice.append(InstructionConstants.POP);
-				aroundClosureInstance.appendLoad(advice, fact);
+
+				// Do not POP the exception off, we need to rethrow it
+				InstructionHandle handlerStart = advice.append(aroundClosureInstance.createLoad(fact));
 				advice.append(Utility.createInvoke(getFactory(), getWorld(), new MemberImpl(Member.METHOD, UnresolvedType
 						.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "unlink",
 						"()V")));
-				advice.append(InstructionConstants.ACONST_NULL);
+				// After that exception is on the top of the stack again
 				advice.append(InstructionConstants.ATHROW);
 				InstructionHandle jumpTarget = advice.append(InstructionConstants.NOP);
 				jumpOverHandler.setInstruction(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
 				enclosingMethod.addExceptionHandler(tryUnlinkPosition, unlinkInsn, handlerStart, null/* ==finally */, false);
-			}	
+			}
 		}
-		
+
 		advice.append(returnConversionCode);
 		if (getKind() == Shadow.MethodExecution && linenumber > 0) {
 			advice.getStart().addTargeter(new LineNumberTag(linenumber));
@@ -3111,7 +3112,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param callbackMethod the method we will call back to when our run method gets called.
 	 * @param proceedMap A map from state position to proceed argument position. May be non covering on state position.
 	 */
@@ -3183,7 +3184,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Extract the instructions in the shadow to a new method.
-	 * 
+	 *
 	 * @param extractedMethodName name for the new method
 	 * @param extractedMethodVisibilityModifier visibility modifiers for the new method
 	 * @param adviceSourceLocation source location of the advice affecting the shadow
