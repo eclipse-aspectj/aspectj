@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
@@ -107,9 +107,9 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		// };
 		// model.getRoot().walk(walker);
 
-		List activeSourceFiles = model.getActiveNodes(BuildConfigNode.Kind.FILE_ASPECTJ);
+		List<BuildConfigNode> activeSourceFiles = model.getActiveNodes(BuildConfigNode.Kind.FILE_ASPECTJ);
 		activeSourceFiles.addAll(model.getActiveNodes(BuildConfigNode.Kind.FILE_JAVA));
-		List activeImportedFiles = model.getActiveNodes(BuildConfigNode.Kind.FILE_LST);
+		List<BuildConfigNode> activeImportedFiles = model.getActiveNodes(BuildConfigNode.Kind.FILE_LST);
 		fileUpdater.writeConfigFile(model.getSourceFile(), activeSourceFiles, activeImportedFiles);
 	}
 
@@ -231,17 +231,17 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 
 	private boolean pruneEmptyDirs(BuildConfigNode node) {
-		List nodesToRemove = new ArrayList();
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			BuildConfigNode currNode = (BuildConfigNode) it.next();
+		List<BuildConfigNode> nodesToRemove = new ArrayList<>();
+		for (Iterator<BuildConfigNode> it = node.getChildren().iterator(); it.hasNext();) {
+			BuildConfigNode currNode = it.next();
 			boolean hasValidChildren = pruneEmptyDirs(currNode);
 			if (!currNode.isValidResource() && !hasValidChildren) {
 				nodesToRemove.add(currNode);
 			}
 		}
 
-		for (Iterator it = nodesToRemove.iterator(); it.hasNext();) {
-			BuildConfigNode currNode = (BuildConfigNode) it.next();
+		for (Iterator<BuildConfigNode> it = nodesToRemove.iterator(); it.hasNext();) {
+			BuildConfigNode currNode = it.next();
 			node.removeChild(currNode);
 		}
 		return node.getChildren().size() > 0;
@@ -278,21 +278,19 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	// }
 	// }
 	//
-	private void sortModel(BuildConfigNode node, Comparator comparator) {
+	private void sortModel(BuildConfigNode node, Comparator<BuildConfigNode> comparator) {
 		if (node == null || node.getChildren() == null)
 			return;
 		Collections.sort(node.getChildren(), comparator);
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			BuildConfigNode nextNode = (BuildConfigNode) it.next();
+		for (Iterator<BuildConfigNode> it = node.getChildren().iterator(); it.hasNext();) {
+			BuildConfigNode nextNode = it.next();
 			if (nextNode != null)
 				sortModel(nextNode, comparator);
 		}
 	}
 
-	private static final Comparator ALPHABETICAL_COMPARATOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			BuildConfigNode n1 = (BuildConfigNode) o1;
-			BuildConfigNode n2 = (BuildConfigNode) o2;
+	private static final Comparator<BuildConfigNode> ALPHABETICAL_COMPARATOR = new Comparator<BuildConfigNode>() {
+		public int compare(BuildConfigNode n1, BuildConfigNode n2) {
 			return n1.getName().compareTo(n2.getName());
 		}
 	};

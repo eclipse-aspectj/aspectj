@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -176,7 +176,7 @@ public class EmacsStructureModelManager {
 				print("(");
 				print(") ");
 				print("(");
-				Iterator it3 = node.getChildren().iterator();
+				Iterator<IProgramElement> it3 = node.getChildren().iterator();
 				if (it3.hasNext()) {
 					while (it3.hasNext()) {
 						// this ignores relations on the compile unit

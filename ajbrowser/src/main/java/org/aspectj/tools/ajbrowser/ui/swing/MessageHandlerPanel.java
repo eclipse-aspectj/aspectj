@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.tools.ajbrowser.ui.swing;
@@ -31,7 +31,7 @@ import org.aspectj.tools.ajbrowser.ui.BrowserMessageHandler;
  * Panel used to display messages from the message handler
  */
 public class MessageHandlerPanel extends JPanel {
-	
+
 	private static final long serialVersionUID = -2251912345065588977L;
 	private JScrollPane jScrollPane1 = new JScrollPane();
 	private JList list;
@@ -44,12 +44,12 @@ public class MessageHandlerPanel extends JPanel {
 			return;
 		}
 		createList(handler.getMessages());
-		
+
 		try {
 			jbInit();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 		list.setModel(listModel);
 
 		MouseListener mouseListener = new MouseAdapter() {
@@ -69,11 +69,11 @@ public class MessageHandlerPanel extends JPanel {
 		list.setCellRenderer(new CompilerMessagesCellRenderer());
 		setVisible(showPanel);
 	}
-	
-	private void createList(List messages) {
+
+	private void createList(List<IMessage> messages) {
 		list = new JList();
 		listModel = new DefaultListModel();
-		for (Iterator iterator = messages.iterator(); iterator.hasNext();) {
+		for (Iterator<IMessage> iterator = messages.iterator(); iterator.hasNext();) {
 			listModel.addElement(iterator.next());
 		}
 	}
