@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002, 2017 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  * Palo Alto Research Center, Incorporated (PARC).
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
@@ -56,9 +56,9 @@ public class ClassPathManager {
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
 
 	private static int maxOpenArchives = -1;
-	
+
 	private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
-	
+
 	private static final int MAXOPEN_DEFAULT = 1000;
 
 	private List<Entry> entries;
@@ -96,10 +96,9 @@ public class ClassPathManager {
 
 	public void addPath(String name, IMessageHandler handler) {
 		File f = new File(name);
-		String lc = name.toLowerCase();
 		if (!f.isDirectory()) {
 			if (!f.isFile()) {
-				if (!lc.endsWith(".jar") || lc.endsWith(".zip")) {
+				if (!name.toLowerCase().endsWith(".jar") || name.toLowerCase().endsWith(".zip")) {
 					// heuristic-only: ending with .jar or .zip means probably a zip file
 					MessageUtil.info(handler, WeaverMessages.format(WeaverMessages.ZIPFILE_ENTRY_MISSING, name));
 				} else {
@@ -108,9 +107,9 @@ public class ClassPathManager {
 				return;
 			}
 			try {
-				if (lc.endsWith(LangUtil.JRT_FS)) { // Java9+
+				if (name.toLowerCase().endsWith(LangUtil.JRT_FS)) { // Java9+
 					if (LangUtil.is18VMOrGreater()) {
-						entries.add(new JImageEntry(lc));
+						entries.add(new JImageEntry(name));
 					}
 				} else {
 					entries.add(new ZipFileEntry(f));
@@ -181,18 +180,18 @@ public class ClassPathManager {
 	abstract static class Entry {
 		public abstract ClassFile find(String name) throws IOException;
 	}
-	
+
 	static class ByteBasedClassFile extends ClassFile {
 
 		private byte[] bytes;
 		private ByteArrayInputStream bais;
 		private String path;
-		
+
 		public ByteBasedClassFile(byte[] bytes, String path) {
-			this.bytes = bytes;			
+			this.bytes = bytes;
 			this.path = path;
 		}
-		
+
 		@Override
 		public InputStream getInputStream() throws IOException {
 			this.bais = new ByteArrayInputStream(bytes);
@@ -214,7 +213,7 @@ public class ClassPathManager {
 				this.bais = null;
 			}
 		}
-		
+
 	}
 
 	static class FileClassFile extends ClassFile {
@@ -309,7 +308,7 @@ public class ClassPathManager {
 		}
 
 	}
-	
+
 	/**
 	 * Maintains a shared package cache for java runtime image. This maps packages (for example:
 	 * java/lang) to a starting root position in the filesystem (for example: /modules/java.base/java/lang).
@@ -319,12 +318,12 @@ public class ClassPathManager {
 	 * helps reduce memory usage but still gives reasonably fast lookup performance.
 	 */
 	static class JImageEntry extends Entry {
-				
+
 		// Map from a JRT-FS file to the cache state for that file
 		private static Map<String, JImageState> states = new HashMap<>();
-		
+
 		private JImageState state;
-		
+
 		// TODO memory management here - is it held onto too long when LTW?
 		static class JImageState {
 			private final String jrtFsPath;
@@ -332,7 +331,7 @@ public class ClassPathManager {
 			Map<String,Path> fileCache = new SoftHashMap<String, Path>();
 			boolean packageCacheInitialized = false;
 			Map<String,Path> packageCache = new HashMap<String, Path>();
-			
+
 			public JImageState(String jrtFsPath, FileSystem fs) {
 				this.jrtFsPath = jrtFsPath;
 				this.fs = fs;
@@ -373,7 +372,7 @@ public class ClassPathManager {
 				}
 			}
 		}
-		
+
 		class PackageCacheBuilderVisitor extends SimpleFileVisitor<Path> {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -388,7 +387,7 @@ public class ClassPathManager {
 				return FileVisitResult.CONTINUE;
 			}
 		}
-		
+
 		/**
 		 * Create a map from package names to the specific directory of the package members in the filesystem.
 		 */
@@ -406,15 +405,15 @@ public class ClassPathManager {
 				}
 			}
 		}
-		
+
 		class TypeIdentifier extends SimpleFileVisitor<Path> {
-			
+
 			// What are we looking for?
 			private String name;
-			
+
 			// If set, where did we find it?
 			public Path found;
-			
+
 			// Basic metric count of how many files we checked before finding it
 			public int filesSearchedCount;
 
@@ -438,7 +437,7 @@ public class ClassPathManager {
 				return FileVisitResult.CONTINUE;
 			}
 		}
-		
+
 		private Path searchForFileAndCache(final Path startPath, final String name) {
 			TypeIdentifier locator = new TypeIdentifier(name);
 			try {
@@ -481,7 +480,7 @@ public class ClassPathManager {
 		Map<String, Path> getPackageCache() {
 			return state.packageCache;
 		}
-		
+
 		Map<String, Path> getFileCache() {
 			return state.fileCache;
 		}
@@ -609,7 +608,7 @@ public class ClassPathManager {
 			return aDefaultValue;
 		}
 	}
-	
+
 	// Mainly exposed for testing
 	public List<Entry> getEntries() {
 		return entries;
