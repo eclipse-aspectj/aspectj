@@ -25,14 +25,14 @@ import aj.org.objectweb.asm.Opcodes;
  * Uses asm to add the stack map attribute to methods in a class. The class is passed in as pure byte data and then a reader/writer
  * process it. The writer is wired into the world so that types can be resolved and getCommonSuperClass() can be implemented without
  * class loading using the context class loader.
- * 
+ *
  * It is important that the constant pool is preserved here and asm does not try to remove unused entries.  That is because some
  * entries are refered to from classfile attributes.  Asm cannot see into these attributes so does not realise the constant pool
  * entries are in use.  In order to ensure the copying of cp occurs, we use the variant super constructor call in AspectJConnectClassWriter
  * that passes in the classreader.  However, ordinarily that change causes a further optimization: that if a classreader sees
  * a methodvisitor that has been created by a ClassWriter then it just copies the data across without changing it (and so it
  * fails to attach the stackmapattribute).  In order to avoid this further optimization we use our own minimal MethodVisitor.
- * 
+ *
  * @author Andy Clement
  */
 public class StackMapAdder {
@@ -46,11 +46,12 @@ public class StackMapAdder {
 			return cw.toByteArray();
 		} catch (Throwable t) {
 			System.err.println("AspectJ Internal Error: unable to add stackmap attributes. " + t.getMessage());
+			t.printStackTrace();
 			AsmDetector.isAsmAround = false;
 			return data;
 		}
 	}
-	
+
 	private static class AspectJClassVisitor extends ClassVisitor {
 
 		public AspectJClassVisitor(ClassVisitor classwriter) {
@@ -62,7 +63,7 @@ public class StackMapAdder {
 			MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 			return new AJMethodVisitor(mv);
 		}
-		
+
 		// Minimal pass through MethodVisitor just so that the ClassReader doesn't see one that has been directly
 		// created by a ClassWriter (see top level class comment)
 		static class AJMethodVisitor extends MethodVisitor {
@@ -70,7 +71,7 @@ public class StackMapAdder {
 				super(Opcodes.ASM7,mv);
 			}
 		}
-		
+
 	}
 
 	private static class AspectJConnectClassWriter extends ClassWriter {
@@ -80,7 +81,7 @@ public class StackMapAdder {
 			super(cr, ClassWriter.COMPUTE_FRAMES); // passing in cr is necessary so cpool isnt modified (see 2.2.4 of asm doc)
 			this.world = w;
 		}
-		
+
 
 		// Implementation of getCommonSuperClass() that avoids Class.forName()
 		@Override
@@ -103,7 +104,7 @@ public class StackMapAdder {
 				do {
 					resolvedType1 = resolvedType1.getSuperclass();
 					if (resolvedType1 == null) {
-						// This happens if some types are missing, the getSuperclass() call on 
+						// This happens if some types are missing, the getSuperclass() call on
 						// MissingResolvedTypeWithKnownSignature will return the Missing type which
 						// in turn returns a superclass of null. By returning Object here it
 						// should surface the cantFindType message raised in the first problematic
