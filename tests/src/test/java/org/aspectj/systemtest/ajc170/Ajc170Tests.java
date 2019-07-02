@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc170;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
@@ -26,9 +22,11 @@ import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.aspectj.weaver.tools.StandardPointcutParser;
 
+import junit.framework.Test;
+
 /**
  * @author Andy Clement
- */ 
+ */
 public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 //	public void testLostAnnos_377130() {
@@ -38,11 +36,11 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //	public void testLostAnnos_377130_2() {
 //		runTest("missing annos on priv aspects - 2");
 //	}
-	
+
 	public void testCovariantGenerics382435_1() {
 		runTest("covariant generic itds 1");
 	}
-	
+
 	public void testCovariantGenerics382435_2() {
 		runTest("covariant generic itds 2");
 	}
@@ -50,7 +48,7 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testCovariantGenericsItd382189_1() {
 		runTest("covariant generics 1");
 	}
-	
+
 	public void testCovariantGenericsItd382189_2() {
 		runTest("covariant generics 2");
 	}
@@ -58,11 +56,11 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testCovariantGenericsItd382189_3() {
 		runTest("covariant generics 3");
 	}
-	
+
 	public void testCovariantGenericsItd382189() {
 		runTest("covariant generics");
 	}
-	
+
 	public void testGenericAspectAround382723() {
 		runTest("generic aspect");
 	}
@@ -74,16 +72,16 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericAspectAround382723_3() {
 		runTest("generic aspect 3");
 	}
-	
+
 	public void testGenericAspectAround382723_4() {
 		runTest("generic aspect 4");
 	}
-	
+
 
 	public void testAttributeErrorJ7() {
 		runTest("attribute issue with J7");
 	}
-	
+
 	public void testSwitchOnEnum() {
 		runTest("switch on enum");
 	}
@@ -91,19 +89,19 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testDecAtFieldOrderingLTW1() {
 		runTest("dec at field ordering ltw 1");
 	}
-	
+
 	public void testDecAtFieldOrdering1() {
 		runTest("dec at field ordering 1");
 	}
-	
+
 //	public void testDecAtFieldOrdering2() {
 //		runTest("dec at field ordering 2");
 //	}
-	
+
 	public void testXmlDefsDeclareAnnoType() {
 		runTest("xml defined dec anno - type");
 	}
-	
+
 	public void testXmlDefsDeclareAnnoMethod() {
 		runTest("xml defined dec at method");
 	}
@@ -116,7 +114,7 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testXmlDefsDeclareAnnoField() {
 		runTest("xml defined dec at field");
 	}
-	
+
 	public void testXmlDefsDeclareAnnoFieldVariants1() {
 		runTest("xml defined dec anno - variants 1");
 	}
@@ -132,10 +130,10 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testXmlDefsDeclareAnnoFieldMultipleValuesAndSpaces() {
 		runTest("xml defined dec anno - multiple values and spaces");
 	}
-	
+
 	public void testPointcutExpense_374964() {
 		// check a declaring type being specified causes the call() to be considered cheaper than this()
-		
+
 		World world = new ReflectionWorld(true, getClass().getClassLoader());
 		StandardPointcutParser pointcutParser = StandardPointcutParser.getPointcutParserSupportingAllPrimitives(world);
 		StandardPointcutExpressionImpl pointcutExpression = (StandardPointcutExpressionImpl)pointcutParser.parsePointcutExpression("call(* *(..)) && this(Object)");
@@ -143,7 +141,7 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Pointcut newp = new PointcutRewriter().rewrite(pc);
 		// no declaring type so this() is considered cheaper
 		assertEquals("(this(java.lang.Object) && call(* *(..)))",newp.toString());
-		
+
 		pointcutExpression = (StandardPointcutExpressionImpl)pointcutParser.parsePointcutExpression("call(* String.*(..)) && this(Object)");
 		pc = pointcutExpression.getUnderlyingPointcut();
 		newp = new PointcutRewriter().rewrite(pc);
@@ -173,35 +171,35 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			}
 		}
 	}
-	
+
 	public void testGenericsWithTwoTypeParamsOneWildcard() {
 		UnresolvedType ut;
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<**>;");
 		assertEquals(2,ut.getTypeParameters().length);
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<***>;");
 		assertEquals(3,ut.getTypeParameters().length);
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<TP;*+Ljava/lang/String;>;");
 		assertEquals(2,ut.getTypeParameters().length);
 
 		ut = TypeFactory.createTypeFromSignature("LFoo<*+Ljava/lang/String;TP;>;");
 		assertEquals(2,ut.getTypeParameters().length);
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<*+Ljava/lang/String;TP;>;");
 		assertEquals(2,ut.getTypeParameters().length);
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<*TT;>;");
 		assertEquals(2,ut.getTypeParameters().length);
 
 		ut = TypeFactory.createTypeFromSignature("LFoo<[I>;");
 		assertEquals(1,ut.getTypeParameters().length);
-		
+
 		ut = TypeFactory.createTypeFromSignature("LFoo<[I[Z>;");
 		assertEquals(2,ut.getTypeParameters().length);
 	}
-	
+
 	public void testPerThis() {
 		runTest("perthis");
 	}
