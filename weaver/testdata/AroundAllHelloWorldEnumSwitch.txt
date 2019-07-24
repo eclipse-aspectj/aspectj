@@ -1,0 +1,390 @@
+public class HelloWorldEnumSwitch extends java.lang.Object:
+  private static int[] $SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum
+  public void <init>():
+                    ALOAD_0     // LHelloWorldEnumSwitch; ajc$this   (line 18)
+                    INVOKESPECIAL java.lang.Object.<init> ()V
+    constructor-execution(void HelloWorldEnumSwitch.<init>())
+    |               ICONST_1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE_1
+    |               ALOAD_1
+    |               ICONST_0
+    |               ALOAD_0
+    |               AASTORE
+    |               NEW HelloWorldEnumSwitch$AjcClosure1
+    |               DUP
+    |               ALOAD_1
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure1.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    |               RETURN
+    constructor-execution(void HelloWorldEnumSwitch.<init>())
+  end public void <init>()
+
+  public static void main(String[]):
+                    ALOAD_0
+                    ASTORE 12
+    method-execution(void HelloWorldEnumSwitch.main(java.lang.String[]))
+    |               ICONST_1   (line 21)
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 13
+    |               ALOAD 13
+    |               ICONST_0
+    |               ALOAD 12
+    |               AASTORE
+    |               NEW HelloWorldEnumSwitch$AjcClosure15
+    |               DUP
+    |               ALOAD 13
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure15.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    |               RETURN
+    method-execution(void HelloWorldEnumSwitch.main(java.lang.String[]))
+  end public static void main(String[])
+
+  static int[] $SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum():
+                    GETSTATIC HelloWorldEnumSwitch.$SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum [I   (line 18)
+                    DUP
+                    IFNULL L0
+                    ARETURN
+                L0: POP
+                    INVOKESTATIC HelloWorldEnumSwitch$TestEnum.values ()[LHelloWorldEnumSwitch$TestEnum;
+                    ARRAYLENGTH
+                    NEWARRAY 10
+                    ASTORE_0
+    catch java.lang.NoSuchFieldError -> E0
+    |               ALOAD_0
+    |               GETSTATIC HelloWorldEnumSwitch$TestEnum.A LHelloWorldEnumSwitch$TestEnum;
+    |               INVOKEVIRTUAL HelloWorldEnumSwitch$TestEnum.ordinal ()I
+    |               ICONST_1
+    |               IASTORE
+    catch java.lang.NoSuchFieldError -> E0
+                    GOTO L1
+                E0: POP
+    catch java.lang.NoSuchFieldError -> E1
+    |           L1: ALOAD_0
+    |               GETSTATIC HelloWorldEnumSwitch$TestEnum.B LHelloWorldEnumSwitch$TestEnum;
+    |               INVOKEVIRTUAL HelloWorldEnumSwitch$TestEnum.ordinal ()I
+    |               ICONST_2
+    |               IASTORE
+    catch java.lang.NoSuchFieldError -> E1
+                    GOTO L2
+                E1: POP
+                L2: ALOAD_0
+                    DUP
+                    PUTSTATIC HelloWorldEnumSwitch.$SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum [I
+                    ARETURN
+  end static int[] $SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum()
+
+  static final void init$_aroundBody0(HelloWorldEnumSwitch):
+                    RETURN   (line 18)
+  end static final void init$_aroundBody0(HelloWorldEnumSwitch)
+
+  static final HelloWorldEnumSwitch$TestEnum A_aroundBody2():
+                    GETSTATIC HelloWorldEnumSwitch$TestEnum.A LHelloWorldEnumSwitch$TestEnum;   (line 21)
+                    ARETURN
+  end static final HelloWorldEnumSwitch$TestEnum A_aroundBody2()
+
+  static final int ordinal_aroundBody4(HelloWorldEnumSwitch$TestEnum):
+                    ALOAD_0
+                    INVOKEVIRTUAL HelloWorldEnumSwitch$TestEnum.ordinal ()I   (line 21)
+                    IRETURN
+  end static final int ordinal_aroundBody4(HelloWorldEnumSwitch$TestEnum)
+
+  static final java.io.PrintStream out_aroundBody6():
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 23)
+                    ARETURN
+  end static final java.io.PrintStream out_aroundBody6()
+
+  static final void println_aroundBody8(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 23)
+                    RETURN
+  end static final void println_aroundBody8(java.io.PrintStream, String)
+
+  static final java.io.PrintStream out_aroundBody10():
+                    GETSTATIC java.lang.System.out Ljava/io/PrintStream;   (line 26)
+                    ARETURN
+  end static final java.io.PrintStream out_aroundBody10()
+
+  static final void println_aroundBody12(java.io.PrintStream, String):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKEVIRTUAL java.io.PrintStream.println (Ljava/lang/String;)V   (line 26)
+                    RETURN
+  end static final void println_aroundBody12(java.io.PrintStream, String)
+
+  static final void main_aroundBody14(String[]):
+                    INVOKESTATIC HelloWorldEnumSwitch.$SWITCH_TABLE$HelloWorldEnumSwitch$TestEnum ()[I   (line 21)
+    field-get(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.A)
+    |               ICONST_0
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE_1
+    |               NEW HelloWorldEnumSwitch$AjcClosure3
+    |               DUP
+    |               ALOAD_1
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure3.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST HelloWorldEnumSwitch$TestEnum
+    field-get(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.A)
+                    ASTORE_3
+    method-call(int HelloWorldEnumSwitch$TestEnum.ordinal())
+    |               ICONST_1
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 5
+    |               ALOAD 5
+    |               ICONST_0
+    |               ALOAD_3
+    |               AASTORE
+    |               NEW HelloWorldEnumSwitch$AjcClosure5
+    |               DUP
+    |               ALOAD 5
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure5.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               INVOKESTATIC org.aspectj.runtime.internal.Conversions.intValue (Ljava/lang/Object;)I
+    method-call(int HelloWorldEnumSwitch$TestEnum.ordinal())
+                    IALOAD
+                    TABLESWITCH
+                      1: 	L0
+                      2: 	L1
+                      default: 	L2
+    field-get(java.io.PrintStream java.lang.System.out)
+    |           L0: ICONST_0
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 7
+    |               NEW HelloWorldEnumSwitch$AjcClosure7
+    |               DUP
+    |               ALOAD 7
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure7.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.io.PrintStream
+    field-get(java.io.PrintStream java.lang.System.out)
+                    LDC "A"   (line 23)
+                    ASTORE 9
+                    ASTORE 11
+    method-call(void java.io.PrintStream.println(java.lang.String))
+    |               ICONST_2
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 13
+    |               ALOAD 13
+    |               ICONST_0
+    |               ALOAD 11
+    |               AASTORE
+    |               ALOAD 13
+    |               ICONST_1
+    |               ALOAD 9
+    |               AASTORE
+    |               NEW HelloWorldEnumSwitch$AjcClosure9
+    |               DUP
+    |               ALOAD 13
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure9.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    method-call(void java.io.PrintStream.println(java.lang.String))
+                    GOTO L2   (line 24)
+    field-get(java.io.PrintStream java.lang.System.out)
+    |           L1: ICONST_0
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 15
+    |               NEW HelloWorldEnumSwitch$AjcClosure11
+    |               DUP
+    |               ALOAD 15
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure11.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               CHECKCAST java.io.PrintStream
+    field-get(java.io.PrintStream java.lang.System.out)
+                    LDC "B"   (line 26)
+                    ASTORE 17
+                    ASTORE 19
+    method-call(void java.io.PrintStream.println(java.lang.String))
+    |               ICONST_2
+    |               ANEWARRAY java.lang.Object
+    |               ASTORE 21
+    |               ALOAD 21
+    |               ICONST_0
+    |               ALOAD 19
+    |               AASTORE
+    |               ALOAD 21
+    |               ICONST_1
+    |               ALOAD 17
+    |               AASTORE
+    |               NEW HelloWorldEnumSwitch$AjcClosure13
+    |               DUP
+    |               ALOAD 21
+    |               INVOKESPECIAL HelloWorldEnumSwitch$AjcClosure13.<init> ([Ljava/lang/Object;)V
+    |               INVOKESTATIC Aspect.ajc_around (Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;
+    |               POP
+    method-call(void java.io.PrintStream.println(java.lang.String))
+                L2: RETURN   (line 29)
+  end static final void main_aroundBody14(String[])
+end public class HelloWorldEnumSwitch
+
+public class HelloWorldEnumSwitch$AjcClosure1 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    ICONST_0
+                    AALOAD
+                    CHECKCAST HelloWorldEnumSwitch
+                    INVOKESTATIC HelloWorldEnumSwitch.init$_aroundBody0 (LHelloWorldEnumSwitch;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure1
+
+public class HelloWorldEnumSwitch$AjcClosure3 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC HelloWorldEnumSwitch.A_aroundBody2 ()LHelloWorldEnumSwitch$TestEnum;
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure3
+
+public class HelloWorldEnumSwitch$AjcClosure5 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    ICONST_0
+                    AALOAD
+                    CHECKCAST HelloWorldEnumSwitch$TestEnum
+                    INVOKESTATIC HelloWorldEnumSwitch.ordinal_aroundBody4 (LHelloWorldEnumSwitch$TestEnum;)I
+                    INVOKESTATIC org.aspectj.runtime.internal.Conversions.intObject (I)Ljava/lang/Object;
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure5
+
+public class HelloWorldEnumSwitch$AjcClosure7 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC HelloWorldEnumSwitch.out_aroundBody6 ()Ljava/io/PrintStream;
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure7
+
+public class HelloWorldEnumSwitch$AjcClosure9 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    ICONST_0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    ICONST_1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC HelloWorldEnumSwitch.println_aroundBody8 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure9
+
+public class HelloWorldEnumSwitch$AjcClosure11 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    INVOKESTATIC HelloWorldEnumSwitch.out_aroundBody10 ()Ljava/io/PrintStream;
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure11
+
+public class HelloWorldEnumSwitch$AjcClosure13 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    ICONST_0
+                    AALOAD
+                    CHECKCAST java.io.PrintStream
+                    ALOAD_2
+                    ICONST_1
+                    AALOAD
+                    CHECKCAST java.lang.String
+                    INVOKESTATIC HelloWorldEnumSwitch.println_aroundBody12 (Ljava/io/PrintStream;Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure13
+
+public class HelloWorldEnumSwitch$AjcClosure15 extends org.aspectj.runtime.internal.AroundClosure:
+  public void <init>(Object[]):
+                    ALOAD_0
+                    ALOAD_1
+                    INVOKESPECIAL org.aspectj.runtime.internal.AroundClosure.<init> ([Ljava/lang/Object;)V
+                    RETURN
+  end public void <init>(Object[])
+
+  public Object run(Object[]):
+                    ALOAD_0
+                    GETFIELD org.aspectj.runtime.internal.AroundClosure.state [Ljava/lang/Object;
+                    ASTORE_2
+                    ALOAD_2
+                    ICONST_0
+                    AALOAD
+                    CHECKCAST [Ljava.lang.String;
+                    INVOKESTATIC HelloWorldEnumSwitch.main_aroundBody14 ([Ljava/lang/String;)V
+                    ACONST_NULL
+                    ARETURN
+  end public Object run(Object[])
+end public class HelloWorldEnumSwitch$AjcClosure15

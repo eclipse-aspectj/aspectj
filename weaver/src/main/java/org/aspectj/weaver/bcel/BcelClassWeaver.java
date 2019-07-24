@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Objects;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.BootstrapMethods;
@@ -92,6 +93,8 @@ import org.aspectj.weaver.tools.TraceFactory;
 class BcelClassWeaver implements IClassWeaver {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelClassWeaver.class);
+
+    private static final String SWITCH_TABLE_SYNTHETIC_METHOD_PREFIX = "$SWITCH_TABLE$";
 
 	public static boolean weave(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
 			List<ConcreteTypeMunger> typeMungers, List<ConcreteTypeMunger> lateTypeMungers, boolean inReweavableMode) {
@@ -2665,6 +2668,11 @@ class BcelClassWeaver implements IClassWeaver {
 					if (isOverweaving && mg.getName().startsWith(NameMangler.PREFIX)) {
 						return false;
 					}
+					if (mg.getName().startsWith(SWITCH_TABLE_SYNTHETIC_METHOD_PREFIX)
+                        && Objects.equals(mg.getReturnType().getSignature(), "[I")) {
+						// this is a synthetic switch helper, should be skipped (since it's not 'declared')
+						return false;
+					}
 					enclosingShadow = BcelShadow.makeMethodExecution(world, mg, !canMatchBodyShadows);
 				} else if (effective.isWeaveBody()) {
 					ResolvedMember rm = effective.getEffectiveSignature();
@@ -3259,6 +3267,12 @@ class BcelClassWeaver implements IClassWeaver {
 						}
 					}
 				}
+
+				if (methodName.startsWith(SWITCH_TABLE_SYNTHETIC_METHOD_PREFIX)) {
+					// we shouldn't process calls to synthetic methods (since they're not 'declared')
+					proceed = false;
+				}
+
 				if (proceed) {
 					match(BcelShadow.makeMethodCall(world, mg, ih, enclosingShadow), shadowAccumulator);
 				}

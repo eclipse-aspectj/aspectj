@@ -267,7 +267,7 @@ public abstract class WeaveTestCase extends TestCase {
 	// ----
 
 	public String[] getStandardTargets() {
-		return new String[] { "HelloWorld", "FancyHelloWorld" };
+		return new String[] { "HelloWorld", "FancyHelloWorld", "HelloWorldEnumSwitch" };
 	}
 
 	public String getTraceJar() {

@@ -1,6 +1,6 @@
 public class HelloWorld extends java.lang.Object:
   public void <init>():
-                    ALOAD_0     // LHelloWorld; this   (line 5)
+                    ALOAD_0     // LHelloWorld; ajc$this   (line 5)
                     INVOKESPECIAL java.lang.Object.<init> ()V
     constructor-execution(void HelloWorld.<init>())
     |               ICONST_1
