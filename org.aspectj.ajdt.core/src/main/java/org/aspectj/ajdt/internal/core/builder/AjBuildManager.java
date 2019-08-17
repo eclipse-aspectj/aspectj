@@ -1342,7 +1342,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 
 		for (String s: buildConfig.getFullClasspath()) {
-			if (s.endsWith("runtime/target/classes")) {
+			if (s.endsWith("runtime/target/classes") || s.endsWith("runtime\\target\\classes")) {
 				// doing an AspectJ build
 				return null;
 			}
