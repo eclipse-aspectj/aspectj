@@ -25,6 +25,7 @@ import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.generic.ArrayType;
+import org.aspectj.apache.bcel.generic.BranchHandle;
 import org.aspectj.apache.bcel.generic.FieldInstruction;
 import org.aspectj.apache.bcel.generic.INVOKEINTERFACE;
 import org.aspectj.apache.bcel.generic.Instruction;
@@ -2987,8 +2988,7 @@ public class BcelShadow extends Shadow {
 						.forName("org.aspectj.runtime.internal.AroundClosure"), Modifier.PUBLIC, "unlink",
 						"()V")));
 
-				InstructionHandle jumpOverHandler = advice.append(InstructionConstants.NOP);
-
+				BranchHandle jumpOverHandler = advice.append(new InstructionBranch(Constants.GOTO, null));
 				// Call unlink in finally block
 
 				// Do not POP the exception off, we need to rethrow it
@@ -2999,7 +2999,7 @@ public class BcelShadow extends Shadow {
 				// After that exception is on the top of the stack again
 				advice.append(InstructionConstants.ATHROW);
 				InstructionHandle jumpTarget = advice.append(InstructionConstants.NOP);
-				jumpOverHandler.setInstruction(InstructionFactory.createBranchInstruction(Constants.GOTO, jumpTarget));
+				jumpOverHandler.setTarget(jumpTarget);
 				enclosingMethod.addExceptionHandler(tryUnlinkPosition, unlinkInsn, handlerStart, null/* ==finally */, false);
 			}
 		}
