@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -47,7 +47,7 @@ public abstract class Shadow {
 	protected final Shadow enclosingShadow;
 	protected List<ShadowMunger> mungers = Collections.emptyList();
 	protected boolean needAroundClosureStacking = false;
-	
+
 	public int shadowId = nextShadowID++; // every time we build a shadow, it gets a new id
 
 	// ----
@@ -82,7 +82,7 @@ public abstract class Shadow {
 
 	/**
 	 * the type of the this object here
-	 * 
+	 *
 	 * @throws IllegalStateException if there is no this here
 	 */
 	public final UnresolvedType getThisType() {
@@ -98,7 +98,7 @@ public abstract class Shadow {
 
 	/**
 	 * a var referencing this
-	 * 
+	 *
 	 * @throws IllegalStateException if there is no target here
 	 */
 	public abstract Var getThisVar();
@@ -118,7 +118,7 @@ public abstract class Shadow {
 
 	/**
 	 * the type of the target object here
-	 * 
+	 *
 	 * @throws IllegalStateException if there is no target here
 	 */
 	public final UnresolvedType getTargetType() {
@@ -130,7 +130,7 @@ public abstract class Shadow {
 
 	/**
 	 * a var referencing the target
-	 * 
+	 *
 	 * @throws IllegalStateException if there is no target here
 	 */
 	public abstract Var getTargetVar();
@@ -266,7 +266,7 @@ public abstract class Shadow {
 
 	/**
 	 * returns the resolved signature of the thing under this shadow
-	 * 
+	 *
 	 */
 	public ResolvedMember getResolvedSignature() {
 		if (resolvedSignature == null) {
@@ -399,7 +399,7 @@ public abstract class Shadow {
 
 		/**
 		 * These shadow kinds have return values that can be bound in after returning(Dooberry doo) advice.
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean hasReturnValue() {
@@ -481,7 +481,7 @@ public abstract class Shadow {
 
 	/**
 	 * Only does the check if the munger requires it (@AJ aspects don't)
-	 * 
+	 *
 	 * @param munger
 	 * @return
 	 */
@@ -628,11 +628,11 @@ public abstract class Shadow {
 
 	/** Actually implement the (non-empty) mungers associated with this shadow */
 	private void implementMungers() {
-		World world = getIWorld(); 
+		World world = getIWorld();
 		needAroundClosureStacking = false;
 		int annotationStyleWithAroundAndProceedCount = 0;
 		for (ShadowMunger munger: mungers) {
-			if (munger.getDeclaringType()!= null && 
+			if (munger.getDeclaringType()!= null &&
 				munger.getDeclaringType().isAnnotationStyleAspect() &&
 				munger.isAroundAdvice() &&
 				munger.bindsProceedingJoinPoint()) {

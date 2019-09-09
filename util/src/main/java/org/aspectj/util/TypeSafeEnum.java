@@ -1,18 +1,19 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class TypeSafeEnum {
 	private byte key;
@@ -40,5 +41,16 @@ public class TypeSafeEnum {
 
 	public void write(DataOutputStream s) throws IOException {
 		s.writeByte(key);
+	}
+	@Override
+	public int hashCode() {
+		return name.hashCode()*37+key;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof TypeSafeEnum) &&
+			   ((TypeSafeEnum)o).key == key &&
+			   ((TypeSafeEnum)o).name.equals(name);
 	}
 }

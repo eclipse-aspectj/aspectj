@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002-2010 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     PARC, Andy Clement (SpringSource)
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -15,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * Represents an aspect declaration.
- * 
+ *
  * @author PARC
  * @author Andy Clement
  */
@@ -83,7 +84,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	public ResolvedMember aspectOfMethod;
 	public ResolvedMember ptwGetWithinTypeNameMethod;
 	public ResolvedMember hasAspectMethod;
-	public Map<ResolvedMember, Binding> accessForInline = new HashMap<ResolvedMember, Binding>();
+	public Map<ResolvedMember, Binding> accessForInline = new LinkedHashMap<ResolvedMember, Binding>();
 	public Map<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair> superAccessForInline = new HashMap<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair>();
 	public boolean isPrivileged;
 	public EclipseSourceType concreteName;
@@ -213,7 +214,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 		if ((binding.tagBits & TagBits.AnnotationResolved) != 0) {
 			// possibly resolution occurred during hasUnsatisfiedDependency()...
-			binding.tagBits = (binding.tagBits & ~TagBits.AnnotationResolved);			
+			binding.tagBits = (binding.tagBits & ~TagBits.AnnotationResolved);
 		}
 		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(),
 				declarationSourceStart);

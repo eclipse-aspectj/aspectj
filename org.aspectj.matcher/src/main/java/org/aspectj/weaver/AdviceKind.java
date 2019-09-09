@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -18,7 +18,7 @@ import org.aspectj.util.TypeSafeEnum;
 
 /**
  * The five kinds of advice in AspectJ.
- * 
+ *
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
@@ -132,4 +132,20 @@ public class AdviceKind extends TypeSafeEnum {
 		return this == PerThisEntry || this == PerTargetEntry;
 	}
 
+	@Override
+	public int hashCode() {
+		return ((super.hashCode()*37 + precedence)*37+(isAfter?0:1))*37 + (isCflow?0:1);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof AdviceKind)) {
+			return false;
+		}
+		AdviceKind ak = (AdviceKind)o;
+		return super.equals(ak) &&
+			   ak.precedence == precedence &&
+			   ak.isAfter == isAfter &&
+			   ak.isCflow == isCflow;
+	}
 }
