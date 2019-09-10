@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -23,9 +23,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.tools.ajc.Ajc;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class AjBuildManagerTest extends TestCase {
@@ -67,20 +65,11 @@ public class AjBuildManagerTest extends TestCase {
 		// EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",
 				});
 		String err = parser.getOtherMessages(true);
-		assertTrue(err, null == err || err.startsWith("incorrect classpath") && err.endsWith("run-all-junit-tests/target/classes"));
+		assertTrue(err, null == err || err.startsWith("incorrect classpath"));
 		// manager.setStructureModel(AsmManager.getDefault().getHierarchy());
 		MessageHandler handler = new MessageHandler();
 		manager.batchBuild(buildConfig, handler);
 		assertCompileMessagesValid(handler);
-		// System.out.println(
-		// ">> model: \n" +
-		// StructureModelManager.INSTANCE.getStructureModel().getRoot().toLongString()
-		// );
-		//		
-		// System.out.println(
-		// ">> children: \n" +
-		// ((StructureNode)StructureModelManager.INSTANCE.getStructureModel().getRoot().getChildren().get(0)).getChildren()
-		// );
 	}
 
 	// XXX add test for resource deltas
@@ -92,15 +81,15 @@ public class AjBuildManagerTest extends TestCase {
 	// List files = new ArrayList();
 	// files.add(FILE_1);
 	// files.add(FILE_2);
-	//		
+	//
 	// AjBuildManager manager = new AjBuildManager(messageWriter);
 	// AjBuildConfig buildConfig = new AjBuildConfig();
 	// manager.buildConfig = buildConfig;
 	// buildConfig.setFiles(files);
-	//		
+	//
 	// manager.updateBuildConfig(buildConfig);
 	// assertTrue("no change", manager.deletedFiles.isEmpty());
-	//		
+	//
 	// AjBuildConfig newConfig = new AjBuildConfig();
 	// newConfig.getFiles().add(FILE_1);
 	// newConfig.getFiles().add(FILE_2);
@@ -109,7 +98,7 @@ public class AjBuildManagerTest extends TestCase {
 	// assertTrue("added file", manager.deletedFiles.isEmpty());
 	// assertTrue(manager.addedFiles.size() == 1);
 	// assertTrue(manager.addedFiles.contains(FILE_3));
-	//		
+	//
 	// newConfig = new AjBuildConfig();
 	// newConfig.getFiles().add(FILE_3);
 	// manager.updateBuildConfig(newConfig);
@@ -145,13 +134,13 @@ public class AjBuildManagerTest extends TestCase {
 	// List files = new ArrayList();
 	// files.add(TEMP_1);
 	// files.add(EXISTS_2);
-	//		
+	//
 	// assertTrue("input files", TEMP_1.exists() && EXISTS_2.exists());
 	// assertTrue("new file", !NEW.exists());
 	//
 	// Thread.sleep(100);
 	// long lastBuildTime = System.currentTimeMillis();
-	//		
+	//
 	// AjBuildManager manager = new AjBuildManager(messageWriter);
 	// manager.buildConfig = new AjBuildConfig();
 	// manager.buildConfig.setFiles(files);
@@ -160,35 +149,35 @@ public class AjBuildManagerTest extends TestCase {
 	//
 	// lastBuildTime = System.currentTimeMillis();
 	// Thread.sleep(100);
-	//	
+	//
 	// touch(NEW, false);
 	//
 	// //NEW.createNewFile();
 	// files.add(NEW);
 	// changedFiles = manager.getModifiedFiles(lastBuildTime);
 	// assertTrue("new file: " + changedFiles, changedFiles.contains(NEW));
-	//		  
+	//
 	// lastBuildTime = System.currentTimeMillis();
 	// Thread.sleep(100);
 	//
 	// files.remove(NEW);
 	// changedFiles = manager.getModifiedFiles(lastBuildTime);
 	// assertTrue("nothing changed", changedFiles.isEmpty());
-	//		
+	//
 	// lastBuildTime = System.currentTimeMillis();
 	// Thread.sleep(100);
-	//		
+	//
 	// touch(TEMP_1, true);
 	// changedFiles = manager.getModifiedFiles(lastBuildTime);
 	// assertTrue("touched file: " + changedFiles, changedFiles.contains(TEMP_1));
-	//		
+	//
 	// lastBuildTime = System.currentTimeMillis();
 	// Thread.sleep(100);
 	//
 	// files.remove(NEW);
 	// changedFiles = manager.getModifiedFiles(lastBuildTime);
 	// assertTrue("nothing changed", changedFiles.isEmpty());
-	//		
+	//
 	// TEMP_1.delete();
 	// NEW.delete();
 	// }
@@ -209,14 +198,14 @@ public class AjBuildManagerTest extends TestCase {
 	// modified,
 	// deleted,
 	// ((File)manager.buildConfig.getSourceRoots().get(0)).getPath());
-	//		
+	//
 	// ResourceDelta d = (ResourceDelta)deltas.get(manager.getJavaBuilder().currentProject);
 	// assertNotNull(d);
-	//		
+	//
 	// assertEquals(d.getAffectedChildren().length, 3);
 	// //XXX do more testing of children
 	// }
-	//	
+	//
 	// // XXX should this be working??
 	// public void testDeleteRealFiles() throws CoreException, IOException {
 	// AjBuildManager manager = new AjBuildManager(messageWriter);
@@ -226,25 +215,25 @@ public class AjBuildManagerTest extends TestCase {
 	// manager.buildConfig.setSourceRoots(sourceRoots);
 	// manager.buildConfig.setOutputDir(new File("out"));
 	// assertTrue(manager.testInit(messageWriter));
-	//		
+	//
 	// File realClassFile = new File("out/X.class");
 	// touch(realClassFile, false);
-	//		
+	//
 	// assertTrue(realClassFile.exists());
-	//		
+	//
 	// IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
 	// classfile.create(FileUtil.getStreamFromZip("testdata/testclasses.jar", "Hello.class"), true, null);
 	// assertTrue(classfile.exists());
-	//		
+	//
 	// manager.addAspectClassFilesToWeaver();
-	//		
+	//
 	// classfile.delete(true, false, null);
 	// assertTrue(realClassFile.exists());
-	//		
+	//
 	// manager.addAspectClassFilesToWeaver();
-	//		
+	//
 	// assertTrue(!realClassFile.exists());
-	//		
+	//
 	// }
 
 	// !!!
@@ -265,7 +254,7 @@ public class AjBuildManagerTest extends TestCase {
 	// modified,
 	// deleted,
 	// ((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath());
-	//		
+	//
 	// JavaBuilder jbuilder = manager.getJavaBuilder();
 	// jbuilder.lastState = new State(jbuilder);
 	// jbuilder.binaryLocationsPerProject = new SimpleLookupTable();
@@ -274,19 +263,19 @@ public class AjBuildManagerTest extends TestCase {
 	// = manager.getIncrementalBuilder(messageWriter); // XXX trap errors
 	// TestNotifier testNotifier = new TestNotifier(builder, jbuilder.currentProject);
 	// jbuilder.notifier = testNotifier;
-	//                
+	//
 	// IContainer[] sourceFolders = new IContainer[] {
 	// new FilesystemFolder(((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath())
 	// };
 	// builder.setSourceFolders(sourceFolders);
 	// testNotifier.builder = builder;
-	//		
+	//
 	// IFile classfile = manager.classFileCache.getFile(new Path("X.class"));
 	// classfile.create(new ByteArrayInputStream(new byte[] {1,2,3}), true, null);
-	//		
+	//
 	// assertTrue(classfile.exists());
-	//		
-	//		
+	//
+	//
 	// try {
 	// manager.testSetHandler(messageWriter);
 	// boolean succeeded = builder.build(deltas);
@@ -295,14 +284,14 @@ public class AjBuildManagerTest extends TestCase {
 	// } finally {
 	// manager.testSetHandler(null);
 	// }
-	//		
+	//
 	// assertTrue(!classfile.exists());
 	// }
-	//	
+	//
 	// static class TestNotifier extends BuildNotifier {
 	// int state = 0;
 	// AjBuildManager.IncrementalBuilder builder;
-	//		
+	//
 	// public TestNotifier(AjBuildManager.IncrementalBuilder builder, IProject project) {
 	// super(null, project);
 	// this.builder = builder;
@@ -354,7 +343,7 @@ public class AjBuildManagerTest extends TestCase {
 	// public void testMakeClasspathLocations() {
 	// List classpath = new ArrayList();
 	// classpath.add(
-	//		
+	//
 	// AjBuildConfig config = new AjBuildConfig();
 	// config.setClasspath()
 	// }
