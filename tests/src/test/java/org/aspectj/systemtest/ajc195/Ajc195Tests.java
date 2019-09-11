@@ -16,6 +16,10 @@ import junit.framework.Test;
  */
 public class Ajc195Tests extends XMLBasedAjcTestCase {
 
+	public void testAvoidWeavingSwitchInfrastructure() {
+		runTest("avoid weaving switch infrastructure");
+	}
+
 	public void testFinallyBlocksAndUnlinkingAndExceptions() {
 		runTest("around finally blocks and unlinking");
 	}

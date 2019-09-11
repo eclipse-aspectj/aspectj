@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -29,8 +29,8 @@ import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.patterns.FormalBinding;
 import org.aspectj.weaver.patterns.PerClause;
 import org.aspectj.weaver.patterns.Pointcut;
@@ -133,7 +133,7 @@ public abstract class WeaveTestCase extends TestCase {
 			throw e;
 		}
 	}
-	
+
 	public String findMostRelevantFile(String name) {
 		double version = LangUtil.getVmVersion();
 		while (version > 0) {
@@ -267,7 +267,7 @@ public abstract class WeaveTestCase extends TestCase {
 	// ----
 
 	public String[] getStandardTargets() {
-		return new String[] { "HelloWorld", "FancyHelloWorld", "HelloWorldEnumSwitch" };
+		return new String[] { "HelloWorld", "FancyHelloWorld" };
 	}
 
 	public String getTraceJar() {

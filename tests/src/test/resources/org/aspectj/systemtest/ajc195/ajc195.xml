@@ -15,5 +15,62 @@
 	        </stdout>
         </run>
     </ajc-test>
+    
+    <ajc-test dir="bugs195/switch" vm="1.8" title="avoid weaving switch infrastructure">
+        <compile files="HelloWorldEnumSwitch.java Azpect.java" options="-showWeaveInfo -1.8 -XnoInline">
+			<message kind="weave" text="Join point 'constructor-execution(void HelloWorldEnumSwitch.&lt;init&gt;())' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-get(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.A)' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:4) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-call(int HelloWorldEnumSwitch$TestEnum.ordinal())' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:4) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-get(java.io.PrintStream java.lang.System.out)' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:6) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:6) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-get(java.io.PrintStream java.lang.System.out)' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:9) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:9) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-execution(void HelloWorldEnumSwitch.main(java.lang.String[]))' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:3) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void HelloWorldEnumSwitch.&lt;clinit&gt;())' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'initialization(void HelloWorldEnumSwitch.&lt;init&gt;())' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'preinitialization(void HelloWorldEnumSwitch.&lt;init&gt;())' in Type 'HelloWorldEnumSwitch' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'constructor-call(void HelloWorldEnumSwitch$TestEnum.&lt;init&gt;(java.lang.String, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:15) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-set(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.A)' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:15) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'constructor-call(void HelloWorldEnumSwitch$TestEnum.&lt;init&gt;(java.lang.String, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:16) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-set(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.B)' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:16) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-get(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.A)' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:14) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'field-get(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.B)' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:14) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'staticinitialization(void HelloWorldEnumSwitch$TestEnum.&lt;clinit&gt;())' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:14) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'constructor-execution(void HelloWorldEnumSwitch$TestEnum.&lt;init&gt;(java.lang.String, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:18) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-call(void java.lang.System.arraycopy(java.lang.Object, int, java.lang.Object, int, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-execution(HelloWorldEnumSwitch$TestEnum[] HelloWorldEnumSwitch$TestEnum.values())' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-call(java.lang.Enum java.lang.Enum.valueOf(java.lang.Class, java.lang.String))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'method-execution(HelloWorldEnumSwitch$TestEnum HelloWorldEnumSwitch$TestEnum.valueOf(java.lang.String))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:1) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'initialization(void HelloWorldEnumSwitch$TestEnum.&lt;init&gt;(java.lang.String, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:18) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+			<message kind="weave" text="Join point 'preinitialization(void HelloWorldEnumSwitch$TestEnum.&lt;init&gt;(java.lang.String, int))' in Type 'HelloWorldEnumSwitch$TestEnum' (HelloWorldEnumSwitch.java:18) advised by before advice from 'Azpect' (Azpect.java:2)"/>
+        </compile>
+       
+        <run class="HelloWorldEnumSwitch">
+	        <stdout>
+	        <line text=">0"/>
+	        <line text=">3"/>
+	        <line text=">15"/>
+	        <line text=">15"/>
+	        <line text=">18"/>
+	        <line text=">18"/>
+	        <line text=">18"/>
+	        <line text=">15"/>
+	        <line text=">16"/>
+	        <line text=">18"/>
+	        <line text=">18"/>
+	        <line text=">18"/>
+	        <line text=">16"/>
+	        <line text=">14"/>
+	        <line text=">14"/>
+	        <line text=">1"/>
+	        <line text=">1"/>
+	        <line text=">4"/>
+	        <line text=">4"/>
+	        <line text=">6"/>
+	        <line text=">6"/>
+	        <line text="A"/>
+	        </stdout>
+        </run>
+    </ajc-test>
 
 </suite>
