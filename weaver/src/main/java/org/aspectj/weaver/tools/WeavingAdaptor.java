@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Matthew Webster, Adrian Colyer, John Kew + Lyor Goldstein (caching)
- *     Martin Lippert     initial implementation 
+ *     Martin Lippert     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.tools;
@@ -69,7 +69,7 @@ import org.aspectj.weaver.tools.cache.WeavedClassCache;
  * A weaving class loader should create a <code>WeavingAdaptor</code> before any classes are defined, typically during construction.
  * The set of aspects passed to the adaptor is fixed for the lifetime of the adaptor although the classpath can be augmented. A
  * system property can be set to allow verbose weaving messages to be written to the console.
- * 
+ *
  */
 public class WeavingAdaptor implements IMessageContext {
 
@@ -113,7 +113,7 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Construct a WeavingAdaptor with a reference to a weaving class loader. The adaptor will automatically search the class loader
 	 * hierarchy to resolve classes. The adaptor will also search the hierarchy for WeavingClassLoader instances to determine the
 	 * set of aspects to be used for weaving.
-	 * 
+	 *
 	 * @param loader instance of <code>ClassLoader</code>
 	 */
 	public WeavingAdaptor(WeavingClassLoader loader) {
@@ -126,7 +126,7 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Construct a WeavingAdaptor with a reference to a <code>GeneratedClassHandler</code>, a full search path for resolving classes
 	 * and a complete set of aspects. The search path must include classes loaded by the class loader constructing the
 	 * WeavingAdaptor and all its parents in the hierarchy.
-	 * 
+	 *
 	 * @param handler <code>GeneratedClassHandler</code>
 	 * @param classURLs the URLs from which to resolve classes
 	 * @param aspectURLs the aspects used to weave classes defined by this class loader
@@ -159,7 +159,7 @@ public class WeavingAdaptor implements IMessageContext {
 				}
 			}
         }
-		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem
 		list.addAll(0, makeClasspath(System.getProperty("sun.boot.class.path")));
 		return list;
 	}
@@ -285,7 +285,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * Appends URL to path used by the WeavingAdptor to resolve classes
-	 * 
+	 *
 	 * @param url to be appended to search path
 	 */
 	public void addURL(URL url) {
@@ -299,7 +299,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * Weave a class using aspects previously supplied to the adaptor.
-	 * 
+	 *
 	 * @param name the name of the class
 	 * @param bytes the class bytes
 	 * @return the woven bytes
@@ -319,7 +319,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * Weave a class using aspects previously supplied to the adaptor.
-	 * 
+	 *
 	 * @param name the name of the class
 	 * @param bytes the class bytes
 	 * @param mustWeave if true then this class *must* get woven (used for concrete aspects generated from XML)
@@ -428,7 +428,7 @@ public class WeavingAdaptor implements IMessageContext {
 			}
 			return bytes;
 		} finally {
-			weaverRunning.set(false);
+			weaverRunning.remove();
 		}
 	}
 
@@ -501,7 +501,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * We allow @AJ aspect weaving so that we can add aspectOf() as part of the weaving (and not part of the source compilation)
-	 * 
+	 *
 	 * @param name
 	 * @param bytes bytecode (from classloader), allow to NOT lookup stuff on disk again during resolve
 	 * @return true if @Aspect
@@ -540,7 +540,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * Weave a set of bytes defining a class.
-	 * 
+	 *
 	 * @param name the name of the class being woven
 	 * @param bytes the bytes that define the class
 	 * @return byte[] the woven bytes for the class
@@ -555,7 +555,7 @@ public class WeavingAdaptor implements IMessageContext {
 	/**
 	 * Weave a set of bytes defining a class for only what is needed to turn @AspectJ aspect in a usefull form ie with aspectOf
 	 * method - see #113587
-	 * 
+	 *
 	 * @param name the name of the class being woven
 	 * @param bytes the bytes that define the class
 	 * @return byte[] the woven bytes for the class
@@ -582,9 +582,9 @@ public class WeavingAdaptor implements IMessageContext {
 	 * Register an aspect library with this classloader for use during weaving. This class loader will also return (unmodified) any
 	 * of the classes in the library in response to a <code>findClass()</code> request. The library is not required to be on the
 	 * weavingClasspath given when this classloader was constructed.
-	 * 
+	 *
 	 * @param aspectLibraryJarFile a jar file representing an aspect library
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void addAspectLibrary(String aspectLibraryName) {
@@ -642,7 +642,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	/**
 	 * Dump the given bytcode in _dump/... (dev mode)
-	 * 
+	 *
 	 * @param name
 	 * @param b
 	 * @param before whether we are dumping before weaving
