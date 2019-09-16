@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -947,7 +947,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// a classpathDirectory object that will attempt to look for source when it can't find binary.
 		// int[] classpathModes = new int[classpaths.length];
 		// for (int i =0 ;i<classpaths.length;i++) classpathModes[i]=ClasspathDirectory.BINARY;
-		
+
 		FileSystem nameEnvironment = null;
 		// TODO J9 The compiler likes to work in terms of checked classpath objects - these will be different
 		// depending on where the code came from (classpath, modulepath). If working with just the raw
@@ -979,7 +979,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			defaultEncoding = null;
 		}
 		CompilationUnit moduleCU = null;
-		
+
 		// TODO building with multiple module-infos?
 		int moduleIndex = -1;
 		IModule moduleDesc = buildConfig.getModuleDesc();
@@ -990,14 +990,14 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				moduleCU = new CompilationUnit(null, filenames[i], defaultEncoding, null, false, moduleName);
 			}
 		}
-		
+
 		for (int i = 0; i < fileCount; i++) {
 //			units[i] = new CompilationUnit(null, filenames[i], defaultEncoding);
 			if (i == moduleIndex) {
 				units[i] = moduleCU;
 			} else {
 				units[i] = new CompilationUnit(null, filenames[i], defaultEncoding, null, false, moduleName);
-				// With Java 10 changes the modulebinding is fetched from the rootenvironment 
+				// With Java 10 changes the modulebinding is fetched from the rootenvironment
 				// this.moduleBinding = rootEnvironment.getModule(this.module);
 				// rather than using the moduleCU:
 				// if (this.modCU != null)
@@ -1005,7 +1005,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 //				units[i].setModule(moduleCU);
 			}
 //			new CompilationUnit(null, fileName, encoding, this.destinationPaths[i],
-//					shouldIgnoreOptionalProblems(this.ignoreOptionalProblemsFromFolders, fileName.toCharArray()), 
+//					shouldIgnoreOptionalProblems(this.ignoreOptionalProblemsFromFolders, fileName.toCharArray()),
 //					this.modNames[i]);
 		}
 		return units;
@@ -1075,7 +1075,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		bMain.batchCompiler = compiler;
 		bMain.initializeAnnotationProcessorManager();
 		compiler.options.produceReferenceInfo = true; // TODO turn off when not needed
-		
+
 
 		if (bMain.compilerOptions.complianceLevel >= ClassFileConstants.JDK1_6
 				&& bMain.compilerOptions.processAnnotations) {
@@ -1340,7 +1340,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) {
 			return "no classpath specified";
 		}
-		
+
 		for (String s: buildConfig.getFullClasspath()) {
 			if (s.endsWith("runtime/target/classes")) {
 				// doing an AspectJ build
@@ -1350,7 +1350,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 		String ret = null;
 		for (Iterator<String> it = buildConfig.getFullClasspath().iterator(); it.hasNext();) {
-			File p = new File((String) it.next());
+			File p = new File(it.next());
 			// pr112830, allow variations on aspectjrt.jar of the form aspectjrtXXXXXX.jar
 			if (p.isFile() && p.getName().startsWith("aspectjrt") && p.getName().endsWith(".jar")) {
 
@@ -1369,7 +1369,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 						}
 					}
 					// assume that users of development aspectjrt.jar know what they're doing
-					if (Version.DEVELOPMENT.equals(version) || version.endsWith("BUILD-SNAPSHOT")) {
+					if (version != null && (Version.DEVELOPMENT.equals(version) || version.endsWith("BUILD-SNAPSHOT"))) {
 						// MessageUtil.info(holder,
 						// "running with development version of aspectjrt.jar in " +
 						// p.getAbsolutePath());
