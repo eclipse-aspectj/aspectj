@@ -4,8 +4,8 @@
     <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"/>
 
 	<target name="package" description="Jarjar asm-NNN.jar and prefix package name with aj">
-	        <jarjar destfile="asm-7.0-beta.renamed.jar">
-	          <zipfileset src="asm-7.0-beta.jar" excludes="module-info.class"/>
+	        <jarjar destfile="asm-7.2.renamed.jar">
+	          <zipfileset src="asm-7.2.jar" excludes="module-info.class"/>
 	          <rule pattern="org.objectweb.asm.**" result="aj.org.objectweb.asm.@1"/>
 	        </jarjar>
 	</target> 
