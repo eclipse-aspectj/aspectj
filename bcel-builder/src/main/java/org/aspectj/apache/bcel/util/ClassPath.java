@@ -137,7 +137,7 @@ public class ClassPath implements Serializable {
 
 	/**
 	 * Search for classes in CLASSPATH.
-	 * 
+	 *
 	 * @deprecated Use SYSTEM_CLASS_PATH constant
 	 */
 	@Deprecated
@@ -225,11 +225,13 @@ public class ClassPath implements Serializable {
 				buf.append(File.pathSeparatorChar);
 		}
 
-		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem 
+		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem
         if (vm_version.startsWith("9") || vm_version.startsWith("10")
-        	|| vm_version.startsWith("11") || vm_version.startsWith("12")) {
+        	|| vm_version.startsWith("11")
+        	|| vm_version.startsWith("12")
+        	|| vm_version.startsWith("13")) {
         		buf.insert(0, File.pathSeparatorChar);
-        		buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);        		
+        		buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);
         }
 
 		return buf.toString().intern();
@@ -436,7 +438,7 @@ public class ClassPath implements Serializable {
 			return dir;
 		}
 	}
-	
+
 	private static class JImage extends PathEntry {
 
 		private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
@@ -444,8 +446,8 @@ public class ClassPath implements Serializable {
 		private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
 
 		private java.nio.file.FileSystem fs;
-		private final Map<String, Path> fileMap;	
-		
+		private final Map<String, Path> fileMap;
+
 		JImage() {
 			fs = FileSystems.getFileSystem(JRT_URI);
 			fileMap = buildFileMap();
@@ -476,7 +478,7 @@ public class ClassPath implements Serializable {
 			}
 			return fileMap;
  		}
-		
+
 		private static class ByteBasedClassFile implements ClassFile {
 
 			private byte[] bytes;
@@ -485,15 +487,15 @@ public class ClassPath implements Serializable {
 			private String base;
 			private long time;
 			private long size;
-			
+
 			public ByteBasedClassFile(byte[] bytes, String path, String base, long time, long size) {
-				this.bytes = bytes;			
+				this.bytes = bytes;
 				this.path = path;
 				this.base = base;
 				this.time = time;
 				this.size = size;
 			}
-			
+
 			@Override
 			public InputStream getInputStream() throws IOException {
 				// TODO too costly to keep these in inflated form in memory?
@@ -520,9 +522,9 @@ public class ClassPath implements Serializable {
 			public long getSize() {
 				return this.size;
 			}
-			
+
 		}
-		
+
 		@Override
 		ClassFile getClassFile(String name, String suffix) throws IOException {
 			// Class files are in here under names like this:

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.lookup;
@@ -18,8 +18,8 @@ import java.util.Map;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.PlainPackageBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -48,7 +48,7 @@ public class InterTypeScope extends ClassScope {
 	public String getAnyAliasForTypeVariableBinding(TypeVariableBinding tvb) {
 		if (usedAliases == null)
 			return null;
-		return (String) usedAliases.get(tvb);
+		return usedAliases.get(tvb);
 	}
 
 	// this method depends on the fact that BinaryTypeBinding extends SourceTypeBinding
@@ -89,7 +89,7 @@ public class InterTypeScope extends ClassScope {
 			if (aliased > sourceType.typeVariables.length || sourceType.typeVariables.length == 0) {
 				TypeVariableBinding tvb = new TypeVariableBinding("fake".toCharArray(), null, 0,this.environment());
 				tvb.superclass = getJavaLangObject();
-				tvb.fPackage = new PackageBinding(environment());
+				tvb.fPackage = new PlainPackageBinding(environment());
 				return tvb;
 				// error is going to be reported by someone else!
 			}

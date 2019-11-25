@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -47,7 +47,7 @@ import org.aspectj.weaver.UnresolvedType;
  * <p/>
  * Specific state and logic is kept in the munger ala ITD so that call/get/set pointcuts can still be matched on the wrapped member
  * thanks to the EffectiveSignature attribute.
- * 
+ *
  * @author Alexandre Vasseur
  * @author Andy Clement
  */
@@ -150,12 +150,19 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 				for (ResolvedMember resolvedMember : methods) {
 					if (invoke.getName(cpg).equals(resolvedMember.getName())
 							&& invoke.getSignature(cpg).equals(resolvedMember.getSignature()) && !resolvedMember.isPublic()) {
-						if ("<init>".equals(invoke.getName(cpg))) {
-							// skipping open up for private constructor
-							// can occur when aspect new a private inner type
-							// too complex to handle new + dup + .. + invokespecial here.
-							aroundAdvice.setCanInline(false);
-							realizedCannotInline = true;
+						if ("<init>".equals(invoke.getName(cpg))
+								) {
+							// If ctor invocation, we care about whether it is targeting exactly the same type
+							// (ignore non public ctors in supertype of the target) (J13 - AbstractStringBuilder has something
+							// that trips this up in one testcase)
+							if (invoke.getClassName(cpg).equals(resolvedMember.getDeclaringType().getPackageName()+
+									"."+resolvedMember.getDeclaringType().getClassName())) {
+								// skipping open up for private constructor
+								// can occur when aspect new a private inner type
+								// too complex to handle new + dup + .. + invokespecial here.
+								aroundAdvice.setCanInline(false);
+								realizedCannotInline = true;
+							}
 						} else {
 							// specific handling for super.foo() calls, where foo is non public
 							ResolvedType memberType = aspectGen.getWorld().resolve(resolvedMember.getDeclaringType());

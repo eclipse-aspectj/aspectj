@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -53,10 +53,10 @@ import org.aspectj.weaver.UnresolvedType;
 
 /**
  * An inter-type field declaration.
- * 
+ *
  * returnType encodes the type of the field selector encodes the name statements is null until resolution when it is filled in from
  * the initializer
- * 
+ *
  * @author Jim Hugunin
  */
 public class InterTypeFieldDeclaration extends InterTypeDeclaration {
@@ -134,16 +134,16 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		 * else if (initialization!=null) { MethodScope initializationScope = this.scope; TypeBinding fieldType = realFieldType;
 		 * TypeBinding initializationType; this.initialization.setExpectedType(fieldType); // needed in case of generic method
 		 * invocation if (this.initialization instanceof ArrayInitializer) {
-		 * 
+		 *
 		 * if ((initializationType = this.initialization.resolveTypeExpecting(initializationScope, fieldType)) != null) {
 		 * ((ArrayInitializer) this.initialization).binding = (ArrayBinding) initializationType;
 		 * this.initialization.computeConversion(initializationScope, fieldType, initializationType); } } //
 		 * System.err.println("i=>"+initialization); // System.err.println("sasuages=>"+initialization.resolvedType); //
 		 * //initializationType = initialization.resolveType(initializationScope); //
 		 * System.err.println("scope=>"+initializationScope);
-		 * 
+		 *
 		 * else if ((initializationType = this.initialization.resolveType(initializationScope)) != null) {
-		 * 
+		 *
 		 * if (fieldType != initializationType) // must call before computeConversion() and typeMismatchError()
 		 * initializationScope.compilationUnitScope().recordTypeConversion(fieldType, initializationType); if
 		 * (this.initialization.isConstantValueOfTypeAssignableToType(initializationType, fieldType) || (fieldType.isBaseType() &&
@@ -203,7 +203,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 
 	/*
 	 * public void resolveStatements() { super.resolveStatements();
-	 * 
+	 *
 	 * // if (initialization!=null) { // MethodScope initializationScope = this.scope; // TypeBinding fieldType = realFieldType; //
 	 * TypeBinding initializationType; // this.initialization.setExpectedType(fieldType); // needed in case of generic method
 	 * invocation // if (this.initialization instanceof ArrayInitializer) { // // if ((initializationType =
@@ -230,7 +230,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 	 * (this.binding.isFinal()){ // cast from constant actual type to variable type // //
 	 * this.binding.setConstant(this.initialization.constant.castTo((this.binding.returnType.id << 4) +
 	 * this.initialization.constant.typeID())); // // } // // } else { // // this.binding.setConstant(NotAConstant); // }}
-	 * 
+	 *
 	 * }
 	 */
 	public EclipseTypeMunger build(ClassScope classScope) {
@@ -378,7 +378,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		AstUtil.generateReturn(binding.returnType, codeStream);
 
-		classFile.completeCodeAttribute(codeAttributeOffset);
+		classFile.completeCodeAttribute(codeAttributeOffset,scope);
 		attributeNumber++;
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}

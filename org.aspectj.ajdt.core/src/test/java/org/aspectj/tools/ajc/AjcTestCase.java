@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Adrian Colyer, Abraham Nevado (lucierna)
  * ******************************************************************/
 package org.aspectj.tools.ajc;
@@ -47,7 +47,7 @@ import junit.framework.TestCase;
  * See the XMLBasedAjcTestCase subclass for TestCase class that can be used to drive compiler tests based on an ajcTests.xml format
  * test specification file.
  * </p>
- * 
+ *
  * @see org.aspectj.tools.ajc.AjcTestCase.Message
  * @see org.aspectj.tools.ajc.AjcTestCase.MessageSpec
  * @see org.aspectj.tools.ajc.AjcTestCase.RunResult
@@ -64,7 +64,7 @@ public abstract class AjcTestCase extends TestCase {
 	protected Ajc ajc;
 
 	// see Ajc and AntSpec
-	public static final String DEFAULT_CLASSPATH_ENTRIES = 
+	public static final String DEFAULT_CLASSPATH_ENTRIES =
 			Ajc.outputFolders("bridge","util","loadtime","weaver","asm","testing-client","runtime","org.aspectj.matcher")
 //			File.pathSeparator + ".." + File.separator + "bridge" + File.separator
 //			+ "bin" + File.pathSeparator + ".." + File.separator + "util" + File.separator + "bin" + File.pathSeparator + ".."
@@ -93,8 +93,8 @@ public abstract class AjcTestCase extends TestCase {
 			+ "bcel"
 			+ File.separator
 			+ "bcel-verifier.jar"
-			
-			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-7.0-beta.renamed.jar"
+
+			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-7.2.renamed.jar"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
@@ -128,7 +128,7 @@ public abstract class AjcTestCase extends TestCase {
 	 * <p>
 	 * Message objects are combined in a MessageSpec which can then be passed to the various assertMessage methods.
 	 * </p>
-	 * 
+	 *
 	 * @see org.aspectj.tools.ajc.AjcTestCase.MessageSpec
 	 */
 	public static class Message {
@@ -324,14 +324,14 @@ public abstract class AjcTestCase extends TestCase {
 
 		/**
 		 * Create a message specification to test a CompilationResult for a given set of info, warning, error, and fail messages.
-		 * 
+		 *
 		 * @param infos The set of info messages to test for. Specifying a non-null value for this parameter enables info message
 		 *        comparison.
 		 * @param warnings The set of warning messages to test for - can pass null to indicate empty set.
 		 * @param errors The set of error messages to test for - can pass null to indicate empty set.
 		 * @param fails The set of fail or abort messages to test for - can pass null to indicate empty set.
 		 */
-		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings, 
+		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings,
 				List<AjcTestCase.Message> errors, List<AjcTestCase.Message> fails, List<AjcTestCase.Message> weaves) {
 			if (infos != null) {
 				this.infos = infos;
@@ -532,7 +532,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	/**
 	 * Perform a compilation and return the result.
-	 * 
+	 *
 	 * @param baseDir the base directory relative to which all relative paths and directories in the arguments will be interpreted.
 	 * @param args the compiler arguments, as you would specify on the command-line. See the Ajc class for a description of the
 	 *        argument processing done in order to run the compilation in a sandbox.
@@ -555,7 +555,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	/**
 	 * Indicate whether or not the sandbox should be emptied before the next compile.
-	 * 
+	 *
 	 * @see org.aspectj.tools.ajc.Ajc#setShouldEmptySandbox(boolean)
 	 */
 	public void setShouldEmptySandbox(boolean empty) {
@@ -582,11 +582,11 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Run the given class, and return the result in a RunResult. The program runs with a classpath containing the sandbox
 	 * directory, runtime, testing-client, bridge, and util projects (all used by the Tester class), and any jars in the sandbox.
-	 * 
+	 *
 	 * @param args the arguments to pass to the program.
 	 * @param classpath the execution classpath, the sandbox directory, runtime, testing-client, bridge, and util projects will all
 	 *        be appended to the classpath, as will any jars in the sandbox.
-	 * @param runSpec 
+	 * @param runSpec
 	 */
 	public RunResult run(String className, String moduleName, String[] args, String vmargs, final String classpath, String modulepath, boolean useLTW, boolean useFullLTW) {
 
@@ -615,7 +615,7 @@ public abstract class AjcTestCase extends TestCase {
 
 		URLClassLoader sandboxLoader;
 		ClassLoader parentLoader = getClass().getClassLoader().getParent();
-		
+
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if ( !useFullLTW && useLTW) {
 //			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
@@ -633,17 +633,17 @@ public abstract class AjcTestCase extends TestCase {
 			URL[] sandboxUrls = getURLs(cp.toString());
 			sandboxLoader = createWeavingClassLoader(sandboxUrls, aspectjLoader);
 			// sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
-		} else if(useFullLTW  && useLTW) {			
+		} else if(useFullLTW  && useLTW) {
 			if(vmargs == null){
 				vmargs ="";
 			}
-			
+
 			File directory = new File (".");
 			String absPath = directory.getAbsolutePath();
 			String javaagent= absPath+File.separator+".."+File.separator+"aj-build"+File.separator+"dist"+File.separator+"tools"+File.separator+"lib"+File.separator+"aspectjweaver.jar";
 			try {
 				String command ="java " +vmargs+ " -classpath " + cp +" -javaagent:"+javaagent + " " + className ;
-				
+
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -651,7 +651,7 @@ public abstract class AjcTestCase extends TestCase {
 		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
 		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
-				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
 				System.out.println("Error executing full LTW test: " + e);
 				e.printStackTrace();
@@ -681,7 +681,7 @@ public abstract class AjcTestCase extends TestCase {
 		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
 		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
-				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
 				System.out.println("Error executing module test: " + e);
 				e.printStackTrace();
@@ -705,7 +705,7 @@ public abstract class AjcTestCase extends TestCase {
 		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
 		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
-				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError); 
+				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
 				System.out.println("Error executing module test: " + e);
 				e.printStackTrace();
@@ -718,7 +718,7 @@ public abstract class AjcTestCase extends TestCase {
 		}
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
-		
+
 
 		StringBuffer command = new StringBuffer();
 		command.append("java -classpath ");
@@ -790,7 +790,7 @@ public abstract class AjcTestCase extends TestCase {
 			String nextToken =st.nextToken();
 			arguments.add(nextToken);
 		}
-		
+
 		return arguments;
 	}
 
@@ -799,7 +799,7 @@ public abstract class AjcTestCase extends TestCase {
 		String line = "";
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
-		
+
 		PrintWriter stdOutWriter = new PrintWriter(baosOut);
 		PrintWriter stdErrWriter = new PrintWriter(baosErr);
 
@@ -814,10 +814,10 @@ public abstract class AjcTestCase extends TestCase {
 
 			}
 			stdErrWriter.flush();
-			
+
 			baosOut.close();
 			baosErr.close();
-				
+
 			return new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
 	}
 
@@ -902,7 +902,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	/**
 	 * Any central pre-processing of args. This supplies aspectjrt.jar if available and classpath not set.
-	 * 
+	 *
 	 * @param args the String[] args to fix up
 	 * @return the String[] args to use
 	 */
@@ -969,7 +969,7 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Compare the set of expected messages against the set of actual messages, leaving in missingElements the set of messages that
 	 * were expected but did not occur, and in extraElements the set of messages that occured but were not excpected
-	 * 
+	 *
 	 * @param expected the expected messages
 	 * @param actual the actual messages
 	 * @param missingElements the missing messages, when passed in must contain all of the expected messages
@@ -1055,7 +1055,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	@Override
@@ -1066,7 +1066,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	@Override

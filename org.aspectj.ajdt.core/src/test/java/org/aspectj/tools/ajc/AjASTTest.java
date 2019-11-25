@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006, 2010 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006, 2010 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.tools.ajc;
@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.org.eclipse.jdt.core.SourceRange;
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
@@ -74,15 +75,14 @@ import org.aspectj.org.eclipse.jdt.core.dom.Type;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
-import org.aspectj.org.eclipse.jdt.core.SourceRange;
 
 /**
  * For each AspectJ ASTNode there is a test for:
- * 
+ *
  * - that a new instance can be created via ajast.newXXX() - that the property descriptors have been set correctly - that the
  * get/set methods for the different properties work as expected - that the clone0 method sets the correct properties - that the
  * internalStructuralPropertiesForType(int) and internalGetSetXXXProperty(..) methods have been implemented correctly
- * 
+ *
  * These are all that is required for an ASTNode, except an implementation of the accept0() method which is tested in
  * ASTVisitorTest.
  */
@@ -1660,24 +1660,24 @@ public class AjASTTest extends AjASTTestCase {
 	public void testDeclareParents() {
 		checkJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", 28, 29);
 	}
-	
-	
+
+
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 * START: Test TypePattern nodes introduced in Bugzilla 329268.
-	 * 
-	 * 
+	 *
+	 *
 	 */
-	
+
 	public void testDeclareParentsTypePatternNodeSource() {
 		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", new int[][] {{46, 1} , {56, 1 }});
 	}
-	
+
 	public void testDeclareParentsAnySource() {
 		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : * extends B;}", new int[][] {{46, 1} , {56, 1 }});
 	}
-	
+
 	public void testDeclareParentsAndSource() {
 
 		checkTypePatternSourceRangesJLS3(
@@ -1690,7 +1690,7 @@ public class AjASTTest extends AjASTTestCase {
 						{ 84, 1 } // E
 				});
 	}
-	
+
 	public void testDeclareParentsNotSource() {
 
 		checkTypePatternSourceRangesJLS3(
@@ -1702,7 +1702,7 @@ public class AjASTTest extends AjASTTestCase {
 						{ 80, 1 } // E
 				});
 	}
-	
+
 	public void testDeclareParentsOrSource() {
 		checkTypePatternSourceRangesJLS3(
 				"class A{}class B{}class D{}class E{}aspect C {declare parents : A || B || D extends E;}",
@@ -1714,16 +1714,16 @@ public class AjASTTest extends AjASTTestCase {
 						{ 84, 1 } // E
 				});
 	}
-	
+
 	public void testDeclareParentsAnyWithAnnotationSource() {
 		checkTypePatternSourceRangesJLS3(
 				"@interface AnnotationT {}class E{}aspect C {declare parents : (@AnnotationT *) extends E;}",
 				new int[][] { { 62, 16 },// (@AnnotationT *)
 						{ 87, 1 } // E
 				});
-		
+
 	}
-	
+
 	public void testDeclareParentsTypeCategorySource() {
 		checkTypePatternSourceRangesJLS3(
 				"class A{}class E{}aspect C {declare parents : A && is(ClassType) extends E;}",
@@ -1789,16 +1789,16 @@ public class AjASTTest extends AjASTTestCase {
 				"class B{}class E{}aspect C {declare parents : B && !is(EnumType) extends E;}",
 				TypeCategoryTypePattern.ENUM, "is(EnumType)");
 	}
-	
+
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 * END: Test TypePattern nodes introduced in Bugzilla 329268.
-	 * 
-	 * 
+	 *
+	 *
 	 */
-	
-	
+
+
 	public void testDeclareWarning() {
 		checkJLS3("aspect A {pointcut a();declare warning: a(): \"error\";}", 23, 30);
 	}
@@ -1820,21 +1820,22 @@ public class AjASTTest extends AjASTTestCase {
 	public void testJavadocCommentForDeclareExists_pr150467() {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource("aspect X {/** I have a doc comment */declare parents : Y implements Z;}".toCharArray());
-		parser.setCompilerOptions(Collections.EMPTY_MAP);
+		//parser.setSource("aspect X {/** I have a doc comment */public  void foo() {}}".toCharArray());
+		parser.setCompilerOptions(Collections.emptyMap());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-		Javadoc javadoc = ((DeclareParentsDeclaration) ((TypeDeclaration) cu.types().get(0)).bodyDeclarations().get(0))
-				.getJavadoc();
+		//Javadoc javadoc = ((MethodDeclaration) ((TypeDeclaration) cu.types().get(0)).bodyDeclarations().get(0)).getJavadoc();
+		Javadoc javadoc = ((DeclareParentsDeclaration) ((TypeDeclaration) cu.types().get(0)).bodyDeclarations().get(0)).getJavadoc();
 		assertNull("expected the doc comment node to be null but it wasn't", javadoc);
 		assertEquals("expected there to be one comment but found " + cu.getCommentList().size(), 1, cu.getCommentList().size());
 	}
 
-	
+
 	protected void assertExpression(String expectedExpression, TypePattern node) {
 		assertTrue("Expected: " + expectedExpression + ". Actual: " + node.getTypePatternExpression(), node.getTypePatternExpression().equals(expectedExpression));
-		
+
 	}
-	
+
 	protected void assertNodeType(Class<?> expected, TypePattern node) {
 		assertTrue("Expected " + expected.toString() + ". Actual: " + node.getClass().toString(), node.getClass().equals(expected));
 	}
@@ -1843,14 +1844,14 @@ public class AjASTTest extends AjASTTestCase {
 
 
 class TypeCategoryTypeVisitor extends AjASTVisitor {
-	
+
 	private TypeCategoryTypePattern typeCategory = null;
-	
+
 	public boolean visit(TypeCategoryTypePattern node) {
 		typeCategory = node;
 		return false;
 	}
-	
+
 	public TypeCategoryTypePattern getTypeCategoryNode() {
 		return typeCategory;
 	}

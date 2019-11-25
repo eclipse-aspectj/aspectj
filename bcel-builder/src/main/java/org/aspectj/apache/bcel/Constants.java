@@ -58,7 +58,7 @@ import org.aspectj.apache.bcel.generic.Type;
 
 /**
  * Constants for the project, mostly defined in the JVM specification.
- * 
+ *
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement
  */
@@ -88,9 +88,11 @@ public interface Constants {
 	public final static short MINOR_11 = 0;
 	public final static short MAJOR_12 = 56;
 	public final static short MINOR_12 = 0;
-	
+	public final static short MAJOR_13 = 57;
+	public final static short MINOR_13 = 0;
+
 	public final static int PREVIEW_MINOR_VERSION = 65535;
-	
+
 	// Defaults
 	public final static short MAJOR = MAJOR_1_1;
 	public final static short MINOR = MINOR_1_1;
@@ -138,7 +140,7 @@ public interface Constants {
 	// Indicates that this dependence was implicitly declared in the source of
 	// the module declaration
 	public final static int MODULE_ACC_MANDATED     = 0x8000;
-	
+
 	// Applies to classes compiled by new compilers only
 	public final static short ACC_SUPER = 0x0020;
 
@@ -159,15 +161,15 @@ public interface Constants {
 	public final static byte CONSTANT_Methodref = 10;
 	public final static byte CONSTANT_InterfaceMethodref = 11;
 	public final static byte CONSTANT_NameAndType = 12;
-	
+
 	public final static byte CONSTANT_MethodHandle = 15;
 	public final static byte CONSTANT_MethodType = 16;
 	public final static byte CONSTANT_Dynamic = 17;
 	public final static byte CONSTANT_InvokeDynamic = 18;
-	
+
 	public final static byte CONSTANT_Module = 19;
 	public final static byte CONSTANT_Package = 20;
-	
+
 
 	public final static String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
@@ -651,7 +653,7 @@ public interface Constants {
 	public static final byte ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS = 20;
 	public static final byte ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS = 21;
 	public static final byte ATTR_METHOD_PARAMETERS = 22;
-	
+
 	// J9:
 	public static final byte ATTR_MODULE = 23;
 	public static final byte ATTR_MODULE_PACKAGES = 24;
@@ -663,11 +665,11 @@ public interface Constants {
 
 	public static final short KNOWN_ATTRIBUTES = 28;
 
-	public static final String[] ATTRIBUTE_NAMES = { 
+	public static final String[] ATTRIBUTE_NAMES = {
 		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
 		"InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
 		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
-		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod", 
+		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod",
 		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
 		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers"
 		};

@@ -425,6 +425,8 @@ public class AspectDeclaration extends TypeDeclaration {
 		return l;
 	}
 
+	public static final char[] HAS_ASPECT = "hasAspect".toCharArray();
+
 	/*
 	 * additionalAttributes allows us to pass some optional attributes we want to attach to the method we generate. Currently this
 	 * is used for inline accessor methods that have been generated to allow private field references or private method calls to be
@@ -464,15 +466,23 @@ public class AspectDeclaration extends TypeDeclaration {
 		if (codeStream.pcToSourceMapSize == 0) {
 			codeStream.recordPositionsFrom(0, 1);
 		}
+		// Seems a dirty hack around some underlying issue...?
+		boolean b2 = CharOperation.equals(methodBinding.selector,HAS_ASPECT) &&
+		  ((classFile.produceAttributes & ClassFileConstants.ATTR_STACK_MAP_TABLE) != 0 ? true : false);
+		if (b2) {
+			classFile.produceAttributes &= ~ClassFileConstants.ATTR_STACK_MAP_TABLE;
+		}
 		boolean b = ((codeStream.generateAttributes & ClassFileConstants.ATTR_VARS) != 0 ? true : false); // pr148693
 		if (codeStream.maxLocals == 0) {
 			codeStream.generateAttributes &= ~ClassFileConstants.ATTR_VARS;
 		}
-		classFile.completeCodeAttribute(codeAttributeOffset);
+		classFile.completeCodeAttribute(codeAttributeOffset, md.scope);
 		if (b) {
 			codeStream.generateAttributes |= ClassFileConstants.ATTR_VARS;
 		}
-
+		if (b2) {
+			classFile.produceAttributes |= ClassFileConstants.ATTR_STACK_MAP_TABLE;
+		}
 		attributeNumber++;
 		classFile.completeMethodInfo(methodBinding, methodAttributeOffset, attributeNumber);
 	}
@@ -713,14 +723,16 @@ public class AspectDeclaration extends TypeDeclaration {
 						world.makeMethodBinding(AjcMemberMaker.perTypeWithinGetInstance(typeX)), null);
 				codeStream.ifnull(noInstanceExists);
 				codeStream.iconst_1();
-				codeStream.goto_(leave);
+				codeStream.ireturn();
+				// codeStream.goto_(leave);
 				noInstanceExists.place();
 				codeStream.iconst_0();
 				leave.place();
 				goneBang.placeEnd();
 				codeStream.ireturn();
 				goneBang.place();
-				codeStream.astore_1();
+				//codeStream.astore_1();
+				codeStream.pop();
 				codeStream.iconst_0();
 				codeStream.ireturn();
 				codeStream.locals[0].recordInitializationEndPC(codeStream.position);

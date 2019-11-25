@@ -51,8 +51,9 @@ Method call
         </run>
     </ajc-test>
     
-    <ajc-test dir="features193" vm="12" title="switch 1">
-        <compile files="Switch1.java" options="-12 --enable-preview">
+    <!-- with the release of 13 this behaviour seems to have moved from 12 to 13?? -->
+    <ajc-test dir="features193" vm="13" title="switch 1">
+        <compile files="Switch1.java" options="-13 --enable-preview">	
         </compile>
         <run class="Switch1" vmargs="--enable-preview">
 	        <stdout>
@@ -64,8 +65,8 @@ Method call
         </run>
     </ajc-test>
     
-    <ajc-test dir="features193" vm="12" title="switch 2">
-        <compile files="Switch2.java" options="--enable-preview -source 12">
+    <ajc-test dir="features193" vm="13" title="switch 2">
+        <compile files="Switch2.java" options="--enable-preview -source 13">
         </compile>
         <run class="Switch2" vmargs="--enable-preview">
 	        <stdout>
@@ -77,8 +78,8 @@ Method call
         </run>
     </ajc-test>
     
-    <ajc-test dir="features193" vm="12" title="switch 3">
-        <compile files="Switch3.java" options="--enable-preview -source 12">
+    <ajc-test dir="features193" vm="13" title="switch 3">
+        <compile files="Switch3.java" options="--enable-preview -source 13">
         </compile>
         <run class="Switch3" vmargs="--enable-preview">
 	        <stdout>

@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 2001-2001 Xerox Corporation, 
+ * Copyright (c) 2001-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC)
  *               2003-2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2003-2004 changes
  * ******************************************************************/
 
@@ -40,7 +40,6 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.taskdefs.PumpStreamHandler;
 import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
@@ -66,7 +65,7 @@ import org.aspectj.util.LangUtil;
  * for each iterative compile, but when forking things are only copied at the completion of a successful compile.
  * <p>
  * See the development environment guide for usage documentation.
- * 
+ *
  * @since AspectJ 1.1, Ant 1.5
  */
 public class AjcTask extends MatchingTask {
@@ -76,9 +75,9 @@ public class AjcTask extends MatchingTask {
 	 * <code>readArguments(String[])</code>; (2) testing is supported by (a) permitting the same specification to be re-run with
 	 * added flags (settings once made cannot be removed); and (b) permitting recycling the task with <code>reset()</code>
 	 * (untested).
-	 * 
+	 *
 	 * The parts that do more than convert ant specs are (a) code for forking; (b) code for copying resources.
-	 * 
+	 *
 	 * If you maintain/upgrade this task, keep in mind: (1) changes to the semantics of ajc (new options, new values permitted,
 	 * etc.) will have to be reflected here. (2) the clients: the iajc ant script, Javac compiler adapter, maven clients of iajc,
 	 * and testing code.
@@ -89,23 +88,23 @@ public class AjcTask extends MatchingTask {
 	 * This method extracts javac arguments to ajc, and add arguments to make ajc behave more like javac in copying resources.
 	 * <p>
 	 * Pass ajc-specific options using compilerarg sub-element:
-	 * 
+	 *
 	 * <pre>
 	 * &lt;javac srcdir=&quot;src&quot;&gt;
 	 *     &lt;compilerarg compiler=&quot;...&quot; line=&quot;-argfile src/args.lst&quot;/&gt;
 	 * &lt;javac&gt;
 	 * </pre>
-	 * 
+	 *
 	 * Some javac arguments are not supported in this component (yet):
-	 * 
+	 *
 	 * <pre>
 	 * String memoryInitialSize;
 	 * boolean includeAntRuntime = true;
 	 * boolean includeJavaRuntime = false;
 	 * </pre>
-	 * 
+	 *
 	 * Other javac arguments are not supported in ajc 1.1:
-	 * 
+	 *
 	 * <pre>
 	 * boolean optimize;
 	 * String forkedExecutable;
@@ -114,7 +113,7 @@ public class AjcTask extends MatchingTask {
 	 * String debugLevel;
 	 * Path compileSourcepath;
 	 * </pre>
-	 * 
+	 *
 	 * @param javac the Javac command to implement (not null)
 	 * @param ajc the AjcTask to adapt (not null)
 	 * @param destDir the File class destination directory (may be null)
@@ -166,7 +165,7 @@ public class AjcTask extends MatchingTask {
 	 * Find aspectjtools.jar on the task or system classpath. Accept <code>aspectj{-}tools{...}.jar</code> mainly to support build
 	 * systems using maven-style re-naming (e.g., <code>aspectj-tools-1.1.0.jar</code>. Note that we search the task classpath
 	 * first, though an entry on the system classpath would be loaded first, because it seems more correct as the more specific one.
-	 * 
+	 *
 	 * @return readable File for aspectjtools.jar, or null if not found.
 	 */
 	public static File findAspectjtoolsJar() {
@@ -247,16 +246,16 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * -Xlint variants (error, warning, ignore)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Lint
 	 */
 	private static final List VALID_XLINT;
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
-	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12" };
-	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12" };
-	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12" };
+	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13" };
+	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13" };
+	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12", "-13" };
 
 	private static final ICommandEditor COMMAND_EDITOR;
 
@@ -328,7 +327,7 @@ public class AjcTask extends MatchingTask {
 	private String xdoneSignal;
 
 	private List<CompilerArg> compilerArgs;
-	
+
 	// ----- added by adapter - integrate better?
 	private List /* File */adapterFiles;
 	private String[] adapterArguments;
@@ -485,7 +484,7 @@ public class AjcTask extends MatchingTask {
   public void setProcessor(String processors) {
     cmd.addFlagged("-processor", processors);
   }
-  
+
   /**
    * -processorpath path
    * Specify where to find annotation processors; if this option is not used, the class path will be searched for processors.
@@ -611,7 +610,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * -Xlint:{error|warning|info} - set default level for -Xlint messages
-	 * 
+	 *
 	 * @param xlint the String with one of error, warning, ignored
 	 */
 	public void setXlint(String xlint) {
@@ -622,7 +621,7 @@ public class AjcTask extends MatchingTask {
 	/**
 	 * -Xlintfile {lint.properties} - enable or disable specific forms of -Xlint messages based on a lint properties file (default
 	 * is <code>org/aspectj/weaver/XLintDefault.properties</code>)
-	 * 
+	 *
 	 * @param xlintFile the File with lint properties
 	 */
 	public void setXlintfile(File xlintFile) {
@@ -698,19 +697,19 @@ public class AjcTask extends MatchingTask {
 	public Commandline.Argument createJvmarg() {
 		return this.javaCmd.createVmArgument();
 	}
-	
+
 	public static class CompilerArg {
 
 		private String value;
-		
+
 		public String getValue() {
 			return value;
 		}
-		
+
 		public void setValue(String value) {
 			this.value = value;
 		}
-		
+
 		@Override
 		public String toString() {
 			return value;
@@ -772,7 +771,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Language compliance level. If not set explicitly, eclipse default holds.
-	 * 
+	 *
 	 * @param input a String in COMPLIANCE_INPUTS
 	 */
 	public void setCompliance(String input) {
@@ -784,7 +783,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Source compliance level. If not set explicitly, eclipse default holds.
-	 * 
+	 *
 	 * @param input a String in SOURCE_INPUTS
 	 */
 	public void setSource(String input) {
@@ -793,14 +792,14 @@ public class AjcTask extends MatchingTask {
 			ignore(ignore);
 		}
 	}
-	
+
 	public void setParameters(boolean b) {
 		cmd.addFlag("-parameters",b);
 	}
 
 	/**
 	 * Flag to copy all non-.class contents of injars to outjar after compile completes. Requires both injars and outjar.
-	 * 
+	 *
 	 * @param doCopy
 	 */
 	public void setCopyInjars(boolean doCopy) {
@@ -812,7 +811,7 @@ public class AjcTask extends MatchingTask {
 	/**
 	 * Option to copy all files from all source root directories except those specified here. If this is specified and sourceroots
 	 * are specified, then this will copy all files except those specified in the filter pattern. Requires sourceroots.
-	 * 
+	 *
 	 * @param filter a String acceptable as an excludes filter for an Ant Zip fileset.
 	 */
 	public void setSourceRootCopyFilter(String filter) {
@@ -823,7 +822,7 @@ public class AjcTask extends MatchingTask {
 	 * Option to copy all files from all inpath directories except the files specified here. If this is specified and inpath
 	 * directories are specified, then this will copy all files except those specified in the filter pattern. Requires inpath. If
 	 * the input does not contain "**\/*.class", then this prepends it, to avoid overwriting woven classes with unwoven input.
-	 * 
+	 *
 	 * @param filter a String acceptable as an excludes filter for an Ant Zip fileset.
 	 */
 	public void setInpathDirCopyFilter(String filter) {
@@ -861,7 +860,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Setup custom message handling.
-	 * 
+	 *
 	 * @param className the String fully-qualified-name of a class reachable from this object's class loader, implementing
 	 *        IMessageHolder, and having a public no-argument constructor.
 	 * @throws BuildException if unable to create instance of className
@@ -885,7 +884,7 @@ public class AjcTask extends MatchingTask {
 	/**
 	 * Setup command-line filter. To do this staticly, define the environment variable
 	 * <code>org.aspectj.tools.ant.taskdefs.AjcTask.COMMAND_EDITOR</code> with the <code>className</code> parameter.
-	 * 
+	 *
 	 * @param className the String fully-qualified-name of a class reachable from this object's class loader, implementing
 	 *        ICommandEditor, and having a public no-argument constructor.
 	 * @throws BuildException if unable to create instance of className
@@ -904,7 +903,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Add path elements to source path and return result. Elements are added even if they do not exist.
-	 * 
+	 *
 	 * @param source the Path to add to - may be null
 	 * @param toAdd the Path to add - may be null
 	 * @return the (never-null) Path that results
@@ -1104,7 +1103,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Compile using ajc per settings.
-	 * 
+	 *
 	 * @exception BuildException if the compilation has problems or if there were compiler errors and failonerror is true.
 	 */
 	@Override
@@ -1144,7 +1143,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Halt processing. This tells main in the same vm to quit. It fails when running in forked mode.
-	 * 
+	 *
 	 * @return true if not in forked mode and main has quit or been told to quit
 	 */
 	public boolean quit() {
@@ -1197,7 +1196,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Create any pseudo-options required to implement some of the macro options
-	 * 
+	 *
 	 * @throws BuildException if options conflict
 	 */
 	protected void setupOptions() {
@@ -1281,9 +1280,9 @@ public class AjcTask extends MatchingTask {
 	/**
 	 * Run the compile in the same VM by loading the compiler (Main), setting up any message holders, doing the compile, and
 	 * converting abort/failure and error messages to BuildException, as appropriate.
-	 * 
+	 *
 	 * @throws BuildException if abort or failure messages or if errors and failonerror.
-	 * 
+	 *
 	 */
 	protected void executeInSameVM(String[] args) {
 		if (null != maxMem) {
@@ -1376,9 +1375,9 @@ public class AjcTask extends MatchingTask {
 	 * <li>No resource-copying between interative runs</li>
 	 * <li>failonerror fails when process interface fails to return negative values</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param args String[] of the complete compiler command to execute
-	 * 
+	 *
 	 * @see DefaultCompilerAdapter#executeExternalCompile(String[], int)
 	 * @throws BuildException if ajc aborts (negative value) or if failonerror and there were compile errors.
 	 */
@@ -1531,7 +1530,7 @@ public class AjcTask extends MatchingTask {
 		addFlaggedPath("-injars", injars, list);
 		addFlaggedPath("-inpath", inpath, list);
 		addFlaggedPath("-sourceroots", sourceRoots, list);
-		
+
 		if (this.compilerArgs != null) {
 			for (CompilerArg compilerArg:compilerArgs) {
 				list.add(compilerArg.toString());
@@ -1590,7 +1589,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Throw BuildException unless file is valid.
-	 * 
+	 *
 	 * @param file the File to check
 	 * @param name the symbolic name to print on error
 	 * @param isDir if true, verify file is a directory
@@ -1797,7 +1796,7 @@ public class AjcTask extends MatchingTask {
 
 	/**
 	 * Read arguments in as if from a command line, mainly to support compiler adapter compilerarg subelement.
-	 * 
+	 *
 	 * @param args the String[] of arguments to read
 	 */
 	public void readArguments(String[] args) { // XXX slow, stupid, unmaintainable
@@ -2049,7 +2048,7 @@ public class AjcTask extends MatchingTask {
 		/**
 		 * Adjust args for size if necessary by creating an argument file, which should be deleted by the client after the compiler
 		 * run has completed.
-		 * 
+		 *
 		 * @param max the int maximum length of the command line (in char)
 		 * @return the temp File for the arguments (if generated), for deletion when done.
 		 * @throws IllegalArgumentException if max is negative
@@ -2106,7 +2105,7 @@ public class AjcTask extends MatchingTask {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#handleMessage(org.aspectj.bridge.IMessage)
 		 */
 		@Override
@@ -2141,7 +2140,7 @@ public class AjcTask extends MatchingTask {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 		 */
 		@Override
@@ -2151,7 +2150,7 @@ public class AjcTask extends MatchingTask {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#dontIgnore(org.aspectj.bridge.IMessage.Kind)
 		 */
 		@Override
@@ -2160,7 +2159,7 @@ public class AjcTask extends MatchingTask {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
 		 */
 		@Override

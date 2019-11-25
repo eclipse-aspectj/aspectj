@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -52,12 +52,12 @@ import org.aspectj.weaver.UnresolvedType;
 
 /**
  * An inter-type method declaration.
- * 
+ *
  * @author Jim Hugunin
  */
 public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 	public InterTypeMethodDeclaration(CompilationResult result, TypeReference onType) {
-		super(result, onType); 
+		super(result, onType);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		if (!Modifier.isStatic(declaredModifiers)) {
 			this.arguments = AstUtil.insert(AstUtil.makeFinalArgument("ajc$this_".toCharArray(), onTypeBinding), this.arguments);
 			binding.parameters = AstUtil.insert(onTypeBinding, binding.parameters);
-			
+
 			// If the inserted argument is a generic type, we should include the associated type variables to ensure
 			// the generated signature is correct (it will be checked by eclipse when this type is consumed in binary form).
 			TypeVariableBinding onTypeTVBs[] = onTypeBinding.typeVariables();
@@ -338,7 +338,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 				}
 			}
 		}
-		classFile.completeCodeAttribute(codeAttributeOffset);
+		classFile.completeCodeAttribute(codeAttributeOffset,scope);
 		attributeNumber++;
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
 	}

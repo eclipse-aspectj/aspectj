@@ -55,7 +55,7 @@
 			<artifactId>asm</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/asm/asm-7.0-beta.renamed.jar</systemPath>
+			<systemPath>${project.basedir}/../lib/asm/asm-7.2.renamed.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>

@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2004,2019 IBM Corporation, contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -19,7 +19,7 @@ import org.aspectj.util.LangUtil;
  * @author Andy Clement
  */
 public class AjcTest {
-	
+
 //	private static boolean is13VMOrGreater = true;
 	private static boolean is14VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
@@ -30,7 +30,8 @@ public class AjcTest {
 	private static boolean is10VMOrGreater = false;
 	private static boolean is11VMOrGreater = false;
 	private static boolean is12VMOrGreater = false;
-	
+	private static boolean is13VMOrGreater = false;
+
 	static { // matching logic is also in org.aspectj.util.LangUtil
 		is14VMOrGreater = LangUtil.is14VMOrGreater();
 		is15VMOrGreater = LangUtil.is15VMOrGreater();
@@ -41,10 +42,11 @@ public class AjcTest {
 		is10VMOrGreater = LangUtil.is10VMOrGreater();
 		is11VMOrGreater = LangUtil.is11VMOrGreater();
 		is12VMOrGreater = LangUtil.is12VMOrGreater();
+		is13VMOrGreater = LangUtil.is13VMOrGreater();
 	}
 
 	private List<ITestStep> testSteps = new ArrayList<ITestStep>();
-	
+
 	private String dir;
 	private String pr;
 	private String title;
@@ -54,16 +56,16 @@ public class AjcTest {
 
 	public AjcTest() {
 	}
-	
+
 	public void addTestStep(ITestStep step) {
 		testSteps.add(step);
 		step.setTest(this);
 	}
-	
+
 	public boolean runTest(AjcTestCase testCase) {
 		if (!canRunOnThisVM()) return false;
 		try {
-			System.out.print("TEST: " + getTitle() + "\t");			
+			System.out.print("TEST: " + getTitle() + "\t");
 			for (ITestStep step: testSteps) {
 				step.setBaseDir(getDir());
 				System.out.print(".");
@@ -74,8 +76,8 @@ public class AjcTest {
 		}
 		return true;
 	}
-	
-	public boolean canRunOnThisVM() {		
+
+	public boolean canRunOnThisVM() {
 		if (vmLevel.equals("1.3")) return true;
 		boolean canRun = true;
 		if (vmLevel.equals("1.4")) canRun = is14VMOrGreater;
@@ -87,13 +89,14 @@ public class AjcTest {
 		if (vmLevel.equals("10")) canRun = is10VMOrGreater;
 		if (vmLevel.equals("11")) canRun = is11VMOrGreater;
 		if (vmLevel.equals("12")) canRun = is12VMOrGreater;
+		if (vmLevel.equals("13")) canRun = is13VMOrGreater;
 		if (!canRun) {
-			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel() 
+			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel()
 					+ ", currently running on " + System.getProperty("java.vm.version"));
 		}
 		return canRun;
 	}
-	
+
 	/**
 	 * @return Returns the comment.
 	 */
@@ -162,7 +165,7 @@ public class AjcTest {
 	public void setVm(String vmLevel) {
 		this.vmLevel = vmLevel;
 	}
-	
+
 	/**
 	 * @return Returns the vmLevel.
 	 */

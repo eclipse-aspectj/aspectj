@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
  *               2018 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.util;
 
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * 
+ *
  */
 public class LangUtil {
 
@@ -49,11 +49,11 @@ public class LangUtil {
 	public static String getVmVersionString() {
 		return Double.toString(vmVersion);
 	}
-	
+
 	public static double getVmVersion() {
 		return vmVersion;
 	}
-	
+
 	static {
 		StringWriter buf = new StringWriter();
 		PrintWriter writer = new PrintWriter(buf);
@@ -87,7 +87,7 @@ public class LangUtil {
 						.printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
-				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)* 
+				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)*
 				// Care about the first set of digits and second set if first digit is 1
 				try {
 					List<Integer> numbers = getFirstNumbers(vm);
@@ -111,7 +111,7 @@ public class LangUtil {
 			vmVersion = 1.5;
 		}
 	}
-	
+
 	private static List<Integer> getFirstNumbers(String vm) {
 		List<Integer> result = new ArrayList<Integer>();
 		StringTokenizer st = new StringTokenizer(vm,".-_");
@@ -125,7 +125,7 @@ public class LangUtil {
 		return result;
 	}
 
-	public static boolean is13VMOrGreater() {
+	public static boolean isOnePointThreeVMOrGreater() {
 		return 1.3 <= vmVersion;
 	}
 
@@ -144,15 +144,15 @@ public class LangUtil {
 	public static boolean is17VMOrGreater() {
 		return 1.7 <= vmVersion;
 	}
-	
+
 	public static boolean is18VMOrGreater() {
 		return 1.8 <= vmVersion;
 	}
-	
+
 	public static boolean is19VMOrGreater() {
 		return 9 <= vmVersion;
 	}
-	
+
 	public static boolean is10VMOrGreater() {
 		return 10 <= vmVersion;
 	}
@@ -165,9 +165,14 @@ public class LangUtil {
 		return 12 <= vmVersion;
 	}
 
+	public static boolean is13VMOrGreater() {
+		return 13 <= vmVersion;
+	}
+
+
 	/**
 	 * Shorthand for "if null, throw IllegalArgumentException"
-	 * 
+	 *
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
 	public static final void throwIaxIfNull(final Object o, final String name) {
@@ -179,7 +184,7 @@ public class LangUtil {
 
 	/**
 	 * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
-	 * 
+	 *
 	 * @param c the Class to check - use null to ignore type check
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
@@ -202,7 +207,7 @@ public class LangUtil {
 
 	/**
 	 * Shorthand for "if not null or not assignable, throw IllegalArgumentException"
-	 * 
+	 *
 	 * @throws IllegalArgumentException "null {name}" if o is null
 	 */
 	public static final void throwIaxIfNotAssignable(final Object o, final Class<?> c, final String name) {
@@ -228,13 +233,13 @@ public class LangUtil {
 	// if (null != c) {
 	// for (Iterator iter = collection.iterator(); iter.hasNext();) {
 	// throwIaxIfNotAssignable(iter.next(), c, name);
-	//				
+	//
 	// }
 	// }
 	// }
 	/**
 	 * Shorthand for "if false, throw IllegalArgumentException"
-	 * 
+	 *
 	 * @throws IllegalArgumentException "{message}" if test is false
 	 */
 	public static final void throwIaxIfFalse(final boolean test, final String message) {
@@ -276,7 +281,7 @@ public class LangUtil {
 
 	/**
 	 * Splits <code>text</code> at whitespace.
-	 * 
+	 *
 	 * @param text <code>String</code> to split.
 	 */
 	public static String[] split(String text) {
@@ -285,7 +290,7 @@ public class LangUtil {
 
 	/**
 	 * Splits <code>input</code> at commas, trimming any white space.
-	 * 
+	 *
 	 * @param input <code>String</code> to split.
 	 * @return List of String of elements.
 	 */
@@ -295,7 +300,7 @@ public class LangUtil {
 
 	/**
 	 * Split string as classpath, delimited at File.pathSeparator. Entries are not trimmed, but empty entries are ignored.
-	 * 
+	 *
 	 * @param classpath the String to split - may be null or empty
 	 * @return String[] of classpath entries
 	 */
@@ -316,7 +321,7 @@ public class LangUtil {
 
 	/**
 	 * Get System property as boolean, but use default value where the system property is not set.
-	 * 
+	 *
 	 * @return true if value is set to true, false otherwise
 	 */
 	public static boolean getBoolean(String propertyName, boolean defaultValue) {
@@ -337,7 +342,7 @@ public class LangUtil {
 	 * Splits <code>input</code>, removing delimiter and trimming any white space. Returns an empty collection if the input is null.
 	 * If delimiter is null or empty or if the input contains no delimiters, the input itself is returned after trimming white
 	 * space.
-	 * 
+	 *
 	 * @param input <code>String</code> to split.
 	 * @param delim <code>String</code> separators for input.
 	 * @return List of String of elements.
@@ -361,7 +366,7 @@ public class LangUtil {
 
 	/**
 	 * Splits strings into a <code>List</code> using a <code>StringTokenizer</code>.
-	 * 
+	 *
 	 * @param text <code>String</code> to split.
 	 */
 	public static List<String> strings(String text) {
@@ -423,7 +428,7 @@ public class LangUtil {
 	// }
 	// return (String[]) result.toArray(new String[0]);
 	// }
-	//    
+	//
 	// /**
 	// * Select from input String[] if readable directories
 	// * @param inputs String[] of input - null ignored
@@ -450,7 +455,7 @@ public class LangUtil {
 
 	/**
 	 * copy non-null two-dimensional String[][]
-	 * 
+	 *
 	 * @see extractOptions(String[], String[][])
 	 */
 	public static String[][] copyStrings(String[][] in) {
@@ -465,14 +470,14 @@ public class LangUtil {
 	/**
 	 * Extract options and arguments to input option list, returning remainder. The input options will be nullified if not found.
 	 * e.g.,
-	 * 
+	 *
 	 * <pre>
 	 * String[] options = new String[][] { new String[] { &quot;-verbose&quot; }, new String[] { &quot;-classpath&quot;, null } };
 	 * String[] args = extractOptions(args, options);
 	 * boolean verbose = null != options[0][0];
 	 * boolean classpath = options[1][1];
 	 * </pre>
-	 * 
+	 *
 	 * @param args the String[] input options
 	 * @param options the String[][]options to find in the input args - not null for each String[] component the first subcomponent
 	 *        is the option itself, and there is one String subcomponent for each additional argument.
@@ -528,7 +533,7 @@ public class LangUtil {
 		return args;
 	}
 
-	//    
+	//
 	// /**
 	// * Extract options and arguments to input parameter list, returning
 	// remainder.
@@ -661,7 +666,7 @@ public class LangUtil {
 	// options = temp;
 	// boolean[] dup = new boolean[options.length];
 	// int numDups = 0;
-	//        
+	//
 	// for (int i = 0; i < options.length; i++) {
 	// String option = options[i];
 	// if (LangUtil.isEmpty(option)) {
@@ -689,7 +694,7 @@ public class LangUtil {
 	// }
 	// return result;
 	// }
-	//    
+	//
 	// private static int exp(int base, int power) { // not in Math?
 	// if (0 > power) {
 	// throw new IllegalArgumentException("negative power: " + power);
@@ -718,7 +723,7 @@ public class LangUtil {
 	/**
 	 * Convert arrays safely. The number of elements in the result will be 1 smaller for each element that is null or not
 	 * assignable. This will use sink if it has exactly the right size. The result will always have the same component type as sink.
-	 * 
+	 *
 	 * @return an array with the same component type as sink containing any assignable elements in source (in the same order).
 	 * @throws IllegalArgumentException if either is null
 	 */
@@ -850,7 +855,7 @@ public class LangUtil {
 
 	/**
 	 * Renders exception <code>t</code> after unwrapping and eliding any test packages.
-	 * 
+	 *
 	 * @param t <code>Throwable</code> to print.
 	 * @see #maxStackTrace
 	 */
@@ -860,7 +865,7 @@ public class LangUtil {
 
 	/**
 	 * Renders exception <code>t</code>, unwrapping, optionally eliding and limiting total number of lines.
-	 * 
+	 *
 	 * @param t <code>Throwable</code> to print.
 	 * @param elide true to limit to 100 lines and elide test packages
 	 * @see StringChecker#TEST_PACKAGES
@@ -880,7 +885,7 @@ public class LangUtil {
 	/**
 	 * Trim ending lines from a StringBuffer, clipping to maxLines and further removing any number of trailing lines accepted by
 	 * checker.
-	 * 
+	 *
 	 * @param checker returns true if trailing line should be elided.
 	 * @param stack StringBuffer with lines to elide
 	 * @param maxLines int for maximum number of resulting lines
@@ -979,7 +984,7 @@ public class LangUtil {
 
 	/**
 	 * Replacement for Arrays.asList(..) which gacks on null and returns a List in which remove is an unsupported operation.
-	 * 
+	 *
 	 * @param array the Object[] to convert (may be null)
 	 * @return the List corresponding to array (never null)
 	 */
@@ -1019,7 +1024,7 @@ public class LangUtil {
 
 	/**
 	 * Gen classpath.
-	 * 
+	 *
 	 * @param bootclasspath
 	 * @param classpath
 	 * @param classesDir
@@ -1056,7 +1061,7 @@ public class LangUtil {
 
 	/**
 	 * Create or initialize a process controller to run a process in another VM asynchronously.
-	 * 
+	 *
 	 * @param controller the ProcessController to initialize, if not null
 	 * @param classpath
 	 * @param mainClass
@@ -1100,7 +1105,7 @@ public class LangUtil {
 
 	/**
 	 * Find java executable File path from java.home system property.
-	 * 
+	 *
 	 * @return File associated with the java command, or null if not found.
 	 */
 	public static File getJavaExecutable() {
@@ -1146,7 +1151,7 @@ public class LangUtil {
 
 	/**
 	 * Sleep until a particular time.
-	 * 
+	 *
 	 * @param time the long time in milliseconds to sleep until
 	 * @return true if delay succeeded, false if interrupted 100 times
 	 */
@@ -1176,11 +1181,11 @@ public class LangUtil {
 	 * when the process completes.
 	 * <p>
 	 * The following sample code creates a process with a completion callback starts it, and some time later retries the process.
-	 * 
+	 *
 	 * <pre>
 	 * LangUtil.ProcessController controller = new LangUtil.ProcessController() {
 	 * 	protected void doCompleting(LangUtil.ProcessController.Thrown thrown, int result) {
-	 * 		// signal result 
+	 * 		// signal result
 	 * 	}
 	 * };
 	 * controller.init(new String[] { &quot;java&quot;, &quot;-version&quot; }, &quot;java version&quot;);
@@ -1193,7 +1198,7 @@ public class LangUtil {
 	 * 	controller.start();
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * <u>warning</u>: Currently this does not close the input or output streams, since doing so prevents their use later.
 	 */
 	public static class ProcessController {
@@ -1298,7 +1303,7 @@ public class LangUtil {
 
 		/**
 		 * Start running the process and pipes asynchronously.
-		 * 
+		 *
 		 * @return Thread started or null if unable to start thread (results available via <code>getThrown()</code>, etc.)
 		 */
 		public final Thread start() {
@@ -1388,7 +1393,7 @@ public class LangUtil {
 		/**
 		 * Get any Throwable thrown. Note that the process can complete normally (with a valid return value), at the same time the
 		 * pipes throw exceptions, and that this may return some exceptions even if the process is not complete.
-		 * 
+		 *
 		 * @return null if not complete or Thrown containing exceptions thrown by the process and streams.
 		 */
 		public final Thrown getThrown() { // cache this
@@ -1405,7 +1410,7 @@ public class LangUtil {
 		 * completed abruptly (including side-effects of the user halting the process). If <code>userStopped()</code> is true, then
 		 * some client asked that the process be destroyed using <code>stop()</code>. Otherwise, the result code should be the
 		 * result value returned by the process.
-		 * 
+		 *
 		 * @param thrown same as <code>getThrown().fromProcess</code>.
 		 * @param result same as <code>getResult()</code>
 		 * @see getThrown()
@@ -1417,7 +1422,7 @@ public class LangUtil {
 
 		/**
 		 * Handle termination (on-demand, abrupt, or normal) by destroying and/or halting process and pipes.
-		 * 
+		 *
 		 * @param thrown ignored if null
 		 * @param result ignored if Integer.MIN_VALUE
 		 */
@@ -1453,7 +1458,7 @@ public class LangUtil {
 
 		/**
 		 * Create snapshot of Throwable's thrown.
-		 * 
+		 *
 		 * @param thrown ignored if null or if this.thrown is not null
 		 */
 		private final synchronized Thrown makeThrown(Throwable processThrown) {
@@ -1503,11 +1508,11 @@ public class LangUtil {
 			}
 		} // class Thrown
 	}
-	
+
 	public static String getJrtFsFilePath() {
 		return getJavaHome() + File.separator + "lib" + File.separator + JRT_FS;
 	}
-		
+
 	public static String getJavaHome() {
 	    return System.getProperty("java.home");
 	}

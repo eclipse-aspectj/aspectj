@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Mik Kersten	  port to AspectJ 1.1+ code base
  * ******************************************************************/
 
@@ -77,7 +77,7 @@ class HtmlDecorator {
 	/**
 	 * Before attempting to decorate the HTML file we have to verify that it exists, which depends on the documentation visibility
 	 * specified to c.
-	 * 
+	 *
 	 * Depending on docModifier, can document - public: only public - protected: protected and public (default) - package: package
 	 * protected and public - private: everything
 	 */
@@ -229,6 +229,11 @@ class HtmlDecorator {
 					// <h2 title="Class A" class="title">Class A</h2>
 					classStartIndex = fileContents.toString().indexOf("<h2 title=\"Class ");
 					int classEndIndex = fileContents.toString().indexOf("</h2>", classStartIndex);
+					if (classStartIndex == -1) {
+						// Java 13 - replaced h2 with h1 here
+						classStartIndex = fileContents.toString().indexOf("<h1 title=\"Class ");
+						classEndIndex = fileContents.toString().indexOf("</h1>", classStartIndex);
+					}
 					if (classEndIndex != -1) {
 						// Convert it to "<h2 title="Aspect A" class="title">Aspect A</h2>"
 						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
@@ -307,7 +312,7 @@ class HtmlDecorator {
 			insertDeclarationsSummary(fileBuffer, constDeclaredOn, ITD_CONSTRUCTOR_SUMMARY, index);
 		}
 		for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement member = (IProgramElement) it.next();
+			IProgramElement member = it.next();
 			if (member.getKind().equals(IProgramElement.Kind.POINTCUT)) {
 				pointcuts.add(member);
 			} else if (member.getKind().equals(IProgramElement.Kind.ADVICE)) {
@@ -737,7 +742,7 @@ class HtmlDecorator {
 	/**
 	 * Generates a relative directory path fragment that can be used to navigate "upwards" from the directory location implied by
 	 * the argument.
-	 * 
+	 *
 	 * @param packagePath
 	 * @return String consisting of multiple "../" parts, one for each component part of the input <code>packagePath</code>.
 	 */
@@ -758,7 +763,7 @@ class HtmlDecorator {
 	 * Generate the "public int"-type information about the given IProgramElement. Used when dealing with ITDs. To mirror the
 	 * behaviour of methods and fields in classes, if we're generating the summary information we don't want to include "public" if
 	 * the accessibility of the IProgramElement is public.
-	 * 
+	 *
 	 */
 	private static String generateModifierInformation(IProgramElement decl, boolean isDetails) {
 		String intro = "";
@@ -828,7 +833,7 @@ class HtmlDecorator {
 	 * the characters between the /** that begins the comment and the 'star-slash' that ends it. The text is devided into one or
 	 * more lines. On each of these lines, the leading * characters are ignored; for lines other than the first, blanks and tabs
 	 * preceding the initial * characters are also discarded.</I>
-	 * 
+	 *
 	 * TODO: implement formatting or linking for tags.
 	 */
 	static String getFormattedComment(IProgramElement decl) {
@@ -883,11 +888,11 @@ class HtmlDecorator {
 
 	static public IProgramElement[] getProgramElements(AsmManager model, String filename) {
 
-		IProgramElement file = (IProgramElement) model.getHierarchy().findElementForSourceFile(filename);
+		IProgramElement file = model.getHierarchy().findElementForSourceFile(filename);
 		final List nodes = new ArrayList();
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
-				IProgramElement p = (IProgramElement) node;
+				IProgramElement p = node;
 				if (accept(node))
 					nodes.add(p);
 			}

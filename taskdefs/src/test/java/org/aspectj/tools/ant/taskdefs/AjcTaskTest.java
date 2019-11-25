@@ -1,17 +1,17 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC)
  *               2003 Contributors.
  *               2005 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     IBM	            ongoing maintenance 
+ *     IBM	            ongoing maintenance
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -47,7 +47,7 @@ import junit.framework.TestCase;
 /**
  * AjcTask test cases.
  * Please put new ones with others between ------- comments.
- * 
+ *
  * Some API tests, but mostly functional tests driving
  * the task execute using data in ../taskdefs/testdata.
  * This will re-run in forked mode for any nonfailing
@@ -98,10 +98,10 @@ public class AjcTaskTest extends TestCase {
 		};
 	}
 
-	/** 
+	/**
 	  * Check that aspectjtools are found on the classpath,
 	  * reporting any errors to System.err.
-	  * 
+	  *
 	  * Run multiple times with different classpaths.
 	  * This should find variants
 	  * aspectjtools.jar,
@@ -111,7 +111,7 @@ public class AjcTaskTest extends TestCase {
 	  * but not
 	  * aspectjrt.jar or
 	  * aspectj/tools.jar.
-	  * XXX use testing aspect to stub out 
+	  * XXX use testing aspect to stub out
 	  * <code>System.getProperty("java.class.path")</code>
 	  * @param args a String[], first is expected path, if any
 	  */
@@ -274,7 +274,7 @@ public class AjcTaskTest extends TestCase {
     // ------------------------------------------------------
     // ------------------------------------------------------
     // Start of test cases
-    
+
 	public void testNullDestDir() {
 		AjcTask task = getTask(NOFILE, null);
 		String[] cmd = task.makeCommand();
@@ -283,7 +283,7 @@ public class AjcTaskTest extends TestCase {
 			assertTrue(!"-d".equals(cmd[i]));
 		}
 	}
-	
+
 	public void testOutputRequirement() {
 		AjcTask task = getTask("default.lst");
 		checkRun(task, null);
@@ -333,7 +333,7 @@ public class AjcTaskTest extends TestCase {
         assertTrue(
             "unable to create " + destDir,
             destDir.canRead() || destDir.mkdirs());
-        AjcTask task = getTask(NOFILE, destDir);        
+        AjcTask task = getTask(NOFILE, destDir);
         Project p = task.getProject();
         Path indirs = new Path(p);
         File dir = new File(testdataDir, "inpathDirs").getAbsoluteFile();
@@ -341,7 +341,7 @@ public class AjcTaskTest extends TestCase {
         indirs.addExisting(new Path(p, new File(dir, "inpathDirTwo").getAbsolutePath()));
         task.setInpath(indirs);
         task.setInpathDirCopyFilter("doNotCopy,**/*.txt");
-        
+
         File file = new File(destDir, "Default.java").getAbsoluteFile();
         assertTrue(file + ".canRead() prematurely", !file.canRead());
         checkRun(task, null);
@@ -365,7 +365,7 @@ public class AjcTaskTest extends TestCase {
         file = new File(destDir, "skipTxtFiles.txt");
         assertTrue(file + ".canRead() passed", !file.canRead());
     }
-    
+
     public void testInpathDirCopyFilterWithJar() throws IOException {
     	checkInpathCopy("testInpathDirCopyFilterWithJar-out.jar");
     }
@@ -374,14 +374,14 @@ public class AjcTaskTest extends TestCase {
     public void testInpathDirCopyFilterWithOddjar() throws IOException {
     	checkInpathCopy("testInpathDirCopyFilterWithJar-outJarFile");
     }
-    
+
     private void checkInpathCopy(String outjarFileStr) throws IOException {
         // inpathDirCopyFilter works with output jar
         File destDir = getTempDir();
         assertTrue(
             "unable to create " + destDir,
             destDir.canRead() || destDir.mkdirs());
-        AjcTask task = getTask(NOFILE, null);        
+        AjcTask task = getTask(NOFILE, null);
         File destJar = new File(destDir, outjarFileStr);
         task.setOutjar(destJar);
         Project p = task.getProject();
@@ -391,11 +391,11 @@ public class AjcTaskTest extends TestCase {
         indirs.addExisting(new Path(p, new File(dir, "inpathDirTwo").getAbsolutePath()));
         task.setInpath(indirs);
         task.setInpathDirCopyFilter("doNotCopy,**/*.txt,**/*.class");
-        
+
         checkRun(task, null);
 
         JarFile jarFile = new JarFile(destJar);
-        String[] expected = {"copyMe.htm", "pack/includeme", 
+        String[] expected = {"copyMe.htm", "pack/includeme",
                 "pack/Pack.class", "Default.class"};
         String[] unexpected = {"doNotCopy", "skipTxtFiles.txt", "pack/something.txt"};
         for (int i = 0; i < expected.length; i++) {
@@ -410,7 +410,7 @@ public class AjcTaskTest extends TestCase {
 
     public void testInpathDirCopyFilterError() {
         // inpathDirCopyFilter fails with no output directory or jar iff specified
-        AjcTask task = getTask(NOFILE, null);        
+        AjcTask task = getTask(NOFILE, null);
         Project p = task.getProject();
         Path indirs = new Path(p);
         File dir = new File(testdataDir, "inpathDirs").getAbsoluteFile();
@@ -514,7 +514,7 @@ public class AjcTaskTest extends TestCase {
 		}
 		// not found when unit testing b/c not on system classpath
 		// so just checking for exceptions.
-		// XXX need aspect to stub out System.getProperty(..) 
+		// XXX need aspect to stub out System.getProperty(..)
 	}
 
 
@@ -631,7 +631,7 @@ public class AjcTaskTest extends TestCase {
 		// change by 1.8 final... this might need reverting back to ONE_ERROR
 		runTest(task, NO_EXCEPTION, MessageHolderChecker.THREE_ERRORS);
 	}
-	
+
 	public void testShowWeaveInfo() {
 		AjcTask task = getTask("showweaveinfo.lst");
 		task.setShowWeaveInfo(true);
@@ -681,7 +681,7 @@ public class AjcTaskTest extends TestCase {
             checkContains(cmd, inputs[i], true);
         }
 	}
-    
+
 	public void testClasspath() {
 		AjcTask task = getTask(NOFILE);
 		String[] cmd = task.makeCommand();
@@ -697,13 +697,13 @@ public class AjcTaskTest extends TestCase {
 			"expecting aspectj in classpath",
 			(-1 != classpath.indexOf("aspectjrt.jar")));
 	}
-	
+
 	CompilerArg createCompilerArg(String value) {
 		CompilerArg c = new CompilerArg();
 		c.setValue(value);
 		return c;
 	}
-	
+
 	public void testAddModulesJ9() {
 		AjcTask task = getTask(NOFILE);
 		task.createCompilerarg().setValue("--add-modules");
@@ -714,7 +714,7 @@ public class AjcTaskTest extends TestCase {
 		assertNotSame(-1, addModulesPos);
 		assertEquals("java.xml.bind,java.io",cmd[addModulesPos+1]);
 	}
-	
+
 	private int findOptionPosition(String[] cmd, String optionString) {
 		for (int i=0;i<cmd.length;i++) {
 			if (cmd[i].equals(optionString)) {
@@ -776,9 +776,9 @@ public class AjcTaskTest extends TestCase {
         task.setTarget("1.1");
         task.setTime(true);
         task.setVerbose(true);
-        task.setXlint("info");        
+        task.setXlint("info");
     }
-    
+
     public void testLogCommand() {
         final String DEFAULT = "default.lst";
         AjcTask task = getTask(DEFAULT);
@@ -813,7 +813,7 @@ public class AjcTaskTest extends TestCase {
 			String[] cmd = task.makeCommand();
 			checkContains(cmd,"-X" + xopts[i],true);
 		}
-		
+
 	}
 
   public void testAptProc() {
@@ -844,7 +844,7 @@ public class AjcTaskTest extends TestCase {
     checkContains(task.makeCommand(), "-s", true);
     checkContains(task.makeCommand(), "some/path", true);
   }
-	
+
 	public void testOutxml () {
         File destDir = getTempDir();
         assertTrue(
@@ -856,9 +856,9 @@ public class AjcTaskTest extends TestCase {
 		File outxmlFile = new File(destDir,"META-INF/aop-ajc.xml");
 		assertTrue("META-INF/aop-ajc.xml missing",outxmlFile.exists());
 	}
-	
+
 	public void testOutxmlFile () {
-		String customName = "custom/aop.xml"; 
+		String customName = "custom/aop.xml";
         File destDir = getTempDir();
         assertTrue(
             "unable to create " + destDir,
@@ -907,7 +907,7 @@ public class AjcTaskTest extends TestCase {
 				&& (null == exceptionType)
 				&& ((null == checker) || !checker.expectFail()));
 		String label = "same-vm ";
-		while (true) { // same vm, then perhaps forked   
+		while (true) { // same vm, then perhaps forked
 			try {
 				task.execute();
 			} catch (Throwable t) {
@@ -975,7 +975,7 @@ public class AjcTaskTest extends TestCase {
 			new MessageHolderChecker(0, 0, 0, 1, IGNORE);
 		static MessageHolderChecker THREE_ERRORS =
 				new MessageHolderChecker(0, 0, 3, 0, IGNORE);
-		
+
 
 		int aborts, fails, errors, warnings, infos;
 		int weaveinfos;
@@ -1027,7 +1027,7 @@ public class AjcTaskTest extends TestCase {
 							holder,
 							kind + " expected " + num + " got " + actual);
 					}
-					if (num != actual){ 
+					if (num != actual){
 						System.out.println("===\n"+Arrays.toString(holder.getMessages(kind, false))+"\n===\n");
 					}
 					assertEquals(kind.toString(), num, actual);
