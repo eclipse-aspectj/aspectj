@@ -1481,7 +1481,7 @@ java bean.Demo
         Note that this aspect does three things. It define an abstract
         pointcut that extending aspects can override. It defines advice
         that should run after the join points of the pointcut. And it
-        declares an inter-tpye field and two inter-type methods so that
+        declares an inter-type field and two inter-type methods so that
         each <literal>Observer</literal> can hold onto its <literal>Subject</literal>. 
       </para>
     </sect3>
