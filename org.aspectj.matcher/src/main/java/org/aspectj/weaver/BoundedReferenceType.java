@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2010 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -12,12 +12,12 @@ import java.util.Map;
 
 /**
  * A BoundedReferenceType is the result of a generics wildcard expression ? extends String, ? super Foo etc..
- * 
+ *
  * The "signature" for a bounded reference type follows the generic signature specification in section 4.4 of JVM spec: *,+,- plus
  * signature strings.
- * 
+ *
  * The bound may be a type variable (e.g. ? super T)
- * 
+ *
  * @author Adrian Colyer
  * @author Andy Clement
  */
@@ -106,7 +106,12 @@ public class BoundedReferenceType extends ReferenceType {
 			parameterizedAdditionalInterfaces[i] = (ReferenceType) additionalInterfaceBounds[i].parameterize(typeBindings);
 		}
 		if (this.kind == EXTENDS) {
-			return new BoundedReferenceType((ReferenceType) getUpperBound().parameterize(typeBindings), true, world,
+			UnresolvedType parameterizedUpperBound = getUpperBound().parameterize(typeBindings);
+			if (!(parameterizedUpperBound instanceof ReferenceType)) {
+				throw new IllegalStateException("DEBUG551732: Unexpected problem processing bounds. Parameterizing "+getUpperBound()+" produced "+parameterizedUpperBound+
+						" (Type: "+parameterizedUpperBound==null?"null":parameterizedUpperBound.getClass().getName()+") (typeBindings="+typeBindings+")");
+			}
+			return new BoundedReferenceType((ReferenceType) parameterizedUpperBound, true, world,
 					parameterizedAdditionalInterfaces);
 		} else {
 			// (this.kind == SUPER)
