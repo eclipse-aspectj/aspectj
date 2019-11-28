@@ -112,7 +112,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	/**
 	 * We don't need a reference to the class loader and using it during construction can cause problems with recursion. It also
 	 * makes sense to supply the weaving context during initialization to.
-	 * 
+	 *
 	 * @deprecated
 	 */
 	@Deprecated
@@ -135,7 +135,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 		/**
 		 * Callback when we need to define a Closure in the JVM
-		 * 
+		 *
 		 */
 		@Override
 		public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
@@ -150,7 +150,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				defineClass(loaderRef.getClassLoader(), name, wovenBytes, activeProtectionDomain);
 			} else {
 				defineClass(loaderRef.getClassLoader(), name, wovenBytes); // could be done lazily using the hook
-
 			}
 		}
 	}
@@ -232,7 +231,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Load and cache the aop.xml/properties according to the classloader visibility rules
-	 * 
+	 *
 	 * @param loader
 	 */
 	List<Definition> parseDefinitions(final ClassLoader loader) {
@@ -341,7 +340,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	/**
 	 * Configure the weaver according to the option directives TODO av - don't know if it is that good to reuse, since we only allow
 	 * a small subset of options in LTW
-	 * 
+	 *
 	 * @param weaver
 	 * @param loader
 	 * @param definitions
@@ -468,7 +467,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Register the aspect, following include / exclude rules
-	 * 
+	 *
 	 * @param weaver
 	 * @param loader
 	 * @param definitions
@@ -591,7 +590,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	/**
 	 * Register the include / exclude filters. We duplicate simple patterns in startWith filters that will allow faster matching
 	 * without ResolvedType
-	 * 
+	 *
 	 * @param weaver
 	 * @param loader
 	 * @param definitions
@@ -644,7 +643,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Checks if the pattern looks like "*..*XXXX*" and if so returns XXXX. This will enable fast name matching of CGLIB exclusion
-	 * 
+	 *
 	 */
 	private String looksLikeStarDotDotStarExclude(String typePattern) {
 		if (!typePattern.startsWith("*..*")) {
@@ -731,7 +730,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Register the dump filter
-	 * 
+	 *
 	 * @param weaver
 	 * @param loader
 	 * @param definitions
@@ -754,7 +753,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Determine whether a type should be accepted for weaving, by checking it against any includes/excludes.
-	 * 
+	 *
 	 * @param className the name of the type to possibly accept
 	 * @param bytes the bytecode for the type (in case we need to look inside, eg. annotations)
 	 * @return true if it should be accepted for weaving
@@ -987,7 +986,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	/**
 	 * Check to see if any classes are stored in the generated classes cache. Then flush the cache if it is not empty
-	 * 
+	 *
 	 * @param className TODO
 	 * @return true if a class has been generated and is stored in the cache
 	 */
@@ -1043,12 +1042,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 		return unsafe;
     }
-	
+
 	private static Method bindTo_Method, invokeWithArguments_Method = null;
 	private static Object defineClassMethodHandle = null;
-	
+
 	private static Boolean initializedForJava11 = false;
-	
+
 	// In order to let this code compile on earlier versions of Java (8), use reflection to discover the elements
 	// we need to define classes.
 	private static synchronized void initializeForJava11() {
@@ -1063,15 +1062,15 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			// MethodHandles.Lookup methodHandlesLookup = MethodHandles.lookup();
 			Class<?> methodHandles_Class = Class.forName("java.lang.invoke.MethodHandles");
 			Method lookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("lookup");
-			lookupMethodOnMethodHandlesClass.setAccessible(true);			
+			lookupMethodOnMethodHandlesClass.setAccessible(true);
 			Object methodHandlesLookup = lookupMethodOnMethodHandlesClass.invoke(null);
-			
-			// MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, baseLookup);
+
+			// MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, methodHandlesLookup);
 			Class<?> methodHandlesLookup_Class = Class.forName("java.lang.invoke.MethodHandles$Lookup");
 			Method privateLookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("privateLookupIn",Class.class,methodHandlesLookup_Class);
 			privateLookupMethodOnMethodHandlesClass.setAccessible(true);
 			Object lookup = privateLookupMethodOnMethodHandlesClass.invoke(null, ClassLoader.class, methodHandlesLookup);
-			
+
 			// MethodHandle defineClassMethodHandle = lookup.findVirtual(ClassLoader.class, "defineClass", defineClassMethodType);
 			Method findVirtual_Method = methodHandlesLookup_Class.getDeclaredMethod("findVirtual", Class.class,String.class,methodType_Class);
 			findVirtual_Method.setAccessible(true);
@@ -1081,13 +1080,13 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			Class<?> methodHandle_Class = Class.forName("java.lang.invoke.MethodHandle");
 			bindTo_Method = methodHandle_Class.getDeclaredMethod("bindTo", Object.class);
 			invokeWithArguments_Method = methodHandle_Class.getDeclaredMethod("invokeWithArguments",Object[].class);
-			
+
 			initializedForJava11 = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
 		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
@@ -1102,7 +1101,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				// Do this: clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length, protectionDomain);
 				Object o = bindTo_Method.invoke(defineClassMethodHandle,loader);
 				clazz = invokeWithArguments_Method.invoke(o, new Object[] {new Object[] {name, bytes, 0, bytes.length, protectionDomain}});
-			    
+
 			} catch (Throwable t) {
 				t.printStackTrace(System.err);
 				warn("define generated class failed", t);
@@ -1112,7 +1111,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				if (defineClassMethod == null) {
 					synchronized (lock) {
 						getUnsafe();
-						defineClassMethod = 
+						defineClassMethod =
 								Unsafe.class.getDeclaredMethod("defineClass", String.class,byte[].class,Integer.TYPE,Integer.TYPE, ClassLoader.class,ProtectionDomain.class);
 					}
 				}
@@ -1136,8 +1135,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 	static Method defineClassMethod;
 	private static String lock = "lock";
-	
-	
+
+
 //    /*
 //    This method is equivalent to the following code but use reflection to compile on Java 7:
 //     MethodHandles.Lookup baseLookup = MethodHandles.lookup();
