@@ -2,6 +2,36 @@
 
 <suite>
 
+<ajc-test dir="bugs195/550494" vm="1.8" title="at decp npe - code">
+  <compile files="Application.java BaseClass.java SubClass.java DataSourceConnectionAspectCode.java" options="-1.8"/>
+  <run class="foo.Application">
+  <stdout>
+  <line text="Aspect should not kick in without ITD, but should with ITD"/>
+  <line text="execution(Connection foo.BaseClass.getConnection())"/>
+  <line text="execution(Connection foo.BaseClass.getConnection(String, String))"/>
+  <line text="Aspect should kick in"/>
+  <line text="execution(Connection foo.BaseClass.getConnection())"/>
+  <line text="execution(Connection foo.BaseClass.getConnection(String, String))"/>
+  </stdout>
+  </run>
+</ajc-test>
+
+
+<ajc-test dir="bugs195/550494" vm="1.8" title="at decp npe - anno">
+  <compile files="Application.java BaseClass.java SubClass.java DataSourceConnectionAspectAnno.java" options="-1.8"/>
+  <run class="foo.Application">
+  <stdout>
+  <line text="Aspect should not kick in without ITD, but should with ITD"/>
+  <line text="execution(Connection foo.BaseClass.getConnection())"/>
+  <line text="execution(Connection foo.BaseClass.getConnection(String, String))"/>
+  <line text="Aspect should kick in"/>
+  <line text="execution(Connection foo.BaseClass.getConnection())"/>
+  <line text="execution(Connection foo.BaseClass.getConnection(String, String))"/>
+  </stdout>
+  </run>
+</ajc-test>
+
+
     <ajc-test dir="bugs195/333274" vm="1.8" title="around finally blocks and unlinking">
         <compile files="Code.java" options="-showWeaveInfo -1.8 -XnoInline">
 			<message kind="weave" text="Join point 'method-call(void Code.print2(java.lang.String))' in Type 'Code' (Code.java:15) advised by around advice from 'Azpect' (Code.java:35)"/>

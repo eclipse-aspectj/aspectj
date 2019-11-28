@@ -16,6 +16,14 @@ import junit.framework.Test;
  */
 public class Ajc195Tests extends XMLBasedAjcTestCase {
 
+	public void testAtDecpNPE_code_550494() {
+		runTest("at decp npe - code");
+	}
+
+	public void testAtDecpNPE_anno_550494() {
+		runTest("at decp npe - anno");
+	}
+
 	public void testAvoidWeavingSwitchInfrastructure() {
 		runTest("avoid weaving switch infrastructure");
 	}

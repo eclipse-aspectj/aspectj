@@ -85,7 +85,7 @@ import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * Annotation defined aspect reader. Reads the Java 5 annotations and turns them into AjAttributes
- * 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AtAjAttributes {
@@ -128,7 +128,7 @@ public class AtAjAttributes {
 
 	/**
 	 * A struct when we read @AJ on method
-	 * 
+	 *
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	private static class AjAttributeMethodStruct extends AjAttributeStruct {
@@ -176,7 +176,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Annotations are RuntimeVisible only. This allow us to not visit RuntimeInvisible ones.
-	 * 
+	 *
 	 * @param attribute
 	 * @return true if runtime visible annotation
 	 */
@@ -186,7 +186,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Extract class level annotations and turn them into AjAttributes.
-	 * 
+	 *
 	 * @param javaClass
 	 * @param type
 	 * @param context
@@ -404,7 +404,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Extract method level annotations and turn them into AjAttributes.
-	 * 
+	 *
 	 * @param method
 	 * @param type
 	 * @param context
@@ -502,7 +502,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Extract field level annotations and turn them into AjAttributes.
-	 * 
+	 *
 	 * @param field
 	 * @param type
 	 * @param context
@@ -518,7 +518,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @Aspect
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -585,7 +585,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read a perClause, returns null on failure and issue messages
-	 * 
+	 *
 	 * @param perClauseString like "pertarget(.....)"
 	 * @param struct for which we are parsing the per clause
 	 * @return a PerClause instance
@@ -638,7 +638,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @DeclarePrecedence
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -709,21 +709,12 @@ public class AtAjAttributes {
 	// return false;
 	// }
 
-	/**
-	 * Read @DeclareParents
-	 * 
-	 * @param runtimeAnnotations
-	 * @param struct
-	 * @return true if found
-	 */
-	private static boolean handleDeclareParentsAnnotation(RuntimeAnnos runtimeAnnotations, AjAttributeFieldStruct struct) {// ,
-		// ResolvedPointcutDefinition
-		// preResolvedPointcut)
-		// {
-		AnnotationGen decp = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPARENTS_ANNOTATION);
-		if (decp != null) {
-			NameValuePair decpPatternNVP = getAnnotationElement(decp, VALUE);
-			String decpPattern = decpPatternNVP.getValue().stringifyValue();
+	private static boolean handleDeclareParentsAnnotation(RuntimeAnnos runtimeAnnotations, AjAttributeFieldStruct struct) {
+		AnnotationGen decpAnno = getAnnotation(runtimeAnnotations, AjcMemberMaker.DECLAREPARENTS_ANNOTATION);
+		if (decpAnno != null) {
+			NameValuePair decpPatternNameValuePair = getAnnotationElement(decpAnno, VALUE);
+			String decpPattern = decpPatternNameValuePair.getValue().stringifyValue();
+			System.out.println("decpPatterNVP = "+decpPattern);
 			if (decpPattern != null) {
 				TypePattern typePattern = parseTypePattern(decpPattern, struct);
 				ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(
@@ -756,7 +747,7 @@ public class AtAjAttributes {
 
 					// do we have a defaultImpl=xxx.class (ie implementation)
 					String defaultImplClassName = null;
-					NameValuePair defaultImplNVP = getAnnotationElement(decp, "defaultImpl");
+					NameValuePair defaultImplNVP = getAnnotationElement(decpAnno, "defaultImpl");
 					if (defaultImplNVP != null) {
 						ClassElementValue defaultImpl = (ClassElementValue) defaultImplNVP.getValue();
 						defaultImplClassName = UnresolvedType.forSignature(defaultImpl.getClassString()).getName();
@@ -816,9 +807,8 @@ public class AtAjAttributes {
 						}
 
 					}
-
-					// then iterate on field interface hierarchy (not object)
 					boolean hasAtLeastOneMethod = false;
+					// then iterate on field interface hierarchy (not object)
 					Iterator<ResolvedMember> methodIterator = fieldType.getMethodsIncludingIntertypeDeclarations(false, true);
 					while (methodIterator.hasNext()) {
 						ResolvedMember method = methodIterator.next();
@@ -894,11 +884,11 @@ public class AtAjAttributes {
 
 	/**
 	 * Process any @DeclareMixin annotation.
-	 * 
+	 *
 	 * Example Declaration <br>
-	 * 
+	 *
 	 * @DeclareMixin("Foo+") public I createImpl(Object o) { return new Impl(o); }
-	 * 
+	 *
 	 * <br>
 	 * @param runtimeAnnotations
 	 * @param struct
@@ -938,7 +928,7 @@ public class AtAjAttributes {
 		// supplied as a list in the 'Class[] interfaces' value in the annotation value
 		// supplied as just the interface return value of the annotated method
 		// supplied as just the class return value of the annotated method
-		NameValuePair interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces"); 
+		NameValuePair interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces");
 
 		List<TypePattern> newParents = new ArrayList<TypePattern>(1);
 		List<ResolvedType> newInterfaceTypes = new ArrayList<ResolvedType>(1);
@@ -1036,7 +1026,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @Before
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1089,7 +1079,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @After
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1141,7 +1131,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @AfterReturning
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1231,7 +1221,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @AfterThrowing
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1320,7 +1310,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @Around
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1372,7 +1362,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @Pointcut and handle the resolving in a lazy way to deal with pointcut references
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if a pointcut was handled
@@ -1467,7 +1457,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Read @DeclareError, @DeclareWarning
-	 * 
+	 *
 	 * @param runtimeAnnotations
 	 * @param struct
 	 * @return true if found
@@ -1521,12 +1511,12 @@ public class AtAjAttributes {
 	 * Sets the location for the declare error / warning using the corresponding IProgramElement in the structure model. This will
 	 * only fix bug 120356 if compiled with -emacssym, however, it does mean that the cross references view in AJDT will show the
 	 * correct information.
-	 * 
+	 *
 	 * Other possibilities for fix: 1. using the information in ajcDeclareSoft (if this is set correctly) which will fix the problem
 	 * if compiled with ajc but not if compiled with javac. 2. creating an AjAttribute called FieldDeclarationLineNumberAttribute
 	 * (much like MethodDeclarationLineNumberAttribute) which we can ask for the offset. This will again only fix bug 120356 when
 	 * compiled with ajc.
-	 * 
+	 *
 	 * @param deow
 	 * @param struct
 	 */
@@ -1547,7 +1537,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Returns a readable representation of a method. Method.toString() is not suitable.
-	 * 
+	 *
 	 * @param method
 	 * @return a readable representation of a method
 	 */
@@ -1560,7 +1550,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Build the bindings for a given method (pointcut / advice)
-	 * 
+	 *
 	 * @param struct
 	 * @return null if no debug info is available
 	 */
@@ -1637,7 +1627,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Compute the flag for the xxxJoinPoint extra argument
-	 * 
+	 *
 	 * @param method
 	 * @return extra arg flag
 	 */
@@ -1652,7 +1642,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Compute the flag for the xxxJoinPoint extra argument
-	 * 
+	 *
 	 * @param argumentSignatures
 	 * @return extra arg flag
 	 */
@@ -1674,7 +1664,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Returns the runtime (RV/RIV) annotation of type annotationType or null if no such annotation
-	 * 
+	 *
 	 * @param rvs
 	 * @param annotationType
 	 * @return annotation
@@ -1691,7 +1681,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Returns the value of a given element of an annotation or null if not found Caution: Does not handles default value.
-	 * 
+	 *
 	 * @param annotation
 	 * @param elementName
 	 * @return annotation NVP
@@ -1731,7 +1721,7 @@ public class AtAjAttributes {
 	 * Extract the method argument names. First we try the debug info attached to the method (the LocalVariableTable) - if we cannot
 	 * find that we look to use the argNames value that may have been supplied on the associated annotation. If that fails we just
 	 * don't know and return an empty string.
-	 * 
+	 *
 	 * @param method
 	 * @param argNamesFromAnnotation
 	 * @param methodStruct
@@ -1853,7 +1843,7 @@ public class AtAjAttributes {
 
 	/**
 	 * A method argument, used for sorting by indexOnStack (ie order in signature)
-	 * 
+	 *
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	private static class MethodArgument {
@@ -1869,7 +1859,7 @@ public class AtAjAttributes {
 	/**
 	 * LazyResolvedPointcutDefinition lazyly resolve the pointcut so that we have time to register all pointcut referenced before
 	 * pointcut resolution happens
-	 * 
+	 *
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	public static class LazyResolvedPointcutDefinition extends ResolvedPointcutDefinition {
@@ -1901,7 +1891,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Helper to test empty strings
-	 * 
+	 *
 	 * @param s
 	 * @return true if empty or null
 	 */
@@ -1911,7 +1901,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Set the pointcut bindings for which to ignore unbound issues, so that we can implicitly bind xxxJoinPoint for @AJ advices
-	 * 
+	 *
 	 * @param pointcut
 	 * @param bindings
 	 */
@@ -1936,7 +1926,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Report an error
-	 * 
+	 *
 	 * @param message
 	 * @param location
 	 */
@@ -1954,7 +1944,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Report a warning
-	 * 
+	 *
 	 * @param message
 	 * @param location
 	 */
@@ -1966,7 +1956,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Parse the given pointcut, return null on failure and issue an error
-	 * 
+	 *
 	 * @param pointcutString
 	 * @param struct
 	 * @param allowIf
@@ -2000,7 +1990,7 @@ public class AtAjAttributes {
 
 	/**
 	 * Parse the given type pattern, return null on failure and issue an error
-	 * 
+	 *
 	 * @param patternString
 	 * @param location
 	 * @return type pattern

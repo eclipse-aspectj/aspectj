@@ -1,25 +1,25 @@
 /* *******************************************************************
  * Copyright (c) 2005 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.testing;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.LangUtil;
 
 public class OutputSpec {
-	
+
 	private List<String> expectedOutputLines = new ArrayList<String>();
 
 	public void addLine(OutputLine line) {
@@ -27,7 +27,7 @@ public class OutputSpec {
 			expectedOutputLines.add(line.getText());
 		}
 	}
-	
+
 	/**
 	 * For a test output line that has specified a vm version, check if it matches the vm we are running on.
 	 * vm might be "1.2,1.3,1.4,1.5" or simply "9" or it may be a version with a '+' suffix indicating that
@@ -51,7 +51,7 @@ public class OutputSpec {
 	public void matchAgainst(String output) {
 		matchAgainst(output, "yes");
 	}
-	
+
 	public void matchAgainst(String output, String ordered) {
 		if (ordered != null && ordered.equals("no")) {
 			unorderedMatchAgainst(output);
@@ -76,21 +76,21 @@ public class OutputSpec {
 			createFailureMessage(output, lineNo, strTok.countTokens());
 		}
 	}
-	
+
 	public void unorderedMatchAgainst(String output) {
 		List<String> outputFound = getOutputFound(output);
 		if(outputFound.size() != expectedOutputLines.size()) {
 			createFailureMessage(output, -1, outputFound.size());
 			return;
-		} 
+		}
 		List<String> expected = new ArrayList<String>();
 		expected.addAll(expectedOutputLines);
 		List<String> found = new ArrayList<String>();
 		found.addAll(outputFound);
 		for (Iterator<String> iterator = outputFound.iterator(); iterator.hasNext();) {
-			String lineFound = (String) iterator.next();
+			String lineFound = iterator.next();
 			for (Iterator<String> iterator2 = expectedOutputLines.iterator(); iterator2.hasNext();) {
-				String lineExpected = (String) iterator2.next();
+				String lineExpected = iterator2.next();
 				if (lineFound.indexOf(lineExpected)!= -1) {
 					found.remove(lineFound);
 					expected.remove(lineExpected);
@@ -102,12 +102,11 @@ public class OutputSpec {
 			createFailureMessage(output,-2,outputFound.size());
 		}
 	}
-	
+
 	private void createFailureMessage(String output, int lineNo, int sizeFound) {
 		StringBuffer failMessage = new StringBuffer();
 		failMessage.append("\n  expecting output:\n");
 		for (String line: expectedOutputLines) {
-			failMessage.append(line);
 			failMessage.append("\n");
 		}
 		failMessage.append("  but found output:\n");
@@ -119,9 +118,9 @@ public class OutputSpec {
 			failMessage.append("First difference is on line " + lineNo);
 		}
 		failMessage.append("\n");
-		AjcTestCase.fail(failMessage.toString());		
+		AjcTestCase.fail(failMessage.toString());
 	}
-	
+
 	private List<String> getOutputFound(String output) {
 		List<String> found = new ArrayList<String>();
 		StringTokenizer strTok = new StringTokenizer(output,"\n");
