@@ -1,28 +1,23 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testingutil;
 
-import org.aspectj.util.LangUtil;
-
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
+
+import org.aspectj.util.LangUtil;
 
 /**
  * This is source for a sample .class file.
@@ -45,10 +40,10 @@ public class TestCompareClassFile implements Runnable {
     }
     protected static void protectedRunStatic() {
     }
-    
+
     private long privateLong;
     private final Object privateFinalObject;
-    
+
     private TestCompareClassFile() {
         super();
         privateLong = System.currentTimeMillis();
@@ -65,11 +60,12 @@ public class TestCompareClassFile implements Runnable {
     }
     protected void protectedRun() {
     }
-    
+
     // ------- misc stolen utility code
     // Collections Util
-    public static List getListInMap(Map map, Object key) {
-        List list = (List)map.get(key);
+    /*
+    public static List getListInMap(Map<Object,List> map, Object key) {
+        List list = map.get(key);
         if (list == null) {
             list = new ArrayList();
             map.put(key, list);
@@ -77,15 +73,16 @@ public class TestCompareClassFile implements Runnable {
         return list;
     }
 
-    public static SortedSet getSortedSetInMap(Map map, Object key) {
-        SortedSet list = (SortedSet)map.get(key);
+    public static SortedSet getSortedSetInMap(Map<Object,SortedSet> map, Object key) {
+        SortedSet list = map.get(key);
         if (list == null) {
             list = new TreeSet();
             map.put(key, list);
         }
         return list;
     }
-    
+    */
+
     // LangUtil
     /**
      * Make a copy of the array.
@@ -116,10 +113,10 @@ public class TestCompareClassFile implements Runnable {
             lines.add(st.nextToken());
         }
         st = null;
-        
+
         String line;
         int elided = 0;
-        while (!lines.isEmpty()) { 
+        while (!lines.isEmpty()) {
             line = (String) lines.getLast();
             if (null == line) {
                 break;
@@ -128,10 +125,10 @@ public class TestCompareClassFile implements Runnable {
                 lines.removeLast();
             }
         }
-        if ((elided > 0) || (maxLines < 1)) { 
-            final int EOL_LEN = LangUtil.EOL.length();           
+        if ((elided > 0) || (maxLines < 1)) {
+            final int EOL_LEN = LangUtil.EOL.length();
             int totalLength = 0;
-            while (!lines.isEmpty()) { 
+            while (!lines.isEmpty()) {
                 totalLength += EOL_LEN + ((String) lines.getFirst()).length();
                 lines.removeFirst();
             }
@@ -143,5 +140,5 @@ public class TestCompareClassFile implements Runnable {
             }
         }
     }
-    
+
 }

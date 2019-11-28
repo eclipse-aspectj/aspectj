@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
@@ -30,13 +30,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * 
+ *
  */
+@SuppressWarnings("deprecation")
 public class FileUtilTest extends TestCase {
 	public static final String[] NONE = new String[0];
 	public static boolean log = false;
@@ -57,7 +57,7 @@ public class FileUtilTest extends TestCase {
 
 	/**
 	 * Verify that dir contains files with names, and return the names of other files in dir.
-	 * 
+	 *
 	 * @return the contents of dir after excluding files or NONE if none
 	 * @throws AssertionFailedError if any names are not in dir
 	 */
@@ -84,7 +84,7 @@ public class FileUtilTest extends TestCase {
 	/**
 	 * Get a sorted String[] of all paths to all files/dirs under dir. Files with names starting with "." are ignored, as are
 	 * directory paths containing "CVS". The directory prefix of the path is stripped. Thus, given directory:
-	 * 
+	 *
 	 * <pre>
 	 * path/to
 	 *   .cvsignore
@@ -99,31 +99,31 @@ public class FileUtilTest extends TestCase {
 	 *     aspectj/
 	 *       Version.java
 	 * </pre>
-	 * 
+	 *
 	 * a call
-	 * 
+	 *
 	 * <pre>
 	 * dirPaths(new File(&quot;path/to&quot;), new String[0]);
 	 * </pre>
-	 * 
+	 *
 	 * returns
-	 * 
+	 *
 	 * <pre>
 	 * { &quot;Base.java&quot;, &quot;com/parc/messages.properties&quot;, &quot;org/aspectj/Version.java&quot; }
 	 * </pre>
-	 * 
+	 *
 	 * while the call
-	 * 
+	 *
 	 * <pre>
 	 * dirPaths(new File(&quot;path/to&quot;), new String[] { &quot;.java&quot; });
 	 * </pre>
-	 * 
+	 *
 	 * returns
-	 * 
+	 *
 	 * <pre>
 	 * { &quot;Base.java&quot;, &quot;org/aspectj/Version.java&quot; }
 	 * </pre>
-	 * 
+	 *
 	 * @param dir the File path to the directory to inspect
 	 * @param suffixes if not empty, require files returned to have this suffix
 	 * @return sorted String[] of all paths to all files under dir ending with one of the listed suffixes but not starting with "."
@@ -148,7 +148,7 @@ public class FileUtilTest extends TestCase {
 		// trim prefix
 		final String prefix = dir.getPath();
 		final int len = prefix.length() + 1; // plus directory separator
-		String[] ra = (String[]) result.toArray(new String[0]);
+		String[] ra = result.toArray(new String[0]);
 		for (int i = 0; i < ra.length; i++) {
 			// assertTrue(ra[i].startsWith(prefix));
 			assertTrue(ra[i], ra[i].length() > len);
@@ -197,7 +197,7 @@ public class FileUtilTest extends TestCase {
 
 	public void tearDown() {
 		for (ListIterator<File> iter = tempFiles.listIterator(); iter.hasNext();) {
-			File dir = (File) iter.next();
+			File dir = iter.next();
 			log("removing " + dir);
 			FileUtil.deleteContents(dir);
 			dir.delete();
@@ -332,7 +332,7 @@ public class FileUtilTest extends TestCase {
 
 	/**
 	 * Method checkGetURL.
-	 * 
+	 *
 	 * @param string
 	 * @param uRL
 	 */

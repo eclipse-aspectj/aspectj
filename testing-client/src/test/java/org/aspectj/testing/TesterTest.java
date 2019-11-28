@@ -1,25 +1,24 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
 package org.aspectj.testing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
@@ -33,7 +32,7 @@ import junit.textui.TestRunner;
 public class TesterTest extends TestCase {
 
 
-   private static final String ME 
+   private static final String ME
         = "org.aspectj.testing.TesterTest";
 
     /** @param args ignored */
@@ -48,7 +47,7 @@ public class TesterTest extends TestCase {
     public TesterTest(String arg0) {
         super(arg0);
     }
-    
+
     /**
      * Test the usage pattern
      * <pre>Tester.event("foo");
@@ -57,10 +56,10 @@ public class TesterTest extends TestCase {
     public void testEventArrayPattern() {
         MyTestReporter reporter = new MyTestReporter();
         Tester.setMessageHandler(reporter);
-        
+
         //--------- positive test - got expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.event("one");
         Tester.event("two");
         Tester.checkEvents(new String[] { "one", "two"});
@@ -75,14 +74,14 @@ public class TesterTest extends TestCase {
 
         //--------- got and didn't get expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.event("one");
         Tester.event("two");
         Tester.checkEvents(new String[] { "one", "two", "three"});
         reporter.assertSize(1);
         assertTrue(reporter.gotFail("three"));
     }
-        
+
     /**
      * Test the usage pattern
      * <pre>Tester.event("foo");
@@ -92,10 +91,10 @@ public class TesterTest extends TestCase {
     public void testEventStringPattern() {
         MyTestReporter reporter = new MyTestReporter();
         Tester.setMessageHandler(reporter);
-        
+
         //--------- positive test - got expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.event("one");
         Tester.event("two");
         Tester.expectEvent("one");
@@ -113,7 +112,7 @@ public class TesterTest extends TestCase {
 
         //--------- got and didn't get expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.expectEvent("one");
         Tester.expectEvent("two");
         Tester.expectEvent("three");
@@ -123,7 +122,7 @@ public class TesterTest extends TestCase {
         assertTrue(reporter.gotFail("three"));
         reporter.assertSize(1);
     }
-    
+
     /**
      * Test the usage pattern
      * <pre>Tester.note("foo");
@@ -132,10 +131,10 @@ public class TesterTest extends TestCase {
     public void testNotePattern() {
         MyTestReporter reporter = new MyTestReporter();
         Tester.setMessageHandler(reporter);
-        
+
         //--------- positive test - got expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.note("one");
         Tester.note("two");
         Tester.check("one");
@@ -152,7 +151,7 @@ public class TesterTest extends TestCase {
 
         //--------- got and didn't get expected events
         reporter.clear();
-        Tester.clear();        
+        Tester.clear();
         Tester.note("one");
         Tester.check("one");
         Tester.note("two");
@@ -161,7 +160,7 @@ public class TesterTest extends TestCase {
         assertTrue(reporter.gotFail("three"));
         reporter.assertSize(1);
     }
-  
+
     /**
      * Stub to record failures emitted by Tester.
      * @author isberg
@@ -179,15 +178,15 @@ public class TesterTest extends TestCase {
             assertTrue(-1 < size);
             assertTrue("failures: " + failures, size == failures.size());
         }
-        
+
         boolean gotPass(String substring) {
             return gotItem(passes, substring);
         }
-        
+
         boolean gotFail(String substring) {
             return gotItem(failures, substring);
         }
-        
+
         boolean gotItem(List<IMessage> list, String substring) {
         	for (IMessage element: list) {
                 String s = element.getMessage();
@@ -197,13 +196,13 @@ public class TesterTest extends TestCase {
 			}
             return false;
         }
-        
+
         public boolean isIgnoring(IMessage.Kind kind) {
             return false;
         }
 
         public void dontIgnore(IMessage.Kind kind) {
-            ;
+
         }
 
         public void ignore(IMessage.Kind kind) {
@@ -214,13 +213,13 @@ public class TesterTest extends TestCase {
             return true;
         }
     }
-}                
+}
 //        /**
 //         * @see ReporterI#abortWithFailure(String, Throwable)
 //         */
 //        public void abortWithFailure(String message, Throwable exception) {
 //            if (null == exception) {
-//                check(message, true); 
+//                check(message, true);
 //            } else {
 //                String s = message + Util.unqualifiedClassName(exception)
 //                    + ": " + exception.getMessage();

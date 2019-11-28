@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation, 
+ * Copyright (c) 2000-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package $installer$.org.aspectj;
@@ -75,12 +75,12 @@ import javax.swing.border.EmptyBorder;
  * <li>"-text".equals(arg[0])</li>
  * <li>arg[1] is the path to a properties file which defines name="output.dir" value="{path to output dir}" name="context.javaPath"
  * value="{path to JDKDIR}", i.e,.
- * 
+ *
  * <pre>
  * output.dir=c:/latest
  *   "context.javaPath=c:/apps/jdk1.3.1
  * </pre>
- * 
+ *
  * </li>
  * <li>outputDir must be created and empty (i.e., no overwriting</li>
  * <li>the VM being invoked should be the target vm</li>
@@ -106,7 +106,7 @@ public class Main {
 				Main.exit(-1);
 			}
 			properties.load(istream);
-			// when running outside GUI, load values into properties 
+			// when running outside GUI, load values into properties
 			// so that property-value resolution works
 			// (otherwise, could just set values below).
 			// XXX not sure if this indirection is actually needed.
@@ -626,7 +626,7 @@ abstract class Installer {
  * (files == null) return; for (int i=0; i<files.length; i++) { if (files[i] == null) continue; if (!files[i].isDirectory())
  * continue; if (files[i].getName().startsWith(prefix)) { System.out.println("found: " + files[i]); } else { findPaths(prefix,
  * files[i], currentDepth + 1); } } }
- * 
+ *
  * public static void findPaths(String prefix) { File [] files = File.listRoots(); for (int i=1; i<files.length; i++) { if
  * (!files[i].isDirectory()) continue; if (files[i].getName().toLowerCase().startsWith(prefix)) { System.out.println("found: " +
  * files[i]); } else { findPaths(prefix, files[i], 1); } } }
@@ -661,7 +661,7 @@ class InstallContext {
 
 	public Installer installer;
 
-	private Map properties;
+	private Map<String,String> properties;
 
 	public boolean hasGui() {
 		return hasGui;
@@ -762,7 +762,7 @@ class InstallContext {
 		return overwriteState == OVERWRITE_YES || overwriteState == OVERWRITE_ALL;
 	}
 
-	public Map getProperties() {
+	public Map<String,String> getProperties() {
 		return properties;
 	}
 }
@@ -1081,11 +1081,11 @@ class ConfigureLauncherPane extends WizardPane {
 	/*
 	 * //XXX check that the returned file is valid public String getDefaultJavaLocation() { String name = "java"; if
 	 * (context.onWindows()) name += ".exe";
-	 * 
+	 *
 	 * if (Options.verbose) { System.out.println("java.home: " + System.getProperty("java.home")); System.out.println("  java: " +
 	 * new File(new File(System.getProperty("java.home"), "bin"), name)); System.out.println("  java: " + new File(new
 	 * File(System.getProperty("java.home"), "bin"), name).getPath()); }
-	 * 
+	 *
 	 * return new File(new File(System.getProperty("java.home"), "bin"), name).getPath(); }
 	 */
 
@@ -1492,7 +1492,7 @@ class CurrentJarUnpacker {
 
 	public void unpack(String contentsName, File outputDir) throws IOException {
 		URL url = getClass().getResource(contentsName);
-		
+
 		// Process everything under 'files/**' copying to the target
 		// install directory with 'files/' removed
 		JarURLConnection juc = (JarURLConnection) url.openConnection();
@@ -1504,7 +1504,7 @@ class CurrentJarUnpacker {
 				writeResource(jf, je, outputDir);
 			}
 		}
-		
+
 //		InputStream stream = url.openStream();
 //		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
 //		String line = reader.readLine();
@@ -1528,7 +1528,7 @@ class LaunchScriptMaker {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void writeAJLaunchScript(String name, boolean isJava5) throws IOException {
 		if (!context.onUnix()) {
@@ -1764,22 +1764,22 @@ class LaunchScriptMaker {
 
 	/*
 	 * final static String OVERWRITE_MESSAGE = "Overwrite launch script "; final static String OVERWRITE_TITLE = "Overwrite?";
-	 * 
+	 *
 	 * final static String[] OVERWRITE_OPTIONS = { "Yes", "No", "Yes to all", "No to all" };
-	 * 
+	 *
 	 * final static int OVERWRITE_YES = 0; final static int OVERWRITE_NO = 1; final static int OVERWRITE_ALL = 2; final static int
 	 * OVERWRITE_NONE = 3;
-	 * 
+	 *
 	 * int overwriteState = OVERWRITE_NO; boolean shouldOverwrite(final File file) { if (overwriteState == OVERWRITE_ALL) return
 	 * true; if (overwriteState == OVERWRITE_NONE) return false;
-	 * 
+	 *
 	 * try { SwingUtilities.invokeAndWait(new Runnable() { public void run() { int ret =
 	 * JOptionPane.showOptionDialog(context.installer.frame, OVERWRITE_MESSAGE+file.getPath(), OVERWRITE_TITLE,
 	 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, OVERWRITE_OPTIONS, OVERWRITE_OPTIONS[OVERWRITE_YES]);
-	 * 
+	 *
 	 * overwriteState = ret; } }); } catch (InvocationTargetException ite) { context.handleException(ite.getTargetException()); }
 	 * catch (InterruptedException ie) { }
-	 * 
+	 *
 	 * return overwriteState == OVERWRITE_YES || overwriteState == OVERWRITE_ALL; }
 	 */
 

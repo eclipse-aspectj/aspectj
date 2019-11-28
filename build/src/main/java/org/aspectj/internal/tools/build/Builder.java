@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC           initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC           initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.tools.build;
@@ -80,10 +80,10 @@ public abstract class Builder {
     /**
      * This has only weak forms for build instructions needed: - resource
      * pattern - compiler selection and control
-     * 
+     *
      * Both assumed and generated paths are scattered; see XXXNameLiteral and
      * XXXFileLiteral.
-     * 
+     *
      * Builder is supposed to be thread-safe, but currently caches build
      * properties to tunnel for filters. hmm.
      */
@@ -140,12 +140,12 @@ public abstract class Builder {
     /**
      * Splits strings into an unmodifable <code>List</code> of String using
      * comma as the delimiter and trimming whitespace from the result.
-     * 
+     *
      * @param text
      *            <code>String</code> to split.
      * @return unmodifiable List (String) of String delimited by comma in text
      */
-    public static List commaStrings(String text) {
+    public static List<String> commaStrings(String text) {
         if ((null == text) || (0 == text.length())) {
             return Collections.EMPTY_LIST;
         }
@@ -162,7 +162,7 @@ public abstract class Builder {
 
     /**
      * Map delivered-jar name to created-module name
-     * 
+     *
      * @param jarName
      *            the String (lowercased) of the jar/zip to map
      */
@@ -305,9 +305,9 @@ public abstract class Builder {
         }
         return noErr;
     }
-    
+
     protected final boolean isLogging() {
-        return (verbose && (null != this.handler));        
+        return (verbose && (null != this.handler));
     }
 
     protected Result[] skipUptodate(Result[] results) {
@@ -331,14 +331,14 @@ public abstract class Builder {
 
     /**
      * Build a result with all antecedants.
-     * 
+     *
      * @param result
      *            the Result to build
      * @param errors
      *            the List sink for errors, if any
      * @return false after successful build, when module jar should exist
      */
-    protected final boolean buildAll(Result result, List errors) {
+    protected final boolean buildAll(Result result, List<String> errors) {
         Result[] buildList = skipUptodate(getAntecedantResults(result));
         ArrayList<String> doneList = new ArrayList<String>();
         if ((null != buildList) && (0 < buildList.length)) {
@@ -364,7 +364,7 @@ public abstract class Builder {
 
     /**
      * Build a module but no antecedants.
-     * 
+     *
      * @param module
      *            the Module to build
      * @param errors
@@ -419,7 +419,7 @@ public abstract class Builder {
      * Build product by discovering any modules to build, building those,
      * assembling the product distribution, and optionally creating an installer
      * for it.
-     * 
+     *
      * @return true on success
      */
     protected final boolean buildProduct(BuildSpec buildSpec)
@@ -527,13 +527,13 @@ public abstract class Builder {
     }
 
     protected final boolean buildProductModule(ProductModule module) {
-        ArrayList errors = new ArrayList();
+        ArrayList<String> errors = new ArrayList<>();
         try {
             Kind productKind = Result.kind(Result.NORMAL, Result.ASSEMBLE);
             Result result = module.module.getResult(productKind);
             return buildAll(result, errors);
         } finally {
-            for (Iterator iter = errors.iterator(); iter.hasNext();) {
+            for (Iterator<String> iter = errors.iterator(); iter.hasNext();) {
                 handler.error("error building " + module + ": " + iter.next());
             }
         }
@@ -578,25 +578,25 @@ public abstract class Builder {
                         assembleAll));
             }
         }
-        return (ProductModule[]) results.toArray(new ProductModule[0]);
+        return results.toArray(new ProductModule[0]);
     }
 
     /**
      * Subclasses should query whether to include library files in the assembly.
-     * 
+     *
      * @param module
      *            the Module being built
      * @param libraries
      *            the List of File path to the jar to consider assembling
      * @return true if the jar should be included, false otherwise.
      */
-    protected void removeLibraryFilesToSkip(Module module, List libraries) {
-        for (ListIterator liter = libraries.listIterator(); liter.hasNext();) {
-            File library = (File) liter.next();
+    protected void removeLibraryFilesToSkip(Module module, List<File> libraries) {
+        for (ListIterator<File> liter = libraries.listIterator(); liter.hasNext();) {
+            File library = liter.next();
             final String fname = library.getName();
             if (null != fname) {
-                for (Iterator iter = SKIP_LIBRARIES.iterator(); iter.hasNext();) {
-                    String name = (String) iter.next();
+                for (Iterator<String> iter = SKIP_LIBRARIES.iterator(); iter.hasNext();) {
+                    String name = iter.next();
                     if (fname.equals(name)) {
                         liter.remove();
                         break;
@@ -613,7 +613,7 @@ public abstract class Builder {
 
     /**
      * Compile module classes to classesDir, saving String errors.
-     * 
+     *
      * @param module
      *            the Module to compile
      * @param classesDir
@@ -629,7 +629,7 @@ public abstract class Builder {
     /**
      * Assemble the module distribution from the classesDir, saving String
      * errors.
-     * 
+     *
      * @see #removeLibraryFilesToSkip(Module, File)
      */
     abstract protected boolean assemble(Result result, File classesDir,
@@ -638,7 +638,7 @@ public abstract class Builder {
     /**
      * Assemble the module distribution from the classesDir and all
      * antecendants, saving String errors.
-     * 
+     *
      * @see #removeLibraryFilesToSkip(Module, File)
      */
     abstract protected boolean assembleAll(Result result, Messager handler);
@@ -658,7 +658,7 @@ public abstract class Builder {
     /**
      * Copy toDir any fromDir included files without any exluded files,
      * optionally filtering contents.
-     * 
+     *
      * @param fromDir
      *            File dir to read from - error if not readable
      * @param toDir

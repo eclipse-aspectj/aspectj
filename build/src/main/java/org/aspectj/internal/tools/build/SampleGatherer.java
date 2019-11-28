@@ -1,27 +1,40 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 /*
  * A quickie hack to extract sample code from testable sources.
- * This could reuse a lot of code from elsewhere, 
- * but currently doesn't, 
+ * This could reuse a lot of code from elsewhere,
+ * but currently doesn't,
  * to keep it in the build module which avoids dependencies.
  * (Too bad we can't use scripting languages...)
  */
 package org.aspectj.internal.tools.build;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.Reader;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This gathers sample code delimited with [START..END]-SAMPLE
@@ -31,14 +44,14 @@ import java.util.*;
  *    ... sample code ...
  *   // END-SAMPLE {anchorName}
  *   </pre>
- * where {anchorName} need not be unique and might be 
+ * where {anchorName} need not be unique and might be
  * hierarchical wrt "-", e.g., "genus-species-individual".
  */
 public class SampleGatherer {
-    
+
     /** EOL String for gathered lines */
     public static final String EOL = "\n"; // XXX
-    
+
     static final String START = "START-SAMPLE";
     static final String END = "END-SAMPLE";
     static final String AUTHOR = "@author";
@@ -62,7 +75,7 @@ public class SampleGatherer {
 //        source = "in this <pre> day and </pre> age";
 //        System.err.println("from " + source);
 //        System.err.println("  to " + SampleUtil.replace(source, from, to));
-//        
+//
 //    }
     /**
      * Emit samples gathered from any input args.
@@ -88,7 +101,7 @@ public class SampleGatherer {
         fos.close();
         System.out.println("see file:///" + out);
     }
-    
+
     /**
      * Gather samples from a source file or directory
      * @param source the File file or directory to start with
@@ -96,7 +109,7 @@ public class SampleGatherer {
      * @return sink or a new Samples collection with any samples found
      * @throws IOException if unable to read a source file
      */
-    public static Samples gather(File source, Samples sink) 
+    public static Samples gather(File source, Samples sink)
             throws IOException {
         if (null == sink) {
             sink = new Samples();
@@ -122,8 +135,8 @@ public class SampleGatherer {
         }
         return line;
     }
-        
-    private static void doGather(File source, Samples sink) 
+
+    private static void doGather(File source, Samples sink)
             throws IOException {
         if (source.isFile()) {
             if (isSource(source)) {
@@ -150,8 +163,8 @@ public class SampleGatherer {
         }
         return false;
     }
-    
-    private static void gatherFromFile(final File source, final Samples sink) 
+
+    private static void gatherFromFile(final File source, final Samples sink)
             throws IOException {
         Reader reader = null;
         try {
@@ -185,7 +198,7 @@ public class SampleGatherer {
                         anchorName = anchorName.substring(0, loc);
                     }
                     continue;
-                } 
+                }
 
                 // found end?
                 loc = line.indexOf(END);
@@ -203,10 +216,10 @@ public class SampleGatherer {
                     endLine = lineNumber;
                     Sample sample = new Sample(anchorName,
                             anchorTitle,
-                            author, 
-                            sampleCode.toString(), 
-                            source, 
-                            startLine, 
+                            author,
+                            sampleCode.toString(),
+                            source,
+                            startLine,
                             endLine,
                             (String[]) flags.toArray(new String[flags.size()]));
                     sink.addSample(sample);
@@ -216,7 +229,7 @@ public class SampleGatherer {
                     startLine = -1;
                     endLine = Integer.MAX_VALUE;
                     continue;
-                } 
+                }
 
                 // found author?
                 loc = line.indexOf(AUTHOR);
@@ -228,7 +241,7 @@ public class SampleGatherer {
                 if (-1 != loc) {
                     flags.add(trimCommentEnd(line, loc + FLAG.length()));
                 }
-                
+
                 // reading?
                 if ((-1 != startLine) && (-1 == endLine)) {
                     sampleCode.append(line);
@@ -272,21 +285,21 @@ class Sample {
         public int compare(Sample left, Sample right) {
             if (null == left) {
                 return (null == right ? 0 : -1);
-            } 
+            }
             if (null == right) {
                 return 1;
-            } 
+            }
             int result = left.anchorName.compareTo(right.anchorName);
             if (0 != result) {
-                return result;                
+                return result;
             }
             result = left.sourcePath.compareTo(right.sourcePath);
             if (0 != result) {
-                return result;                
+                return result;
             }
             result = right.startLine - left.startLine;
             if (0 != result) {
-                return result;                
+                return result;
             }
             return right.endLine - left.endLine;
         }
@@ -297,18 +310,18 @@ class Sample {
         public int compare(Sample left, Sample right) {
             if (null == left) {
                 return (null == right ? 0 : -1);
-            } 
+            }
             if (null == right) {
                 return 1;
-            } 
+            }
             int result = left.author.compareTo(right.author);
             if (0 != result) {
-                return result;                
+                return result;
             }
             return NAME_SOURCE_COMPARER.compare(left,right);
         }
     };
-    
+
     final String anchorName;
     final String anchorTitle;
     final String author;
@@ -349,10 +362,10 @@ class Sample {
     }
 
     public static class Kind {
-        
+
         /** lowercase source suffixes identify files to gather samples from */
         public static final String[] SOURCE_SUFFIXES = new String[]
-        { ".java", ".aj", ".sh", ".ksh", 
+        { ".java", ".aj", ".sh", ".ksh",
         ".txt", ".text", ".html", ".htm", ".xml" };
         static final Kind XML = new Kind();
         static final Kind HTML = new Kind();
@@ -404,7 +417,7 @@ class Samples {
     List<Sample> getSortedSamples() {
         return getSortedSamples(Sample.NAME_SOURCE_COMPARER);
     }
-    
+
     List<Sample> getSortedSamples(Comparator<Sample> comparer) {
         ArrayList<Sample> result = new ArrayList<Sample>();
         result.addAll(samples);
@@ -419,10 +432,10 @@ class Samples {
  */
 class SamplesRenderer {
     public static SamplesRenderer ME = new SamplesRenderer();
-    protected SamplesRenderer() {        
+    protected SamplesRenderer() {
     }
     public static final String EOL = "\n"; // XXX
-    public static final String INFO = 
+    public static final String INFO =
       "<p>This contains contributions from the AspectJ community of "
     + "<ul><li>sample code for AspectJ programs,</li>"
     + "<li>sample code for extensions to AspectJ tools using the public API's,</li>"
@@ -436,7 +449,7 @@ class SamplesRenderer {
     + "see the <a href=\"doc/faq.html#q:buildingsource\">FAQ entry "
     + "\"buildingsource\"</a>.</p>";
 
-    public static final String COPYRIGHT = 
+    public static final String COPYRIGHT =
         "<p><small>Copyright 2003 Contributors. All Rights Reserved. "
         + "This sample code is made available under the Common Public "        + "License version 1.0 available at "
         + "<a href=\"http://www.eclipse.org/legal/epl-v10.html\">"
@@ -448,7 +461,7 @@ class SamplesRenderer {
         + "the source by reference to the AspectJ project home page "
         + " at http://eclipse.org/aspectj.</small></p>"
         + EOL;
-    
+
     /** template algorithm to render */
     public final StringBuffer render(Samples samples, StringBuffer sink) {
         if (null == sink) {
@@ -458,15 +471,15 @@ class SamplesRenderer {
             return sink;
         }
         startList(samples, sink);
-        List list = samples.getSortedSamples();
+        List<Sample> list = samples.getSortedSamples();
         String anchorName = null;
-        for (ListIterator iter = list.listIterator();
+        for (ListIterator<Sample> iter = list.listIterator();
             iter.hasNext();) {
-            Sample sample = (Sample) iter.next();
+            Sample sample = iter.next();
             String newAnchorName = sample.anchorName;
-            if ((null == anchorName) 
+            if ((null == anchorName)
                 || (!anchorName.equals(newAnchorName))) {
-                endAnchorName(anchorName, sink); 
+                endAnchorName(anchorName, sink);
                 startAnchorName(newAnchorName, sample.anchorTitle, sink);
                 anchorName = newAnchorName;
             }
@@ -518,25 +531,25 @@ class SamplesRenderer {
 class HTMLSamplesRenderer extends SamplesRenderer {
     public static SamplesRenderer ME = new HTMLSamplesRenderer();
     // XXX move these
-    public static boolean doHierarchical = true;    
-    public static boolean doFlags = false;    
+    public static boolean doHierarchical = true;
+    public static boolean doFlags = false;
 
-        
+
     final StringBuffer tableOfContents;
     final StringBuffer sampleSection;
     String[] lastAnchor = new String[0];
     String currentAnchor;
     String currentAuthor;
 
-    protected HTMLSamplesRenderer() {        
+    protected HTMLSamplesRenderer() {
         sampleSection = new StringBuffer();
         tableOfContents = new StringBuffer();
     }
-    
+
     protected void startAnchorName(String name, String title, StringBuffer sink) {
         if (doHierarchical) {
             doContentTree(name);
-        } 
+        }
         // ---- now do anchor
         tableOfContents.append("        <li><a href=\"#" + name);
         if ((null == title) || (0 == title.length())) {
@@ -559,9 +572,9 @@ class HTMLSamplesRenderer extends SamplesRenderer {
             }
             currentAnchor = null;
         }
-    
+
         // do heading then code
-        renderHeading(sample.anchorName, sample.anchorTitle, sampleSection); 
+        renderHeading(sample.anchorName, sample.anchorTitle, sampleSection);
         if (sample.kind == Sample.Kind.HTML) {
             renderHTML(sample);
         } else if (sample.kind == Sample.Kind.XML) {
@@ -583,12 +596,12 @@ class HTMLSamplesRenderer extends SamplesRenderer {
             sampleSection.append("    <p>| &nbsp; " + currentAuthor);
             sampleSection.append(EOL);
         }
-        sampleSection.append(" &nbsp;|&nbsp; "); 
+        sampleSection.append(" &nbsp;|&nbsp; ");
         sampleSection.append(SampleUtil.renderCodePath(sample.sourcePath));
         sampleSection.append(":" + sample.startLine);
-        sampleSection.append(" &nbsp;|"); 
+        sampleSection.append(" &nbsp;|");
         sampleSection.append(EOL);
-        sampleSection.append("<p>"); 
+        sampleSection.append("<p>");
         sampleSection.append(EOL);
         if (doFlags) {
             boolean flagHeaderDone = false;
@@ -609,7 +622,7 @@ class HTMLSamplesRenderer extends SamplesRenderer {
             }
         }
     }
-    
+
     protected void renderXML(Sample sample) {
         renderStandardHeader(sample);
         sampleSection.append("    <pre>");
@@ -756,10 +769,10 @@ class HTMLSamplesRenderer extends SamplesRenderer {
             tableOfContents.append(EOL);
             tableOfContents.append("        <ul>");
             tableOfContents.append(EOL);
-            
+
             renderHeading(prefixName, prefixName, sampleSection);
         }
-        lastAnchor = parts;        
+        lastAnchor = parts;
     }
 
     protected void renderAuthorIndex(Samples samples, StringBuffer sink) {
@@ -803,22 +816,22 @@ class SampleUtil {
             iter.hasNext();) {
             Sample sample = (Sample) iter.next();
             sink.append(i++ + ": " + sample);
-        }        
+        }
     }
-    
+
     /** result struct for getPackagePath */
     static class JavaFile {
         /** input File possibly signifying a java file */
         final File path;
-        
-        /** String java path suffix in form "com/company/Bar.java" 
+
+        /** String java path suffix in form "com/company/Bar.java"
          *  null if this is not a java file
          */
         final String javaPath;
-        
+
         /** any prefix before java path suffix in the original path */
         final String prefix;
-        
+
         /** error handling */
         final Throwable thrown;
         JavaFile(File path, String javaPath, String prefix, Throwable thrown) {
@@ -874,7 +887,7 @@ class SampleUtil {
                 if (null != reader) {
                     try {
                         reader.close();
-                    } catch (IOException e1) { 
+                    } catch (IOException e1) {
                         // ignore
                     }
                 }
@@ -891,7 +904,7 @@ class SampleUtil {
         }
         return new JavaFile(path, javaPath, prefix, thrown);
     }
-    
+
     /**
      * Extract file path relative to base of package directory
      * and directory in SAMPLE_BASE_DIR_NAME for this file.
@@ -901,10 +914,10 @@ class SampleUtil {
     public static String renderCodePath(File path) {
         JavaFile javaFile = getJavaFile(path);
         if (javaFile.thrown != null) {
-            throw new Error(javaFile.thrown.getClass() 
+            throw new Error(javaFile.thrown.getClass()
                 + ": " + javaFile.thrown.getMessage());
         }
-        
+
         String file = javaFile.javaPath; // can be null...
         String prefix = javaFile.prefix;
         if (prefix == null) {
@@ -916,7 +929,7 @@ class SampleUtil {
             throw new IllegalArgumentException(m + "?: " + path);
         }
         prefix = prefix.substring(loc + 1 + SAMPLE_BASE_DIR_NAME.length());
-        
+
         if (file == null) {
             int slash = prefix.lastIndexOf('/');
             if (-1 == slash) {
@@ -951,11 +964,11 @@ class SampleUtil {
         }
         return (one.length > two.length ? two.length : one.length);
     }
-    
+
     public static String[] splitAnchorName(Sample sample) {
         return splitAnchorName(sample.anchorName);
     }
-    
+
     public static String[] splitAnchorName(String anchorName) {
         ArrayList<String> result = new ArrayList<String>();
         int start = 0;
@@ -969,7 +982,7 @@ class SampleUtil {
         }
         next  = anchorName.substring(start);
         result.add(next);
-        return (String[]) result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
     }
     /**
      * Replace literals with literals in source string
@@ -1008,8 +1021,8 @@ class SampleUtil {
 
     public static void render(
         Sample sample,
-        String fieldDelim, 
-        String valueDelim, 
+        String fieldDelim,
+        String valueDelim,
         StringBuffer sink) {
         if ((null == sink) || (null == sample)) {
             return;

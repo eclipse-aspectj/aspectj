@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.tools.build;
@@ -43,7 +43,7 @@ import org.aspectj.internal.tools.build.Util.OSGIBundle.RequiredBundle;
  * <li>a file <code>{moduleName}.mf.txt</code> is taken as the manifest of
  * any .jar file produced, after filtering. </li>
  * </ul>
- * 
+ *
  * @see Builder
  * @see Modules#getModule(String)
  */
@@ -98,7 +98,7 @@ public class Module {
 
     /**
      * Recursively find antecedant jars.
-     * 
+     *
      * @see findKnownJarAntecedants()
      */
      static void doFindJarRequirements(Result result, List<File> known) {
@@ -147,7 +147,7 @@ public class Module {
 //        }
 //        return result;
 //    }
-    
+
     public final boolean valid;
 
     public final File moduleDir;
@@ -266,7 +266,7 @@ public class Module {
         return false;
     }
 
-    
+
 
     public String toString() {
         return name;
@@ -282,32 +282,32 @@ public class Module {
         return kind.assemble ? (kind.normal ? releaseAll : testAll)
                 : (kind.normal ? release : test);
     }
-    
+
     List<File> srcDirs(Result result) {
         myResult(result);
         return srcDirs;
     }
-    
+
     List<File> libJars(Result result) {
         myResult(result);
         return libJars;
     }
-    
+
     List<String> classpathVariables(Result result) {
         myResult(result);
         return classpathVariables;
     }
-    
+
     List<File> exportedLibJars(Result result) {
         myResult(result);
         return exportedLibJars;
     }
-    
+
     List<Module> requiredModules(Result result) {
         myResult(result);
         return requiredModules;
     }
-    
+
     private void myResult(Result result) {
         if ((null == result) || this != result.getModule()) {
             throw new IllegalArgumentException("not my result: " + result + ": " + this);
@@ -325,7 +325,7 @@ public class Module {
 
     /** read OSGI manifest.mf file XXX hacked */
     private boolean initManifest() {
-        File metaInf = new File(moduleDir, "META-INF"); 
+        File metaInf = new File(moduleDir, "META-INF");
         if (!metaInf.canRead() || !metaInf.isDirectory()) {
             return false;
         }
@@ -354,9 +354,9 @@ public class Module {
             update("lib", libs[i], libs[i], false);
         }
 
-        return true;        
+        return true;
     }
-    
+
     /** read eclipse .classpath file XXX line-oriented hack */
     private boolean initClasspath() {
         // meaning testsrc directory, junit library, etc.
@@ -517,8 +517,8 @@ public class Module {
      */
     protected boolean reviewInit() {
         try {
-            for (ListIterator iter = srcDirs.listIterator(); iter.hasNext();) {
-                File srcDir = (File) iter.next();
+            for (ListIterator<File> iter = srcDirs.listIterator(); iter.hasNext();) {
+                File srcDir = iter.next();
                 String lcname = srcDir.getName().toLowerCase();
                 if (!Util.JAVA5_VM
                         && (Util.Constants.JAVA5_SRC.equals(lcname) || Util.Constants.JAVA5_TESTSRC
@@ -640,7 +640,7 @@ public class Module {
                     }
                 }
             }
-            return (String[]) result.toArray(new String[0]);
+            return result.toArray(new String[0]);
         }
 
         public void acceptLine(String line) {

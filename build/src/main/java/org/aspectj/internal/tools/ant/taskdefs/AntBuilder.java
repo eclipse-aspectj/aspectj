@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.internal.tools.ant.taskdefs;
 
@@ -51,7 +51,7 @@ public class AntBuilder extends Builder {
 
 	/**
 	 * Factory for a Builder.
-	 * 
+	 *
 	 * @param config the String configuration, where only substrings "verbose" and "useEclipseCompiles" are significant
 	 * @param project the owning Project for all tasks (not null)
 	 * @param tempDir the File path to a temporary dir for side effects (may be null)
@@ -128,7 +128,7 @@ public class AntBuilder extends Builder {
 	/**
 	 * Initialize task with project and "ajbuild-" + name as name. (Using bm- prefix distinguishes these tasks from tasks found in
 	 * the build script.)
-	 * 
+	 *
 	 * @param task the Task to initialize - not null
 	 * @param name the String name suffix for the task
 	 * @return true unless some error
@@ -141,7 +141,7 @@ public class AntBuilder extends Builder {
 
 	/**
 	 * Copy file, optionally filtering. (Filters set in project.)
-	 * 
+	 *
 	 * @param fromFile the readable File source to copy
 	 * @param toFile the writable File destination file
 	 * @param boolean filter if true, enable filtering
@@ -158,7 +158,7 @@ public class AntBuilder extends Builder {
 
 	/**
 	 * (Filters set in project.)
-	 * 
+	 *
 	 * @see org.aspectj.internal.tools.ant.taskdefs.Builder#copyFiles(File, File, String, String, boolean)
 	 */
 	@Override
@@ -230,7 +230,7 @@ public class AntBuilder extends Builder {
 		for (File file: result.getSrcDirs()) {
 			path.createPathElement().setLocation(file);
 			if (!isJava5Compile
-					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) || 
+					&& (Util.Constants.JAVA5_SRC.equals(file.getName()) ||
 						Util.Constants.JAVA5_TESTSRC.equals(file.getName()) ||
 						new File(file.getParent(), ".isJava5").exists())) {
 				isJava5Compile = true;
@@ -272,11 +272,11 @@ public class AntBuilder extends Builder {
 		javac.setDebug(true);
 		if (isJava8Compile) {
 			javac.setSource("1.8");
-			javac.setTarget("1.8");				
+			javac.setTarget("1.8");
 		} else if (isJava5Compile) {
 			// *cough*
 			javac.setSource("1.6");
-			javac.setTarget("1.6");			
+			javac.setTarget("1.6");
 		} else {
 			javac.setTarget("1.1"); // 1.1 class files - Javac in 1.4 uses 1.4
 			javac.setSource("1.3");
@@ -311,8 +311,8 @@ public class AntBuilder extends Builder {
 	public boolean setupClasspath(Result result, Path classpath) { // XXX fix test access
 		boolean hasLibraries = false;
 		// required libraries
-		for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+		for (Iterator<File> iter = result.getLibJars().iterator(); iter.hasNext();) {
+			File file = iter.next();
 			classpath.createPathElement().setLocation(file);
 			if (!hasLibraries) {
 				hasLibraries = true;
@@ -329,8 +329,8 @@ public class AntBuilder extends Builder {
 			}
 			// also put on classpath libraries exported from required module
 			// XXX exported modules not supported
-			for (Iterator iterator = requiredResult.getExportedLibJars().iterator(); iterator.hasNext();) {
-				classpath.createPathElement().setLocation((File) iterator.next());
+			for (Iterator<File> iterator = requiredResult.getExportedLibJars().iterator(); iterator.hasNext();) {
+				classpath.createPathElement().setLocation(iterator.next());
 			}
 		}
 		return hasLibraries;
@@ -356,8 +356,9 @@ public class AntBuilder extends Builder {
 		ZipFileSet zipfileset = null;
 
 		// -- merge any resources in any of the src directories
-		for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
-			File srcDir = (File) iter.next();
+		//for (Iterator iter = result.getSrcDirs().iterator(); iter.hasNext();) {
+		//	File srcDir = (File) iter.next();
+		for (File srcDir: result.getSrcDirs()) {
 			zipfileset = new ZipFileSet();
 			zipfileset.setProject(project);
 			zipfileset.setDir(srcDir);
@@ -528,7 +529,7 @@ public class AntBuilder extends Builder {
 
 		/**
 		 * If this module should be compiled with AspectJ, return a task to do so.
-		 * 
+		 *
 		 * @param module the Module to compile
 		 * @param javac the Javac compile commands
 		 * @return javac or a Task to compile with AspectJ if needed
@@ -588,7 +589,7 @@ public class AntBuilder extends Builder {
 		/**
 		 * Wrap AspectJ compiler as Task. Only works for javac-like source compilation of everything under srcDir. Written
 		 * reflectively to compile in the build module, which can't depend on the whole tree.
-		 * 
+		 *
 		 * @param javac the Javac specification
 		 * @param toolsJar the Path to the aspectjtools.jar
 		 * @param runtimeJar the Path to the aspectjrt.jar
@@ -659,7 +660,7 @@ public class AntBuilder extends Builder {
 // loadAntProperties(ant, buildSpec);
 // ant.execute();
 // }
-//     
+//
 // /** override definitions */
 // private void loadAntProperties(Ant ant, BuildSpec buildSpec) {
 // Property property = ant.createProperty();
@@ -682,7 +683,7 @@ public class AntBuilder extends Builder {
 /**
  * Segregate product-building API's from module-building APIs for clarity. These are called by the superclass if the BuildSpec
  * warrants. XXX extremely brittle/arbitrary assumptions.
- * 
+ *
  * @see BuildModule for assumptions
  */
 class ProductBuilder extends AntBuilder {
@@ -708,7 +709,7 @@ class ProductBuilder extends AntBuilder {
 
 	/**
 	 * Calculate name of main, typically InitialCap, and hence installer class.
-	 * 
+	 *
 	 * @return $$installer$$.org.aspectj." + ProductName + "Installer"
 	 */
 
@@ -801,7 +802,7 @@ class ProductBuilder extends AntBuilder {
 	// String name = (!assembleAll ? jarName : jarName.substring(0, jarName.length()-4));
 	// return modules.getModule(name);
 	// }
-	//    
+	//
 }
 
 class ProjectMessager extends Messager {

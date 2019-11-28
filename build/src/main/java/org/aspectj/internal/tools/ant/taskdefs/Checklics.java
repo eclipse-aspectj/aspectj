@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.tools.ant.taskdefs;
@@ -36,6 +36,7 @@ import org.apache.tools.ant.types.Reference;
  * Check that included .java files contain license and copyright strings for MPL 1.0 (default), Apache, or CPL. Use list="true" to
  * get a list of known license variants {license}-{copyrightHolder} todo reimplement with regexp and jdiff FileLine utilities
  */
+@SuppressWarnings("deprecation")
 public class Checklics extends MatchingTask {
 	/*
 	 * This does not enforce that copyrights are correct/current, only that they exist. E.g., the default behavior requires MPL but
@@ -114,7 +115,7 @@ public class Checklics extends MatchingTask {
 
 	/**
 	 * Run the license check directly
-	 * 
+	 *
 	 * @param sourcepaths String[] of paths to source directories
 	 * @param license the String tag for the license, if any
 	 * @param failonerror boolean flag to pass to Checklics
@@ -171,7 +172,7 @@ public class Checklics extends MatchingTask {
 	/**
 	 * When failOnError is true, if any file failed, throw BuildException listing number of files that file failed to pass license
 	 * check
-	 * 
+	 *
 	 * @param fail if true, report errors by throwing BuildException
 	 */
 	public void setFailOnError(boolean fail) {
@@ -342,7 +343,7 @@ public class Checklics extends MatchingTask {
 	public static class License {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
-		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", 
+		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008",
 				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2001 ", "2000 ",
 				"1999 " };
 		public final String tag;
@@ -556,7 +557,7 @@ class HeaderInfo {
 	 * Alto Research Center, Incorporated (PARC). All rights reserved. This program and the accompanying materials are made
 	 * available under the terms of the Eclipse Public License v1.0 which accompanies this distribution and is available at
 	 * http://www.eclipse.org/legal/epl-v10.html
-	 * 
+	 *
 	 * Contributors: Xerox/PARC initial implementation ******************************************************************
 	 */
 }
@@ -651,7 +652,7 @@ class Header {
 
 	/**
 	 * Add any years found (as String) to years, and return true at the first end-of-comment
-	 * 
+	 *
 	 * @return true if this line has end-of-comment
 	 */
 	private static boolean checkLine(String line, ArrayList<String> years) {

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 //XXX INCLUDES CODE FROM ANT -- UNDER APACHE LICENSE
@@ -39,12 +39,13 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.PatternSet;
 
+@SuppressWarnings("deprecation")
 public class AJInstaller extends MatchingTask {
     static final String INCLUDE_CLASSES = "$installer$/org/aspectj/*.class";
     static final String MAIN_CLASS = "$installer$.org.aspectj.Main";
     static final String CONTENTS_FILE = "$installer$/org/aspectj/resources/contents.txt";
     private String htmlSrc;
-    
+
     public void setHtmlSrc(String v) { htmlSrc = v; }
 
     private String resourcesSrc;
@@ -57,11 +58,11 @@ public class AJInstaller extends MatchingTask {
 
     private File installerClassJar;
 
-    public void setInstallerclassjar(String v) { 
+    public void setInstallerclassjar(String v) {
         installerClassJar = project.resolveFile(v);
     }
 
-    protected List contentsNames = new ArrayList();
+    protected List<String> contentsNames = new ArrayList<>();
 
     protected long contentsBytes = 0;
 
@@ -102,7 +103,7 @@ public class AJInstaller extends MatchingTask {
         PatternSet patterns = new PatternSet();
         patterns.setIncludes(INCLUDE_CLASSES);
         expand.addPatternset(patterns);
-        expand.execute();        
+        expand.execute();
 
         // move the correct resource files into the jar
         Copy cd = getCopyTask();
@@ -151,8 +152,8 @@ public class AJInstaller extends MatchingTask {
         StringBuffer buf = new StringBuffer();
         buf.append(contentsBytes);
         buf.append(NEWLINE);
-        for (Iterator i = contentsNames.iterator(); i.hasNext(); ) {
-            String name = (String)i.next();
+        for (Iterator<String> i = contentsNames.iterator(); i.hasNext(); ) {
+            String name = i.next();
             buf.append(name);
             buf.append(NEWLINE);
         }
@@ -179,7 +180,7 @@ public class AJInstaller extends MatchingTask {
      * This is the name/location of where to
      * create the .zip file.
      */
-    public void setZipfile(String zipFilename) {
+	public void setZipfile(String zipFilename) {
         zipFile = project.resolveFile(zipFilename);
     }
 
@@ -294,12 +295,12 @@ public class AJInstaller extends MatchingTask {
         }
         return tmpDir;
     }
-    
+
     public void execute() throws BuildException {
         if (installerClassJar == null) {
             throw new BuildException("installerClassJar attribute must be set!");
         }
-        if (!installerClassJar.canRead() 
+        if (!installerClassJar.canRead()
             || !installerClassJar.getPath().endsWith(".jar")) {
             throw new BuildException("not readable jar:" + installerClassJar);
         }

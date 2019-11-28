@@ -1,58 +1,68 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
-
 package org.aspectj.testing;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
 import org.aspectj.util.LangUtil;
 
-import java.util.*;
-import java.io.*;
-
 /**
  * Testing client interface for checking results and reporting
  * to a delegate IMessageHandler.
- * Harnesses providing this interface for test clients must 
+ * Harnesses providing this interface for test clients must
  * set it up by calling
  * {@link #setBASEDIR(File)}
- * {@link #setMessageHandler(IMessageHandler)} and 
+ * {@link #setMessageHandler(IMessageHandler)} and
  * {@link #clear()} for each test, as appropriate.
  * (That means that IMessageHandler must be loaded from a class
  * loader common to the harness and Tester.)
  * If clients submit a failing check, this registers the message
- * and throws an AbortException holding the message; this 
+ * and throws an AbortException holding the message; this
  * AbortException <b>will not</b> have the correct stack trace;
  * all the information should be encoded in the message.
  * Find any original exception thrown in the message itself.
  */
-  // XXX consider creating exception for new API throwFailure(String m) 
+  // XXX consider creating exception for new API throwFailure(String m)
 public class Tester {
     /** delegate for reporting results */
     private static IMessageHandler messageHandler;
-    
+
     /** base directory for calculating relative paths to event files */
     private static File BASEDIR;
-    
-    /** 
+
+    /**
      * collection of notes submitted
      */
-    private static Set notes;
-    
+    private static Set<String> notes;
+
     /** <code>List</code> to hold events submitted. */
     private static List<String> actualEvents = new ArrayList<>();
-    
+
     /** <code>List</code> to hold events we expect. */
     private static List<String> expectedEvents = new ArrayList<>();
 
@@ -76,21 +86,21 @@ public class Tester {
     public static File getBASEDIR() {
         return BASEDIR;
     }
-    
-    
+
+
     /**
      * Set the message handler used for this Tester.
-     * When given a message of kind FAIL, this handler 
+     * When given a message of kind FAIL, this handler
      * must complete abruptly or return false (i.e., not handled completely)
-     * so the Tester throws an AbortException.  
+     * so the Tester throws an AbortException.
      * @see checkFailed(..).
      */
-    public static void setMessageHandler(IMessageHandler handler) {   
+    public static void setMessageHandler(IMessageHandler handler) {
         if (null == handler) throw new IllegalArgumentException("null handler");
         if (messageHandler != handler) messageHandler = handler;
     }
 
-    
+
     public static void clear() {
         clearNotes();
         clearEvents();
@@ -98,27 +108,27 @@ public class Tester {
 
     /** XXX deprecated #clear() */
     public static void clearNotes() {
-        notes = new HashSet();
+        notes = new HashSet<>();
     }
 
     /** XXX deprecated #clear() */
-    public static void clearEvents() { 
-        actualEvents = new ArrayList<>(); 
-        expectedEvents = new ArrayList<>();     
+    public static void clearEvents() {
+        actualEvents = new ArrayList<>();
+        expectedEvents = new ArrayList<>();
     }
-    
+
 
     /** Add an actual event */
-    public static void event(String s) { 
-        actualEvents.add(s); 
+    public static void event(String s) {
+        actualEvents.add(s);
     }
-    
+
     /**
      * Add a note to {@link #notes}.
      * @param note Message to add.
-     * XXX deprecated event(String) 
+     * XXX deprecated event(String)
      */
-    public static void note(Object note) { 
+    public static void note(String note) {
         notes.add(note);
     }
 
@@ -127,9 +137,9 @@ public class Tester {
      * and fails using <code>note.toString()</code> is it wasn't found.
      *
      * @param note Message that should've been added using {@link #note}.
-     * XXX deprecated checkEvent(String) 
+     * XXX deprecated checkEvent(String)
      */
-    public static void check(Object note) {
+    public static void check(String note) {
         check(note, "expected note \"" + note.toString() + "\"");
     }
 
@@ -141,7 +151,7 @@ public class Tester {
      * @param message Message with which to fail if <code>node</code>
      *                wasn't added.
      */
-    public static void check(Object note, String message) {
+    public static void check(String note, String message) {
         check(notes.contains(note), message);
     }
 
@@ -156,7 +166,7 @@ public class Tester {
         throwable(t, null);
     }
 
-    
+
     /**
      * Reports that <code>t</code> shouldn't have been thrown.
      * using <code>msg</code> as the message.
@@ -503,7 +513,7 @@ public class Tester {
      */
     public static void checkEqual(long value, long expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Compared <code>value</code> and <code>expectedValue</code>
@@ -533,7 +543,7 @@ public class Tester {
      */
     public static void checkEqual(double value, double expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }       
+    }
 
     /**
      * Compared <code>value</code> and <code>expectedValue</code>
@@ -564,7 +574,7 @@ public class Tester {
      */
     public static void checkEqual(short value, short expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Compared <code>value</code> and <code>expectedValue</code>
@@ -594,7 +604,7 @@ public class Tester {
      */
     public static void checkEqual(byte value, byte expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Compares <code>value</code> and <code>expectedValue</code>
@@ -624,7 +634,7 @@ public class Tester {
      */
     public static void checkEqual(char value, char expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Compares <code>value</code> and <code>expectedValue</code>
@@ -654,7 +664,7 @@ public class Tester {
      */
     public static void checkEqual(boolean value, boolean expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Compares <code>value</code> and <code>expectedValue</code>
@@ -679,23 +689,23 @@ public class Tester {
      * @param expectedSet Expected <code>String</code> of values.
      * @param msg         Message with which to fail.
      */
-    public static void checkEqual(Collection set, String expectedSet, String msg) {
+    public static void checkEqual(Collection<String> set, String expectedSet, String msg) {
         checkEqual(set, LangUtil.split(expectedSet), msg);
     }
-        
+
     /**
      * Checks whether the entries of <code>set</code> are equal
      * using <code>equals</code> to the corresponding entry in
      * <code>expectedSet</code> and fails with message <code>msg</code>,
      * except that duplicate actual entries are ignored.
-     * This issues fail messages for each failure; when 
+     * This issues fail messages for each failure; when
      * aborting on failure, only the first will be reported.
      *
      * @param set         Unkown set of values.
      * @param expectedSet Expected <code>String</code> of values.
      * @param msg         Message with which to fail.
      */
-    public static void checkEqualIgnoreDups(Collection set, String[] expected, String msg,
+    public static void checkEqualIgnoreDups(Collection<String> set, String[] expected, String msg,
                                               boolean ignoreDups) {
         String[] diffs = diffIgnoreDups(set, expected, msg, ignoreDups);
         if (0 < diffs.length) {
@@ -703,11 +713,11 @@ public class Tester {
         }
 //        for (int i = 0; i < diffs.length; i++) {
 //			check(false, diffs[i]);
-//		}                                            
+//		}
     }
-    
+
     /** @return String[] of differences '{un}expected msg "..." {not} found' */
-    private static String[] diffIgnoreDups(Collection<String> set, String[] expected, String msg, 
+    private static String[] diffIgnoreDups(Collection<String> set, String[] expected, String msg,
         boolean ignoreDups) {
         ArrayList<String> result = new ArrayList<>();
         ArrayList<String> actual = new ArrayList<>(set);
@@ -723,9 +733,9 @@ public class Tester {
             }
         }
         for (String act: actual) {
-            result.add(" unexpected " + msg + " \"" + act + "\" found");			
+            result.add(" unexpected " + msg + " \"" + act + "\" found");
 		}
-        return (String[]) result.toArray(new String[0]);
+        return result.toArray(new String[0]);
     }
 
     /**
@@ -737,7 +747,7 @@ public class Tester {
      * @param expectedSet Expected <code>String</code> of values.
      * @param msg         Message with which to fail.
      */
-    public static void checkEqual(Collection set, String[] expected, String msg) {
+    public static void checkEqual(Collection<String> set, String[] expected, String msg) {
         checkEqualIgnoreDups(set, expected, msg, false);
     }
 
@@ -751,7 +761,7 @@ public class Tester {
      */
     public static void checkEqual(Object value, Object expectedValue) {
         checkEqual(value, expectedValue, "compare");
-    }    
+    }
 
     /**
      * Checks whether the entries of <code>set</code> are equal
@@ -790,14 +800,14 @@ public class Tester {
             expectedEvents.add(s);
         }
     }
-    
+
      /** add expected events */
     public static void expectEvent(Object s) {
         if (null != s) {
             expectEvent(s.toString());
         }
     }
-    
+
     /**
      * add expected events, parse out ; from string
      * Expect those messages in <code>s</code> separated by
@@ -836,26 +846,26 @@ public class Tester {
                 if (null != events[i]) {
                     expectEvent(events[i].toString());
                 }
-            }            
+            }
         }
     }
-    
+
     /** check actual and expected have same members */
     public static void checkAllEvents() {
-        checkAndClearEvents((String[]) expectedEvents.toArray(new String[0]));
+        checkAndClearEvents(expectedEvents.toArray(new String[0]));
     }
-    
+
     /** also ignore duplicate actual entries for expected */
     public static void checkAllEventsIgnoreDups() {
         final boolean ignoreDups = true;
-        final String[] exp = (String[]) expectedEvents.toArray(new String[0]);
+        final String[] exp = expectedEvents.toArray(new String[0]);
         checkEqualIgnoreDups(actualEvents, exp, "event", ignoreDups);
         clearEvents();
     }
-    
+
     /** Check events, file is line-delimited.  If there is a non-match, signalls
-     * a single error for the first event that does not match the next event in 
-     * the file.  The equivalence is {@link #checkEqualLists}.  Blank lines are 
+     * a single error for the first event that does not match the next event in
+     * the file.  The equivalence is {@link #checkEqualLists}.  Blank lines are
      * ignored.  lines that start with '//' are ignored.  */
     public static void checkEventsFromFile(String eventsFile) {
         // XXX bug reads into current expected and checks all - separate read and check
@@ -864,19 +874,20 @@ public class Tester {
             BufferedReader in = new BufferedReader(new FileReader(file));
             //final File parentDir = (null == file? null : file.getParentFile());
             String line;
-            List expEvents = new ArrayList();
+            List<String> expEvents = new ArrayList<>();
             while ((line = in.readLine()) != null) {
                 line = line.trim();
                 if ((line.length() < 1) || (line.startsWith("//"))) continue;
                 expEvents.add(line);
             }
+            in.close();
             checkEqualLists(actualEvents, expEvents, " from " + eventsFile);
         } catch (IOException ioe) {
             throwable(ioe);
         }
     }
-    
-    
+
+
     /** Check to see that two lists of strings are the same.  Order is important.
      *  Trimmable whitespace is not important.  Case is important.
      *
@@ -884,10 +895,10 @@ public class Tester {
      *  @param expected another list
      *  @param message a context string for the resulting error message if the test fails.
      */
-    public static void checkEqualLists(List/*String*/ actual, List/*String*/ expected, 
+    public static void checkEqualLists(List<String> actual, List<String> expected,
     					String message) {
-       	Iterator a = actual.iterator();
-       	Iterator e = expected.iterator();
+       	Iterator<String> a = actual.iterator();
+       	Iterator<String> e = expected.iterator();
         int ai = 0;
         int ei = 0;
        	for (; a.hasNext(); ) {
@@ -895,10 +906,10 @@ public class Tester {
        	        checkFailed("unexpected [" + ai + "] \"" + a.next() + "\" " + message);
        	        return;
        	    }
-       	    String a0 = ((String) a.next()).trim();
-       	    String e0 = ((String) e.next()).trim();
+       	    String a0 = a.next().trim();
+       	    String e0 = e.next().trim();
        	    if (! a0.equals(e0)) {
-       	        checkFailed("expected [" + ei + "] \"" + e0 
+       	        checkFailed("expected [" + ei + "] \"" + e0
                         + "\"\n  but found [" + ai + "] \"" + a0 + "\"\n  " + message);
        	        return;
        	    }
@@ -909,8 +920,8 @@ public class Tester {
        	     checkFailed("expected [" + ei + "] \"" + e.next() + "\" " + message);
              ei++;
        	}
-    }	    
-   	    
+    }
+
     /** Check events, expEvents is space delimited */
     public static void checkEvents(String expEvents) {
         checkEqual(actualEvents, expEvents, "event");
@@ -920,13 +931,13 @@ public class Tester {
     public static void checkEvents(String[] expEvents) {
         checkEqual(actualEvents, expEvents, "event");
     }
-        
+
     /** Check events and clear after check*/
     public static void checkAndClearEvents(String expEvents) {
         checkEvents(expEvents);
         clearEvents();
-    }    
-    
+    }
+
     /** Check events and clear after check*/
     public static void checkAndClearEvents(String[] expEvents) {
         checkEvents(expEvents);
@@ -935,7 +946,7 @@ public class Tester {
 
     /** XXX deprecated */
     public static void printEvents() {  // XXX no clients?
-        for (Iterator i = actualEvents.iterator(); i.hasNext(); ) {
+        for (Iterator<String> i = actualEvents.iterator(); i.hasNext(); ) {
             System.out.println(i.next());               // XXX System.out
         }
     }
@@ -945,13 +956,13 @@ public class Tester {
      * @param thrown <code>Throwable</code> to print.
      * @see   #maxStackTrace
      */
-    public void unexpectedExceptionFailure(Throwable thrown) { 
+    public void unexpectedExceptionFailure(Throwable thrown) {
         handle("unexpectedExceptionFailure", thrown, true);
     }
-    
+
     /**
      * Handle message by delegation to message handler, doing
-     * IMessage.FAIL if (fail || (thrown != null) and IMessage.INFO 
+     * IMessage.FAIL if (fail || (thrown != null) and IMessage.INFO
      * otherwise.
      */
 
@@ -964,7 +975,7 @@ public class Tester {
 //    private static void resofhandle(String message, Throwable thrown, boolean fail) {
 //     /* If FAIL and the message handler returns false (normally),
 //     * Then this preserves "abort" semantics by throwing an
-//     * abort exception.  
+//     * abort exception.
 //     */
 //        if (failed) {
 //            if (handled) {

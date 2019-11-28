@@ -1,21 +1,21 @@
 /* *******************************************************************
  * Copyright (c) 2005-2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * ******************************************************************/
 
 package org.aspectj.util;
 
-import junit.framework.TestCase;
-
 import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.util.GenericSignature.ClassTypeSignature;
 import org.aspectj.util.GenericSignature.FieldTypeSignature;
 import org.aspectj.util.GenericSignature.SimpleClassTypeSignature;
+
+import junit.framework.TestCase;
 
 /**
  * @author Adrian Colyer
@@ -176,7 +176,7 @@ public class GenericSignatureParserTest extends TestCase {
 		assertEquals("Ljava/lang/Exception;", mSig.throwsSignatures[0].toString());
 		assertEquals("Ljava/lang/RuntimeException;", mSig.throwsSignatures[1].toString());
 	}
-	
+
 	public void testMethodSignaturePrimitiveParams() {
 		GenericSignature.MethodTypeSignature mSig = parser.parseAsMethodSignature("(ILjava/lang/Object;)V");
 		assertEquals("2 parameters", 2, mSig.parameters.length);
@@ -194,8 +194,7 @@ public class GenericSignatureParserTest extends TestCase {
 	}
 
 	public void testPr107784() {
-		parser
-				.parseAsMethodSignature("(Lcom/cibc/responders/mapping/CommonDataBeanScenario;Ljava/lang/Object;)Lcom/cibc/responders/response/Formatter<[BLjava/lang/Object;>;");
+		parser.parseAsMethodSignature("(Lcom/cibc/responders/mapping/CommonDataBeanScenario;Ljava/lang/Object;)Lcom/cibc/responders/response/Formatter<[BLjava/lang/Object;>;");
 		parser.parseAsClassSignature("<Parent:Ljava/lang/Object;Child:Ljava/lang/Object;>Ljava/lang/Object;");
 	}
 

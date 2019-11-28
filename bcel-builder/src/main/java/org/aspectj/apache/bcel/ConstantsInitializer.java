@@ -57,6 +57,7 @@ import org.aspectj.apache.bcel.generic.Type;
 
 public class ConstantsInitializer {
 
+	@SuppressWarnings("unchecked")
 	public static Object initialize() {
 		Constants.types[Constants.ILOAD] = Type.INT;
 		Constants.types[Constants.ISTORE] = Type.INT;

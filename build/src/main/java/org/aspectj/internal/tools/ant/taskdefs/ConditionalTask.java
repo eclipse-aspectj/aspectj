@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.tools.ant.taskdefs;
@@ -21,6 +21,7 @@ import java.util.Vector;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
+@SuppressWarnings("deprecation")
 public abstract class ConditionalTask extends Task {
 
     public final static String TRUE = "true";
@@ -170,7 +171,7 @@ public abstract class ConditionalTask extends Task {
         Iterator<If> iter = ifs().iterator();
         List<String> result = new Vector<String>();
         while (iter.hasNext()) {
-            If next = (If) iter.next();
+            If next = iter.next();
             String name = next.getName();
             String prop = project.getProperty(name);
             if (prop == null) {

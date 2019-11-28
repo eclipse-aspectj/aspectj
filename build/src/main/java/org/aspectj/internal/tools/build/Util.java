@@ -1,29 +1,36 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
- 
+
 package org.aspectj.internal.tools.build;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
-/** 
+/**
  * Build-only utilities.
  * Many mirror utils module APIs.
  */
@@ -45,8 +52,8 @@ public class Util {
         JAVA5_VM = java5VM;
     }
 
-    /** 
-     * Map version in long form to short, 
+    /**
+     * Map version in long form to short,
      * e.g., replacing "alpha" with "a"
      */
     public static String shortVersion(String version) {
@@ -57,7 +64,7 @@ public class Util {
         version = Util.replace(version, "dev", "d");
         return version;
     }
-    
+
     /**
      * Replace any instances of {replace} in {input} with {with}.
      * @param input the String to search/replace
@@ -92,35 +99,35 @@ public class Util {
 		}
         return passed;
     }
-    
+
     /** @throws IllegalArgumentException if cannot read dir */
     public static void iaxIfNotCanReadDir(File dir, String name) {
         if (!canReadDir(dir)) {
             throw new IllegalArgumentException(name + " dir not readable: " + dir);
         }
     }
-    
+
     /** @throws IllegalArgumentException if cannot read file */
     public static void iaxIfNotCanReadFile(File file, String name) {
         if (!canReadFile(file)) {
             throw new IllegalArgumentException(name + " file not readable: " + file);
         }
     }
-    
+
     /** @throws IllegalArgumentException if cannot write dir */
     public static void iaxIfNotCanWriteDir(File dir, String name) {
         if (!canWriteDir(dir)) {
             throw new IllegalArgumentException(name + " dir not writeable: " + dir);
         }
     }
-    
+
     /** @throws IllegalArgumentException if input is null */
     public static void iaxIfNull(Object input, String name) {
         if (null == input) {
             throw new IllegalArgumentException("null " + name);
         }
     }
-    
+
     /** render exception to String */
     public static String renderException(Throwable thrown) {
         if (null == thrown) {
@@ -129,16 +136,16 @@ public class Util {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
         pw.println(thrown.getMessage());
-        thrown.printStackTrace(pw); 
+        thrown.printStackTrace(pw);
         pw.flush();
-        return sw.getBuffer().toString(); 
+        return sw.getBuffer().toString();
     }
-    
+
     /** @return true if dir is a writable directory */
     public static boolean canWriteDir(File dir) {
         return (null != dir) && dir.canWrite() && dir.isDirectory();
     }
-    
+
     public static String path(String first, String second) {
         return first + File.separator + second;
     }
@@ -155,31 +162,31 @@ public class Util {
         }
         return sb.toString();
     }
-    
+
     /** @return true if dir is a readable directory */
     public static boolean canReadDir(File dir) {
         return (null != dir) && dir.canRead() && dir.isDirectory();
     }
-    
+
     /** @return true if dir is a readable file */
     public static boolean canReadFile(File file) {
         return (null != file) && file.canRead() && file.isFile();
     }
-    
-    /** 
+
+    /**
      * Delete file or directory.
      * @param dir the File file or directory to delete.
-     * @return true if all contents of dir were deleted 
+     * @return true if all contents of dir were deleted
      */
     public static boolean delete(File dir) {
         return deleteContents(dir) && dir.delete();
     }
-    
-    /** 
+
+    /**
      * Delete contents of directory.
      * The directory itself is not deleted.
      * @param dir the File directory whose contents should be deleted.
-     * @return true if all contents of dir were deleted 
+     * @return true if all contents of dir were deleted
      */
     public static boolean deleteContents(File dir) {
         if ((null == dir) || !dir.canWrite()) {
@@ -194,7 +201,7 @@ public class Util {
         }
         return true;
     }
-    
+
     /** @return File temporary directory with the given prefix */
     public static File makeTempDir(String prefix) {
         if (null == prefix) {
@@ -203,7 +210,7 @@ public class Util {
         File tempFile = null;
         for (int i = 0; i < 10; i++) {
             try {
-                tempFile =  File.createTempFile(prefix,"tmp");       
+                tempFile =  File.createTempFile(prefix,"tmp");
                 tempFile.delete();
                 if (tempFile.mkdirs()) {
                     break;
@@ -212,12 +219,12 @@ public class Util {
             } catch (IOException e) {
             }
         }
-        return tempFile;        
+        return tempFile;
     }
     /**
      * Close stream with the usual checks.
-     * @param stream the InputStream to close - ignored if null 
-     * @return null if closed without IOException, message otherwise 
+     * @param stream the InputStream to close - ignored if null
+     * @return null if closed without IOException, message otherwise
      */
     public static String close(Writer stream) {
         String result = null;
@@ -323,12 +330,12 @@ public class Util {
 
     /**
      * Support for OSGI bundles read from manifest files.
-     * Currently very limited, and will only support the subset of 
+     * Currently very limited, and will only support the subset of
      * features that we use.
      * sources:
      * http://www-128.ibm.com/developerworks/library/os-ecl-osgi/index.html
      * http://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/osgi/org/osgi/framework/Constants.html
-     */    
+     */
     public static class OSGIBundle {
         public static final Name BUNDLE_NAME = new Name("Bundle-Name");
 
@@ -348,9 +355,9 @@ public class Util {
         public static final Name BUNDLE_CLASSPATH = new Name("Bundle-ClassPath");
 
         /** unmodifiable list of all valid OSGIBundle Name's */
-        public static final List NAMES;
+        public static final List<Name> NAMES;
         static {
-            ArrayList names = new ArrayList();
+            ArrayList<Name> names = new ArrayList<>();
             names.add(BUNDLE_NAME);
             names.add(BUNDLE_SYMBOLIC_NAME);
             names.add(BUNDLE_VERSION);
@@ -367,7 +374,7 @@ public class Util {
         private final Attributes attributes;
 
         /**
-         * 
+         *
          * @param manifestInputStream
          *            the InputStream of the manifest.mf - will be closed.
          * @throws IOException
@@ -414,7 +421,7 @@ public class Util {
             int skips = 0;
             while (st.hasMoreTokens()) {
                 String token = st.nextToken();
-                int first = token.indexOf("\""); 
+                int first = token.indexOf("\"");
                 if (-1 != first) {
                     if (!st.hasMoreTokens()) {
                         throw new IllegalArgumentException(token);
@@ -434,18 +441,18 @@ public class Util {
         }
 
         /**
-         * Wrap each dependency on another bundle 
+         * Wrap each dependency on another bundle
          */
         public static class RequiredBundle {
-            
+
             /** unparsed entry text, for debugging */
             final String text;
-            
+
             /** Symbolic name of the required bundle */
             final String name;
 
             /** if not null, then start/end versions of required bundle
-             * in the format of the corresponding manifest entry 
+             * in the format of the corresponding manifest entry
              */
             final String versions;
 
@@ -472,7 +479,7 @@ public class Util {
                         int start = RESOLUTION.length();
                         int end = token.length();
                         opt = token.substring(start, end);
-                    } 
+                    }
                 }
                 versions = vers;
                 optional = "optional".equals(opt);

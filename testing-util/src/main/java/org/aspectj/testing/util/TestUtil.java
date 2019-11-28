@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -41,6 +41,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageUtil;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
+import org.aspectj.util.Reflection;
+
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
@@ -51,12 +57,6 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import junit.runner.TestCaseClassLoader;
-
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.MessageUtil;
-import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
-import org.aspectj.util.Reflection;
 
 /**
  * Things that junit should perhaps have, but doesn't. Note the file-comparison methods require JDiff to run, but JDiff types are
@@ -125,8 +125,8 @@ public final class TestUtil {
 		LIB_RPATHS.setProperty(TESTING_CLIENT_KEY, "tests/testing-client.jar");
 		// TODO support others loaded dynamically
 
-		Map map = new HashMap();
-		for (Iterator iter = LIB_RPATHS.keySet().iterator(); iter.hasNext();) {
+		Map<String,Object> map = new HashMap<>();
+		for (Iterator<Object> iter = LIB_RPATHS.keySet().iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			String path = LIB_RPATHS.getProperty(key);
 			File file = null;
@@ -196,7 +196,7 @@ public final class TestUtil {
 
 	/**
 	 * This relies on these being File (where toString() == getPath()) or URL (where toString() == toExternalForm()).
-	 * 
+	 *
 	 * @param entries the Object[] of File or URL elements
 	 * @return the String with entries dlimited by the File.pathSeparator
 	 */
@@ -220,9 +220,9 @@ public final class TestUtil {
 	}
 
     public static String aspectjrtClasspath() {
-        return TestUtil.aspectjrtPath().getPath();        
+        return TestUtil.aspectjrtPath().getPath();
     }
-    
+
 	/**
 	 * @param input the String to parse for [on|off|true|false]
 	 * @throws IllegalArgumentException if input is bad
@@ -286,7 +286,7 @@ public final class TestUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param rpath the String relative path from the library directory to a resource that must exist (may be a directory), using
 	 *        forward slashes as a file separator
 	 * @return the File path
@@ -306,7 +306,7 @@ public final class TestUtil {
 
 	/**
 	 * Like libPath, only it returns a URL.
-	 * 
+	 *
 	 * @return URL or null if it does not exist
 	 * @throws IllegalArgumentException if no such directory or file
 	 */
@@ -327,7 +327,7 @@ public final class TestUtil {
 
 	// ---- unordered
 
-	public static void assertSetEquals(Collection expected, Collection found) {
+	public static void assertSetEquals(Collection<?> expected, Collection<?> found) {
 		assertSetEquals(null, expected, found);
 	}
 
@@ -335,13 +335,13 @@ public final class TestUtil {
 		assertSetEquals(msg, Arrays.asList(expected), Arrays.asList(found));
 	}
 
-	public static void assertSetEquals(String msg, Collection expected, Collection found) {
+	public static void assertSetEquals(String msg, Collection<?> expected, Collection<?> found) {
 		msg = (msg == null) ? "" : msg + ": ";
 
-		Set results1 = new HashSet(found);
+		Set<Object> results1 = new HashSet<>(found);
 		results1.removeAll(expected);
 
-		Set results2 = new HashSet(expected);
+		Set<Object> results2 = new HashSet<>(expected);
 		results2.removeAll(found);
 
 		if (results1.isEmpty()) {
@@ -403,7 +403,7 @@ public final class TestUtil {
 			BufferedReader r1 = new BufferedReader(new StringReader(s1));
 			BufferedReader r2 = new BufferedReader(new StringReader(s2));
 
-			List lines = new ArrayList();
+			List<String> lines = new ArrayList<>();
 			String l1, l2;
 
 			int index = 1;
@@ -456,7 +456,7 @@ public final class TestUtil {
 	/**
 	 * If there is an expected dir, expect each file in its subtree to match a corresponding actual file in the base directory. This
 	 * does NOT check that all actual files have corresponding expected files. This ignores directory paths containing "CVS".
-	 * 
+	 *
 	 * @param handler the IMessageHandler sink for error messages
 	 * @param expectedBaseDir the File path to the directory containing expected files, all of which are compared with any
 	 *        corresponding actual files
@@ -494,7 +494,7 @@ public final class TestUtil {
 	/**
 	 * Test interface to compare two files, line by line, and report differences as one FAIL message if a handler is supplied. This
 	 * preprocesses .class files by disassembling.
-	 * 
+	 *
 	 * @param handler the IMessageHandler for any FAIL messages (null to ignore)
 	 * @param expectedFile the File path to the canonical file
 	 * @param actualFile the File path to the actual file, if any
@@ -508,7 +508,7 @@ public final class TestUtil {
 	 * Test interface to compare two files, line by line, and report differences as one FAIL message if a handler is supplied. This
 	 * preprocesses .class files by disassembling. This method assumes that the files are at the same offset from two respective
 	 * base directories.
-	 * 
+	 *
 	 * @param handler the IMessageHandler for any FAIL messages (null to ignore)
 	 * @param expectedBaseDir the File path to the canonical file base directory
 	 * @param actualBaseDir the File path to the actual file base directory
@@ -766,7 +766,7 @@ public final class TestUtil {
 
 		/**
 		 * Reduce file to CanonicalLine[].
-		 * 
+		 *
 		 * @param handler the IMessageHandler for errors (may be null)
 		 * @param file the File to render
 		 * @param basedir the File for the base directory (may be null)
@@ -798,7 +798,7 @@ public final class TestUtil {
 	private abstract static class Lineator implements ILineator {
 		/**
 		 * Reduce file to CanonicalLine[].
-		 * 
+		 *
 		 * @param handler the IMessageHandler for errors (may be null)
 		 * @param file the File to render
 		 * @param basedir the File for the base directory (may be null)
@@ -916,7 +916,7 @@ public final class TestUtil {
 			}
 		}
 	}
-	
+
 
 	public static File createEmptySandbox() {
 		File sandbox;
@@ -973,11 +973,11 @@ public final class TestUtil {
 
 		ByteArrayOutputStream missed;
 
-		ArrayList sink;
+		ArrayList<String> sink;
 
 		public LineStream() {
 			super(new ByteArrayOutputStream());
-			this.sink = new ArrayList();
+			this.sink = new ArrayList<>();
 			missed = (ByteArrayOutputStream) out;
 		}
 
@@ -993,11 +993,11 @@ public final class TestUtil {
 
 		/**
 		 * Get String[] of lines printed, delimited by println(..) calls.
-		 * 
+		 *
 		 * @return lines printed, exclusive of any not yet terminated by newline
 		 */
 		public String[] getLines() {
-			return (String[]) sink.toArray(new String[0]);
+			return sink.toArray(new String[0]);
 		}
 
 		// ---------- PrintStream overrides
