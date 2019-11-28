@@ -9,14 +9,14 @@ package org.aspectj.systemtest.ajc193;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava12OrLater;
+import org.aspectj.testing.XMLBasedAjcTestCaseForJava13OrLater;
 
 import junit.framework.Test;
 
 /**
  * @author Andy Clement
  */
-public class Java12Tests extends XMLBasedAjcTestCaseForJava12OrLater {
+public class Java13Tests extends XMLBasedAjcTestCaseForJava13OrLater {
 
 	public void testSwitch1() {
 		runTest("switch 1");
@@ -35,7 +35,7 @@ public class Java12Tests extends XMLBasedAjcTestCaseForJava12OrLater {
 	// ---
 
 	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(Java12Tests.class);
+		return XMLBasedAjcTestCase.loadSuite(Java13Tests.class);
 	}
 
 	@Override

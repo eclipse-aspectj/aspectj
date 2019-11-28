@@ -18,7 +18,7 @@ public class AllTestsAspectJ193 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.3 tests");
 		suite.addTest(Ajc193Tests.suite());
-		suite.addTest(Java12Tests.suite());
+		suite.addTest(Java13Tests.suite());
 		return suite;
 	}
 }

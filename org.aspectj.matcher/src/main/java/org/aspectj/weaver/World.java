@@ -1,15 +1,15 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  *               2005 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     PARC     initial implementation
- *     Adrian Colyer, Andy Clement, overhaul for generics, Abraham Nevado 
+ *     Adrian Colyer, Andy Clement, overhaul for generics, Abraham Nevado
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -55,7 +55,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * A World is a collection of known types and crosscutting members.
  */
 public abstract class World implements Dump.INode {
-	
+
 	/** handler for any messages produced during resolution etc. */
 	private IMessageHandler messageHandler = IMessageHandler.SYSTEM_ERR;
 
@@ -112,10 +112,10 @@ public abstract class World implements Dump.INode {
 	/** The level of the aspectjrt.jar the code we generate needs to run on */
 	public static final RuntimeVersion RUNTIME_LEVEL_DEFAULT = RuntimeVersion.V1_5;
 	private RuntimeVersion targetAspectjRuntimeLevel = RUNTIME_LEVEL_DEFAULT;
-	
+
 	/** Flags for the new joinpoints that are 'optional': -Xjoinpoints:arrayconstruction -Xjoinpoints:synchronization */
-	private boolean optionalJoinpoint_ArrayConstruction = false; 
-	private boolean optionalJoinpoint_Synchronization = false; 
+	private boolean optionalJoinpoint_ArrayConstruction = false;
+	private boolean optionalJoinpoint_Synchronization = false;
 
 	private boolean addSerialVerUID = false;
 
@@ -407,7 +407,7 @@ public abstract class World implements Dump.INode {
 	/**
 	 * When the world is operating in 1.5 mode, the TypeMap should only contain RAW types and never directly generic types. The RAW
 	 * type will contain a reference to the generic type.
-	 * 
+	 *
 	 * @param type a possibly generic type for which the raw needs creating as it is not currently in the world
 	 * @return a type suitable for putting into the world
 	 */
@@ -862,7 +862,7 @@ public abstract class World implements Dump.INode {
 
 	/**
 	 * Set the error and warning threashold which can be taken from CompilerOptions (see bug 129282)
-	 * 
+	 *
 	 * @param errorThreshold
 	 * @param warningThreshold
 	 */
@@ -968,7 +968,7 @@ public abstract class World implements Dump.INode {
 	public final static String xsetITD_VERSION_DEFAULT = xsetITD_VERSION_2NDGEN;
 	public final static String xsetMINIMAL_MODEL = "minimalModel";
 	public final static String xsetTARGETING_RUNTIME_1610 = "targetRuntime1_6_10";
-	
+
 	// This option allows you to prevent AspectJ adding local variable tables - some tools (e.g. dex) may
 	// not like what gets created because even though it is valid, the bytecode they are processing has
 	// unexpected quirks that mean the table entries are violated in the code. See issue:
@@ -1065,8 +1065,7 @@ public abstract class World implements Dump.INode {
 			addedSinceLastDemote = new ArrayList<String>();
 			writtenClasses = new ArrayList<String>();
 			this.w = w;
-			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.
-			// INFO);
+			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.INFO);
 		}
 
 		// For testing
@@ -1088,7 +1087,7 @@ public abstract class World implements Dump.INode {
 		 * expendable map where GC can claim them at some point later. Demotion means: the type is not an aspect, the type is not
 		 * java.lang.Object, the type is not primitive and the type is not affected by type mungers in any way. Further refinements
 		 * of these conditions may allow for more demotions.
-		 * 
+		 *
 		 * @return number of types demoted
 		 */
 		public int demote(boolean atEndOfCompile) {
@@ -1196,7 +1195,7 @@ public abstract class World implements Dump.INode {
 		 * cannot guarantee you are using the type variable in the same way as someone previously working with a similarly named
 		 * type variable. So, these do not go into the map: - TypeVariableReferenceType. - ParameterizedType where a member type
 		 * variable is involved. - BoundedReferenceType when one of the bounds is a type variable.
-		 * 
+		 *
 		 * definition: "member type variables" - a tvar declared on a generic method/ctor as opposed to those you see declared on a
 		 * generic type.
 		 */
@@ -1218,8 +1217,7 @@ public abstract class World implements Dump.INode {
 				}
 				return type;
 			}
-			// this test should be improved - only avoid putting them in if one
-			// of the
+			// this test should be improved - only avoid putting them in if one of the
 			// bounds is a member type variable
 			if (type instanceof BoundedReferenceType) {
 				if (debug) {
@@ -1243,12 +1241,11 @@ public abstract class World implements Dump.INode {
 			}
 
 			// TODO should this be in as a permanent assertion?
-			
 			if ((type instanceof ReferenceType) && type.getWorld().isInJava5Mode()
 					&& (((ReferenceType) type).getDelegate() != null) && type.isGenericType()) {
 				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
 			}
-			
+
 
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {
@@ -1307,7 +1304,7 @@ public abstract class World implements Dump.INode {
 
 		/**
 		 * Lookup a type by its signature, always look in the real map before the expendable map
-		 */ 
+		 */
 		public ResolvedType get(String key) {
 			checkq();
 			ResolvedType ret = tMap.get(key);
@@ -1628,7 +1625,7 @@ public abstract class World implements Dump.INode {
 
 				s = p.getProperty(xsetDEBUG_STRUCTURAL_CHANGES_CODE, "false");
 				forDEBUG_structuralChangesCode = s.equalsIgnoreCase("true");
-				
+
 				s = p.getProperty(xsetTRANSIENT_TJP_FIELDS,"false");
 				transientTjpFields = s.equalsIgnoreCase("true");
 
@@ -1638,9 +1635,9 @@ public abstract class World implements Dump.INode {
 				s = p.getProperty(xsetGENERATE_NEW_LVTS,"true");
 				generateNewLvts = s.equalsIgnoreCase("true");
 				if (!generateNewLvts) {
-					getMessageHandler().handleMessage(MessageUtil.info("[generateNewLvts=false] for methods without an incoming local variable table, do not generate one"));					
+					getMessageHandler().handleMessage(MessageUtil.info("[generateNewLvts=false] for methods without an incoming local variable table, do not generate one"));
 				}
-				
+
 				s = p.getProperty(xsetOPTIMIZED_MATCHING, "true");
 				optimizedMatching = s.equalsIgnoreCase("true");
 				if (!optimizedMatching) {
@@ -1691,7 +1688,7 @@ public abstract class World implements Dump.INode {
 		ensureAdvancedConfigurationProcessed();
 		return runMinimalMemory;
 	}
-	
+
 	public boolean isTransientTjpFields() {
 		ensureAdvancedConfigurationProcessed();
 		return transientTjpFields;
@@ -1741,7 +1738,7 @@ public abstract class World implements Dump.INode {
 
 	/**
 	 * Register a new pointcut designator handler with the world - this can be used by any pointcut parsers attached to the world.
-	 * 
+	 *
 	 * @param designatorHandler handler for the new pointcut
 	 */
 	public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
@@ -1783,7 +1780,7 @@ public abstract class World implements Dump.INode {
 	/**
 	 * Determine if the named aspect requires a particular type around in order to be useful. The type is named in the aop.xml file
 	 * against the aspect.
-	 * 
+	 *
 	 * @return true if there is a type missing that this aspect really needed around
 	 */
 	public boolean hasUnsatisfiedDependency(ResolvedType aspectType) {
@@ -2012,7 +2009,7 @@ public abstract class World implements Dump.INode {
 	/**
 	 * Returns the version of ITD that this world wants to create. The default is the new style (2) but in some cases where there
 	 * might be a clash, the old style can be used. It is set through the option -Xset:itdVersion=1
-	 * 
+	 *
 	 * @return the ITD version this world wants to create - 1=oldstyle 2=new, transparent style
 	 */
 	public int getItdVersion() {
