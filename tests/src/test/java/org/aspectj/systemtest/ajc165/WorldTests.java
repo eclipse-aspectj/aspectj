@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,13 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc165;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.Test;
 
 public class WorldTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
