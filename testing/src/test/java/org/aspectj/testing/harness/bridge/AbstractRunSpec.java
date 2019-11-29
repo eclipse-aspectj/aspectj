@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2004 updates
  * ******************************************************************/
 
@@ -62,7 +62,7 @@ import org.aspectj.util.LangUtil;
  * <u>Coordination with writers</u>: because this reads the contents of values written by IXmlWritable, they should ensure their
  * values are readable. When flattening and unflattening lists, the convention is to use the {un}flattenList(..) methods in
  * XMLWriter.
- * 
+ *
  * @see XMLWriter@unflattenList(String)
  * @see XMLWriter@flattenList(List)
  */
@@ -114,7 +114,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		// XXXXXunused sourceLocations = new ArrayList();
 		keywords = new ArrayList<String>();
 		children = new ArrayList<IRunSpec>();
-		dirChanges = new ArrayList();
+		dirChanges = new ArrayList<>();
 		xmlNames = XMLNames.DEFAULT;
 		runtime = new RT();
 		this.skipIfAnyChildSkipped = skipIfAnyChildSkipped;
@@ -191,8 +191,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void addKeywords(String[] ra) {
 		if (null != ra) {
-			for (int i = 0; i < ra.length; i++) {
-				addKeyword(ra[i]);
+			for (String element : ra) {
+				addKeyword(element);
 			}
 		}
 	}
@@ -210,7 +210,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	/** @return String[] of options */
 	public String[] getOptionsArray() {
-		return (String[]) options.toArray(new String[0]);
+		return options.toArray(new String[0]);
 	}
 
 	public void setOption(String option) {
@@ -231,7 +231,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	/**
 	 * Set options, removing any existing options.
-	 * 
+	 *
 	 * @param options String[] options to use - may be null or empty
 	 */
 	public void setOptionsArray(String[] options) {
@@ -249,8 +249,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void addOptions(String[] ra) {
 		if (null != ra) {
-			for (int i = 0; i < ra.length; i++) {
-				addOption(ra[i]);
+			for (String element : ra) {
+				addOption(element);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	/** @return String[] of paths */
 	public String[] getPathsArray() {
-		return (String[]) paths.toArray(new String[0]);
+		return paths.toArray(new String[0]);
 	}
 
 	public void setPath(String path) {
@@ -288,8 +288,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void addPaths(String[] ra) {
 		if (null != ra) {
-			for (int i = 0; i < ra.length; i++) {
-				addPath(ra[i]);
+			for (String element : ra) {
+				addPath(element);
 			}
 		}
 	}
@@ -327,8 +327,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	public void addMessages(String items) {
 		if (null != items) {
 			String[] ra = XMLWriter.unflattenList(items);
-			for (int i = 0; i < ra.length; i++) {
-				addMessage(ra[i]);
+			for (String element : ra) {
+				addMessage(element);
 			}
 		}
 	}
@@ -395,7 +395,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	 * or the child's adoptParentValues(..) should add one info message with the reason this is being skipped. The only reason to
 	 * override this would be to NOT invoke the same for children, or to do something similar for children which are not
 	 * AbstractRunSpec.
-	 * 
+	 *
 	 * @param parentRuntime the RT values to adopt - ignored if null
 	 * @param handler the IMessageHandler for info messages when skipping
 	 * @return false if this wants to be skipped, true otherwise
@@ -437,7 +437,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	 * adds any non-null options we don't already have. setting verbose and adding to parent options. Implementors override this to
 	 * affect how parent values are adopted. Implementors should not recurse into children. This method may be called multiple
 	 * times, so implementors should not destroy any spec information. Always add an info message when returning false to skip
-	 * 
+	 *
 	 * @param parentRuntime the RT values to adopt - never null
 	 * @return false if this wants to be skipped, true otherwise
 	 */
@@ -456,7 +456,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	/**
 	 * Implementations call this when signalling skips to ensure consistency in message formatting
-	 * 
+	 *
 	 * @param handler the IMessageHandler sink - not null
 	 * @param reason the String reason to skip - not null
 	 */
@@ -473,7 +473,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	/**
 	 * Control XML output by renaming or suppressing output for attributes and subelements. Subelements are skipped by setting the
 	 * XMLNames booleans to false. Attributes are skipped by setting their name to null.
-	 * 
+	 *
 	 * @param names XMLNames with new names and/or suppress flags.
 	 */
 	protected void setXMLNames(XMLNames names) {
@@ -504,7 +504,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		return ((!LangUtil.isEmpty(xmlNames.descriptionName) && !LangUtil.isEmpty(description))
 				|| (!LangUtil.isEmpty(xmlNames.keywordsName) && !LangUtil.isEmpty(keywords))
 				|| (!LangUtil.isEmpty(xmlNames.optionsName) && !LangUtil.isEmpty(options)) || (!LangUtil
-				.isEmpty(xmlNames.pathsName) && !LangUtil.isEmpty(paths)));
+						.isEmpty(xmlNames.pathsName) && !LangUtil.isEmpty(paths)));
 	}
 
 	/**
@@ -539,11 +539,12 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	 * The default implementation writes everything as attributes, then subelements for dirChanges, messages, then subelements for
 	 * children. Subclasses that override may delegate back for any of these. Subclasses may also set XMLNames to name or suppress
 	 * any attribute or subelement.
-	 * 
+	 *
 	 * @see writeMessages(XMLWriter)
 	 * @see writeChildren(XMLWriter)
 	 * @see IXmlWritable#writeXml(XMLWriter)
 	 */
+	@Override
 	public void writeXml(XMLWriter out) {
 		out.startElement(xmlElementName, false);
 		writeAttributes(out);
@@ -572,8 +573,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	 */
 	protected void writeChildren(XMLWriter out) {
 		if (0 < children.size()) {
-			for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
-				IXmlWritable self = (IXmlWritable) iter.next();
+			for (IRunSpec iRunSpec : children) {
+				IXmlWritable self = iRunSpec;
 				self.writeXml(out);
 			}
 		}
@@ -583,8 +584,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void printAll(PrintStream out, String prefix) {
 		out.println(prefix + toString());
-		for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
-			AbstractRunSpec child = (AbstractRunSpec) iter.next(); // IRunSpec
+		for (IRunSpec iRunSpec : children) {
+			AbstractRunSpec child = (AbstractRunSpec) iRunSpec; // IRunSpec
 			child.printAll(out, prefix + "    ");
 		}
 	}
@@ -592,7 +593,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	/**
 	 * default implementation returns the description if not empty or the unqualified class name otherwise. Subclasses should not
 	 * call toString from here unless they reimplement it.
-	 * 
+	 *
 	 * @return name of this thing or type
 	 */
 	protected String getPrintName() {
@@ -604,6 +605,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	}
 
 	/** @return summary count of spec elements */
+	@Override
 	public String toString() {
 		return getPrintName() + "(" + containedSummary() + ")";
 	}
@@ -646,9 +648,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		 */
 		spec.badInput = badInput;
 		spec.children.clear();
-		for (Iterator<IRunSpec> iter = children.iterator(); iter.hasNext();) {
-			// clone these...
-			IRunSpec child = iter.next();
+		for (IRunSpec child : children) {
 			// require all child classes to support clone?
 			if (child instanceof AbstractRunSpec) {
 				spec.addChild((AbstractRunSpec) ((AbstractRunSpec) child).clone());
@@ -728,6 +728,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		final boolean skipMessages;
 		final boolean skipChildren;
 
+		@Override
 		protected Object clone() {
 			return new XMLNames(null, descriptionName, sourceLocationName, keywordsName, optionsName, pathsName, commentName,
 					stagingName, badInputName, skipDirChanges, skipMessages, skipChildren);
@@ -767,6 +768,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	}
 
 	/** subclasses implement this to create and set up a run */
+	@Override
 	abstract public IRunIterator makeRunIterator(Sandbox sandbox, Validator validator);
 
 	/** segregate runtime-only state in spec */
@@ -788,15 +790,15 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		/**
 		 * Set parent options - old options destroyed. Will result in duplicates if duplicates added. Null or empty entries are
 		 * ignored
-		 * 
+		 *
 		 * @param options ignored if null or empty
 		 */
 		public void setOptions(String[] options) {
 			parentOptions.clear();
 			if (!LangUtil.isEmpty(options)) {
-				for (int i = 0; i < options.length; i++) {
-					if (!LangUtil.isEmpty(options[i])) {
-						parentOptions.add(options[i]);
+				for (String option : options) {
+					if (!LangUtil.isEmpty(option)) {
+						parentOptions.add(option);
 					}
 				}
 			}
@@ -804,7 +806,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 		/**
 		 * Copy values from another RT
-		 * 
+		 *
 		 * @param toCopy the RT to copy from
 		 * @throws IllegalArgumentException if toCopy is null
 		 */
@@ -817,11 +819,11 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 		/**
 		 * Return any parent option accepted by validOptions, optionally removing the parent option.
-		 * 
+		 *
 		 * @param validOptions String[] of options to extract
 		 * @param remove if true, then remove any parent option matched
 		 * @return String[] containing any validOptions[i] in parentOptions
-		 * 
+		 *
 		 */
 		public Values extractOptions(Options validOptions, boolean remove, StringBuffer errors) {
 			Values result = Values.EMPTY;
@@ -836,7 +838,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 				return result;
 			}
 			// boolean haveOption = false;
-			String[] parents = (String[]) parentOptions.toArray(new String[0]);
+			String[] parents = parentOptions.toArray(new String[0]);
 			try {
 				result = validOptions.acceptInput(parents);
 			} catch (InvalidInputException e) {
@@ -869,7 +871,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 		/**
 		 * Return any parent option which has one of validOptions as a prefix, optionally absorbing (removing) the parent option.
-		 * 
+		 *
 		 * @param validOptions String[] of options to extract
 		 * @param absorb if true, then remove any parent option matched
 		 * @return String[] containing any validOptions[i] in parentOptions (at most once)
@@ -880,8 +882,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 			}
 			ArrayList<String> result = new ArrayList<String>();
 			// boolean haveOption = false;
-			for (int i = 0; i < validOptions.length; i++) {
-				String option = validOptions[i];
+			for (String option : validOptions) {
 				if (LangUtil.isEmpty(option)) {
 					continue;
 				}
@@ -895,7 +896,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 					}
 				}
 			}
-			return (String[]) result.toArray(new String[0]);
+			return result.toArray(new String[0]);
 		}
 
 		/** Get ListIterator that permits removals */
@@ -905,7 +906,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 		/**
 		 * Enable verbose logging
-		 * 
+		 *
 		 * @param verbose if true, do verbose logging
 		 */
 		public void setVerbose(boolean verbose) {
