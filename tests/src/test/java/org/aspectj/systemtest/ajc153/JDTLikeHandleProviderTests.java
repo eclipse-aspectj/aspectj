@@ -10,18 +10,17 @@
  *******************************************************************/
 package org.aspectj.systemtest.ajc153;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 

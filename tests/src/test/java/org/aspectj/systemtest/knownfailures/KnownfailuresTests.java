@@ -11,11 +11,9 @@
 * ******************************************************************/
 package org.aspectj.systemtest.knownfailures;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class KnownfailuresTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

@@ -15,8 +15,13 @@
 
 package org.aspectj.testing.xml;
 
-import java.io.*;
 //import java.util.Vector;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.bridge.AbortException;
@@ -24,10 +29,17 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.testing.harness.bridge.*;
+import org.aspectj.testing.harness.bridge.AjcTest;
+import org.aspectj.testing.harness.bridge.CompilerRun;
+import org.aspectj.testing.harness.bridge.DirChanges;
+import org.aspectj.testing.harness.bridge.IncCompilerRun;
+import org.aspectj.testing.harness.bridge.JavaRun;
+import org.aspectj.testing.harness.bridge.Sandbox;
+import org.aspectj.testing.harness.bridge.Validator;
 import org.aspectj.testing.util.RunUtils;
 import org.aspectj.util.LangUtil;
-import org.xml.sax.*;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /** 

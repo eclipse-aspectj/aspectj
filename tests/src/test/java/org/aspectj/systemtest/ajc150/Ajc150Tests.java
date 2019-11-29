@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,11 +11,8 @@
 package org.aspectj.systemtest.ajc150;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -23,6 +20,8 @@ import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.Test;
 
 public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -845,7 +844,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		if (LangUtil.is17VMOrGreater()) {
 			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7");
 		} else {
-			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");	
+			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");
 		}
 	}
 

@@ -10,12 +10,10 @@
  *******************************************************************/
 package org.aspectj.systemtest.model;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.World;
+
+import junit.framework.Test;
 
 /**
  * Tests the model when there is a requirement on Java5 features.

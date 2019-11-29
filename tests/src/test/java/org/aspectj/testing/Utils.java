@@ -12,15 +12,9 @@ package org.aspectj.testing;
 
 import java.io.File;
 
-import org.aspectj.apache.bcel.Repository;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
-//import org.aspectj.apache.bcel.verifier.VerificationResult;
-//import org.aspectj.apache.bcel.verifier.Verifier;
-//import org.aspectj.apache.bcel.verifier.VerifierFactory;
-import org.aspectj.tools.ajc.Ajc;
 
 /**
  * Not quite the right place for this class..

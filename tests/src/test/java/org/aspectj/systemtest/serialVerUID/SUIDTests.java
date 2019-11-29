@@ -9,9 +9,9 @@
  * ******************************************************************/
 package org.aspectj.systemtest.serialVerUID;
 
-import java.io.File;
-import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class SUIDTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

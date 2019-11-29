@@ -11,11 +11,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150.ataspectj;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * A suite for @AspectJ aspects located in java5/ataspectj

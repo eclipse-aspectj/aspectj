@@ -3,9 +3,6 @@
  */
 package org.aspectj.systemtest;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.aspectj.systemtest.ajc150.AllTestsAspectJ150;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjAnnotationGenTests;
 import org.aspectj.systemtest.ajc151.AllTestsAspectJ151;
@@ -19,6 +16,9 @@ import org.aspectj.systemtest.incremental.tools.MoreOutputLocationManagerTests;
 import org.aspectj.systemtest.incremental.tools.MultiProjectIncrementalTests;
 import org.aspectj.systemtest.model.Model5Tests;
 import org.aspectj.systemtest.xlint.XLint5Tests;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class AllTests15 {
 

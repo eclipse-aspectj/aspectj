@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc167;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

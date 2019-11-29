@@ -9,9 +9,9 @@
  * ******************************************************************/
 package org.aspectj.systemtest.pre10x;
 
-import java.io.File;
-import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class AjcPre10xTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

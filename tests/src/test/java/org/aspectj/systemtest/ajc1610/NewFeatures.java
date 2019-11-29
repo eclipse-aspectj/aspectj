@@ -10,13 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc1610;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 

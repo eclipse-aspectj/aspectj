@@ -14,17 +14,19 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import java.util.*;
 import java.util.Arrays;
-
-import junit.framework.TestCase;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.harness.bridge.CompilerRun.Spec.CRSOptions;
-import org.aspectj.testing.util.options.*;
+import org.aspectj.testing.util.options.Option;
+import org.aspectj.testing.util.options.OptionChecker;
 import org.aspectj.testing.util.options.Options;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.TestCase;
 
 /**
  * 

@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc181;
 
+import org.aspectj.systemtest.apt.AptTests;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.aspectj.systemtest.apt.AptTests;
 
 public class AllTestsAspectJ181 {
 

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.apt;
 
-import java.io.File;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
 

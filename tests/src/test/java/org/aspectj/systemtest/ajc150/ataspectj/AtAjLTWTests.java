@@ -14,10 +14,10 @@ package org.aspectj.systemtest.ajc150.ataspectj;
 import java.io.File;
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.FileUtil;
+
+import junit.framework.Test;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

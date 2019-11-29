@@ -10,16 +10,15 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc169;
 
-import java.io.File;
 import java.lang.reflect.Modifier;
-
-import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * What would a completely transparent weave be? Is there a minimal subset that makes sense? What is the roadmap to get there? What

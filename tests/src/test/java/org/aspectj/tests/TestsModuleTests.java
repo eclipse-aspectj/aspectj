@@ -1,5 +1,12 @@
 package org.aspectj.tests;
 
+import org.aspectj.systemtest.AllTests;
+import org.aspectj.systemtest.AllTests14;
+import org.aspectj.systemtest.AllTests17;
+import org.aspectj.systemtest.AllTests18;
+import org.aspectj.systemtest.AllTests19;
+import org.aspectj.util.LangUtil;
+
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
  * All rights reserved. 
@@ -15,13 +22,6 @@ package org.aspectj.tests;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.aspectj.systemtest.AllTests;
-import org.aspectj.systemtest.AllTests14;
-import org.aspectj.systemtest.AllTests17;
-import org.aspectj.systemtest.AllTests18;
-import org.aspectj.systemtest.AllTests19;
-import org.aspectj.util.LangUtil;
 
 public class TestsModuleTests extends TestCase {
 

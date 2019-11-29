@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.aspectj.ajde.core.AjCompiler;
 import org.aspectj.ajde.core.IBuildMessageHandler;
 import org.aspectj.ajde.core.ICompilerConfiguration;
@@ -32,7 +30,8 @@ import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.tools.ajc.Ajc;
+
+import junit.framework.TestCase;
 
 /**
  * This class uses Ajde in the same way that an IDE (e.g. AJDT) does.

@@ -10,17 +10,16 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc152;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
-
-import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

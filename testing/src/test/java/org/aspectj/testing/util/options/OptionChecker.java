@@ -14,9 +14,9 @@ package org.aspectj.testing.util.options;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-
 import org.aspectj.testing.util.LangUtil;
+
+import junit.framework.Assert;
 
 /**
  * Drivers to test a given set of Options.

@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.bringup;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * These are tests that will run on Java 1.4 and use the old harness format for test specification.

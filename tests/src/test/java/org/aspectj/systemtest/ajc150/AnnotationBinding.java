@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150;
 
-import java.io.File;
 import java.util.List;
-
-import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
@@ -21,6 +18,8 @@ import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.internal.Relationship;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class AnnotationBinding extends XMLBasedAjcTestCase {
 
@@ -326,7 +325,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 
 			Relationship rel = (Relationship) l.get(0);
 			assertTrue("Should have 1 target but has " + rel.getTargets().size(), rel.getTargets().size() == 1);
-			String tgt = (String) rel.getTargets().get(0);
+			String tgt = rel.getTargets().get(0);
 			int lineNumber = asm.getHandleProvider().getLineNumberForHandle(tgt);
 			assertTrue("Should point to line 10 but doesnt: " + lineNumber, lineNumber == 10);
 		}
@@ -356,7 +355,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 
 			Relationship rel = (Relationship) l.get(0);
 			assertTrue("Should have 1 target but has " + rel.getTargets().size(), rel.getTargets().size() == 1);
-			String tgt = (String) rel.getTargets().get(0);
+			String tgt = rel.getTargets().get(0);
 			int lineNumber = asm.getHandleProvider().getLineNumberForHandle(tgt);
 			assertTrue("Should point to line 10 but doesnt: " + lineNumber, lineNumber == 10);
 
@@ -388,7 +387,7 @@ public class AnnotationBinding extends XMLBasedAjcTestCase {
 
 			Relationship rel = (Relationship) l.get(0);
 			assertTrue("Should have 1 target but has " + rel.getTargets().size(), rel.getTargets().size() == 1);
-			String tgt = (String) rel.getTargets().get(0);
+			String tgt = rel.getTargets().get(0);
 			int lineNumber = asm.getHandleProvider().getLineNumberForHandle(tgt);
 			assertTrue("Should point to line 10 but doesnt: " + lineNumber, lineNumber == 10);
 

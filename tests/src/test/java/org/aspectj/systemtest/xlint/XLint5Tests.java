@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.xlint;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class XLint5Tests  extends XMLBasedAjcTestCase {
 

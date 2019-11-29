@@ -13,17 +13,23 @@
 package org.aspectj.testing.taskdefs;
 
 //import java.awt.Frame;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 //import java.lang.reflect.*;
-import java.util.*;
 //import java.util.List;
+import java.util.ArrayList;
 
-import org.apache.tools.ant.*;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.tools.ant.taskdefs.AjcTask;
-import org.aspectj.util.*;
 import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 /**
  * Drive tests using the Ant taskdef.

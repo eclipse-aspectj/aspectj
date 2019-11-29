@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//import junit.framework.*;
-import junit.framework.TestCase;
-
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
 import org.aspectj.testing.harness.bridge.AjcTest;
 import org.aspectj.testing.harness.bridge.FlatSuiteReader;
 import org.aspectj.util.LangUtil;
+
+//import junit.framework.*;
+import junit.framework.TestCase;
 
 /**
  * 

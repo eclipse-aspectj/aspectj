@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc153;
 
-import java.io.File;
 import java.net.URL;
-
-import junit.framework.Test;
 
 //import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.ajdt.internal.compiler.AjPipeliningCompilerAdapter;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * testplan: (x = complete)

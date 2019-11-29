@@ -10,14 +10,12 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc182;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeInvisTypeAnnos;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement

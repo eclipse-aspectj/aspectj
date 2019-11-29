@@ -11,9 +11,9 @@ package org.aspectj.systemtest.ajc121;
 
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

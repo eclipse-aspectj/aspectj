@@ -10,14 +10,14 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjLTWTests;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjMisuseTests;
 import org.aspectj.systemtest.ajc150.ataspectj.AtAjSyntaxTests;
 import org.aspectj.systemtest.ajc150.ltw.LTWServerTests;
 import org.aspectj.systemtest.ajc150.ltw.LTWTests;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * This pulls together tests we have written for AspectJ 1.5.0 that don't need Java 1.5 to run

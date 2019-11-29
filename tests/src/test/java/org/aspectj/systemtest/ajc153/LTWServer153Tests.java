@@ -1,11 +1,10 @@
 package org.aspectj.systemtest.ajc153;
 
-import java.io.File;
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class LTWServer153Tests extends XMLBasedAjcTestCase {
 

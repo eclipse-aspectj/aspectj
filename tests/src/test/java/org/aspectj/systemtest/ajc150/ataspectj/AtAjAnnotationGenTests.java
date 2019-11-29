@@ -12,9 +12,9 @@ package org.aspectj.systemtest.ajc150.ataspectj;
 
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * A suite for @AspectJ aspects located in java5/ataspectj

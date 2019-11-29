@@ -10,12 +10,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc186;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import junit.framework.Test;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.tools.ContextBasedMatcher;
@@ -25,6 +22,8 @@ import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
 import org.aspectj.weaver.tools.PointcutExpression;
 import org.aspectj.weaver.tools.PointcutParser;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement

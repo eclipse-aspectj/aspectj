@@ -12,9 +12,9 @@ package org.aspectj.systemtest.tracing;
 
 import java.io.File;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class TracingTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

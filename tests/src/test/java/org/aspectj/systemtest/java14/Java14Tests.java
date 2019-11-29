@@ -9,12 +9,10 @@
  * ******************************************************************/
 package org.aspectj.systemtest.java14;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.Test;
 
 public class Java14Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

@@ -12,16 +12,30 @@
 
 package org.aspectj.testing.util;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.*;
+import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLEditorKit;
 
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 //import org.aspectj.util.FileUtil;
 

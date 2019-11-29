@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc165;
 
-import java.io.File;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;

@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc152;
 
-import java.io.File;
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * Work items, phase #1: lock()/unlock() x expose new joinpoints x parse new pcds x fix tjp string x preventing double unlock()

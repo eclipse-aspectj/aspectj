@@ -9,12 +9,10 @@
  * ******************************************************************/
 package org.aspectj.systemtest.xlint;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.bcel.BcelShadow;
+
+import junit.framework.Test;
 
 public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

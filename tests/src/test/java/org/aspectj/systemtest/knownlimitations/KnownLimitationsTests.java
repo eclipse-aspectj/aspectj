@@ -9,9 +9,9 @@
  * ******************************************************************/
 package org.aspectj.systemtest.knownlimitations;
 
-import java.io.File;
-import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class KnownLimitationsTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

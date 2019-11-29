@@ -10,15 +10,14 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc161;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
-
-import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

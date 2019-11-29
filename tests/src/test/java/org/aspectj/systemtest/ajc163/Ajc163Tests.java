@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc163;
 
-import java.io.File;
 import java.util.List;
-
-import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
@@ -24,6 +21,8 @@ import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.Utils;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testGenericMethodBridging_pr251326() {

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.ajde.CompileCommand;
@@ -29,8 +28,6 @@ import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
 import org.aspectj.testing.util.StructureModelUtil;
 import org.aspectj.testing.util.StructureModelUtil.ModelIncorrectException;
-import org.aspectj.testing.xml.AjcSpecXmlReader;
-import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;

@@ -13,12 +13,12 @@
 
 package org.aspectj.testing.xml;
 
-import org.aspectj.bridge.IMessage;
-import org.aspectj.util.LangUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.aspectj.bridge.IMessage;
+import org.aspectj.util.LangUtil;
 
 import junit.framework.TestCase;
 

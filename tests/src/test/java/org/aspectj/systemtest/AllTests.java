@@ -9,9 +9,6 @@
  * ******************************************************************/
 package org.aspectj.systemtest;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.systemtest.ajc11.Ajc11Tests;
 import org.aspectj.systemtest.ajc120.Ajc120Tests;
@@ -29,6 +26,9 @@ import org.aspectj.systemtest.pre10x.AjcPre10xTests;
 import org.aspectj.systemtest.serialVerUID.SUIDTests;
 import org.aspectj.systemtest.tracing.TracingTests;
 import org.aspectj.systemtest.xlint.XLintTests;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * @author Andy Clement

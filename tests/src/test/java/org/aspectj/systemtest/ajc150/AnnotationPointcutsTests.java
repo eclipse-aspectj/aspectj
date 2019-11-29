@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc150;
 
-import java.io.File;
 import java.net.URL;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 
 /**

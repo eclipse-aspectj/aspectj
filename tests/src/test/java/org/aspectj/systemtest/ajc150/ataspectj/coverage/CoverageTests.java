@@ -1,6 +1,5 @@
 package org.aspectj.systemtest.ajc150.ataspectj.coverage;
 
-import java.io.File;
 import java.net.URL;
 
 import junit.framework.Test;

@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc154;
 
-import java.io.File;
 import java.lang.reflect.Field;
-
-import junit.framework.Test;
 
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -26,6 +23,8 @@ import org.aspectj.weaver.tools.ContextBasedMatcher;
 import org.aspectj.weaver.tools.FuzzyBoolean;
 import org.aspectj.weaver.tools.MatchingContext;
 import org.aspectj.weaver.tools.PointcutDesignatorHandler;
+
+import junit.framework.Test;
 
 /**
  * These are tests for AspectJ1.5.4

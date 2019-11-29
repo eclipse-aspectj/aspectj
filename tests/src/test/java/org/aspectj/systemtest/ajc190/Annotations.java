@@ -7,11 +7,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * A copy of the 1.5.0 Annotations test but with compliance set to 1.9

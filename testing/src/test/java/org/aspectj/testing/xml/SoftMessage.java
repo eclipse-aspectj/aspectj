@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.aspectj.bridge.*;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;

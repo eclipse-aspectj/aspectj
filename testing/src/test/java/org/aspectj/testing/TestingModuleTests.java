@@ -12,11 +12,26 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
-import org.aspectj.testing.harness.bridge.*;
-import org.aspectj.testing.taskdefs.*;
-import org.aspectj.testing.util.*;
-import org.aspectj.testing.util.options.*;
-import org.aspectj.testing.xml.*;
+import org.aspectj.testing.harness.bridge.AbstractRunSpecTest;
+import org.aspectj.testing.harness.bridge.AjcSpecTest;
+import org.aspectj.testing.harness.bridge.CompilerRunSpecTest;
+import org.aspectj.testing.harness.bridge.CompilerRunTest;
+import org.aspectj.testing.harness.bridge.DirChangesTest;
+import org.aspectj.testing.harness.bridge.ParseTestCase;
+import org.aspectj.testing.taskdefs.AjcTaskCompileCommandTest;
+import org.aspectj.testing.util.BridgeUtilTest;
+import org.aspectj.testing.util.FileUtilTest;
+import org.aspectj.testing.util.IteratorWrapperTest;
+import org.aspectj.testing.util.LangUtilTest;
+import org.aspectj.testing.util.MessageUtilTest;
+import org.aspectj.testing.util.StreamGrabberTest;
+import org.aspectj.testing.util.StructureModelUtilTest;
+import org.aspectj.testing.util.TestDiffsTest;
+import org.aspectj.testing.util.options.OptionsTest;
+import org.aspectj.testing.util.options.ValuesTest;
+import org.aspectj.testing.xml.AjcSpecXmlReaderTest;
+import org.aspectj.testing.xml.MessageListXmlReaderTest;
+import org.aspectj.testing.xml.XMLWriterTest;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

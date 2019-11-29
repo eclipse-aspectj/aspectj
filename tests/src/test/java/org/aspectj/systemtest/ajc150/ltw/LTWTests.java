@@ -15,10 +15,10 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.tools.WeavingAdaptor;
+
+import junit.framework.Test;
 
 public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

@@ -12,6 +12,18 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.URL;
+import java.security.Permission;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
@@ -26,12 +38,6 @@ import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
-
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
-import java.security.Permission;
-import java.util.*;
 
 /**
  * Run a class in this VM using reflection.

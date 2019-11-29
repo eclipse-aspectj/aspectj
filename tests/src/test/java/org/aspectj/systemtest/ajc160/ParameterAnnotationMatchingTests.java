@@ -12,11 +12,9 @@
 package org.aspectj.systemtest.ajc160;
 
  
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * Parameter annotation matching

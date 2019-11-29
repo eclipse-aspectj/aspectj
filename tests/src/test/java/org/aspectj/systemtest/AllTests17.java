@@ -3,15 +3,15 @@
  */
 package org.aspectj.systemtest;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.aspectj.systemtest.ajc170.AllTestsAspectJ170;
 import org.aspectj.systemtest.ajc171.AllTestsAspectJ171;
 import org.aspectj.systemtest.ajc172.AllTestsAspectJ172;
 import org.aspectj.systemtest.ajc173.AllTestsAspectJ173;
 import org.aspectj.systemtest.ajc174.AllTestsAspectJ174;
 import org.aspectj.systemtest.ajc175.AllTestsAspectJ175;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class AllTests17 {
 

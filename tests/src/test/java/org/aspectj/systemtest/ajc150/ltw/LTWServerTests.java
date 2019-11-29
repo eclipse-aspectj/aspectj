@@ -1,10 +1,8 @@
 package org.aspectj.systemtest.ajc150.ltw;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class LTWServerTests extends XMLBasedAjcTestCase {
 

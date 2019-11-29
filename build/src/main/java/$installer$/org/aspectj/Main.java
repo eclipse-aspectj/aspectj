@@ -822,7 +822,7 @@ abstract class WizardPane {
 												 * + "}</head>\n";
 												 */
 
-	public static String applyProperties(String text, Map map) {
+	public static String applyProperties(String text, Map<String,String> map) {
 		// ${name} -> map.get(name).toString()
 		int lastIndex = 0;
 		StringBuffer buf = new StringBuffer();

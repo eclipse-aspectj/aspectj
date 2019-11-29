@@ -1,10 +1,8 @@
 package org.aspectj.systemtest.ajc150;
 
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  *  Checking that runtime visible annotations are visible at runtime (they get into the class file)

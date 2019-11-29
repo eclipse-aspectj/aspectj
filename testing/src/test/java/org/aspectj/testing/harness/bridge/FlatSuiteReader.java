@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.bridge.SourceLocation;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.testing.util.BridgeUtil;
 import org.aspectj.testing.util.ObjectChecker;
 import org.aspectj.testing.util.SFileReader;

@@ -12,7 +12,8 @@
 
 package org.aspectj.testing.util.options;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.aspectj.util.LangUtil;
 

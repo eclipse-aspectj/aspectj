@@ -172,7 +172,7 @@ public class SampleGatherer {
             StringBuffer sampleCode = new StringBuffer();
             String anchorName = null;
             String anchorTitle = null;
-            ArrayList flags = new ArrayList();
+            ArrayList<String> flags = new ArrayList<>();
             int startLine = -1; // seeking
             int endLine = Integer.MAX_VALUE; // not seeking
             reader = new FileReader(source);
@@ -221,7 +221,7 @@ public class SampleGatherer {
                             source,
                             startLine,
                             endLine,
-                            (String[]) flags.toArray(new String[flags.size()]));
+                            flags.toArray(new String[flags.size()]));
                     sink.addSample(sample);
 
                     // back to seeking start
@@ -331,7 +331,7 @@ class Sample {
     final int endLine;
     final Kind kind;
     /** List of String flags found in the sample */
-    final List flags;
+    final List<String> flags;
     public Sample(
         String anchorName,
         String anchorTitle,
@@ -351,7 +351,7 @@ class Sample {
         this.kind = Kind.getKind(sourcePath);
 //        List theFlags;
         if ((null == flags) || (0 == flags.length)) {
-            this.flags = Collections.EMPTY_LIST;
+            this.flags = Collections.emptyList();
         } else {
             this.flags = Collections.unmodifiableList(Arrays.asList(flags));
         }
@@ -777,10 +777,10 @@ class HTMLSamplesRenderer extends SamplesRenderer {
 
     protected void renderAuthorIndex(Samples samples, StringBuffer sink) {
         sink.append("<h2><a name=\"authorIndex\"></a>Author Index</h2>");
-        List list = samples.getSortedSamples(Sample.AUTHOR_NAME_SOURCE_COMPARER);
+        List<Sample> list = samples.getSortedSamples(Sample.AUTHOR_NAME_SOURCE_COMPARER);
         String lastAuthor = null;
-        for (ListIterator iter = list.listIterator(); iter.hasNext();) {
-            Sample sample = (Sample)iter.next();
+        for (ListIterator<Sample> iter = list.listIterator(); iter.hasNext();) {
+            Sample sample = iter.next();
             String author = sample.author;
             if (!author.equals(lastAuthor)) {
                 if (null != lastAuthor) {

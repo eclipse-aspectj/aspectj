@@ -18,15 +18,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.xml.MessageListXmlReader;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.LangUtil;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 /**
  * (broken) tests for unutilized feature to read in

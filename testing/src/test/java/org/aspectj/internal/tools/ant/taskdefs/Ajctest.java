@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -78,10 +78,11 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 import org.aspectj.util.LangUtil;
 
+@SuppressWarnings("deprecation")
 public class Ajctest extends Task implements PropertyChangeListener {
     private static Ajctest CURRENT_AJCTEST;
 
-    // todo shutdown hook assumes one task per VM 
+    // todo shutdown hook assumes one task per VM
     public Ajctest() {
         super();
         CURRENT_AJCTEST = this;
@@ -112,13 +113,13 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private void fire(String prop) {
         fire(prop, "dummy-old", "dummy-new");
     }
-    
+
     private static boolean dumpresults = false;
     private Stats ajdocStats = new Stats();
     private Stats ajcStats   = new Stats();
     private Stats runStats   = new Stats();
 //    private Stats errorStats   = new Stats();
-    private static final String NO_TESTID = "NONE";    
+    private static final String NO_TESTID = "NONE";
     private File workingdir = new File("ajworkingdir"); //XXX
 
     //fields
@@ -141,7 +142,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     public Argfile createArgfile() {
         return createTestset().createArgfile();
     }
-      
+
     public void setNoverify(boolean input) {
         if (input != noverify) noverify = input;
     }
@@ -152,13 +153,13 @@ public class Ajctest extends Task implements PropertyChangeListener {
             //setTestId(target.getName());
         }
     }
-    
+
     public void setTestId(String str) {
         if ((null != str) && (0 < str.trim().length())) {
             testId = str;
         }
     }
-    
+
     public void setArgs(String str) {
         if (str == null || str.length() < 1) return;
         StringTokenizer tok = new StringTokenizer(str, ",", false);
@@ -221,7 +222,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         return arg;
     }
 
-    
+
     public Argument createArg() {
         Argument arg = new Argument(false);
         args.add(arg);
@@ -279,7 +280,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     public Run createJava() {
-        Run testclass = new Run(project);
+		Run testclass = new Run(project);
         testclasses.add(testclass);
         return testclass;
     }
@@ -310,11 +311,11 @@ public class Ajctest extends Task implements PropertyChangeListener {
             ajdoc.createArg().setValue(t.nextToken().trim());
         }
     }
-    
+
     public void addAjdoc(Ajdoc ajdoc) {
         this.ajdoc = ajdoc;
     }
-    
+
     public Ajdoc createAjdoc() {
         return ajdoc = new Ajdoc();
     }
@@ -387,7 +388,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         }
     }
     //end-methods
-    
+
     public static class Argfile {
         private String name;
         public void setName(String name) { this.name = name; }
@@ -457,18 +458,18 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public void setExcludesfile(File excludesfile) {
             super.setExcludesfile(excludesfile);
             havecludes = true;
-        }        
-        
+        }
+
         public void setArgfile(String name) {
             createArgfile().setName(name);
         }
-        
+
         public void setArgfiles(String str) {
             StringTokenizer tok = new StringTokenizer(str, ", ", false);
             while (tok.hasMoreTokens()) {
                 createArgfile().setName(tok.nextToken().trim());
             }
-            
+
         }
         public Argfile createArgfile() {
             Argfile argfile = new Argfile();
@@ -496,7 +497,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public void setTestclass(String testclass) {
             createJava().setClassname(testclass);
         }
-        
+
         public void setClasses(String str) {
             for (StringTokenizer t = new StringTokenizer(str, ", ", false);
                  t.hasMoreTokens();) {
@@ -510,14 +511,14 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 classpath.append(path);
             }
         }
-        
+
         public Path createClasspath() {
             if (classpath == null) {
                 classpath = new Path(project);
             }
             return classpath.createPath();
         }
-        
+
         public void setClasspathRef(Reference r) {
             createClasspath().setRefid(r);
         }
@@ -528,18 +529,18 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 internalclasspath.append(path);
             }
         }
-        
+
         public Path createInternalclasspath() {
             if (internalclasspath == null) {
             internalclasspath = new Path(project);
             }
             return internalclasspath.createPath();
         }
-        
+
         public void setInternalclasspathRef(Reference r) {
             createInternalclasspath().setRefid(r);
         }
-        
+
         public void setAjdoc(boolean b) {
             if (b && ajdoc == null) {
                 createAjdoc();
@@ -574,7 +575,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             }
         }
         //end-testset-methods
-        
+
         public void resolve() throws BuildException {
             if (dir != null) this.setDir(dir);
             File src = getDir(project);
@@ -589,7 +590,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 String[] filenames =
                     getDirectoryScanner(project).getIncludedFiles();
                 for (int j = 0; j < filenames.length; j++) {
-                    String name = filenames[j];                    
+                    String name = filenames[j];
                     if (name.endsWith(".java")) {
                         File file = new File(src, name);
                         if (check(file, name, location)) files.add(file);
@@ -638,25 +639,25 @@ public class Ajctest extends Task implements PropertyChangeListener {
             StringTokenizer tok = new StringTokenizer(str, ",", false);
             while (tok.hasMoreTokens()) {
                 String name = tok.nextToken().trim();
-                parse(name.startsWith("J") ? createJarg() : createArg(), name);                
+                parse(name.startsWith("J") ? createJarg() : createArg(), name);
             }
         }
-        
+
         public Argument createJarg() {
             Argument arg = new Argument(true);
             args.add(arg);
             return arg;
         }
-        
+
         public Argument createArg() {
             Argument arg = new Argument(false);
             args.add(arg);
             return arg;
-        }        
+        }
     }
 
     private void prepare() throws BuildException {
-        
+
     }
 
     private void finish() throws BuildException {
@@ -664,7 +665,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             log("");
             log("There " + w(errors) + " " + errors.size() + " errors:");
             for (int i = 0; i < errors.size(); i++) {
-                log(" ", (Failure)errors.get(i), i);
+                log(" ", errors.get(i), i);
             }
         }
         allErrors.addAll(errors);
@@ -680,13 +681,13 @@ public class Ajctest extends Task implements PropertyChangeListener {
         log(space + "msgs:" + failure.msgs);
     }
 
-    
+
     private String enough(String str, int size, char filler) {
         while (str.length() < size) str += filler;
         return str;
     }
 
-    
+
     private void log(String space, List<?> list, String title) {
         if (list == null || list.size() < 1) return;
         log(space + title);
@@ -762,9 +763,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
             } else {
                 throw new Error("unknown compiler: " + compiler);
             }
-            
+
             System.out.println("using compiler: " + ajc);
-            try {            
+            try {
                 if ((exit = ajc.run()) != 0) {
                     post(testset, args, ajc.msgs, exit, "ajc");
                     goodCompile = false;
@@ -782,7 +783,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                  "couldn't run classes " + testset.testclasses +
                  "due to failed compile",
                  -1, "run");
-            
+
         } else if (!isSet("norun")) {
             for (Iterator<Run> i = testset.testclasses.iterator(); i.hasNext();) {
                 Run testclass = i.next();
@@ -833,7 +834,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 execute(testset, args);
             }
         }
-        
+
 //          for (Iterator iter = testsets.iterator(); iter.hasNext(); _++) {
 //              Testset testset = (Testset)iter.next();
 //              testset.resolve();
@@ -850,7 +851,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 //                  execute(testset, args);
 //                  log("");
 //              }
-//          }        
+//          }
         finish();
     }
 
@@ -886,20 +887,20 @@ public class Ajctest extends Task implements PropertyChangeListener {
         return true;
     }
 
-    /** 
+    /**
      * Interpose Wrapper class to catch and report exceptions
      * by setting a positive value for System.exit().
      * (In some cases it seems that Exceptions are not being reported
      *  as errors in the tests.)
      * This forces the VM to fork.  A forked VM is required for
      * two reasons:
-     * (1) The wrapper class may have been defined by a different 
+     * (1) The wrapper class may have been defined by a different
      * class loader than the target class, so it would not be able
      * to load the target class;
      * <p>
      * (2) Since the wrapper class is generic, we have to pass in
      * the name of the target class.  I choose to do this using
-     * VM properties rather than hacking up the arguments.  
+     * VM properties rather than hacking up the arguments.
      * <p>todo: relies on name/value of property "taskdef.jar"
      *    to add jar with wrapper to invoking classpath.
      * <p>
@@ -916,7 +917,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public final String PROP_NAME = "MainWrapper.classname";
         /** tracked in MainWrapper.CLASSDIR_NAME */
         public final String CLASSDIR_NAME = "MainWrapper.classdir";
-        public final String WRAPPER_CLASS 
+        public final String WRAPPER_CLASS
             = "org.aspectj.internal.tools.ant.taskdefs.MainWrapper";
         private String classname;
         protected String classesDir;
@@ -951,7 +952,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                RunWrapper.this.createClasspath().append(wrapperPath);
             }
         }
-        
+
         /** do setup, then super.execute() */
         public int executeJava() {
             setup();
@@ -967,7 +968,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     }
 
     public class Run extends RunWrapper {
-        //public class Run extends Java 
+        //public class Run extends Java
         private Path bootclasspath;
         public void setBootbootclasspath(Path path) {
             if (bootclasspath == null) {
@@ -1123,19 +1124,19 @@ public class Ajctest extends Task implements PropertyChangeListener {
                     str += secs + " second" + (secs != 1 ? "s" : "") + " ";
                     return str;
                 }
-               
+
                 public void run() {
                     Ajctest current = CURRENT_AJCTEST;
                     String oneLine = "warning: oneLine not set.";
                     String multiLine = "warning: multiLine not set.";
-                    
+
                     // setup oneLine
                     if (null == current) {
                         oneLine = "\nRESULT=\"ERROR\" null ACJTEST";
                     } else {
                         StringBuffer sb = new StringBuffer("\n");
                         int errs = Ajctest.allErrors.size();
-                        int allFails = errs 
+                        int allFails = errs
                             + current.ajdocStats.fails
                             + current.ajcStats.fails
                             + current.runStats.fails;
@@ -1181,7 +1182,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                         str += "Total time   : " + ms(startTime, stopTime) + "\n";
                         str +=
                             "------------------------------" +
-                            " Summary " + 
+                            " Summary " +
                             "------------------------------" + "\n";
                         str += "Task\tPassed\tFailed" + "\n";
                         Object[] os = new Object[] {
@@ -1194,7 +1195,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                         }
                         if (allErrors.size() > 0) {
                             str += "" + "\n";
-                            str += 
+                            str +=
                                 "There " + w(allErrors) + " " +
                                 allErrors.size() + " error" +
                                 s(allErrors) + ":" + "\n";
@@ -1210,7 +1211,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                             str += "No errors." + "\n";
                         }
                         str += "--------------------------" +
-                            " End of Summary " + 
+                            " End of Summary " +
                             "---------------------------" + "\n";
                         multiLine = str;
                     }
@@ -1251,7 +1252,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private static String a(List list, String some, String one) {
         return list == null || list.size() != 1 ? some : one;
     }
-    
+
     static class Failure {
         public final Testset testset;
         public final List args;
@@ -1276,7 +1277,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             str += "type:" + type + "\n";
             str += testset + "\n";
             if (args.size() > 0) {
-                str += " args: " + args + "\n";;
+                str += " args: " + args + "\n";
             }
             str += " msgs:" + msgs + "\n";
             str += " exit:" + exit;
@@ -1378,7 +1379,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public AjcWrapper(Testset testset, List args) {
             super(testset, args, false);
             if (testset.noclean) {
-                setExtraclasspath(new Path(project, 
+                setExtraclasspath(new Path(project,
                                            destdir.getAbsolutePath()));
             }
         }
@@ -1391,7 +1392,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public EAjcWrapper(Testset testset, List args) {
             super(testset, args, false);
             if (testset.noclean) {
-                setExtraclasspath(new Path(project, 
+                setExtraclasspath(new Path(project,
                                            destdir.getAbsolutePath()));
             }
         }
@@ -1445,7 +1446,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         protected List args;
         protected boolean needsClasspath;
         protected Path extraClasspath;
-        
+
         public JavaCommandWrapper(Testset testset, List args,
                                   boolean needsClasspath) {
             this.testset = testset;
@@ -1456,12 +1457,12 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public void setExtraclasspath(Path extraClasspath) {
             this.extraClasspath = extraClasspath;
         }
-        
+
         public String toString() {
-            return LangUtil.unqualifiedClassName(getClass()) 
+            return LangUtil.unqualifiedClassName(getClass())
                 + "(" + getMainClassName() + ")";
         }
-        
+
         protected Commandline createCommandline() {
             Commandline cmd = new Commandline();
             cmd.setExecutable("java");
@@ -1471,7 +1472,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 cp = extraClasspath;
             }
             if (extraClasspath == null) {
-                Path aspectjBuildDir = 
+                Path aspectjBuildDir =
                     new Path(project,
                              project.getProperty("ajctest.pathelement"));
                 // todo: dependency on ant script variable name ajctest.pathelement
@@ -1611,7 +1612,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 //        }
 //        exec.execute();
 //    }
-//    
+//
     public void handle(Throwable t) {
         log("handling " + t);
         if (t != null) t.printStackTrace();
@@ -1692,7 +1693,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 status.runs.fails.inc();
             }
         }
-        
+
         private abstract static class TitledPanel extends JPanel {
             public TitledPanel(LayoutManager layout, String title) {
                 super(layout);
@@ -1753,7 +1754,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 }
             }
         }
-        
+
         private class TablePanel extends TitledPanel {
             private DefaultTableModel model = new DefaultTableModel();
             private TJable table;

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc187;
 
-import java.io.File;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;

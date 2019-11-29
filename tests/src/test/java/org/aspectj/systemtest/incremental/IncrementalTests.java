@@ -12,11 +12,11 @@ package org.aspectj.systemtest.incremental;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.aspectj.ajdt.internal.core.builder.AbstractStateListener;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

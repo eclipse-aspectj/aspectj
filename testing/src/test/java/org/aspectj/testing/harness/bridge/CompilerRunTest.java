@@ -13,14 +13,20 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.aspectj.bridge.ICommand;
+import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.bridge.IMessageHolder;
+import org.aspectj.bridge.MessageHandler;
+import org.aspectj.testing.run.IRunIterator;
+import org.aspectj.testing.run.RunStatus;
+import org.aspectj.testing.run.Runner;
+import org.aspectj.util.FileUtil;
+import org.aspectj.util.LangUtil;
 
 import junit.framework.TestCase;
-
-import org.aspectj.bridge.*;
-import org.aspectj.testing.run.*;
-import org.aspectj.util.*;
-import org.aspectj.util.LangUtil;
 
 /**
  * Use a stub compiler/ICommand to verify command-line passed

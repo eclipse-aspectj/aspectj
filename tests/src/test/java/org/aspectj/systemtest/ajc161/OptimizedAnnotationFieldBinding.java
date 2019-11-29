@@ -11,11 +11,9 @@
  * ******************************************************************/
 package org.aspectj.systemtest.ajc161;
  
-import java.io.File;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
-
-import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * Optimising Annotation Field Binding - better code gen for the cases where the user just wants a field from the

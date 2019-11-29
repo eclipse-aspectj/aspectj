@@ -1,15 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Wes Isberg       initial implementation
  * ******************************************************************/
-
 package org.aspectj.internal.tools.build;
 
 import java.io.File;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -62,7 +60,7 @@ public class Result {
         if (null == name) {
             throw new IllegalArgumentException("null name");
         }
-        return (Result) nameToResult.get(name);
+        return nameToResult.get(name);
     }
 
     public static Result[] getResults(String[] names) {
@@ -293,7 +291,7 @@ public class Result {
         if (null == list) {
             return new Result[0];
         }
-        return (Result[]) list.toArray(new Result[0]);
+        return list.toArray(new Result[0]);
     }
 
     private void initSrcDirs() {

@@ -9,13 +9,11 @@
  * ******************************************************************/
 package org.aspectj.systemtest.incremental.model;
 
-import java.io.File;
-
-import junit.framework.Test;
-
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.util.StructureModelUtil;
+
+import junit.framework.Test;
 
 public class IncrementalModelTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

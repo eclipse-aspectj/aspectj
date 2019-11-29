@@ -10,20 +10,19 @@
  *******************************************************************************/
 package org.aspectj.testing;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
-
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
 
 import org.apache.commons.digester.Digester;
 import org.aspectj.tools.ajc.Ajc;
+
+import junit.extensions.TestSetup;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * Autowiring of XML test spec file as JUnit tests.

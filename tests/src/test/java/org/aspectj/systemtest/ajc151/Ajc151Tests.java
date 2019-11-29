@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc151;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.aspectj.asm.AsmManager;

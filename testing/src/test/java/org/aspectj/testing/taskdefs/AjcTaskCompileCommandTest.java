@@ -14,12 +14,12 @@ package org.aspectj.testing.taskdefs;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import org.aspectj.bridge.*;
+import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
+import org.aspectj.bridge.MessageUtil;
 import org.aspectj.testing.harness.bridge.Globals;
-import org.aspectj.util.*;
+import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 import junit.framework.TestCase;

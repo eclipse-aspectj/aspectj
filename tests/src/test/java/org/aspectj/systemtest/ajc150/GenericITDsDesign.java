@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Field;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -26,6 +24,8 @@ import org.aspectj.weaver.TypeVariableReference;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelTypeMunger;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.Test;
 
 public class GenericITDsDesign extends XMLBasedAjcTestCase {
 

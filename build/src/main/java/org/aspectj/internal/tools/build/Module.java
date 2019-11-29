@@ -257,8 +257,8 @@ public class Module {
             }
         }
         // libraries
-        for (Iterator iter = result.getLibJars().iterator(); iter.hasNext();) {
-            file = (File) iter.next();
+        for (Iterator<File> iter = result.getLibJars().iterator(); iter.hasNext();) {
+            file = iter.next();
             if (outOfDate(time, file)) {
                 return true;
             }

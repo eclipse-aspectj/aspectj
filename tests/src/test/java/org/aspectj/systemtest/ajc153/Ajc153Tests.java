@@ -10,16 +10,15 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc153;
 
-import java.io.File;
 import java.net.URL;
-
-import junit.framework.Test;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.bcel.Utility;
+
+import junit.framework.Test;
 
 public class Ajc153Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 

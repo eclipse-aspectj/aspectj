@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc170;
 
-import java.io.File;
 import java.io.IOException;
 
-import junit.framework.Test;
-
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Andy Clement

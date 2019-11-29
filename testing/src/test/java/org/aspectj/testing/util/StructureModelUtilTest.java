@@ -16,11 +16,11 @@ package org.aspectj.testing.util;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.TestSuite;
-
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.asm.IProgramElement;
+
+import junit.framework.TestSuite;
 
 /**
  * @author Mik Kersten
