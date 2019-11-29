@@ -17,9 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.aspectj.ajde.core.AjCompiler;
 import org.aspectj.ajde.ui.utils.TestBuildProgressMonitor;
 import org.aspectj.ajde.ui.utils.TestCompilerConfiguration;
@@ -28,7 +25,9 @@ import org.aspectj.ajde.ui.utils.TestIdeUIAdapter;
 import org.aspectj.ajde.ui.utils.TestMessageHandler;
 import org.aspectj.ajde.ui.utils.TestRuntimeProperties;
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.tools.ajc.Ajc;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 public abstract class AjdeTestCase extends TestCase {
 

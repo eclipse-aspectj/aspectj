@@ -16,9 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.WeaverTestCase;
+
+import junit.framework.TestCase;
 
 public class ZipTestCase extends TestCase {
 

@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
+
+import junit.framework.TestCase;
 
 /** NOT YET INCLUDED IN A FULL TEST RUN - WORK IN PROGRESS CHECKING CLASSLOADERREPOSITORY OPTIMIZATIONS */
 public class ClassLoaderRepositoryTest extends TestCase {

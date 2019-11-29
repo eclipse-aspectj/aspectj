@@ -14,17 +14,17 @@ package org.aspectj.weaver.patterns;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 /*
  * Sample types that this program uses are:

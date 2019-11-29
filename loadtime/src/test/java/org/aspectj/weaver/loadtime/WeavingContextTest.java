@@ -17,9 +17,9 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.tools.WeavingAdaptor;
+
+import junit.framework.TestCase;
 
 public class WeavingContextTest extends TestCase {
 

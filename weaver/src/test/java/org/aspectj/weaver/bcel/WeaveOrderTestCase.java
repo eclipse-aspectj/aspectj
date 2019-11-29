@@ -13,8 +13,14 @@
 
 package org.aspectj.weaver.bcel;
 
-import org.aspectj.weaver.patterns.*;
-import org.aspectj.weaver.*;
+import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.MemberImpl;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.patterns.Declare;
+import org.aspectj.weaver.patterns.PatternParser;
 
 /**.
  */

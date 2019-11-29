@@ -7,8 +7,12 @@
  * http://www.eclipse.org/legal/epl-v10.html 
  * ******************************************************************/package org.aspectj.util;
 
-import java.lang.ref.*;
-import java.util.*;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SoftHashMap<K,V> extends AbstractMap<K,V> {
 	private Map<K, SpecialValue> map;

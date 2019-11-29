@@ -11,12 +11,12 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.test;
 
-import junit.framework.TestCase;
-
 import java.net.URL;
 
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

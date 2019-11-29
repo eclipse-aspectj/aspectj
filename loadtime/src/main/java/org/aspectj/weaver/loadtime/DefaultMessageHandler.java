@@ -11,9 +11,9 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.AbortException;
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessageHandler;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

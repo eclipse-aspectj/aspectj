@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.reflect.ReflectionWorld;
+
+import junit.framework.TestCase;
 
 /**
  * @author Andy Clement

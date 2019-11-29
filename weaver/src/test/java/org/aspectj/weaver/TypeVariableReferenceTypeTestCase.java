@@ -11,9 +11,9 @@
  * ******************************************************************/
 package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 /**
  * @author colyer

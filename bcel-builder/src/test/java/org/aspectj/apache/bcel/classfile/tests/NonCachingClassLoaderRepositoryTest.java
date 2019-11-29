@@ -57,10 +57,10 @@ package org.aspectj.apache.bcel.classfile.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
+
+import junit.framework.TestCase;
 
 /**
  * @author Kristian Rosenvold

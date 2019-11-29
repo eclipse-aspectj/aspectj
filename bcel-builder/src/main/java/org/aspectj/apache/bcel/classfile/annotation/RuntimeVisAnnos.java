@@ -17,8 +17,8 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
-import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.ClassVisitor;
+import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 public class RuntimeVisAnnos extends RuntimeAnnos {
 	

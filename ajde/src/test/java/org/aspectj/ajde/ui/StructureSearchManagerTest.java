@@ -16,11 +16,11 @@ package org.aspectj.ajde.ui;
 
 import java.util.List;
 
-import junit.framework.TestSuite;
-
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
 import org.aspectj.asm.IProgramElement;
+
+import junit.framework.TestSuite;
 
 /**
  * @author Mik Kersten

@@ -53,7 +53,8 @@ package org.aspectj.apache.bcel.util;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 
 /**
  * Utility class that implements a sequence of bytes which can be read

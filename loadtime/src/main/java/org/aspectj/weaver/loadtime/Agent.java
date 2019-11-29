@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
-import java.lang.instrument.Instrumentation;
 import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
 
 /**
  * Java 1.5 preMain agent to hook in the class pre processor

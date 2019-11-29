@@ -15,8 +15,13 @@ package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
 
-import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.*;
+import org.aspectj.weaver.CrosscuttingMembers;
+import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.patterns.PatternParser;
+import org.aspectj.weaver.patterns.PerClause;
+import org.aspectj.weaver.patterns.PerSingleton;
+import org.aspectj.weaver.patterns.TestScope;
 
 public class NonstaticWeaveTestCase extends WeaveTestCase {
 	{

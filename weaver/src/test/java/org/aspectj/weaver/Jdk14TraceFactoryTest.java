@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.tools.Jdk14TraceFactory;
 import org.aspectj.weaver.tools.Trace;
+
+import junit.framework.TestCase;
 
 public class Jdk14TraceFactoryTest extends TestCase {
 

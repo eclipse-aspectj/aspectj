@@ -27,10 +27,10 @@ import java.util.zip.ZipEntry;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
-import junit.framework.TestCase;
-
 import com.bea.jvm.ClassPreProcessor;
 import com.bea.jvm.JVMFactory;
+
+import junit.framework.TestCase;
 
 public class JRockitAgentTest extends TestCase {
 

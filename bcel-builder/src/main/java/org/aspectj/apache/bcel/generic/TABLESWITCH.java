@@ -59,8 +59,6 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
-
 /**
  * TABLESWITCH - Switch within given range of values, i.e., low..high
  * 

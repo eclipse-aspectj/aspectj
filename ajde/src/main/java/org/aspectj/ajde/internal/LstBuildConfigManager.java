@@ -37,23 +37,27 @@ import org.aspectj.util.FileUtil;
  */
 public class LstBuildConfigManager implements BuildConfigManager {
 
+
 	private List<String> allBuildConfigFiles;
 	private List<BuildConfigListener> listeners = new ArrayList<BuildConfigListener>();
 	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
 	protected String currConfigFilePath = null;
 
 	private static final FilenameFilter SOURCE_FILE_FILTER = new FilenameFilter() {
+		@Override
 		public boolean accept(File dir, String name) {
 			return FileUtil.hasSourceSuffix(name) || name.endsWith(".lst");
 		}
 	};
 
 	private static final FileFilter DIR_FILTER = new FileFilter() {
+		@Override
 		public boolean accept(File file) {
 			return file.isDirectory();
 		}
 	};
 
+	@Override
 	public BuildConfigModel buildModel(String configFilePath) {
 		File configFile = new File(configFilePath);
 		String rootPath = configFile.getParent();
@@ -89,12 +93,13 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		return model;
 	}
 
-	private void addProblemEntries(BuildConfigNode root, List badEntries) {
-		for (Iterator it = badEntries.iterator(); it.hasNext();) {
-			root.addChild(new BuildConfigNode(it.next().toString(), BuildConfigNode.Kind.ERROR, null));
+	private void addProblemEntries(BuildConfigNode root, List<String> badEntries) {
+		for (String string : badEntries) {
+			root.addChild(new BuildConfigNode(string.toString(), BuildConfigNode.Kind.ERROR, null));
 		}
 	}
 
+	@Override
 	public void writeModel(BuildConfigModel model) {
 		// final List paths = new ArrayList();
 		// StructureWalker walker = new StructureWalker() {
@@ -113,14 +118,17 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		fileUpdater.writeConfigFile(model.getSourceFile(), activeSourceFiles, activeImportedFiles);
 	}
 
-	public void writePaths(String configFilePath, List files) {
+	@Override
+	public void writePaths(String configFilePath, List<String> files) {
 		fileUpdater.writeConfigFile(configFilePath, files);
 	}
 
+	@Override
 	public void addFilesToConfig(String configFilePath, List paths) {
 
 	}
 
+	@Override
 	public void removeFilesFromConfig(String configFilePath, List files) {
 
 	}
@@ -148,16 +156,16 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		File[] dirs = new File(node.getResourcePath()).listFiles(DIR_FILTER);
 		if (dirs == null)
 			return;
-		for (int i = 0; i < dirs.length; i++) {
-			BuildConfigNode dir = new BuildConfigNode(dirs[i].getName(), BuildConfigNode.Kind.DIRECTORY, dirs[i].getPath());
-			File[] files = dirs[i].listFiles(SOURCE_FILE_FILTER);
-			for (int j = 0; j < files.length; j++) {
-				if (files[j] != null) {// && !files[j].getName().endsWith(".lst")) {
-					String filePath = fileUpdater.relativizePath(files[j].getPath(), rootPath);
+		for (File dir2 : dirs) {
+			BuildConfigNode dir = new BuildConfigNode(dir2.getName(), BuildConfigNode.Kind.DIRECTORY, dir2.getPath());
+			File[] files = dir2.listFiles(SOURCE_FILE_FILTER);
+			for (File file2 : files) {
+				if (file2 != null) {// && !files[j].getName().endsWith(".lst")) {
+					String filePath = fileUpdater.relativizePath(file2.getPath(), rootPath);
 					BuildConfigNode.Kind kind = BuildConfigNode.Kind.FILE_JAVA;
-					if (!files[j].getName().endsWith(".lst")) {
+					if (!file2.getName().endsWith(".lst")) {
 						// kind = BuildConfigNode.Kind.FILE_LST;
-						BuildConfigNode file = new BuildConfigNode(files[j].getName(), kind, filePath);
+						BuildConfigNode file = new BuildConfigNode(file2.getName(), kind, filePath);
 						file.setActive(false);
 						dir.addChild(file);
 					}
@@ -167,15 +175,15 @@ public class LstBuildConfigManager implements BuildConfigManager {
 			// boolean foundMatch = false;
 			for (Iterator it = importedFiles.iterator(); it.hasNext();) {
 				File importedFile = (File) it.next();
-				if (importedFile.getParentFile().getAbsolutePath().equals(dirs[i].getAbsolutePath())) {
+				if (importedFile.getParentFile().getAbsolutePath().equals(dir2.getAbsolutePath())) {
 					// foundMatch = true;
 					BuildConfigNode importedFileNode = new BuildConfigNode(importedFile.getName(), BuildConfigNode.Kind.FILE_LST,
 							fileUpdater.relativizePath(importedFile.getPath(), rootPath));
 					importedFileNode.setActive(true);
 					// dir.getChildren().clear();
 					boolean found = false;
-					for (Iterator it2 = dir.getChildren().iterator(); it2.hasNext();) {
-						if (((BuildConfigNode) it2.next()).getName().equals(importedFile.getName())) {
+					for (BuildConfigNode buildConfigNode : dir.getChildren()) {
+						if (buildConfigNode.getName().equals(importedFile.getName())) {
 							found = true;
 						}
 					}
@@ -192,13 +200,13 @@ public class LstBuildConfigManager implements BuildConfigManager {
 			File[] files = new File(rootPath).listFiles(SOURCE_FILE_FILTER);
 			if (files == null)
 				return;
-			for (int i = 0; i < files.length; i++) {
-				if (files[i] != null && !files[i].getName().equals(configFileName)) {// && !files[i].getName().endsWith(".lst")) {
+			for (File file2 : files) {
+				if (file2 != null && !file2.getName().equals(configFileName)) {// && !files[i].getName().endsWith(".lst")) {
 					BuildConfigNode.Kind kind = BuildConfigNode.Kind.FILE_JAVA;
-					if (files[i].getName().endsWith(".lst")) {
+					if (file2.getName().endsWith(".lst")) {
 						kind = BuildConfigNode.Kind.FILE_LST;
 					}
-					BuildConfigNode file = new BuildConfigNode(files[i].getName(), kind, files[i].getName());
+					BuildConfigNode file = new BuildConfigNode(file2.getName(), kind, file2.getName());
 					file.setActive(false);
 					node.addChild(file);
 				}
@@ -232,25 +240,25 @@ public class LstBuildConfigManager implements BuildConfigManager {
 
 	private boolean pruneEmptyDirs(BuildConfigNode node) {
 		List<BuildConfigNode> nodesToRemove = new ArrayList<>();
-		for (Iterator<BuildConfigNode> it = node.getChildren().iterator(); it.hasNext();) {
-			BuildConfigNode currNode = it.next();
+		for (BuildConfigNode currNode : node.getChildren()) {
 			boolean hasValidChildren = pruneEmptyDirs(currNode);
 			if (!currNode.isValidResource() && !hasValidChildren) {
 				nodesToRemove.add(currNode);
 			}
 		}
 
-		for (Iterator<BuildConfigNode> it = nodesToRemove.iterator(); it.hasNext();) {
-			BuildConfigNode currNode = it.next();
+		for (BuildConfigNode currNode : nodesToRemove) {
 			node.removeChild(currNode);
 		}
 		return node.getChildren().size() > 0;
 	}
 
+	@Override
 	public String getActiveConfigFile() {
 		return currConfigFilePath;
 	}
 
+	@Override
 	public void setActiveConfigFile(String currConfigFilePath) {
 		if (currConfigFilePath == null)
 			return;
@@ -258,17 +266,19 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		notifyConfigChanged();
 	}
 
+	@Override
 	public void addListener(BuildConfigListener configurationListener) {
 		listeners.add(configurationListener);
 	}
 
+	@Override
 	public void removeListener(BuildConfigListener configurationListener) {
 		listeners.remove(configurationListener);
 	}
 
 	private void notifyConfigChanged() {
-		for (Iterator it = listeners.iterator(); it.hasNext();) {
-			((BuildConfigListener) it.next()).currConfigChanged(currConfigFilePath);
+		for (Object element : listeners) {
+			((BuildConfigListener) element).currConfigChanged(currConfigFilePath);
 		}
 	}
 
@@ -282,19 +292,20 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		if (node == null || node.getChildren() == null)
 			return;
 		Collections.sort(node.getChildren(), comparator);
-		for (Iterator<BuildConfigNode> it = node.getChildren().iterator(); it.hasNext();) {
-			BuildConfigNode nextNode = it.next();
+		for (BuildConfigNode nextNode : node.getChildren()) {
 			if (nextNode != null)
 				sortModel(nextNode, comparator);
 		}
 	}
 
 	private static final Comparator<BuildConfigNode> ALPHABETICAL_COMPARATOR = new Comparator<BuildConfigNode>() {
+		@Override
 		public int compare(BuildConfigNode n1, BuildConfigNode n2) {
 			return n1.getName().compareTo(n2.getName());
 		}
 	};
 
+	@Override
 	public List<String> getAllBuildConfigFiles() {
 		if (allBuildConfigFiles == null) {
 			allBuildConfigFiles = new ArrayList<String>();

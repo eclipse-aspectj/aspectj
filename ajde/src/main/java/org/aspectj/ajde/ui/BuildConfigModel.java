@@ -1,27 +1,26 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajde.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 /**
  * TODO: we have schitzophrenia between BuildConfigNode(s) and IProgramElement(s), fix.
- * 
+ *
  * @author Mik Kersten
  */
 public class BuildConfigModel {
@@ -59,9 +58,9 @@ public class BuildConfigModel {
 	private BuildConfigNode getNodeForPathHelper(StringTokenizer st, BuildConfigNode node) {
 		BuildConfigNode parent = node;
 		while (st.hasMoreElements()) {
-			String pathItem = (String) st.nextElement();
-			for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-				node = (BuildConfigNode) it.next();
+			String pathItem = st.nextToken();
+			for (BuildConfigNode element : node.getChildren()) {
+				node = element;
 				String childName = node.getName();
 				if (childName.equals(pathItem)) {
 					return getNodeForPathHelper(st, node);
@@ -113,8 +112,8 @@ public class BuildConfigModel {
 		}
 
 		if (node != null && node.getChildren() != null) {
-			for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-				BuildConfigNode foundNode = findNodeForSourceLineHelper((BuildConfigNode) it.next(), sourceFilePath, lineNumber);
+			for (Object element : node.getChildren()) {
+				BuildConfigNode foundNode = findNodeForSourceLineHelper((BuildConfigNode) element, sourceFilePath, lineNumber);
 				if (foundNode != null)
 					return foundNode;
 			}
@@ -134,10 +133,10 @@ public class BuildConfigModel {
 	}
 
 	private boolean hasMoreSpecificChild(BuildConfigNode node, String sourceFilePath, int lineNumber) {
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			BuildConfigNode child = (BuildConfigNode) it.next();
-			if (matches(child, sourceFilePath, lineNumber))
+		for (BuildConfigNode child : node.getChildren()) {
+			if (matches(child, sourceFilePath, lineNumber)) {
 				return true;
+			}
 		}
 		return false;
 	}

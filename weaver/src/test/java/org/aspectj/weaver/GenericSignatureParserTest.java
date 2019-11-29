@@ -10,12 +10,12 @@
  * ******************************************************************/
  package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.util.GenericSignatureParser;
+
+import junit.framework.TestCase;
 
 /**
  * @author Adrian Colyer

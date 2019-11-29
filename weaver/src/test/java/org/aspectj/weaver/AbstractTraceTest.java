@@ -12,11 +12,11 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.tools.AbstractTrace;
 import org.aspectj.weaver.tools.DefaultTrace;
 import org.aspectj.weaver.tools.Traceable;
+
+import junit.framework.TestCase;
 
 public abstract class AbstractTraceTest extends TestCase {
 

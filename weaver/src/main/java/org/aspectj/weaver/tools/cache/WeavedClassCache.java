@@ -13,14 +13,14 @@
 
 package org.aspectj.weaver.tools.cache;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.weaver.tools.GeneratedClassHandler;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Manages a cache of weaved and generated classes similar to Eclipse Equinox,

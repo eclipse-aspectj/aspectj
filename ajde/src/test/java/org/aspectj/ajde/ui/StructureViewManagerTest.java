@@ -16,13 +16,13 @@ package org.aspectj.ajde.ui;
 import java.io.File;
 import java.util.Iterator;
 
-import junit.framework.TestSuite;
-
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
 import org.aspectj.asm.IProgramElement;
+
+import junit.framework.TestSuite;
 
 /**
  * @author Mik Kersten

@@ -12,8 +12,9 @@
  * ******************************************************************/
 package org.aspectj.util;
 
-import junit.framework.*;
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class UtilModuleTests extends TestCase {
 

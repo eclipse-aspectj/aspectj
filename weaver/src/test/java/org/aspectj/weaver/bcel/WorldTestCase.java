@@ -15,7 +15,6 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 
 import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.CommonWorldTests;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
@@ -24,6 +23,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.TestUtils;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.World;
 
 /**

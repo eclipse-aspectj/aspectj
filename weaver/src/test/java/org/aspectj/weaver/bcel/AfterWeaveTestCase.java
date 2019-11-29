@@ -13,7 +13,7 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.io.*;
+import java.io.IOException;
 
 public class AfterWeaveTestCase extends WeaveTestCase {
 	{

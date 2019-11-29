@@ -14,11 +14,12 @@
 
 package org.aspectj.ajde.internal;
 
-import junit.framework.*;
-import org.aspectj.ajde.*;
+import java.io.File;
+
+import org.aspectj.ajde.AjdeTestCase;
 import org.aspectj.asm.AsmManager;
 
-import java.io.*;
+import junit.framework.TestSuite;
 
 /**
  * @author Mik Kersten

@@ -18,11 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.TestSuite;
-
 import org.aspectj.ajde.AjdeTestCase;
 import org.aspectj.ajde.ui.BuildConfigModel;
 import org.aspectj.ajde.ui.utils.TestMessageHandler.TestMessage;
+
+import junit.framework.TestSuite;
 
 public class LstBuildConfigManagerTest extends AjdeTestCase {
 	

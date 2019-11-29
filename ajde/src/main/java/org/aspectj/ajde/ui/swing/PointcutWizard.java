@@ -14,14 +14,18 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 //import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import org.aspectj.ajde.ui.*;
 //import org.aspectj.asm.IRelationship;
+import org.aspectj.ajde.ui.StructureViewProperties;
 
 /**
  * @author Mik Kersten

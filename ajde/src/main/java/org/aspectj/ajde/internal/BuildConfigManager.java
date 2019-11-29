@@ -46,18 +46,18 @@ public interface BuildConfigManager {
 	/**
 	 * Add a listner that will be notified of build configuration change events
 	 */
-    public void addListener(BuildConfigListener configurationListener);
+	public void addListener(BuildConfigListener configurationListener);
 
 	/**
 	 * Remove a configuration listener.
 	 */
-    public void removeListener(BuildConfigListener configurationListener);
+	public void removeListener(BuildConfigListener configurationListener);
 
-   	/**
-   	 * Build a model for the corresponding configuration file.
-   	 *
-   	 * @param	full path to the file
-   	 */
+	/**
+	 * Build a model for the corresponding configuration file.
+	 *
+	 * @param	full path to the file
+	 */
 	public BuildConfigModel buildModel(String configFilePath);
 
 	/**
@@ -69,7 +69,7 @@ public interface BuildConfigManager {
 	 * Write a list of source files into a configuration file.  File paths will be
 	 * written relative to the path of the configuration file.
 	 */
-	public void writePaths(String configFilePath, List paths);
+	public void writePaths(String configFilePath, List<String> paths);
 
 	/**
 	 * Add files to a configuration.

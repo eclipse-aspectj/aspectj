@@ -9,16 +9,16 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.AbortException;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.AnnotationAJ;
-import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 public class AnnotationPatternTestCase extends TestCase {
 

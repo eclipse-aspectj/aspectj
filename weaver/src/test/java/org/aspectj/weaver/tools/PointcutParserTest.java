@@ -13,9 +13,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
@@ -24,6 +21,9 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
 
 /**
  * Test cases for the PointcutParser class

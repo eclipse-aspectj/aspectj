@@ -15,8 +15,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Unknown;
@@ -24,6 +22,8 @@ import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverStateInfo;
+
+import junit.framework.TestCase;
 
 public class ReadingAttributesTest extends TestCase {
 

@@ -54,7 +54,6 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.generic.InstructionHandle;
 
 /** 
  * Returnaddress, the type JSR or JSR_W instructions push upon the stack.

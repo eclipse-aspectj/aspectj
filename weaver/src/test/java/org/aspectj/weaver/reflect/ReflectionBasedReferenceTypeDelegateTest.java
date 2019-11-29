@@ -15,14 +15,14 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase {
 

@@ -14,11 +14,9 @@ package org.aspectj.weaver;
 
 import java.io.File;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.aspectj.util.FileUtil;
+
+import junit.framework.TestCase;
 
 public abstract class WeaverTestCase extends TestCase {
 

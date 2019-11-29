@@ -27,11 +27,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking.IndexEntry;
+
+import junit.framework.TestCase;
 
 /**
  */

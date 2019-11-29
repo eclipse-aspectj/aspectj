@@ -14,13 +14,18 @@
 
 package org.aspectj.ajde.ui.swing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.aspectj.ajde.ui.*;
+import org.aspectj.ajde.ui.AbstractIcon;
+import org.aspectj.ajde.ui.IStructureViewNode;
+import org.aspectj.ajde.ui.StructureViewNodeFactory;
 //import org.aspectj.ajde.ui.IStructureViewNode.Kind;
-import org.aspectj.asm.*;
+import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 
 /**
  * @author Mik Kersten

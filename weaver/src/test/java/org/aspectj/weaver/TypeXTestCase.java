@@ -13,11 +13,11 @@
 
 package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 /**
  * This is a test case for all the portions of UnresolvedType that don't require a world.

@@ -23,7 +23,7 @@ import org.aspectj.util.LangUtil;
 /**
  * A class that hanldes LTW options. Note: AV - I choosed to not reuse AjCompilerOptions and alike since those implies too many
  * dependancies on jdt and ajdt modules.
- * 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class Options {
@@ -66,7 +66,7 @@ public class Options {
 				if (arg.length() > OPTIONVALUED_messageHandler.length()) {
 					String handlerClass = arg.substring(OPTIONVALUED_messageHandler.length()).trim();
 					try {
-						Class handler = Class.forName(handlerClass, false, laoder);
+						Class<?> handler = Class.forName(handlerClass, false, laoder);
 						weaverOption.messageHandler = ((IMessageHandler) handler.newInstance());
 					} catch (Throwable t) {
 						weaverOption.messageHandler.handleMessage(new Message("Cannot instantiate message handler " + handlerClass,
@@ -78,7 +78,7 @@ public class Options {
 
 		// configure the other options
 		for (Iterator<String> iterator = flags.iterator(); iterator.hasNext();) {
-			String arg = (String) iterator.next();
+			String arg = iterator.next();
 			if (arg.equals(OPTION_15)) {
 				weaverOption.java5 = true;
 			} else if (arg.equalsIgnoreCase(OPTION_lazyTjp)) {

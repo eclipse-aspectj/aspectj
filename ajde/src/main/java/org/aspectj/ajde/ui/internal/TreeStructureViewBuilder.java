@@ -14,12 +14,22 @@
 
 package org.aspectj.ajde.ui.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.FileStructureView;
+import org.aspectj.ajde.ui.GlobalStructureView;
+import org.aspectj.ajde.ui.IStructureViewNode;
+import org.aspectj.ajde.ui.StructureView;
+import org.aspectj.ajde.ui.StructureViewNodeFactory;
+import org.aspectj.ajde.ui.StructureViewProperties;
 //import org.aspectj.asm.internal.*;
 //import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.IHierarchy;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten

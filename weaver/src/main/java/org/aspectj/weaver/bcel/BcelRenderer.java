@@ -12,8 +12,6 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.lang.reflect.Modifier;
-
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.InstructionFactory;
 import org.aspectj.apache.bcel.generic.InstructionHandle;

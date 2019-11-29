@@ -22,7 +22,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.loadtime.definition.Definition.AdviceKind;
-import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotation;
 import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotationKind;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;

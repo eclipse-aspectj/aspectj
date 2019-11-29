@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
@@ -30,6 +28,8 @@ import org.aspectj.weaver.World.TypeMap;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.tools.WeavingAdaptor;
+
+import junit.framework.TestCase;
 
 public class ClassLoaderWeavingAdaptorTest extends TestCase {
 

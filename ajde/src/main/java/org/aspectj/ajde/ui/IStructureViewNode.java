@@ -14,7 +14,8 @@
  
 package org.aspectj.ajde.ui;
 
-import java.io.*;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.List;
 
 import org.aspectj.asm.IProgramElement;

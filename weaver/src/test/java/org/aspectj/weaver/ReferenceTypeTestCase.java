@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import junit.framework.TestCase;
-
 import org.aspectj.util.PartialOrder;
 import org.aspectj.weaver.bcel.BcelWorld;
+
+import junit.framework.TestCase;
 
 // test cases for Adrian's additions to ReferenceType
 // XXX - couldn't find any unit test cases for the rest of the ReferenceType class

@@ -39,12 +39,11 @@ import org.aspectj.weaver.patterns.TypePattern;
 import org.aspectj.weaver.patterns.TypePatternList;
 import org.aspectj.weaver.patterns.WildAnnotationTypePattern;
 
-import test.A1AnnotatedType;
-import test.A2AnnotatedType;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import test.A1AnnotatedType;
+import test.A2AnnotatedType;
 
 /**
  * Test parameter pointcut parsing.  Extended by Andy Clement to cover parameter annotation matching.

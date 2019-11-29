@@ -15,10 +15,10 @@ package org.aspectj.weaver.bcel;
 
 import java.io.IOException;
 
+import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.MessageHandler;
 import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
-import org.aspectj.bridge.*;
-import org.aspectj.bridge.MessageHandler;
 
 public class CheckerTestCase extends WeaveTestCase {
 	{

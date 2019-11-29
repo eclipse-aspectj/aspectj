@@ -13,10 +13,10 @@ package org.aspectj.weaver;
 import java.io.IOException;
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.util.ByteSequence;
+
+import junit.framework.TestCase;
 
 public class LocaleTest extends TestCase {
 

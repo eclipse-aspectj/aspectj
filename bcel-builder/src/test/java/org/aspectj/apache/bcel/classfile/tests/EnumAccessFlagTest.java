@@ -14,12 +14,12 @@ package org.aspectj.apache.bcel.classfile.tests;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+
+import junit.framework.TestCase;
 
 public class EnumAccessFlagTest extends TestCase {
 	

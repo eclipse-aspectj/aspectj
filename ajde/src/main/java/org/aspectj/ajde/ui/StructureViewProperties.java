@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IProgramElement.Accessibility;
+import org.aspectj.asm.IProgramElement.Modifiers;
 import org.aspectj.asm.IRelationship;
 
 /**
@@ -62,11 +64,11 @@ public class StructureViewProperties {
         relations.remove(kind);
     }
 
-    public void setFilteredMemberAccessibility(List memberVisibility) {
+    public void setFilteredMemberAccessibility(List<Accessibility> memberVisibility) {
         this.filteredMemberAccessibility = memberVisibility;
     }
 
-    public List getFilteredMemberAccessibility() {
+    public List<Accessibility> getFilteredMemberAccessibility() {
         return filteredMemberAccessibility;
     }
 
@@ -78,11 +80,11 @@ public class StructureViewProperties {
 		this.filteredMemberAccessibility.remove(accessibility);
 	}
 
-    public List getFilteredMemberModifiers() {
+    public List<Modifiers> getFilteredMemberModifiers() {
         return filteredMemberModifiers;
     }
 
-    public void setFilteredMemberModifiers(List memberModifiers) {
+    public void setFilteredMemberModifiers(List<Modifiers> memberModifiers) {
         this.filteredMemberModifiers = memberModifiers;
     }
 
@@ -102,11 +104,11 @@ public class StructureViewProperties {
         this.sorting = sorting;
     }
 
-	public List getFilteredMemberKinds() {
+	public List<IProgramElement.Kind> getFilteredMemberKinds() {
 		return filteredMemberKinds;
 	}
 
-	public void setFilteredMemberKinds(List memberKinds) {
+	public void setFilteredMemberKinds(List<IProgramElement.Kind> memberKinds) {
 		this.filteredMemberKinds = memberKinds;
 	}
 
@@ -118,11 +120,11 @@ public class StructureViewProperties {
 		this.filteredMemberKinds.remove(kind);
 	}
 
-	public List getGrouping() {
+	public List<Grouping> getGrouping() {
 		return grouping;
 	}
 
-	public void setGrouping(List grouping) {
+	public void setGrouping(List<Grouping> grouping) {
 		this.grouping = grouping;
 	}
 

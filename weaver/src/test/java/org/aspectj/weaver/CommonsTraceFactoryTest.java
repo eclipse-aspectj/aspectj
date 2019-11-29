@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import junit.framework.TestCase;
-
 import org.aspectj.weaver.tools.CommonsTraceFactory;
 import org.aspectj.weaver.tools.Trace;
+
+import junit.framework.TestCase;
 
 public class CommonsTraceFactoryTest extends TestCase {
 

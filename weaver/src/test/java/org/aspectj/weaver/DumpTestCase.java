@@ -15,12 +15,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageHandler;
+
+import junit.framework.TestCase;
 
 /**
  * @author websterm

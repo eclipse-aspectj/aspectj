@@ -12,12 +12,12 @@
 
 package org.aspectj.weaver.tools.cache;
 
-import junit.framework.TestCase;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
+
+import junit.framework.TestCase;
 
 /**
  */

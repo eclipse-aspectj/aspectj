@@ -14,7 +14,7 @@
 package org.aspectj.util;
 
 import java.io.File;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;

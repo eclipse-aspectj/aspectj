@@ -16,11 +16,13 @@ package org.aspectj.ajde;
 
 import java.net.URL;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
-import org.aspectj.ajde.ui.*;
-import org.aspectj.asm.*;
+import org.aspectj.ajde.ui.AbstractIcon;
+import org.aspectj.ajde.ui.AbstractIconRegistry;
 import org.aspectj.asm.IProgramElement;
+import org.aspectj.asm.IRelationship;
 
 /**
  * Default icons.  Override behavior for custom icons.

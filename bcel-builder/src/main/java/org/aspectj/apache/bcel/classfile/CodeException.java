@@ -1,5 +1,10 @@
 package org.aspectj.apache.bcel.classfile;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -55,7 +60,6 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
 
 /**
  * This class represents an entry in the exception table of the <em>Code</em>

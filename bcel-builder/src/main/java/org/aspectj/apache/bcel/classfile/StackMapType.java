@@ -1,5 +1,9 @@
 package org.aspectj.apache.bcel.classfile;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -55,7 +59,6 @@ package org.aspectj.apache.bcel.classfile;
  */
 
 import  org.aspectj.apache.bcel.Constants;
-import  java.io.*;
 
 /**
  * This class represents the type of a local variable or item on stack

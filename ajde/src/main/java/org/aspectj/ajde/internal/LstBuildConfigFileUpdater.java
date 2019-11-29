@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
@@ -34,7 +34,7 @@ import org.aspectj.bridge.Message;
 
 /**
  * Used for reading and writing build configuration (".lst") files.
- * 
+ *
  * @author Mik Kersten
  */
 class LstBuildConfigFileUpdater {
@@ -43,7 +43,7 @@ class LstBuildConfigFileUpdater {
 	 * Adds an entry to a build configuration file.
 	 */
 	public void updateBuildConfigFile(String buildConfigFile, String update, boolean addToConfiguration) {
-		List fileContents = readConfigFile(buildConfigFile);
+		List<String> fileContents = readConfigFile(buildConfigFile);
 		if (addToConfiguration) {
 			fileContents.add(update);
 		} else {
@@ -117,21 +117,21 @@ class LstBuildConfigFileUpdater {
 		return null;
 	}
 
-	public void writeConfigFile(String filePath, List files, List importedNodes) {
+	public void writeConfigFile(String filePath, List<BuildConfigNode> files, List<BuildConfigNode> importedNodes) {
 		// Set contentsSet = new TreeSet(fileContents);
 		String fileContentsString = "";
 		// List filesToWrite = null;
-		Set includedFiles = new HashSet();
-		for (Iterator it = importedNodes.iterator(); it.hasNext();) {
-			BuildConfigNode node = (BuildConfigNode) it.next();
+		Set<String> includedFiles = new HashSet<>();
+		for (Iterator<BuildConfigNode> it = importedNodes.iterator(); it.hasNext();) {
+			BuildConfigNode node = it.next();
 			fileContentsString += '@' + node.getResourcePath() + "\n";
 			String parentPath = new File(filePath).getParent();
 			String importedFilePath = parentPath + File.separator + node.getResourcePath();
 			includedFiles.addAll(getIncludedFiles(importedFilePath, parentPath));
 		}
 
-		for (Iterator it = files.iterator(); it.hasNext();) {
-			BuildConfigNode node = (BuildConfigNode) it.next();
+		for (Iterator<BuildConfigNode> it = files.iterator(); it.hasNext();) {
+			BuildConfigNode node = it.next();
 			if (node.getName().endsWith(".lst") && !node.getResourcePath().startsWith("..")) {
 				fileContentsString += '@';
 				fileContentsString += node.getResourcePath() + "\n";
@@ -151,7 +151,7 @@ class LstBuildConfigFileUpdater {
 			List<File> files = configParser.getFiles();
 			List<String> relativeFiles = new ArrayList<String>();
 			for (Iterator<File> it = files.iterator(); it.hasNext();) {
-				relativeFiles.add(relativizePath(((File) it.next()).getPath(), rootPath));
+				relativeFiles.add(relativizePath(it.next().getPath(), rootPath));
 			}
 			return relativeFiles;
 		} catch (ConfigParser.ParseException pe) {
@@ -184,13 +184,13 @@ class LstBuildConfigFileUpdater {
 
 	/**
 	 * Sorts and does not write duplicates.
-	 * 
+	 *
 	 * @param fileContents full paths representing file entries
 	 */
-	public void writeConfigFile(String filePath, List fileContents) {
-		Set contentsSet = new TreeSet(fileContents);
+	public void writeConfigFile(String filePath, List<String> fileContents) {
+		Set<String> contentsSet = new TreeSet<>(fileContents);
 		StringBuffer fileContentsSB = new StringBuffer();
-		Iterator it = contentsSet.iterator();
+		Iterator<String> it = contentsSet.iterator();
 		while (it.hasNext()) {
 			fileContentsSB.append(it.next().toString());
 			fileContentsSB.append("\n");

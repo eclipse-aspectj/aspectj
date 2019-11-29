@@ -1,18 +1,40 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2003 changes.
  * ******************************************************************/
 
 package org.aspectj.testing.drivers;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
@@ -45,16 +67,6 @@ import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 /**
  * Test harness for running AjcTest.Suite test suites.
  * This can be easily extended by subclassing.
@@ -70,11 +82,11 @@ import java.util.*;
  * categories.
  */
 public class Harness {
-    /** 
+    /**
      * Spaces up to the width that an option should take in the syntax,
      * including the two-space leader
      */
-    protected static final String SYNTAX_PAD = "                    "; 
+    protected static final String SYNTAX_PAD = "                    ";
     protected static final String OPTION_DELIM = ";";
     private static final String JAVA_VERSION;
     private static final String ASPECTJ_VERSION;
@@ -83,22 +95,22 @@ public class Harness {
         try {  version = System.getProperty("java.version", "UNKNOWN"); }
         catch (Throwable t) {}
         JAVA_VERSION = version;
-        
+
         version = "UNKNOWN";
         try {
             Class c = Class.forName("org.aspectj.bridge.Version");
-            version = (String) c.getField("text").get(null);            
+            version = (String) c.getField("text").get(null);
         } catch (Throwable t) {
             // ignore
         }
         ASPECTJ_VERSION = version;
     }
-    
+
     /** factory for the subclass currently anointed as default */
     public static Harness makeHarness() {
         return new FeatureHarness();
     }
-    
+
     /** @param args String[] like runMain(String[]) args */
     public static void main(String[] args) throws Exception {
         if (LangUtil.isEmpty(args)) {
@@ -129,9 +141,9 @@ public class Harness {
     /**
      * Read argFile contents into String[],
      * delimiting at any whitespace
-     */ 
+     */
     private static String[] readArgs(File argFile) {
-        ArrayList args = new ArrayList();
+        ArrayList<String> args = new ArrayList<>();
 //        int lineNum = 0;
 
         try {
@@ -146,24 +158,23 @@ public class Harness {
             }
         } catch (IOException e) {
             e.printStackTrace(System.err);
-        }    
-        return (String[]) args.toArray(new String[0]);
+        }
+        return args.toArray(new String[0]);
     }
-    
+
     /** aliases key="option" value="option{,option}" */
     private static Properties optionAliases;
-    
+
     /** be extra noisy if true */
     private boolean verboseHarness;
-    
+
     /** be extra quiet if true */
     private boolean quietHarness;
-    
+
     /** just don't say anything! */
     protected boolean silentHarness;
 
-    /** map of feature names to features */
-    private HashMap features;
+    private HashMap<String,Feature> features;
 
 	/** if true, do not delete temporary files. */
 	private boolean keepTemp;
@@ -173,38 +184,38 @@ public class Harness {
 
 	/** if true, then log results in report(..) when done */
 	private boolean logResults;
-    
+
     /** if true and there were failures, do System.exit({numFailures})*/
     private boolean exitOnFailure;
-    
+
     protected Harness() {
-        features = new HashMap();
+        features = new HashMap<>();
     }
 
-    
-    /** 
+
+    /**
      * Entry point for a test.
-     * This reads in the arguments, 
+     * This reads in the arguments,
      * creates the test suite(s) from the input file(s),
-     * and for each suite does setup, run, report, and cleanup. 
+     * and for each suite does setup, run, report, and cleanup.
      * When arguments are read, any option ending with "-" causes
      * option variants, a set of args with and another without the
-     * option. See {@link LangUtil.optionVariants(String[])} for 
+     * option. See {@link LangUtil.optionVariants(String[])} for
      * more details.
      * @param args the String[] for the test suite - use -help to get options,
      *         and use "-" suffixes for variants.
-     * @param resultList List for IRunStatus results - ignored if null 
+     * @param resultList List for IRunStatus results - ignored if null
      */
     public void runMain(String[] args, List resultList) {
         LangUtil.throwIaxIfFalse(!LangUtil.isEmpty(args), "empty args");
         // read arguments
-        final ArrayList globals = new ArrayList();
-        final ArrayList files = new ArrayList();
-        final LinkedList argList = new LinkedList();
+        final ArrayList<String> globals = new ArrayList<>();
+        final ArrayList<String> files = new ArrayList<>();
+        final LinkedList<String> argList = new LinkedList<>();
         argList.addAll(Arrays.asList(args));
         for (int i = 0; i < argList.size(); i++) {
-            String arg = (String) argList.get(i);
-            List aliases = aliasOptions(arg);
+            String arg = argList.get(i);
+            List<String> aliases = aliasOptions(arg);
             if (!LangUtil.isEmpty(aliases)) {
                 argList.remove(i);
                 argList.addAll(i, aliases);
@@ -216,9 +227,9 @@ public class Harness {
                 printSyntax(getLogStream());
                 return;
             } else if (isSuiteFile(arg)) {
-                files.add(arg); 
+                files.add(arg);
             } else if (!acceptOption(arg)) {
-                globals.add(arg); 
+                globals.add(arg);
             } // else our options absorbed
         }
         if (0 == files.size()) {
@@ -227,13 +238,13 @@ public class Harness {
             printSyntax(getLogStream());
             return;
         }
-        String[] globalOptions = (String[]) globals.toArray(new String[0]);
+        String[] globalOptions = globals.toArray(new String[0]);
         String[][] globalOptionVariants = optionVariants(globalOptions);
         AbstractRunSpec.RT runtime = new AbstractRunSpec.RT();
         if (verboseHarness) {
             runtime.setVerbose(true);
         }
-        
+
         // run suites read from each file
         AjcTest.Suite.Spec spec;
         for (Iterator iter = files.iterator(); iter.hasNext();) {
@@ -251,7 +262,7 @@ public class Harness {
             for (int i = 0; i < globalOptionVariants.length; i++) {
                 runtime.setOptions(globalOptionVariants[i]);
                 holder.init();
-                boolean skip = !spec.adoptParentValues(runtime, holder);                
+                boolean skip = !spec.adoptParentValues(runtime, holder);
                 // awful/brittle assumption about number of skips == number of skip messages
                 final List skipList = MessageUtil.getMessages(holder, IMessage.INFO, false, "skip");
                 if ((verboseHarness || skip || (0 < skipList.size()))) {
@@ -272,17 +283,17 @@ public class Harness {
                     }
                 }
                 if (!skip) {
-                    doStartSuite(suiteFile);            
+                    doStartSuite(suiteFile);
                     long elapsed = 0;
                     RunResult result = null;
-                    try {                    
+                    try {
                         final long startTime = System.currentTimeMillis();
                         result = run(spec);
                         if (null != resultList) {
                             resultList.add(result);
                         }
-                        elapsed = System.currentTimeMillis() - startTime; 
-                        report(result.status, skipList.size(), result.numIncomplete, elapsed);                   
+                        elapsed = System.currentTimeMillis() - startTime;
+                        report(result.status, skipList.size(), result.numIncomplete, elapsed);
                     } finally {
                         doEndSuite(suiteFile,elapsed);
                     }
@@ -292,7 +303,7 @@ public class Harness {
                             System.exit(numFailures);
                         }
                         Object value = result.status.getResult();
-                        if ((value instanceof Boolean) 
+                        if ((value instanceof Boolean)
                                 && !((Boolean) value).booleanValue()) {
                             System.exit(-1);
                         }
@@ -300,8 +311,8 @@ public class Harness {
                 }
             }
 		}
-    }   
-    
+    }
+
 
 	/**
 	 * Tell all IRunListeners that we are about to start a test suite
@@ -315,7 +326,7 @@ public class Harness {
 			if (element.listener instanceof TestCompleteListener) {
 				((TestCompleteListener)element.listener).doEndSuite(suiteFile,elapsed);
 			}
-		}					
+		}
 	}
     /**
      * Generate variants of String[] options by creating an extra set for
@@ -328,7 +339,7 @@ public class Harness {
      */
     public static String[][] optionVariants(String[] options) {
         if ((null == options) || (0 == options.length)) {
-            return new String[][] { new String[0]};            
+            return new String[][] { new String[0]};
         }
         // be nice, don't stomp input
         String[] temp = new String[options.length];
@@ -336,7 +347,7 @@ public class Harness {
         options = temp;
         boolean[] dup = new boolean[options.length];
         int numDups = 0;
-        
+
         for (int i = 0; i < options.length; i++) {
             String option = options[i];
             if (LangUtil.isEmpty(option)) {
@@ -352,23 +363,23 @@ public class Harness {
         final int variants = exp(2, numDups);
         final String[][] result = new String[variants][];
         // variant is a bitmap wrt doing extra value when dup[k]=true
-        for (int variant = 0; variant < variants; variant++) { 
-            ArrayList next = new ArrayList();
+        for (int variant = 0; variant < variants; variant++) {
+            ArrayList<String> next = new ArrayList<>();
             int nextOption = 0;
             for (int k = 0; k < options.length; k++) {
                 if (!dup[k] || (0 != (variant & (1 << (nextOption++))))) {
                     next.add(options[k]);
-                }                   
+                }
             }
-            result[variant] = (String[]) next.toArray(NONE);
+            result[variant] = next.toArray(NONE);
         }
         return result;
     }
-    
+
     private static int exp(int base, int power) { // not in Math?
         if (0 > power) {
             throw new IllegalArgumentException("negative power: " + power);
-        } 
+        }
         int result = 1;
         while (0 < power--) {
             result *= base;
@@ -386,7 +397,7 @@ public class Harness {
 			if (element.listener instanceof TestCompleteListener) {
 				((TestCompleteListener)element.listener).doStartSuite(suiteFile);
 			}
-		}		
+		}
 	}
 
 	/** Run the test suite specified by the spec */
@@ -395,13 +406,13 @@ public class Harness {
         /*
          * For each run, initialize the runner and validator,
          * create a new set of IRun{Iterator} tests,
-         * and run them. 
+         * and run them.
          * Delete all temp files when done.
          */
         Runner runner = new Runner();
         if (0 != features.size()) {
-            for (Iterator iter = features.entrySet().iterator(); iter.hasNext();) {
-                Feature feature = (Feature) ((Map.Entry) iter.next()).getValue();
+            for (Iterator<Map.Entry<String,Feature>> iter = features.entrySet().iterator(); iter.hasNext();) {
+                Feature feature = iter.next().getValue();
                 runner.registerListener(feature.clazz, feature.listener);
             }
         }
@@ -432,8 +443,8 @@ public class Harness {
         }
         return new RunResult(status, numIncomplete);
     }
-    
-    /** 
+
+    /**
      * Report the results of a test run after it is completed.
      * Clients should be able to identify the number of:
      * <ul>
@@ -443,27 +454,27 @@ public class Harness {
      * <li>tests skipped, i.e., test definition read and found incompatible with
      *     the current configuration.</li>
      * <ul>
-     * 
+     *
      * @param status returned from the run
-     * @param numSkipped int tests that were skipped because of 
+     * @param numSkipped int tests that were skipped because of
      *         configuration incompatibilities
      * @param numIncomplete int tests that failed during setup,
      *         usually indicating a test definition or configuration error.
      * @param msElapsed elapsed time in milliseconds
      * */
-    protected void report(IRunStatus status, int numSkipped, int numIncomplete, 
+    protected void report(IRunStatus status, int numSkipped, int numIncomplete,
         long msElapsed ) {
     	if (logResults) {
             RunUtils.AJCSUITE_PRINTER.printRunStatus(getLogStream(), status);
         } else if (!(quietHarness || silentHarness) && (0 < status.numMessages(null, true))) {
         	if (!silentHarness) {
-            	MessageUtil.print(getLogStream(), status, "");    
+            	MessageUtil.print(getLogStream(), status, "");
         	}
         }
-        
-       	logln(BridgeUtil.childString(status, numSkipped, numIncomplete) 
+
+       	logln(BridgeUtil.childString(status, numSkipped, numIncomplete)
             + " " + (msElapsed/1000) + " seconds");
-        
+
     }
 
     // --------------- delegate methods
@@ -472,25 +483,25 @@ public class Harness {
         	getLogStream().println(s);
     	}
     }
-    
+
     protected PrintStream getLogStream() {
         return System.out;
     }
-    
+
     protected boolean isSuiteFile(String arg) {
-        return ((null != arg) 
+        return ((null != arg)
                 && (arg.endsWith(".txt") || arg.endsWith(".xml"))
                 && new File(arg).canRead());
     }
-    
-    /** 
+
+    /**
      * Get the options that the input option is an alias for.
      * Subclasses may add options directly to the getFeatureAliases result
      * or override this.
      * @return null if the input is not an alias for other options,
-     * or a non-empty List (String) of options that this option is an alias for 
+     * or a non-empty List (String) of options that this option is an alias for
      */
-    protected List aliasOptions(String option) {
+    protected List<String> aliasOptions(String option) {
         Properties aliases = Harness.getOptionAliases();
         if (null != aliases) {
             String args = aliases.getProperty(option);
@@ -501,7 +512,7 @@ public class Harness {
         return null;
     }
 
-    /** 
+    /**
      * Read and implement any of our options.
      * Options other than this and suite files will be
      * passed down as parent options through the test spec hierarchy.
@@ -518,20 +529,20 @@ public class Harness {
 		} else if ("-silentHarness".equals(option)) {
 			silentHarness = true;
         } else if ("-keepTemp".equals(option)) {
-            keepTemp = true; 
+            keepTemp = true;
         } else if ("-killTemp".equals(option)) {
-            killTemp = true; 
+            killTemp = true;
         } else if ("-logResults".equals(option)) {
-            logResults = true; 
+            logResults = true;
         } else if ("-exitOnFailure".equals(option)) {
-            exitOnFailure = true; 
+            exitOnFailure = true;
         } else {
 	        return false;
         }
-        return true;    
-    }    
-    
-    /** 
+        return true;
+    }
+
+    /**
      * Read a test suite file.
      * This implementation knows how to read .txt and .xml files
      * and logs any errors.
@@ -555,7 +566,7 @@ public class Harness {
         }
         return null;
     }
-    
+
     /** Add feature to take effect during the next runMain(..) invocation.
      * @param feature the Feature to add, using feature.name as key.
      */
@@ -564,14 +575,14 @@ public class Harness {
             features.put(feature.name, feature);
         }
     }
-    
+
     /** remove feature by name (same as feature.name) */
     protected void removeFeature(String name) {
         if (!LangUtil.isEmpty(name)) {
             features.remove(name);
         }
     }
-    
+
     /** @return unmodifiable Set of feature names */
     protected Set listFeatureNames() {
         return Collections.unmodifiableSet(features.keySet());
@@ -611,7 +622,7 @@ public class Harness {
             out.println(alias + entry.getValue());
         }
     }
-    
+
     /** result struct for run(AjcTest.Spec) */
     public static class RunResult {
         public final IRunStatus status;
@@ -625,13 +636,13 @@ public class Harness {
     public static class Feature {
         /** never null, always assignable to IRun */
         public final Class clazz;
-        
+
         /** never null */
         public final IRunListener listener;
-        
+
         /** never null or empty */
         public final String name;
-        
+
         /** @throws IllegalArgumentException if any is null/empty or clazz is
          *           not assignable to IRun
          */
@@ -644,12 +655,12 @@ public class Harness {
             }
             LangUtil.throwIaxIfNull(listener, "listener");
             LangUtil.throwIaxIfNull(name, "name");
-            LangUtil.throwIaxIfFalse(0 < name.length(), "empty name");        
+            LangUtil.throwIaxIfFalse(0 < name.length(), "empty name");
             this.clazz = clazz;
             this.listener = listener;
             this.name = name;
         }
-        
+
         /** @return feature name */
         public String toString() {
             return name;
@@ -658,32 +669,32 @@ public class Harness {
 }
 
 
-/** 
+/**
  * Harness with features for controlling output
  * (logging results and hiding streams).
  * Use -help to get a list of feature options.
  */
 class FeatureHarness extends Harness {
 
-    private static final String[] ALIASES = new String[] 
-        { "-hideStreams", 
-            "-hideCompilerStreams" 
+    private static final String[] ALIASES = new String[]
+        { "-hideStreams",
+            "-hideCompilerStreams"
             + OPTION_DELIM + "-hideRunStreams",
-          "-jim", 
-            "-logMinFail"   
+          "-jim",
+            "-logMinFail"
             + OPTION_DELIM + "-hideStreams",
-          "-loud", 
+          "-loud",
             "-verboseHarness",
-          "-baseline", 
-            "-verboseHarness" 
-            + OPTION_DELIM + "-traceTestsMin" 
+          "-baseline",
+            "-verboseHarness"
+            + OPTION_DELIM + "-traceTestsMin"
             + OPTION_DELIM + "-hideStreams",
-          "-release", 
-              "-baseline" 
+          "-release",
+              "-baseline"
               + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava",
           "-junit",
           	  "-silentHarness" + OPTION_DELIM + "-logJUnit" + OPTION_DELIM +
-          	  "-hideStreams", 
+          	  "-hideStreams",
           "-cruisecontrol",
           	  "-junit" + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava"
         };
@@ -697,17 +708,17 @@ class FeatureHarness extends Harness {
     }
 
     /** controller for suppressing and sniffing error and output streams. */
-    StreamsHandler streamsHandler; 
+    StreamsHandler streamsHandler;
 
     /** facility of hiding-streams may be applied in many features */
     IRunListener streamHider;
 
     /** facility of capture/log may be applied in many features */
     IRunListener captureLogger;
-    
+
     /** when making tests, do not run them */
     TestMaker testMaker;
-    
+
     public FeatureHarness() {
         super();
         streamsHandler = new StreamsHandler(false, true);
@@ -769,12 +780,12 @@ class FeatureHarness extends Harness {
         if (null == option) {
             return false;
         }
-        
+
         final StreamsHandler streams = streamsHandler;
         final IRunValidator validator = RunValidator.NORMAL;
-        final RunUtils.IRunStatusPrinter verbose 
+        final RunUtils.IRunStatusPrinter verbose
             = RunUtils.VERBOSE_PRINTER;
-        final RunUtils.IRunStatusPrinter terse 
+        final RunUtils.IRunStatusPrinter terse
             = RunUtils.TERSE_PRINTER;
 //        final boolean LOGPASS = true;
 //        final boolean LOGFAIL = true;
@@ -782,11 +793,11 @@ class FeatureHarness extends Harness {
 //        final boolean SKIPFAIL = false;
 //        final boolean LOGSTREAMS = true;
         final boolean SKIPSTREAMS = false;
-        
+
 		Feature feature = null;
         if (super.acceptOption(option)) {
             // ok, result returned below
-            
+
         } else if ("-XmakeTests".equals(option)) {
             testMaker = TestMaker.ME;
         } else if (option.startsWith("-traceTestsMin")) {
@@ -794,43 +805,43 @@ class FeatureHarness extends Harness {
         } else if (option.startsWith("-traceTests")) {
             feature = new Feature(option, AjcTest.class,new TestTraceLogger(streams, true));
         } else if (option.startsWith("-logMin")) {
-            feature = new Feature(option, AjcTest.class, 
+            feature = new Feature(option, AjcTest.class,
                 new RunLogger(option, SKIPSTREAMS, streams, validator, terse));
         } else if (option.startsWith("-logXML")) {
-            feature = new Feature(option, AjcTest.class, 
+            feature = new Feature(option, AjcTest.class,
                 new XmlLogger(option, streams, validator));
         } else if (option.startsWith("-logJUnit")) {
         	feature = new Feature(option, AjcTest.class,
         		new JUnitXMLLogger(option,streams,validator));
         } else if (option.startsWith("-log")) {
-            feature = new Feature(option, AjcTest.class, 
+            feature = new Feature(option, AjcTest.class,
                 new RunLogger(option, SKIPSTREAMS, streams, validator, verbose));
         } else if ("-hideRunStreams".equals(option)) {
-            feature = new Feature(option, JavaRun.class, getStreamHider());       
+            feature = new Feature(option, JavaRun.class, getStreamHider());
         } else if ("-hideCompilerStreams".equals(option)) {
-            addFeature(new Feature(option, IncCompilerRun.class, getStreamHider()));   // hmmm    
-            feature = new Feature(option, CompilerRun.class, getStreamHider());       
+            addFeature(new Feature(option, IncCompilerRun.class, getStreamHider()));   // hmmm
+            feature = new Feature(option, CompilerRun.class, getStreamHider());
         } else if ("-progressDots".equals(option)) {
             IRunListener listener = new RunListener() {
 				public void runCompleted(IRunStatus run) {
                     streamsHandler.log((validator.runPassed(run) ? "." : "!"));
 				}
             };
-            feature = new Feature(option, AjcTest.class, listener);       
+            feature = new Feature(option, AjcTest.class, listener);
         } else if (option.startsWith("-XlogPublicType")) {
             String label = option + TestCompleteListener.PASS; // print when validator true
-            feature = new Feature(option, AjcTest.class, 
+            feature = new Feature(option, AjcTest.class,
                 new XmlLogger(label, streams, MessageRunValidator.PUBLIC_TYPE_ERROR));
         } else if (option.startsWith("-XlogSourceIn")) {
             String input = option.substring("-XlogSourceIn=".length());
             LangUtil.throwIaxIfFalse(0 < input.length(), option);
             String label = "-XlogSourceIn="  + TestCompleteListener.PASS; // print when validator true
             StringRunner sr = new SubstringRunner(input, false);
-            feature = new Feature(option, AjcTest.class, 
+            feature = new Feature(option, AjcTest.class,
                 new XmlLogger(label, streams, new SourcePathValidator(sr)));
         } else {
             return false;
-        }       
+        }
         addFeature(feature);
         return true;
 	}
@@ -854,9 +865,9 @@ class FeatureHarness extends Harness {
 
 /** Generate any needed test case files for any test. */
 class TestMaker  {
-    
+
     static TestMaker ME = new TestMaker();
-    
+
     /** @throws Error if unable to make dir */
     static void mkdirs(File dir) {
         if (null != dir && !dir.exists()) {
@@ -881,7 +892,7 @@ class TestMaker  {
            sb.append("package " + pack + ";");
         }
         final String EOL = "\n"; // XXX find discovered EOL
-        sb.append( EOL 
+        sb.append( EOL
             + EOL + "import org.aspectj.testing.Tester;"
             + EOL + ""
             + EOL + "/** @testcase " + label + " */"
@@ -890,12 +901,12 @@ class TestMaker  {
             + EOL + "\t\tTester.check(null != args, \"null args\"); "
             + EOL + "\t}"
             + EOL + "}"
-            + EOL 
+            + EOL
             );
-            
+
         return sb.toString();
     }
-    
+
     /** create a minimal source file for a test */
     static void createSrcFile(File baseDir, File file, String testName) {
         if (file.exists()) {
@@ -907,7 +918,7 @@ class TestMaker  {
             throw new Error(error);
         }
     }
-    
+
     /** create an empty arg file for a test */
     static void createArgFile(File baseDir, File file, String testName) {
         if (file.exists()) {
@@ -919,18 +930,18 @@ class TestMaker  {
             throw new Error(error);
         }
     }
-	
+
     public Harness.RunResult run(AjcTest.Suite.Spec spec) {
         ArrayList kids = spec.getChildren();
         for (Iterator iter = kids.iterator(); iter.hasNext();) {
-			makeTest( (AjcTest.Spec) iter.next());			
+			makeTest( (AjcTest.Spec) iter.next());
 		}
         IRunStatus status = new RunStatus(new MessageHandler(), new Runner());
         status.start();
         status.finish(IRunStatus.PASS);
         return new Harness.RunResult(status, 0);
     }
-    
+
     private void makeTest(AjcTest.Spec spec) {
         CompilerRun.Spec compileSpec = AjcTest.unwrapCompilerRunSpec(spec);
         if (null == spec) {
@@ -956,25 +967,25 @@ class TestMaker  {
         if (0 < pr) {
             testName.append("PR#" + pr + " ");
         }
-        
+
         testName.append(spec.getDescription());
         final String label = testName.toString();
         final File[] srcFiles = FileUtil.getBaseDirFiles(dir, compileSpec.getPathsArray());
         if (!LangUtil.isEmpty(srcFiles)) {
             for (int i = 0; i < srcFiles.length; i++) {
-                TestMaker.createSrcFile(dir, srcFiles[i], label);            
+                TestMaker.createSrcFile(dir, srcFiles[i], label);
             }
         }
         final File[] argFiles = FileUtil.getBaseDirFiles(dir, compileSpec.getArgfilesArray());
         if (!LangUtil.isEmpty(argFiles)) {
             for (int i = 0; i < argFiles.length; i++) {
-                TestMaker.createArgFile(dir, argFiles[i], label);            
+                TestMaker.createArgFile(dir, argFiles[i], label);
             }
         }
-        
+
 	}
-    
-    /** @return "Testmaker()" */    
+
+    /** @return "Testmaker()" */
     public String toString() {
         return "TestMaker()";
     }
@@ -990,7 +1001,7 @@ interface StringRunner {
  */
 class SubstringRunner implements StringRunner {
     private static String[] extractSubstrings(
-            String substrings, 
+            String substrings,
             boolean caseSensitive) {
         if (null == substrings) {
             return null;
@@ -1006,10 +1017,10 @@ class SubstringRunner implements StringRunner {
         }
         return result;
     }
-    
+
     private final String[] substrings;
     private final boolean caseSensitive;
-    
+
     /**
      * @param substrings the String containing comma-separated substrings
      *                    to find in input - if null, any input accepted
@@ -1018,9 +1029,9 @@ class SubstringRunner implements StringRunner {
      */
     SubstringRunner(String substrings, boolean caseSensitive) {
         this.caseSensitive = caseSensitive;
-        this.substrings = extractSubstrings(substrings, caseSensitive); 
+        this.substrings = extractSubstrings(substrings, caseSensitive);
     }
-    
+
     public boolean accept(String input) {
         if (null == substrings) {
             return true;
@@ -1028,7 +1039,7 @@ class SubstringRunner implements StringRunner {
         if (null == input) {
             return false;
         }
-        
+
         if (!caseSensitive) {
             input = input.toLowerCase();
         }
@@ -1041,7 +1052,7 @@ class SubstringRunner implements StringRunner {
     }
 }
 
-/** 
+/**
  * Signal whether run "passed" based on validating absolute source paths.
  * (Static evaluation - no run necessary)
  */
@@ -1050,7 +1061,7 @@ class SourcePathValidator implements IRunValidator { // static - no run needed
     // XXX hoist common
     SourcePathValidator(StringRunner validator) {
         LangUtil.throwIaxIfNull(validator, "validator");
-        this.validator = validator;        
+        this.validator = validator;
     }
     /**
      * @return true if any source files in compile spec are
@@ -1072,20 +1083,20 @@ class SourcePathValidator implements IRunValidator { // static - no run needed
         }
 		return false;
 	}
-    
+
 }
 
 /** Signal whether run "passed" based on message kind and content */
 class MessageRunValidator implements IRunValidator {
-    
+
     /** signals "passed" if any error contains "public type" */
-    static final IRunValidator PUBLIC_TYPE_ERROR 
+    static final IRunValidator PUBLIC_TYPE_ERROR
         = new MessageRunValidator("public type", IMessage.ERROR, false);
-    
+
     private final IMessage.Kind kind;
     private final String sought;
     private final boolean orGreater;
-    
+
     /**
      * @param sought the String to seek anywhere in any message of the right kind
      *         if null, accept any message of the right kind.
@@ -1096,12 +1107,12 @@ class MessageRunValidator implements IRunValidator {
         this.kind = kind;
         this.orGreater = orGreater;
     }
-    
+
     /** @return true if this run has messages of the right kind and text */
 	public boolean runPassed(IRunStatus run) {
         return gotMessage(new IRunStatus[] {run});
     }
-    
+
     /**
      * Search these children and their children recursively
      * for messages of the right kind and content.
@@ -1140,7 +1151,7 @@ class MessageRunValidator implements IRunValidator {
 	}
 }
 
-/** 
+/**
  * Base class for listeners that run depending on pass/fail status of input.
  * Template method runCompleted handled whether to run.
  * Subclasses implement doRunCompleted(..).
@@ -1154,14 +1165,14 @@ abstract class TestCompleteListener extends RunListener {
 
     /** label suffix indicating pass */
     public static final String PASS = "Pass";
-    
+
 
     /** runValidator determines if a given run passed */
     protected final IRunValidator runValidator;
 
     /** label for this listener */
     final String label;
-    
+
     /** if trun and run passed, then run doRunCompleted(..) */
     final boolean logOnPass;
 
@@ -1170,16 +1181,16 @@ abstract class TestCompleteListener extends RunListener {
 
     /** may be null */
     protected final StreamsHandler streamsHandler;
-    
+
     /** true if the last run evaluation was ok */
     boolean lastRunOk;
-    
+
     /** last run evaluated */
     IRunStatus lastRun; // XXX small memory leak - cache hashcode instead?
-    
+
     /** @param label endsWith PASS || FAIL || ALL */
     protected TestCompleteListener(
-        String label, 
+        String label,
         IRunValidator runValidator,
         StreamsHandler streamsHandler) {
         if (null == runValidator) {
@@ -1191,22 +1202,22 @@ abstract class TestCompleteListener extends RunListener {
         this.runValidator = runValidator;
         this.streamsHandler = streamsHandler;
     }
-    
+
     public void runStarted(IRunStatus run) {
         if (null != streamsHandler) {
             streamsHandler.startListening();
         }
     }
-    
+
     /** subclasses implement this to do some per-test initialization */
     protected void doRunStarted(IRunStatus run) {
     }
-    
-    
+
+
     /** subclasses implement this to do some per-suite initialization */
     protected void doStartSuite(File suite) {
     }
-    
+
     /** subclasses implement this to do end-of-suite processing */
     protected void doEndSuite(File suite, long duration) {
     }
@@ -1233,49 +1244,49 @@ abstract class TestCompleteListener extends RunListener {
         return lastRunOk;
     }
 
-    /** @return "{classname}({pass}{,fail})" indicating when this runs */    
+    /** @return "{classname}({pass}{,fail})" indicating when this runs */
     public String toString() { // XXX add label?
         return LangUtil.unqualifiedClassName(this)
-            + "(" + (logOnPass ? (logOnNotPass ? "pass, fail)" : "pass)") 
+            + "(" + (logOnPass ? (logOnNotPass ? "pass, fail)" : "pass)")
                                        : (logOnNotPass ? "fail)" : ")"));
     }
-    /** 
-     * Subclasses implement this to do some completion action 
+    /**
+     * Subclasses implement this to do some completion action
      * @param run the IRunStatus for this completed run
      * @param result the StreamsHandler.Result (if any - may be null)
      */
     public abstract void doRunCompleted(IRunStatus run, StreamsHandler.Result result);
 }
 
-/** 
+/**
  * Write XML for any test passed and/or failed.
  * Must register with Runner for RunSpecIterator.class,
  * most sensibly AjcTest.class.
  */
 class XmlLogger extends TestCompleteListener {
-    /** 
+    /**
      * @param printer the component that prints any status - not null
      * @param runValidator if null, use RunValidator.NORMAL
      */
     public XmlLogger(
         String label,
-        StreamsHandler streamsHandler, 
+        StreamsHandler streamsHandler,
         IRunValidator runValidator) {
         super(label, runValidator, streamsHandler);
     }
-    
+
     public void doRunCompleted(IRunStatus run, StreamsHandler.Result result) {
         PrintStream out = streamsHandler.getLogStream();
         out.println("");
         XMLWriter writer = new XMLWriter(new PrintWriter(out, true));
         Object id = run.getIdentifier();
-        if (!(id instanceof Runner.IteratorWrapper)) {                
-            out.println(this + " not IteratorWrapper: " 
+        if (!(id instanceof Runner.IteratorWrapper)) {
+            out.println(this + " not IteratorWrapper: "
                 + id.getClass().getName() + ": " + id);
             return;
         }
         IRunIterator iter = ((Runner.IteratorWrapper) id).iterator;
-        if (!(iter instanceof RunSpecIterator)) {                
+        if (!(iter instanceof RunSpecIterator)) {
             out.println(this + " not RunSpecIterator: " + iter.getClass().getName()
                 + ": " + iter);
             return;
@@ -1283,7 +1294,7 @@ class XmlLogger extends TestCompleteListener {
         ((RunSpecIterator) iter).spec.writeXml(writer);
         out.flush();
     }
-    
+
 }
 
 /**
@@ -1308,18 +1319,18 @@ class JUnitXMLLogger extends TestCompleteListener {
   private int numFails = 0;
   private DecimalFormat timeFormatter = new DecimalFormat("#.##");
 
-  public JUnitXMLLogger(        
+  public JUnitXMLLogger(
   	String label,
-  	StreamsHandler streamsHandler, 
+  	StreamsHandler streamsHandler,
   	IRunValidator runValidator) {
   		super(label + ALL, runValidator, streamsHandler);
-  		junitOutput = new StringBuffer();	
+  		junitOutput = new StringBuffer();
   }
-  
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.testing.drivers.TestCompleteListener#doRunCompleted(org.aspectj.testing.run.IRunStatus, org.aspectj.testing.util.StreamsHandler.Result)
 	 */
-	public void doRunCompleted(IRunStatus run, Result result) {		
+	public void doRunCompleted(IRunStatus run, Result result) {
 		long duration = System.currentTimeMillis()  - startTimeMillis;
 		numTests++;
 		junitOutput.append("<testcase name=\"" + run.getIdentifier() + "\" ");
@@ -1340,7 +1351,7 @@ class JUnitXMLLogger extends TestCompleteListener {
 	 * @see org.aspectj.testing.drivers.TestCompleteListener#runStarted(org.aspectj.testing.run.IRunStatus)
 	 */
 	public void runStarting(IRunStatus run) {
-		 super.runStarting(run);		
+		 super.runStarting(run);
 		 startTimeMillis = System.currentTimeMillis();
 	}
 
@@ -1354,12 +1365,12 @@ class JUnitXMLLogger extends TestCompleteListener {
 		suiteName = suiteName.substring(0,suiteName.indexOf('.'));
 		PrintStream out = streamsHandler.getLogStream();
 		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		String timeStr = new DecimalFormat("#.##").format(duration/1000.0);					
+		String timeStr = new DecimalFormat("#.##").format(duration/1000.0);
 		out.print("<testsuite errors=\"" + numFails + "\" failures=\"0\" ");
 		out.print("name=\"" + suite.getName() + "\" " );
 		out.println("tests=\"" + numTests + "\" time=\"" + timeStr + "\">");
 		out.print(junitOutput.toString());
-		out.println("</testsuite>");	
+		out.println("</testsuite>");
 	}
 
 	/* (non-Javadoc)
@@ -1380,7 +1391,7 @@ class RunLogger extends TestCompleteListener {
     final boolean logStreams;
     final RunUtils.IRunStatusPrinter printer;
 
-    /** 
+    /**
      * @param printer the component that prints any status - not null
      * @param runValidator if null, use RunValidator.NORMAL
      */
@@ -1403,11 +1414,11 @@ class RunLogger extends TestCompleteListener {
         if (logStreams) {
             if (!LangUtil.isEmpty(result.err)) {
                 out.println("--- error");
-                out.println(result.err); 
+                out.println(result.err);
             }
             if (!LangUtil.isEmpty(result.out)) {
                 out.println("--- ouput");
-                out.println(result.out); 
+                out.println(result.out);
             }
         }
         out.println("");
@@ -1420,7 +1431,7 @@ class TestTraceLogger extends TestCompleteListener {
     private long startTime;
     private long startMemoryFree;
     private final boolean verbose;
-    
+
     public TestTraceLogger(StreamsHandler handler) {
         this(handler, true);
     }
@@ -1431,9 +1442,9 @@ class TestTraceLogger extends TestCompleteListener {
     public void runStarting(IRunStatus run) {
         super.runStarting(run);
         startTime = System.currentTimeMillis();
-        startMemoryFree = runtime.freeMemory();    
+        startMemoryFree = runtime.freeMemory();
     }
-    
+
     public void doRunCompleted(IRunStatus run, StreamsHandler.Result result) {
         long elapsed = System.currentTimeMillis() - startTime;
         long free = runtime.freeMemory();
@@ -1449,19 +1460,19 @@ class TestTraceLogger extends TestCompleteListener {
         }
         out.println(label + renderId(run));
     }
-    
+
     /** @return true - always trace tests */
     protected boolean isFailLabel(String label) {
         return true;
     }
-    
+
     /** @return true - always trace tests */
     protected boolean isPassLabel(String label) {
         return true;
     }
 
     /**
-     * This implementation returns run identifier toString(). 
+     * This implementation returns run identifier toString().
      * Subclasses override this to render id as message suffix.
      */
     protected String renderId(IRunStatus run) {
@@ -1477,7 +1488,7 @@ class TestTraceLogger extends TestCompleteListener {
 //            StringBuffer sb = new StringBuffer();
 //            for (Iterator iter = files.iterator(); iter.hasNext();) {
 //                File file = (File) iter.next();
-//                sb.append(" " + file.getPath().replace('\\','/').substring(2));         
+//                sb.append(" " + file.getPath().replace('\\','/').substring(2));
 //            }
 //            out.println("files: " + sb);
 //        }

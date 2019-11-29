@@ -16,9 +16,9 @@ package org.aspectj.weaver;
 
 import java.lang.reflect.Modifier;
 
-import junit.framework.TestCase;
-
 import org.aspectj.testing.util.TestUtil;
+
+import junit.framework.TestCase;
 
 /**
  * This is a test case for all the portions of Member that don't require a world.
