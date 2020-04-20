@@ -1,0 +1,118 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<!-- switch now in Java14 and doesn't need -enable-preview flag -->
+	<ajc-test dir="features193" vm="14" title="switch 1">
+		<compile files="Switch1.java" options="-14">
+		</compile>
+		<run class="Switch1" vmargs="--enable-preview">
+			<stdout>
+				<line text="0" />
+				<line text="1" />
+				<line text="2" />
+				<line text="3" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="features193" vm="14" title="switch 2">
+		<compile files="Switch2.java" options="-source 14">
+		</compile>
+		<run class="Switch2" vmargs="">
+			<stdout>
+				<line text="0" />
+				<line text="2" />
+				<line text="4" />
+				<line text="6" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="features193" vm="14" title="switch 3">
+		<compile files="Switch3.java" options="-source 14">
+		</compile>
+		<run class="Switch3" vmargs="">
+			<stdout>
+				<line text="3" />
+				<line text="6" />
+				<line text="9" />
+				<line text="12" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs196/java14" vm="14" title="simple record">
+		<compile files="Person.java" options="--enable-preview  -14" />
+	</ajc-test>
+
+	<ajc-test dir="bugs196/java14" vm="14" title="using a record">
+		<compile files="Person.java UsingPersonRecord.java"
+			options="--enable-preview -14" />
+		<run class="UsingPersonRecord" vmargs="--enable-preview">
+			<stdout>
+				<line text="Person[firstName=A, lastName=B, age=99]" />
+				<line text="A" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs196/java14" vm="14"
+		title="instanceof patterns">
+		<compile files="Jep305.java" options="--enable-preview -14" />
+		<run class="Jep305" vmargs="--enable-preview">
+			<stdout>
+				<line text="orange" />
+				<line text="apple" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+
+	<ajc-test dir="bugs196/java14" vm="14"
+		title="advising records">
+		<compile
+			files="TraceRecordComponents.aj Person.java UsingPersonRecord.java"
+			options="--enable-preview -14" />
+		<run class="UsingPersonRecord" vmargs="--enable-preview">
+			<stdout>
+				<line text="execution(String Person.toString())" />
+				<line text="Person[firstName=A, lastName=B, age=99]" />
+				<line text="execution(String Person.firstName())" />
+				<line text="A" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+
+	<!-- textblock still in preview at 14 level -->
+	<ajc-test dir="features195/textblock" vm="14"
+		title="textblock 1">
+		<compile files="Code.java"
+			options="--enable-preview -source 14">
+		</compile>
+		<run class="Code" vmargs="--enable-preview">
+			<stdout>
+				<line text="this is a text" />
+				<!-- the incidental space is removed with a trim in output matching but 
+					the test app doesn't remove it when printing it, why? -->
+				<line text="block" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="features195/textblock" vm="14"
+		title="textblock 2">
+		<compile files="Code2.java"
+			options="--enable-preview -source 14">
+		</compile>
+		<run class="Code2" vmargs="--enable-preview">
+			<stdout>
+				<!-- why is the incidental space not removed here?? -->
+				<line text="this is a text" />
+				<line text="block in advice" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

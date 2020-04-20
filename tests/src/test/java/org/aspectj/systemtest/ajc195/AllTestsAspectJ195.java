@@ -16,7 +16,7 @@ import junit.framework.TestSuite;
 public class AllTestsAspectJ195 {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("AspectJ 1.9.4 tests");
+		TestSuite suite = new TestSuite("AspectJ 1.9.5 tests");
 		suite.addTest(Ajc195Tests.suite());
 		suite.addTest(SanityTestsJava13.suite());
 		return suite;

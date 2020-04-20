@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
@@ -19,7 +19,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class LangUtilTest extends TestCase {
 
@@ -40,7 +40,7 @@ public class LangUtilTest extends TestCase {
 	// EXP = "[-d, classes, -classpath, foo.jar, -verbose]";
 	// resultString = "" + extracted;
 	// assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-	//        
+	//
 	// // no input, no output
 	// extracted.clear();
 	// args = new String[] {};
@@ -50,7 +50,7 @@ public class LangUtilTest extends TestCase {
 	// assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
 	// resultString = "" + extracted;
 	// assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-	//        
+	//
 	// // one input, nothing extracted
 	// extracted.clear();
 	// args = new String[] {"Bar.java"};
@@ -61,7 +61,7 @@ public class LangUtilTest extends TestCase {
 	// EXP = "[]";
 	// resultString = "" + extracted;
 	// assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-	//        
+	//
 	// // one input, extracted
 	// extracted.clear();
 	// args = new String[] {"-verbose"};
@@ -87,7 +87,7 @@ public class LangUtilTest extends TestCase {
 	// EXP = "[-verbose]";
 	// resultString = "" + extracted;
 	// assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-	//        
+	//
 	// // one input, not extracted
 	// extracted.clear();
 	// args = new String[] {"Bar.java"};
@@ -103,7 +103,7 @@ public class LangUtilTest extends TestCase {
 	public void testVersion() {
 		assertTrue(LangUtil.isOnePointThreeVMOrGreater()); // min vm now - floor may change
 		if (LangUtil.is15VMOrGreater()) {
-			assertTrue(LangUtil.is14VMOrGreater());
+			assertTrue(LangUtil.is1dot4VMOrGreater());
 		}
 	}
 
@@ -111,33 +111,33 @@ public class LangUtilTest extends TestCase {
 	public void testExtractOptionsArrayCollector() {
 		String[] args = new String[] { "-d", "classes", "-classpath", "foo.jar", "-verbose", "Bar.java" };
 		String[][] OPTIONS = new String[][] { new String[] { "-classpath", null }, new String[] { "-d", null },
-				new String[] { "-verbose" }, new String[] { "-help" } };
+			new String[] { "-verbose" }, new String[] { "-help" } };
 
-		String[][] options = LangUtil.copyStrings(OPTIONS);
+			String[][] options = LangUtil.copyStrings(OPTIONS);
 
-		String[] result = LangUtil.extractOptions(args, options);
-		String resultString = "" + Arrays.asList(result);
-		String EXP = "[Bar.java]";
-		assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-		assertTrue("-verbose".equals(options[2][0]));
-		assertTrue("foo.jar".equals(options[0][1]));
-		assertTrue("classes".equals(options[1][1]));
-		assertTrue("-classpath".equals(options[0][0]));
-		assertTrue("-d".equals(options[1][0]));
-		assertTrue(null == options[3][0]);
+			String[] result = LangUtil.extractOptions(args, options);
+			String resultString = "" + Arrays.asList(result);
+			String EXP = "[Bar.java]";
+			assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+			assertTrue("-verbose".equals(options[2][0]));
+			assertTrue("foo.jar".equals(options[0][1]));
+			assertTrue("classes".equals(options[1][1]));
+			assertTrue("-classpath".equals(options[0][0]));
+			assertTrue("-d".equals(options[1][0]));
+			assertTrue(null == options[3][0]);
 
-		// get args back, no options set
-		args = new String[] { "Bar.java" };
-		options = LangUtil.copyStrings(OPTIONS);
+			// get args back, no options set
+			args = new String[] { "Bar.java" };
+			options = LangUtil.copyStrings(OPTIONS);
 
-		result = LangUtil.extractOptions(args, options);
-		resultString = "" + Arrays.asList(result);
-		EXP = "[Bar.java]";
-		assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
-		assertTrue(null == options[0][0]);
-		assertTrue(null == options[1][0]);
-		assertTrue(null == options[2][0]);
-		assertTrue(null == options[3][0]);
+			result = LangUtil.extractOptions(args, options);
+			resultString = "" + Arrays.asList(result);
+			EXP = "[Bar.java]";
+			assertTrue(resultString + " != " + EXP, resultString.equals(EXP));
+			assertTrue(null == options[0][0]);
+			assertTrue(null == options[1][0]);
+			assertTrue(null == options[2][0]);
+			assertTrue(null == options[3][0]);
 	}
 
 	// public void testOptionVariants() {
@@ -153,7 +153,7 @@ public class LangUtilTest extends TestCase {
 	// String[] threeB = new String[] {"-1-", "-2-", "-3-"};
 	// String[] athreeB = new String[] {"a", "-1-", "-2-", "-3-"};
 	// String[] threeaB = new String[] {"-1-", "a", "-2-", "-3-"};
-	//        
+	//
 	// checkOptionVariants(NONE, new String[][] { NONE });
 	// checkOptionVariants(one, new String[][] { one });
 	// checkOptionVariants(both, new String[][] { both });

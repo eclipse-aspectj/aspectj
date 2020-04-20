@@ -253,9 +253,9 @@ public class AjcTask extends MatchingTask {
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
-	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13" };
-	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13" };
-	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12", "-13" };
+	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14" };
+	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14" };
+	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12", "-13", "-14" };
 
 	private static final ICommandEditor COMMAND_EDITOR;
 
@@ -265,7 +265,7 @@ public class AjcTask extends MatchingTask {
 				"notReweavable", "noInline", "terminateAfterCompilation", "hasMember", "ajruntimetarget:1.2",
 				"ajruntimetarget:1.5", "addSerialVersionUID"
 
-		// , "targetNearSource", "OcodeSize",
+				// , "targetNearSource", "OcodeSize",
 		};
 		VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));
 
@@ -464,47 +464,47 @@ public class AjcTask extends MatchingTask {
 		return (0 == result.length() ? null : result.toString());
 	}
 
-  /**
-   * Controls whether annotation processing and/or compilation is done.
-   * -proc:none means that compilation takes place without annotation processing.
-   * -proc:only means that only annotation processing is done, without any subsequent compilation.
-   */
-  public void setProc(String proc) {
-    if (proc.equals("none")) {
-      cmd.addFlag("-proc:none", true);
-    } else if (proc.equals("only")) {
-      cmd.addFlag("-proc:only", true);
-    }
-  }
+	/**
+	 * Controls whether annotation processing and/or compilation is done.
+	 * -proc:none means that compilation takes place without annotation processing.
+	 * -proc:only means that only annotation processing is done, without any subsequent compilation.
+	 */
+	public void setProc(String proc) {
+		if (proc.equals("none")) {
+			cmd.addFlag("-proc:none", true);
+		} else if (proc.equals("only")) {
+			cmd.addFlag("-proc:only", true);
+		}
+	}
 
-  /**
-   * -processor class1[,class2,class3...]
-   *  Names of the annotation processors to run. This bypasses the default discovery process.
-   */
-  public void setProcessor(String processors) {
-    cmd.addFlagged("-processor", processors);
-  }
+	/**
+	 * -processor class1[,class2,class3...]
+	 *  Names of the annotation processors to run. This bypasses the default discovery process.
+	 */
+	public void setProcessor(String processors) {
+		cmd.addFlagged("-processor", processors);
+	}
 
-  /**
-   * -processorpath path
-   * Specify where to find annotation processors; if this option is not used, the class path will be searched for processors.
-   */
-  public void setProcessorpath(String processorpath) {
-    cmd.addFlagged("-processorpath", processorpath);
-  }
+	/**
+	 * -processorpath path
+	 * Specify where to find annotation processors; if this option is not used, the class path will be searched for processors.
+	 */
+	public void setProcessorpath(String processorpath) {
+		cmd.addFlagged("-processorpath", processorpath);
+	}
 
-  /**
-   * -s dir
-   * Specify the directory where to place generated source files. The directory must already exist; javac will not create it.
-   * If a class is part of a package, the compiler puts the source file in a subdirectory reflecting the package name,
-   * creating directories as needed.
-   *
-   * For example, if you specify -s C:\mysrc and the class is called com.mypackage.MyClass,
-   * then the source file will be placed in C:\mysrc\com\mypackage\MyClass.java.
-   */
-  public void setS(String s) {
-    cmd.addFlagged("-s", s);
-  }
+	/**
+	 * -s dir
+	 * Specify the directory where to place generated source files. The directory must already exist; javac will not create it.
+	 * If a class is part of a package, the compiler puts the source file in a subdirectory reflecting the package name,
+	 * creating directories as needed.
+	 *
+	 * For example, if you specify -s C:\mysrc and the class is called com.mypackage.MyClass,
+	 * then the source file will be placed in C:\mysrc\com\mypackage\MyClass.java.
+	 */
+	public void setS(String s) {
+		cmd.addFlagged("-s", s);
+	}
 
 	public void setIncremental(boolean incremental) {
 		cmd.addFlag("-incremental", incremental);
@@ -717,12 +717,12 @@ public class AjcTask extends MatchingTask {
 	}
 
 	public CompilerArg createCompilerarg() {
-		 CompilerArg compilerArg = new CompilerArg();
-		 if (compilerArgs == null) {
-			 compilerArgs = new ArrayList<CompilerArg>();
-		 }
-		 compilerArgs.add(compilerArg);
-		 return compilerArg;
+		CompilerArg compilerArg = new CompilerArg();
+		if (compilerArgs == null) {
+			compilerArgs = new ArrayList<CompilerArg>();
+		}
+		compilerArgs.add(compilerArg);
+		return compilerArg;
 	}
 
 	// ----------------
@@ -1340,14 +1340,14 @@ public class AjcTask extends MatchingTask {
 				StringBuffer sb = new StringBuffer();
 				String prefix = "fail due to ";
 				int numThrown = 0;
-				for (int i = 0; i < fails.length; i++) {
-					String message = fails[i].getMessage();
+				for (IMessage fail : fails) {
+					String message = fail.getMessage();
 					if (LangUtil.isEmpty(message)) {
 						message = "<no message>";
 					} else if (-1 != message.indexOf(USAGE_SUBSTRING)) {
 						continue;
 					}
-					Throwable t = fails[i].getThrown();
+					Throwable t = fail.getThrown();
 					if (null != t) {
 						numThrown++;
 						sb.append(prefix);
@@ -1466,28 +1466,28 @@ public class AjcTask extends MatchingTask {
 					Project.MSG_WARN);
 
 			// replace above two lines with what follows as an aid to debugging when running the unit tests....
-//			LogStreamHandler handler = new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN) {
-//
-//				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//				/*
-//				 * @see
-//				 * org.apache.tools.ant.taskdefs.PumpStreamHandler#createProcessOutputPump(java.
-//				 * io.InputStream, java.io.OutputStream)
-//				 */
-//				protected void createProcessErrorPump(InputStream is, OutputStream os) {
-//					super.createProcessErrorPump(is, baos);
-//				}
-//
-//				/*
-//				 * @see org.apache.tools.ant.taskdefs.LogStreamHandler#stop()
-//				 */
-//				public void stop() {
-//					byte[] written = baos.toByteArray();
-//					System.err.print(new String(written));
-//					super.stop();
-//				}
-//			};
+			//			LogStreamHandler handler = new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN) {
+			//
+			//				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			//
+			//				/*
+			//				 * @see
+			//				 * org.apache.tools.ant.taskdefs.PumpStreamHandler#createProcessOutputPump(java.
+			//				 * io.InputStream, java.io.OutputStream)
+			//				 */
+			//				protected void createProcessErrorPump(InputStream is, OutputStream os) {
+			//					super.createProcessErrorPump(is, baos);
+			//				}
+			//
+			//				/*
+			//				 * @see org.apache.tools.ant.taskdefs.LogStreamHandler#stop()
+			//				 */
+			//				public void stop() {
+			//					byte[] written = baos.toByteArray();
+			//					System.err.print(new String(written));
+			//					super.stop();
+			//				}
+			//			};
 
 			Execute exe = new Execute(handler);
 			exe.setAntRun(project);
@@ -1539,9 +1539,9 @@ public class AjcTask extends MatchingTask {
 
 		if (argfiles != null) {
 			String[] files = argfiles.list();
-			for (int i = 0; i < files.length; i++) {
-				File argfile = project.resolveFile(files[i]);
-				if (check(argfile, files[i], false, location)) {
+			for (String file : files) {
+				File argfile = project.resolveFile(file);
+				if (check(argfile, file, false, location)) {
 					list.add("-argfile");
 					list.add(argfile.getAbsolutePath());
 				}
@@ -1549,9 +1549,9 @@ public class AjcTask extends MatchingTask {
 		}
 		if (inxmlfiles != null) {
 			String[] files = inxmlfiles.list();
-			for (int i = 0; i < files.length; i++) {
-				File inxmlfile = project.resolveFile(files[i]);
-				if (check(inxmlfile, files[i], false, location)) {
+			for (String file : files) {
+				File inxmlfile = project.resolveFile(file);
+				if (check(inxmlfile, file, false, location)) {
 					list.add("-xmlConfigured");
 					list.add(inxmlfile.getAbsolutePath());
 				}
@@ -1560,13 +1560,13 @@ public class AjcTask extends MatchingTask {
 		if (srcdir != null) {
 			// todo: ignore any srcdir if any argfiles and no explicit includes
 			String[] dirs = srcdir.list();
-			for (int i = 0; i < dirs.length; i++) {
-				File dir = project.resolveFile(dirs[i]);
-				check(dir, dirs[i], true, location);
+			for (String dir2 : dirs) {
+				File dir = project.resolveFile(dir2);
+				check(dir, dir2, true, location);
 				// relies on compiler to prune non-source files
 				String[] files = getDirectoryScanner(dir).getIncludedFiles();
-				for (int j = 0; j < files.length; j++) {
-					File file = new File(dir, files[j]);
+				for (String file2 : files) {
+					File file = new File(dir, file2);
 					if (FileUtil.hasSourceSuffix(file)) {
 						if (!list.contains(file.getAbsolutePath())) {
 							list.add(file.getAbsolutePath());
@@ -1654,12 +1654,12 @@ public class AjcTask extends MatchingTask {
 				patternSet.setProject(project);
 				patternSet.setIncludes("**/*");
 				patternSet.setExcludes("**/*.class");
-				for (int i = 0; i < paths.length; i++) {
+				for (String path : paths) {
 					Expand unzip = new Expand();
 					unzip.setProject(project);
 					unzip.setTaskName(taskName);
 					unzip.setDest(destDir);
-					unzip.setSrc(new File(paths[i]));
+					unzip.setSrc(new File(path));
 					unzip.addPatternset(patternSet);
 					unzip.execute();
 				}
@@ -1671,9 +1671,9 @@ public class AjcTask extends MatchingTask {
 				Copy copy = new Copy();
 				copy.setProject(project);
 				copy.setTodir(destDir);
-				for (int i = 0; i < paths.length; i++) {
+				for (String path : paths) {
 					FileSet fileSet = new FileSet();
-					fileSet.setDir(new File(paths[i]));
+					fileSet.setDir(new File(path));
 					fileSet.setIncludes("**/*");
 					fileSet.setExcludes(sourceRootCopyFilter);
 					copy.addFileset(fileSet);
@@ -1688,8 +1688,8 @@ public class AjcTask extends MatchingTask {
 				copy.setProject(project);
 				copy.setTodir(destDir);
 				boolean gotDir = false;
-				for (int i = 0; i < paths.length; i++) {
-					File inpathDir = new File(paths[i]);
+				for (String path : paths) {
+					File inpathDir = new File(path);
 					if (inpathDir.isDirectory() && inpathDir.canRead()) {
 						if (!gotDir) {
 							gotDir = true;
@@ -1730,8 +1730,8 @@ public class AjcTask extends MatchingTask {
 		if (copyInjars) {
 			String[] paths = injars.list();
 			if (!LangUtil.isEmpty(paths)) {
-				for (int i = 0; i < paths.length; i++) {
-					File jarFile = new File(paths[i]);
+				for (String path : paths) {
+					File jarFile = new File(path);
 					zipfileset = new ZipFileSet();
 					zipfileset.setProject(project);
 					zipfileset.setSrc(jarFile);
@@ -1744,8 +1744,8 @@ public class AjcTask extends MatchingTask {
 		if ((null != sourceRootCopyFilter) && (null != sourceRoots)) {
 			String[] paths = sourceRoots.list();
 			if (!LangUtil.isEmpty(paths)) {
-				for (int i = 0; i < paths.length; i++) {
-					File srcRoot = new File(paths[i]);
+				for (String path : paths) {
+					File srcRoot = new File(path);
 					FileSet fileset = new FileSet();
 					fileset.setProject(project);
 					fileset.setDir(srcRoot);
@@ -1758,8 +1758,8 @@ public class AjcTask extends MatchingTask {
 		if ((null != inpathDirCopyFilter) && (null != inpath)) {
 			String[] paths = inpath.list();
 			if (!LangUtil.isEmpty(paths)) {
-				for (int i = 0; i < paths.length; i++) {
-					File inpathDir = new File(paths[i]);
+				for (String path : paths) {
+					File inpathDir = new File(path);
 					if (inpathDir.isDirectory() && inpathDir.canRead()) {
 						FileSet fileset = new FileSet();
 						fileset.setProject(project);
@@ -1780,8 +1780,8 @@ public class AjcTask extends MatchingTask {
 	 * Add specified source files.
 	 */
 	void addFiles(File[] paths) {
-		for (int i = 0; i < paths.length; i++) {
-			addFile(paths[i]);
+		for (File path : paths) {
+			addFile(path);
 		}
 	}
 
@@ -2009,8 +2009,8 @@ public class AjcTask extends MatchingTask {
 			if (isEmpty(input)) {
 				return null;
 			}
-			for (int i = 0; i < validOptions.length; i++) {
-				if (input.equals(validOptions[i])) {
+			for (String validOption : validOptions) {
+				if (input.equals(validOption)) {
 					if (isEmpty(prefix)) {
 						addFlag(input, true);
 					} else {
@@ -2073,8 +2073,8 @@ public class AjcTask extends MatchingTask {
 				File userDir = new File(userDirName);
 				tmpFile = File.createTempFile("argfile", "", userDir);
 				out = new PrintWriter(new FileWriter(tmpFile));
-				for (int i = 0; i < args.length; i++) {
-					out.println(args[i]);
+				for (String arg : args) {
+					out.println(arg);
 				}
 				out.flush();
 				return new String[] { "-argfile", tmpFile.getAbsolutePath() };

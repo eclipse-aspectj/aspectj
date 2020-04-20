@@ -84,7 +84,7 @@ public class LangUtil {
 			if (vm == null) {
 				new RuntimeException(
 						"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version")
-						.printStackTrace(System.err);
+				.printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
 				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)*
@@ -107,7 +107,7 @@ public class LangUtil {
 		} catch (Throwable t) {
 			new RuntimeException(
 					"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version", t)
-					.printStackTrace(System.err);
+			.printStackTrace(System.err);
 			vmVersion = 1.5;
 		}
 	}
@@ -129,7 +129,7 @@ public class LangUtil {
 		return 1.3 <= vmVersion;
 	}
 
-	public static boolean is14VMOrGreater() {
+	public static boolean is1dot4VMOrGreater() {
 		return 1.4 <= vmVersion;
 	}
 
@@ -169,6 +169,9 @@ public class LangUtil {
 		return 13 <= vmVersion;
 	}
 
+	public static boolean is14VMOrGreater() {
+		return 14 <= vmVersion;
+	}
 
 	/**
 	 * Shorthand for "if null, throw IllegalArgumentException"
@@ -1001,7 +1004,7 @@ public class LangUtil {
 	public static class StringChecker {
 		static StringChecker TEST_PACKAGES = new StringChecker(new String[] { "org.aspectj.testing",
 				"org.eclipse.jdt.internal.junit", "junit.framework.",
-				"org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner" });
+		"org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner" });
 
 		String[] infixes;
 
@@ -1123,8 +1126,8 @@ public class LangUtil {
 			File binDir = new File(javaHome, "bin");
 			if (binDir.isDirectory() && binDir.canRead()) {
 				String[] execs = new String[] { "java", "java.exe" };
-				for (int i = 0; i < execs.length; i++) {
-					result = new File(binDir, execs[i]);
+				for (String exec : execs) {
+					result = new File(binDir, exec);
 					if (result.canRead()) {
 						break;
 					}
@@ -1514,7 +1517,7 @@ public class LangUtil {
 	}
 
 	public static String getJavaHome() {
-	    return System.getProperty("java.home");
+		return System.getProperty("java.home");
 	}
 
 }

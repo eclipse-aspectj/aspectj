@@ -92,8 +92,10 @@
      <compile files="Failing.java" options="-1.5"/>
      <run class="Failing">
        <stderr>
-          <line text="On TestInterface:@TestAnnotation(value=true)"/>
-          <line text="On Failing:@TestAnnotation(value=true)"/>
+          <line text="On TestInterface:@TestAnnotation(value=true)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+          <line text="On TestInterface:@TestAnnotation(true)" vm="14+"/>
+          <line text="On Failing:@TestAnnotation(value=true)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+          <line text="On Failing:@TestAnnotation(true)" vm="14+"/>
        </stderr>
      </run>
     </ajc-test>
@@ -102,8 +104,10 @@
      <compile files="Failing2.java" options="-1.5"/>
      <run class="Failing2">
        <stderr>
-          <line text="On TestInterface:@TestAnnotation(value=true)"/>
-          <line text="On Failing2:@TestAnnotation(value=true)"/>
+          <line text="On TestInterface:@TestAnnotation(value=true)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+          <line text="On TestInterface:@TestAnnotation(true)" vm="14+"/>
+          <line text="On Failing2:@TestAnnotation(value=true)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+          <line text="On Failing2:@TestAnnotation(true)" vm="14+"/>
        </stderr>
      </run>
     </ajc-test>

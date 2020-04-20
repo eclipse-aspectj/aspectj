@@ -90,6 +90,8 @@ public interface Constants {
 	public final static short MINOR_12 = 0;
 	public final static short MAJOR_13 = 57;
 	public final static short MINOR_13 = 0;
+	public final static short MAJOR_14 = 58;
+	public final static short MINOR_14 = 0;
 
 	public final static int PREVIEW_MINOR_VERSION = 65535;
 
@@ -666,13 +668,13 @@ public interface Constants {
 	public static final short KNOWN_ATTRIBUTES = 28;
 
 	public static final String[] ATTRIBUTE_NAMES = {
-		"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
-		"InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
-		"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
-		"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod",
-		"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
-		"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers"
-		};
+			"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
+			"InnerClasses", "Synthetic", "Deprecated", "PMGClass", "Signature", "StackMap",
+			"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
+			"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod",
+			"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
+			"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers"
+	};
 
 	/**
 	 * Constants used in the StackMap attribute.
@@ -688,5 +690,5 @@ public interface Constants {
 	public static final byte ITEM_NewObject = 8;
 
 	public static final String[] ITEM_NAMES = { "Bogus", "Integer", "Float", "Double", "Long", "Null", "InitObject", "Object",
-			"NewObject" };
+	"NewObject" };
 }

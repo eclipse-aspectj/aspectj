@@ -201,8 +201,8 @@ public class ClassPath implements Serializable {
 		ArrayList<String> dirs = new ArrayList<String>();
 		getPathComponents(ext_path, dirs);
 
-		for (Iterator<String> e = dirs.iterator(); e.hasNext();) {
-			File ext_dir = new File(e.next());
+		for (String string : dirs) {
+			File ext_dir = new File(string);
 			String[] extensions = ext_dir.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
@@ -212,8 +212,8 @@ public class ClassPath implements Serializable {
 			});
 
 			if (extensions != null)
-				for (int i = 0; i < extensions.length; i++)
-					list.add(ext_dir.toString() + File.separatorChar + extensions[i]);
+				for (String extension : extensions)
+					list.add(ext_dir.toString() + File.separatorChar + extension);
 		}
 
 		StringBuffer buf = new StringBuffer();
@@ -226,13 +226,14 @@ public class ClassPath implements Serializable {
 		}
 
 		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem
-        if (vm_version.startsWith("9") || vm_version.startsWith("10")
-        	|| vm_version.startsWith("11")
-        	|| vm_version.startsWith("12")
-        	|| vm_version.startsWith("13")) {
-        		buf.insert(0, File.pathSeparatorChar);
-        		buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);
-        }
+		if (vm_version.startsWith("9") || vm_version.startsWith("10")
+				|| vm_version.startsWith("11")
+				|| vm_version.startsWith("12")
+				|| vm_version.startsWith("13")
+				|| vm_version.startsWith("14")) {
+			buf.insert(0, File.pathSeparatorChar);
+			buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);
+		}
 
 		return buf.toString().intern();
 	}
@@ -277,10 +278,10 @@ public class ClassPath implements Serializable {
 	 * @return class file for the java class
 	 */
 	public ClassFile getClassFile(String name, String suffix) throws IOException {
-		for (int i = 0; i < paths.length; i++) {
+		for (PathEntry path : paths) {
 			ClassFile cf;
 
-			if ((cf = paths[i].getClassFile(name, suffix)) != null)
+			if ((cf = path.getClassFile(name, suffix)) != null)
 				return cf;
 		}
 
@@ -460,24 +461,24 @@ public class ClassPath implements Serializable {
 			for (java.nio.file.Path path : roots) {
 				try {
 					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                        @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            if (file.getNameCount() > 2
-                                && matcher.matches(file.getFileName())) {
-                                Path classPath = file.subpath(2, file.getNameCount());
-                                fileMap.put(classPath.toString(), file);
-                            }
+						@Override
+						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+							if (file.getNameCount() > 2
+									&& matcher.matches(file.getFileName())) {
+								Path classPath = file.subpath(2, file.getNameCount());
+								fileMap.put(classPath.toString(), file);
+							}
 
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
+							return FileVisitResult.CONTINUE;
+						}
+					});
 				}
 				catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
 			return fileMap;
- 		}
+		}
 
 		private static class ByteBasedClassFile implements ClassFile {
 

@@ -20,8 +20,8 @@ import org.aspectj.util.LangUtil;
  */
 public class AjcTest {
 
-//	private static boolean is13VMOrGreater = true;
-	private static boolean is14VMOrGreater = true;
+	//	private static boolean is13VMOrGreater = true;
+	private static boolean is1dot4VMOrGreater = true;
 	private static boolean is15VMOrGreater = false;
 	private static boolean is16VMOrGreater = false;
 	private static boolean is17VMOrGreater = false;
@@ -31,9 +31,10 @@ public class AjcTest {
 	private static boolean is11VMOrGreater = false;
 	private static boolean is12VMOrGreater = false;
 	private static boolean is13VMOrGreater = false;
+	private static boolean is14VMOrGreater = false;
 
 	static { // matching logic is also in org.aspectj.util.LangUtil
-		is14VMOrGreater = LangUtil.is14VMOrGreater();
+		is1dot4VMOrGreater = LangUtil.is1dot4VMOrGreater();
 		is15VMOrGreater = LangUtil.is15VMOrGreater();
 		is16VMOrGreater = LangUtil.is16VMOrGreater();
 		is17VMOrGreater = LangUtil.is17VMOrGreater();
@@ -43,6 +44,7 @@ public class AjcTest {
 		is11VMOrGreater = LangUtil.is11VMOrGreater();
 		is12VMOrGreater = LangUtil.is12VMOrGreater();
 		is13VMOrGreater = LangUtil.is13VMOrGreater();
+		is14VMOrGreater = LangUtil.is14VMOrGreater();
 	}
 
 	private List<ITestStep> testSteps = new ArrayList<ITestStep>();
@@ -80,7 +82,7 @@ public class AjcTest {
 	public boolean canRunOnThisVM() {
 		if (vmLevel.equals("1.3")) return true;
 		boolean canRun = true;
-		if (vmLevel.equals("1.4")) canRun = is14VMOrGreater;
+		if (vmLevel.equals("1.4")) canRun = is1dot4VMOrGreater;
 		if (vmLevel.equals("1.5")) canRun = is15VMOrGreater;
 		if (vmLevel.equals("1.6")) canRun = is16VMOrGreater;
 		if (vmLevel.equals("1.7")) canRun = is17VMOrGreater;
@@ -90,9 +92,10 @@ public class AjcTest {
 		if (vmLevel.equals("11")) canRun = is11VMOrGreater;
 		if (vmLevel.equals("12")) canRun = is12VMOrGreater;
 		if (vmLevel.equals("13")) canRun = is13VMOrGreater;
+		if (vmLevel.equals("14")) canRun = is14VMOrGreater;
 		if (!canRun) {
 			System.out.println("***SKIPPING TEST***" + getTitle()+ " needs " + getVmLevel()
-					+ ", currently running on " + System.getProperty("java.vm.version"));
+			+ ", currently running on " + System.getProperty("java.vm.version"));
 		}
 		return canRun;
 	}

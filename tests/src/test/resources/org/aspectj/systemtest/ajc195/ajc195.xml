@@ -103,31 +103,6 @@
         </run>
     </ajc-test>
     
-    
-    <ajc-test dir="features195/textblock" vm="13" title="textblock 1">
-        <compile files="Code.java" options="--enable-preview -source 13">
-        </compile>
-        <run class="Code" vmargs="--enable-preview">
-	        <stdout>
-	        <line text="this is a text"/>
-	        <!--  the incidental space is removed with a trim in output matching but the test app doesn't remove it when printing it, why? -->
-			<line text="block"/>
-			<line text=""/>
-	        </stdout>
-        </run>
-    </ajc-test>
-
-    <ajc-test dir="features195/textblock" vm="13" title="textblock 2">
-        <compile files="Code2.java" options="--enable-preview -source 13">
-        </compile>
-        <run class="Code2" vmargs="--enable-preview">
-	        <stdout>
-	        <!--  why is the incidental space not removed here?? -->
-			<line text="this is a text"/>
-			<line text="block in advice"/>
-			<line text=""/>
-	        </stdout>
-        </run>
-    </ajc-test>
+   
 
 </suite>

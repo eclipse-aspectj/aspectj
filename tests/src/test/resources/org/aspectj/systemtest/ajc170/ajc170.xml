@@ -184,7 +184,8 @@
            <line text="@AnnoBoolean(value=true, zzz=false)"/>
            <line text="@AnnoClass(value=class java.lang.Integer, ccc=class java.lang.String)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
            <line text="@AnnoClass(value=java.lang.Integer.class, ccc=java.lang.String.class)" vm="9+"/>
-           <line text="@AnnoLong(value=999, jjj=111)"/>
+           <line text="@AnnoLong(value=999L, jjj=111L)" vm="14+"/>
+           <line text="@AnnoLong(value=999, jjj=111)" vm="1.2,1.3,1.4,1.5,1.6,1.6,1.8,9,10,11,12,13"/>
            <line text="@AnnoString(value=set from xml, sss=xyz)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
            <line text="@AnnoString(value=&quot;set from xml&quot;, sss=&quot;xyz&quot;)" vm="9+"/>
            <line text="Annotations on field2? true"/>
@@ -209,7 +210,8 @@
            <line text="@AnnoShort(value=8, sss=3)"/>
            <line text="Annotations on field2? true"/>
            <line text="Annotation count is 2"/>
-           <line text="@AnnoByte(value=88, bbb=66)"/>
+           <line text="@AnnoByte(value=88, bbb=66)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+           <line text="@AnnoByte(value=(byte)0x58, bbb=(byte)0x42)" vm="14+"/>
            <line text="@AnnoInt(iii=111, value=99)"/>
        </stdout>
      </run>

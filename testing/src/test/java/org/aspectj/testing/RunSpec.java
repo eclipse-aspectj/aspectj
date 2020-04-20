@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Adrian Colyer,  Abraham Nevado (lucierna)
  * ******************************************************************/
 package org.aspectj.testing;
@@ -56,16 +56,16 @@ public class RunSpec implements ITestStep {
 			System.err.println("Warning, message spec for run command is currently ignored (org.aspectj.testing.RunSpec)");
 		}
 		String[] args = buildArgs();
-//		 System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
+		//		 System.err.println("? execute() inTestCase='" + inTestCase + "', ltwFile=" + ltwFile);
 		boolean useLtw = copyLtwFile(inTestCase.getSandboxDirectory());
-		
+
 		copyXlintFile(inTestCase.getSandboxDirectory());
 		try {
 			setSystemProperty("test.base.dir", inTestCase.getSandboxDirectory().getAbsolutePath());
 
 			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), getModuleToRun(), args, vmargs, getClasspath(), getModulepath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 
-			if (stdErrSpec != null) { 
+			if (stdErrSpec != null) {
 				stdErrSpec.matchAgainst(rr.getStdErr(), orderedStderr);
 			}
 			if (stdOutSpec != null) {
@@ -121,7 +121,7 @@ public class RunSpec implements ITestStep {
 	public void setTest(AjcTest test) {
 		this.myTest = test;
 	}
-	
+
 	public AjcTest getTest() {
 		return this.myTest;
 	}
@@ -149,7 +149,7 @@ public class RunSpec implements ITestStep {
 	public void setModulepath(String mpath) {
 		this.mpath = mpath;
 	}
-	
+
 	public void setClasspath(String cpath) {
 		this.cpath = cpath;
 	}
@@ -165,19 +165,19 @@ public class RunSpec implements ITestStep {
 	public void setOrderedStderr(String orderedStderr) {
 		this.orderedStderr = orderedStderr;
 	}
-	
+
 	public String getClassToRun() {
 		return classToRun;
 	}
-	
+
 	public void setClassToRun(String classToRun) {
 		this.classToRun = classToRun;
 	}
-	
+
 	public void setModuleToRun(String moduleToRun) {
 		this.moduleToRun = moduleToRun;
 	}
-	
+
 	public String getModuleToRun() {
 		return this.moduleToRun;
 	}

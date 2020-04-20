@@ -51,46 +51,6 @@ Method call
         </run>
     </ajc-test>
     
-    <!-- with the release of 13 this behaviour seems to have moved from 12 to 13?? -->
-    <ajc-test dir="features193" vm="13" title="switch 1">
-        <compile files="Switch1.java" options="-13 --enable-preview">	
-        </compile>
-        <run class="Switch1" vmargs="--enable-preview">
-	        <stdout>
-	        <line text="0"/>
-	        <line text="1"/>
-	        <line text="2"/>
-	        <line text="3"/>
-	        </stdout>
-        </run>
-    </ajc-test>
-    
-    <ajc-test dir="features193" vm="13" title="switch 2">
-        <compile files="Switch2.java" options="--enable-preview -source 13">
-        </compile>
-        <run class="Switch2" vmargs="--enable-preview">
-	        <stdout>
-	        <line text="0"/>
-	        <line text="2"/>
-	        <line text="4"/>
-	        <line text="6"/>
-	        </stdout>
-        </run>
-    </ajc-test>
-    
-    <ajc-test dir="features193" vm="13" title="switch 3">
-        <compile files="Switch3.java" options="--enable-preview -source 13">
-        </compile>
-        <run class="Switch3" vmargs="--enable-preview">
-	        <stdout>
-	        <line text="3"/>
-	        <line text="6"/>
-	        <line text="9"/>
-	        <line text="12"/>
-	        </stdout>
-        </run>
-    </ajc-test>
-    
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - reweaving">
         <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
 	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>

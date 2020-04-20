@@ -11,7 +11,6 @@
  * ******************************************************************/
 package org.aspectj.testing;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -87,10 +86,8 @@ public class OutputSpec {
 		expected.addAll(expectedOutputLines);
 		List<String> found = new ArrayList<String>();
 		found.addAll(outputFound);
-		for (Iterator<String> iterator = outputFound.iterator(); iterator.hasNext();) {
-			String lineFound = iterator.next();
-			for (Iterator<String> iterator2 = expectedOutputLines.iterator(); iterator2.hasNext();) {
-				String lineExpected = iterator2.next();
+		for (String lineFound : outputFound) {
+			for (String lineExpected : expectedOutputLines) {
 				if (lineFound.indexOf(lineExpected)!= -1) {
 					found.remove(lineFound);
 					expected.remove(lineExpected);
@@ -107,7 +104,7 @@ public class OutputSpec {
 		StringBuffer failMessage = new StringBuffer();
 		failMessage.append("\n  expecting output:\n");
 		for (String line: expectedOutputLines) {
-			failMessage.append("\n");
+			failMessage.append(line+"\n");
 		}
 		failMessage.append("  but found output:\n");
 		failMessage.append(output);

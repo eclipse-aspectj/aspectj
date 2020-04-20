@@ -99,7 +99,8 @@
 		<run class="Target4">
 		<stdout>
 		<line text="1"/>
-		<line text="@Tagged(value=31)"/>
+		<line text="@Tagged(value=31)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
+		<line text="@Tagged(31)" vm="14+"/>
 		</stdout>
 		</run>
 	</ajc-test>

@@ -3813,46 +3813,64 @@
        <stdout>
          <line text="target-ok an X execution(void X.foo())"/>
          <line text="@this-ok @MyAnnotation(value=my-value) execution(void X.foo())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@this-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9+"/>
+         <line text="@this-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9,10,11,12,13"/>
+         <line text="@this-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.foo())" vm="14+"/>
          <line text="@target-ok @MyAnnotation(value=my-value) execution(void X.foo())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@target-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9+"/>
+         <line text="@target-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9,10,11,12,13"/>
+         <line text="@target-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.foo())" vm="14+"/>
          <line text="@within-ok @MyAnnotation(value=my-value) execution(void X.foo())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@within-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9+"/>
+         <line text="@within-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.foo())" vm="9,10,11,12,13"/>
+         <line text="@within-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.foo())" vm="14+"/>
          <line text="cflow-ok an X a Y set(Y X.y)"/>
          <line text="@annotation-ok-sub @MyAnnotation(value=bar) execution(void X.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@annotation-ok-sub @MyAnnotation(value=&quot;bar&quot;) execution(void X.bar())" vm="9+"/>
+         <line text="@annotation-ok-sub @MyAnnotation(value=&quot;bar&quot;) execution(void X.bar())" vm="9,10,11,12,13"/>
+         <line text="@annotation-ok-sub @MyAnnotation(&quot;bar&quot;) execution(void X.bar())" vm="14+"/>
          <line text="@annotation-ok @MyAnnotation(value=bar) execution(void X.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@annotation-ok @MyAnnotation(value=&quot;bar&quot;) execution(void X.bar())" vm="9+"/>
+         <line text="@annotation-ok @MyAnnotation(value=&quot;bar&quot;) execution(void X.bar())" vm="9,10,11,12,13"/>
+         <line text="@annotation-ok @MyAnnotation(&quot;bar&quot;) execution(void X.bar())" vm="14+"/>
          <line text="target-ok an X execution(void X.bar())"/>
          <line text="@this-ok @MyAnnotation(value=my-value) execution(void X.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@this-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9+"/>
+         <line text="@this-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9,10,11,12,13"/>
+         <line text="@this-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.bar())" vm="14+"/>
          <line text="@target-ok @MyAnnotation(value=my-value) execution(void X.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@target-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9+"/>
+         <line text="@target-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9,10,11,12,13"/>
+         <line text="@target-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.bar())" vm="14+"/>
          <line text="@within-ok @MyAnnotation(value=my-value) execution(void X.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@within-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9+"/>
+         <line text="@within-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void X.bar())" vm="9,10,11,12,13"/>
+         <line text="@within-ok @MyAnnotation(&quot;my-value&quot;) execution(void X.bar())" vm="14+"/>
          <line text="@args-ok @MyAnnotation(value=my-value) execution(void Y.foo(X))" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@args-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void Y.foo(X))" vm="9+"/>
+         <line text="@args-ok @MyAnnotation(value=&quot;my-value&quot;) execution(void Y.foo(X))" vm="9,10,11,12,13"/>
+         <line text="@args-ok @MyAnnotation(&quot;my-value&quot;) execution(void Y.foo(X))" vm="14+"/>
          <line text="args-ok an X execution(void Y.foo(X))"/>
          <line text="this-ok a Y execution(void Y.foo(X))"/>
          <line text="@this-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9+"/>
+         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9,10,11,12,13"/>
+         <line text="@this-ok @MyAnnotation(&quot;on Y&quot;) execution(void Y.foo(X))" vm="14+"/>
          <line text="@target-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@target-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9+"/>
+         <line text="@target-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9,10,11,12,13"/>
+         <line text="@target-ok @MyAnnotation(&quot;on Y&quot;) execution(void Y.foo(X))" vm="14+"/>
          <line text="@within-ok @MyAnnotation(value=on Y) execution(void Y.foo(X))" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@within-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9+"/>
+         <line text="@within-ok @MyAnnotation(value=&quot;on Y&quot;) execution(void Y.foo(X))" vm="9,10,11,12,13"/>
+         <line text="@within-ok @MyAnnotation(&quot;on Y&quot;) execution(void Y.foo(X))" vm="14+"/>
          <line text="@annotation-ok-sub @MyAnnotation(value=my-value) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@annotation-ok-sub @MyAnnotation(value=&quot;my-value&quot;) execution(X Y.bar())" vm="9+"/>
+         <line text="@annotation-ok-sub @MyAnnotation(value=&quot;my-value&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
+         <line text="@annotation-ok-sub @MyAnnotation(&quot;my-value&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="@annotation-ok @MyAnnotation(value=my-value) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@annotation-ok @MyAnnotation(value=&quot;my-value&quot;) execution(X Y.bar())" vm="9+"/>
+         <line text="@annotation-ok @MyAnnotation(value=&quot;my-value&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
+         <line text="@annotation-ok @MyAnnotation(&quot;my-value&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="this-ok a Y execution(X Y.bar())"/>
          <line text="@this-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/> 
-         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9+"/> 
+         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/> 
+         <line text="@this-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/> 
          <line text="@target-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@target-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9+"/>
+         <line text="@target-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
+         <line text="@target-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="@within-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@within-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9+"/>
+         <line text="@within-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
+         <line text="@within-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="@withincode-ok @MyAnnotation(value=my-value) get(X Y.x)" vm="1.5,1.6,1.7,1.8"/>
-         <line text="@withincode-ok @MyAnnotation(value=&quot;my-value&quot;) get(X Y.x)" vm="9+"/>
+         <line text="@withincode-ok @MyAnnotation(value=&quot;my-value&quot;) get(X Y.x)" vm="9,10,11,12,13"/>
+         <line text="@withincode-ok @MyAnnotation(&quot;my-value&quot;) get(X Y.x)" vm="14+"/>
        </stdout>
      </run>
    </ajc-test>

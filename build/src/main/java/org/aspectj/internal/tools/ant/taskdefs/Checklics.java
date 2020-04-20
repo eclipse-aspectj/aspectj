@@ -243,11 +243,11 @@ public class Checklics extends MatchingTask {
 	private void visitAll(FileVisitor visitor) {
 		// List filelist = new ArrayList();
 		String[] dirs = sourcepath.list();
-		for (int i = 0; i < dirs.length; i++) {
-			File dir = project.resolveFile(dirs[i]);
+		for (String dir2 : dirs) {
+			File dir = project.resolveFile(dir2);
 			String[] files = getDirectoryScanner(dir).getIncludedFiles();
-			for (int j = 0; j < files.length; j++) {
-				File file = new File(dir, files[j]);
+			for (String file2 : files) {
+				File file = new File(dir, file2);
 				String path = file.getPath();
 				if (path.endsWith(".java")) {
 					visitor.visit(file);
@@ -343,9 +343,9 @@ public class Checklics extends MatchingTask {
 	public static class License {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
-		new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008",
-				"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2001 ", "2000 ",
-				"1999 " };
+				new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008",
+						"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2001 ", "2000 ",
+		"1999 " };
 		public final String tag;
 		public final String license;
 		private final String[] copyright;

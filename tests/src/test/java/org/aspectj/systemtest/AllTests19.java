@@ -12,6 +12,7 @@ import org.aspectj.systemtest.ajc191.AllTestsAspectJ191;
 import org.aspectj.systemtest.ajc192.AllTestsAspectJ192;
 import org.aspectj.systemtest.ajc193.AllTestsAspectJ193;
 import org.aspectj.systemtest.ajc195.AllTestsAspectJ195;
+import org.aspectj.systemtest.ajc196.AllTestsAspectJ196;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -30,6 +31,7 @@ public class AllTests19 {
 		suite.addTest(AllTestsAspectJ193.suite());
 		// there were no new tests for 1.9.4
 		suite.addTest(AllTestsAspectJ195.suite());
+		suite.addTest(AllTestsAspectJ196.suite());
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$
 		return suite;

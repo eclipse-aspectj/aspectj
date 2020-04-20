@@ -9,14 +9,14 @@ import org.aspectj.util.LangUtil;
 
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Wes Isberg       initial implementation
  * ******************************************************************/
 
 import junit.framework.Test;
@@ -30,14 +30,14 @@ public class TestsModuleTests extends TestCase {
 		TestSuite suite = new TestSuite(name);
 		// compiler tests, wrapped for JUnit
 		if (LangUtil.is19VMOrGreater()) {
-			suite.addTest(AllTests19.suite());	
+			suite.addTest(AllTests19.suite());
 		} else if (LangUtil.is18VMOrGreater()) {
-			suite.addTest(AllTests18.suite());	
+			suite.addTest(AllTests18.suite());
 		} else if (LangUtil.is15VMOrGreater()) {
 			// suite.addTest(AllTests15.suite());
 			suite.addTest(AllTests17.suite()); // there are currently (28/11/06) no tests specific to a 1.6/1.7 vm - so we can do
-												// this
-		} else if (LangUtil.is14VMOrGreater()) {
+			// this
+		} else if (LangUtil.is1dot4VMOrGreater()) {
 			System.err.println("Skipping tests for 1.5");
 			// suite.addTest(TestUtil.skipTest("for 1.5"));
 			suite.addTest(AllTests14.suite());

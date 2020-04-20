@@ -32,13 +32,6 @@ public class Ajc195Tests extends XMLBasedAjcTestCase {
 		runTest("around finally blocks and unlinking");
 	}
 
-	public void testTextBlock1() {
-		runTest("textblock 1");
-	}
-
-	public void testTextBlock2() {
-		runTest("textblock 2");
-	}
 
 	// ---
 
