@@ -66,6 +66,8 @@ public class RuntimePerformanceTest extends TestCase {
 		task.cancel();
 	}
 
+	public void testempty() {}
+
 	// No longer valid with Java being so quick now...
 	public void xtestToString () {
 		Signature signature = makeMethodSig("test");
