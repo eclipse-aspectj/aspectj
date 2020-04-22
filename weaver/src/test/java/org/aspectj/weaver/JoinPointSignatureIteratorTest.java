@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2009 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *   Andy Clement
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -52,7 +52,7 @@ public class JoinPointSignatureIteratorTest extends TestCase {
 			if (expectedResults.containsKey(rm.toString())) {
 				System.out.println("\nChecking: " + rm);
 				int i = 0;
-				List/* String */sigs = (List) expectedResults.get(rm.toString());
+				List<String> sigs = expectedResults.get(rm.toString());
 				Iterator jpsi = rm.getJoinPointSignatures(w);
 				while (jpsi.hasNext()) {
 					ResolvedMember sig = (ResolvedMember) jpsi.next();
@@ -75,32 +75,32 @@ public class JoinPointSignatureIteratorTest extends TestCase {
 		}
 	}
 
-	public static Map expectedResults = new HashMap();
+	public static Map<String, List<String>> expectedResults = new HashMap<>();
 
 	static {
-		List sigs = new ArrayList();
+		List<String> sigs = new ArrayList<String>();
 		sigs.add("java.lang.Object $Proxy1.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object MessageService.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		expectedResults.put("java.lang.Object $Proxy1.get1(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList();
+		sigs = new ArrayList<String>();
 		sigs.add("java.lang.Object $Proxy1.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object MessageService.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		expectedResults.put("java.lang.Object $Proxy1.get2(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList();
+		sigs = new ArrayList<String>();
 		sigs.add("java.lang.Object $Proxy1.get1(java.lang.Long)");
 		expectedResults.put("java.lang.Object $Proxy1.get1(java.lang.Long)", sigs);
 
-		sigs = new ArrayList();
+		sigs = new ArrayList<String>();
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		expectedResults.put("java.lang.Object GenericService.get1(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList();
+		sigs = new ArrayList<String>();
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		expectedResults.put("java.lang.Object GenericService.get2(java.io.Serializable)", sigs);
 	}

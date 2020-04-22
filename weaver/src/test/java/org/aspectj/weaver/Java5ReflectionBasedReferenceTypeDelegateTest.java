@@ -66,7 +66,7 @@ public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBas
 		ReferenceType rawType = (ReferenceType) world.resolve(javaUtilMap);
 		assertTrue("Should be the raw type ?!? " + rawType.getTypekind(), rawType.isRawType());
 
-		ReferenceType genericType = (ReferenceType) rawType.getGenericType();
+		ReferenceType genericType = rawType.getGenericType();
 		assertTrue("Should be the generic type ?!? " + genericType.getTypekind(), genericType.isGenericType());
 
 		ResolvedType rt = rawType.getSuperclass();
@@ -83,7 +83,6 @@ public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBas
 	public void testAnnotationFinderClassRetention() throws Exception {
 		ResolvedType type = world.resolve(AnnoTesting.class.getName());
 		ResolvedMember[] ms = type.getDeclaredMethods();
-		int findMethod = findMethod("a", ms);
 		
 		ResolvedMember methodWithOnlyClassLevelAnnotation = ms[findMethod("a", ms)];
 		ResolvedMember methodWithOnlyRuntimeLevelAnnotation = ms[findMethod("b", ms)];
