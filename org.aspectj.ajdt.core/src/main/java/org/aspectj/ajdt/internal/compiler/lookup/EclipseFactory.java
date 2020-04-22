@@ -1100,10 +1100,16 @@ public class EclipseFactory {
 		typexToBinding.put(fromBinding(binding), binding);
 	}
 
-	public void addTypeBindingAndStoreInWorld(TypeBinding binding) {
+	public void addTypeBindingAndStoreInWorld(SourceTypeBinding binding) {
 		UnresolvedType ut = fromBinding(binding);
 		typexToBinding.put(ut, binding);
-		world.lookupOrCreateName(ut);
+		ReferenceType rt = world.lookupOrCreateName(ut);
+		// Ensure a delegate is set (#558995) 
+		// TODO the delegate is perhaps not 100% ideal as the decl is the aspect?
+		TypeDeclaration decl = binding.scope.referenceContext;
+		CompilationUnitDeclaration referenceCompilationUnit = binding.scope.referenceCompilationUnit();
+		EclipseSourceType t = new EclipseSourceType(rt, this, binding, decl, referenceCompilationUnit);
+		rt.setDelegate(t);
 	}
 
 	public Shadow makeShadow(ASTNode location, ReferenceContext context) {
