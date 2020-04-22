@@ -23,3 +23,9 @@ log.txt
 
 # MacOS X Finder
 .DS_Store
+
+# Linux
+.attach_pid*
+
+# No idea where these come from
+bin/
