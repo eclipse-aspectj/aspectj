@@ -1,4 +1,5 @@
 */bin
+.attach_pid*
 pom.xml.versionsBackup
 log.txt
 .vscode
