@@ -1,17 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- *               2005 Contributors
+ *               2005,2020 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     PARC     initial implementation
- *     Adrian Colyer, Andy Clement, overhaul for generics, Abraham Nevado
  * ******************************************************************/
-
 package org.aspectj.weaver;
 
 import java.lang.ref.Reference;
@@ -22,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -53,6 +47,12 @@ import org.aspectj.weaver.tools.TraceFactory;
 
 /**
  * A World is a collection of known types and crosscutting members.
+ *
+ * @author PARC
+ * @author Adrian Colyer
+ * @author Andy Clement
+ * @author Abraham Nevado
+ * @author Joseph MacFarlane
  */
 public abstract class World implements Dump.INode {
 
@@ -1179,7 +1179,15 @@ public abstract class World implements Dump.INode {
 
 		private void insertInExpendableMap(String key, ResolvedType type) {
 			if (useExpendableMap) {
-				if (!expendableMap.containsKey(key)) {
+				// Need to check both whether the entry is gone, or whether the entry has had
+				// the WR to the value cleared.
+				Reference<ResolvedType> existingReference = expendableMap.get(key);
+				if (existingReference == null || existingReference.get() == null) {
+					// If a previous key is in there, WeakHashMap.put will update the value on the
+					// entry but not the key. We can't allow this as the old key won't
+					// be directly referenced by the new type, meaning that the key and value
+					// might be GC'd independently.
+					expendableMap.remove(key);
 					if (policy == USE_SOFT_REFS) {
 						expendableMap.put(key, new SoftReference<ResolvedType>(type));
 					} else {
@@ -1246,9 +1254,14 @@ public abstract class World implements Dump.INode {
 				throw new BCException("Attempt to add generic type to typemap " + type.toString() + " (should be raw)");
 			}
 
-
 			if (w.isExpendable(type)) {
 				if (useExpendableMap) {
+					// If a previous key is in there, WeakHashMap.put will update the value on the
+					// entry but not the key. We can't allow this as the old key won't be directly
+					// referenced by the new type, meaning that the key and value might
+					// be GC'd independently.
+					expendableMap.remove(key);
+
 					// Dont use reference queue for tracking if not profiling...
 					if (policy == USE_WEAK_REFS) {
 						if (memoryProfiling) {
@@ -1421,8 +1434,8 @@ public abstract class World implements Dump.INode {
 				DeclarePrecedence orderer = null; // Records the declare
 				// precedence statement that
 				// gives the first ordering
-				for (Iterator<Declare> i = world.getCrosscuttingMembersSet().getDeclareDominates().iterator(); i.hasNext();) {
-					DeclarePrecedence d = (DeclarePrecedence) i.next();
+				for (Declare declare : world.getCrosscuttingMembersSet().getDeclareDominates()) {
+					DeclarePrecedence d = (DeclarePrecedence) declare;
 					int thisOrder = d.compare(firstAspect, secondAspect);
 					if (thisOrder != 0) {
 						if (orderer == null) {
