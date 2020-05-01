@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM 
+ * Copyright (c) 2006 IBM
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -368,8 +368,8 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IProgramElement ipe = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.METHOD, ipeLabel);
 		assertNotNull("Couldn't find '" + ipeLabel + "' element in the tree", ipe);
 		List<char[]> l = ipe.getParameterSignatures();
-		boolean eq = CharOperation.equals(((char[]) l.get(0)), expectedParm.toCharArray());
-		assertTrue("expected parameter to be '" + expectedParm + "' but found '" + new String(((char[]) l.get(0))) + "'", eq);
+		boolean eq = CharOperation.equals((l.get(0)), expectedParm.toCharArray());
+		assertTrue("expected parameter to be '" + expectedParm + "' but found '" + new String((l.get(0))) + "'", eq);
 	}
 
 	// ///////////////////////////////////////

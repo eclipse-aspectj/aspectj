@@ -2,6 +2,10 @@
 
 <suite>
 
+    <ajc-test dir="bugs196/558995" title="early resolution of supporting interfaces">
+    	<compile options="-14" files="foo/SynchronizedStaticAspect.aj foo/SynchronizedAspect.aj foo/SynchronizedTest.java foo/Synchronized.java"/>
+    </ajc-test>
+
 	<!-- switch now in Java14 and doesn't need -enable-preview flag -->
 	<ajc-test dir="features193" vm="14" title="switch 1">
 		<compile files="Switch1.java" options="-14">

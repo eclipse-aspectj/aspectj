@@ -18,6 +18,10 @@ import junit.framework.Test;
  */
 public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
 
+	public void testNPE_558995() {
+		runTest("early resolution of supporting interfaces");
+	}
+
 	public void testRecords() {
 		runTest("simple record");
 		checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);

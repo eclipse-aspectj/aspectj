@@ -16,7 +16,7 @@
 <compile files="Test2.java" options="-1.8 -XnoInline"/>
 </ajc-test>
 
-<ajc-test dir="bugs188/defaultmethods" title="default methods 1">
+<ajc-test dir="bugs188/defaultMethods" title="default methods 1">
 <compile files="Code.java" options="-1.8 -XnoInline"/>
 <run class="Code">
 <stdout>
@@ -27,7 +27,7 @@
 </ajc-test>
 
 
-<ajc-test dir="bugs188/defaultmethods" title="default methods 2">
+<ajc-test dir="bugs188/defaultMethods" title="default methods 2">
 <compile files="Code2.java" options="-1.8"/>
 <run class="Code2">
 <stdout>

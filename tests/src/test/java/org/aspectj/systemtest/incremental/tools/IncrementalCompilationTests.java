@@ -4,14 +4,16 @@
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
  * http://eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Andy Clement (SpringSource)         initial implementation
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
 
 import java.io.File;
+import java.lang.ref.Reference;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.aspectj.ajde.core.AjCompiler;
@@ -29,9 +31,11 @@ import org.aspectj.weaver.World;
 import org.aspectj.weaver.World.TypeMap;
 
 /**
- * Incremental compilation tests. MultiProjectIncrementalTests was getting unwieldy - started this new test class for 1.6.10.
- * 
+ * Incremental compilation tests. MultiProjectIncrementalTests was getting
+ * unwieldy - started this new test class for 1.6.10.
+ *
  * @author Andy Clement
+ * @author Joseph MacFarlane
  * @since 1.6.10
  */
 public class IncrementalCompilationTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
@@ -471,6 +475,42 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertEquals("Pjava/util/List<Ljava/lang/Integer;>;", fields[3].getGenericReturnType().getSignature());
 	}
 
+	public void testExpendableMapEntryReplacement() throws Exception {
+		String p = "PR278496_5";
+		initialiseProject(p);
+		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true");
+		build(p);
+		checkWasFullBuild();
+		alter(p, "inc1");
+		build(p);
+		checkWasntFullBuild();
+		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
+		AjBuildManager ajBuildManager = buildManager.getAjBuildManager();
+		World w = ajBuildManager.getWorld();
+
+		// Hold onto the signature but GC the type...
+		String signature = w.resolveToReferenceType("com.Foo").getSignature();
+		System.gc();
+		assertTrue("Map entry still present", w.getTypeMap().getExpendableMap().containsKey(signature));
+		assertNull("Type has been GC'd", w.getTypeMap().getExpendableMap().get(signature).get());
+
+		// Re-resolve the type and check that it has a new instance of the signature
+		// String
+		ReferenceType referenceType = w.resolveToReferenceType("com.Foo");
+		assertNotSame("New type has a new signature.", System.identityHashCode(signature),
+				System.identityHashCode(referenceType.getSignature()));
+
+		Map.Entry<String, Reference<ResolvedType>> entry = null;
+		for (Map.Entry<String, Reference<ResolvedType>> e : w.getTypeMap().getExpendableMap().entrySet()) {
+			if (referenceType.getSignature().equals(e.getKey())) {
+				entry = e;
+			}
+		}
+		assertEquals(
+				"Map is keyed by the same String instance that is the re-resolved type's signature, not by the previous instance.",
+				System.identityHashCode(referenceType.getSignature()), System.identityHashCode(entry.getKey()));
+	}
+
 	/**
 	 * This test is verifying the treatment of array types (here, String[]). These should be expendable but because the
 	 * ArrayReferenceType wasnt overriding isExposedToWeaver() an array had an apparent null delegate - this caused the isExpendable
@@ -757,8 +797,8 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 	private String stringify(Object[] arr) {
 		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < arr.length; i++) {
-			s.append(arr[i]);
+		for (Object element : arr) {
+			s.append(element);
 			s.append(" ");
 		}
 		return "[" + s.toString().trim() + "]";
