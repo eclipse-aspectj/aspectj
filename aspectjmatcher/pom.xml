@@ -10,14 +10,14 @@
 		<version>1.9.6.BUILD-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>aspectjweaver</artifactId>
+	<artifactId>aspectjmatcher</artifactId>
 	<packaging>pom</packaging>
-	<name>AspectJ Weaver</name>
+	<name>AspectJ Matcher</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>weaver</artifactId>
+			<artifactId>matcher</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
@@ -38,6 +38,7 @@
 			</plugin>
 			
 			
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -60,70 +61,73 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>aspectjweaver-assembly</id>
+						<id>aspectjmatcher-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>aspectjweaver-${project.version}</finalName>
+							<finalName>aspectjmatcher-${project.version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 							<archive>
 								<manifestEntries>
-									<Automatic-Module-Name>org.aspectj.weaver</Automatic-Module-Name>
+									<Automatic-Module-Name>org.aspectj.matcher</Automatic-Module-Name>
+									<!--
 									<Premain-Class>org.aspectj.weaver.loadtime.Agent</Premain-Class>
 									<Agent-Class>org.aspectj.weaver.loadtime.Agent</Agent-Class>
 									<Can-Redefine-Classes>true</Can-Redefine-Classes>
+									-->
 								</manifestEntries>
 
 
 								<manifestSections>
 									<manifestSection>
-										<name>org/aspectj/weaver/</name>
+										<name>org/aspectj/matcher/</name>
 										<manifestEntries>
 
-											<Specification-Title>AspectJ Weaver Classes</Specification-Title>
+											<Specification-Title>AspectJ Matcher Classes</Specification-Title>
 											<Specification-Version>${project.version}</Specification-Version>
 											<Specification-Vendor>https://www.eclipse.org/aspectj/</Specification-Vendor>
 
-											<Implementation-Title>org.aspectj.weaver</Implementation-Title>
+											<Implementation-Title>org.aspectj.matcher</Implementation-Title>
 											<Implementation-Version>${project.version}</Implementation-Version>
 											<Implementation-Vendor>https://www.eclipse.org/aspectj/</Implementation-Vendor>
 
-											<Bundle-Name>AspectJ Weaver</Bundle-Name>
+											<Bundle-Name>AspectJ Matcher</Bundle-Name>
 											<Bundle-Version>${project.version}</Bundle-Version>
 											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation,
 												2002 Palo Alto Research Center, Incorporated (PARC),
-												2003-2019 Contributors. All Rights Reserved</Bundle-Copyright>
+												2003-2020 Contributors. All Rights Reserved</Bundle-Copyright>
 										</manifestEntries>
 									</manifestSection>
 								</manifestSections>
 							</archive>
 
 							<descriptors>
-								<descriptor>aspectjweaver-assembly.xml</descriptor>
+								<descriptor>aspectjmatcher-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
 
 					<execution>
-						<id>aspectjweaver-sources-assembly</id>
+						<id>aspectjmatcher-sources-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 						<configuration>
 							<classifier>sources</classifier>
-							<finalName>aspectjweaver-${project.version}</finalName>
+							<finalName>aspectjmatcher-${project.version}</finalName>
 							<archive>
 							</archive>
 							<descriptors>
-								<descriptor>aspectjweaver-sources-assembly.xml</descriptor>
+								<descriptor>aspectjmatcher-sources-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

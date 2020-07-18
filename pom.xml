@@ -44,6 +44,7 @@
 		<module>aspectjrt</module>
 		<module>aspectjweaver</module>
 		<module>aspectjtools</module>
+		<module>aspectjmatcher</module>
 
 		<!-- build the java -jar'able installer -->
 		<module>installer</module>

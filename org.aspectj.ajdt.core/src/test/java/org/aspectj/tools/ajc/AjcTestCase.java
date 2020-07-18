@@ -66,14 +66,14 @@ public abstract class AjcTestCase extends TestCase {
 	// see Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
 			Ajc.outputFolders("bridge","util","loadtime","weaver","asm","testing-client","runtime","org.aspectj.matcher")
-//			File.pathSeparator + ".." + File.separator + "bridge" + File.separator
-//			+ "bin" + File.pathSeparator + ".." + File.separator + "util" + File.separator + "bin" + File.pathSeparator + ".."
-//			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver"
-//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver5" + File.separator + "bin"
-//			+ File.pathSeparator + ".." + File.separator + "asm" + File.separator + "bin" + File.pathSeparator + ".."
-//			+ File.separator + "testing-client" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "runtime"
-//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin"
-//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher" + File.separator + "bin"
+			//			File.pathSeparator + ".." + File.separator + "bridge" + File.separator
+			//			+ "bin" + File.pathSeparator + ".." + File.separator + "util" + File.separator + "bin" + File.pathSeparator + ".."
+			//			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver"
+			//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver5" + File.separator + "bin"
+			//			+ File.pathSeparator + ".." + File.separator + "asm" + File.separator + "bin" + File.pathSeparator + ".."
+			//			+ File.separator + "testing-client" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "runtime"
+			//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin"
+			//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher" + File.separator + "bin"
 			+ File.pathSeparator
 			+ ".." + File.separator + "lib" + File.separator + "junit" + File.separator
 			+ "junit.jar"
@@ -94,7 +94,7 @@ public abstract class AjcTestCase extends TestCase {
 			+ File.separator
 			+ "bcel-verifier.jar"
 
-			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-7.2.renamed.jar"
+			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-8.0.1.renamed.jar"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
@@ -175,11 +175,11 @@ public abstract class AjcTestCase extends TestCase {
 			StringBuffer srcFileName = new StringBuffer();
 			if (srcFile != null) {
 				char[] chars = srcFile.toCharArray();
-				for (int i = 0; i < chars.length; i++) {
-					if ((chars[i] == '\\') || (chars[i] == '/')) {
+				for (char c : chars) {
+					if ((c == '\\') || (c == '/')) {
 						srcFileName.append(File.separator);
 					} else {
-						srcFileName.append(chars[i]);
+						srcFileName.append(c);
 					}
 				}
 				this.sourceFileName = srcFileName.toString();
@@ -233,8 +233,8 @@ public abstract class AjcTestCase extends TestCase {
 				if (extraLocations.size() != seeAlsos.length) {
 					return false;
 				}
-				for (int i = 0; i < seeAlsos.length; i++) {
-					if (!hasAMatch(extraLocations, seeAlsos[i])) {
+				for (ISourceLocation seeAlso : seeAlsos) {
+					if (!hasAMatch(extraLocations, seeAlso)) {
 						return false;
 					}
 				}
@@ -277,11 +277,11 @@ public abstract class AjcTestCase extends TestCase {
 			}
 			if (seeAlsos != null) {
 				buff.append("\n\twith see alsos:");
-				for (int i = 0; i < seeAlsos.length; i++) {
+				for (ISourceLocation seeAlso : seeAlsos) {
 					buff.append("\t\t");
-					buff.append(seeAlsos[i].getSourceFile().getPath());
+					buff.append(seeAlso.getSourceFile().getPath());
 					buff.append(":");
-					buff.append(seeAlsos[i].getLine());
+					buff.append(seeAlso.getLine());
 				}
 			}
 			return buff.toString();
@@ -479,9 +479,9 @@ public abstract class AjcTestCase extends TestCase {
 			addExtra(failureReport, "weaveInfo", extraWeaves);
 			failureReport.append("\ncommand was: ajc");
 			String[] args = result.getArgs();
-			for (int i = 0; i < args.length; i++) {
+			for (String arg : args) {
 				failureReport.append(" ");
-				failureReport.append(args[i]);
+				failureReport.append(arg);
 			}
 			String report = failureReport.toString();
 			System.err.println(failureReport);
@@ -524,8 +524,8 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	protected List newMessageList(Message[] messages) {
 		List ret = new ArrayList();
-		for (int i = 0; i < messages.length; i++) {
-			ret.add(messages[i]);
+		for (Message message : messages) {
+			ret.add(message);
 		}
 		return ret;
 	}
@@ -618,7 +618,7 @@ public abstract class AjcTestCase extends TestCase {
 
 		/* Sandbox -> AspectJ -> Extension -> Bootstrap */
 		if ( !useFullLTW && useLTW) {
-//			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
+			//			URLClassLoader testLoader = (URLClassLoader) getClass().getClassLoader();
 			/*
 			 * Create a new AspectJ class loader using the existing test CLASSPATH and any missing Java 5 projects
 			 */
@@ -648,8 +648,8 @@ public abstract class AjcTestCase extends TestCase {
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
 				exec = pb.start();
-		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
-		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
 				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
@@ -678,8 +678,8 @@ public abstract class AjcTestCase extends TestCase {
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
 				exec = pb.start();
-		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
-		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
 				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
@@ -690,9 +690,9 @@ public abstract class AjcTestCase extends TestCase {
 		} else if (vmargs!=null && (vmargs.contains("--enable-preview") || vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") || vmargs.contains("--add-reads"))) {
 			// If --add-modules supplied, need to fork the test
 			try {
-//				if (mp.indexOf("$runtime") != -1) {
-//					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
-//				}
+				//				if (mp.indexOf("$runtime") != -1) {
+				//					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
+				//				}
 				if (cp.indexOf("aspectjrt")==-1) {
 					cp.append(File.pathSeparator).append(TestUtil.aspectjrtPath().getPath());
 				}
@@ -702,8 +702,8 @@ public abstract class AjcTestCase extends TestCase {
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
 				exec = pb.start();
-		        BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
-		        BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+				BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 				exec.waitFor();
 				lastRunResult = createResultFromBufferReaders(command,stdInput, stdError);
 			} catch (Exception e) {
@@ -725,18 +725,18 @@ public abstract class AjcTestCase extends TestCase {
 		command.append(cp.toString());
 		command.append(" ");
 		command.append(className);
-		for (int i = 0; i < args.length; i++) {
+		for (String arg : args) {
 			command.append(" ");
-			command.append(args[i]);
+			command.append(arg);
 		}
-//		try {
-//			// Enable the security manager
-//			Policy.setPolicy(new MyPolicy());
-//			SecurityManager sm = new SecurityManager();
-//			System.setSecurityManager(sm);
-//		} catch (SecurityException se) {
-//			// SecurityManager already set
-//		}
+		//		try {
+		//			// Enable the security manager
+		//			Policy.setPolicy(new MyPolicy());
+		//			SecurityManager sm = new SecurityManager();
+		//			System.setSecurityManager(sm);
+		//		} catch (SecurityException se) {
+		//			// SecurityManager already set
+		//		}
 
 		ClassLoader contexClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
@@ -768,14 +768,14 @@ public abstract class AjcTestCase extends TestCase {
 			fail("Exception thrown by " + className + ".main(String[]) :" + invTgt.getTargetException());
 		} finally {
 
-//			try {
-//				// Enable the security manager
-//				SecurityManager sm = new SecurityManager();
-//				System.setSecurityManager(null);
-//			} catch (SecurityException se) {
-//				se.printStackTrace();
-//				// SecurityManager already set
-//			}
+			//			try {
+			//				// Enable the security manager
+			//				SecurityManager sm = new SecurityManager();
+			//				System.setSecurityManager(null);
+			//			} catch (SecurityException se) {
+			//				se.printStackTrace();
+			//				// SecurityManager already set
+			//			}
 			Thread.currentThread().setContextClassLoader(contexClassLoader);
 			stopCapture(baosErr, baosOut);
 			lastRunResult = new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
@@ -803,53 +803,53 @@ public abstract class AjcTestCase extends TestCase {
 		PrintWriter stdOutWriter = new PrintWriter(baosOut);
 		PrintWriter stdErrWriter = new PrintWriter(baosErr);
 
-			while ((line = stdInput.readLine()) != null) {
-				stdOutWriter.println(line);
-				System.out.println(line);
-			}
-			stdOutWriter.flush();
-			while ((line = stdError.readLine()) != null) {
-				stdErrWriter.println(line);
-				System.err.println(line);
+		while ((line = stdInput.readLine()) != null) {
+			stdOutWriter.println(line);
+			System.out.println(line);
+		}
+		stdOutWriter.flush();
+		while ((line = stdError.readLine()) != null) {
+			stdErrWriter.println(line);
+			System.err.println(line);
 
-			}
-			stdErrWriter.flush();
+		}
+		stdErrWriter.flush();
 
-			baosOut.close();
-			baosErr.close();
+		baosOut.close();
+		baosErr.close();
 
-			return new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
+		return new RunResult(command.toString(), new String(baosOut.toByteArray()), new String(baosErr.toByteArray()));
 	}
 
-//	static class MyPolicy extends Policy {
-//
-//		@Override
-//		public boolean implies(ProtectionDomain domain, Permission permission) {
-//			// if (permission != SecurityConstants.GET_POLICY_PERMISSION) {
-//			// // System.out.println(domain + " " + permission.getName());
-//			// System.out.println(permission.getName());
-//			// }
-//			// if (true) {
-//			// return true;
-//			// }
-//			if (permission instanceof PropertyPermission) {
-//				return true;
-//			}
-//			if (permission instanceof RuntimePermission) {
-//				return true;
-//			}
-//			if (permission instanceof FilePermission) {
-//				// System.out.println(permission);
-//				return true;
-//			}
-//			if (permission instanceof ReflectPermission) {
-//				return true;
-//			}
-//			// System.out.println(permission);
-//			return super.implies(domain, permission);
-//			// return true;
-//		}
-//	}
+	//	static class MyPolicy extends Policy {
+	//
+	//		@Override
+	//		public boolean implies(ProtectionDomain domain, Permission permission) {
+	//			// if (permission != SecurityConstants.GET_POLICY_PERMISSION) {
+	//			// // System.out.println(domain + " " + permission.getName());
+	//			// System.out.println(permission.getName());
+	//			// }
+	//			// if (true) {
+	//			// return true;
+	//			// }
+	//			if (permission instanceof PropertyPermission) {
+	//				return true;
+	//			}
+	//			if (permission instanceof RuntimePermission) {
+	//				return true;
+	//			}
+	//			if (permission instanceof FilePermission) {
+	//				// System.out.println(permission);
+	//				return true;
+	//			}
+	//			if (permission instanceof ReflectPermission) {
+	//				return true;
+	//			}
+	//			// System.out.println(permission);
+	//			return super.implies(domain, permission);
+	//			// return true;
+	//		}
+	//	}
 
 	/*
 	 * Must create weaving class loader reflectively using new parent so we don't have a reference to a World loaded from CLASSPATH
@@ -906,48 +906,48 @@ public abstract class AjcTestCase extends TestCase {
 	 * @param args the String[] args to fix up
 	 * @return the String[] args to use
 	 */
-    protected String[] fixupArgs(String[] args) {
-        if (null == args) {
-                return null;
-        }
-        int cpIndex = -1;
-        boolean hasruntime = false;
-        for (int i = 0; i < args.length - 1; i++) {
-                args[i] = adaptToPlatform(args[i]);
-                if ("-classpath".equals(args[i])) {
-                        cpIndex = i;
-                        args[i + 1] = substituteSandbox(args[i + 1]);
-                        String next = args[i + 1];
-                        hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
-                } else if ("-p".equals(args[i]) || "--module-path".equals(args[i])) {
-                    args[i + 1] = substituteSandbox(args[i + 1]);
-                }
-        }
-        if (-1 == cpIndex) {
-                String[] newargs = new String[args.length + 2];
-                newargs[0] = "-classpath";
-                newargs[1] = TestUtil.aspectjrtPath(false).getPath();
-                System.arraycopy(args, 0, newargs, 2, args.length);
-                args = newargs;
-                cpIndex = 1;
-        } else {
-                if (!hasruntime) {
-                        cpIndex++;
-                        String[] newargs = new String[args.length];
-                        System.arraycopy(args, 0, newargs, 0, args.length);
-                        newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
-                        args = newargs;
-                }
-        }
-        boolean needsJRTFS = LangUtil.is19VMOrGreater();
-        if (needsJRTFS) {
-                if (args[cpIndex].indexOf(LangUtil.JRT_FS) == -1) {
-                        String jrtfsPath = LangUtil.getJrtFsFilePath();
-                        args[cpIndex] = jrtfsPath + File.pathSeparator + args[cpIndex];
-                }
-        }
-        return args;
-}
+	protected String[] fixupArgs(String[] args) {
+		if (null == args) {
+			return null;
+		}
+		int cpIndex = -1;
+		boolean hasruntime = false;
+		for (int i = 0; i < args.length - 1; i++) {
+			args[i] = adaptToPlatform(args[i]);
+			if ("-classpath".equals(args[i])) {
+				cpIndex = i;
+				args[i + 1] = substituteSandbox(args[i + 1]);
+				String next = args[i + 1];
+				hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
+			} else if ("-p".equals(args[i]) || "--module-path".equals(args[i])) {
+				args[i + 1] = substituteSandbox(args[i + 1]);
+			}
+		}
+		if (-1 == cpIndex) {
+			String[] newargs = new String[args.length + 2];
+			newargs[0] = "-classpath";
+			newargs[1] = TestUtil.aspectjrtPath(false).getPath();
+			System.arraycopy(args, 0, newargs, 2, args.length);
+			args = newargs;
+			cpIndex = 1;
+		} else {
+			if (!hasruntime) {
+				cpIndex++;
+				String[] newargs = new String[args.length];
+				System.arraycopy(args, 0, newargs, 0, args.length);
+				newargs[cpIndex] = args[cpIndex] + File.pathSeparator + TestUtil.aspectjrtPath().getPath();
+				args = newargs;
+			}
+		}
+		boolean needsJRTFS = LangUtil.is19VMOrGreater();
+		if (needsJRTFS) {
+			if (args[cpIndex].indexOf(LangUtil.JRT_FS) == -1) {
+				String jrtfsPath = LangUtil.getJrtFsFilePath();
+				args[cpIndex] = jrtfsPath + File.pathSeparator + args[cpIndex];
+			}
+		}
+		return args;
+	}
 
 	private String adaptToPlatform(String s) {
 		String ret = s.replace(';', File.pathSeparatorChar);
@@ -960,8 +960,8 @@ public abstract class AjcTestCase extends TestCase {
 			return in;
 
 		List<T> out = new ArrayList<T>();
-		for (Iterator<T> iter = in.iterator(); iter.hasNext();) {
-			out.add(iter.next());
+		for (T t : in) {
+			out.add(t);
 		}
 		return out;
 	}
@@ -997,9 +997,9 @@ public abstract class AjcTestCase extends TestCase {
 			buff.append("Missing expected ");
 			buff.append(type);
 			buff.append(" messages:\n");
-			for (Iterator<AjcTestCase.Message> iter = messages.iterator(); iter.hasNext();) {
+			for (Message message : messages) {
 				buff.append("\t");
-				buff.append(iter.next().toString());
+				buff.append(message.toString());
 				buff.append("\n");
 			}
 		}
@@ -1021,12 +1021,12 @@ public abstract class AjcTestCase extends TestCase {
 	// add any jars in the directory to the classpath
 	private void getAnyJars(File dir, StringBuffer buff) {
 		File[] files = dir.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().endsWith(".jar")) {
+		for (File file : files) {
+			if (file.getName().endsWith(".jar")) {
 				buff.append(File.pathSeparator);
-				buff.append(files[i].getAbsolutePath());
-			} else if (files[i].isDirectory()) {
-				getAnyJars(files[i], buff);
+				buff.append(file.getAbsolutePath());
+			} else if (file.isDirectory()) {
+				getAnyJars(file, buff);
 			}
 		}
 	}
