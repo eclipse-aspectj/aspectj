@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -97,7 +97,7 @@ public class ExactTypePattern extends TypePattern {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
 	@Override
@@ -234,8 +234,8 @@ public class ExactTypePattern extends TypePattern {
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + type.hashCode();
-		result = 37 * result + new Boolean(includeSubtypes).hashCode();
-		result = 37 * result + new Boolean(isVarArgs).hashCode();
+		result = 37 * result + Boolean.valueOf(includeSubtypes).hashCode();
+		result = 37 * result + Boolean.valueOf(isVarArgs).hashCode();
 		result = 37 * result + typeParameters.hashCode();
 		result = 37 * result + annotationPattern.hashCode();
 		return result;
@@ -322,7 +322,7 @@ public class ExactTypePattern extends TypePattern {
 			TypeVariableReference t = (TypeVariableReference) type;
 			String key = t.getTypeVariable().getName();
 			if (typeVariableMap.containsKey(key)) {
-				newType = (UnresolvedType) typeVariableMap.get(key);
+				newType = typeVariableMap.get(key);
 			}
 		} else if (type.isParameterizedType()) {
 			newType = w.resolve(type).parameterize(typeVariableMap);

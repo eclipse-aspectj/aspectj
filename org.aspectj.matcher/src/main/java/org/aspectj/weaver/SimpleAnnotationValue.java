@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2006 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement IBM     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Andy Clement IBM     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -78,6 +78,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		theInt = i;
 	}
 
+	@Override
 	public String stringify() {
 		switch (valueKind) {
 		case 'B': // byte
@@ -95,7 +96,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		case 'S': // short
 			return Short.toString(theShort);
 		case 'Z': // boolean
-			return new Boolean(theBoolean).toString();
+			return Boolean.valueOf(theBoolean).toString();
 		case 's': // String
 			return theString;
 		default:
@@ -103,6 +104,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return stringify();
 	}
