@@ -8,7 +8,7 @@
   <version>1.8.6</version>
   <name>AspectJ weaver</name>
   <description>The AspectJ weaver introduces advices to java classes</description>
-  <url>http://www.aspectj.org</url>
+  <url>https://www.eclipse.org/aspectj/</url>
 
   <licenses>
     <license>
@@ -27,7 +27,7 @@
   </developers>
   
   <scm>
-    <url>http://dev.eclipse.org/viewcvs/index.cgi/org.aspectj/?root=Tools_Project</url>
+    <url>https://github.com/eclipse/org.aspectj</url>
   </scm>
 
 </project>
