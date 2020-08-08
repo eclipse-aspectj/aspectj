@@ -116,7 +116,7 @@ public class TestUtilTest extends TestCase {
             } catch (IllegalArgumentException e) {
                 assertTrue("exception: " + errors[i], fail);
                 String m = e.getMessage();
-                if (-1 == m.indexOf(errors[i])) {
+                if (!m.contains(errors[i])) {
                     fail(errors[i] + " not in " + m);
                 }
             }

@@ -61,10 +61,10 @@ public class AntBuilder extends Builder {
 		boolean useEclipseCompiles = false;
 		boolean verbose = false;
 		if (null != config) {
-			if (-1 != config.indexOf("useEclipseCompiles")) {
+			if (config.contains("useEclipseCompiles")) {
 				useEclipseCompiles = true;
 			}
-			if (-1 != config.indexOf("verbose")) {
+			if (config.contains("verbose")) {
 				verbose = true;
 			}
 		}

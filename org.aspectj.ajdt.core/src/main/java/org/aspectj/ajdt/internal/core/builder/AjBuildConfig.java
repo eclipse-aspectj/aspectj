@@ -579,7 +579,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			lintValue = AjCompilerOptions.ERROR;
 		} else {
 			// Possibly a name=value comma separated list of configurations
-			if (lintMode.indexOf("=")!=-1) {
+			if (lintMode.contains("=")) {
 				this.lintMode = AJLINT_DEFAULT;
 				lintOptionsMap = new HashMap<String,String>();
 				StringTokenizer tokenizer = new StringTokenizer(lintMode,",");

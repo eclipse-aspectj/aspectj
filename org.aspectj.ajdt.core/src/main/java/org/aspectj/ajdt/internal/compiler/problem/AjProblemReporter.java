@@ -325,25 +325,25 @@ public class AjProblemReporter extends ProblemReporter {
 			String name = new String(binding.selector);
 			if (name.startsWith("ajc$")) {
 				long metaTagBits = annotation.resolvedType.getAnnotationTagBits(); // could be forward reference
-				if (name.indexOf("interField") != -1) {
+				if (name.contains("interField")) {
 					if ((metaTagBits & TagBits.AnnotationForField) != 0)
 						return;
-				} else if (name.indexOf("interConstructor") != -1) {
+				} else if (name.contains("interConstructor")) {
 					if ((metaTagBits & TagBits.AnnotationForConstructor) != 0)
 						return;
-				} else if (name.indexOf("interMethod") != -1) {
+				} else if (name.contains("interMethod")) {
 					if ((metaTagBits & TagBits.AnnotationForMethod) != 0)
 						return;
-				} else if (name.indexOf("declare_" + DeclareAnnotation.AT_TYPE + "_") != -1) {
+				} else if (name.contains("declare_" + DeclareAnnotation.AT_TYPE + "_")) {
 					if ((metaTagBits & TagBits.AnnotationForAnnotationType) != 0 || (metaTagBits & TagBits.AnnotationForType) != 0)
 						return;
-				} else if (name.indexOf("declare_" + DeclareAnnotation.AT_FIELD + "_") != -1) {
+				} else if (name.contains("declare_" + DeclareAnnotation.AT_FIELD + "_")) {
 					if ((metaTagBits & TagBits.AnnotationForField) != 0)
 						return;
-				} else if (name.indexOf("declare_" + DeclareAnnotation.AT_CONSTRUCTOR + "_") != -1) {
+				} else if (name.contains("declare_" + DeclareAnnotation.AT_CONSTRUCTOR + "_")) {
 					if ((metaTagBits & TagBits.AnnotationForConstructor) != 0)
 						return;
-				} else if (name.indexOf("declare_eow") != -1) {
+				} else if (name.contains("declare_eow")) {
 					if ((metaTagBits & TagBits.AnnotationForField) != 0)
 						return;
 				}
@@ -685,7 +685,7 @@ public class AjProblemReporter extends ProblemReporter {
 			this.delegate = aProblem;
 			// if this was a problem that came via the weaver, it will already have
 			// pinpoint info, don't do it twice...
-			if (delegate.getMessage().indexOf("message issued...") == -1) {
+			if (!delegate.getMessage().contains("message issued...")) {
 				this.message = delegate.getMessage() + "\n" + pinpoint;
 			} else {
 				this.message = delegate.getMessage();

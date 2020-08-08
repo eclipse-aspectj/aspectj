@@ -1164,7 +1164,7 @@ public class WildTypePattern extends TypePattern {
 				ret.add(possibleMatch);
 				continue;
 			}
-			if (possibleMatch.indexOf("$") != -1) {
+			if (possibleMatch.contains("$")) {
 				names = splitNames(possibleMatch, false); // ??? not most efficient
 				if (namePatterns[0].matches(names[names.length - 1])) {
 					ret.add(possibleMatch);

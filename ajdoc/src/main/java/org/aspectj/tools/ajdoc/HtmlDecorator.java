@@ -192,7 +192,7 @@ class HtmlDecorator {
 				}
 				// only add aspect documentation if we're in the correct
 				// file for the given IProgramElement
-				if (file.getName().indexOf(fullname + ".html") != -1) {
+				if (file.getName().contains(fullname + ".html")) {
 					addAspectDocumentation(decl, fileContents, index);
 				}
 			} else {
@@ -202,7 +202,7 @@ class HtmlDecorator {
 			// moved this here because then can use the IProgramElement.Kind
 			// rather than checking to see if there's advice - this fixes
 			// the case with an inner aspect not having the title "Aspect"
-			if (decl.getKind().equals(IProgramElement.Kind.ASPECT) && file.getName().indexOf(decl.toSignatureString()) != -1) {
+			if (decl.getKind().equals(IProgramElement.Kind.ASPECT) && file.getName().contains(decl.toSignatureString())) {
 				// only want to change "Class" to "Aspect" if we're in the
 				// file corresponding to the IProgramElement
 				String fullname = "";
@@ -212,7 +212,7 @@ class HtmlDecorator {
 				} else {
 					fullname += decl.toSignatureString();
 				}
-				if (file.getName().indexOf(fullname + ".html") == -1) {
+				if (!file.getName().contains(fullname + ".html")) {
 					// we're still in the file for a parent IPE
 					continue;
 				}
@@ -746,7 +746,7 @@ class HtmlDecorator {
 	 */
 	private static String getRelativePathFromHere(String packagePath) {
 		StringBuffer result = new StringBuffer("");
-		if (packagePath != null && (packagePath.indexOf("/") != -1)) {
+		if (packagePath != null && (packagePath.contains("/"))) {
 			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
 			while (sTok.hasMoreTokens()) {
 				sTok.nextToken(); // don't care about the token value

@@ -125,7 +125,7 @@ public abstract class AjdeCoreTestCase extends TestCase {
 	public boolean checkFor(String what) {
 		List<TestMessage> ll = ((TestMessageHandler) compiler.getMessageHandler()).getMessages();
 		for (TestMessage element: ll) {
-			if (element.toString().indexOf(what) != -1)
+			if (element.toString().contains(what))
 				return true;
 		}
 		return false;

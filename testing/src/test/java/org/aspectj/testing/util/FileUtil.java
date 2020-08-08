@@ -169,7 +169,7 @@ public class FileUtil {
 									String exp = (String) o;
 									if (path.startsWith(exp)) {
 										String suffix = path.substring(exp.length());
-										if (-1 == suffix.indexOf("/")) { // normalized...
+										if (!suffix.contains("/")) { // normalized...
 											expected.remove(path);
 											// found - do not add to unexpected
 											return false;

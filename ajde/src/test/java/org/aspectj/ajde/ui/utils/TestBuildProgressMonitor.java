@@ -55,7 +55,7 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 		if (text.startsWith("woven class ")) numWovenClassMessages++;
 		if (text.startsWith("compiled:")) numCompiledMessages++;
 		if (programmableString != null
-			&& text.indexOf(programmableString) != -1) {
+			&& text.contains(programmableString)) {
 			count--;
 			if (count==0) {
 				if (debugTests) System.out.println("Just got message '"+newText+"' - asking build to cancel");
@@ -80,7 +80,7 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 		for (Object o : messagesReceived) {
 			String element = (String) o;
 			if (element.startsWith(prefix) &&
-					element.indexOf(distinguishingMarks) != -1) return true;
+					element.contains(distinguishingMarks)) return true;
 		}
 		return false;
 	}

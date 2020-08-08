@@ -91,7 +91,7 @@ public class CompilerRunTest extends TestCase {
         String command = (String) dummyReports.remove(0);
         assertTrue(0 == dummyReports.size());
         if ((null == command) 
-            || (-1 == command.indexOf(expectedInCommand))) {
+            || (!command.contains(expectedInCommand))) {
             assertTrue("expected " 
                 + expectedInCommand 
                 + "got "

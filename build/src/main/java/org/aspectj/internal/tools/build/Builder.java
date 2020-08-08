@@ -251,7 +251,7 @@ public abstract class Builder {
      */
     protected Result specifyResultFor(BuildSpec buildSpec) {
         if (buildSpec.trimTesting
-                && (-1 != buildSpec.module.indexOf("testing"))) { // XXXNameLiteral
+                && (buildSpec.module.contains("testing"))) { // XXXNameLiteral
             String warning = "Warning - cannot trimTesting for testing modules: ";
             handler.log(warning + buildSpec.module);
         }

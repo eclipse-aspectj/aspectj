@@ -162,7 +162,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 			// so compile succeeds but run not attempted
 			//result.errors = Main.RA_ErrorLine;
 			// result.runOptions = Main.RA_String;
-		} else if (isNumber(first) || (-1 != first.indexOf(":"))) {
+		} else if (isNumber(first) || (first.contains(":"))) {
 			exp.addAll(makeMessages(IMessage.ERROR, words, 0, lastFile));
 		} else {
 			String[] args = new String[words.length - 1];
@@ -275,13 +275,13 @@ public class FlatSuiteReader implements SFileReader.Maker {
         }
         input = description.toString();
         String error = null;
-        if (-1 != input.indexOf("&")) {
+        if (input.contains("&")) {
             error = "char &";
-        } else if (-1 != input.indexOf("<")) {
+        } else if (input.contains("<")) {
             error = "char <";
-        } else if (-1 != input.indexOf(">")) {
+        } else if (input.contains(">")) {
             error = "char >";
-        } else if (-1 != input.indexOf("\"")) {
+        } else if (input.contains("\"")) {
             error = "char \"";
         }
         if (null != error) {

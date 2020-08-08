@@ -139,7 +139,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 
 	public String getPointcutText() {
 		String text = getPointcut().toString();
-		if (text.indexOf("BindingTypePattern") == -1)
+		if (!text.contains("BindingTypePattern"))
 			return text;
 		// has been wrecked by resolution, try to reconstruct from tokens
 		if (pointcutDesignator != null) {

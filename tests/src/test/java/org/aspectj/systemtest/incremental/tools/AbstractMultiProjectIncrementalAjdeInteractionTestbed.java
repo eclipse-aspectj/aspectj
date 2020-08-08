@@ -238,9 +238,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 			BufferedReader reader = new BufferedReader(new FileReader(aopXML));
 			String line = reader.readLine();
 			while (line != null) {
-				if (aspectName.equals("") && line.indexOf("aspect name=\"") != -1) {
+				if (aspectName.equals("") && line.contains("aspect name=\"")) {
 					aspectCount++;
-				} else if (line.indexOf("aspect name=\"" + aspectName + "\"") != -1) {
+				} else if (line.contains("aspect name=\"" + aspectName + "\"")) {
 					aspectCount++;
 				}
 				line = reader.readLine();
@@ -257,7 +257,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 
 	protected void assertContains(String expectedSubstring, Object object) {
 		String actualString = object.toString();
-		if (actualString.indexOf(expectedSubstring) == -1) {
+		if (!actualString.contains(expectedSubstring)) {
 			fail("Expected to find '" + expectedSubstring + "' in '" + actualString + "'");
 		}
 	}

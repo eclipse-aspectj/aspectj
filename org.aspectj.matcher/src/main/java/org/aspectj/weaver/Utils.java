@@ -32,7 +32,7 @@ public class Utils {
 				// 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
 				String value = ann.getStringFormOfValue("value");
 				// Slightly lazy, just doing a string indexof
-				if (value == null || value.indexOf(lintkey) != -1) {
+				if (value == null || value.contains(lintkey)) {
 					return true;
 				}
 			}

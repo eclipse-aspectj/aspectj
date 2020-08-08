@@ -162,7 +162,7 @@ public class FileUtilTest extends TestCase {
 	 * @param useSuffix if true, then use dir as suffix to path
 	 */
 	private static void doDirPaths(File dir, ArrayList<String> paths) {
-		if ((null == dir) || !dir.canRead() || (-1 != dir.getPath().indexOf("CVS"))) {
+		if ((null == dir) || !dir.canRead() || (dir.getPath().contains("CVS"))) {
 			return;
 		}
 		File[] files = dir.listFiles();

@@ -178,7 +178,7 @@ public class AjcTaskTest extends TestCase {
                 String m = e.getMessage();
                 if (null == m) {
                     assertTrue("not " + exceptionString, false);
-                } else if (-1 == m.indexOf(exceptionString)) {
+                } else if (!m.contains(exceptionString)) {
                     assertEquals(exceptionString, e.getMessage());
                 }
             }
@@ -218,7 +218,7 @@ public class AjcTaskTest extends TestCase {
         if (NOFILE.equals(input)) {
             // add nothing
         } else if (input.endsWith(".lst")) {
-            if (-1 != input.indexOf(",")) {
+            if (input.contains(",")) {
                 throw new IllegalArgumentException(
                     "lists not supported: " + input);
             } else if (null == testdataDir) {
@@ -695,7 +695,7 @@ public class AjcTaskTest extends TestCase {
 		}
 		assertTrue(
 			"expecting aspectj in classpath",
-			(-1 != classpath.indexOf("aspectjrt.jar")));
+			(classpath.contains("aspectjrt.jar")));
 	}
 
 	CompilerArg createCompilerArg(String value) {
@@ -792,7 +792,7 @@ public class AjcTaskTest extends TestCase {
         boolean matched = false;
         for (int i = 0; !matched && (i < results.length); i++) {
             String s = results[i];
-            matched = (null != s) && (-1 != s.indexOf(DEFAULT));
+            matched = (null != s) && (s.contains(DEFAULT));
         }
         if (!matched) {
             fail(DEFAULT + " not found in " + Arrays.asList(results));

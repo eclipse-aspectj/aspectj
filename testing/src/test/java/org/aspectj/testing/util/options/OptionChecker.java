@@ -104,7 +104,7 @@ public class OptionChecker {
             String m = e.getFullMessage();
             boolean ok =
                 (null != expectedInExceptionMessage)
-                    && (-1 != m.indexOf(expectedInExceptionMessage));
+                    && (m.contains(expectedInExceptionMessage));
             if (!ok) {
                 e.printStackTrace(System.err);
                 if (null != expectedInExceptionMessage) {
@@ -144,7 +144,7 @@ public class OptionChecker {
             }
         } else {
             if ((null == expectedIn)
-                || (-1 == expectedIn.indexOf(expected))) {
+                || (!expectedIn.contains(expected))) {
                 assertionFailed(
                     "expected \""
                         + expected

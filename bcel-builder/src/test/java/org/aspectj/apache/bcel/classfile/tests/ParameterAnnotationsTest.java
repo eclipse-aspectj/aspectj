@@ -75,9 +75,9 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
 		assertTrue("This annotation should contain the string 'fruit=Apples' but it is "+annos[0].toString(),
-				   annos[0].toString().indexOf("fruit=Apples")!=-1);
+				annos[0].toString().contains("fruit=Apples"));
 		assertTrue("This annotation should contain the string 'fruit=Oranges' but it is "+annos[1].toString(),
-				   annos[1].toString().indexOf("fruit=Oranges")!=-1);
+				annos[1].toString().contains("fruit=Oranges"));
 	}
 	
 	
@@ -105,9 +105,9 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
 		assertTrue("This annotation should contain the string 'fruit=Apples' but it is "+annos[0].toString(),
-				   annos[0].toString().indexOf("fruit=Apples")!=-1);
+				annos[0].toString().contains("fruit=Apples"));
 		assertTrue("This annotation should contain the string 'fruit=Oranges' but it is "+annos[1].toString(),
-				   annos[1].toString().indexOf("fruit=Oranges")!=-1);
+				annos[1].toString().contains("fruit=Oranges"));
 		assertTrue(wipe("temp5","HelloWorld.class"));
 		
 	}

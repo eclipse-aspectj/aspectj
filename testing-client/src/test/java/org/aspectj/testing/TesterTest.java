@@ -190,7 +190,7 @@ public class TesterTest extends TestCase {
         boolean gotItem(List<IMessage> list, String substring) {
         	for (IMessage element: list) {
                 String s = element.getMessage();
-				if ((null != s) && (-1 != s.indexOf(substring))) {
+				if ((null != s) && (s.contains(substring))) {
                     return true;
                 }
 			}

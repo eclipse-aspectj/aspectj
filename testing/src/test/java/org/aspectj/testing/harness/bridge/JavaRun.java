@@ -434,7 +434,7 @@ public class JavaRun implements IAjcRun {
 	protected boolean expectedException(Throwable thrown) {
 		if (null != spec.expectedException) {
 			String cname = thrown.getClass().getName();
-			if (-1 != cname.indexOf(spec.expectedException)) {
+			if (cname.contains(spec.expectedException)) {
 				return true; // caller sets value for returns normally
 			}
 		}
@@ -443,7 +443,7 @@ public class JavaRun implements IAjcRun {
 
 	protected boolean expectedException(ByteArrayOutputStream bout) {
 		return ((null != spec.expectedException)
-				&& (-1 != bout.toString().indexOf(spec.expectedException)));
+				&& (bout.toString().contains(spec.expectedException)));
 	}
 
 	/**

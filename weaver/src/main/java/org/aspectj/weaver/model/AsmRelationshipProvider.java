@@ -715,7 +715,7 @@ public class AsmRelationshipProvider {
 		if (kind == ResolvedTypeMunger.Field) { // ITD FIELD
 			// String name = rtMunger.getSignature().toString();
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
-			if (name.indexOf("$") != -1) {
+			if (name.contains("$")) {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_FIELD, getBinarySourceLocation(
@@ -725,7 +725,7 @@ public class AsmRelationshipProvider {
 		} else if (kind == ResolvedTypeMunger.Method) { // ITD
 			// METHOD
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getName();
-			if (name.indexOf("$") != -1) {
+			if (name.contains("$")) {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_METHOD, getBinarySourceLocation(
@@ -734,7 +734,7 @@ public class AsmRelationshipProvider {
 			return pe;
 		} else if (kind == ResolvedTypeMunger.Constructor) {
 			String name = sig.getDeclaringType().getClassName() + "." + sig.getDeclaringType().getClassName();
-			if (name.indexOf("$") != -1) {
+			if (name.contains("$")) {
 				name = name.substring(name.indexOf("$") + 1);
 			}
 			IProgramElement pe = new ProgramElement(model, name, IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR,

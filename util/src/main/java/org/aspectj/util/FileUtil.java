@@ -1404,7 +1404,7 @@ public class FileUtil {
 
 	/** @return true if input is not null and contains no path separator */
 	private static boolean isValidFileName(String input) {
-		return ((null != input) && (-1 == input.indexOf(File.pathSeparator)));
+		return ((null != input) && (!input.contains(File.pathSeparator)));
 	}
 
 	private static void listFiles(final File baseDir, String dir, ArrayList<String> result) {

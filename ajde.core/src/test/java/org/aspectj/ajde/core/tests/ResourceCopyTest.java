@@ -169,7 +169,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 		File[] fromResources = FileUtil.listFiles(srcBase, aspectjResourceFileFilter);
 		for (File fromResource : fromResources) {
 			String name = FileUtil.normalizedPath(fromResource, srcBase);
-			if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
+			if (!name.startsWith("CVS/") && (!name.contains("/CVS/")) && !name.endsWith("/CVS")) {
 				resources.add(name);
 			}
 		}
@@ -179,7 +179,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 		@Override
 		public boolean accept(File pathname) {
 			String name = pathname.getName().toLowerCase();
-			boolean isCVSRelated = name.indexOf("/cvs/") != -1;
+			boolean isCVSRelated = name.contains("/cvs/");
 			return (!isCVSRelated && !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj"));
 		}
 	};

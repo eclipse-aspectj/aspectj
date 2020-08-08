@@ -412,7 +412,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
 			pw.flush();
 			String tree = baos.toString();
-			assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.indexOf("Red  [enumvalue]") != -1);
+			assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.contains("Red  [enumvalue]"));
 		}
 	}
 

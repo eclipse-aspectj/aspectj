@@ -122,7 +122,7 @@ public class AjdtCommandTestCase extends TestCase {
 	public void testIncrementalOption() throws InvalidInputException {
 		AjdtCommand.genBuildConfig(new String[] { "-incremental" }, counter);
 
-		assertTrue("didn't specify source root", outputWriter.getContents().indexOf("specify a source root") != -1);
+		assertTrue("didn't specify source root", outputWriter.getContents().contains("specify a source root"));
 
 		outputWriter.flushBuffer();
 		AjdtCommand.genBuildConfig(new String[] { "-incremental", "-sourceroots", Constants.TESTDATA_PATH + "/src1" }, counter);
@@ -132,8 +132,7 @@ public class AjdtCommandTestCase extends TestCase {
 		outputWriter.flushBuffer();
 		AjdtCommand.genBuildConfig(new String[] { "-incremental", "testdata/src1/Hello.java" }, counter);
 
-		assertTrue("specified a file", outputWriter.getContents().indexOf(
-				"incremental mode only handles source files using -sourceroots") != -1);
+		assertTrue("specified a file", outputWriter.getContents().contains("incremental mode only handles source files using -sourceroots"));
 	}
 
 	public void testBadOptionAndUsagePrinting() throws InvalidInputException {
@@ -143,7 +142,7 @@ public class AjdtCommandTestCase extends TestCase {
 		}
 		// usage printed by caller to genBuildConfig now...
 		assertTrue(outputWriter.getContents() + " contains? " + "Usage",
-				outputWriter.getContents().indexOf("-mubleBadOption") != -1);
+				outputWriter.getContents().contains("-mubleBadOption"));
 
 	}
 
@@ -166,7 +165,7 @@ public class AjdtCommandTestCase extends TestCase {
 		}
 
 		String text = byteArrayOut.toString();
-		assertTrue(text + " contains? " + "Usage", text.indexOf("Usage") != -1);
+		assertTrue(text + " contains? " + "Usage", text.contains("Usage"));
 	}
 
 	public void q() throws InvalidInputException {
@@ -194,14 +193,13 @@ public class AjdtCommandTestCase extends TestCase {
 
 		String text = byteArrayOut.toString();
 		// String text2 = byteArrayErr.toString();
-		assertTrue("version output does not include 'AspectJ Compiler', output was:\n'" + text + "'", text
-				.indexOf("AspectJ Compiler") != -1);
+		assertTrue("version output does not include 'AspectJ Compiler', output was:\n'" + text + "'", text.contains("AspectJ Compiler"));
 	}
 
 	public void testNonExistingLstFile() {
 		AjdtCommand.genBuildConfig(new String[] { "@mumbleDoesNotExist" }, counter);
 
-		assertTrue(outputWriter.getContents(), outputWriter.getContents().indexOf("file does not exist") != -1);
+		assertTrue(outputWriter.getContents(), outputWriter.getContents().contains("file does not exist"));
 	}
 
 	protected void setUp() throws Exception {

@@ -356,7 +356,7 @@ public class LangUtil {
 		}
 		ArrayList<String> result = new ArrayList<String>();
 
-		if (LangUtil.isEmpty(delim) || (-1 == input.indexOf(delim))) {
+		if (LangUtil.isEmpty(delim) || (!input.contains(delim))) {
 			result.add(input.trim());
 		} else {
 			StringTokenizer st = new StringTokenizer(input, delim);
@@ -1018,7 +1018,7 @@ public class LangUtil {
 			boolean result = false;
 			if (!LangUtil.isEmpty(input)) {
 				for (int i = 0; !result && (i < infixes.length); i++) {
-					result = (-1 != input.indexOf(infixes[i]));
+					result = (input.contains(infixes[i]));
 				}
 			}
 			return result;

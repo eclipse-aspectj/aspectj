@@ -134,8 +134,8 @@ public class BridgeUtil {
                 || LangUtil.isEmpty(rhs_s)) {
                 return 0;
             }
-            if ((-1 != lhs_s.indexOf(rhs_s))
-                || (-1 != rhs_s.indexOf(lhs_s))) {
+            if ((lhs_s.contains(rhs_s))
+                || (rhs_s.contains(lhs_s))) {
                 return 0;
             }
             return String.CASE_INSENSITIVE_ORDER.compare(lhs_s, rhs_s);

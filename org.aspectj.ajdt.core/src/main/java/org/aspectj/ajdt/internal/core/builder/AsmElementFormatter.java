@@ -174,7 +174,7 @@ public class AsmElementFormatter {
 		} else if (methodDeclaration instanceof InterTypeDeclaration) {
 			InterTypeDeclaration itd = (InterTypeDeclaration) methodDeclaration;
 			String fqname = itd.getOnType().toString();
-			if (fqname.indexOf(".") != -1) {
+			if (fqname.contains(".")) {
 				// TODO the string handling round here is embarrassing
 				node.addFullyQualifiedName(fqname + "." + new String(itd.getDeclaredSelector()));
 				fqname = fqname.substring(fqname.lastIndexOf(".") + 1);

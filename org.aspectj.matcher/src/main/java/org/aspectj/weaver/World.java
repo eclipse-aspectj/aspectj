@@ -991,10 +991,10 @@ public abstract class World implements Dump.INode {
 		if (jps == null) {
 			return;
 		}
-		if (jps.indexOf("arrayconstruction") != -1) {
+		if (jps.contains("arrayconstruction")) {
 			optionalJoinpoint_ArrayConstruction = true;
 		}
-		if (jps.indexOf("synchronization") != -1) {
+		if (jps.contains("synchronization")) {
 			optionalJoinpoint_Synchronization = true;
 		}
 	}

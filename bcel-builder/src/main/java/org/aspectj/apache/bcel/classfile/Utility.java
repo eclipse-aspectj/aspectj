@@ -243,7 +243,7 @@ public abstract class Utility {
 		StringBuffer buf = new StringBuffer("(");
 		String type;
 		int index;
-		int var_index = (access.indexOf("static") >= 0) ? 0 : 1;
+		int var_index = (access.contains("static")) ? 0 : 1;
 
 		try { // Read all declarations between for `(' and `)'
 			if (signature.charAt(0) != '(') {

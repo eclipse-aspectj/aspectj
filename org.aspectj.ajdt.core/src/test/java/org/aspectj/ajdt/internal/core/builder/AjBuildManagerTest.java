@@ -43,7 +43,7 @@ public class AjBuildManagerTest extends TestCase {
 		final int numMessages = handler.numMessages(IMessage.WARNING, true);
 		if (1 == numMessages) { // permit aspectjrt.jar warning
 			IMessage m = handler.getMessages(IMessage.WARNING, true)[0];
-			if (!(m.isWarning() && (-1 != m.getMessage().indexOf("aspectjrt.jar")))) {
+			if (!(m.isWarning() && (m.getMessage().contains("aspectjrt.jar")))) {
 				assertTrue(handler.toString(), false);
 			}
 		} else if (0 != numMessages) {

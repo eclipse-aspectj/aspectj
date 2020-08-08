@@ -212,7 +212,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 						break;
 					} else {
 						if (t.isAnnotation()) {
-							if (v.indexOf("(") != -1) {
+							if (v.contains("(")) {
 								throw new RuntimeException(
 										"Compiler limitation: annotation values can only currently be marker annotations (no values): "
 												+ v);
@@ -297,7 +297,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			if (typePattern instanceof WildTypePattern && (annotationValues == null || annotationValues.isEmpty())) {
 				WildTypePattern wildTypePattern = (WildTypePattern) typePattern;
 				String fullyQualifiedName = wildTypePattern.maybeGetCleanName();
-				if (fullyQualifiedName != null && fullyQualifiedName.indexOf(".") != -1) {
+				if (fullyQualifiedName != null && fullyQualifiedName.contains(".")) {
 					ResolvedType resolvedType = world.resolve(UnresolvedType.forName(fullyQualifiedName));
 					if (resolvedType != null && !resolvedType.isMissing()) {
 						typePattern = new ExactTypePattern(resolvedType, false, false);

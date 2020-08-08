@@ -640,9 +640,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	private boolean acceptResource(String resourceName, boolean fromFile) {
-		if ((resourceName.startsWith("CVS/")) || (resourceName.indexOf("/CVS/") != -1) || (resourceName.endsWith("/CVS"))
+		if ((resourceName.startsWith("CVS/")) || (resourceName.contains("/CVS/")) || (resourceName.endsWith("/CVS"))
 				|| (resourceName.endsWith(".class")) || (resourceName.startsWith(".svn/"))
-				|| (resourceName.indexOf("/.svn/") != -1) || (resourceName.endsWith("/.svn")) ||
+				|| (resourceName.contains("/.svn/")) || (resourceName.endsWith("/.svn")) ||
 				// Do not copy manifests if either they are coming from a jar or we are writing to a jar
 				(resourceName.toUpperCase().equals(MANIFEST_NAME) && (!fromFile || zos != null))) {
 			return false;
@@ -1382,7 +1382,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                 }
                 return null; // this is the "OK" return value!
             }
-            else if (p.isFile() && p.getName().indexOf("org.aspectj.runtime") != -1) {
+            else if (p.isFile() && p.getName().contains("org.aspectj.runtime")) {
                 // likely to be a variant from the springsource bundle repo b272591
                 return null;
             }

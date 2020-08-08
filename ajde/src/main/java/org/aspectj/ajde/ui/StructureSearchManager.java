@@ -45,7 +45,7 @@ public class StructureSearchManager {
 
 	private List<IProgramElement> findMatchesHelper(IProgramElement node, String pattern, IProgramElement.Kind kind, List<IProgramElement> matches) {
 
-		if (node != null && node.getName().indexOf(pattern) != -1) {
+		if (node != null && node.getName().contains(pattern)) {
 			if (kind == null || node.getKind().equals(kind)) {
 				matches.add(node);
 			}

@@ -102,7 +102,7 @@ public class BindingTestCase extends PatternsTestCase {
 			// System.out.println("expected exception: " + re);
 			return;
 		} catch (Throwable t) {
-			assertTrue(prefix, t.getMessage().indexOf(prefix) != -1);
+			assertTrue(prefix, t.getMessage().contains(prefix));
 			return;
 		}
 		assertTrue("should have failed", false);

@@ -662,7 +662,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * Checks if the pattern looks like "com.foo.Bar" - an exact name
 	 */
 	private String looksLikeExactName(String typePattern) {
-		if (hasSpaceAnnotationPlus(typePattern, 0) || typePattern.indexOf("*") != -1) {
+		if (hasSpaceAnnotationPlus(typePattern, 0) || typePattern.contains("*")) {
 			return null;
 		}
 		return typePattern.replace('$', '.');

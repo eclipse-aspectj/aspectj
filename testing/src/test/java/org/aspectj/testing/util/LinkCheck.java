@@ -414,8 +414,8 @@ public class LinkCheck {
             // only info if redirect from http to https
             String m = e.getMessage();
             if ((m != null) 
-                && (-1 != m.indexOf("protocol"))
-                && (-1 != m.indexOf("https"))
+                && (m.contains("protocol"))
+                && (m.contains("https"))
                 && "http".equals(link.url.getProtocol())) {
                 info("httpsRedirect", link);
                 return;

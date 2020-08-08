@@ -99,8 +99,8 @@ public class BuildArgParserTestCase extends TestCase {
     		boolean jar2Found = false;
 			for (Object o : cp) {
 				String element = (String) o;
-				if (element.indexOf("1.jar") != -1) jar1Found = true;
-				if (element.indexOf("2.jar") != -1) jar2Found = true;
+				if (element.contains("1.jar")) jar1Found = true;
+				if (element.contains("2.jar")) jar2Found = true;
 			}
     		assertTrue(
     			config.getClasspath().toString(),
@@ -312,7 +312,7 @@ public class BuildArgParserTestCase extends TestCase {
 			"-bootclasspath", PATH }, 
 			messageWriter);		
 		assertTrue("Should find '" + PATH + "' contained in the first entry of '" + config.getBootclasspath().toString(),
-				config.getBootclasspath().get(0).indexOf(PATH) != -1); 
+				config.getBootclasspath().get(0).contains(PATH));
 
 		config = genBuildConfig(new String[] { 
 			}, 
@@ -375,8 +375,8 @@ public class BuildArgParserTestCase extends TestCase {
 		boolean jar2Found = false;
 		for (Object o : cp) {
 			String element = (String) o;
-			if (element.indexOf("1.jar") != -1) jar1Found = true;
-			if (element.indexOf("2.jar") != -1) jar2Found = true;
+			if (element.contains("1.jar")) jar1Found = true;
+			if (element.contains("2.jar")) jar2Found = true;
 		}
 		assertTrue(
 			config.getClasspath().toString(),

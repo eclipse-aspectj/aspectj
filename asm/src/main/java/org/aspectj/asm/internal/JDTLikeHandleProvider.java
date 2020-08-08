@@ -73,7 +73,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			if (folder.endsWith("/")) {
 				folder = folder.substring(0, folder.length() - 1);
 			}
-			if (folder.indexOf("/") != -1) {
+			if (folder.contains("/")) {
 				folder = folder.replace("/", "\\/");
 			}
 			sb.append(folder);
@@ -211,7 +211,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						// this code needs a speed overhaul... and some proper tests
 						// Two static parts because one may be enclosing jpsp (269522)
 						if (sig1 != null) {
-							if (sig1.indexOf("Lorg/aspectj/lang") != -1) {
+							if (sig1.contains("Lorg/aspectj/lang")) {
 								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
 									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
 								}
@@ -263,7 +263,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						// this code needs a speed overhaul... and some proper tests
 						// Two static parts because one may be enclosing jpsp (269522)
 						if (sig1 != null) {
-							if (sig1.indexOf("Lorg/aspectj/lang") != -1) {
+							if (sig1.contains("Lorg/aspectj/lang")) {
 								if (sig1.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
 									sig1 = sig1.substring(0, sig1.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
 								}
@@ -358,7 +358,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 			ipeSig = ipeSig.substring(0, idx);
 		}
 		if (ipeSig != null) {
-			if (ipeSig.indexOf("Lorg/aspectj/lang") != -1) {
+			if (ipeSig.contains("Lorg/aspectj/lang")) {
 				if (ipeSig.endsWith("Lorg/aspectj/lang/JoinPoint$StaticPart;")) {
 					ipeSig = ipeSig.substring(0, ipeSig.lastIndexOf("Lorg/aspectj/lang/JoinPoint$StaticPart;"));
 				}

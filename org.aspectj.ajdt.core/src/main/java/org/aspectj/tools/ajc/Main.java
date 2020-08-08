@@ -570,7 +570,7 @@ public class Main {
 				File file = loc.getSourceFile();
 				if (null != file) {
 					String name = file.getName();
-					if (!toString || (-1 == text.indexOf(name))) {
+					if (!toString || (!text.contains(name))) {
 						sb.append(FileUtil.getBestPath(file));
 						if (loc.getLine() > 0) {
 							sb.append(":" + loc.getLine());

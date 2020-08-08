@@ -79,7 +79,7 @@ public class ExtensionTest extends AjcTestCase {
 	private IProgramElement getChild(IProgramElement parent, String s) {
 		List<IProgramElement> kids = parent.getChildren();
 		for (IProgramElement element : kids) {
-			if (element.getName().indexOf(s) != -1)
+			if (element.getName().contains(s))
 				return element;
 		}
 		return null;
@@ -90,7 +90,7 @@ public class ExtensionTest extends AjcTestCase {
 	private void findChild(String s, IProgramElement ipe) {
 		if (ipe == null)
 			return;
-		if (ipe.getName().indexOf(s) != -1) {
+		if (ipe.getName().contains(s)) {
 			foundNode = ipe;
 			return;
 		}

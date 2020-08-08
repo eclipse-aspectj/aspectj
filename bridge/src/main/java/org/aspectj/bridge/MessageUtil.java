@@ -587,7 +587,7 @@ public class MessageUtil {
 				return true;
 			}
 			String text = message.getMessage();
-			return (text.indexOf(infix) != -1);
+			return (text.contains(infix));
 		}
 
 		public void ignore(Kind kind) {

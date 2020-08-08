@@ -125,7 +125,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 
 		String expected = "Type referred to is not an annotation type";
 		String msg = ((IMessage) mh.messages.get(0)).toString();
-		assertTrue("Expected: " + expected + " but got " + msg, msg.indexOf(expected) != -1);
+		assertTrue("Expected: " + expected + " but got " + msg, msg.contains(expected));
 	}
 
 	public void testReferenceViaFormalToNonAnnotationType() {
@@ -142,7 +142,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 
 		String expected = "Type referred to is not an annotation type";
 		String msg = ((IMessage) mh.messages.get(0)).toString();
-		assertTrue("Expected: " + expected + " but got " + msg, msg.indexOf(expected) != -1);
+		assertTrue("Expected: " + expected + " but got " + msg, msg.contains(expected));
 
 		// expected = "Binding not supported in @pcds (1.5.0 M1 limitation): null";
 		// msg = ((IMessage)mh.messages.get(1)).toString();

@@ -161,7 +161,7 @@ public class EclipseAdapterUtils {
 			declared = true;
 			extraDetails = extraDetails.substring(0, extraDetails.length() - "[deow=true]".length());
 		}
-		if (extraDetails != null && extraDetails.indexOf("[Xlint:") != -1) {
+		if (extraDetails != null && extraDetails.contains("[Xlint:")) {
 			isLintMessage = true;
 			lintkey = extraDetails.substring(extraDetails.indexOf("[Xlint:"));
 			lintkey = lintkey.substring("[Xlint:".length());

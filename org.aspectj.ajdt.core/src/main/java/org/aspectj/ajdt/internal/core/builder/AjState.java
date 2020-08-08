@@ -1429,7 +1429,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (compiledTypes != null) {
 				for (char[] className : (Iterable<char[]>) compiledTypes.keySet()) {
 					String typeName = new String(className).replace('/', '.');
-					if (typeName.indexOf(BcelWeaver.SYNTHETIC_CLASS_POSTFIX) == -1) {
+					if (!typeName.contains(BcelWeaver.SYNTHETIC_CLASS_POSTFIX)) {
 						ResolvedType rt = world.resolve(typeName);
 						if (rt.isMissing()) {
 							// This can happen in a case where another problem has occurred that prevented it being

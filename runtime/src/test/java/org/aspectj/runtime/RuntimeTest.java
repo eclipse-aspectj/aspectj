@@ -69,9 +69,9 @@ public class RuntimeTest extends TestCase {
    
     
     static void checkSoftExceptionString(String s) {        
-        assertTrue(-1 != s.indexOf("SoftException"));
-        assertTrue(-1 != s.indexOf("Caused by: java.lang.Error"));
-        assertTrue(-1 != s.indexOf("xyz"));
-        assertTrue(-1 != s.indexOf("testSoftExceptionPrintStackTrace"));
+        assertTrue(s.contains("SoftException"));
+        assertTrue(s.contains("Caused by: java.lang.Error"));
+        assertTrue(s.contains("xyz"));
+        assertTrue(s.contains("testSoftExceptionPrintStackTrace"));
     }
 }  

@@ -149,7 +149,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		for (Method m : ms) {
 			match = match + "--" + m.getName();
 		}
-		assertTrue(match.indexOf("aMethod") >=0);
+		assertTrue(match.contains("aMethod"));
 	}
 	
 	public void testGetDeclaredPointcut() throws Exception {
@@ -200,8 +200,8 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals(2,pcs.length);
         // AV was corrupted, cannot rely on ordering
         String match = "simpleAspectMethodExecution--simpleAspectCall";
-		assertTrue(match.indexOf(pcs[0].getName()) >= 0);
-		assertTrue(match.indexOf(pcs[1].getName()) >= 0);
+		assertTrue(match.contains(pcs[0].getName()));
+		assertTrue(match.contains(pcs[1].getName()));
 	}
 	
 	public void testGetPointcuts() {

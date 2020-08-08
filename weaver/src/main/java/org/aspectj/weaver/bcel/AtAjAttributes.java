@@ -1958,7 +1958,7 @@ public class AtAjAttributes {
 			Pointcut pointcut = parser.parsePointcut();
 			parser.checkEof();
 			pointcut.check(null, struct.enclosingType.getWorld());
-			if (!allowIf && pointcutString.indexOf("if()") >= 0 && hasIf(pointcut)) {
+			if (!allowIf && pointcutString.contains("if()") && hasIf(pointcut)) {
 				reportError("if() pointcut is not allowed at this pointcut location '" + pointcutString + "'", struct);
 				return null;
 			}

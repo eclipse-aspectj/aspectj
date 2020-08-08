@@ -417,7 +417,7 @@ public class AjcTest extends RunSpecIterator {
 						 !gotHit && iter.hasNext();
 					) {
 						String substring = (String) iter.next();
-						if (-1 != this.description.indexOf(substring)) {
+						if (this.description.contains(substring)) {
 							gotHit = true;
 						}
 					}

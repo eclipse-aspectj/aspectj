@@ -88,17 +88,17 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test016_ByteConversionInstructions() {
   	runTest("RuntimeException thrown: Could not find instruction: org.apache.bcel.generic.B2I");
   	String output = getLastRunResult().getStdErr();
-  	assertTrue("Expected to find [b2] in this output but didn't:"+output,output.indexOf("[b2]")!=-1);
-  	assertTrue("Expected to find [b127] in this output but didn't:"+output,output.indexOf("[b127]")!=-1);
-  	assertTrue("Expected to find [b0] in this output but didn't:"+output,output.indexOf("[b0]")!=-1);
+  	assertTrue("Expected to find [b2] in this output but didn't:"+output, output.contains("[b2]"));
+  	assertTrue("Expected to find [b127] in this output but didn't:"+output, output.contains("[b127]"));
+  	assertTrue("Expected to find [b0] in this output but didn't:"+output, output.contains("[b0]"));
 
-  	assertTrue("Expected to find [c65] in this output but didn't:"+output,output.indexOf("[c65]")!=-1);
-  	assertTrue("Expected to find [c66] in this output but didn't:"+output,output.indexOf("[c66]")!=-1);
-  	assertTrue("Expected to find [c67] in this output but didn't:"+output,output.indexOf("[c67]")!=-1);
+  	assertTrue("Expected to find [c65] in this output but didn't:"+output, output.contains("[c65]"));
+  	assertTrue("Expected to find [c66] in this output but didn't:"+output, output.contains("[c66]"));
+  	assertTrue("Expected to find [c67] in this output but didn't:"+output, output.contains("[c67]"));
 
-  	assertTrue("Expected to find [s1] in this output but didn't:"+output,output.indexOf("[s1]")!=-1);
-  	assertTrue("Expected to find [s32767] in this output but didn't:"+output,output.indexOf("[s32767]")!=-1);
-  	assertTrue("Expected to find [b0] in this output but didn't:"+output,output.indexOf("[b0]")!=-1);
+  	assertTrue("Expected to find [s1] in this output but didn't:"+output, output.contains("[s1]"));
+  	assertTrue("Expected to find [s32767] in this output but didn't:"+output, output.contains("[s32767]"));
+  	assertTrue("Expected to find [b0] in this output but didn't:"+output, output.contains("[b0]"));
   }
   
   public void test017_PrivateMethodCallsInAroundAdvice() {
@@ -229,7 +229,7 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("proper handling of ExceptionInIntializer inside clinit in presence of after throwing advice");
     String s = getLastRunResult().getStdErr();
     assertTrue("Output should contain java.lang.ExceptionInInitializerError but is '"+s+"'",
-            s.indexOf("java.lang.ExceptionInInitializerError")!=-1);
+			s.contains("java.lang.ExceptionInInitializerError"));
     // No getCause on 1.3 JVMs
 //    assertTrue("Output should contain 'CAUSE=org.aspectj.lang.NoAspectBoundException' but is '"+s+"'",
 //            s.indexOf("CAUSE=org.aspectj.lang.NoAspectBoundException")!=-1);

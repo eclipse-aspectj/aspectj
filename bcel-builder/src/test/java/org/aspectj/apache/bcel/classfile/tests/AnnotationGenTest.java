@@ -60,7 +60,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		// Check it looks right
-		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().indexOf("id=4") != -1);
+		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().contains("id=4"));
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
@@ -87,7 +87,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		NameValuePair nvGen = new NameValuePair("id", evg, cp);
 
 		// Check it looks right
-		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().indexOf("id=4") != -1);
+		assertTrue("Should include string 'id=4' but says: " + nvGen.toString(), nvGen.toString().contains("id=4"));
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 

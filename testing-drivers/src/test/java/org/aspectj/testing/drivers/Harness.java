@@ -1056,7 +1056,7 @@ class SubstringRunner implements StringRunner {
 			input = input.toLowerCase();
 		}
 		for (String substring : substrings) {
-			if (-1 != input.indexOf(substring)) {
+			if (input.contains(substring)) {
 				return true;
 			}
 		}
@@ -1150,7 +1150,7 @@ class MessageRunValidator implements IRunValidator {
 							continue; // hmm
 						}
 						String text = message.getMessage();
-						if ((null != text) && (-1 != text.indexOf(sought))) {
+						if ((null != text) && (text.contains(sought))) {
 							return true;
 						}
 					}

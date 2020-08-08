@@ -185,7 +185,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// TAG: WeavingMessage
 		if (changed && worthReporting && munger != null && !weaver.getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
 			String tName = weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getName();
-			if (tName.indexOf("no debug info available") != -1) {
+			if (tName.contains("no debug info available")) {
 				tName = "no debug info available";
 			} else {
 				tName = getShortname(weaver.getLazyClassGen().getType().getSourceLocation().getSourceFile().getPath());

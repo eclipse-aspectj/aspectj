@@ -153,7 +153,7 @@ class StubFileGenerator {
 
 				if (member.getKind().equals(IProgramElement.Kind.METHOD)
 						|| member.getKind().equals(IProgramElement.Kind.CONSTRUCTOR)) {
-					if (member.getParent().getKind().equals(IProgramElement.Kind.INTERFACE) || signature.indexOf("abstract ") != -1) {
+					if (member.getParent().getKind().equals(IProgramElement.Kind.INTERFACE) || signature.contains("abstract ")) {
 						writer.println(";");
 					} else {
 						writer.println(" { }");

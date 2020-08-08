@@ -87,7 +87,7 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// Look for the message relating to 'List' and check the offsets
 		for (IMessage iMessage : ms) {
 			LintMessage m = (LintMessage) iMessage;
-			if (m.toString().indexOf("List") != -1) {
+			if (m.toString().contains("List")) {
 				// 225/228 on windows - 237/240 on linux
 				if (!(m.getSourceStart() == 225 || m.getSourceStart() == 237)) {
 					fail("Did not get expected start position, was:" + m.getSourceStart());

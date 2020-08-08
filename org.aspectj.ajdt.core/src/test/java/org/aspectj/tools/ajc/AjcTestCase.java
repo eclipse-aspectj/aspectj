@@ -224,7 +224,7 @@ public abstract class AjcTestCase extends TestCase {
 				}
 			}
 			if (text != null) {
-				if (message.getMessage().indexOf(text) == -1) {
+				if (!message.getMessage().contains(text)) {
 					return false;
 				}
 			}
@@ -891,7 +891,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	private String substituteSandbox(String path) {
 		// the longhand form of the non 1.3 API: path.replace("$sandbox", ajc.getSandboxDirectory().getAbsolutePath());
-		while (path.indexOf("$sandbox") != -1) {
+		while (path.contains("$sandbox")) {
 			int pos = path.indexOf("$sandbox");
 			String firstbit = path.substring(0, pos);
 			String endbit = path.substring(pos + 8);
@@ -918,7 +918,7 @@ public abstract class AjcTestCase extends TestCase {
 				cpIndex = i;
 				args[i + 1] = substituteSandbox(args[i + 1]);
 				String next = args[i + 1];
-				hasruntime = ((null != next) && (-1 != next.indexOf("aspectjrt.jar")));
+				hasruntime = ((null != next) && (next.contains("aspectjrt.jar")));
 			} else if ("-p".equals(args[i]) || "--module-path".equals(args[i])) {
 				args[i + 1] = substituteSandbox(args[i + 1]);
 			}
@@ -941,7 +941,7 @@ public abstract class AjcTestCase extends TestCase {
 		}
 		boolean needsJRTFS = LangUtil.is19VMOrGreater();
 		if (needsJRTFS) {
-			if (args[cpIndex].indexOf(LangUtil.JRT_FS) == -1) {
+			if (!args[cpIndex].contains(LangUtil.JRT_FS)) {
 				String jrtfsPath = LangUtil.getJrtFsFilePath();
 				args[cpIndex] = jrtfsPath + File.pathSeparator + args[cpIndex];
 			}

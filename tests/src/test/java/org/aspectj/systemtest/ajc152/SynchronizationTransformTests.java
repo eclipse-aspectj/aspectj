@@ -243,7 +243,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 			String[] lines = ls.getLines();
 			for (int i = 0; i < lines.length; i++) {
 				String existingLine = lines[i];
-				if (fileContents[i].indexOf("MethodDeclarationLineNumber") == -1 && !fileContents[i].equals(existingLine)) {
+				if (!fileContents[i].contains("MethodDeclarationLineNumber") && !fileContents[i].equals(existingLine)) {
 					dump("File contents:", fileContents);
 					dump("Actual:", lines);
 					fail("\nDifference in method " + m.getName() + " on line " + i + " between the expected:\n" + fileContents[i]

@@ -364,7 +364,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		List<IMessage> messages = ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
 		for (IMessage element : messages) {
-			if (element.getMessage().indexOf(anError) != -1) {
+			if (element.getMessage().contains(anError)) {
 				return;
 			}
 		}

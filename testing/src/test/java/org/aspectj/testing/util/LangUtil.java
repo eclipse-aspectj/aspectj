@@ -68,9 +68,9 @@ public class LangUtil {
                 ps = ";";
                 String cp = System.getProperty("java.class.path");
                 if (null != cp) {
-                    if (-1 != cp.indexOf(";")) {
+                    if (cp.contains(";")) {
                         ps = ";";
-                    } else if (-1 != cp.indexOf(":")) {
+                    } else if (cp.contains(":")) {
                         ps = ":";
                     }
                     // else warn?
@@ -105,7 +105,7 @@ public class LangUtil {
     public static void escape(String input, String target, String escape, StringBuffer sink) {
         if ((null == sink) || isEmpty(input) || isEmpty(target) || isEmpty(escape)) {
             return;
-        } else if (-1 == input.indexOf(target)) { // avoid StringTokenizer construction
+        } else if (!input.contains(target)) { // avoid StringTokenizer construction
             sink.append(input);
             return;
         }
@@ -377,7 +377,7 @@ public class LangUtil {
         if (isEmpty(input)) {
             return result;
         }
-        if ((!haveDelim) || (-1 == input.indexOf(delim))) {
+        if ((!haveDelim) || (!input.contains(delim))) {
             result.add(input);
             return result;
         }
@@ -482,7 +482,7 @@ public class LangUtil {
         StringBuffer sb = new StringBuffer();
         sb.append(SPLIT_START);
         for (int i = 0; i < input.length; i++) {
-            if (-1 != input[i].indexOf(SPLIT_DELIM)) {
+            if (input[i].contains(SPLIT_DELIM)) {
                 if (null != errs) {
                     errs.append("\nLangUtil.unsplit(..) - item " + i + ": \"" + input[i]
                         + " contains \"" + SPLIT_DELIM + "\"");

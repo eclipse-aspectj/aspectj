@@ -132,7 +132,7 @@ public class XMLWriter {
 						printed = true;
 					}
 					String s = o.toString();
-					if (-1 != s.indexOf(",")) {
+					if (s.contains(",")) {
 						throw new IllegalArgumentException("comma in " + s);
 					}
 					sb.append(s);

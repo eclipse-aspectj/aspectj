@@ -444,7 +444,7 @@ public class Module {
         	if (path.equals("org.eclipse.ajdt.core.ASPECTJRT_CONTAINER")) {
         		classpathVariables.add("ASPECTJRT_LIB");
         	} else {
-	            if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
+	            if (!path.contains("JRE")) { // warn non-JRE containers
 	                messager.log("cannot handle con yet: " + toString);
 	            }
         	}
@@ -614,7 +614,7 @@ public class Module {
             boolean inQuote = false;
             while (st.hasMoreTokens()) {
                 String s = st.nextToken();
-                if ((1 == s.length()) && (-1 != DELIM.indexOf(s))) {
+                if ((1 == s.length()) && (DELIM.contains(s))) {
                     if ("\"".equals(s)) { // end quote (or escaped)
                         if (inQuote) {
                             inQuote = false;

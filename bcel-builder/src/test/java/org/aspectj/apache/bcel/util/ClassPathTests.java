@@ -9,7 +9,7 @@ public class ClassPathTests extends BcelTestCase {
 
 	public void testJava9ImageFile() throws IOException {
 		String sunbootClasspath = System.getProperty("sun.boot.class.path");
-		if (sunbootClasspath==null || sunbootClasspath.indexOf(".jimage")==-1) {
+		if (sunbootClasspath==null || !sunbootClasspath.contains(".jimage")) {
 			// Not java9
 			return;
 		}

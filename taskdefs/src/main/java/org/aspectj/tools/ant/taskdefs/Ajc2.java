@@ -498,7 +498,7 @@ public class Ajc2 extends Javac {
                 }
 
                 // If there are stars we'll try to resolve the file here
-                else if (line.indexOf("*") != -1) {
+                else if (line.contains("*")) {
                     log("The argfile line '" + line + "' is invalid",
                         Project.MSG_WARN);
                 }

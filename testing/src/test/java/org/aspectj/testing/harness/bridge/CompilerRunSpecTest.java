@@ -141,7 +141,7 @@ public class CompilerRunSpecTest extends TestCase {
             }
         } else {
             String messages = "" + handler;
-            if (-1 == messages.indexOf(contains)) {
+            if (!messages.contains(contains)) {
                 assertTrue(messages, false);
             }
         }
@@ -398,7 +398,7 @@ public class CompilerRunSpecTest extends TestCase {
             }
             if (null != resultContains) {
                 String result = "" + spec.testSetup.commandOptions;
-                if (-1 == result.indexOf(resultContains)) {
+                if (!result.contains(resultContains)) {
                     assertTrue(
                         "expected " + resultContains + " got " + result,
                         false);
@@ -411,7 +411,7 @@ public class CompilerRunSpecTest extends TestCase {
                     assertTrue("expected " + messagesContain, false);
                 } else {
                     String messages = handler.toString();
-                    if (-1 == messages.indexOf(messagesContain)) {
+                    if (!messages.contains(messagesContain)) {
                         assertTrue(
                             "expected "
                                 + messagesContain

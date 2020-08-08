@@ -755,7 +755,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		// check going bang in this case we check for $ (crap...) - we can't check the outer because the declaring type
 		// is considered unresolved...
 		if (// isParameterized && <-- might need this bit...
-		!getDeclaringType().isGenericType() && getDeclaringType().getName().indexOf("$") == -1) {
+		!getDeclaringType().isGenericType() && !getDeclaringType().getName().contains("$")) {
 			throw new IllegalStateException("Can't ask to parameterize a member of non-generic type: " + getDeclaringType()
 					+ "  kind(" + getDeclaringType().typeKind + ")");
 		}

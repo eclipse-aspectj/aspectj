@@ -975,7 +975,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public boolean isSynthetic() {
-		return signature.indexOf("$ajc") != -1;
+		return signature.contains("$ajc");
 	}
 
 	public final boolean isFinal() {

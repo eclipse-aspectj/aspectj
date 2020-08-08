@@ -477,7 +477,7 @@ public final class TestUtil {
 		String[] paths = FileUtil.listFiles(expectedBaseDir);
 		boolean result = true;
 		for (String path : paths) {
-			if (-1 != path.indexOf("CVS")) {
+			if (path.contains("CVS")) {
 				continue;
 			}
 			if (!sameFiles(handler, expectedBaseDir, actualBaseDir, path) && result) {

@@ -432,7 +432,7 @@ public class ProgramElement implements IProgramElement {
 			// check if someone is calling us with something that is a signature already
 			assert name.charAt(0) != '[';
 
-			if (name.indexOf("<") == -1) {
+			if (!name.contains("<")) {
 				// not parameterized
 				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 			} else {

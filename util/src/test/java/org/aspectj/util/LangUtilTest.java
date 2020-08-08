@@ -229,7 +229,7 @@ public class LangUtilTest extends TestCase {
 		LangUtil.elideEndingLines(LangUtil.StringChecker.TEST_PACKAGES, stackBuffer, 10);
 		String result = stackBuffer.toString();
 
-		if (-1 == result.indexOf("(... ")) {
+		if (!result.contains("(... ")) {
 			// brittle - will fail under different top-level drivers
 			String m = "when running under eclipse or Ant, expecting (... in trace: ";
 			assertTrue(m + result, false);
@@ -264,7 +264,7 @@ public class LangUtilTest extends TestCase {
 
 		LangUtil.elideEndingLines(LangUtil.StringChecker.TEST_PACKAGES, stackBuffer, 25);
 		result = stackBuffer.toString();
-		assertTrue(result, -1 != result.indexOf("(... "));
-		assertTrue(result, -1 == result.indexOf("org.aspectj.testing"));
+		assertTrue(result, result.contains("(... "));
+		assertTrue(result, !result.contains("org.aspectj.testing"));
 	}
 }

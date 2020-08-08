@@ -438,7 +438,7 @@ public class Diffs {
 		} else if (null == actual) {
 			return false; // expected something
 		} else {
-			return (-1 != actual.indexOf(expected));
+			return (actual.contains(expected));
 		}
 	}
 

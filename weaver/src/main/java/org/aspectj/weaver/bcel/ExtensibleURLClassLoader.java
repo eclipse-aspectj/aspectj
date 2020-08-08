@@ -71,7 +71,7 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 		try {
 			unresolvedType = UnresolvedType.forName(name);
 		} catch (BCException bce) {
-			if (bce.getMessage().indexOf("nameToSignature") == -1) {
+			if (!bce.getMessage().contains("nameToSignature")) {
 				bce.printStackTrace(System.err);
 			}
 			return null;

@@ -707,7 +707,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// 2 errors are reported when there is a clash - one against the aspect, one against the affected target type.
 		// each of the two errors are recorded against the compilation result for the aspect and the target
 		// So it comes out as 4 - but for now I am tempted to leave it because at least it shows there is a problem...
-		assertTrue("Was:" + getErrorMessages(p).get(0), getErrorMessages(p).get(0).toString().indexOf("conflicts") != -1);
+		assertTrue("Was:" + getErrorMessages(p).get(0), getErrorMessages(p).get(0).toString().contains("conflicts"));
 	}
 
 	public void testOutputLocationCallbacks2() {
@@ -789,8 +789,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkWasFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
-		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().indexOf(
-				"Syntax error on token \")\", \"name pattern\" expected") != -1);
+		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().contains("Syntax error on token \")\", \"name pattern\" expected"));
 	}
 
 	public void testIncrementalMixin() {
@@ -1160,15 +1159,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		List<IMessage> l = getErrorMessages(p);
-		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+		assertTrue(l.toString().contains("ManagedResource cannot be resolved to a type"));
 		// checkWasFullBuild();
 		alter(p, "inc1");
 		build(p);
 		// checkWasntFullBuild();
 		List<String> compilerErrors = getCompilerErrorMessages(p);
-		assertTrue(compilerErrors.toString().indexOf("NullPointerException") == -1);
+		assertTrue(!compilerErrors.toString().contains("NullPointerException"));
 		l = getErrorMessages(p);
-		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+		assertTrue(l.toString().contains("ManagedResource cannot be resolved to a type"));
 	}
 
 	public void testIncrementalAnnoStyle_pr286341() {
@@ -1514,13 +1513,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
 		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().isSourceFile()
-				&& whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
+				&& whereToLook.getSourceLocation().getSourceFile().toString().contains(filesubstring)) {
 			return whereToLook;
 		}
 		for (IProgramElement element : whereToLook.getChildren()) {
 			Kind k = element.getKind();
 			ISourceLocation sloc = element.getSourceLocation();
-			if (sloc != null && k.isSourceFile() && sloc.getSourceFile().toString().indexOf(filesubstring) != -1) {
+			if (sloc != null && k.isSourceFile() && sloc.getSourceFile().toString().contains(filesubstring)) {
 				return element;
 			}
 			if (k.isSourceFile()) {
@@ -2961,7 +2960,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<String> files = getCompiledFiles(projectName);
 		boolean found = false;
 		for (String object: files) {
-			if (object.indexOf(typeNameSubstring) != -1) {
+			if (object.contains(typeNameSubstring)) {
 				found = true;
 			}
 		}
@@ -3053,7 +3052,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<IMessage> warnings = getWarningMessages("PR133117");
 		List<IMessage> noGuardWarnings = new ArrayList<>();
 		for (IMessage warning: warnings) {
-			if (warning.getMessage().indexOf("Xlint:noGuardForLazyTjp") != -1) {
+			if (warning.getMessage().contains("Xlint:noGuardForLazyTjp")) {
 				noGuardWarnings.add(warning);
 			}
 		}
@@ -3137,7 +3136,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String decisions = AjdeInteractionTestbed.MyStateListener.getDecisions();
 		String expect = "Need to recompile 'A.aj'";
 		assertTrue("Couldn't find build decision: '" + expect + "' in the list of decisions made:\n" + decisions,
-				decisions.indexOf(expect) != -1);
+				decisions.contains(expect));
 	}
 
 	public void testPr133532_3() {

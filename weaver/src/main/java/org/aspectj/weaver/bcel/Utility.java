@@ -113,7 +113,7 @@ public class Utility {
 	 */
 	public static String beautifyLocation(ISourceLocation isl) {
 		StringBuffer nice = new StringBuffer();
-		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().indexOf("no debug info available") != -1) {
+		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().contains("no debug info available")) {
 			nice.append("no debug info available");
 		} else {
 			// can't use File.getName() as this fails when a Linux box

@@ -164,7 +164,7 @@ public class ConcreteAspectCodeGen {
 
 		String parentAspectName = concreteAspect.extend;
 
-		if (parentAspectName.indexOf("<") != -1) {
+		if (parentAspectName.contains("<")) {
 			// yikes, generic parent
 			parent = world.resolve(UnresolvedType.forName(parentAspectName), true);
 			if (parent.isMissing()) {
@@ -741,7 +741,7 @@ public class ConcreteAspectCodeGen {
 								return null;
 							}
 							String clazz = value.substring(0, value.length() - 6);
-							boolean qualified = clazz.indexOf(".") != -1;
+							boolean qualified = clazz.contains(".");
 							if (!qualified) {
 								// if not qualified, have to assume java.lang
 								clazz = "java.lang." + clazz;

@@ -336,14 +336,14 @@ public class PointcutParserTest extends TestCase {
 			pc = parser.parsePointcutExpression("args(String)", null, new PointcutParameter[] { param });
 			fail("Expecting IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {
-			assertTrue("formal unbound", ex.getMessage().indexOf("formal unbound") != -1);
+			assertTrue("formal unbound", ex.getMessage().contains("formal unbound"));
 		}
 
 		try {
 			pc = parser.parsePointcutExpression("args(y)");
 			fail("Expecting IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {
-			assertTrue("no match for type name", ex.getMessage().indexOf("warning no match for this type name: y") != -1);
+			assertTrue("no match for type name", ex.getMessage().contains("warning no match for this type name: y"));
 		}
 	}
 
@@ -357,7 +357,7 @@ public class PointcutParserTest extends TestCase {
 		try {
 			p.parsePointcutExpression("this(FooBar)");
 		} catch (IllegalArgumentException ex) {
-			assertTrue("should have xlint:invalidAbsoluteTypeName", ex.getMessage().indexOf("Xlint:invalidAbsoluteTypeName") != -1);
+			assertTrue("should have xlint:invalidAbsoluteTypeName", ex.getMessage().contains("Xlint:invalidAbsoluteTypeName"));
 		}
 		Properties props = new Properties();
 		props.put("invalidAbsoluteTypeName", "ignore");
