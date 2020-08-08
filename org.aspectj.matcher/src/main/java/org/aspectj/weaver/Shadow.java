@@ -596,7 +596,7 @@ public abstract class Shadow {
 								// Ask the world if it knows about precedence between these
 								Integer order = getIWorld().getPrecedenceIfAny(adviceA.concreteAspect, adviceB.concreteAspect);
 
-								if (order != null && order.equals(new Integer(0))) {
+								if (order != null && order.equals(0)) {
 									String key = adviceA.getDeclaringAspect() + ":" + adviceB.getDeclaringAspect();
 									String possibleExistingKey = adviceB.getDeclaringAspect() + ":" + adviceA.getDeclaringAspect();
 									if (!clashingAspects.contains(possibleExistingKey)) {

@@ -210,14 +210,14 @@ public class AnnotationAccessVar extends BcelVar {
 	}
 
 	private void buildArray(InstructionList il, InstructionFactory fact, Type arrayElementType, Type[] arrayEntries, int dim) {
-		il.append(fact.createConstant(Integer.valueOf(arrayEntries == null ? 0 : arrayEntries.length)));
+		il.append(fact.createConstant(arrayEntries == null ? 0 : arrayEntries.length));
 		il.append(fact.createNewArray(arrayElementType, (short) dim));
 		if (arrayEntries == null) {
 			return;
 		}
 		for (int i = 0; i < arrayEntries.length; i++) {
 			il.append(InstructionFactory.createDup(1));
-			il.append(fact.createConstant(Integer.valueOf(i)));
+			il.append(fact.createConstant(i));
 			switch (arrayEntries[i].getType()) {
 			case Constants.T_ARRAY:
 				il.append(fact.createConstant(new ObjectType(arrayEntries[i].getSignature()))); // FIXME should be getName() and not

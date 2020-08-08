@@ -1536,7 +1536,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 //						System.err.println("Detected a structural change in " + thisTime.getFilename());
 						printStructuralChanges(thisTime.getFilename(),reader, existingStructure);
 					}
-					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(), new Long(currentBuildTime));
+					structuralChangesSinceLastFullBuild.put(thisTime.getFilename(), currentBuildTime);
 					recordTypeChanged(new String(reader.getName()).replace('/', '.'));
 				}
 			}

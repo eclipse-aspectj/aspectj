@@ -162,7 +162,7 @@ public class AsmManager implements IStructureModel {
 				entries.add(peNode);
 				ISourceLocation sourceLoc = peNode.getSourceLocation();
 				if (null != sourceLoc) {
-					Integer hash = new Integer(sourceLoc.getLine());
+					Integer hash = sourceLoc.getLine();
 					List<IProgramElement> existingEntry = annotations.get(hash);
 					if (existingEntry != null) {
 						entries.addAll(existingEntry);
@@ -1189,9 +1189,9 @@ public class AsmManager implements IStructureModel {
 			String node = ipe.getKind().toString();
 			Integer ctr = nodeTypeCount.get(node);
 			if (ctr == null) {
-				nodeTypeCount.put(node, new Integer(1));
+				nodeTypeCount.put(node, 1);
 			} else {
-				ctr = new Integer(ctr.intValue() + 1);
+				ctr = ctr.intValue() + 1;
 				nodeTypeCount.put(node, ctr);
 			}
 		}

@@ -812,7 +812,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             List<Argument> bothargs = new Vector<>(args);
             bothargs.addAll(testset.args);
             List<List<Arg>> argcombo = argcombo(bothargs);
-            argcombos.add(new Integer(argcombo.size()));
+            argcombos.add(argcombo.size());
             testsetToArgcombo.put(testset, argcombo);
         }
         while (!testsetToArgcombo.isEmpty()) {
@@ -1786,7 +1786,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
             public void add(Failure f, String taskname, String type,
                             int num, long time) {
                 model.addRow(new Object[]{taskname, type,
-                                          new Integer(num), date(time)});
+						num, date(time)});
                 failures.add(f);
             }
         }

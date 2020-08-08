@@ -123,7 +123,7 @@ public class CompilationAndWeavingContext {
 	}
 
 	public static void registerFormatter(int phaseId, ContextFormatter aFormatter) {
-		formatterMap.put(new Integer(phaseId), aFormatter);
+		formatterMap.put(phaseId, aFormatter);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class CompilationAndWeavingContext {
 	}
 
 	private static ContextFormatter getFormatter(ContextStackEntry entry) {
-		Integer key = new Integer(entry.phaseId);
+		Integer key = entry.phaseId;
 		if (formatterMap.containsKey(key)) {
 			return formatterMap.get(key);
 		} else {

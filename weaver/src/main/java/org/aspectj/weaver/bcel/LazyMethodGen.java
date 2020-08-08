@@ -1345,11 +1345,11 @@ public final class LazyMethodGen implements Traceable {
 			if (slots == null) {
 				slots = new HashSet<Integer>();
 				duplicatedLocalMap.put(start, slots);
-			} else if (slots.contains(new Integer(tag.getSlot()))) {
+			} else if (slots.contains(tag.getSlot())) {
 				// we already have a var starting at this tag with this slot
 				continue;
 			}
-			slots.add(Integer.valueOf(tag.getSlot()));
+			slots.add(tag.getSlot());
 			Type t = tag.getRealType();
 			if (t == null) {
 				t = BcelWorld.makeBcelType(UnresolvedType.forSignature(tag.getType()));

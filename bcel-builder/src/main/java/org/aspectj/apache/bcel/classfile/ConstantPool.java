@@ -465,7 +465,7 @@ public class ConstantPool implements Node {
 				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchSignature))
 					continue;
-				fieldCache.put(k, new Integer(i));
+				fieldCache.put(k, i);
 				return i;
 			}
 		}
@@ -793,7 +793,7 @@ public class ConstantPool implements Node {
 				String typeSignature = ((ConstantUtf8) pool[cnat.getSignatureIndex()]).getValue();
 				if (!typeSignature.equals(searchSignature))
 					continue;
-				methodCache.put(key, new Integer(i));
+				methodCache.put(key, i);
 				return i;
 			}
 		}

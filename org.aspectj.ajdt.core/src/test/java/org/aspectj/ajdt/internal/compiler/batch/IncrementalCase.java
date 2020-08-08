@@ -174,7 +174,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		IMessageHolder compilerMessages,
         StringBuffer commandLine,
 		IMessageHandler handler) {
-        log("verifyCompile -  iteration ", new Integer(iteration), handler);
+        log("verifyCompile -  iteration ", iteration, handler);
 		log("verifyCompile -        def ", def, handler);
         log("verifyCompile -    command ", commandLine.toString(), handler);
 		log("verifyCompile -   messages ", compilerMessages, handler);

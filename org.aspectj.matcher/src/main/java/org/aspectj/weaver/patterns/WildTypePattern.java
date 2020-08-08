@@ -1023,7 +1023,7 @@ public class WildTypePattern extends TypePattern {
 		if ((tvs.length < minRequiredTypeParameters) || (!foundEllipsis && minRequiredTypeParameters != tvs.length)) {
 			// issue message "does not match because wrong no of type params"
 			String msg = WeaverMessages.format(WeaverMessages.INCORRECT_NUMBER_OF_TYPE_ARGUMENTS, genericType.getName(),
-					new Integer(tvs.length));
+					tvs.length);
 			if (requireExactType) {
 				scope.message(MessageUtil.error(msg, getSourceLocation()));
 			} else {
@@ -1092,7 +1092,7 @@ public class WildTypePattern extends TypePattern {
 							parameterName = ((TypeVariableReference) ut).getTypeVariable().getDisplayName();
 						}
 						String msg = WeaverMessages.format(WeaverMessages.VIOLATES_TYPE_VARIABLE_BOUNDS, parameterName,
-								new Integer(i + 1), tvs[i].getDisplayName(), genericType.getName());
+								i + 1, tvs[i].getDisplayName(), genericType.getName());
 						if (requireExactType) {
 							scope.message(MessageUtil.error(msg, sLoc));
 						} else {

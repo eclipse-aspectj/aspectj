@@ -33,10 +33,11 @@ public class ModifiersPattern extends PatternNode {
 		int flag = 1;
 		while (flag <= Modifier.STRICT) {
 			String flagName = Modifier.toString(flag);
-			modifierFlags.put(flagName, new Integer(flag));
+			modifierFlags.put(flagName, flag);
 			flag = flag << 1;
 		}
-		modifierFlags.put("synthetic", new Integer(0x1000 /* Modifier.SYNTHETIC */));
+		/* Modifier.SYNTHETIC */
+		modifierFlags.put("synthetic", 0x1000);
 	}
 
 	public ModifiersPattern(int requiredModifiers, int forbiddenModifiers) {

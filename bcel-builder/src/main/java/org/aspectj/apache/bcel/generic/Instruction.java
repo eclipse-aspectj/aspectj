@@ -342,7 +342,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 		case ICONST_3:
 		case ICONST_4:
 		case ICONST_5:
-			return new Integer(opcode - ICONST_0);
+			return opcode - ICONST_0;
 		default:
 			throw new IllegalStateException("Not implemented yet for " + getName());
 		}

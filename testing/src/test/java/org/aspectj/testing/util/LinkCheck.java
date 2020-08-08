@@ -382,7 +382,7 @@ public class LinkCheck {
         }
 
         private void checkingLinks(int i) {
-            info("checkingLinks", new Integer(i));
+            info("checkingLinks", i);
         }
 
         private void checkingLink(Link link) {

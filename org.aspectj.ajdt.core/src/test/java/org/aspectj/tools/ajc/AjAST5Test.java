@@ -62,7 +62,7 @@ public class AjAST5Test extends AjASTTestCase {
 			} else if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				if (element.getId().equals("privileged")) {
-					Boolean b = new Boolean(true);
+					Boolean b = Boolean.TRUE;
 					d.setStructuralProperty(element, b);
 					assertEquals("AspectDeclaration's isPrivileged property should" +
 							" now be a boolean", b, d.getStructuralProperty(element));
@@ -89,7 +89,7 @@ public class AjAST5Test extends AjASTTestCase {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				if (element.getId().equals("aspect")) {
-					Boolean b = new Boolean(true);
+					Boolean b = Boolean.TRUE;
 					d.setStructuralProperty(element, b);
 					assertEquals("AjTypeDeclaration's aspect property should" +
 							" now be a SignaturePattern", b, d.getStructuralProperty(element));
@@ -140,7 +140,7 @@ public class AjAST5Test extends AjASTTestCase {
 			} else if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				if (element.getId().equals("isExtends")) {
-					Boolean b = new Boolean(true);
+					Boolean b = Boolean.TRUE;
 					d.setStructuralProperty(element, b);
 					assertEquals("DeclareParentsDeclaration's isExtends property should" +
 							" now be a boolean", b, d.getStructuralProperty(element));

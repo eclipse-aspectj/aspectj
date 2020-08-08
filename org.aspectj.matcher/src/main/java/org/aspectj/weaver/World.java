@@ -1453,7 +1453,7 @@ public abstract class World implements Dump.INode {
 						}
 					}
 				}
-				cachedResults.put(key, new Integer(order));
+				cachedResults.put(key, order);
 				return order;
 			}
 		}

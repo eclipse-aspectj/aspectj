@@ -259,11 +259,11 @@ public abstract class ResolvedTypeMunger {
 		} else {
 			s.writeByte(0);
 			ObjectOutputStream oos = new ObjectOutputStream(s);
-			oos.writeObject(new Boolean(location != null));
+			oos.writeObject(location != null);
 			if (location != null) {
 				oos.writeObject(location.getSourceFile());
-				oos.writeObject(new Integer(location.getLine()));
-				oos.writeObject(new Integer(location.getOffset()));
+				oos.writeObject(location.getLine());
+				oos.writeObject(location.getOffset());
 			}
 			oos.flush();
 			oos.close();

@@ -2942,7 +2942,7 @@ public class BcelShadow extends Shadow {
 			aroundClosureInstance.appendStore(closureInstantiation, fact);
 
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
-			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
+			closureInstantiation.append(fact.createConstant(bitflags));
 			if (needAroundClosureStacking) {
 				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
 						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),

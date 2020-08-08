@@ -1560,7 +1560,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private boolean doesAlreadyHaveAnnotation(ResolvedMember rm, DeclareAnnotation deca, List<Integer> reportedProblems, boolean reportError) {
 		if (rm.hasAnnotation(deca.getAnnotationType())) {
 			if (reportError && world.getLint().elementAlreadyAnnotated.isEnabled()) {
-				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
+				Integer uniqueID = rm.hashCode() * deca.hashCode();
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { rm.toString(),
@@ -1577,10 +1577,10 @@ class BcelClassWeaver implements IClassWeaver {
 			List<Integer> reportedProblems) {
 		if (rm != null && rm.hasAnnotation(deca.getAnnotationType())) {
 			if (world.getLint().elementAlreadyAnnotated.isEnabled()) {
-				Integer uniqueID = new Integer(rm.hashCode() * deca.hashCode());
+				Integer uniqueID = rm.hashCode() * deca.hashCode();
 				if (!reportedProblems.contains(uniqueID)) {
 					reportedProblems.add(uniqueID);
-					reportedProblems.add(new Integer(itdfieldsig.hashCode() * deca.hashCode()));
+					reportedProblems.add(itdfieldsig.hashCode() * deca.hashCode());
 					world.getLint().elementAlreadyAnnotated.signal(new String[] { itdfieldsig.toString(),
 							deca.getAnnotationType().toString() }, rm.getSourceLocation(),
 							new ISourceLocation[] { deca.getSourceLocation() });
