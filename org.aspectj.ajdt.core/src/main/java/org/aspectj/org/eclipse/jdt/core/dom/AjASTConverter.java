@@ -1993,9 +1993,8 @@ public class AjASTConverter extends ASTConverter {
 					if (this.resolveBindings) {
 						recordNodes(docComment, javadoc);
 						// resolve member and method references binding
-						Iterator tags = docComment.tags().listIterator();
-						while (tags.hasNext()) {
-							recordNodes(javadoc, (TagElement) tags.next());
+						for (Object o : docComment.tags()) {
+							recordNodes(javadoc, (TagElement) o);
 						}
 					}
 					bodyDeclaration.setJavadoc(docComment);
@@ -2016,9 +2015,8 @@ public class AjASTConverter extends ASTConverter {
 					if (this.resolveBindings) {
 						recordNodes(docComment, javadoc);
 						// resolve member and method references binding
-						Iterator tags = docComment.tags().listIterator();
-						while (tags.hasNext()) {
-							recordNodes(javadoc, (TagElement) tags.next());
+						for (Object o : docComment.tags()) {
+							recordNodes(javadoc, (TagElement) o);
 						}
 					}
 					packageDeclaration.setJavadoc(docComment);
@@ -3389,9 +3387,8 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	protected void recordNodes(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Javadoc javadoc, TagElement tagElement) {
-		Iterator fragments = tagElement.fragments().listIterator();
-		while (fragments.hasNext()) {
-			ASTNode node = (ASTNode) fragments.next();
+		for (Object value : tagElement.fragments()) {
+			ASTNode node = (ASTNode) value;
 			if (node.getNodeType() == ASTNode.MEMBER_REF) {
 				MemberRef memberRef = (MemberRef) node;
 				Name name = memberRef.getName();
@@ -3404,16 +3401,16 @@ public class AjASTConverter extends ASTConverter {
 				}
 				// Replace qualifier to have all nodes recorded
 				if (memberRef.getQualifier() != null) {
-					org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeRef = null;
+					TypeReference typeRef = null;
 					if (compilerNode instanceof JavadocFieldReference) {
 						org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = ((JavadocFieldReference) compilerNode).receiver;
-						if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
-							typeRef = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) expression;
+						if (expression instanceof TypeReference) {
+							typeRef = (TypeReference) expression;
 						}
 					} else if (compilerNode instanceof JavadocMessageSend) {
 						org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = ((JavadocMessageSend) compilerNode).receiver;
-						if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
-							typeRef = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) expression;
+						if (expression instanceof TypeReference) {
+							typeRef = (TypeReference) expression;
 						}
 					}
 					if (typeRef != null) {
@@ -3431,16 +3428,16 @@ public class AjASTConverter extends ASTConverter {
 				if (compilerNode != null) {
 					recordNodes(methodRef, compilerNode);
 					// get type ref
-					org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeRef = null;
+					TypeReference typeRef = null;
 					if (compilerNode instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocAllocationExpression) {
 						typeRef = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocAllocationExpression) compilerNode).type;
 						if (typeRef != null) {
 							recordNodes(name, compilerNode);
 						}
-					} else if (compilerNode instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocMessageSend) {
-						org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = ((org.aspectj.org.eclipse.jdt.internal.compiler.ast.JavadocMessageSend) compilerNode).receiver;
-						if (expression instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) {
-							typeRef = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference) expression;
+					} else if (compilerNode instanceof JavadocMessageSend) {
+						org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = ((JavadocMessageSend) compilerNode).receiver;
+						if (expression instanceof TypeReference) {
+							typeRef = (TypeReference) expression;
 						}
 						// TODO (frederic) remove following line to fix bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=62650
 						recordNodes(name, compilerNode);
@@ -3451,16 +3448,15 @@ public class AjASTConverter extends ASTConverter {
 					}
 				}
 				// Resolve parameters
-				Iterator parameters = methodRef.parameters().listIterator();
-				while (parameters.hasNext()) {
-					MethodRefParameter param = (MethodRefParameter) parameters.next();
+				for (Object o : methodRef.parameters()) {
+					MethodRefParameter param = (MethodRefParameter) o;
 					org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression = (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression) javadoc
 							.getNodeStartingAt(param.getStartPosition());
 					if (expression != null) {
 						recordNodes(param, expression);
 						if (expression instanceof JavadocArgumentExpression) {
 							JavadocArgumentExpression argExpr = (JavadocArgumentExpression) expression;
-							org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference typeRef = argExpr.argument.type;
+							TypeReference typeRef = argExpr.argument.type;
 							if (this.ast.apiLevel >= AST.JLS3) {
 								param.setVarargs(argExpr.argument.isVarArgs());
 							}

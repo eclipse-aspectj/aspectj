@@ -703,9 +703,7 @@ public class InstructionList implements Serializable {
 
 			Set<InstructionTargeter> targeters = ih.getTargeters();
 			boolean isOK = false;
-			Iterator<InstructionTargeter> tIter = targeters.iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter instructionTargeter = tIter.next();
+			for (InstructionTargeter instructionTargeter : targeters) {
 				if (instructionTargeter.getClass().getName().endsWith("ShadowRange")
 						|| instructionTargeter.getClass().getName().endsWith("ExceptionRange")
 						|| instructionTargeter.getClass().getName().endsWith("LineNumberTag")) {

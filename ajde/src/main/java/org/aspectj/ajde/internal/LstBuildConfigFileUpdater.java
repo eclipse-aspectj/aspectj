@@ -81,9 +81,8 @@ class LstBuildConfigFileUpdater {
 	}
 
 	public boolean exists(String entry, String configFile, String rootPath) {
-		Iterator it = readConfigFile(configFile).iterator();
-		while (it.hasNext()) {
-			if ((entry).equals(rootPath + "/" + (String) it.next())) {
+		for (String s : readConfigFile(configFile)) {
+			if ((entry).equals(rootPath + "/" + s)) {
 				return true;
 			}
 		}
@@ -188,9 +187,8 @@ class LstBuildConfigFileUpdater {
 	public void writeConfigFile(String filePath, List<String> fileContents) {
 		Set<String> contentsSet = new TreeSet<>(fileContents);
 		StringBuffer fileContentsSB = new StringBuffer();
-		Iterator<String> it = contentsSet.iterator();
-		while (it.hasNext()) {
-			fileContentsSB.append(it.next().toString());
+		for (String s : contentsSet) {
+			fileContentsSB.append(s.toString());
 			fileContentsSB.append("\n");
 		}
 		writeFile(fileContentsSB.toString(), filePath);

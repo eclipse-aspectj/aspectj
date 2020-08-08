@@ -2324,9 +2324,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// copy over tags and range attributes
 
-			Iterator<InstructionTargeter> tIter = src.getTargeters().iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter old = tIter.next();
+			for (InstructionTargeter old : src.getTargeters()) {
 				if (old instanceof Tag) {
 					Tag oldTag = (Tag) old;
 					Tag fresh = tagMap.get(oldTag);

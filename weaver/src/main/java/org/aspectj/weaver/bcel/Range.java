@@ -194,9 +194,7 @@ abstract class Range implements InstructionTargeter {
 	protected static final Range getRange(InstructionHandle ih) {
 		// assert isRangeHandle(ih)
 		Range ret = null;
-		Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
-		while (tIter.hasNext()) {
-			InstructionTargeter targeter = tIter.next();
+		for (InstructionTargeter targeter : ih.getTargeters()) {
 			if (targeter instanceof Range) {
 				Range r = (Range) targeter;
 				if (r.getStart() != ih && r.getEnd() != ih) {

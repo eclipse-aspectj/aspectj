@@ -580,9 +580,7 @@ public class Utility {
 			if (ih == null) {
 				return -1;
 			}
-			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter t = tIter.next();
+			for (InstructionTargeter t : ih.getTargeters()) {
 				if (t instanceof LineNumberTag) {
 					return ((LineNumberTag) t).getLineNumber();
 				}

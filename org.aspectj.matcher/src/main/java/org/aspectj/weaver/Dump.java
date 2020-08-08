@@ -424,9 +424,8 @@ public class Dump {
 	}
 
 	private void println(Properties props) {
-		Iterator iter = props.keySet().iterator();
-		while (iter.hasNext()) {
-			String key = (String) iter.next();
+		for (Object o : props.keySet()) {
+			String key = (String) o;
 			String value = props.getProperty(key);
 			print.println(key + "=" + value);
 		}

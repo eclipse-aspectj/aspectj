@@ -555,9 +555,7 @@ public class BcelShadow extends Shadow {
 		if (startOfHandler.getInstruction().isStoreInstruction() && startOfHandler.getNext() != null) {
 			int slot = startOfHandler.getInstruction().getIndex();
 			// System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
-			Iterator<InstructionTargeter> tIter = startOfHandler.getNext().getTargeters().iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter targeter = tIter.next();
+			for (InstructionTargeter targeter : startOfHandler.getNext().getTargeters()) {
 				if (targeter instanceof LocalVariableTag) {
 					LocalVariableTag t = (LocalVariableTag) targeter;
 					if (t.getSlot() == slot) {

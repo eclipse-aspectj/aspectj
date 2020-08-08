@@ -177,9 +177,8 @@ public class AjdeCoreBuildManager {
 		}
 
 		StringBuffer formattedOptions = new StringBuffer();
-		Iterator<?> it = options.iterator();
-		while (it.hasNext()) {
-			String o = it.next().toString();
+		for (Object option : options) {
+			String o = option.toString();
 			if (formattedOptions.length() > 0) {
 				formattedOptions.append(", ");
 			}

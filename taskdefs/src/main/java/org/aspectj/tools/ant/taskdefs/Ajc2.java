@@ -416,11 +416,10 @@ public class Ajc2 extends Javac {
         List newIncludes = new ArrayList();
         List newArguments = new ArrayList();
         if (argfiles != null) {
-            Iterator iter = argfiles.iterator();
-            while (iter.hasNext()) {
-                File argfile = ((Argfile)iter.next()).getFile();
-                expandArgfile(argfile, newIncludes, newArguments);
-            }
+			for (Object o : argfiles) {
+				File argfile = ((Argfile) o).getFile();
+				expandArgfile(argfile, newIncludes, newArguments);
+			}
         }
 
         // If there aren't any includes, but we've used an argfile then we should
@@ -445,10 +444,9 @@ public class Ajc2 extends Javac {
         }
 
         // Add the new included files
-        Iterator iter = newIncludes.iterator();
-        while (iter.hasNext()) {
-            newFiles.add((File)iter.next());
-        }
+		for (Object newInclude : newIncludes) {
+			newFiles.add((File) newInclude);
+		}
 
         // This is the same behavior found in Javac
         int newFileSize = newFiles.size();

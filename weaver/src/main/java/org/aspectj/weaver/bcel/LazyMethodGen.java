@@ -658,9 +658,8 @@ public final class LazyMethodGen implements Traceable {
 			// boolean hasPendingTargeters = false;
 			int lcounter = 0;
 			for (InstructionHandle ih = body.getStart(); ih != null; ih = ih.getNext()) {
-				Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
-				while (tIter.hasNext()) {
-					InstructionTargeter t = tIter.next();// targeters
+				// targeters
+				for (InstructionTargeter t : ih.getTargeters()) {
 					// [
 					// i
 					// ]
@@ -1708,9 +1707,8 @@ public final class LazyMethodGen implements Traceable {
 //	}
 
 	private static void assertTargetedBy(InstructionHandle target, InstructionTargeter targeter, String from) {
-		Iterator tIter = target.getTargeters().iterator();
-		while (tIter.hasNext()) {
-			if (((InstructionTargeter) tIter.next()) == targeter) {
+		for (InstructionTargeter instructionTargeter : target.getTargeters()) {
+			if (instructionTargeter == targeter) {
 				return;
 			}
 		}
