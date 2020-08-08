@@ -267,7 +267,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
             description.setLength(0);
             description.append((prefix + " " + suffix).trim());
             try {
-                result.setBugId(Integer.valueOf(pr).intValue());
+                result.setBugId(Integer.valueOf(pr));
             } catch (NumberFormatException e) {
                 throw new Error("unable to convert " + pr + " for " + result
                     + " at " + lineReader);

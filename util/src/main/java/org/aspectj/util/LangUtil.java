@@ -332,7 +332,7 @@ public class LangUtil {
 			try {
 				String value = System.getProperty(propertyName);
 				if (null != value) {
-					return Boolean.valueOf(value).booleanValue();
+					return Boolean.valueOf(value);
 				}
 			} catch (Throwable t) {
 				// default below

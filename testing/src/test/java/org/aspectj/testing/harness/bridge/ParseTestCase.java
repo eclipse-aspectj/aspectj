@@ -106,7 +106,7 @@ public class ParseTestCase extends TestCase {
         AjcTest.Spec test = new AjcTest.Spec();
         test.setDescription(title);
         test.setTestDirOffset(dir);
-        test.setBugId(Integer.valueOf(pr).intValue());
+        test.setBugId(Integer.valueOf(pr));
         test.setSourceLocation(sourceLocation);
 		//AjcTest test = new AjcTest(title, dir, pr, sourceLocation);
 		
@@ -175,7 +175,7 @@ public class ParseTestCase extends TestCase {
 			file = new File("XXX");  //XXX 
 		}
 		
-		int line = Integer.valueOf(getAttributeString(child, "line")).intValue();
+		int line = Integer.valueOf(getAttributeString(child, "line"));
 		
 		ISourceLocation sourceLocation = new SourceLocation(file, line, line, 0);
 		

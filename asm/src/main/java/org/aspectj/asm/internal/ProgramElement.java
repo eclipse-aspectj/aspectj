@@ -364,7 +364,7 @@ public class ProgramElement implements IProgramElement {
 		if (b == null) {
 			return false;
 		}
-		return b.booleanValue();
+		return b;
 	}
 
 	public String[] getRemovedAnnotationTypes() {

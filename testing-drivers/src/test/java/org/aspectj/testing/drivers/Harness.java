@@ -306,7 +306,7 @@ public class Harness {
 						}
 						Object value = result.status.getResult();
 						if ((value instanceof Boolean)
-								&& !((Boolean) value).booleanValue()) {
+								&& !(Boolean) value) {
 							System.exit(-1);
 						}
 					}

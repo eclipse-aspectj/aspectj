@@ -112,7 +112,7 @@ public final class Conversions {
 		if (o == null) {
 			return 0;
 		} else if (o instanceof Character) {
-			return ((Character)o).charValue();
+			return (Character) o;
 		} else {
 			throw new ClassCastException(o.getClass().getName() +
 					" can not be converted to char");
@@ -122,7 +122,7 @@ public final class Conversions {
 		if (o == null) {
 			return false;
 		} else if (o instanceof Boolean) {
-			return ((Boolean)o).booleanValue();
+			return (Boolean) o;
 		} else {
 			throw new ClassCastException(o.getClass().getName() +
 					" can not be converted to boolean");

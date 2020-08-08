@@ -1191,7 +1191,7 @@ public class AsmManager implements IStructureModel {
 			if (ctr == null) {
 				nodeTypeCount.put(node, 1);
 			} else {
-				ctr = ctr.intValue() + 1;
+				ctr = ctr + 1;
 				nodeTypeCount.put(node, ctr);
 			}
 		}

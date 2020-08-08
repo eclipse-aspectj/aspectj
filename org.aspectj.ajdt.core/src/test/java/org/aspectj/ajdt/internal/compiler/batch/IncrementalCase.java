@@ -312,7 +312,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			if (-1 != loc)
 				s = s.substring(loc + 1);
 			try {
-				exp[i] = Integer.valueOf(s).intValue();
+				exp[i] = Integer.valueOf(s);
 				sb.append(exp[i] + ((i < (exp.length - 1)) ? ", " : ""));
 			} catch (NumberFormatException e) {
 				info(handler, "bad " + label + ":" + expected[i]);

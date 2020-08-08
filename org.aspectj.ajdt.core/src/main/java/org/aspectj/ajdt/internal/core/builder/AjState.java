@@ -820,7 +820,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		Long l = structuralChangesSinceLastFullBuild.get(file.getAbsolutePath());
 		long strucModTime = -1;
 		if (l != null) {
-			strucModTime = l.longValue();
+			strucModTime = l;
 		} else {
 			strucModTime = this.lastSuccessfulFullBuildTime;
 		}
@@ -837,7 +837,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		for (Map.Entry<String, Long> entry : entries) {
 			Long l = entry.getValue();
 			if (l != null) {
-				long lvalue = l.longValue();
+				long lvalue = l;
 				if (lvalue > lastSuccessfulBuildTime) {
 					if (listenerDefined()) {
 						getListener().recordDecision(

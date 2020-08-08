@@ -109,7 +109,7 @@ public class SoftSourceLocation implements ISourceLocation  {
     }
     
     private int convert(String in) {
-        return Integer.valueOf(in).intValue();
+        return Integer.valueOf(in);
     }
 
 	public String getLocationContext() {

@@ -217,8 +217,8 @@ public abstract class ResolvedTypeMunger {
 					File f = (File) ois.readObject();
 					Integer ii = (Integer) ois.readObject();
 					Integer offset = (Integer) ois.readObject();
-					ret = new SourceLocation(f, ii.intValue());
-					ret.setOffset(offset.intValue());
+					ret = new SourceLocation(f, ii);
+					ret.setOffset(offset);
 				}
 			} else {
 				boolean validLocation = b == 2;

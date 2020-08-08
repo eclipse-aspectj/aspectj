@@ -59,7 +59,7 @@ public class DirChanges {
     static {
         long delay = 10l;
         try {
-            delay = Long.getLong(DELAY_NAME).longValue();
+            delay = Long.getLong(DELAY_NAME);
             if ((delay > 40000) || (delay < 0)) {
                 delay = 10l;
             }

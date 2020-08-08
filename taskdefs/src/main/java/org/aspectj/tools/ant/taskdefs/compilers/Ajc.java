@@ -91,11 +91,11 @@ public class Ajc extends DefaultCompilerAdapter {
                                                     Project.MSG_WARN));
             System.setOut(logstr);
             System.setErr(logstr);
-            return ((Integer)main.getMethod
-                    ("compile", new Class[]{String[].class}).invoke
-                    (main.newInstance(), new Object[]{
-                        removeUnsupported(cline, logstr)
-                    })).intValue() == AJC_COMPILER_SUCCESS;
+            return (Integer) main.getMethod
+					("compile", new Class[]{String[].class}).invoke
+					(main.newInstance(), new Object[]{
+							removeUnsupported(cline, logstr)
+					}) == AJC_COMPILER_SUCCESS;
         } catch (Exception e) {
             if (e instanceof BuildException) {
                 throw (BuildException)e;

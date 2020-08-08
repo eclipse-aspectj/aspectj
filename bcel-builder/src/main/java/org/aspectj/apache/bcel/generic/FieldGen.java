@@ -189,16 +189,16 @@ public class FieldGen extends FieldGenOrMethodGen {
 		case Constants.T_BYTE:
 		case Constants.T_BOOLEAN:
 		case Constants.T_SHORT:
-			return cp.addInteger(((Integer) value).intValue());
+			return cp.addInteger((Integer) value);
 
 		case Constants.T_FLOAT:
-			return cp.addFloat(((Float) value).floatValue());
+			return cp.addFloat((Float) value);
 
 		case Constants.T_DOUBLE:
-			return cp.addDouble(((Double) value).doubleValue());
+			return cp.addDouble((Double) value);
 
 		case Constants.T_LONG:
-			return cp.addLong(((Long) value).longValue());
+			return cp.addLong((Long) value);
 
 		case Constants.T_REFERENCE:
 			return cp.addString(((String) value));

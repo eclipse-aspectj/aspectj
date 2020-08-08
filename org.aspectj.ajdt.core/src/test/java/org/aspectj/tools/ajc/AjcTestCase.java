@@ -1050,7 +1050,7 @@ public abstract class AjcTestCase extends TestCase {
 	private static boolean getBoolean(String name, boolean def) {
 		String defaultValue = String.valueOf(def);
 		String value = System.getProperty(name, defaultValue);
-		return Boolean.valueOf(value).booleanValue();
+		return Boolean.valueOf(value);
 	}
 
 	/*

@@ -930,7 +930,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
             java.lang.reflect.Method isBridge 
                 = java.lang.reflect.Method.class.getMethod("isBridge", noparms);
             Boolean result = (Boolean) isBridge.invoke(m, new Object[0]);
-            return result.booleanValue();
+            return result;
         } catch (Throwable t) {
             return false;
         }

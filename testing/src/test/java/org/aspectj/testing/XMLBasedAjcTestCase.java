@@ -201,7 +201,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		if (clearTestAfterRun.isEmpty()) {
 			return false;
 		}
-		boolean result = clearTestAfterRun.peek().booleanValue();
+		boolean result = clearTestAfterRun.peek();
 		if (pop) {
 			clearTestAfterRun.pop();
 		}

@@ -32,7 +32,7 @@ public abstract class TraceFactory {
     protected static boolean getBoolean(String name, boolean def) {
 		String defaultValue = String.valueOf(def);
 		String value = System.getProperty(name,defaultValue);
-		return Boolean.valueOf(value).booleanValue();
+		return Boolean.valueOf(value);
 	}
 
 	static {

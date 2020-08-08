@@ -444,7 +444,7 @@ public class ConstantPool implements Node {
 		String k = new StringBuffer().append(searchClassname).append(searchFieldname).append(searchSignature).toString();
 		Integer pos = fieldCache.get(k);
 		if (pos != null)
-			return pos.intValue();
+			return pos;
 		for (int i = 1; i < poolSize; i++) {
 			Constant c = pool[i];
 			if (c != null && c.tag == Constants.CONSTANT_Fieldref) {
@@ -771,7 +771,7 @@ public class ConstantPool implements Node {
 		String key = new StringBuffer().append(searchClassname).append(searchMethodName).append(searchSignature).toString();
 		Integer cached = methodCache.get(key);
 		if (cached != null)
-			return cached.intValue();
+			return cached;
 		searchClassname = searchClassname.replace('.', '/');
 		for (int i = 1; i < poolSize; i++) {
 			Constant c = pool[i];

@@ -1842,7 +1842,7 @@ public class CompilerRun implements IAjcRun {
                             compilerOption,
                             result);
                     }
-                    return result.booleanValue();
+                    return result;
                 }
             }
         } // CompilerRun.Spec.CRSOptions

@@ -97,7 +97,7 @@ public class ModifiersPattern extends PatternNode {
 		if (flag == null) {
 			return -1;
 		}
-		return flag.intValue();
+		return flag;
 	}
 
 	public Object accept(PatternNodeVisitor visitor, Object data) {
