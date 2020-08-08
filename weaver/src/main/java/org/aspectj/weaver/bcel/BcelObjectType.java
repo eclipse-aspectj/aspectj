@@ -462,8 +462,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	private void resolveAnnotationDeclares(List<AjAttribute> attributeList) {
 		FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 		IScope bindingScope = new BindingScope(getResolvedTypeX(), getResolvedTypeX().getSourceContext(), bindings);
-		for (Iterator<AjAttribute> iter = attributeList.iterator(); iter.hasNext();) {
-			AjAttribute a = iter.next();
+		for (AjAttribute a : attributeList) {
 			if (a instanceof AjAttribute.DeclareAttribute) {
 				Declare decl = (((AjAttribute.DeclareAttribute) a).getDeclare());
 				if (decl instanceof DeclareErrorOrWarning) {
@@ -605,8 +604,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				return false;
 			} else {
 				String lookingForSignature = ofType.getSignature();
-				for (int a = 0; a < annos.length; a++) {
-					AnnotationGen annotation = annos[a];
+				for (AnnotationGen annotation : annos) {
 					if (lookingForSignature.equals(annotation.getTypeSignature())) {
 						return true;
 					}
@@ -641,8 +639,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 					AnnotationAJ ax = annotations[i];
 					if (ax.getTypeName().equals(UnresolvedType.AT_RETENTION.getName())) {
 						List<NameValuePair> values = ((BcelAnnotation) ax).getBcelAnnotation().getValues();
-						for (Iterator<NameValuePair> it = values.iterator(); it.hasNext();) {
-							NameValuePair element = it.next();
+						for (NameValuePair element : values) {
 							EnumElementValue v = (EnumElementValue) element.getValue();
 							retentionPolicy = v.getEnumValueString();
 							return retentionPolicy;
@@ -659,8 +656,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (targetKinds == null) {
 			return true;
 		}
-		for (int i = 0; i < targetKinds.length; i++) {
-			if (targetKinds[i].equals(AnnotationTargetKind.TYPE)) {
+		for (AnnotationTargetKind targetKind : targetKinds) {
+			if (targetKind.equals(AnnotationTargetKind.TYPE)) {
 				return true;
 			}
 		}
@@ -677,8 +674,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		List<AnnotationTargetKind> targetKinds = new ArrayList<AnnotationTargetKind>();
 		if (isAnnotation()) {
 			AnnotationAJ[] annotationsOnThisType = getAnnotations();
-			for (int i = 0; i < annotationsOnThisType.length; i++) {
-				AnnotationAJ a = annotationsOnThisType[i];
+			for (AnnotationAJ a : annotationsOnThisType) {
 				if (a.getTypeName().equals(UnresolvedType.AT_TARGET.getName())) {
 					Set<String> targets = a.getTargets();
 					if (targets != null) {
@@ -775,11 +771,11 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				GenericSignature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List<FormalTypeParameter> allFormals = new ArrayList<FormalTypeParameter>();
-					for (int i = 0; i < formalsForResolution.length; i++) {
-						allFormals.add(formalsForResolution[i]);
+					for (FormalTypeParameter formalTypeParameter : formalsForResolution) {
+						allFormals.add(formalTypeParameter);
 					}
-					for (int i = 0; i < extraFormals.length; i++) {
-						allFormals.add(extraFormals[i]);
+					for (FormalTypeParameter extraFormal : extraFormals) {
+						allFormals.add(extraFormal);
 					}
 					formalsForResolution = new GenericSignature.FormalTypeParameter[allFormals.size()];
 					allFormals.toArray(formalsForResolution);

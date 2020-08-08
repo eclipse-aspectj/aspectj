@@ -114,8 +114,7 @@ public class MethodDelegateTypeMunger extends ResolvedTypeMunger {
 	public ResolvedMember getDelegateFactoryMethod(World w) {
 		ResolvedType aspectType = w.resolve(aspect);
 		ResolvedMember[] methods = aspectType.getDeclaredMethods();
-		for (int i = 0; i < methods.length; i++) {
-			ResolvedMember rm = methods[i];
+		for (ResolvedMember rm : methods) {
 			if (rm.getName().equals(factoryMethodName) && rm.getSignature().equals(factoryMethodSignature)) {
 				return rm;
 			}

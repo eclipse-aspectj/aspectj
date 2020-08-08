@@ -63,9 +63,9 @@ public class SuperFixerVisitor extends ASTVisitor {
 				localTypeDeclaration.binding.modifiers |=Modifier.PUBLIC;
 				MethodBinding[] bindings = localTypeDeclaration.binding.methods;
 				if (bindings!=null) {
-					for (int i=0,max=bindings.length;i<max;i++) {
-						if (CharOperation.equals(bindings[i].selector,ctor)) {
-							bindings[i].modifiers|=Modifier.PUBLIC;
+					for (MethodBinding binding : bindings) {
+						if (CharOperation.equals(binding.selector, ctor)) {
+							binding.modifiers |= Modifier.PUBLIC;
 						}
 					}
 				}

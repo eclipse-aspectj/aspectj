@@ -30,57 +30,57 @@ public class AttributeUtils {
 			file.writeShort(0);
 		} else {
 			file.writeShort(attributes.length);
-			for (int i = 0; i < attributes.length; i++) {
-				attributes[i].dump(file);
+			for (Attribute attribute : attributes) {
+				attribute.dump(file);
 			}
 		}
 	}
 
 	public static Signature getSignatureAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_SIGNATURE) {
-				return (Signature) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_SIGNATURE) {
+				return (Signature) attribute;
 			}
 		}
 		return null;
 	}
 
 	public static Code getCodeAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_CODE) {
-				return (Code) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_CODE) {
+				return (Code) attribute;
 			}
 		}
 		return null;
 	}
 
 	public static ExceptionTable getExceptionTableAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_EXCEPTIONS) {
-				return (ExceptionTable) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_EXCEPTIONS) {
+				return (ExceptionTable) attribute;
 			}
 		}
 		return null;
 	}
 
 	public static ConstantValue getConstantValueAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].getTag() == Constants.ATTR_CONSTANT_VALUE) {
-				return (ConstantValue) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.getTag() == Constants.ATTR_CONSTANT_VALUE) {
+				return (ConstantValue) attribute;
 			}
 		}
 		return null;
 	}
 
 	public static void accept(Attribute[] attributes, ClassVisitor visitor) {
-		for (int i = 0; i < attributes.length; i++) {
-			attributes[i].accept(visitor);
+		for (Attribute attribute : attributes) {
+			attribute.accept(visitor);
 		}
 	}
 
 	public static boolean hasSyntheticAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_SYNTHETIC) {
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_SYNTHETIC) {
 				return true;
 			}
 		}
@@ -88,9 +88,9 @@ public class AttributeUtils {
 	}
 
 	public static SourceFile getSourceFileAttribute(Attribute[] attributes) {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_SOURCE_FILE) {
-				return (SourceFile) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_SOURCE_FILE) {
+				return (SourceFile) attribute;
 			}
 		}
 		return null;

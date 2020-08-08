@@ -413,11 +413,11 @@ public class IncCompilerRun implements IAjcRun {
             if (null != items) {
                 String[] classes = XMLWriter.unflattenList(items);
                 if (!LangUtil.isEmpty(classes)) {
-                    for (int i = 0; i < classes.length; i++) {
-                        if (!LangUtil.isEmpty(classes[i])) {
-                            list.add(classes[i]);
-                        }
-                    }
+					for (String aClass : classes) {
+						if (!LangUtil.isEmpty(aClass)) {
+							list.add(aClass);
+						}
+					}
                 }
             }    
         }

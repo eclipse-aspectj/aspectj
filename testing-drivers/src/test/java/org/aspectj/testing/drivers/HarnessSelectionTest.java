@@ -87,9 +87,9 @@ public class HarnessSelectionTest extends TestCase {
         String[] files = new String[] {
             SELECT, INCREMENTAL, TITLE_LIST_ONE, TITLE_LIST_PLURAL
         };
-        for (int i = 0; i < files.length; i++) {
-            assertTrue(files[i], new File(files[i]).canRead());
-        }
+		for (String file : files) {
+			assertTrue(file, new File(file).canRead());
+		}
     }
 
     public void testIncrementalSuite() {
@@ -358,10 +358,10 @@ public class HarnessSelectionTest extends TestCase {
         assertTrue(children.length + "!= expRun=" + exp.testsRun, 
             exp.testsRun == children.length);
         int actPass = 0;
-        for (int i = 0; i < children.length; i++) {
-            if (RunValidator.NORMAL.runPassed(children[i])) {
-                actPass++;
-            }
+		for (IRunStatus child : children) {
+			if (RunValidator.NORMAL.runPassed(child)) {
+				actPass++;
+			}
 		}
         if (exp.passed != actPass) {
             assertTrue("exp.passed=" + exp.passed + " != actPass=" + actPass, false);

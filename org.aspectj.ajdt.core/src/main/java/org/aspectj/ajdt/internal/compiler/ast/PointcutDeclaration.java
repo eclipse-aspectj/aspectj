@@ -268,8 +268,8 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	 * is added. So, this method adds the attribute if someone else hasn't already.
 	 */
 	private void addVersionAttributeIfNecessary(ClassFile classFile) {
-		for (Iterator iter = classFile.extraAttributes.iterator(); iter.hasNext();) {
-			EclipseAttributeAdapter element = (EclipseAttributeAdapter) iter.next();
+		for (Object o : classFile.extraAttributes) {
+			EclipseAttributeAdapter element = (EclipseAttributeAdapter) o;
 			if (CharOperation.equals(element.getNameChars(), weaverVersionChars))
 				return;
 		}

@@ -281,10 +281,9 @@ public class DeclareParentsTest extends AjcTestCase {
 		// ///////////////////////////////////////////////////////////////////////////
 		// Check the error messages are comparable (allow for differing orderings)
 		if (compareErrors) {
-			for (Iterator<IMessage> iter = binaryErrorMessages.iterator(); iter.hasNext();) {
-				IMessage binaryMessage = iter.next();
+			for (IMessage binaryMessage : binaryErrorMessages) {
 				IMessage correctSourceMessage = null;
-				for (Iterator<IMessage> iterator = sourceErrorMessages.iterator(); iterator.hasNext() && correctSourceMessage == null;) {
+				for (Iterator<IMessage> iterator = sourceErrorMessages.iterator(); iterator.hasNext() && correctSourceMessage == null; ) {
 					IMessage sourceMessage = iterator.next();
 
 					if (sourceMessage.getMessage().equals(binaryMessage.getMessage())) {
@@ -298,8 +297,7 @@ public class DeclareParentsTest extends AjcTestCase {
 				sourceErrorMessages.remove(correctSourceMessage);
 			}
 			if (sourceErrorMessages.size() > 0) {
-				for (Iterator<IMessage> iter = sourceErrorMessages.iterator(); iter.hasNext();) {
-					IMessage srcMsg = iter.next();
+				for (IMessage srcMsg : sourceErrorMessages) {
 					System.err.println("This error message from source compilation '" + srcMsg
 							+ "' didn't occur during binary weaving.");
 				}

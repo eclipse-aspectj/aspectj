@@ -173,13 +173,13 @@ public final class Code extends Attribute {
 		file.write(code, 0, code.length);
 
 		file.writeShort(exceptionTable.length);
-		for (int i = 0; i < exceptionTable.length; i++) {
-			exceptionTable[i].dump(file);
+		for (CodeException e : exceptionTable) {
+			e.dump(file);
 		}
 
 		file.writeShort(attributes.length);
-		for (int i = 0; i < attributes.length; i++) {
-			attributes[i].dump(file);
+		for (Attribute attribute : attributes) {
+			attribute.dump(file);
 		}
 	}
 
@@ -195,9 +195,9 @@ public final class Code extends Attribute {
 	 * @return LineNumberTable of Code, if it has one
 	 */
 	public LineNumberTable getLineNumberTable() {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_LINE_NUMBER_TABLE) {
-				return (LineNumberTable) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_LINE_NUMBER_TABLE) {
+				return (LineNumberTable) attribute;
 			}
 		}
 		return null;
@@ -207,9 +207,9 @@ public final class Code extends Attribute {
 	 * @return LocalVariableTable of Code, if it has one
 	 */
 	public LocalVariableTable getLocalVariableTable() {
-		for (int i = 0; i < attributes.length; i++) {
-			if (attributes[i].tag == Constants.ATTR_LOCAL_VARIABLE_TABLE) {
-				return (LocalVariableTable) attributes[i];
+		for (Attribute attribute : attributes) {
+			if (attribute.tag == Constants.ATTR_LOCAL_VARIABLE_TABLE) {
+				return (LocalVariableTable) attribute;
 			}
 		}
 		return null;
@@ -262,8 +262,8 @@ public final class Code extends Attribute {
 	private final int calculateLength() {
 		int len = 0;
 		if (attributes != null) {
-			for (int i = 0; i < attributes.length; i++) {
-				len += attributes[i].length + 6 /* attribute header size */;
+			for (Attribute attribute : attributes) {
+				len += attribute.length + 6 /* attribute header size */;
 			}
 		}
 		return len + getInternalLength();
@@ -317,16 +317,16 @@ public final class Code extends Attribute {
 		if (exceptionTable.length > 0) {
 			buf.append("\nException handler(s) = \n" + "From\tTo\tHandler\tType\n");
 
-			for (int i = 0; i < exceptionTable.length; i++) {
-				buf.append(exceptionTable[i].toString(cpool, verbose) + "\n");
+			for (CodeException e : exceptionTable) {
+				buf.append(e.toString(cpool, verbose) + "\n");
 			}
 		}
 
 		if (attributes.length > 0) {
 			buf.append("\nAttribute(s) = \n");
 
-			for (int i = 0; i < attributes.length; i++) {
-				buf.append(attributes[i].toString() + "\n");
+			for (Attribute attribute : attributes) {
+				buf.append(attribute.toString() + "\n");
 			}
 		}
 
@@ -372,8 +372,7 @@ public final class Code extends Attribute {
 		codeString.append(Utility.codeToString(code, cpool, 0, -1, true));
 		if (exceptionTable.length > 0) {
 			codeString.append("\n").append("Exception entries =  ").append(exceptionTable.length).append("\n");
-			for (int i = 0; i < exceptionTable.length; i++) {
-				CodeException exc = exceptionTable[i];
+			for (CodeException exc : exceptionTable) {
 				int type = exc.getCatchType();
 				String name = "finally";
 				if (type != 0) {

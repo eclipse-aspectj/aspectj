@@ -61,11 +61,11 @@ public class InterTypeMethodBinding extends MethodBinding {
 		// Ok, we need to set the typevariable declaring elements
 		// 1st set:
 		// If the typevariable is one declared on the source method, then we know we are the declaring element
-		for (int i = 0; i < typeVariables.length; i++) {
-			typeVariables[i].declaringElement = this;
+		for (org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding variable : typeVariables) {
+			variable.declaringElement = this;
 		}
-		for (int i = 0; i < typeVariables.length; i++) {
-			if (typeVariables[i].declaringElement == null)
+		for (org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding typeVariable : typeVariables) {
+			if (typeVariable.declaringElement == null)
 				throw new RuntimeException("Declaring element not set");
 
 		}

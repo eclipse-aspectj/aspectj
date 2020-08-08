@@ -220,11 +220,11 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 			if (parameterAnnotations == null) {
 				return FuzzyBoolean.NO;
 			}
-			for (int i = 0; i < parameterAnnotations.length; i++) {
-				if (annotationType.equals(parameterAnnotations[i])) {
+			for (ResolvedType parameterAnnotation : parameterAnnotations) {
+				if (annotationType.equals(parameterAnnotation)) {
 					// Are we also matching annotation values?
 					if (annotationValues != null) {
-						parameterAnnotations[i]
+						parameterAnnotation
 								.getWorld()
 								.getMessageHandler()
 								.handleMessage(
@@ -383,8 +383,7 @@ public class ExactAnnotationTypePattern extends AnnotationTypePattern {
 		} else {
 			s.writeInt(annotationValues.size());
 			Set<String> key = annotationValues.keySet();
-			for (Iterator<String> keys = key.iterator(); keys.hasNext();) {
-				String k = keys.next();
+			for (String k : key) {
 				s.writeUTF(k);
 				s.writeUTF(annotationValues.get(k));
 			}

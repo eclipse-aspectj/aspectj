@@ -63,12 +63,11 @@ public class MethodAnnotationsTest extends BcelTestCase {
 			String annotationName,String annotationElementName,String annotationElementValue) {
 		Method[] methods = clazz.getMethods();
 
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			AnnotationGen[] methodAnnotations = m.getAnnotations();
 			if (m.getName().equals(methodname)) {
-				checkAnnotation(methodAnnotations[0],annotationName,annotationElementName,annotationElementValue);
-				
+				checkAnnotation(methodAnnotations[0], annotationName, annotationElementName, annotationElementValue);
+
 			}
 		}
 	}
@@ -88,11 +87,10 @@ public class MethodAnnotationsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
-					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
+					fail("Expected element " + name + " to have value " + tostring + " but it had value " + element.getValue().stringifyValue());
 				}
 				return;
 			}

@@ -38,30 +38,29 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 		Attribute[] rvaAttr = findAttribute("RuntimeVisibleParameterAnnotations",clazz);
 		Method[] methods = clazz.getMethods();
 
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			if (m.getName().equals("foo")) {
-				RuntimeVisParamAnnos paramAnns = 
-					(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
-				assertTrue("foo takes two parameters, not "+paramAnns.getParameterAnnotations().size(),
-						paramAnns.getParameterAnnotations().size()==2);
+				RuntimeVisParamAnnos paramAnns =
+						(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations", m.getAttributes());
+				assertTrue("foo takes two parameters, not " + paramAnns.getParameterAnnotations().size(),
+						paramAnns.getParameterAnnotations().size() == 2);
 
 				AnnotationGen[] firstParamAnnotations = paramAnns.getAnnotationsOnParameter(0);
-				checkAnnotation(firstParamAnnotations[0],"SimpleAnnotation","id","2");
+				checkAnnotation(firstParamAnnotations[0], "SimpleAnnotation", "id", "2");
 
 				AnnotationGen[] secondParamAnnotations = paramAnns.getAnnotationsOnParameter(1);
-				checkAnnotation(secondParamAnnotations[0],"SimpleAnnotation","id","3");
-				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","LSimpleEnum;Red");
-				
+				checkAnnotation(secondParamAnnotations[0], "SimpleAnnotation", "id", "3");
+				checkAnnotation(secondParamAnnotations[1], "AnnotationEnumElement", "enumval", "LSimpleEnum;Red");
+
 			}
 			if (m.getName().equals("main")) {
-				RuntimeVisParamAnnos paramAnns = 
-					(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations",m.getAttributes());
-				assertTrue("main takes one parameter, not "+paramAnns.getParameterAnnotations().size(),
-						paramAnns.getParameterAnnotations().size()==1);
+				RuntimeVisParamAnnos paramAnns =
+						(RuntimeVisParamAnnos) findAttribute("RuntimeVisibleParameterAnnotations", m.getAttributes());
+				assertTrue("main takes one parameter, not " + paramAnns.getParameterAnnotations().size(),
+						paramAnns.getParameterAnnotations().size() == 1);
 
 				AnnotationGen[] firstParamAnnotations = paramAnns.getAnnotationsOnParameter(0);
-				checkAnnotation(firstParamAnnotations[0],"SimpleAnnotation","id","1");
+				checkAnnotation(firstParamAnnotations[0], "SimpleAnnotation", "id", "1");
 			}
 		}
 	}
@@ -94,17 +93,16 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 	public void checkFooMethod(JavaClass clazz) {
 		Method[] methods = clazz.getMethods();
 
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			if (m.getName().equals("foo")) {
 
 				AnnotationGen[] firstParamAnnotations = m.getAnnotationsOnParameter(0);
-				checkAnnotation(firstParamAnnotations[0],"SimpleAnnotation","id","2");
+				checkAnnotation(firstParamAnnotations[0], "SimpleAnnotation", "id", "2");
 
 				AnnotationGen[] secondParamAnnotations = m.getAnnotationsOnParameter(1);
-				checkAnnotation(secondParamAnnotations[0],"SimpleAnnotation","id","3");
-				checkAnnotation(secondParamAnnotations[1],"AnnotationEnumElement","enumval","LSimpleEnum;Red");
-				
+				checkAnnotation(secondParamAnnotations[0], "SimpleAnnotation", "id", "3");
+				checkAnnotation(secondParamAnnotations[1], "AnnotationEnumElement", "enumval", "LSimpleEnum;Red");
+
 			}
 		}
 	}
@@ -124,11 +122,10 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
-					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
+					fail("Expected element " + name + " to have value " + tostring + " but it had value " + element.getValue().stringifyValue());
 				}
 				return;
 			}

@@ -323,10 +323,10 @@ public class Harness {
 	 */
 	private void doEndSuite(File suiteFile, long elapsed) {
 		Collection c = features.values();
-		for (Iterator iter = c.iterator(); iter.hasNext();) {
-			Feature element = (Feature) iter.next();
+		for (Object o : c) {
+			Feature element = (Feature) o;
 			if (element.listener instanceof TestCompleteListener) {
-				((TestCompleteListener)element.listener).doEndSuite(suiteFile,elapsed);
+				((TestCompleteListener) element.listener).doEndSuite(suiteFile, elapsed);
 			}
 		}
 	}

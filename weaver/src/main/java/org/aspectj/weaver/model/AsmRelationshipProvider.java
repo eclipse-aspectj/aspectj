@@ -604,8 +604,7 @@ public class AsmRelationshipProvider {
 
 	private static void addPointcuts(AsmManager model, String sourcefilename, ResolvedType aspect,
 			IProgramElement containingAspect, ResolvedMember[] pointcuts) {
-		for (int i = 0; i < pointcuts.length; i++) {
-			ResolvedMember pointcut = pointcuts[i];
+		for (ResolvedMember pointcut : pointcuts) {
 			if (pointcut instanceof ResolvedPointcutDefinition) {
 				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition) pointcut;
 				Pointcut p = rpcd.getPointcut();
@@ -624,8 +623,7 @@ public class AsmRelationshipProvider {
 	private static final String NO_COMMENT = null;
 
 	private static void addChildNodes(AsmManager asm, ResolvedType aspect, IProgramElement parent, ResolvedMember[] children) {
-		for (int i = 0; i < children.length; i++) {
-			ResolvedMember pcd = children[i];
+		for (ResolvedMember pcd : children) {
 			if (pcd instanceof ResolvedPointcutDefinition) {
 				ResolvedPointcutDefinition rpcd = (ResolvedPointcutDefinition) pcd;
 				Pointcut p = rpcd.getPointcut();
@@ -767,8 +765,8 @@ public class AsmRelationshipProvider {
 			pe.setParameterSignatures(Collections.<char[]>emptyList(), Collections.<String>emptyList());
 		} else {
 			List<char[]> paramSigs = new ArrayList<char[]>();
-			for (int i = 0; i < ts.length; i++) {
-				paramSigs.add(ts[i].getSignature().toCharArray());
+			for (UnresolvedType t : ts) {
+				paramSigs.add(t.getSignature().toCharArray());
 			}
 			pe.setParameterSignatures(paramSigs, Collections.<String>emptyList());
 		}
@@ -944,8 +942,7 @@ public class AsmRelationshipProvider {
 	 */
 	private static IProgramElement findOrCreateCodeNode(AsmManager asm, IProgramElement enclosingNode, Member shadowSig,
 			Shadow shadow) {
-		for (Iterator it = enclosingNode.getChildren().iterator(); it.hasNext();) {
-			IProgramElement node = (IProgramElement) it.next();
+		for (IProgramElement node : enclosingNode.getChildren()) {
 			int excl = node.getBytecodeName().lastIndexOf('!');
 			if (((excl != -1 && shadowSig.getName().equals(node.getBytecodeName().substring(0, excl))) || shadowSig.getName()
 					.equals(node.getBytecodeName()))
@@ -984,8 +981,7 @@ public class AsmRelationshipProvider {
 		if (typeElement == null) {
 			return null;
 		}
-		for (Iterator it = typeElement.getChildren().iterator(); it.hasNext();) {
-			IProgramElement element = (IProgramElement) it.next();
+		for (IProgramElement element : typeElement.getChildren()) {
 			if (member.getName().equals(element.getBytecodeName()) && member.getSignature().equals(element.getBytecodeSignature())) {
 				return element;
 			}

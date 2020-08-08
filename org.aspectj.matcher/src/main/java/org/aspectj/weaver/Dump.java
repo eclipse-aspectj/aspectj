@@ -372,8 +372,7 @@ public class Dump {
 	private void dumpCompilerMessages(IMessageHolder messageHolder) {
 		println("---- Compiler Messages ---");
 		if (messageHolder != null) {
-			for (Iterator<IMessage> i = messageHolder.getUnmodifiableListView().iterator(); i.hasNext();) {
-				IMessage message = i.next();
+			for (IMessage message : messageHolder.getUnmodifiableListView()) {
 				println(message.toString());
 			}
 		} else {
@@ -419,8 +418,8 @@ public class Dump {
 			return;
 		}
 
-		for (int i = 0; i < array.length; i++) {
-			print.println(array[i]);
+		for (Object o : array) {
+			print.println(o);
 		}
 	}
 
@@ -454,8 +453,7 @@ public class Dump {
 		if (list == null || list.isEmpty()) {
 			println(NULL_OR_EMPTY);
 		} else {
-			for (Iterator i = list.iterator(); i.hasNext();) {
-				Object o = i.next();
+			for (Object o : list) {
 				if (o instanceof Exception) {
 					println((Exception) o);
 				} else {

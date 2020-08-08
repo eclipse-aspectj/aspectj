@@ -250,11 +250,11 @@ public class AjdeCoreBuildManager {
 				args = new String[l.size() + xmlfiles.size() + 1];
 				// TODO speedup
 				int p = 0;
-				for (int i = 0; i < l.size(); i++) {
-					args[p++] = l.get(i);
+				for (String s : l) {
+					args[p++] = s;
 				}
-				for (int i = 0; i < xmlfiles.size(); i++) {
-					args[p++] = xmlfiles.get(i);
+				for (String xmlfile : xmlfiles) {
+					args[p++] = xmlfile;
 				}
 				args[p++] = "-xmlConfigured";
 			} else {

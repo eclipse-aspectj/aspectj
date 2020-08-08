@@ -53,8 +53,8 @@ public class ExposedState {
 	}
 
 	public boolean isFullySetUp() {
-		for (int i = 0; i < vars.length; i++) {
-			if (vars[i] == null)
+		for (Var var : vars) {
+			if (var == null)
 				return false;
 		}
 		return true;

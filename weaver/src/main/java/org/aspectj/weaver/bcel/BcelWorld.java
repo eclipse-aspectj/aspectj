@@ -885,8 +885,7 @@ public class BcelWorld extends World implements Repository {
 		boolean aParentChangeOccurred = false;
 		boolean anAnnotationChangeOccurred = false;
 		// First pass - apply all decp mungers
-		for (Iterator<DeclareParents> i = declareParentsList.iterator(); i.hasNext();) {
-			DeclareParents decp = i.next();
+		for (DeclareParents decp : declareParentsList) {
 			boolean typeChanged = applyDeclareParents(decp, onType);
 			if (typeChanged) {
 				aParentChangeOccurred = true;

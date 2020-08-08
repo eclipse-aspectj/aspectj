@@ -335,8 +335,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	public void addMessages(List messages) {
 		if (null != messages) {
-			for (Iterator iter = messages.iterator(); iter.hasNext();) {
-				Object o = iter.next();
+			for (Object o : messages) {
 				if (o instanceof IMessage) {
 					addMessage((IMessage) o);
 				} else {

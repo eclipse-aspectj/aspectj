@@ -35,9 +35,9 @@ public class TypeVariablePatternList extends PatternNode {
 	}
 
 	public TypeVariablePattern lookupTypeVariable(String name) {
-		for (int i = 0; i < patterns.length; i++) {
-			if (patterns[i].getName().equals(name)) {
-				return patterns[i];
+		for (TypeVariablePattern pattern : patterns) {
+			if (pattern.getName().equals(name)) {
+				return pattern;
 			}
 		}
 		return null;
@@ -49,8 +49,8 @@ public class TypeVariablePatternList extends PatternNode {
 
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeInt(patterns.length);
-		for (int i = 0; i < patterns.length; i++) {
-			patterns[i].write(s);
+		for (TypeVariablePattern pattern : patterns) {
+			pattern.write(s);
 		}
 		writeLocation(s);
 	}
@@ -75,8 +75,8 @@ public class TypeVariablePatternList extends PatternNode {
 
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (int i = 0; i < patterns.length; i++) {
-			patterns[i].traverse(visitor, ret);
+		for (TypeVariablePattern pattern : patterns) {
+			pattern.traverse(visitor, ret);
 		}
 		return ret;
 	}

@@ -66,8 +66,8 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		
 		int[] separators = compilationResult().lineSeparatorPositions;
 		int declarationStartLine = 1;
-		for (int i = 0; i < separators.length; i++) {
-			if (sourceStart < separators[i]) break;
+		for (int separator : separators) {
+			if (sourceStart < separator) break;
 			declarationStartLine++;
 		}
 		

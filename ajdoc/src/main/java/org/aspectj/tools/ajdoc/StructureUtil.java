@@ -47,16 +47,14 @@ public class StructureUtil {
 		if (rels != null) {
 			relations.addAll(rels);
 		}
-		for (Iterator<IProgramElement> iter = node.getChildren().iterator(); iter.hasNext();) {
-			IProgramElement child = (IProgramElement) iter.next();
+		for (IProgramElement child : node.getChildren()) {
 			// if we're not a type, or if we are and the child is code, then
 			// we want to get the relationships for this child - this means that the
 			// correct relationships appear against the type in the ajdoc
 			if (!node.getKind().isType() || child.getKind().equals(IProgramElement.Kind.CODE)) {
 				List<IRelationship> childRelations = node.getModel().getRelationshipMap().get(child);
 				if (childRelations != null) {
-					for (Iterator<IRelationship> iterator = childRelations.iterator(); iterator.hasNext();) {
-						IRelationship rel = (IRelationship) iterator.next();
+					for (IRelationship rel : childRelations) {
 						if (!relations.contains(rel)) {
 							relations.add(rel);
 						}
@@ -67,11 +65,10 @@ public class StructureUtil {
 		if (relations == null || relations.isEmpty())
 			return null;
 		List<String> targets = new ArrayList<String>();
-		for (Iterator<IRelationship> it = relations.iterator(); it.hasNext();) {
-			IRelationship rtn = (IRelationship) it.next();
+		for (IRelationship rtn : relations) {
 			if (rtn.getKind().equals(kind) && ((relName != null && relName.equals(rtn.getName())) || relName == null)) {
 				List<String> targs = rtn.getTargets();
-				for (String element: targs) {
+				for (String element : targs) {
 					if (!targets.contains(element)) {
 						targets.add(element);
 					}
@@ -125,8 +122,8 @@ public class StructureUtil {
 		}
 
 		String modifiers = "";
-		for (Iterator modIt = node.getModifiers().iterator(); modIt.hasNext();) {
-			modifiers += modIt.next() + " ";
+		for (IProgramElement.Modifiers value : node.getModifiers()) {
+			modifiers += value + " ";
 		}
 
 		if (node.getKind().equals(IProgramElement.Kind.METHOD) || node.getKind().equals(IProgramElement.Kind.FIELD)) {

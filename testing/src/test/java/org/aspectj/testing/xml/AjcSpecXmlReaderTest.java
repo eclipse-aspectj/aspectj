@@ -51,8 +51,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
 
     public void tearDown() {
     	if (!LangUtil.isEmpty(tempFiles)) {
-	    	for (Iterator<File> iter = tempFiles.iterator(); iter.hasNext();) {
-				File file = (File) iter.next();
+			for (File file : tempFiles) {
 				if (file.canRead()) {
 					file.delete();
 				}
@@ -66,23 +65,23 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcSpecXmlReader.BProps[] expected
             = AjcSpecXmlReader.expectedProperties();
         PropertyDescriptor[] des;
-        for (int i = 0; i < expected.length; i++) {
-            Class<?> clazz = expected[i].cl;
-            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-            assertTrue(null != beanInfo);
-            des = beanInfo.getPropertyDescriptors();
-            for (int j = 0; j < expected[i].props.length; j++) {
-				String name = expected[i].props[j];
-                String fqn = clazz.getName() + "." + name;
-                boolean gotIt = false;
-                for (int k = 0; k < des.length; k++) {
-                    String desName = des[k].getName();
-                    if (name.equals(desName)) {
-                        assertTrue(fqn, null != des[k].getWriteMethod());
-                        gotIt = true;
-                    }         
-                }
-                assertTrue("no such property: " + fqn, gotIt);
+		for (AjcSpecXmlReader.BProps bProps : expected) {
+			Class<?> clazz = bProps.cl;
+			BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+			assertTrue(null != beanInfo);
+			des = beanInfo.getPropertyDescriptors();
+			for (int j = 0; j < bProps.props.length; j++) {
+				String name = bProps.props[j];
+				String fqn = clazz.getName() + "." + name;
+				boolean gotIt = false;
+				for (PropertyDescriptor de : des) {
+					String desName = de.getName();
+					if (name.equals(desName)) {
+						assertTrue(fqn, null != de.getWriteMethod());
+						gotIt = true;
+					}
+				}
+				assertTrue("no such property: " + fqn, gotIt);
 			}
 		}
         
@@ -140,9 +139,9 @@ public class AjcSpecXmlReaderTest extends TestCase {
             assertTrue("CloneNotSupportedException: " + e.getMessage(), false);
         }
 
-        for (Iterator<File> iter = toDelete.iterator(); iter.hasNext();) {
-          iter.next().delete();          
-      }
+		for (File file : toDelete) {
+			file.delete();
+		}
     }
 
     void checkRoundTrip(String path) throws IOException, Exception {
@@ -199,9 +198,9 @@ public class AjcSpecXmlReaderTest extends TestCase {
         //System.err.println("----------------------- suite2 " + xml2Path);
         AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
         AjcSpecTest.sameAjcSuiteSpec(suite0, suite2, this);
-        
-        for (Iterator<File> iter = toDelete.iterator(); iter.hasNext();) {
-			iter.next().delete();			
+
+		for (File file : toDelete) {
+			file.delete();
 		}
     }
 }

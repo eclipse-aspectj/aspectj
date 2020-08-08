@@ -95,8 +95,7 @@ public class AntBuilder extends Builder {
 			Result[] reqs = result.getRequired();
 			StringBuffer depends = new StringBuffer();
 			boolean first = true;
-			for (int i = 0; i < reqs.length; i++) {
-				Result reqResult = reqs[i];
+			for (Result reqResult : reqs) {
 				if (!first) {
 					depends.append(",");
 				} else {
@@ -110,8 +109,7 @@ public class AntBuilder extends Builder {
 			targets.put(resultTargetName, target);
 
 			// then recursively add any required results
-			for (int i = 0; i < reqs.length; i++) {
-				Result reqResult = reqs[i];
+			for (Result reqResult : reqs) {
 				makeTargetsForResult(reqResult, targets);
 			}
 		}
@@ -311,8 +309,7 @@ public class AntBuilder extends Builder {
 	public boolean setupClasspath(Result result, Path classpath) { // XXX fix test access
 		boolean hasLibraries = false;
 		// required libraries
-		for (Iterator<File> iter = result.getLibJars().iterator(); iter.hasNext();) {
-			File file = iter.next();
+		for (File file : result.getLibJars()) {
 			classpath.createPathElement().setLocation(file);
 			if (!hasLibraries) {
 				hasLibraries = true;
@@ -321,16 +318,15 @@ public class AntBuilder extends Builder {
 		// Westodo Kind kind = result.getKind();
 		Result[] reqs = result.getRequired();
 		// required modules and their exported libraries
-		for (int i = 0; i < reqs.length; i++) {
-			Result requiredResult = reqs[i];
+		for (Result requiredResult : reqs) {
 			classpath.createPathElement().setLocation(requiredResult.getOutputFile());
 			if (!hasLibraries) {
 				hasLibraries = true;
 			}
 			// also put on classpath libraries exported from required module
 			// XXX exported modules not supported
-			for (Iterator<File> iterator = requiredResult.getExportedLibJars().iterator(); iterator.hasNext();) {
-				classpath.createPathElement().setLocation(iterator.next());
+			for (File file : requiredResult.getExportedLibJars()) {
+				classpath.createPathElement().setLocation(file);
 			}
 		}
 		return hasLibraries;
@@ -424,8 +420,7 @@ public class AntBuilder extends Builder {
 			return new Result[0];
 		}
 		ArrayList<String> toReturn = new ArrayList<String>();
-		for (Iterator<Target> iter = result.iterator(); iter.hasNext();) {
-			Target target = iter.next();
+		for (Target target : result) {
 			String name = target.getName();
 			if (null == name) {
 				throw new Error("null name?");

@@ -73,14 +73,13 @@ public class EclipseAnnotationConvertor {
 			MemberValuePair[] memberValuePairs = normalAnnotation.memberValuePairs;
 			if (memberValuePairs != null) {
 				int memberValuePairsLength = memberValuePairs.length;
-				for (int i = 0; i < memberValuePairsLength; i++) {
-					MemberValuePair memberValuePair = memberValuePairs[i];
+				for (MemberValuePair memberValuePair : memberValuePairs) {
 					MethodBinding methodBinding = memberValuePair.binding;
 					if (methodBinding == null) {
 						// is this just a marker annotation?
 						throw new MissingImplementationException(
 								"Please raise an AspectJ bug.  AspectJ does not know how to convert this annotation [" + annotation
-								+ "]");
+										+ "]");
 					} else {
 						AnnotationValue av = generateElementValue(memberValuePair.value, methodBinding.returnType);
 						AnnotationNameValuePair anvp = new AnnotationNameValuePair(new String(memberValuePair.name), av);

@@ -102,12 +102,12 @@ public class UtilClassLoader extends URLClassLoader {
     /** @return null if class not found or byte[] of class otherwise */
     private byte[] readClass(String className) throws ClassNotFoundException {
         final String fileName = className.replace('.', '/')+".class";
-        for (Iterator<File> iter = dirs.iterator(); iter.hasNext();) {
-            File file = new File(iter.next(), fileName);
-            if (file.canRead()) { 
-                return getClassData(file);
-            }
-        }
+		for (File dir : dirs) {
+			File file = new File(dir, fileName);
+			if (file.canRead()) {
+				return getClassData(file);
+			}
+		}
         return null; 
     }
         

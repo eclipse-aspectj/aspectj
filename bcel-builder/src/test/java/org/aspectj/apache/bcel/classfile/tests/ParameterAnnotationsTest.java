@@ -271,8 +271,8 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 	
 	private Method findMethod(ClassGen c,String mname) {
 		Method[] ms = c.getMethods();
-		for (int i = 0; i < ms.length; i++) {
-			if (ms[i].getName().equals(mname)) return ms[i];
+		for (Method m : ms) {
+			if (m.getName().equals(mname)) return m;
 		}
 		return null;
 	}	

@@ -108,8 +108,8 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	public boolean hasAnnotation(UnresolvedType ofType) {
 		ResolvedType[] myAnns = getAnnotationTypes();
 		ResolvedType toLookFor = ofType.resolve(getWorld());
-		for (int i = 0; i < myAnns.length; i++) {
-			if (myAnns[i] == toLookFor) {
+		for (ResolvedType myAnn : myAnns) {
+			if (myAnn == toLookFor) {
 				return true;
 			}
 		}
@@ -270,8 +270,8 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 				parser = new InternalUseOnlyPointcutParser(classLoaderReference.getClassLoader());
 			}
 			Set additionalPointcutHandlers = world.getRegisteredPointcutHandlers();
-			for (Iterator handlerIterator = additionalPointcutHandlers.iterator(); handlerIterator.hasNext();) {
-				PointcutDesignatorHandler handler = (PointcutDesignatorHandler) handlerIterator.next();
+			for (Object additionalPointcutHandler : additionalPointcutHandlers) {
+				PointcutDesignatorHandler handler = (PointcutDesignatorHandler) additionalPointcutHandler;
 				parser.registerPointcutDesignatorHandler(handler);
 			}
 

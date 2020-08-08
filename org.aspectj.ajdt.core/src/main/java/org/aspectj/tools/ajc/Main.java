@@ -119,8 +119,8 @@ public class Main {
 		}
 		IMessage[] messages = holder.getMessages(kind, orGreater);
 		if (!LangUtil.isEmpty(messages)) {
-			for (int i = 0; i < messages.length; i++) {
-				sink.add(MessagePrinter.render(messages[i]));
+			for (IMessage message : messages) {
+				sink.add(MessagePrinter.render(message));
 			}
 		}
 	}
@@ -264,8 +264,8 @@ public class Main {
 
 		boolean skipExit = false;
 		if (useSystemExit && !LangUtil.isEmpty(args)) { // sigh - pluck -noExit
-			for (int i = 0; i < args.length; i++) {
-				if ("-noExit".equals(args[i])) {
+			for (String arg : args) {
+				if ("-noExit".equals(arg)) {
 					skipExit = true;
 					break;
 				}

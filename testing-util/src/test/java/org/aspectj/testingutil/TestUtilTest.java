@@ -96,15 +96,15 @@ public class TestUtilTest extends TestCase {
     public void testParseBoolean() {
         {
             String[] trues = {"true", "TRUE", "on", "ON" };
-            for (int i = 0; i < trues.length; i++) {
-                assertTrue(trues[i], TestUtil.parseBoolean(trues[i]));
-            }
+			for (String aTrue : trues) {
+				assertTrue(aTrue, TestUtil.parseBoolean(aTrue));
+			}
         }
         {
             String[] falses = {"false", "FALSE", "off", "off" };
-            for (int i = 0; i < falses.length; i++) {
-                assertTrue(falses[i], !TestUtil.parseBoolean(falses[i]));
-            }
+			for (String fals : falses) {
+				assertTrue(fals, !TestUtil.parseBoolean(fals));
+			}
         }
         String[] errors = {"fals", "tru", "T", "on of" };
         boolean fail = false;

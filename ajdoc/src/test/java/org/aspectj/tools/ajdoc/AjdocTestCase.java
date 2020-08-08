@@ -97,8 +97,7 @@ public abstract class AjdocTestCase extends TestCase {
 		String contents[] = from.list();
 		if (contents == null)
 			return;
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(from, string);
 			File t = new File(to, string);
 
@@ -209,9 +208,9 @@ public abstract class AjdocTestCase extends TestCase {
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");
 		}
-		for (int i = 0; i < inputFiles.length; i++) {
-			if (!inputFiles[i].exists()) {
-				fail(inputFiles[i].getAbsolutePath() + " does not exist");
+		for (File inputFile : inputFiles) {
+			if (!inputFile.exists()) {
+				fail(inputFile.getAbsolutePath() + " does not exist");
 			}
 		}
 
@@ -305,8 +304,8 @@ public abstract class AjdocTestCase extends TestCase {
 	public void runAjdoc(List options) {
 		String[] args = new String[options.size()];
 		int i = 0;
-		for (Iterator iter = options.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (Object option : options) {
+			String element = (String) option;
 			args[i] = element;
 			i++;
 		}

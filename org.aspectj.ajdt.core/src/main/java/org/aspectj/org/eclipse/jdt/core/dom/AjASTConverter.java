@@ -107,8 +107,8 @@ public class AjASTConverter extends ASTConverter {
 					adviceDecl.setFlags(adviceDecl.getFlags() | ASTNode.MALFORMED);
 					break;
 				case AST.JLS3:
-					for (int i = 0, max = typeParameters.length; i < max; i++) {
-						((AroundAdviceDeclaration) adviceDecl).typeParameters().add(convert(typeParameters[i]));
+					for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter typeParameter : typeParameters) {
+						((AroundAdviceDeclaration) adviceDecl).typeParameters().add(convert(typeParameter));
 					}
 				}
 			}
@@ -119,15 +119,15 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = adviceDeclaration.thrownExceptions;
 		if (thrownExceptions != null) {
 			int thrownExceptionsLength = thrownExceptions.length;
-			for (int i = 0; i < thrownExceptionsLength; i++) {
-				adviceDecl.thrownExceptions().add(convert(thrownExceptions[i]));
+			for (TypeReference thrownException : thrownExceptions) {
+				adviceDecl.thrownExceptions().add(convert(thrownException));
 			}
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = adviceDeclaration.arguments;
 		if (parameters != null) {
 			int parametersLength = parameters.length;
-			for (int i = 0; i < parametersLength; i++) {
-				adviceDecl.parameters().add(convert(parameters[i]));
+			for (Argument parameter : parameters) {
+				adviceDecl.parameters().add(convert(parameter));
 			}
 		}
 		int start = adviceDeclaration.sourceStart;
@@ -404,8 +404,8 @@ public class AjASTConverter extends ASTConverter {
 						methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
 						break;
 					default :
-						for (int i = 0, max = typeParameters.length; i < max; i++) {
-							methodDecl.typeParameters().add(convert(typeParameters[i]));
+						for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter typeParameter : typeParameters) {
+							methodDecl.typeParameters().add(convert(typeParameter));
 						}
 				}
 			}
@@ -666,16 +666,16 @@ public class AjASTConverter extends ASTConverter {
 			}
 			TypePattern[] weaverTypePatterns = dp.getParents().getTypePatterns();
 			List typePatterns = ((DeclareParentsDeclaration) declareDeclaration).parentTypePatterns();
-			for (int i = 0; i < weaverTypePatterns.length; i++) {
-				typePatterns.add(convert(weaverTypePatterns[i]));
+			for (TypePattern weaverTypePattern : weaverTypePatterns) {
+				typePatterns.add(convert(weaverTypePattern));
 			}
 		} else if (declare instanceof DeclarePrecedence) {
 			declareDeclaration = new org.aspectj.org.eclipse.jdt.core.dom.DeclarePrecedenceDeclaration(this.ast);
 			DeclarePrecedence dp = (DeclarePrecedence) declare;
 			TypePattern[] weaverTypePatterns = dp.getPatterns().getTypePatterns();
 			List typePatterns = ((DeclarePrecedenceDeclaration) declareDeclaration).typePatterns();
-			for (int i = 0; i < weaverTypePatterns.length; i++) {
-				typePatterns.add(convert(weaverTypePatterns[i]));
+			for (TypePattern weaverTypePattern : weaverTypePatterns) {
+				typePatterns.add(convert(weaverTypePattern));
 			}
 		} else if (declare instanceof DeclareSoft) {
 			declareDeclaration = new DeclareSoftDeclaration(this.ast);
@@ -763,8 +763,8 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = pointcutDeclaration.arguments;
 		if (parameters != null) {
 			int parametersLength = parameters.length;
-			for (int i = 0; i < parametersLength; i++) {
-				pointcutDecl.parameters().add(convert(parameters[i]));
+			for (Argument parameter : parameters) {
+				pointcutDecl.parameters().add(convert(parameter));
 			}
 		}
 
@@ -1141,10 +1141,10 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] expressions = expression.expressions;
 		if (expressions != null) {
 			int length = expressions.length;
-			for (int i = 0; i < length; i++) {
-				Expression expr = super.convert(expressions[i]);
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression value : expressions) {
+				Expression expr = super.convert(value);
 				if (this.resolveBindings) {
-					recordNodes(expr, expressions[i]);
+					recordNodes(expr, value);
 				}
 				arrayInitializer.expressions().add(expr);
 			}
@@ -1505,16 +1505,15 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference[] imports = unit.imports;
 		if (imports != null) {
 			int importLength = imports.length;
-			for (int i = 0; i < importLength; i++) {
-				compilationUnit.imports().add(convertImport(imports[i]));
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference anImport : imports) {
+				compilationUnit.imports().add(convertImport(anImport));
 			}
 		}
 
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration[] types = unit.types;
 		if (types != null) {
 			int typesLength = types.length;
-			for (int i = 0; i < typesLength; i++) {
-				org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration declaration = types[i];
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration declaration : types) {
 				if (CharOperation.equals(declaration.name, TypeConstants.PACKAGE_INFO_NAME)) {
 					continue;
 				}
@@ -1908,8 +1907,8 @@ public class AjASTConverter extends ASTConverter {
 				forStatement.initializers().add(variableDeclarationExpression);
 			} else {
 				int initializationsLength = initializations.length;
-				for (int i = 0; i < initializationsLength; i++) {
-					Expression initializer = convertToExpression(initializations[i]);
+				for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement initialization : initializations) {
+					Expression initializer = convertToExpression(initialization);
 					if (initializer != null) {
 						forStatement.initializers().add(initializer);
 					} else {
@@ -1924,8 +1923,8 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] increments = statement.increments;
 		if (increments != null) {
 			int incrementsLength = increments.length;
-			for (int i = 0; i < incrementsLength; i++) {
-				forStatement.updaters().add(convertToExpression(increments[i]));
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement increment : increments) {
+				forStatement.updaters().add(convertToExpression(increment));
 			}
 		}
 		forStatement.setBody(convert(statement.action));
@@ -2062,8 +2061,8 @@ public class AjASTConverter extends ASTConverter {
 		setTypeNameForAnnotation(annotation, normalAnnotation);
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair[] memberValuePairs = annotation.memberValuePairs;
 		if (memberValuePairs != null) {
-			for (int i = 0, max = memberValuePairs.length; i < max; i++) {
-				normalAnnotation.values().add(convert(memberValuePairs[i]));
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.MemberValuePair memberValuePair : memberValuePairs) {
+				normalAnnotation.values().add(convert(memberValuePair));
 			}
 		}
 		int start = annotation.sourceStart;
@@ -2149,10 +2148,10 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = allocation.arguments;
 		if (arguments != null) {
 			int length = arguments.length;
-			for (int i = 0; i < length; i++) {
-				Expression argument = super.convert(arguments[i]);
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression : arguments) {
+				Expression argument = super.convert(expression);
 				if (this.resolveBindings) {
-					recordNodes(argument, arguments[i]);
+					recordNodes(argument, expression);
 				}
 				classInstanceCreation.arguments().add(argument);
 			}
@@ -2404,8 +2403,8 @@ public class AjASTConverter extends ASTConverter {
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = statement.statements;
 		if (statements != null) {
 			int statementsLength = statements.length;
-			for (int i = 0; i < statementsLength; i++) {
-				switchStatement.statements().add(convert(statements[i]));
+			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement value : statements) {
+				switchStatement.statements().add(convert(value));
 			}
 		}
 		return switchStatement;
@@ -2541,13 +2540,13 @@ public class AjASTConverter extends ASTConverter {
 		if (superInterfaces != null) {
 			switch(this.ast.apiLevel) {
 				case AST.JLS2_INTERNAL :
-					for (int index = 0, length = superInterfaces.length; index < length; index++) {
-						typeDecl.internalSuperInterfaces().add(convert(superInterfaces[index]));
+					for (TypeReference anInterface : superInterfaces) {
+						typeDecl.internalSuperInterfaces().add(convert(anInterface));
 					}
 					break;
 				default :
-					for (int index = 0, length = superInterfaces.length; index < length; index++) {
-						typeDecl.superInterfaceTypes().add(convertType(superInterfaces[index]));
+					for (TypeReference superInterface : superInterfaces) {
+						typeDecl.superInterfaceTypes().add(convertType(superInterface));
 					}
 			}
 		}
@@ -2558,8 +2557,8 @@ public class AjASTConverter extends ASTConverter {
 					typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
 					break;
 				default :
-					for (int index = 0, length = typeParameters.length; index < length; index++) {
-						typeDecl.typeParameters().add(convert(typeParameters[index]));
+					for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter typeParameter : typeParameters) {
+						typeDecl.typeParameters().add(convert(typeParameter));
 					}
 			}
 		}
@@ -2590,8 +2589,8 @@ public class AjASTConverter extends ASTConverter {
 		TypeReference[] bounds = typeParameter.bounds;
 		if (bounds != null) {
 			Type type = null;
-			for (int index = 0, length = bounds.length; index < length; index++) {
-				type = convertType(bounds[index]);
+			for (TypeReference bound : bounds) {
+				type = convertType(bound);
 				typeParameter2.typeBounds().add(type);
 				end = type.getStartPosition() + type.getLength() - 1;
 			}
@@ -2906,8 +2905,8 @@ public class AjASTConverter extends ASTConverter {
 					TypeReference[] typeArguments = parameterizedSingleTypeReference.typeArguments;
 					if (typeArguments != null) {
 						Type type2 = null;
-						for (int i = 0, max = typeArguments.length; i < max; i++) {
-							type2 = convertType(typeArguments[i]);
+						for (TypeReference typeArgument : typeArguments) {
+							type2 = convertType(typeArgument);
 							((ParameterizedType) type).typeArguments().add(type2);
 							end = type2.getStartPosition() + type2.getLength() - 1;
 						}
@@ -2982,8 +2981,8 @@ public class AjASTConverter extends ASTConverter {
 						int numberOfEnclosingType = 0;
 						int startingIndex = 0;
 						int endingIndex = 0;
-						for (int i = 0, max = typeArguments.length; i < max; i++) {
-							if (typeArguments[i] != null) {
+						for (TypeReference[] typeArgument : typeArguments) {
+							if (typeArgument != null) {
 								numberOfEnclosingType++;
 							} else if (numberOfEnclosingType == 0) {
 								endingIndex++;
@@ -3308,14 +3307,14 @@ public class AjASTConverter extends ASTConverter {
 
 	private void lookupForScopes() {
 		if (this.pendingNameScopeResolution != null) {
-			for (Iterator iterator = this.pendingNameScopeResolution.iterator(); iterator.hasNext();) {
-				Name name = (Name) iterator.next();
+			for (Object o : this.pendingNameScopeResolution) {
+				Name name = (Name) o;
 				this.ast.getBindingResolver().recordScope(name, lookupScope(name));
 			}
 		}
 		if (this.pendingThisExpressionScopeResolution != null) {
-			for (Iterator iterator = this.pendingThisExpressionScopeResolution.iterator(); iterator.hasNext();) {
-				ThisExpression thisExpression = (ThisExpression) iterator.next();
+			for (Object o : this.pendingThisExpressionScopeResolution) {
+				ThisExpression thisExpression = (ThisExpression) o;
 				this.ast.getBindingResolver().recordScope(thisExpression, lookupScope(thisExpression));
 			}
 		}

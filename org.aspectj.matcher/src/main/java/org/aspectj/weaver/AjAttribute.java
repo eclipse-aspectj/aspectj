@@ -374,9 +374,9 @@ public abstract class AjAttribute {
 			}
 			s.writeInt(lineBreaks.length);
 			int previous = 0;
-			for (int i = 0, max = lineBreaks.length; i < max; i++) {
-				s.writeShort(lineBreaks[i] - previous);
-				previous = lineBreaks[i];
+			for (int lineBreak : lineBreaks) {
+				s.writeShort(lineBreak - previous);
+				previous = lineBreak;
 			}
 		}
 

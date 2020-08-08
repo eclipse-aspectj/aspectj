@@ -107,10 +107,9 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     
     private ConfigTreeNode buildTree(BuildConfigNode node) {
     	ConfigTreeNode treeNode = new ConfigTreeNode(node);
-    	for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-    		BuildConfigNode childNode = (BuildConfigNode)it.next();
-    		treeNode.add(buildTree(childNode));
-    	}
+		for (BuildConfigNode childNode : node.getChildren()) {
+			treeNode.add(buildTree(childNode));
+		}
     	return treeNode;
     }	
     

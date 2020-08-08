@@ -81,13 +81,13 @@ public class StripNonBodyHtml extends MatchingTask {
 
         log("stripping " + files.length + " files");
         int stripped = 0;
-        for (int i = 0, len = files.length; i < len; i++) {
-            if (processFile(files[i])) {
-                stripped++;
-            } else {
-                log(files[i] + " not stripped");
-            }
-        }
+		for (String file : files) {
+			if (processFile(file)) {
+				stripped++;
+			} else {
+				log(file + " not stripped");
+			}
+		}
         log(stripped + " files successfully stripped");
     }
 

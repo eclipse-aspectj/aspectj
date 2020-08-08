@@ -51,8 +51,8 @@ public class TypePatternList extends PatternNode {
 
 	public TypePatternList(TypePattern[] arguments) {
 		this.typePatterns = arguments;
-		for (int i = 0; i < arguments.length; i++) {
-			if (arguments[i] == TypePattern.ELLIPSIS) {
+		for (TypePattern argument : arguments) {
+			if (argument == TypePattern.ELLIPSIS) {
 				ellipsisCount++;
 			}
 		}
@@ -452,8 +452,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	public void postRead(ResolvedType enclosingType) {
-		for (int i = 0; i < typePatterns.length; i++) {
-			TypePattern p = typePatterns[i];
+		for (TypePattern p : typePatterns) {
 			p.postRead(enclosingType);
 		}
 	}
@@ -479,8 +478,8 @@ public class TypePatternList extends PatternNode {
 	@Override
 	public int hashCode() {
 		int result = 41;
-		for (int i = 0, len = typePatterns.length; i < len; i++) {
-			result = 37 * result + typePatterns[i].hashCode();
+		for (TypePattern typePattern : typePatterns) {
+			result = 37 * result + typePattern.hashCode();
 		}
 		return result;
 	}
@@ -521,8 +520,8 @@ public class TypePatternList extends PatternNode {
 	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeShort(typePatterns.length);
-		for (int i = 0; i < typePatterns.length; i++) {
-			typePatterns[i].write(s);
+		for (TypePattern typePattern : typePatterns) {
+			typePattern.write(s);
 		}
 		// writeLocation(s);
 	}
@@ -533,8 +532,8 @@ public class TypePatternList extends PatternNode {
 
 	public List<UnresolvedType> getExactTypes() {
 		List<UnresolvedType> ret = new ArrayList<UnresolvedType>();
-		for (int i = 0; i < typePatterns.length; i++) {
-			UnresolvedType t = typePatterns[i].getExactType();
+		for (TypePattern typePattern : typePatterns) {
+			UnresolvedType t = typePattern.getExactType();
 			if (!ResolvedType.isMissing(t)) {
 				ret.add(t);
 			}
@@ -550,15 +549,14 @@ public class TypePatternList extends PatternNode {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (int i = 0; i < typePatterns.length; i++) {
-			typePatterns[i].traverse(visitor, ret);
+		for (TypePattern typePattern : typePatterns) {
+			typePattern.traverse(visitor, ret);
 		}
 		return ret;
 	}
 
 	public boolean areAllExactWithNoSubtypesAllowed() {
-		for (int i = 0; i < typePatterns.length; i++) {
-			TypePattern array_element = typePatterns[i];
+		for (TypePattern array_element : typePatterns) {
 			if (!(array_element instanceof ExactTypePattern)) {
 				return false;
 			} else {

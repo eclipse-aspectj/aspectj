@@ -30,8 +30,8 @@ public class GenericSignature {
 			StringBuffer ret = new StringBuffer();
 			ret.append(formalTypeParameters.toString());
 			ret.append(superclassSignature.toString());
-			for (int i = 0; i < superInterfaceSignatures.length; i++) {
-				ret.append(superInterfaceSignatures[i].toString());
+			for (ClassTypeSignature superInterfaceSignature : superInterfaceSignatures) {
+				ret.append(superInterfaceSignature.toString());
 			}
 			return ret.toString();
 		}
@@ -55,20 +55,20 @@ public class GenericSignature {
 			StringBuffer sb = new StringBuffer();
 			if (formalTypeParameters.length > 0) {
 				sb.append("<");
-				for (int i = 0; i < formalTypeParameters.length; i++) {
-					sb.append(formalTypeParameters[i].toString());
+				for (FormalTypeParameter formalTypeParameter : formalTypeParameters) {
+					sb.append(formalTypeParameter.toString());
 				}
 				sb.append(">");
 			}
 			sb.append("(");
-			for (int i = 0; i < parameters.length; i++) {
-				sb.append(parameters[i].toString());
+			for (TypeSignature parameter : parameters) {
+				sb.append(parameter.toString());
 			}
 			sb.append(")");
 			sb.append(returnType.toString());
-			for (int i = 0; i < throwsSignatures.length; i++) {
+			for (FieldTypeSignature throwsSignature : throwsSignatures) {
 				sb.append("^");
-				sb.append(throwsSignatures[i].toString());
+				sb.append(throwsSignature.toString());
 			}
 			return sb.toString();
 		}
@@ -89,9 +89,9 @@ public class GenericSignature {
 			ret.append(identifier);
 			ret.append(":");
 			ret.append(classBound.toString());
-			for (int i = 0; i < interfaceBounds.length; i++) {
+			for (FieldTypeSignature interfaceBound : interfaceBounds) {
 				ret.append(":");
-				ret.append(interfaceBounds[i].toString());
+				ret.append(interfaceBound.toString());
 			}
 			return ret.toString();
 		}
@@ -212,8 +212,8 @@ public class GenericSignature {
 			sb.append(identifier);
 			if (typeArguments.length > 0) {
 				sb.append("<");
-				for (int i = 0; i < typeArguments.length; i++) {
-					sb.append(typeArguments[i].toString());
+				for (TypeArgument typeArgument : typeArguments) {
+					sb.append(typeArgument.toString());
 				}
 				sb.append(">");
 			}

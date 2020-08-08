@@ -88,8 +88,7 @@ public class PartialOrder {
 
 	private static <T extends PartialComparable> void addNewPartialComparable(List<SortObject<T>> graph, T o) {
 		SortObject<T> so = new SortObject<T>(o);
-		for (Iterator<SortObject<T>> i = graph.iterator(); i.hasNext();) {
-			SortObject<T> other = i.next();
+		for (SortObject<T> other : graph) {
 			so.addDirectedLinks(other);
 		}
 		graph.add(so);
@@ -125,8 +124,8 @@ public class PartialOrder {
 		// ??? I don't like creating this data structure, but it does give good
 		// ??? separation of concerns.
 		List<SortObject<T>> sortList = new LinkedList<SortObject<T>>();
-		for (Iterator<T> i = objects.iterator(); i.hasNext();) {
-			addNewPartialComparable(sortList, i.next());
+		for (T object : objects) {
+			addNewPartialComparable(sortList, object);
 		}
 
 		// System.out.println(sortList);

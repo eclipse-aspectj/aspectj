@@ -164,21 +164,21 @@ public class LineReader extends LineNumberReader {
             if (result == null)
                 return null;
             result = result.trim();
-            for (int i = 0; i < eolComments.length; i++) {
-                int loc = result.indexOf(eolComments[i]);
-                if (-1 != loc) {
-                    result = result.substring(0, loc);
-                    break;
-                }
-            }
+			for (String eolComment : eolComments) {
+				int loc = result.indexOf(eolComment);
+				if (-1 != loc) {
+					result = result.substring(0, loc);
+					break;
+				}
+			}
             len = result.length();
             if (0 < len) {
-                for (int i = 0; i < leadComments.length; i++) {
-                    if (result.startsWith(leadComments[i])) {
-                        result = "";
-                        break;
-                    }
-                }
+				for (String leadComment : leadComments) {
+					if (result.startsWith(leadComment)) {
+						result = "";
+						break;
+					}
+				}
                 len = result.length();
             }
             len = result.length();

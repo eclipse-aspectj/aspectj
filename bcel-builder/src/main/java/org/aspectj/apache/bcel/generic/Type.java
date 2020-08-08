@@ -466,8 +466,8 @@ public abstract class Type {
 		StringBuffer sb = new StringBuffer("(");
 		Class[] params = meth.getParameterTypes(); // avoid clone
 
-		for (int j = 0; j < params.length; j++) {
-			sb.append(getType(params[j]).getSignature());
+		for (Class param : params) {
+			sb.append(getType(param).getSignature());
 		}
 
 		sb.append(")");
@@ -479,8 +479,8 @@ public abstract class Type {
 		StringBuffer sb = new StringBuffer("(");
 		Class<?>[] params = cons.getParameterTypes(); // avoid clone
 
-		for (int j = 0; j < params.length; j++) {
-			sb.append(getType(params[j]).getSignature());
+		for (Class<?> param : params) {
+			sb.append(getType(param).getSignature());
 		}
 
 		sb.append(")V");

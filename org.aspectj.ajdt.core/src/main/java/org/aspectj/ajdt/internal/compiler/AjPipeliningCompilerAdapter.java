@@ -191,8 +191,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		}
 
 		if (!reportedErrors && units != null) {
-			for (int i = 0; i < units.length; i++) {
-				if (units[i] != null && units[i].compilationResult != null && units[i].compilationResult.hasErrors()) {
+			for (CompilationUnitDeclaration unit : units) {
+				if (unit != null && unit.compilationResult != null && unit.compilationResult.hasErrors()) {
 					reportedErrors = true;
 					break; // TODO break or exit here?
 				}
@@ -202,11 +202,11 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		// Break the units into two lists...
 		List<CompilationUnitDeclaration> aspects = new ArrayList<CompilationUnitDeclaration>();
 		List<CompilationUnitDeclaration> nonaspects = new ArrayList<CompilationUnitDeclaration>();
-		for (int i = 0; i < units.length; i++) {
-			if (containsAnAspect(units[i])) {
-				aspects.add(units[i]);
+		for (CompilationUnitDeclaration unit : units) {
+			if (containsAnAspect(unit)) {
+				aspects.add(unit);
 			} else {
-				nonaspects.add(units[i]);
+				nonaspects.add(unit);
 			}
 		}
 
@@ -347,8 +347,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		int sourceStart = md.sourceStart;
 		int[] separators = md.compilationResult.lineSeparatorPositions;
 		int declarationStartLine = 1;
-		for (int i = 0; i < separators.length; i++) {
-			if (sourceStart < separators[i]) {
+		for (int separator : separators) {
+			if (sourceStart < separator) {
 				break;
 			}
 			declarationStartLine++;
@@ -385,8 +385,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		try {
 			// not great ... but one more check before we continue, see pr132314
 			if (!reportedErrors && units != null) {
-				for (int i = 0; i < units.length; i++) {
-					if (units[i] != null && units[i].compilationResult != null && units[i].compilationResult.hasErrors()) {
+				for (CompilationUnitDeclaration unit : units) {
+					if (unit != null && unit.compilationResult != null && unit.compilationResult.hasErrors()) {
 						reportedErrors = true;
 						break;
 					}
@@ -476,8 +476,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private List<InterimCompilationResult> getBinarySourcesFrom(Map<String, List<UnwovenClassFile>> binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
 		List<InterimCompilationResult> ret = new ArrayList<InterimCompilationResult>();
-		for (Iterator<String> binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
-			String sourceFileName = binIter.next();
+		for (String sourceFileName : binarySourceEntries.keySet()) {
 			List<UnwovenClassFile> unwovenClassFiles = binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
 			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
@@ -489,8 +488,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	private void notifyRequestor() {
-		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
-			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
 		}
 	}
@@ -500,8 +498,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		if (debugPipeline) {
 			System.err.println(">.weaveQueuedEntries()");
 		}
-		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
-			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
 				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}
@@ -602,15 +599,14 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private boolean containsAnAspect(CompilationUnitDeclaration cud) {
 		TypeDeclaration[] typeDecls = cud.types;
 		if (typeDecls != null) {
-			for (int i = 0; i < typeDecls.length; i++) { // loop through top level types in the file
-				TypeDeclaration declaration = typeDecls[i];
+			for (TypeDeclaration declaration : typeDecls) { // loop through top level types in the file
 				if (isAspect(declaration)) {
 					return true;
 				}
 				if (declaration.memberTypes != null) {
 					TypeDeclaration[] memberTypes = declaration.memberTypes;
-					for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
-						if (containsAnAspect(memberTypes[j])) {
+					for (TypeDeclaration memberType : memberTypes) { // loop through inner types
+						if (containsAnAspect(memberType)) {
 							return true;
 						}
 					}
@@ -626,8 +622,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		}
 		if (tDecl.memberTypes != null) {
 			TypeDeclaration[] memberTypes = tDecl.memberTypes;
-			for (int j = 0; j < memberTypes.length; j++) { // loop through inner types
-				if (containsAnAspect(memberTypes[j])) {
+			for (TypeDeclaration memberType : memberTypes) { // loop through inner types
+				if (containsAnAspect(memberType)) {
 					return true;
 				}
 			}

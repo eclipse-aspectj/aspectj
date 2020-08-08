@@ -229,8 +229,7 @@ public class AjProblemReporter extends ProblemReporter {
 			// so we don't have to worry about interfaces, just the superclass.
 			onTypeX = factory.fromEclipse(type.superclass()); // abstractMethod.declaringClass);
 		}
-		for (Iterator i = onTypeX.getInterTypeMungersIncludingSupers().iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+		for (ConcreteTypeMunger m : onTypeX.getInterTypeMungersIncludingSupers()) {
 			ResolvedMember sig = m.getSignature();
 			if (!Modifier.isAbstract(sig.getModifiers())) {
 				if (ResolvedType.matches(
@@ -434,9 +433,8 @@ public class AjProblemReporter extends ProblemReporter {
 		ResolvedType supertypeToLookAt = onTypeX.getSuperclass();
 		while (supertypeToLookAt != null) {
 			List<ConcreteTypeMunger> itMungers = supertypeToLookAt.getInterTypeMungers();
-			for (Iterator<ConcreteTypeMunger> i = itMungers.iterator(); i.hasNext();) {
-				ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
-				if (m.getMunger()!=null && m.getMunger().getKind()== ResolvedTypeMunger.PrivilegedAccess) {
+			for (ConcreteTypeMunger m : itMungers) {
+				if (m.getMunger() != null && m.getMunger().getKind() == ResolvedTypeMunger.PrivilegedAccess) {
 					continue;
 				}
 				ResolvedMember sig = m.getSignature();
@@ -492,13 +490,11 @@ public class AjProblemReporter extends ProblemReporter {
 			AspectDeclaration ad = (AspectDeclaration) typeDecl.enclosingType;
 			if (ad.concreteName != null) {
 				List<Declare> declares = ad.concreteName.declares;
-				for (Iterator<Declare> iter = declares.iterator(); iter.hasNext();) {
-					Object dec = iter.next();
+				for (Object dec : declares) {
 					if (dec instanceof DeclareParents) {
 						DeclareParents decp = (DeclareParents) dec;
 						TypePattern[] newparents = decp.getParents().getTypePatterns();
-						for (int i = 0; i < newparents.length; i++) {
-							TypePattern pattern = newparents[i];
+						for (TypePattern pattern : newparents) {
 							UnresolvedType ut = pattern.getExactType();
 							if (ut == null)
 								continue;
@@ -552,8 +548,7 @@ public class AjProblemReporter extends ProblemReporter {
 				weaverType = factory.fromEclipse(type.superclass());
 			}
 			Set checked = new HashSet();
-			for (Iterator i = weaverType.getInterTypeMungersIncludingSupers().iterator(); i.hasNext();) {
-				ConcreteTypeMunger m = (ConcreteTypeMunger) i.next();
+			for (ConcreteTypeMunger m : weaverType.getInterTypeMungersIncludingSupers()) {
 				ResolvedType theAspect = m.getAspectType();
 				if (!checked.contains(theAspect)) {
 					TypeBinding tb = factory.makeTypeBinding(m.getAspectType());
@@ -570,8 +565,8 @@ public class AjProblemReporter extends ProblemReporter {
 							Collection/* ResolvedMember */privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
 							// On an incremental compile the information is in the bcel delegate
 							if (privvies != null) {
-								for (Iterator iterator = privvies.iterator(); iterator.hasNext();) {
-									ResolvedMember priv = (ResolvedMember) iterator.next();
+								for (Object privvy : privvies) {
+									ResolvedMember priv = (ResolvedMember) privvy;
 									if (priv.getName().equals(fname)) {
 										return;
 									}

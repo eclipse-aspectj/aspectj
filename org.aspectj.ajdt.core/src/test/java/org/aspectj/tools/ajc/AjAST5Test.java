@@ -33,42 +33,40 @@ public class AjAST5Test extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		AspectDeclaration d = ajast.newAspectDeclaration();
 		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				if (element.getId().equals("perClause")) {
 					assertNull("AspectDeclaration's " + element.getId() + " property" +
-							"should be null since we haven't set it yet",
-							d.getStructuralProperty(element));					
+									"should be null since we haven't set it yet",
+							d.getStructuralProperty(element));
 				}
 			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				assertNotNull("AspectDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a boolean",
+								"should not be null since it is a boolean",
 						d.getStructuralProperty(element));
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				if (element.getId().equals("perClause")) {
 					PerTypeWithin ptw = ajast.newPerTypeWithin();
-					d.setStructuralProperty(element,ptw);
+					d.setStructuralProperty(element, ptw);
 					assertEquals("AspectDeclaration's perClause property should" +
-							" now be a perTypeWithin",ptw,d.getStructuralProperty(element));
+							" now be a perTypeWithin", ptw, d.getStructuralProperty(element));
 				} else if (element.getId().equals("javadoc")) {
 					// do nothing since makes no sense to have javadoc
-				}				
+				}
 			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-			    if (element.getId().equals("privileged")) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
+				if (element.getId().equals("privileged")) {
 					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
+					d.setStructuralProperty(element, b);
 					assertEquals("AspectDeclaration's isPrivileged property should" +
-							" now be a boolean",b,d.getStructuralProperty(element));
-			    }
+							" now be a boolean", b, d.getStructuralProperty(element));
+				}
 			}
 		}
 	}
@@ -77,26 +75,24 @@ public class AjAST5Test extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
 		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				if (element.getId().equals("aspect")) {
 					assertNotNull("AjTypeDeclaration's " + element.getId() + " property" +
-							" should not be null since it is a boolean",
-							d.getStructuralProperty(element));				
-				} 				
+									" should not be null since it is a boolean",
+							d.getStructuralProperty(element));
+				}
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				if (element.getId().equals("aspect")) {
 					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
+					d.setStructuralProperty(element, b);
 					assertEquals("AjTypeDeclaration's aspect property should" +
-						" now be a SignaturePattern",b,d.getStructuralProperty(element));
+							" now be a SignaturePattern", b, d.getStructuralProperty(element));
 				}
 			}
 		}
@@ -106,51 +102,49 @@ public class AjAST5Test extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareParentsDeclaration d = ajast.newDeclareParentsDeclaration();
 		List props = DeclareParentsDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
-				ChildPropertyDescriptor element = (ChildPropertyDescriptor)o;
+				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				assertNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should be null since we haven't set it yet",
-						d.getStructuralProperty(element));					
+								"should be null since we haven't set it yet",
+						d.getStructuralProperty(element));
 			} else if (o instanceof ChildListPropertyDescriptor) {
-				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor)o;
+				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor) o;
 				assertNotNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a list",
+								"should not be null since it is a list",
 						d.getStructuralProperty(element));
 				assertEquals("should only be able to put TypePattern's into the list",
-						TypePattern.class,element.getElementType());
+						TypePattern.class, element.getElementType());
 			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				assertNotNull("DeclareParentsDeclaration's " + element.getId() + " property" +
-						"should not be null since it is a boolean",
-						d.getStructuralProperty(element));									
+								"should not be null since it is a boolean",
+						d.getStructuralProperty(element));
 			} else {
 				fail("unknown PropertyDescriptor associated with DeclareParentsDeclaration: " + o);
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				if (element.getId().equals("childTypePattern")) {
 					DefaultTypePattern dtp = ajast.newDefaultTypePattern();
-					d.setStructuralProperty(element,dtp);
+					d.setStructuralProperty(element, dtp);
 					assertEquals("DeclareParentsDeclaration's typePattern property should" +
-							" now be a DefaultTypePattern",dtp,d.getStructuralProperty(element));
+							" now be a DefaultTypePattern", dtp, d.getStructuralProperty(element));
 				} else if (element.getId().equals("javadoc")) {
 					// do nothing since makes no sense to have javadoc
 				} else {
 					fail("unknown property for DeclareParentsDeclaration");
-				}				
+				}
 			} else if (o instanceof SimplePropertyDescriptor) {
-				SimplePropertyDescriptor element = (SimplePropertyDescriptor)o;
-			    if (element.getId().equals("isExtends")) {
+				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
+				if (element.getId().equals("isExtends")) {
 					Boolean b = new Boolean(true);
-					d.setStructuralProperty(element,b);
+					d.setStructuralProperty(element, b);
 					assertEquals("DeclareParentsDeclaration's isExtends property should" +
-							" now be a boolean",b,d.getStructuralProperty(element));
-			    }
+							" now be a boolean", b, d.getStructuralProperty(element));
+				}
 			}
 		}
 	}

@@ -81,8 +81,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		if (nvPairs == null) {
 			return false;
 		}
-		for (int i = 0; i < nvPairs.size(); i++) {
-			AnnotationNameValuePair pair = nvPairs.get(i);
+		for (AnnotationNameValuePair pair : nvPairs) {
 			if (pair.getName().equals(n)) {
 				return true;
 			}
@@ -97,8 +96,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		if (nvPairs == null) {
 			return false;
 		}
-		for (int i = 0; i < nvPairs.size(); i++) {
-			AnnotationNameValuePair pair = nvPairs.get(i);
+		for (AnnotationNameValuePair pair : nvPairs) {
 			if (pair.getName().equals(n)) {
 				if (pair.getValue().stringify().equals(v)) {
 					return true;
@@ -119,8 +117,8 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		ArrayAnnotationValue aav = (ArrayAnnotationValue) nvp.getValue();
 		AnnotationValue[] avs = aav.getValues();
 		Set<String> targets = new HashSet<String>();
-		for (int i = 0; i < avs.length; i++) {
-			EnumAnnotationValue value = (EnumAnnotationValue)avs[i];
+		for (AnnotationValue av : avs) {
+			EnumAnnotationValue value = (EnumAnnotationValue) av;
 			targets.add(value.getValue());
 		}
 		return targets;

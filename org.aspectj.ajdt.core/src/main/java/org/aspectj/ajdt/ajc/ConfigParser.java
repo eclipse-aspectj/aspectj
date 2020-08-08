@@ -42,8 +42,8 @@ public class ConfigParser {
 	public void parseCommandLine(String[] argsArray) throws ParseException {
 		location = new CommandLineLocation();
 		LinkedList<Arg> args = new LinkedList<Arg>();
-		for (int i = 0; i < argsArray.length; i++) {
-			args.add(new Arg(argsArray[i], location));
+		for (String s : argsArray) {
+			args.add(new Arg(s, location));
 		}
 		String aspectjOptions = null;
 		try {
@@ -188,8 +188,8 @@ public class ConfigParser {
 				showWarning("no matching files found in: " + dir);
 			}
 
-			for (int i = 0; i < files.length; i++) {
-				addFile(files[i]);
+			for (File file : files) {
+				addFile(file);
 			}
 		}
 	}

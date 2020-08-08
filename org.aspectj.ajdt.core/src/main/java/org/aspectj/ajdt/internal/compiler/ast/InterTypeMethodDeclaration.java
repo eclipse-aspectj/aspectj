@@ -162,9 +162,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 				ReferenceBinding supertype = onTypeBinding.superclass();
 				while (supertype != null && reportError) {
 					MethodBinding[] possibles = supertype.getMethods(declaredSelector);
-					for (int i = 0; i < possibles.length; i++) {
-						MethodBinding mb = possibles[i];
-
+					for (MethodBinding mb : possibles) {
 						boolean couldBeMatch = true;
 						if (mb.parameters.length != realthing.parameters.length)
 							couldBeMatch = false;
@@ -290,11 +288,11 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 
 		Argument[] itdArgs = this.arguments;
 		if (itdArgs != null) {
-			for (int a = 0; a < itdArgs.length; a++) {
-				LocalVariableBinding lvb = itdArgs[a].binding;
+			for (Argument itdArg : itdArgs) {
+				LocalVariableBinding lvb = itdArg.binding;
 				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
 				// e37: have to create a declaration so that the check in ClassFile (line 2538) won't skip it
-				lvbCopy.declaration = new LocalDeclaration(itdArgs[a].name,0,0);
+				lvbCopy.declaration = new LocalDeclaration(itdArg.name, 0, 0);
 				codeStream.record(lvbCopy);
 				lvbCopy.recordInitializationStartPC(0);
 				lvbCopy.resolvedPosition = lvb.resolvedPosition;
@@ -311,9 +309,9 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 			codeStream.aload_0();
 			resolvedPosition = 1;
 		}
-		for (int i = 0; i < length; i++) {
-			codeStream.load(parameters[i], resolvedPosition);
-			if ((parameters[i] == TypeBinding.DOUBLE) || (parameters[i] == TypeBinding.LONG))
+		for (TypeBinding parameter : parameters) {
+			codeStream.load(parameter, resolvedPosition);
+			if ((parameter == TypeBinding.DOUBLE) || (parameter == TypeBinding.LONG))
 				resolvedPosition += 2;
 			else
 				resolvedPosition++;

@@ -182,8 +182,8 @@ public class TypeAnnotationGen {
 		case LOCAL_VARIABLE:
 		case RESOURCE_VARIABLE:
 			dos.writeShort(localVarTarget.length/3);
-			for (int i=0;i<localVarTarget.length;i++) {
-				dos.writeShort(localVarTarget[i]);
+			for (int j : localVarTarget) {
+				dos.writeShort(j);
 			}
 			break;
 		case EXCEPTION_PARAMETER:
@@ -208,8 +208,8 @@ public class TypeAnnotationGen {
 			throw new IllegalStateException("nyi "+targetType);
 		}
 		dos.writeByte(typePath.length);
-		for (int i=0;i<typePath.length;i++) {
-			dos.writeByte(typePath[i]);
+		for (int j : typePath) {
+			dos.writeByte(j);
 		}
 		annotation.dump(dos);
 	}

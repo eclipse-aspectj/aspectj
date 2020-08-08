@@ -42,8 +42,8 @@ public class Main {
 			return false;
 		}
 		int numConfigFiles = 0;
-		for (int i = 0; i < args.length; i++) {
-			if ((null != args[i]) && args[i].endsWith(".lst")) {
+		for (String arg : args) {
+			if ((null != arg) && arg.endsWith(".lst")) {
 				numConfigFiles++;
 			}
 		}

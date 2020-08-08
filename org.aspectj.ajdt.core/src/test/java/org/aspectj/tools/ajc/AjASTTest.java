@@ -393,8 +393,7 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundName = false;
 		boolean foundParamList = false;
 		boolean foundDesignator = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if ((o instanceof ChildPropertyDescriptor)) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				String id = element.getId();
@@ -439,8 +438,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		PointcutDeclaration d = ajast.newPointcutDeclaration();
 		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				if (element.getId().equals("name")) {
@@ -467,8 +465,7 @@ public class AjASTTest extends AjASTTestCase {
 				fail("unknown PropertyDescriptor associated with PointcutDeclaration: " + o);
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				if (element.getId().equals("designator")) {
@@ -505,8 +502,7 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundPerClause = false;
 		boolean foundIsPrivileged = false;
 		boolean foundIsAspect = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if ((o instanceof ChildPropertyDescriptor)) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				String id = element.getId();
@@ -735,8 +731,7 @@ public class AjASTTest extends AjASTTestCase {
 		ajast.newAjTypeDeclaration();
 		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundAspect = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				String id = element.getId();
@@ -770,8 +765,7 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundPrivileged = false;
 		boolean foundPerClause = false;
 		// boolean foundAspect = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				String id = element.getId();
@@ -802,8 +796,7 @@ public class AjASTTest extends AjASTTestCase {
 		ajast.newTypeDeclaration();
 		List props = TypeDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundAspect = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				String id = element.getId();
@@ -831,8 +824,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -883,8 +876,8 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareAtFieldDeclaration d = ajast.newDeclareAtFieldDeclaration();
 		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
 				assertNotNull("DeclareAtFieldDeclaration's " + element.getId() + " property"
 						+ " should not be null since it is lazily created", d.getStructuralProperty(element));
@@ -893,8 +886,8 @@ public class AjASTTest extends AjASTTestCase {
 						+ " should be null since we haven't set it yet", d.getStructuralProperty(element));
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pattern")) {
 				SignaturePattern p = ajast.newSignaturePattern();
 				d.setStructuralProperty(element, p);
@@ -929,8 +922,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -981,8 +974,8 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareAtMethodDeclaration d = ajast.newDeclareAtMethodDeclaration();
 		List props = DeclareAtMethodDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
 				assertNotNull("DeclareAtMethodDeclaration's " + element.getId() + " property"
 						+ " should not be null since it is lazily created", d.getStructuralProperty(element));
@@ -991,8 +984,8 @@ public class AjASTTest extends AjASTTestCase {
 						+ " should be null since we haven't set it yet", d.getStructuralProperty(element));
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pattern")) {
 				SignaturePattern p = ajast.newSignaturePattern();
 				d.setStructuralProperty(element, p);
@@ -1027,8 +1020,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -1079,8 +1072,8 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareAtConstructorDeclaration d = ajast.newDeclareAtConstructorDeclaration();
 		List props = DeclareAtConstructorDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
 				assertNotNull("DeclareAtConstructorDeclaration's " + element.getId() + " property"
 						+ " should not be null since it is lazily created", d.getStructuralProperty(element));
@@ -1089,8 +1082,8 @@ public class AjASTTest extends AjASTTestCase {
 						+ " should be null since we haven't set it yet", d.getStructuralProperty(element));
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pattern")) {
 				SignaturePattern p = ajast.newSignaturePattern();
 				d.setStructuralProperty(element, p);
@@ -1125,8 +1118,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -1177,8 +1170,8 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareAtTypeDeclaration d = ajast.newDeclareAtTypeDeclaration();
 		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
 				assertNotNull("DeclareAtTypeDeclaration's " + element.getId() + " property"
 						+ " should not be null since it is lazily created", d.getStructuralProperty(element));
@@ -1187,8 +1180,8 @@ public class AjASTTest extends AjASTTestCase {
 						+ " should be null since we haven't set it yet", d.getStructuralProperty(element));
 			}
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pattern")) {
 				DefaultTypePattern p = ajast.newDefaultTypePattern();
 				d.setStructuralProperty(element, p);
@@ -1223,8 +1216,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundMessage = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -1273,13 +1266,13 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareErrorDeclaration d = ajast.newDeclareErrorDeclaration();
 		List props = DeclareErrorDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareErrorDeclaration's " + element.getId() + " property" + "should be null since we haven't set it yet",
 					d.getStructuralProperty(element));
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pointcut")) {
 				AndPointcut p = ajast.newAndPointcut();
 				d.setStructuralProperty(element, p);
@@ -1315,8 +1308,7 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundTypePattern = false;
 		boolean foundIsExtends = false;
 		boolean foundTypePatternList = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if ((o instanceof ChildPropertyDescriptor)) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				String id = element.getId();
@@ -1400,8 +1392,7 @@ public class AjASTTest extends AjASTTestCase {
 		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.JLS3);
 		boolean foundJavadoc = false;
 		boolean foundTypePatterns = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if ((o instanceof ChildPropertyDescriptor) && ((ChildPropertyDescriptor) o).getId().equals("javadoc")) {
 				foundJavadoc = true;
 			} else if ((o instanceof ChildListPropertyDescriptor)
@@ -1440,8 +1431,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclarePrecedenceDeclaration d = ajast.newDeclarePrecedenceDeclaration();
 		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 				assertNull("DeclareErrorDeclaration's " + element.getId() + " property"
@@ -1473,8 +1463,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundTypePattern = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -1523,13 +1513,13 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareSoftDeclaration d = ajast.newDeclareSoftDeclaration();
 		List props = DeclareSoftDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareSoftDeclaration's " + element.getId() + " property" + "should be null since we haven't set it yet",
 					d.getStructuralProperty(element));
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pointcut")) {
 				AndPointcut p = ajast.newAndPointcut();
 				d.setStructuralProperty(element, p);
@@ -1564,8 +1554,8 @@ public class AjASTTest extends AjASTTestCase {
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundMessage = false;
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			String id = element.getId();
 			if (id.equals("javadoc")) {
 				foundJavadoc = true;
@@ -1614,13 +1604,13 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		DeclareWarningDeclaration d = ajast.newDeclareWarningDeclaration();
 		List props = DeclareWarningDeclaration.propertyDescriptors(AST.JLS3);
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object o : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareWarningDeclaration's " + element.getId() + " property"
 					+ "should be null since we haven't set it yet", d.getStructuralProperty(element));
 		}
-		for (Iterator iter = props.iterator(); iter.hasNext();) {
-			ChildPropertyDescriptor element = (ChildPropertyDescriptor) iter.next();
+		for (Object prop : props) {
+			ChildPropertyDescriptor element = (ChildPropertyDescriptor) prop;
 			if (element.getId().equals("pointcut")) {
 				AndPointcut p = ajast.newAndPointcut();
 				d.setStructuralProperty(element, p);

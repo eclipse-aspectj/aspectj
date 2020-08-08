@@ -226,24 +226,22 @@ public class LinkCheck {
             messages.checkingLinks(linksToCheck.size());
             list.clear();
             list.addAll(linksToCheck);
-            for (Iterator<Link> iter = list.iterator(); iter.hasNext();) {
-                final Link link = iter.next();
-                String urlString = link.url.toString();
-                if (!checkedUrls.contains(urlString)) {
-                    checkedUrls.add(urlString);
-                    messages.checkingLink(link);
-                    checkLink(link);
-                }
-            }
+			for (final Link link : list) {
+				String urlString = link.url.toString();
+				if (!checkedUrls.contains(urlString)) {
+					checkedUrls.add(urlString);
+					messages.checkingLink(link);
+					checkLink(link);
+				}
+			}
             linksToCheck.removeAll(list);
         }
         // now check that all named references are accounted for
-        for (Iterator<String> iter = refsToCheck.iterator(); iter.hasNext();) {
-            String ref = iter.next();
-            if (!validRefs.contains(ref)) {
-                messages.namedReferenceNotFound(ref);
-            }
-        }
+		for (String ref : refsToCheck) {
+			if (!validRefs.contains(ref)) {
+				messages.namedReferenceNotFound(ref);
+			}
+		}
     }
 
     /** @return null if link known or if unable to create */

@@ -244,13 +244,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		List<String> filesForCompilation = new ArrayList<String>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 		boolean changed = false;
-		for (int i = 0; i < filesForCompilation.size(); i++) {
-			if (!currentFiles.contains(filesForCompilation.get(i))) {
+		for (String s : filesForCompilation) {
+			if (!currentFiles.contains(s)) {
 				changed = true;
 			}
 		}
-		for (int i = 0; i < currentFiles.size(); i++) {
-			if (!filesForCompilation.contains(currentFiles.get(i))) {
+		for (String currentFile : currentFiles) {
+			if (!filesForCompilation.contains(currentFile)) {
 				changed = true;
 			}
 		}
@@ -266,13 +266,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		List<String> collector = new ArrayList<String>();
 		collectUpXmlFiles(projectBase, projectBase, collector);
 		boolean changed = false;
-		for (int i = 0; i < collector.size(); i++) {
-			if (!currentXmlFiles.contains(collector.get(i))) {
+		for (String s : collector) {
+			if (!currentXmlFiles.contains(s)) {
 				changed = true;
 			}
 		}
-		for (int i = 0; i < currentXmlFiles.size(); i++) {
-			if (!collector.contains(currentXmlFiles.get(i))) {
+		for (String currentXmlFile : currentXmlFiles) {
+			if (!collector.contains(currentXmlFile)) {
 				changed = true;
 			}
 		}
@@ -286,8 +286,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		if (contents == null) {
 			return;
 		}
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(location, string);
 			if (f.isDirectory()) {
 				collectUpFiles(f, base, collectionPoint);
@@ -311,8 +310,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		if (contents == null) {
 			return;
 		}
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(location, string);
 			if (f.isDirectory()) {
 				collectUpXmlFiles(f, base, collectionPoint);
@@ -365,8 +363,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	public void checkForError(String projectName, String anError) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		List<IMessage> messages = ((MultiProjTestMessageHandler) compiler.getMessageHandler()).getErrorMessages();
-		for (Iterator<IMessage> iter = messages.iterator(); iter.hasNext();) {
-			IMessage element = iter.next();
+		for (IMessage element : messages) {
 			if (element.getMessage().indexOf(anError) != -1) {
 				return;
 			}
@@ -409,13 +406,13 @@ public class AjdeInteractionTestbed extends TestCase {
 		System.out.println("Build took: " + getTimeTakenForBuild(projectName) + "ms");
 		List<String> compiled = getCompiledFiles(projectName);
 		System.out.println("Compiled: " + compiled.size() + " files");
-		for (Iterator<String> iter = compiled.iterator(); iter.hasNext();) {
-			System.out.println("        :" + iter.next());
+		for (String value : compiled) {
+			System.out.println("        :" + value);
 		}
 		List<String> woven = getWovenClasses(projectName);
 		System.out.println("Wove: " + woven.size() + " files");
-		for (Iterator<String> iter = woven.iterator(); iter.hasNext();) {
-			System.out.println("    :" + iter.next());
+		for (String s : woven) {
+			System.out.println("    :" + s);
 		}
 		if (wasFullBuild()) {
 			System.out.println("It was a batch (full) build");

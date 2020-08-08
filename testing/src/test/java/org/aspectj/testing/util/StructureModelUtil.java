@@ -146,12 +146,11 @@ public class StructureModelUtil {
 	public static Set getAspectsAffectingPackage(IProgramElement packageNode) {
 		List<IProgramElement> files = StructureModelUtil.getFilesInPackage(packageNode);
 		Set aspects = new HashSet();
-		for (Iterator<IProgramElement> it = files.iterator(); it.hasNext();) {
-			IProgramElement fileNode = (IProgramElement) it.next();
+		for (IProgramElement fileNode : files) {
 			Map adviceMap = getLinesToAspectMap(fileNode.getSourceLocation().getSourceFile().getAbsolutePath());
 			Collection values = adviceMap.values();
-			for (Iterator it2 = values.iterator(); it2.hasNext();) {
-				aspects.add(it2.next());
+			for (Object value : values) {
+				aspects.add(value);
 			}
 		}
 		return aspects;
@@ -182,8 +181,7 @@ public class StructureModelUtil {
 			matches.add(o);
 		}
 
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement nextNode = (IProgramElement) it.next();
+		for (IProgramElement nextNode : node.getChildren()) {
 			getPackagesHelper(nextNode, kind, prename, matches);
 		}
 
@@ -251,8 +249,7 @@ public class StructureModelUtil {
 			packageContents = packageNode.getChildren();
 		}
 		List<IProgramElement> files = new ArrayList<IProgramElement>();
-		for (Iterator<IProgramElement> it = packageContents.iterator(); it.hasNext();) {
-			IProgramElement packageItem = (IProgramElement) it.next();
+		for (IProgramElement packageItem : packageContents) {
 			if (packageItem.getKind() == IProgramElement.Kind.FILE_JAVA
 					|| packageItem.getKind() == IProgramElement.Kind.FILE_ASPECTJ) {
 				files.add(packageItem);

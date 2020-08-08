@@ -36,8 +36,8 @@ public class GenericSignatureParserTest extends TestCase {
 				"java.lang.InheritableThreadLocal", "java.lang.ThreadLocal", "java.util.Collection", "java.util.Comparator",
 				"java.util.Enumeration", "java.util.Iterator", "java.util.List", "java.util.ListIterator", "java.util.Map",
 				"java.util.Map$Entry", "java.util.Queue", "java.util.Set", "java.util.SortedMap", "java.util.SortedSet" };
-		for (int i = 0; i < testClasses.length; i++) {
-			JavaClass jc = repository.loadClass(testClasses[i]);
+		for (String testClass : testClasses) {
+			JavaClass jc = repository.loadClass(testClass);
 			String sig = jc.getGenericSignature();
 			parser.parseAsClassSignature(sig);
 		}
@@ -49,11 +49,11 @@ public class GenericSignatureParserTest extends TestCase {
 				"java.lang.InheritableThreadLocal", "java.lang.ThreadLocal", "java.util.Collection", "java.util.Comparator",
 				"java.util.Enumeration", "java.util.Iterator", "java.util.List", "java.util.ListIterator", "java.util.Map",
 				"java.util.Map$Entry", "java.util.Queue", "java.util.Set", "java.util.SortedMap", "java.util.SortedSet" };
-		for (int i = 0; i < testClasses.length; i++) {
-			JavaClass jc = repository.loadClass(testClasses[i]);
+		for (String testClass : testClasses) {
+			JavaClass jc = repository.loadClass(testClass);
 			Method[] methods = jc.getMethods();
-			for (int j = 0; j < methods.length; j++) {
-				String sig = methods[j].getGenericSignature();
+			for (Method method : methods) {
+				String sig = method.getGenericSignature();
 				if (sig != null)
 					parser.parseAsMethodSignature(sig);
 			}

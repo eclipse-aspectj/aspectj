@@ -966,8 +966,8 @@ public final class LazyMethodGen implements Traceable {
 		}
 		MethodGen gen = new MethodGen(flags, getReturnType(), getArgumentTypes(), null, // getArgumentNames(),
 				getName(), getEnclosingClass().getName(), new InstructionList(), getEnclosingClass().getConstantPool());
-		for (int i = 0, len = declaredExceptions.length; i < len; i++) {
-			gen.addException(declaredExceptions[i]);
+		for (String declaredException : declaredExceptions) {
+			gen.addException(declaredException);
 		}
 
 		for (Attribute attr : attributes) {
@@ -983,17 +983,17 @@ public final class LazyMethodGen implements Traceable {
 		if (newParameterAnnotations != null) {
 			for (int i = 0; i < newParameterAnnotations.length; i++) {
 				AnnotationAJ[] annos = newParameterAnnotations[i];
-				for (int j = 0; j < annos.length; j++) {
+				for (AnnotationAJ anno : annos) {
 					gen.addParameterAnnotation(i,
-							new AnnotationGen(((BcelAnnotation) annos[j]).getBcelAnnotation(), gen.getConstantPool(), true));
+							new AnnotationGen(((BcelAnnotation) anno).getBcelAnnotation(), gen.getConstantPool(), true));
 				}
 			}
 		}
 
 		if (memberView != null && memberView.getAnnotations() != null && memberView.getAnnotations().length != 0) {
 			AnnotationAJ[] ans = memberView.getAnnotations();
-			for (int i = 0, len = ans.length; i < len; i++) {
-				AnnotationGen a = ((BcelAnnotation) ans[i]).getBcelAnnotation();
+			for (AnnotationAJ an : ans) {
+				AnnotationGen a = ((BcelAnnotation) an).getBcelAnnotation();
 				gen.addAnnotation(new AnnotationGen(a, gen.getConstantPool(), true));
 			}
 		}
@@ -1315,8 +1315,8 @@ public final class LazyMethodGen implements Traceable {
 		int paramSlots = gen.isStatic() ? 0 : 1;
 		Type[] argTypes = gen.getArgumentTypes();
 		if (argTypes != null) {
-			for (int i = 0; i < argTypes.length; i++) {
-				if (argTypes[i].getSize() == 2) {
+			for (Type argType : argTypes) {
+				if (argType.getSize() == 2) {
 					paramSlots += 2;
 				} else {
 					paramSlots += 1;

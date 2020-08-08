@@ -89,9 +89,9 @@ public class SampleGatherer {
             return;
         }
         Samples result = new Samples();
-        for (int i = 0; i < args.length; i++) {
-            result = gather(new File(args[i]), result);
-        }
+		for (String arg : args) {
+			result = gather(new File(arg), result);
+		}
 
         StringBuffer sb = HTMLSamplesRenderer.ME.render(result, null);
 
@@ -144,9 +144,9 @@ public class SampleGatherer {
             }
         } else if (source.isDirectory() && source.canRead()) {
             File[] files = source.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                doGather(files[i], sink);
-            }
+			for (File file : files) {
+				doGather(file, sink);
+			}
         }
     }
 
@@ -156,11 +156,11 @@ public class SampleGatherer {
         }
         String path = file.getName().toLowerCase();
         String[] suffixes = Sample.Kind.SOURCE_SUFFIXES;
-        for (int i = 0; i < suffixes.length; i++) {
-            if (path.endsWith(suffixes[i])) {
-                return true;
-            }
-        }
+		for (String suffix : suffixes) {
+			if (path.endsWith(suffix)) {
+				return true;
+			}
+		}
         return false;
     }
 
@@ -451,7 +451,8 @@ class SamplesRenderer {
 
     public static final String COPYRIGHT =
         "<p><small>Copyright 2003 Contributors. All Rights Reserved. "
-        + "This sample code is made available under the Common Public "        + "License version 1.0 available at "
+        + "This sample code is made available under the Common Public "
+        + "License version 1.0 available at "
         + "<a href=\"http://www.eclipse.org/legal/epl-v10.html\">"
         + "http://www.eclipse.org/legal/epl-v10.html</a>."
         + "Contributors are listed in this document as authors. "
@@ -473,18 +474,16 @@ class SamplesRenderer {
         startList(samples, sink);
         List<Sample> list = samples.getSortedSamples();
         String anchorName = null;
-        for (ListIterator<Sample> iter = list.listIterator();
-            iter.hasNext();) {
-            Sample sample = iter.next();
-            String newAnchorName = sample.anchorName;
-            if ((null == anchorName)
-                || (!anchorName.equals(newAnchorName))) {
-                endAnchorName(anchorName, sink);
-                startAnchorName(newAnchorName, sample.anchorTitle, sink);
-                anchorName = newAnchorName;
-            }
-            render(sample, sink);
-        }
+		for (Sample sample : list) {
+			String newAnchorName = sample.anchorName;
+			if ((null == anchorName)
+					|| (!anchorName.equals(newAnchorName))) {
+				endAnchorName(anchorName, sink);
+				startAnchorName(newAnchorName, sample.anchorTitle, sink);
+				anchorName = newAnchorName;
+			}
+			render(sample, sink);
+		}
         endAnchorName(anchorName, sink);
         endList(samples, sink);
         return sink;
@@ -605,17 +604,16 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         sampleSection.append(EOL);
         if (doFlags) {
             boolean flagHeaderDone = false;
-            for (Iterator iter = sample.flags.iterator(); iter.hasNext();) {
-                String flag = (String) iter.next();
-                if (!flagHeaderDone) {
-                    sampleSection.append("<p>Comments flagged:<ul>");
-                    sampleSection.append(EOL);
-                    flagHeaderDone = true;
-                }
-                sampleSection.append("<li>");
-                sampleSection.append(flag);
-                sampleSection.append("</li>");
-            }
+			for (String flag : sample.flags) {
+				if (!flagHeaderDone) {
+					sampleSection.append("<p>Comments flagged:<ul>");
+					sampleSection.append(EOL);
+					flagHeaderDone = true;
+				}
+				sampleSection.append("<li>");
+				sampleSection.append(flag);
+				sampleSection.append("</li>");
+			}
             if (flagHeaderDone) {
                 sampleSection.append("</ul>");
                 sampleSection.append(EOL);
@@ -779,30 +777,29 @@ class HTMLSamplesRenderer extends SamplesRenderer {
         sink.append("<h2><a name=\"authorIndex\"></a>Author Index</h2>");
         List<Sample> list = samples.getSortedSamples(Sample.AUTHOR_NAME_SOURCE_COMPARER);
         String lastAuthor = null;
-        for (ListIterator<Sample> iter = list.listIterator(); iter.hasNext();) {
-            Sample sample = iter.next();
-            String author = sample.author;
-            if (!author.equals(lastAuthor)) {
-                if (null != lastAuthor) {
-                    sink.append("</li></ul>");
-                }
-                sink.append("<li>");
-                sink.append(author);
-                sink.append(EOL);
-                sink.append("<ul>");
-                sink.append(EOL);
-                lastAuthor = author;
-            }
-            sink.append("    <li><a href=\"#");
-            sink.append(sample.anchorName);
-            sink.append("\">");
-            if (null == sample.anchorTitle) {
-                sink.append(sample.anchorName);
-            } else {
-                sink.append(sample.anchorTitle);
-            }
-            sink.append("</a></li>");
-        }
+		for (Sample sample : list) {
+			String author = sample.author;
+			if (!author.equals(lastAuthor)) {
+				if (null != lastAuthor) {
+					sink.append("</li></ul>");
+				}
+				sink.append("<li>");
+				sink.append(author);
+				sink.append(EOL);
+				sink.append("<ul>");
+				sink.append(EOL);
+				lastAuthor = author;
+			}
+			sink.append("    <li><a href=\"#");
+			sink.append(sample.anchorName);
+			sink.append("\">");
+			if (null == sample.anchorTitle) {
+				sink.append(sample.anchorName);
+			} else {
+				sink.append(sample.anchorTitle);
+			}
+			sink.append("</a></li>");
+		}
     }
 }
 
@@ -812,11 +809,10 @@ class SampleUtil {
     public static void simpleRender(Samples result, StringBuffer sink) {
         List sortedSamples = result.getSortedSamples();
         int i = 0;
-        for (ListIterator iter = sortedSamples.listIterator();
-            iter.hasNext();) {
-            Sample sample = (Sample) iter.next();
-            sink.append(i++ + ": " + sample);
-        }
+		for (Object sortedSample : sortedSamples) {
+			Sample sample = (Sample) sortedSample;
+			sink.append(i++ + ": " + sample);
+		}
     }
 
     /** result struct for getPackagePath */

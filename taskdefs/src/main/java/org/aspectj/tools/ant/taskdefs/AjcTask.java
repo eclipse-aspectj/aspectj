@@ -1161,9 +1161,9 @@ public class AjcTask extends MatchingTask {
 	String[] makeCommand() {
 		ArrayList result = new ArrayList();
 		if (0 < ignored.size()) {
-			for (Iterator iter = ignored.iterator(); iter.hasNext();) {
-				logVerbose("ignored: " + iter.next());
-			}
+            for (Object o : ignored) {
+                logVerbose("ignored: " + o);
+            }
 		}
 		// when copying resources, use temp jar for class output
 		// then copy temp jar contents and resources to output jar
@@ -1576,14 +1576,15 @@ public class AjcTask extends MatchingTask {
 			}
 		}
 		if (0 < adapterFiles.size()) {
-			for (Iterator iter = adapterFiles.iterator(); iter.hasNext();) {
-				File file = (File) iter.next();
-				if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
-					list.add(file.getAbsolutePath());
-				} else {
-					this.logger.warning("skipping file: " + file);
-				}
-			}
+            for (Object adapterFile : adapterFiles) {
+                File file = (File) adapterFile;
+                if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
+                    list.add(file.getAbsolutePath());
+                }
+                else {
+                    this.logger.warning("skipping file: " + file);
+                }
+            }
 		}
 	}
 

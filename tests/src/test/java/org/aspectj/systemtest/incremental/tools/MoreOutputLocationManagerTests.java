@@ -68,8 +68,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		Map<String,File> classNameToFileMap = state.getClassNameToFileMap();
 		assertFalse("expected there to be classes ", classNameToFileMap.isEmpty());
 		Set<Map.Entry<String,File>> entrySet = classNameToFileMap.entrySet();
-		for (Iterator<Map.Entry<String,File>> iterator = entrySet.iterator(); iterator.hasNext();) {
-			Map.Entry<String,File> entry = iterator.next();
+		for (Map.Entry<String, File> entry : entrySet) {
 			String className = entry.getKey();
 			String fullClassName = expectedOutputDir + File.separator + className.replace('.', File.separatorChar) + ".class";
 			File file = entry.getValue();

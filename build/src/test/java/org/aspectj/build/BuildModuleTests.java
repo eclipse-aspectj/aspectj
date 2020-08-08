@@ -114,8 +114,8 @@ public class BuildModuleTests extends TestCase {
     public void testLicense_org_eclipse_jdt_core() {
         final String mod = "org.eclipse.jdt.core";
         final String pre = BASE_DIR + mod + File.separator;
-        for (int i = 0; i < JDT_SOURCE_DIRS.length; i++) {
-            checkSourceDirectory(new File(pre + JDT_SOURCE_DIRS[i]), mod);    
+		for (String jdtSourceDir : JDT_SOURCE_DIRS) {
+			checkSourceDirectory(new File(pre + jdtSourceDir), mod);
 		}
     }
     
@@ -167,10 +167,10 @@ public class BuildModuleTests extends TestCase {
     void checkLicense(String module) {
         File moduleDir = new File(Util.path("..", module));
         File[] srcDirs = findSourceRoots(moduleDir);
-        for (int i = 0; i < srcDirs.length; i++) {
-        	System.out.println(srcDirs[i]);
-            checkSourceDirectory(srcDirs[i], module);
-        }
+		for (File srcDir : srcDirs) {
+			System.out.println(srcDir);
+			checkSourceDirectory(srcDir, module);
+		}
     }
     
     void checkSourceDirectory(File srcDir, String module) {
@@ -294,17 +294,16 @@ public class BuildModuleTests extends TestCase {
         }
         void unknownFiles(File dir, ArrayList<File> results) {
             File[] files = dir.listFiles(this);
-            for (int j = 0; j < files.length; j++) {
-                File file = files[j];
-                if (file.isDirectory()) {
-                    String name = file.getName();
-                    if (!("CVS".equals(name))) {
-                        unknownFiles(file, results);
-                    }
-                } else {
-                    results.add(file);
-                }
-            }
+			for (File file : files) {
+				if (file.isDirectory()) {
+					String name = file.getName();
+					if (!("CVS".equals(name))) {
+						unknownFiles(file, results);
+					}
+				} else {
+					results.add(file);
+				}
+			}
         }
         
     }

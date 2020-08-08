@@ -131,14 +131,14 @@ public class BoundedReferenceType extends ReferenceType {
 		if (kind==SUPER){
 			ret.append("-");
 			ret.append(lowerBound.getSignatureForAttribute());
-			for (int i=0;i<additionalInterfaceBounds.length;i++) {
-				ret.append(additionalInterfaceBounds[i].getSignatureForAttribute());
+			for (ReferenceType additionalInterfaceBound : additionalInterfaceBounds) {
+				ret.append(additionalInterfaceBound.getSignatureForAttribute());
 			}
 		} else if (kind==EXTENDS) {
 			ret.append("+");
 			ret.append(upperBound.getSignatureForAttribute());
-			for (int i=0;i<additionalInterfaceBounds.length;i++) {
-				ret.append(additionalInterfaceBounds[i].getSignatureForAttribute());
+			for (ReferenceType additionalInterfaceBound : additionalInterfaceBounds) {
+				ret.append(additionalInterfaceBound.getSignatureForAttribute());
 			}
 		} else if (kind==UNBOUND) {
 			ret.append("*");

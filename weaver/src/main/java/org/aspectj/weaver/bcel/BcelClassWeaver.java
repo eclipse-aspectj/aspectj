@@ -187,10 +187,10 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private void initializeSuperInitializerMap(ResolvedType child) {
 		ResolvedType[] superInterfaces = child.getDeclaredInterfaces();
-		for (int i = 0, len = superInterfaces.length; i < len; i++) {
-			if (ty.getResolvedTypeX().isTopmostImplementor(superInterfaces[i])) {
-				if (addSuperInitializer(superInterfaces[i])) {
-					initializeSuperInitializerMap(superInterfaces[i]);
+		for (ResolvedType superInterface : superInterfaces) {
+			if (ty.getResolvedTypeX().isTopmostImplementor(superInterface)) {
+				if (addSuperInitializer(superInterface)) {
+					initializeSuperInitializerMap(superInterface);
 				}
 			}
 		}
@@ -512,8 +512,8 @@ class BcelClassWeaver implements IClassWeaver {
 
 		// now proceed with late type mungers
 		if (lateTypeMungers != null) {
-			for (Iterator<ConcreteTypeMunger> i = lateTypeMungers.iterator(); i.hasNext();) {
-				BcelTypeMunger munger = (BcelTypeMunger) i.next();
+			for (ConcreteTypeMunger lateTypeMunger : lateTypeMungers) {
+				BcelTypeMunger munger = (BcelTypeMunger) lateTypeMunger;
 				if (munger.matches(clazz.getType())) {
 					boolean typeMungerAffectedType = munger.munge(this);
 					if (typeMungerAffectedType) {
@@ -723,9 +723,8 @@ class BcelClassWeaver implements IClassWeaver {
 		boolean inSamePackage = packageName.equals(mpkg);
 
 		ResolvedMember[] methods = typeToCheck.getDeclaredMethods();
-		for (int ii = 0; ii < methods.length; ii++) {
+		for (ResolvedMember methodThatMightBeGettingOverridden : methods) {
 			// the method we are going to check
-			ResolvedMember methodThatMightBeGettingOverridden = methods[ii];
 			ResolvedMember isOverriding = isOverriding(typeToCheck, methodThatMightBeGettingOverridden, mname, mrettype, mmods,
 					inSamePackage, methodParamsArray);
 			if (isOverriding != null) {
@@ -735,8 +734,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// was: List l = typeToCheck.getInterTypeMungers();
 		List<ConcreteTypeMunger> l = (typeToCheck.isRawType() ? typeToCheck.getGenericType().getInterTypeMungers() : typeToCheck
 				.getInterTypeMungers());
-		for (Iterator<ConcreteTypeMunger> iterator = l.iterator(); iterator.hasNext();) {
-			ConcreteTypeMunger o = iterator.next();
+		for (ConcreteTypeMunger o : l) {
 			// FIXME asc if its not a BcelTypeMunger then its an
 			// EclipseTypeMunger ... do I need to worry about that?
 			if (o instanceof BcelTypeMunger) {
@@ -763,9 +761,8 @@ class BcelClassWeaver implements IClassWeaver {
 		checkForOverride(superclass, mname, mparams, mrettype, mmods, mpkg, methodParamsArray,overriddenMethodsCollector);
 
 		ResolvedType[] interfaces = typeToCheck.getDeclaredInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			ResolvedType anInterface = interfaces[i];
-			checkForOverride(anInterface, mname, mparams, mrettype, mmods, mpkg, methodParamsArray,overriddenMethodsCollector);
+		for (ResolvedType anInterface : interfaces) {
+			checkForOverride(anInterface, mname, mparams, mrettype, mmods, mpkg, methodParamsArray, overriddenMethodsCollector);
 		}
 	}
 
@@ -793,17 +790,15 @@ class BcelClassWeaver implements IClassWeaver {
 		// Keep a set of all methods from this type - it'll help us to check if bridge methods
 		// have already been created, we don't want to do it twice!
 		Set<String> methodsSet = new HashSet<String>();
-		for (int i = 0; i < methods.size(); i++) {
-			LazyMethodGen aMethod = methods.get(i);
+		for (LazyMethodGen aMethod : methods) {
 			StringBuilder sb = new StringBuilder(aMethod.getName());
 			sb.append(aMethod.getSignature());
 			methodsSet.add(sb.toString()); // e.g. "foo(Ljava/lang/String;)V"
 		}
 
 		// Now go through all the methods in this type
-		for (int i = 0; i < methods.size(); i++) {
+		for (LazyMethodGen bridgeToCandidate : methods) {
 			// This is the local method that we *might* have to bridge to
-			LazyMethodGen bridgeToCandidate = methods.get(i);
 			if (bridgeToCandidate.isBridgeMethod()) {
 				continue; // Doh!
 			}
@@ -833,7 +828,7 @@ class BcelClassWeaver implements IClassWeaver {
 			List<ResolvedMember> overriddenMethodsCollector = new ArrayList<ResolvedMember>();
 			checkForOverride(theSuperclass, name, psig, rsig, bridgeToCandidate.getAccessFlags(), pkgName, bm, overriddenMethodsCollector);
 			if (overriddenMethodsCollector.size() != 0) {
-				for (ResolvedMember overriddenMethod: overriddenMethodsCollector) {
+				for (ResolvedMember overriddenMethod : overriddenMethodsCollector) {
 					String key = new StringBuilder(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
 					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 					if (!alreadyHaveABridgeMethod) {
@@ -849,15 +844,15 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// Check superinterfaces
 			String[] interfaces = clazz.getInterfaceNames();
-			for (int j = 0; j < interfaces.length; j++) {
+			for (String anInterface : interfaces) {
 				if (world.forDEBUG_bridgingCode) {
-					System.err.println("Bridging:checking superinterface " + interfaces[j]);
+					System.err.println("Bridging:checking superinterface " + anInterface);
 				}
-				ResolvedType interfaceType = world.resolve(interfaces[j]);
+				ResolvedType interfaceType = world.resolve(anInterface);
 				overriddenMethodsCollector.clear();
 				checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
 						clazz.getPackageName(), bm, overriddenMethodsCollector);
-				for (ResolvedMember overriddenMethod: overriddenMethodsCollector) {
+				for (ResolvedMember overriddenMethod : overriddenMethodsCollector) {
 					String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
 					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 					if (!alreadyHaveABridgeMethod) {
@@ -1198,14 +1193,13 @@ class BcelClassWeaver implements IClassWeaver {
 	private boolean weaveAtFieldRepeatedly(List<DeclareAnnotation> decaFs, List<ConcreteTypeMunger> itdFields,
 			List<Integer> reportedErrors) {
 		boolean isChanged = false;
-		for (Iterator<ConcreteTypeMunger> iter = itdFields.iterator(); iter.hasNext();) {
-			BcelTypeMunger fieldMunger = (BcelTypeMunger) iter.next();
+		for (ConcreteTypeMunger itdField : itdFields) {
+			BcelTypeMunger fieldMunger = (BcelTypeMunger) itdField;
 			ResolvedMember itdIsActually = fieldMunger.getSignature();
 			Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<DeclareAnnotation>();
 			boolean modificationOccured = false;
 
-			for (Iterator<DeclareAnnotation> iter2 = decaFs.iterator(); iter2.hasNext();) {
-				DeclareAnnotation decaF = iter2.next();
+			for (DeclareAnnotation decaF : decaFs) {
 				if (decaF.matches(itdIsActually, world)) {
 					if (decaF.isRemover()) {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
@@ -1242,8 +1236,7 @@ class BcelClassWeaver implements IClassWeaver {
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
 				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
-				for (Iterator<DeclareAnnotation> iter2 = worthRetrying.iterator(); iter2.hasNext();) {
-					DeclareAnnotation decaF = iter2.next();
+				for (DeclareAnnotation decaF : worthRetrying) {
 					if (decaF.matches(itdIsActually, world)) {
 						if (decaF.isRemover()) {
 							LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, fieldMunger);
@@ -1290,8 +1283,7 @@ class BcelClassWeaver implements IClassWeaver {
 			List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
 			boolean modificationOccured = false;
 
-			for (Iterator<DeclareAnnotation> iter2 = decaMCs.iterator(); iter2.hasNext();) {
-				DeclareAnnotation decaMC = iter2.next();
+			for (DeclareAnnotation decaMC : decaMCs) {
 				if (decaMC.matches(unMangledInterMethod, world)) {
 					LazyMethodGen annotationHolder = locateAnnotationHolderForMethodCtorMunger(clazz, methodctorMunger);
 					if (annotationHolder == null
@@ -1315,8 +1307,7 @@ class BcelClassWeaver implements IClassWeaver {
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
 				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
-				for (Iterator<DeclareAnnotation> iter2 = worthRetrying.iterator(); iter2.hasNext();) {
-					DeclareAnnotation decaMC = iter2.next();
+				for (DeclareAnnotation decaMC : worthRetrying) {
 					if (decaMC.matches(unMangledInterMethod, world)) {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, methodctorMunger);
 						if (doesAlreadyHaveAnnotation(annotationHolder, unMangledInterMethod, decaMC, reportedErrors)) {
@@ -1453,9 +1444,7 @@ class BcelClassWeaver implements IClassWeaver {
 						modificationOccured = false;
 						// lets have another go with any remaining ones
 						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
-						for (Iterator<DeclareAnnotation> iter = worthRetrying.iterator(); iter.hasNext();) {
-							DeclareAnnotation decaF = iter.next();
-
+						for (DeclareAnnotation decaF : worthRetrying) {
 							if (decaF.matches(field, world)) {
 								if (decaF.isRemover()) {
 									AnnotationAJ annotation = decaF.getAnnotation();
@@ -1471,7 +1460,7 @@ class BcelClassWeaver implements IClassWeaver {
 								} else {
 									// below code is for recursive things
 									unusedDecafs.remove(decaF);
-									if (doesAlreadyHaveAnnotation(field, decaF, reportedProblems,true)) {
+									if (doesAlreadyHaveAnnotation(field, decaF, reportedProblems, true)) {
 										continue;
 									}
 									field.addAnnotation(decaF.getAnnotation());
@@ -1806,8 +1795,7 @@ class BcelClassWeaver implements IClassWeaver {
 					// the load instruction
 					// (so we never jump over the monitorexit logic)
 
-					for (Iterator<InstructionHandle> iter = rets.iterator(); iter.hasNext();) {
-						InstructionHandle element = iter.next();
+					for (InstructionHandle element : rets) {
 						InstructionList monitorExitBlock = new InstructionList();
 						monitorExitBlock.append(InstructionFactory.createLoad(enclosingClassType, slotForLockObject));
 						monitorExitBlock.append(InstructionConstants.MONITOREXIT);
@@ -2125,8 +2113,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// load instruction
 				// (so we never jump over the monitorexit logic)
 
-				for (Iterator<InstructionHandle> iter = rets.iterator(); iter.hasNext();) {
-					InstructionHandle element = iter.next();
+				for (InstructionHandle element : rets) {
 					// System.err.println("Adding monitor exit block at "+element
 					// );
 					InstructionList monitorExitBlock = new InstructionList();
@@ -2560,8 +2547,7 @@ class BcelClassWeaver implements IClassWeaver {
 			donorFramePos += 1;
 		}
 		Type[] argTypes = donor.getArgumentTypes();
-		for (int i = 0, len = argTypes.length; i < len; i++) {
-			Type argType = argTypes[i];
+		for (Type argType : argTypes) {
 			int argSlot = recipient.allocateLocal(argType);
 			ret.insert(InstructionFactory.createStore(argType, argSlot));
 			frameEnv.put(donorFramePos, argSlot);
@@ -2747,9 +2733,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// now add interface inits
 		if (!isThisCall(superOrThisCall)) {
 			InstructionHandle curr = enclosingShadow.getRange().getStart();
-			for (Iterator<IfaceInitList> i = addedSuperInitializersAsList.iterator(); i.hasNext();) {
-				IfaceInitList l = i.next();
-
+			for (IfaceInitList l : addedSuperInitializersAsList) {
 				Member ifaceInitSig = AjcMemberMaker.interfaceConstructor(l.onType);
 
 				BcelShadow initShadow = BcelShadow.makeIfaceInitialization(world, mg, ifaceInitSig);
@@ -3041,8 +3025,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	private ResolvedMember findResolvedMemberNamed(ResolvedType type, String methodName) {
 		ResolvedMember[] allMethods = type.getDeclaredMethods();
-		for (int i = 0; i < allMethods.length; i++) {
-			ResolvedMember member = allMethods[i];
+		for (ResolvedMember member : allMethods) {
 			if (member.getName().equals(methodName)) {
 				return member;
 			}
@@ -3060,8 +3043,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private ResolvedMember findResolvedMemberNamed(ResolvedType type, String methodName, UnresolvedType[] params) {
 		ResolvedMember[] allMethods = type.getDeclaredMethods();
 		List<ResolvedMember> candidates = new ArrayList<ResolvedMember>();
-		for (int i = 0; i < allMethods.length; i++) {
-			ResolvedMember candidate = allMethods[i];
+		for (ResolvedMember candidate : allMethods) {
 			if (candidate.getName().equals(methodName)) {
 				if (candidate.getArity() == params.length) {
 					candidates.add(candidate);

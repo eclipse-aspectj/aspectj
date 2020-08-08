@@ -246,9 +246,9 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		JavaClass jc = Utils.getClassFrom(ajc.getSandboxDirectory().getAbsolutePath(), "Test");
 		Method[] ms = jc.getMethods();
 		Method m = null;
-		for (int i = 0; i < ms.length; i++) {
-			if (ms[i].getName().equals("sayHello")) {
-				m = ms[i];
+		for (Method method : ms) {
+			if (method.getName().equals("sayHello")) {
+				m = method;
 			}
 		}
 		if (m.getLocalVariableTable() == null) {
@@ -310,8 +310,7 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	private void print(LocalVariableTable localVariableTable) {
 		LocalVariable[] lvs = localVariableTable.getLocalVariableTable();
-		for (int i = 0; i < lvs.length; i++) {
-			LocalVariable localVariable = lvs[i];
+		for (LocalVariable localVariable : lvs) {
 			System.out.println(localVariable);
 		}
 	}

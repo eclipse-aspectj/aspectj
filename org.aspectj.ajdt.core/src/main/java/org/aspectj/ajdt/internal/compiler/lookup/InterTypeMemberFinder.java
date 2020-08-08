@@ -53,8 +53,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		}
 		int fieldLength = fieldName.length;
 
-		for (int i = 0, len = interTypeFields.size(); i < len; i++) {
-			FieldBinding field = interTypeFields.get(i);
+		for (FieldBinding field : interTypeFields) {
 			if (field.name.length == fieldLength && CharOperation.prefixEquals(field.name, fieldName)) {
 				retField = resolveConflicts(sourceTypeBinding, retField, field, site, scope);
 			}
@@ -256,15 +255,14 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		// if (interTypeMethods.isEmpty()) return orig;
 
 		List<MethodBinding> ret = new ArrayList<MethodBinding>(Arrays.asList(orig));
-		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = interTypeMethods.get(i);
+		for (MethodBinding method : interTypeMethods) {
 			ret.add(method);
 		}
 
 		ReferenceBinding[] interfaces = sourceTypeBinding.superInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			if (interfaces[i] instanceof SourceTypeBinding) {
-				SourceTypeBinding intSTB = (SourceTypeBinding) interfaces[i];
+		for (ReferenceBinding anInterface : interfaces) {
+			if (anInterface instanceof SourceTypeBinding) {
+				SourceTypeBinding intSTB = (SourceTypeBinding) anInterface;
 				addPublicITDSFrom(intSTB, ret);
 			}
 		}
@@ -304,9 +302,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		Set<MethodBinding> ret = new HashSet<MethodBinding>(Arrays.asList(orig));
 		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
 
-		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding method = interTypeMethods.get(i);
-
+		for (MethodBinding method : interTypeMethods) {
 			if (CharOperation.equals(selector, method.selector)) {
 				ret.add(method);
 			}
@@ -341,8 +337,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		MethodBinding ret = sourceTypeBinding.getExactMethodBase(selector, argumentTypes, refScope);
 
 		// An intertype declaration may override an inherited member (Bug#50776)
-		for (int i = 0, len = interTypeMethods.size(); i < len; i++) {
-			MethodBinding im = interTypeMethods.get(i);
+		for (MethodBinding im : interTypeMethods) {
 			if (matches(im, selector, argumentTypes)) {
 				return im;
 			}

@@ -85,8 +85,7 @@ public abstract class AjdeCoreTestCase extends TestCase {
 		String contents[] = from.list();
 		if (contents == null)
 			return;
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(from, string);
 			File t = new File(to, string);
 
@@ -141,8 +140,8 @@ public abstract class AjdeCoreTestCase extends TestCase {
 
 	public List<String> getSourceFileList(String[] files) {
 		List<String> sourceFiles = new ArrayList<String>();
-		for (int i = 0; i < files.length; i++) {
-			sourceFiles.add(getAbsoluteProjectDir() + File.separator + files[i]);
+		for (String file : files) {
+			sourceFiles.add(getAbsoluteProjectDir() + File.separator + file);
 		}
 		return sourceFiles;
 	}

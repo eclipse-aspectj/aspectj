@@ -208,8 +208,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		// Check if already there
 		IProgramElement sourceFolderNode = null;
 		List<IProgramElement> kids = root.getChildren();
-		for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement child = (IProgramElement) iterator.next();
+		for (IProgramElement child : kids) {
 			if (child.getKind() == IProgramElement.Kind.SOURCE_FOLDER && child.getName().equals(sourceFolder)) {
 				sourceFolderNode = child;
 				break;
@@ -265,8 +264,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			IProgramElement pkgNode = null;
 			if (structureModel != null && structureModel.getHierarchy().getRoot() != null && rootForSource.getChildren() != null) {
-				for (Iterator<IProgramElement> it = rootForSource.getChildren().iterator(); it.hasNext();) {
-					IProgramElement currNode = (IProgramElement) it.next();
+				for (IProgramElement currNode : rootForSource.getChildren()) {
 					if (pkgName.equals(currNode.getName())) {
 						pkgNode = currNode;
 						break;
@@ -641,9 +639,9 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		}
 		ResolvedMember[] members = onType.resolve(world).getDeclaredPointcuts();
 		if (members != null) {
-			for (int i = 0; i < members.length; i++) {
-				if (members[i].getName().equals(rp.name)) {
-					return members[i];
+			for (ResolvedMember member : members) {
+				if (member.getName().equals(rp.name)) {
+					return member;
 				}
 			}
 		}

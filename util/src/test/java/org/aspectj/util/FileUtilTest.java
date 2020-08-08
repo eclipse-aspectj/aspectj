@@ -166,13 +166,13 @@ public class FileUtilTest extends TestCase {
 			return;
 		}
 		File[] files = dir.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			String path = files[i].getPath();
-			if (!files[i].getName().startsWith(".")) {
-				if (files[i].isFile()) {
+		for (File file : files) {
+			String path = file.getPath();
+			if (!file.getName().startsWith(".")) {
+				if (file.isFile()) {
 					paths.add(path);
-				} else if (files[i].isDirectory()) {
-					doDirPaths(files[i], paths);
+				} else if (file.isDirectory()) {
+					doDirPaths(file, paths);
 				} else {
 					log("not file or dir: " + dir + "/" + path);
 				}
@@ -325,8 +325,8 @@ public class FileUtilTest extends TestCase {
 
 	public void testGetURL() {
 		String[] args = new String[] { ".", "../util/testdata", "../lib/test/aspectjrt.jar" };
-		for (int i = 0; i < args.length; i++) {
-			checkGetURL(args[i]);
+		for (String arg : args) {
+			checkGetURL(arg);
 		}
 	}
 
@@ -496,8 +496,8 @@ public class FileUtilTest extends TestCase {
 			sb.append(LangUtil.EOL);
 		}
 		final String contents = sb.toString();
-		for (int i = 0; i < sources.length; i++) {
-			File file = new File(sources[i]);
+		for (String source : sources) {
+			File file = new File(source);
 			FileUtil.writeAsString(file, contents);
 			tempFiles.add(file);
 		}
@@ -588,9 +588,9 @@ public class FileUtilTest extends TestCase {
 		assertTrue(d.exists());
 		tempFiles.add(d);
 		assertTrue(d.canWrite());
-		for (int i = 0; i < filenames.length; i++) {
-			File f = new File(d, filenames[i]);
-			assertTrue(filenames[i], f.createNewFile());
+		for (String filename : filenames) {
+			File f = new File(d, filename);
+			assertTrue(filename, f.createNewFile());
 		}
 		return d;
 	}

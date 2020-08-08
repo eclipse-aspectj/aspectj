@@ -277,15 +277,13 @@ public abstract class WeaveTestCase extends TestCase {
 	// ----
 
 	protected void weaveTest(String[] inClassNames, String outKind, ShadowMunger patternMunger) throws IOException {
-		for (int i = 0; i < inClassNames.length; i++) {
-			String inFileName = inClassNames[i];
+		for (String inFileName : inClassNames) {
 			weaveTest(inFileName, outKind + inFileName, patternMunger);
 		}
 	}
 
 	protected void weaveTest(String[] inClassNames, String outKind, List<ShadowMunger> patternMungers) throws IOException {
-		for (int i = 0; i < inClassNames.length; i++) {
-			String inFileName = inClassNames[i];
+		for (String inFileName : inClassNames) {
 			weaveTest(inFileName, outKind + inFileName, patternMungers);
 		}
 	}
@@ -300,17 +298,18 @@ public abstract class WeaveTestCase extends TestCase {
 
 	// XXX cut-and-paster from IdWeaveTestCase
 	public void checkShadowSet(List l, String[] ss) {
-		outer: for (int i = 0, len = ss.length; i < len; i++) {
+		outer:
+		for (String s : ss) {
 			// inner:
-			for (Iterator j = l.iterator(); j.hasNext();) {
+			for (Iterator j = l.iterator(); j.hasNext(); ) {
 				BcelShadow shadow = (BcelShadow) j.next();
 				String shadowString = shadow.toString();
-				if (shadowString.equals(ss[i])) {
+				if (shadowString.equals(s)) {
 					j.remove();
 					continue outer;
 				}
 			}
-			assertTrue("didn't find " + ss[i] + " in " + l, false);
+			assertTrue("didn't find " + s + " in " + l, false);
 		}
 		assertTrue("too many things in " + l, l.size() == 0);
 	}

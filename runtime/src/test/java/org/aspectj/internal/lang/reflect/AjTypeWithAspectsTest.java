@@ -146,9 +146,9 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals(10,ms.length);
         //AV was corrupted, cannot rely on ordering
         String match = "";
-        for (int i = 0; i < ms.length; i++) {
-            match = match + "--" + ms[i].getName();
-        }
+		for (Method m : ms) {
+			match = match + "--" + m.getName();
+		}
 		assertTrue(match.indexOf("aMethod") >=0);
 	}
 	

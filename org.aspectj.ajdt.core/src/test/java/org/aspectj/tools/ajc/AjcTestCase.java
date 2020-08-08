@@ -1010,9 +1010,9 @@ public abstract class AjcTestCase extends TestCase {
 			buff.append("Unexpected ");
 			buff.append(type);
 			buff.append(" messages:\n");
-			for (Iterator iter = messages.iterator(); iter.hasNext();) {
+			for (Object message : messages) {
 				buff.append("\t");
-				buff.append(iter.next().toString());
+				buff.append(message.toString());
 				buff.append("\n");
 			}
 		}

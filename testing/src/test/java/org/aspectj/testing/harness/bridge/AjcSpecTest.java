@@ -122,8 +122,7 @@ public class AjcSpecTest extends TestCase {
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
 		boolean first = true;
-		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			Object o = iter.next();
+		for (Object o : list) {
 			if (!first) {
 				sb.append(", ");
 			} else {

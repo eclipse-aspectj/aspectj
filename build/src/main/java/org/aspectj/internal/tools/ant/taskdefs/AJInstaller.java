@@ -152,11 +152,10 @@ public class AJInstaller extends MatchingTask {
         StringBuffer buf = new StringBuffer();
         buf.append(contentsBytes);
         buf.append(NEWLINE);
-        for (Iterator<String> i = contentsNames.iterator(); i.hasNext(); ) {
-            String name = i.next();
-            buf.append(name);
-            buf.append(NEWLINE);
-        }
+		for (String name : contentsNames) {
+			buf.append(name);
+			buf.append(NEWLINE);
+		}
         zipFile(new StringBufferInputStream(buf.toString()), zOut, CONTENTS_FILE, System.currentTimeMillis());
     }
 
@@ -347,19 +346,19 @@ public class AJInstaller extends MatchingTask {
     }
 
     protected void writeDirs(ZipOutputStream zOut, String[] dirs) throws IOException {
-        for (int i = 0; i < dirs.length; i++) {
-            File f = new File(baseDir,dirs[i]);
-            String name = dirs[i].replace(File.separatorChar,'/')+"/";
-            zipDir(f, zOut, name);
-        }
+		for (String dir : dirs) {
+			File f = new File(baseDir, dir);
+			String name = dir.replace(File.separatorChar, '/') + "/";
+			zipDir(f, zOut, name);
+		}
     }
 
     protected void writeFiles(ZipOutputStream zOut, String[] files) throws IOException {
-        for (int i = 0; i < files.length; i++) {
-            File f = new File(baseDir,files[i]);
-            String name = files[i].replace(File.separatorChar,'/');
-            zipFile(f, zOut, name);
-        }
+		for (String file : files) {
+			File f = new File(baseDir, file);
+			String name = file.replace(File.separatorChar, '/');
+			zipFile(f, zOut, name);
+		}
     }
 
 }

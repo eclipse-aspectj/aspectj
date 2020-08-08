@@ -234,8 +234,8 @@ public class Lint {
 
 	@SuppressWarnings("rawtypes")
 	public void setFromProperties(Properties properties) {
-		for (Iterator i = properties.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
+		for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
+			Map.Entry entry = (Map.Entry) objectObjectEntry;
 			Kind kind = kinds.get(entry.getKey());
 			if (kind == null) {
 				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, entry.getKey()));

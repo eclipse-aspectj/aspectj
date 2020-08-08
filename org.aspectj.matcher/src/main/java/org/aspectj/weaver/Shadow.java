@@ -350,11 +350,11 @@ public abstract class Shadow {
 	 */
 	public static int howMany(int i) {
 		int count = 0;
-		for (int j = 0; j < SHADOW_KINDS.length; j++) {
-			if ((i & SHADOW_KINDS[j].bit) != 0) {
-				count++;
-			}
-		}
+        for (Kind shadowKind : SHADOW_KINDS) {
+            if ((i & shadowKind.bit) != 0) {
+                count++;
+            }
+        }
 		return count;
 	}
 
@@ -487,11 +487,11 @@ public abstract class Shadow {
 	 */
 	protected boolean checkMunger(ShadowMunger munger) {
 		if (munger.mustCheckExceptions()) {
-			for (Iterator<ResolvedType> i = munger.getThrownExceptions().iterator(); i.hasNext();) {
-				if (!checkCanThrow(munger, i.next())) {
-					return false;
-				}
-			}
+            for (ResolvedType resolvedType : munger.getThrownExceptions()) {
+                if (!checkCanThrow(munger, resolvedType)) {
+                    return false;
+                }
+            }
 		}
 		return true;
 	}
@@ -522,11 +522,11 @@ public abstract class Shadow {
 
 	private boolean isDeclaredException(ResolvedType resolvedTypeX, Member member) {
 		ResolvedType[] excs = getIWorld().resolve(member.getExceptions(getIWorld()));
-		for (int i = 0, len = excs.length; i < len; i++) {
-			if (excs[i].isAssignableFrom(resolvedTypeX)) {
-				return true;
-			}
-		}
+        for (ResolvedType exc : excs) {
+            if (exc.isAssignableFrom(resolvedTypeX)) {
+                return true;
+            }
+        }
 		return false;
 	}
 
@@ -608,13 +608,12 @@ public abstract class Shadow {
 					}
 				}
 			}
-			for (Iterator<String> iter = clashingAspects.iterator(); iter.hasNext();) {
-				String element = iter.next();
-				String aspect1 = element.substring(0, element.indexOf(":"));
-				String aspect2 = element.substring(element.indexOf(":") + 1);
-				getIWorld().getLint().unorderedAdviceAtShadow.signal(new String[] { this.toString(), aspect1, aspect2 },
-						this.getSourceLocation(), null);
-			}
+            for (String element : clashingAspects) {
+                String aspect1 = element.substring(0, element.indexOf(":"));
+                String aspect2 = element.substring(element.indexOf(":") + 1);
+                getIWorld().getLint().unorderedAdviceAtShadow.signal(new String[]{this.toString(), aspect1, aspect2},
+                        this.getSourceLocation(), null);
+            }
 		}
 	}
 

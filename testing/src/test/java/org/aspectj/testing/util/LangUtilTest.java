@@ -89,8 +89,8 @@ public class LangUtilTest extends TestCase {
         , new FTest("[1,2]", new String[] {"1,2"}, LIST)
         , new FTest("[1, 2, 3]", new String[] {"1","2","3"}, LIST)        
         };
-        for (int i = 0; i < tests.length; i++) {
-			checkUnflatten(tests[i]);
+		for (FTest test : tests) {
+			checkUnflatten(test);
 		}
     }
     

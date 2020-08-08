@@ -101,8 +101,8 @@ public class WildTypePattern extends TypePattern {
 		this.namePatterns = namePatterns;
 		this.dim = dim;
 		ellipsisCount = 0;
-		for (int i = 0; i < namePatterns.length; i++) {
-			if (namePatterns[i] == NamePattern.ELLIPSIS) {
+		for (NamePattern namePattern : namePatterns) {
+			if (namePattern == NamePattern.ELLIPSIS) {
 				ellipsisCount++;
 			}
 		}
@@ -341,14 +341,13 @@ public class WildTypePattern extends TypePattern {
 				// we've already ruled out "*", and no other name pattern should match an anonymous type
 				return false;
 			}
-			for (int i = 0, len = knownMatches.length; i < len; i++) {
-				if (knownMatches[i].equals(targetTypeName)) {
+			for (String knownMatch : knownMatches) {
+				if (knownMatch.equals(targetTypeName)) {
 					return true;
 				}
 			}
 		} else {
-			for (int i = 0, len = knownMatches.length; i < len; i++) {
-				String knownMatch = knownMatches[i];
+			for (String knownMatch : knownMatches) {
 				// String knownPrefix = knownMatches[i] + "$";
 				// if (targetTypeName.startsWith(knownPrefix)) {
 				if (targetTypeName.startsWith(knownMatch) && targetTypeName.length() > knownMatch.length()
@@ -363,8 +362,7 @@ public class WildTypePattern extends TypePattern {
 
 		// if any prefixes match, strip the prefix and check that the rest matches
 		// assumes that prefixes have a dot at the end
-		for (int i = 0, len = importedPrefixes.length; i < len; i++) {
-			String prefix = importedPrefixes[i];
+		for (String prefix : importedPrefixes) {
 			// System.err.println("prefix match? " + prefix + " to " + targetTypeName);
 			if (targetTypeName.startsWith(prefix)) {
 
@@ -965,8 +963,8 @@ public class WildTypePattern extends TypePattern {
 				canCreateExactTypePattern = false;
 			}
 			if (additionalInterfaceBounds != null) {
-				for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-					if (ResolvedType.isMissing(additionalInterfaceBounds[i].getExactType())) {
+				for (TypePattern additionalInterfaceBound : additionalInterfaceBounds) {
+					if (ResolvedType.isMissing(additionalInterfaceBound.getExactType())) {
 						canCreateExactTypePattern = false;
 					}
 				}
@@ -1012,9 +1010,9 @@ public class WildTypePattern extends TypePattern {
 		int minRequiredTypeParameters = typeParameters.size();
 		boolean foundEllipsis = false;
 		TypePattern[] typeParamPatterns = typeParameters.getTypePatterns();
-		for (int i = 0; i < typeParamPatterns.length; i++) {
-			if (typeParamPatterns[i] instanceof WildTypePattern) {
-				WildTypePattern wtp = (WildTypePattern) typeParamPatterns[i];
+		for (TypePattern typeParamPattern : typeParamPatterns) {
+			if (typeParamPattern instanceof WildTypePattern) {
+				WildTypePattern wtp = (WildTypePattern) typeParamPattern;
 				if (wtp.ellipsisCount > 0) {
 					foundEllipsis = true;
 					minRequiredTypeParameters--;
@@ -1160,16 +1158,16 @@ public class WildTypePattern extends TypePattern {
 		// if (namePatterns.length != 1) return CollectionUtil.NO_STRINGS;
 
 		List<String> ret = new ArrayList<String>();
-		for (int i = 0, len = possibleMatches.length; i < len; i++) {
-			char[][] names = splitNames(possibleMatches[i], true); // ??? not most efficient
+		for (String possibleMatch : possibleMatches) {
+			char[][] names = splitNames(possibleMatch, true); // ??? not most efficient
 			if (namePatterns[0].matches(names[names.length - 1])) {
-				ret.add(possibleMatches[i]);
+				ret.add(possibleMatch);
 				continue;
 			}
-			if (possibleMatches[i].indexOf("$") != -1) {
-				names = splitNames(possibleMatches[i], false); // ??? not most efficient
+			if (possibleMatch.indexOf("$") != -1) {
+				names = splitNames(possibleMatch, false); // ??? not most efficient
 				if (namePatterns[0].matches(names[names.length - 1])) {
-					ret.add(possibleMatches[i]);
+					ret.add(possibleMatch);
 				}
 			}
 		}
@@ -1282,8 +1280,8 @@ public class WildTypePattern extends TypePattern {
 	@Override
 	public int hashCode() {
 		int result = 17;
-		for (int i = 0, len = namePatterns.length; i < len; i++) {
-			result = 37 * result + namePatterns[i].hashCode();
+		for (NamePattern namePattern : namePatterns) {
+			result = 37 * result + namePattern.hashCode();
 		}
 		result = 37 * result + annotationPattern.hashCode();
 		if (upperBound != null) {
@@ -1302,8 +1300,8 @@ public class WildTypePattern extends TypePattern {
 		s.writeByte(TypePattern.WILD);
 		s.writeByte(VERSION);
 		s.writeShort(namePatterns.length);
-		for (int i = 0; i < namePatterns.length; i++) {
-			namePatterns[i].write(s);
+		for (NamePattern namePattern : namePatterns) {
+			namePattern.write(s);
 		}
 		s.writeBoolean(includeSubtypes);
 		s.writeInt(dim);
@@ -1327,8 +1325,8 @@ public class WildTypePattern extends TypePattern {
 		}
 		s.writeInt(additionalInterfaceBounds == null ? 0 : additionalInterfaceBounds.length);
 		if (additionalInterfaceBounds != null) {
-			for (int i = 0; i < additionalInterfaceBounds.length; i++) {
-				additionalInterfaceBounds[i].write(s);
+			for (TypePattern additionalInterfaceBound : additionalInterfaceBounds) {
+				additionalInterfaceBound.write(s);
 			}
 		}
 	}

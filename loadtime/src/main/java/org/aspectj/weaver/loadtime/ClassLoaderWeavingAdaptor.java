@@ -219,8 +219,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	List<String> getAspectClassNames(List<Definition> definitions) {
 		List<String> aspects = new LinkedList<String>();
-		for (Iterator<Definition> it = definitions.iterator(); it.hasNext(); ) {
-			Definition def = it.next();
+		for (Definition def : definitions) {
 			List<String> defAspects = def.getAspectClassNames();
 			if (defAspects != null) {
 				aspects.addAll(defAspects);
@@ -598,9 +597,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	private void registerIncludeExclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
 		for (Definition definition : definitions) {
-			for (Iterator<String> iterator1 = definition.getIncludePatterns().iterator(); iterator1.hasNext();) {
+			for (String value : definition.getIncludePatterns()) {
 				hasIncludes = true;
-				String include = iterator1.next();
+				String include = value;
 				fastMatchInfo = looksLikeStartsWith(include);
 				if (fastMatchInfo != null) {
 					includeStartsWith.add(fastMatchInfo);
@@ -613,9 +612,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					includeTypePattern.add(includePattern);
 				}
 			}
-			for (Iterator<String> iterator1 = definition.getExcludePatterns().iterator(); iterator1.hasNext();) {
+			for (String s : definition.getExcludePatterns()) {
 				hasExcludes = true;
-				String exclude = iterator1.next();
+				String exclude = s;
 				fastMatchInfo = looksLikeStartsWith(exclude);
 				if (fastMatchInfo != null) {
 					excludeStartsWith.add(fastMatchInfo);
@@ -628,8 +627,8 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				} else if (exclude
 						.equals("org.codehaus.groovy..* && !org.codehaus.groovy.grails.web.servlet.mvc.SimpleGrailsController*")) {
 					// TODO need a more sophisticated analysis here, to allow for similar situations
-					excludeSpecial.add(new String[] { "org.codehaus.groovy.",
-							"org.codehaus.groovy.grails.web.servlet.mvc.SimpleGrailsController" });
+					excludeSpecial.add(new String[]{"org.codehaus.groovy.",
+							"org.codehaus.groovy.grails.web.servlet.mvc.SimpleGrailsController"});
 					// for the related test:
 					// } else if (exclude.equals("testdata..* && !testdata.sub.Oran*")) {
 					// excludeSpecial.add(new String[] { "testdata.", "testdata.sub.Oran" });
@@ -737,8 +736,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	private void registerDump(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		for (Definition definition : definitions) {
-			for (Iterator<String> iterator1 = definition.getDumpPatterns().iterator(); iterator1.hasNext();) {
-				String dump = iterator1.next();
+			for (String dump : definition.getDumpPatterns()) {
 				TypePattern pattern = new PatternParser(dump).parseTypePattern();
 				dumpTypePattern.add(pattern);
 			}
@@ -828,9 +826,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				}
 			}
 			boolean fastAccept = false;// defaults to false if no fast include
-			for (int i = 0; i < includeStartsWith.size(); i++) {
+			for (String s : includeStartsWith) {
 				didSomeIncludeMatching = true;
-				fastAccept = fastClassName.startsWith(includeStartsWith.get(i));
+				fastAccept = fastClassName.startsWith(s);
 				if (fastAccept) {
 					return true;
 				}
@@ -866,9 +864,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					}
 				}
 			}
-			for (int i = 0; i < includeStartsWith.size(); i++) {
+			for (String s : includeStartsWith) {
 				didSomeIncludeMatching = true;
-				boolean fastaccept = fastClassName.startsWith(includeStartsWith.get(i));
+				boolean fastaccept = fastClassName.startsWith(s);
 				if (fastaccept) {
 					return true;
 				}
@@ -898,14 +896,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// still try to avoid ResolvedType if we have simple patterns
 		// EXCLUDE: if one match then reject
 		String fastClassName = aspectClassName.replace('/', '.').replace('.', '$');
-		for (int i = 0; i < aspectExcludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith(aspectExcludeStartsWith.get(i))) {
+		for (String value : aspectExcludeStartsWith) {
+			if (fastClassName.startsWith(value)) {
 				return false;
 			}
 		}
 		// INCLUDE: if one match then accept
-		for (int i = 0; i < aspectIncludeStartsWith.size(); i++) {
-			if (fastClassName.startsWith(aspectIncludeStartsWith.get(i))) {
+		for (String s : aspectIncludeStartsWith) {
+			if (fastClassName.startsWith(s)) {
 				return true;
 			}
 		}
@@ -946,8 +944,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// TODO AV - optimize for className.startWith only
 		ResolvedType classInfo = weaver.getWorld().resolve(UnresolvedType.forName(className), true);
 		// dump
-		for (Iterator<TypePattern> iterator = dumpTypePattern.iterator(); iterator.hasNext();) {
-			TypePattern typePattern = iterator.next();
+		for (TypePattern typePattern : dumpTypePattern) {
 			if (typePattern.matchesStatically(classInfo)) {
 				// dump match
 				return true;

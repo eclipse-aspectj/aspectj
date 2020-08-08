@@ -238,31 +238,31 @@ public class DirChanges {
 //            final File expDir = ((!doCompare || (null == spec.expDir))
 //                ? null 
 //                : new File(baseDir, spec.expDir));
-            for (Iterator iter = pathList.iterator(); iter.hasNext();) {
-                final String entry = (String) iter.next() ;
-                String path = entry ;
-                if (null != spec.defaultSuffix) {
-                    if (".class".equals(spec.defaultSuffix)) {
-                        path = path.replace('.', '/');
-                    }
-                    path = path + spec.defaultSuffix;
-                }
-                File actualFile = new File(baseDir, path);
-                if (exists != (actualFile.canRead() && actualFile.isFile() 
-                                && (expectStartEarlier
-                                	? startTime <= actualFile.lastModified()
-                                	: startTime > actualFile.lastModified()
-                                	))) {
-                    failMessage(handler, exists, label, path, actualFile); 
-                    if (result) {
-                        result = false;
-                    }
-                } else if (exists && doCompare && (null != fileChecker)) {
-                    if (!fileChecker.checkFile(handler, path, actualFile) && result) {
-                        result = false;
-                    }
-                }
-            }
+			for (Object o : pathList) {
+				final String entry = (String) o;
+				String path = entry;
+				if (null != spec.defaultSuffix) {
+					if (".class".equals(spec.defaultSuffix)) {
+						path = path.replace('.', '/');
+					}
+					path = path + spec.defaultSuffix;
+				}
+				File actualFile = new File(baseDir, path);
+				if (exists != (actualFile.canRead() && actualFile.isFile()
+						&& (expectStartEarlier
+						? startTime <= actualFile.lastModified()
+						: startTime > actualFile.lastModified()
+				))) {
+					failMessage(handler, exists, label, path, actualFile);
+					if (result) {
+						result = false;
+					}
+				} else if (exists && doCompare && (null != fileChecker)) {
+					if (!fileChecker.checkFile(handler, path, actualFile) && result) {
+						result = false;
+					}
+				}
+			}
         }
         return result;
     }
@@ -600,12 +600,11 @@ public class DirChanges {
                 return;
             }
             LangUtil.throwIaxIfNull(out, "out");
-            for (Iterator<DirChanges.Spec> iter = dirChanges.iterator(); iter.hasNext();) {
-				DirChanges.Spec spec = iter.next();
+			for (Spec spec : dirChanges) {
 				if (null == spec) {
-                    continue;
-                }
-                spec.writeXml(out);
+					continue;
+				}
+				spec.writeXml(out);
 			}            
 		}
 

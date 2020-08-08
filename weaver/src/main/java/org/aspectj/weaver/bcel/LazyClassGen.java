@@ -331,15 +331,14 @@ public final class LazyClassGen {
 			hasSerialVersionUIDField = hasSerialVersionUIDField(getType());
 
 			ResolvedMember[] methods = getType().getDeclaredMethods();
-			for (int i = 0; i < methods.length; i++) {
-				ResolvedMember method = methods[i];
-				if (method.getName().equals("<clinit>")) {
-					if (method.getKind() != Member.STATIC_INITIALIZATION) {
-						throw new RuntimeException("qui?");
-					}
-					hasClinit = true;
-				}
-			}
+            for (ResolvedMember method : methods) {
+                if (method.getName().equals("<clinit>")) {
+                    if (method.getKind() != Member.STATIC_INITIALIZATION) {
+                        throw new RuntimeException("qui?");
+                    }
+                    hasClinit = true;
+                }
+            }
 
 			// Do we need to calculate an SUID and add it?
 			if (!getType().isInterface() && !hasSerialVersionUIDField && world.isAddSerialVerUID()) {
@@ -358,9 +357,9 @@ public final class LazyClassGen {
 		}
 
 		ResolvedMember[] methods = myType.getDeclaredMethods();
-		for (int i = 0; i < methods.length; i++) {
-			addMethodGen(new LazyMethodGen((BcelMethod) methods[i], this));
-		}
+        for (ResolvedMember method : methods) {
+            addMethodGen(new LazyMethodGen((BcelMethod) method, this));
+        }
 
 		// Method[] methods = myGen.getMethods();
 		// for (int i = 0; i < methods.length; i++) {
@@ -368,21 +367,20 @@ public final class LazyClassGen {
 		// }
 
 		ResolvedMember[] fields = myType.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			this.fields.add((BcelField) fields[i]);
-		}
+        for (ResolvedMember field : fields) {
+            this.fields.add((BcelField) field);
+        }
 	}
 
 	public static boolean hasSerialVersionUIDField(ResolvedType type) {
 
 		ResolvedMember[] fields = type.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			ResolvedMember field = fields[i];
-			if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers())
-					&& field.getType().equals(UnresolvedType.LONG)) {
-				return true;
-			}
-		}
+        for (ResolvedMember field : fields) {
+            if (field.getName().equals("serialVersionUID") && Modifier.isStatic(field.getModifiers())
+                    && field.getType().equals(UnresolvedType.LONG)) {
+                return true;
+            }
+        }
 
 		return false;
 	}
@@ -646,19 +644,17 @@ public final class LazyClassGen {
 		if (!needAttribute) {
 			if (myType != null) {
 				ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
-				for (int i = 0; i < interfaceRTXs.length; i++) {
-					ResolvedType typeX = interfaceRTXs[i];
-					if (typeX.isGenericType() || typeX.isParameterizedType()) {
-						needAttribute = true;
-					}
-				}
+                for (ResolvedType typeX : interfaceRTXs) {
+                    if (typeX.isGenericType() || typeX.isParameterizedType()) {
+                        needAttribute = true;
+                    }
+                }
 				if (extraSuperInterfaces != null) {
-					for (int i = 0; i < extraSuperInterfaces.length; i++) {
-						ResolvedType interfaceType = extraSuperInterfaces[i];
-						if (interfaceType.isGenericType() || interfaceType.isParameterizedType()) {
-							needAttribute = true;
-						}
-					}
+                    for (ResolvedType interfaceType : extraSuperInterfaces) {
+                        if (interfaceType.isGenericType() || interfaceType.isParameterizedType()) {
+                            needAttribute = true;
+                        }
+                    }
 				}
 			}
 
@@ -685,10 +681,9 @@ public final class LazyClassGen {
 				TypeVariable[] tVars = myType.getTypeVariables();
 				if (tVars.length > 0) {
 					signature.append("<");
-					for (int i = 0; i < tVars.length; i++) {
-						TypeVariable variable = tVars[i];
-						signature.append(variable.getSignatureForAttribute());
-					}
+                    for (TypeVariable variable : tVars) {
+                        signature.append(variable.getSignatureForAttribute());
+                    }
 					signature.append(">");
 				}
 			}
@@ -697,15 +692,15 @@ public final class LazyClassGen {
 			signature.append(supersig);
 			if (myType != null) {
 				ResolvedType[] interfaceRTXs = myType.getDeclaredInterfaces();
-				for (int i = 0; i < interfaceRTXs.length; i++) {
-					String s = interfaceRTXs[i].getSignatureForAttribute();
-					signature.append(s);
-				}
+                for (ResolvedType interfaceRTX : interfaceRTXs) {
+                    String s = interfaceRTX.getSignatureForAttribute();
+                    signature.append(s);
+                }
 				if (extraSuperInterfaces != null) {
-					for (int i = 0; i < extraSuperInterfaces.length; i++) {
-						String s = extraSuperInterfaces[i].getSignatureForAttribute();
-						signature.append(s);
-					}
+                    for (ResolvedType extraSuperInterface : extraSuperInterfaces) {
+                        String s = extraSuperInterface.getSignatureForAttribute();
+                        signature.append(s);
+                    }
 				}
 			}
 			if (sigAttr != null) {
@@ -905,10 +900,10 @@ public final class LazyClassGen {
 			myType.printWackyStuff(out);
 		}
 		Field[] fields = myGen.getFields();
-		for (int i = 0, len = fields.length; i < len; i++) {
-			out.print("  ");
-			out.println(fields[i]);
-		}
+        for (Field field : fields) {
+            out.print("  ");
+            out.println(field);
+        }
 		List<LazyMethodGen> methodGens = getMethodGens();
 		for (Iterator<LazyMethodGen> iter = methodGens.iterator(); iter.hasNext();) {
 			LazyMethodGen gen = iter.next();
@@ -1273,16 +1268,15 @@ public final class LazyClassGen {
 		});
 
 		long estimatedSize = 0;
-		for (Iterator<Map.Entry<BcelShadow, Field>> i = entries.iterator(); i.hasNext();) {
-			Map.Entry<BcelShadow, Field> entry = i.next();
-			if (estimatedSize > Constants.MAX_CODE_SIZE) {
-				estimatedSize = 0;
-				list = initInstructionList();
-				lists.add(list);
-			}
-			estimatedSize += entry.getValue().getSignature().getBytes().length;
-			initializeTjp(fact, list, entry.getValue(), entry.getKey());
-		}
+        for (Map.Entry<BcelShadow, Field> entry : entries) {
+            if (estimatedSize > Constants.MAX_CODE_SIZE) {
+                estimatedSize = 0;
+                list = initInstructionList();
+                lists.add(list);
+            }
+            estimatedSize += entry.getValue().getSignature().getBytes().length;
+            initializeTjp(fact, list, entry.getValue(), entry.getKey());
+        }
 		InstructionList listArrayModel[] = new InstructionList[1];
 		return lists.toArray(listArrayModel);
 	}
@@ -1779,11 +1773,11 @@ public final class LazyClassGen {
 	}
 
 	private boolean hasSyntheticAttribute(List<Attribute> attributes) {
-		for (int i = 0; i < attributes.size(); i++) {
-			if ((attributes.get(i)).getName().equals("Synthetic")) {
-				return true;
-			}
-		}
+        for (Attribute attribute : attributes) {
+            if (attribute.getName().equals("Synthetic")) {
+                return true;
+            }
+        }
 		return false;
 	}
 
@@ -1839,12 +1833,11 @@ public final class LazyClassGen {
 		if (agens == null) {
 			return false;
 		}
-		for (int i = 0; i < agens.length; i++) {
-			AnnotationGen gen = agens[i];
-			if (t.equals(UnresolvedType.forSignature(gen.getTypeSignature()))) {
-				return true;
-			}
-		}
+        for (AnnotationGen gen : agens) {
+            if (t.equals(UnresolvedType.forSignature(gen.getTypeSignature()))) {
+                return true;
+            }
+        }
 
 		// annotations added during this weave
 
@@ -1884,14 +1877,14 @@ public final class LazyClassGen {
 		}
 
 		ResolvedType[] interfaces = aType.getDeclaredInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			if (interfaces[i].isMissing()) {
-				continue;
-			}
-			if (implementsSerializable(interfaces[i])) {
-				return true;
-			}
-		}
+        for (ResolvedType anInterface : interfaces) {
+            if (anInterface.isMissing()) {
+                continue;
+            }
+            if (implementsSerializable(anInterface)) {
+                return true;
+            }
+        }
 		ResolvedType superType = aType.getSuperclass();
 		if (superType != null && !superType.isMissing()) {
 			return implementsSerializable(superType);

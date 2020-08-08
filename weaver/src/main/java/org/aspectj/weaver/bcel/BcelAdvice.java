@@ -79,8 +79,8 @@ class BcelAdvice extends Advice {
 
 	public boolean bindsProceedingJoinPoint() {
 		UnresolvedType[] parameterTypes = signature.getParameterTypes();
-		for (int i=0;i<parameterTypes.length;i++) {
-			if (parameterTypes[i].equals(UnresolvedType.PROCEEDING_JOINPOINT)) {
+		for (UnresolvedType parameterType : parameterTypes) {
+			if (parameterType.equals(UnresolvedType.PROCEEDING_JOINPOINT)) {
 				return true;
 			}
 		}
@@ -428,11 +428,11 @@ class BcelAdvice extends Advice {
 		ResolvedType runtimeException = world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION);
 		ResolvedType error = world.getCoreType(UnresolvedType.ERROR);
 
-		for (int i = 0, len = excs.length; i < len; i++) {
-			ResolvedType t = world.resolve(excs[i], true);
+		for (UnresolvedType exc : excs) {
+			ResolvedType t = world.resolve(exc, true);
 			if (t.isMissing()) {
 				world.getLint().cantFindType
-						.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE, excs[i].getName()),
+						.signal(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE, exc.getName()),
 								getSourceLocation());
 				// IMessage msg = new Message(
 				// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_EXCEPTION_TYPE,excs[i].getName()),
@@ -546,8 +546,7 @@ class BcelAdvice extends Advice {
 			LocalVariableTable lvt = shadow.getEnclosingMethod().getMemberView().getMethod().getLocalVariableTable();
 			if (lvt != null) {
 				LocalVariable[] lvTable = lvt.getLocalVariableTable();
-				for (int i = 0; i < lvTable.length; i++) {
-					LocalVariable lv = lvTable[i];
+				for (LocalVariable lv : lvTable) {
 					if (lv.getStartPC() == 0) {
 						start.addTargeter(new LocalVariableTag(lv.getSignature(), lv.getName(), lv.getIndex(), 0));
 					}

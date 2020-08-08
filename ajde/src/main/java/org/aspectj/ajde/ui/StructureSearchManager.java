@@ -51,8 +51,7 @@ public class StructureSearchManager {
 			}
 		}
 		if (node != null && node.getChildren() != null) {
-			for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-				IProgramElement nextNode = it.next();
+			for (IProgramElement nextNode : node.getChildren()) {
 				if (nextNode != null) {
 					findMatchesHelper(nextNode, pattern, kind, matches);
 				}

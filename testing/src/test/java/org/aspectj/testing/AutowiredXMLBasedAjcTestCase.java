@@ -68,22 +68,20 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
 
             Map<String,AjcTest> ajTests = wired.getSuiteTests();
 
-            for (Iterator<Map.Entry<String,AjcTest>> iterator = ajTests.entrySet().iterator(); iterator.hasNext();) {
-                final Map.Entry<String,AjcTest> entry = iterator.next();
+			for (final Map.Entry<String, AjcTest> entry : ajTests.entrySet()) {
+				suite.addTest(
+						new TestCase(entry.getKey().toString()) {
 
-                suite.addTest(
-                        new TestCase(entry.getKey().toString()) {
+							protected void runTest() {
+								entry.getValue().runTest(wired);
+							}
 
-                            protected void runTest() {
-                                entry.getValue().runTest(wired);
-                            }
-
-                            public String getName() {
-                                return entry.getKey();
-                            }
-                        }
-                );
-            }
+							public String getName() {
+								return entry.getKey();
+							}
+						}
+				);
+			}
         } catch (Throwable t) {
             final String message = t.toString();
             suite.addTest(
@@ -99,13 +97,12 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
         // this simple check avoids failure when no test.. method is found.
         // it could be refined to lookup in the hierarchy as well, and excluding private method as JUnit does.
         Method[] testMethods = testCaseClass.getDeclaredMethods();
-        for (int i = 0; i < testMethods.length; i++) {
-            Method testMethod = testMethods[i];
-            if (testMethod.getName().startsWith("test")) {
-                suite.addTestSuite(testCaseClass);
-                break;
-            }
-        }
+		for (Method testMethod : testMethods) {
+			if (testMethod.getName().startsWith("test")) {
+				suite.addTestSuite(testCaseClass);
+				break;
+			}
+		}
 
         TestSetup wrapper = new TestSetup(suite) {
             /* (non-Javadoc)

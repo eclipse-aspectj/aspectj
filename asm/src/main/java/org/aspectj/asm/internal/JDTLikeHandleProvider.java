@@ -136,8 +136,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		List<char[]> parameterTypes = ipe.getParameterSignatures();
 		StringBuffer sb = new StringBuffer();
 		if (sourceRefs != null) {
-			for (int i = 0; i < sourceRefs.size(); i++) {
-				String sourceRef = sourceRefs.get(i);
+			for (String sourceRef : sourceRefs) {
 				sb.append(HandleProviderDelimiter.getDelimiter(ipe));
 				sb.append(sourceRef);
 			}
@@ -164,8 +163,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 		if (ipe.getKind().isInterTypeMember()) {
 			int count = 1;
 			List<IProgramElement> kids = ipe.getParent().getChildren();
-			for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
-				IProgramElement object = iterator.next();
+			for (IProgramElement object : kids) {
 				if (object.equals(ipe)) {
 					break;
 				}

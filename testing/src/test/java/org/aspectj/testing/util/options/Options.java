@@ -141,13 +141,13 @@ public class Options {
     private Option.Value firstMatch(String value) {
         LangUtil.throwIaxIfNull(value, "value");
 //        ArrayList list = new ArrayList();
-        for (Iterator iter = options.iterator(); iter.hasNext();) {
-            Option option = (Option) iter.next();
-            Option.Value result = option.acceptValue(value);
-            if (null != result) {
-                return result;
-            }
-        }
+		for (Object o : options) {
+			Option option = (Option) o;
+			Option.Value result = option.acceptValue(value);
+			if (null != result) {
+				return result;
+			}
+		}
         return null;
     }
 }

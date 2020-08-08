@@ -406,18 +406,18 @@ public class LangUtil {
         twoList.addAll(org.aspectj.util.LangUtil.arrayAsList(two));
         ArrayList result = new ArrayList();
         if (null != one) {
-            for (int i = 0; i < one.length; i++) {
-                if (null != one[i]) {
-                    twoList.remove(one[i]);
-                    result.add(one[i]);
-                }
-            }
+			for (String s : one) {
+				if (null != s) {
+					twoList.remove(s);
+					result.add(s);
+				}
+			}
         }
-        for (Iterator iterator = twoList.iterator(); iterator.hasNext(); ) {
-			String element = (String) iterator.next();
+		for (Object o : twoList) {
+			String element = (String) o;
 			if (null != element) {
-                result.add(element);
-            }
+				result.add(element);
+			}
 		}
         return (String[]) result.toArray(NONE);
     }
@@ -425,19 +425,19 @@ public class LangUtil {
     public static Properties combine(Properties dest, Properties add, boolean respectExisting)  { // XXX
         if (null == add) return dest;
         if (null == dest) return add;
-        for (Iterator iterator = add.keySet().iterator(); iterator.hasNext(); ) {
-            String key = (String) iterator.next();
-            if (null == key) {
-                continue;
-            }
-            String value = add.getProperty(key);
-            if (null == value) {
-                continue;
-            }
-            if (! respectExisting || (null == dest.getProperty(key))) {
-                dest.setProperty(key, value);           
-            }
-        }
+		for (Object o : add.keySet()) {
+			String key = (String) o;
+			if (null == key) {
+				continue;
+			}
+			String value = add.getProperty(key);
+			if (null == value) {
+				continue;
+			}
+			if (!respectExisting || (null == dest.getProperty(key))) {
+				dest.setProperty(key, value);
+			}
+		}
         return dest;
     }
 
@@ -547,22 +547,22 @@ public class LangUtil {
     public static void loadClasses(String[] args, StringBuffer out,
                                    StringBuffer err) {
         if (null != args) {
-            for (int i = 0; i < args.length; i++) {
-                try {
-                    Class c = Class.forName(args[i]);
-                    if (null != out) {
-                        out.append("\n");
-                        out.append(args[i]);
-                        out.append(": ");
-                        out.append(c.getName());
-                    }
-                } catch (Throwable t) {
-                    if (null != err) {
-                        err.append("\n");
-                        FileUtil.render(t, err);
-                    }
-                }
-            } 
+			for (String arg : args) {
+				try {
+					Class c = Class.forName(arg);
+					if (null != out) {
+						out.append("\n");
+						out.append(arg);
+						out.append(": ");
+						out.append(c.getName());
+					}
+				} catch (Throwable t) {
+					if (null != err) {
+						err.append("\n");
+						FileUtil.render(t, err);
+					}
+				}
+			}
             
         }
     } 
@@ -577,20 +577,20 @@ public class LangUtil {
         }
         int length = path.length() - ".class".length();
         path = path.substring(prefix.length()+1, length);
-        for (int i = 0; i < SEPS.length; i++) {
-            path = path.replace(SEPS[i], '.');
-        } 
+		for (char sep : SEPS) {
+			path = path.replace(sep, '.');
+		}
         return path;
     }
     
     public static void main (String[] args) { // todo remove as testing
         StringBuffer err = new StringBuffer();
         StringBuffer out = new StringBuffer();
-        for (int i = 0; i < args.length; i++) {
-            String[] names = classesIn(new File(args[i]));
-            System.err.println(args[i] + " -> " + render(names));
-            loadClasses(names, out, err); 
-        }
+		for (String arg : args) {
+			String[] names = classesIn(new File(arg));
+			System.err.println(arg + " -> " + render(names));
+			loadClasses(names, out, err);
+		}
         if (0 < err.length()) {
             System.err.println(err.toString());
         }
@@ -887,8 +887,7 @@ public class LangUtil {
             return;
         }
 		BitSet actualExpected = new BitSet();
-		for (int i = 0; i < expectedListIn.size(); i++) {
-			Object expect = expectedListIn.get(i);
+		for (Object expect : expectedListIn) {
 			int loc = actualListIn.indexOf(expect);
 			if (-1 == loc) {
 				if (null != missingListOut) {
@@ -962,19 +961,18 @@ public class LangUtil {
         // messages on the same line, but with different text content.
         while (actualIter.hasNext()) {
         	act = actualIter.next();
-        	for (Iterator expectedIter = expected.iterator(); expectedIter.hasNext();) {
-        		Object exp = expectedIter.next();
-        		// if actual matches expected remove actual from extraListOut, and 
-        		// remove expected from missingListOut
-        		int diff = comparator.compare(exp,act);
-        		if (diff == 0) {
-        			extraListOut.remove(act);
-        			missingListOut.remove(exp);
-        		} else if (diff > 0) {
-        			// since list is sorted, there can be no more matches...
-        			break;
-        		}
-        	}
+			for (Object exp : expected) {
+				// if actual matches expected remove actual from extraListOut, and
+				// remove expected from missingListOut
+				int diff = comparator.compare(exp, act);
+				if (diff == 0) {
+					extraListOut.remove(act);
+					missingListOut.remove(exp);
+				} else if (diff > 0) {
+					// since list is sorted, there can be no more matches...
+					break;
+				}
+			}
         }
         
 //        while (((null != act) || actualIter.hasNext())

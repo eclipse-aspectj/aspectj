@@ -280,10 +280,10 @@ public abstract class ReferenceType extends Type {
 		this_sups[0] = Repository.lookupClass(thiz.getClassName());
 		t_sups[0] = Repository.lookupClass(other.getClassName());
 
-		for (int i = 0; i < t_sups.length; i++) {
-			for (int j = 0; j < this_sups.length; j++) {
-				if (this_sups[j].equals(t_sups[i])) {
-					return new ObjectType(this_sups[j].getClassName());
+		for (JavaClass t_sup : t_sups) {
+			for (JavaClass this_sup : this_sups) {
+				if (this_sup.equals(t_sup)) {
+					return new ObjectType(this_sup.getClassName());
 				}
 			}
 		}

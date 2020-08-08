@@ -54,8 +54,7 @@ public abstract class BcelTestCase extends TestCase {
 
 	protected Method getMethod(JavaClass cl, String methodname) {
 		Method[] methods = cl.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			if (m.getName().equals(methodname)) {
 				return m;
 			}
@@ -65,8 +64,7 @@ public abstract class BcelTestCase extends TestCase {
 
 	protected Field getField(JavaClass cl, String fieldname) {
 		Field[] fields = cl.getFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
+		for (Field f : fields) {
 			if (f.getName().equals(fieldname)) {
 				return f;
 			}
@@ -96,22 +94,22 @@ public abstract class BcelTestCase extends TestCase {
 	protected Attribute[] findAttribute(String name, JavaClass clazz) {
 		Attribute[] all = clazz.getAttributes();
 		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
-		for (int i = 0; i < all.length; i++) {
+		for (Attribute attribute : all) {
 			if (verbose)
-				System.err.println("Attribute: " + all[i].getName());
-			if (all[i].getName().equals(name))
-				chosenAttrsList.add(all[i]);
+				System.err.println("Attribute: " + attribute.getName());
+			if (attribute.getName().equals(name))
+				chosenAttrsList.add(attribute);
 		}
 		return chosenAttrsList.toArray(new Attribute[] {});
 	}
 
 	protected Attribute findAttribute(String name, Attribute[] all) {
 		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
-		for (int i = 0; i < all.length; i++) {
+		for (Attribute attribute : all) {
 			if (verbose)
-				System.err.println("Attribute: " + all[i].getName());
-			if (all[i].getName().equals(name))
-				chosenAttrsList.add(all[i]);
+				System.err.println("Attribute: " + attribute.getName());
+			if (attribute.getName().equals(name))
+				chosenAttrsList.add(attribute);
 		}
 		assertTrue("Should be one match: " + chosenAttrsList.size(), chosenAttrsList.size() == 1);
 		return chosenAttrsList.get(0);

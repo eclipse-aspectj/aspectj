@@ -121,10 +121,9 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 	 */
 	private final AnnotationAJ retrieveAnnotationOnAnnotation(UnresolvedType requiredAnnotationSignature) {
 		AnnotationAJ[] annos = type.getAnnotations();
-		for (int i = 0; i < annos.length; i++) {
-			AnnotationAJ a = annos[i];
+		for (AnnotationAJ a : annos) {
 			if (a.getTypeSignature().equals(requiredAnnotationSignature.getSignature())) {
-				return annos[i];
+				return a;
 			}
 		}
 		return null;

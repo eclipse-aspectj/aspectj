@@ -120,8 +120,8 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		AbstractReferenceTypeDelegate outerObjectType = (AbstractReferenceTypeDelegate) outerDelegate;
 		if (outerObjectType.isNested()) {
 			GenericSignature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
-			for (int i = 0; i < parentParams.length; i++) {
-				typeParameters.add(parentParams[i]);
+			for (GenericSignature.FormalTypeParameter parentParam : parentParams) {
+				typeParameters.add(parentParam);
 			}
 		}
 		GenericSignature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();

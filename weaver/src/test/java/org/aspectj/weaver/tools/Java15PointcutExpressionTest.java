@@ -298,10 +298,9 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  }
 	  if (expected.size()>0) { // we have excess ones!
 		  StringBuffer excessTokens = new StringBuffer();
-		  for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
-			String string = (String) iterator.next();
-			excessTokens.append(string).append(" ");
-		}
+		  for (String string : expected) {
+			  excessTokens.append(string).append(" ");
+		  }
 	    fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern has these unexpected parameter type annotations "+excessTokens.toString());
 	  }
 	  
@@ -318,10 +317,9 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  }
 	  if (expected.size()>0) { // we have excess ones!
 		  StringBuffer excessTokens = new StringBuffer();
-		  for (Iterator iterator = expected.iterator(); iterator.hasNext();) {
-			String string = (String) iterator.next();
-			excessTokens.append(string).append(" ");
-		}
+		  for (String string : expected) {
+			  excessTokens.append(string).append(" ");
+		  }
 	    fail("In pointcut expression "+pe.getPointcutExpression()+" parameter "+parameterNumber+". The annotation type pattern has these unexpected parameter annotations "+excessTokens.toString());
 	  }
 	  

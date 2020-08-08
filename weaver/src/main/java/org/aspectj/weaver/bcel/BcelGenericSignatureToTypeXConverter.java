@@ -208,9 +208,9 @@ public class BcelGenericSignatureToTypeXConverter {
 			Map<GenericSignature.FormalTypeParameter, ReferenceType> inProgressTypeVariableResolutions)
 			throws GenericSignatureFormatException {
 		GenericSignature.FormalTypeParameter typeVarBounds = null;
-		for (int i = 0; i < typeParams.length; i++) {
-			if (typeParams[i].identifier.equals(aTypeVarSig.typeVariableName)) {
-				typeVarBounds = typeParams[i];
+		for (GenericSignature.FormalTypeParameter typeParam : typeParams) {
+			if (typeParam.identifier.equals(aTypeVarSig.typeVariableName)) {
+				typeVarBounds = typeParam;
 				break;
 			}
 		}
@@ -240,10 +240,10 @@ public class BcelGenericSignatureToTypeXConverter {
 		ReferenceType rt = (ReferenceType) aTypeX;
 		TypeVariable[] typeVars = rt.getTypeVariables();
 		if (typeVars != null) {
-			for (int i = 0; i < typeVars.length; i++) {
-				if (typeVars[i].getUpperBound() instanceof FTPHolder) {
-					GenericSignature.FormalTypeParameter key = ((FTPHolder) typeVars[i].getUpperBound()).ftpToBeSubstituted;
-					typeVars[i].setUpperBound(typeVariableResolutions.get(key));
+			for (TypeVariable typeVar : typeVars) {
+				if (typeVar.getUpperBound() instanceof FTPHolder) {
+					GenericSignature.FormalTypeParameter key = ((FTPHolder) typeVar.getUpperBound()).ftpToBeSubstituted;
+					typeVar.setUpperBound(typeVariableResolutions.get(key));
 				}
 			}
 		}

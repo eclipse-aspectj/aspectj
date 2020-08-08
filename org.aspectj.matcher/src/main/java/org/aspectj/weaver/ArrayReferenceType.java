@@ -119,8 +119,8 @@ public class ArrayReferenceType extends ReferenceType {
 	public TypeVariable[] getTypeVariables() {
 		if (this.typeVariables == null && componentType.getTypeVariables() != null) {
 			this.typeVariables = componentType.getTypeVariables();
-			for (int i = 0; i < this.typeVariables.length; i++) {
-				this.typeVariables[i].resolve(world);
+			for (TypeVariable typeVariable : this.typeVariables) {
+				typeVariable.resolve(world);
 			}
 		}
 		return this.typeVariables;

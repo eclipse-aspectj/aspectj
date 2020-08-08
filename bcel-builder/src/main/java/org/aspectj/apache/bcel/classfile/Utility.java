@@ -522,26 +522,26 @@ public abstract class Utility {
 		char[] ch = label.toCharArray();
 		StringBuffer buf = new StringBuffer();
 
-		for (int i = 0; i < ch.length; i++) {
-			switch (ch[i]) {
-			case '\n':
-				buf.append("\\n");
-				break;
-			case '\r':
-				buf.append("\\r");
-				break;
-			case '\"':
-				buf.append("\\\"");
-				break;
-			case '\'':
-				buf.append("\\'");
-				break;
-			case '\\':
-				buf.append("\\\\");
-				break;
-			default:
-				buf.append(ch[i]);
-				break;
+		for (char c : ch) {
+			switch (c) {
+				case '\n':
+					buf.append("\\n");
+					break;
+				case '\r':
+					buf.append("\\r");
+					break;
+				case '\"':
+					buf.append("\\\"");
+					break;
+				case '\'':
+					buf.append("\\'");
+					break;
+				case '\\':
+					buf.append("\\\\");
+					break;
+				default:
+					buf.append(c);
+					break;
 			}
 		}
 

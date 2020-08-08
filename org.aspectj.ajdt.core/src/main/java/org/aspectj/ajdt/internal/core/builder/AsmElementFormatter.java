@@ -321,8 +321,7 @@ public class AsmElementFormatter {
 			TypeReference[] typeRefs = pstr.typeArguments;
 			if (typeRefs != null && typeRefs.length > 0) {
 				handleSig.append("\\<");
-				for (int i = 0; i < typeRefs.length; i++) {
-					TypeReference typeR = typeRefs[i];
+				for (TypeReference typeR : typeRefs) {
 					TypeBinding typeB = typeR.resolvedType;
 					if (typeB == null) {
 						typeB = typeR.resolveType(scope);
@@ -368,8 +367,7 @@ public class AsmElementFormatter {
 				TypeReference[] typeRefs = pstr.typeArguments[i];
 				if (typeRefs != null && typeRefs.length > 0) {
 					handleSig.append("\\<");
-					for (int j = 0; j < typeRefs.length; j++) {
-						TypeReference typeR = typeRefs[j];
+					for (TypeReference typeR : typeRefs) {
 						TypeBinding typeB = typeR.resolvedType;
 						if (typeB == null) {
 							typeB = typeR.resolveType(scope);
@@ -428,11 +426,11 @@ public class AsmElementFormatter {
 			List<char[]> paramSigs = new ArrayList<char[]>();
 			List<String> paramSourceRefs = new ArrayList<String>();
 			boolean problemWithSourceRefs = false;
-			for (int i = 0; i < argArray.length; i++) {
-				String argName = new String(argArray[i].name);
+			for (Argument argument : argArray) {
+				String argName = new String(argument.name);
 				// String argType = "<UnknownType>"; // pr135052
-				if (acceptArgument(argName, argArray[i].type.toString())) {
-					TypeReference typeR = argArray[i].type;
+				if (acceptArgument(argName, argument.type.toString())) {
+					TypeReference typeR = argument.type;
 					if (typeR != null && md.scope != null) {
 						TypeBinding typeB = typeR.resolvedType;
 						if (typeB == null) {

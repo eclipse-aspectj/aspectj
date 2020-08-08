@@ -544,8 +544,8 @@ public class ProgramElement implements IProgramElement {
 		if (children == null) {
 			return;
 		}
-		for (Iterator<IProgramElement> it = children.iterator(); it.hasNext();) {
-			(it.next()).setParent(this);
+		for (IProgramElement child : children) {
+			child.setParent(this);
 		}
 	}
 
@@ -751,8 +751,7 @@ public class ProgramElement implements IProgramElement {
 			return Collections.emptyList();
 		}
 		List<char[]> params = new ArrayList<char[]>();
-		for (Iterator<char[]> iter = l.iterator(); iter.hasNext();) {
-			char[] param = iter.next();
+		for (char[] param : l) {
 			params.add(NameConvertor.convertFromSignature(param));
 		}
 		return params;

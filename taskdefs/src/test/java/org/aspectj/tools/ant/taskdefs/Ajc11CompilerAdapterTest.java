@@ -35,11 +35,11 @@ public class Ajc11CompilerAdapterTest extends TestCase {
     }
     
     public void tearDown() {
-        for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
-            File file = (File) iter.next();
-            FileUtil.deleteContents(file);
-            file.delete();
-        }
+		for (Object tempFile : tempFiles) {
+			File file = (File) tempFile;
+			FileUtil.deleteContents(file);
+			file.delete();
+		}
     }
     
 //    public void testCompilerAdapterWithJavac() { // XXX requires tools.jar 

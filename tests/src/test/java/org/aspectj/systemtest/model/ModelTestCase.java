@@ -168,8 +168,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			}
 
 			// iterate over what we found
-			for (Iterator<String> iter = foundFileContents.iterator(); iter.hasNext();) {
-				String line = (String) iter.next();
+			for (String line : foundFileContents) {
 				if (debugTest)
 					System.err.println("looking at model entry: " + line);
 				if (!fileContents.contains(line)) {
@@ -177,8 +176,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 
 					if (debugTest) {
 						System.err.println("couldn't find: " + line);
-						for (Iterator<String> iterator = fileContents.iterator(); iterator.hasNext();) {
-							String element = (String) iterator.next();
+						for (String element : fileContents) {
 							System.err.println("compared with: " + element);
 						}
 					}
@@ -192,8 +190,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			}
 
 			if (debugTest && !fileContents.isEmpty()) {
-				for (Iterator<String> iter = fileContents.iterator(); iter.hasNext();) {
-					String element = (String) iter.next();
+				for (String element : fileContents) {
 					System.err.println("remaining: " + element);
 				}
 			}

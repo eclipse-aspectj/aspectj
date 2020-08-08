@@ -94,9 +94,9 @@ public class AjcCompilerAdapter implements CompilerAdapter {
         tempAjc.setIncludeantruntime(javac.getIncludeantruntime()); // XXX unsupported
         File[] files = javac.getFileList();
         if (null != files) {
-            for (int i = 0; i < files.length; i++) {
-                tempAjc.backdoorSetFile(files[i]);
-            } 
+			for (File file : files) {
+				tempAjc.backdoorSetFile(file);
+			}
         }
         ajc = tempAjc;
     }

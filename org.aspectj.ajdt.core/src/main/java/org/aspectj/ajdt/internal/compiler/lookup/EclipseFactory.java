@@ -654,8 +654,8 @@ public class EclipseFactory {
 		}
 		UnresolvedType[] typeArguments = typeX.getTypeParameters();
 		if (typeArguments != null) {
-			for (int i = 0; i < typeArguments.length; i++) {
-				if (typeArguments[i].isTypeVariableReference()) {
+			for (UnresolvedType typeArgument : typeArguments) {
+				if (typeArgument.isTypeVariableReference()) {
 					return true;
 				}
 			}
@@ -1177,8 +1177,8 @@ public class EclipseFactory {
 		}
 
 		ReferenceBinding[] memberTypes = binding.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			addSourceTypeBinding((SourceTypeBinding) memberTypes[i], unit);
+		for (ReferenceBinding memberType : memberTypes) {
+			addSourceTypeBinding((SourceTypeBinding) memberType, unit);
 		}
 	}
 

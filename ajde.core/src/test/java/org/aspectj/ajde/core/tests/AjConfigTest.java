@@ -135,8 +135,7 @@ public class AjConfigTest extends AjdeCoreTestCase {
 		compilerConfig.setSourcePathResources(m);
 		AjBuildConfig buildConfig = genAjBuildConfig();
 		Map<String, File> found = buildConfig.getSourcePathResources();
-		for (Iterator<String> i = found.keySet().iterator(); i.hasNext();) {
-			String resource = i.next();
+		for (String resource : found.keySet()) {
 			assertEquals("expected to find resource with name newFile.txt but " + "found " + resource, "newFile.txt", resource);
 			File from = buildConfig.getSourcePathResources().get(resource);
 			assertEquals("expected to find resource with file " + getWorkingDir() + "but found " + from, getWorkingDir(), from);

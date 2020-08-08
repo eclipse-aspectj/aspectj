@@ -88,8 +88,8 @@ public abstract class InstructionSelect extends InstructionBranch {
 		super(opcode, target);
 
 		this.targets = targets;
-		for (int i = 0; i < targets.length; i++) {
-			notifyTarget(null, targets[i], this);
+		for (InstructionHandle instructionHandle : targets) {
+			notifyTarget(null, instructionHandle, this);
 		}
 
 		this.match = match;
@@ -236,8 +236,8 @@ public abstract class InstructionSelect extends InstructionBranch {
 			return true;
 		}
 
-		for (int i = 0; i < targets.length; i++) {
-			if (targets[i] == ih) {
+		for (InstructionHandle target : targets) {
+			if (target == ih) {
 				return true;
 			}
 		}
@@ -251,8 +251,8 @@ public abstract class InstructionSelect extends InstructionBranch {
 	void dispose() {
 		super.dispose();
 
-		for (int i = 0; i < targets.length; i++) {
-			targets[i].removeTargeter(this);
+		for (InstructionHandle target : targets) {
+			target.removeTargeter(this);
 		}
 	}
 

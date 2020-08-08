@@ -875,12 +875,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		if (vars == null || vars.length == 0) {
 			return null;
 		}
-		for (int i = 0; i < vars.length; i++) {
-			TypeVariable aVar = vars[i];
-			if (aVar.getName().equals(name)) {
-				return aVar;
-			}
-		}
+        for (TypeVariable aVar : vars) {
+            if (aVar.getName().equals(name)) {
+                return aVar;
+            }
+        }
 		return null;
 	}
 

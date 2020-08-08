@@ -45,18 +45,18 @@ public class LocalVariableTypeTableTest extends BcelTestCase {
 		boolean tc1OK = false;
 		boolean tc2OK = false;
 		String errormessage = null;
-		for (int i = 0; i < lvtable.length; i++) {
-			String sig = Utility.signatureToString(lvtable[i].getSignature());
-			if (lvtable[i].getName().equals("tc1")) {
+		for (LocalVariable localVariable : lvtable) {
+			String sig = Utility.signatureToString(localVariable.getSignature());
+			if (localVariable.getName().equals("tc1")) {
 				if (!sig.equals("TreasureChest<String>")) {
-					errormessage="Expected signature of 'TreasureChest<String>' for tc1 but got "+sig;
+					errormessage = "Expected signature of 'TreasureChest<String>' for tc1 but got " + sig;
 				} else {
 					tc1OK = true;
 				}
 			}
-			if (lvtable[i].getName().equals("tc2")) {
+			if (localVariable.getName().equals("tc2")) {
 				if (!sig.equals("TreasureChest<Integer>")) {
-					errormessage="Expected signature of 'TreasureChest<Integer>' for tc2 but got "+sig;
+					errormessage = "Expected signature of 'TreasureChest<Integer>' for tc2 but got " + sig;
 				} else {
 					tc2OK = true;
 				}

@@ -204,17 +204,17 @@ public class CompilerRunSpecTest extends TestCase {
         Set options = crsOptions.compilerOptions();
         assertTrue(null != options);
         StringBuffer notLoaded = new StringBuffer();
-        for (Iterator iter = options.iterator(); iter.hasNext();) {
-            Option compilerOption = (Option) iter.next();
-            if (!(crsOptions.compilerIsLoadable(compilerOption))) {
-                notLoaded.append(" " + compilerOption);
-            } else {                
-                String className = crsOptions.compilerClassName(compilerOption);
-                String argValue = compilerOption.toString(); // XXX snoop
-                String arg = Option.ON.render(argValue);
-                checkCompilerOption(arg, className);
-            }
-        }
+		for (Object option : options) {
+			Option compilerOption = (Option) option;
+			if (!(crsOptions.compilerIsLoadable(compilerOption))) {
+				notLoaded.append(" " + compilerOption);
+			} else {
+				String className = crsOptions.compilerClassName(compilerOption);
+				String argValue = compilerOption.toString(); // XXX snoop
+				String arg = Option.ON.render(argValue);
+				checkCompilerOption(arg, className);
+			}
+		}
         if (0 < notLoaded.length()) {
             System.err.println(
                 getClass().getName()
@@ -298,12 +298,12 @@ public class CompilerRunSpecTest extends TestCase {
                 new String[] { "-verbose", "-g:vars,source" },
                 };
         // normal
-        for (int i = 0; i < input.length; i++) {
-            optionChecker.checkOptions(input[i], input[i]);
-        }
-        for (int i = 0; i < literalInput.length; i++) {
-            optionChecker.checkOptions(literalInput[i], literalInput[i]);
-        }
+		for (String[] value : input) {
+			optionChecker.checkOptions(value, value);
+		}
+		for (String[] strings : literalInput) {
+			optionChecker.checkOptions(strings, strings);
+		}
         // force-on
         String[][] forceInput = duplicate(input, "!");
         for (int i = 0; i < input.length; i++) {

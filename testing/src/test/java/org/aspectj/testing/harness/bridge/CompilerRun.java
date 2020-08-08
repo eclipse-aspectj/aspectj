@@ -134,16 +134,15 @@ public class CompilerRun implements IAjcRun {
             return new String[0];
         }
         ArrayList result = new ArrayList();
-        for (int i = 0; i < inputs.length; i++) {
-            String input = inputs[i];
-            if (null == input) {
-                continue;
-            }
-            File inputFile = new File(baseDir, input);
-            if (inputFile.canRead() && inputFile.isDirectory()) {
-                result.add(input);
-            }
-        }
+		for (String input : inputs) {
+			if (null == input) {
+				continue;
+			}
+			File inputFile = new File(baseDir, input);
+			if (inputFile.canRead() && inputFile.isDirectory()) {
+				result.add(input);
+			}
+		}
         return (String[]) result.toArray(new String[0]);
     }
     
@@ -167,25 +166,24 @@ public class CompilerRun implements IAjcRun {
             suffixes = temp;
         }
         ArrayList result = new ArrayList();
-        for (int i = 0; i < inputs.length; i++) {
-            String input = inputs[i];
-            if (null == input) {
-                continue;
-            }
-            if (!ignoreCase) {
-                input = input.toLowerCase();
-            }
-            for (int j = 0; j < suffixes.length; j++) {
-                String suffix = suffixes[j];
-                if (null == suffix) {
-                    continue;
-                }
-                if (input.endsWith(suffix)) {
-                    result.add(input);
-                    break;
-                }
-            }
-        }
+		for (String s : inputs) {
+			String input = s;
+			if (null == input) {
+				continue;
+			}
+			if (!ignoreCase) {
+				input = input.toLowerCase();
+			}
+			for (String suffix : suffixes) {
+				if (null == suffix) {
+					continue;
+				}
+				if (input.endsWith(suffix)) {
+					result.add(input);
+					break;
+				}
+			}
+		}
         return (String[]) result.toArray(new String[0]);
     }
 
@@ -407,12 +405,12 @@ public class CompilerRun implements IAjcRun {
                             return (first != last);
                         }
                     };
-                    for (int i = 0; i < sourcerootFiles.length; i++) {
-                        FileUtil.deleteContents(
-                            sourcerootFiles[i],
-                            pickIncFiles,
-                            false);
-                    }
+					for (File sourcerootFile : sourcerootFiles) {
+						FileUtil.deleteContents(
+								sourcerootFile,
+								pickIncFiles,
+								false);
+					}
                     if (0 < sourcerootFiles.length) {
                         FileUtil.sleepPastFinalModifiedTime(
                             sourcerootFiles);
@@ -469,9 +467,9 @@ public class CompilerRun implements IAjcRun {
         }
         if (!LangUtil.isEmpty(argFiles)) {
             String[] ra = FileUtil.getPaths(argFiles);
-            for (int j = 0; j < ra.length; j++) {
-                arguments.add("@" + ra[j]);
-            }
+			for (String s : ra) {
+				arguments.add("@" + s);
+			}
             if (!spec.badInput && spec.isStaging) {
                 validator.fail(
                     "warning: files listed in argfiles not staged");
@@ -602,13 +600,11 @@ public class CompilerRun implements IAjcRun {
                         false,
                         slop);
                 if (!LangUtil.isEmpty(found)) {
-                    for (Iterator iter = found.iterator();
-                        iter.hasNext();
-                        ) {
-                        MessageUtil.info(
-                            status,
-                            Spec.SEEK_MESSAGE_PREFIX + iter.next());
-                    }
+					for (Object o : found) {
+						MessageUtil.info(
+								status,
+								Spec.SEEK_MESSAGE_PREFIX + o);
+					}
                 }
             }
             ICommand compiler = spec.reuseCompiler
@@ -1198,16 +1194,14 @@ public class CompilerRun implements IAjcRun {
 
         boolean hasInvalidOptions(Values values, TestSetup result) {
             // not supporting 1.0 options any more
-            for (Iterator iter = CRSOPTIONS.invalidOptions.iterator();
-                iter.hasNext();
-                ) {
-                Option option = (Option) iter.next();
-                if (null != values.firstOption(option)) {
-                    result.failureReason =
-                        "invalid option in harness: " + option;
-                    return true;
-                }
-            }
+			for (Object o : CRSOPTIONS.invalidOptions) {
+				Option option = (Option) o;
+				if (null != values.firstOption(option)) {
+					result.failureReason =
+							"invalid option in harness: " + option;
+					return true;
+				}
+			}
             return false;
         }
 
@@ -1243,15 +1237,13 @@ public class CompilerRun implements IAjcRun {
                 return true;
             }
             // not supporting 1.0 options any more
-            for (Iterator iter = CRSOPTIONS.ajc10Options.iterator();
-                iter.hasNext();
-                ) {
-                Option option = (Option) iter.next();
-                if (null != values.firstOption(option)) {
-                    result.failureReason = "old ajc 1.0 option: " + option;
-                    return true;
-                }
-            }
+			for (Object o : CRSOPTIONS.ajc10Options) {
+				Option option = (Option) o;
+				if (null != values.firstOption(option)) {
+					result.failureReason = "old ajc 1.0 option: " + option;
+					return true;
+				}
+			}
 
             return false;
         }
@@ -1771,21 +1763,17 @@ public class CompilerRun implements IAjcRun {
                     };
                     
                 // among options not permitted: extdirs...
-                
-                for (int i = 0; i < options.length; i++) {
-                    crsOptions.addOption(options[i]);
-                }
-                for (Iterator iter = compilerOptions.iterator();
-                    iter.hasNext();
-                    ) {
-                    crsOptions.addOption((Option) iter.next());
-                }
+
+				for (Option option : options) {
+					crsOptions.addOption(option);
+				}
+				for (Object compilerOption : compilerOptions) {
+					crsOptions.addOption((Option) compilerOption);
+				}
                 // these are recognized but records with them are skipped
-                for (Iterator iter = ajc10Options.iterator();
-                    iter.hasNext();
-                    ) {
-                    crsOptions.addOption((Option) iter.next());
-                }
+				for (Object ajc10Option : ajc10Options) {
+					crsOptions.addOption((Option) ajc10Option);
+				}
                 crsOptions.freeze();
             }
 

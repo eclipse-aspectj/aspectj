@@ -74,18 +74,18 @@ public class MessageTest extends TestCase {
     public void testKind_isSameOrLessThan() {
         IMessage.Kind last;
         IMessage.Kind next = null;
-        for (Iterator<IMessage.Kind> iter = IMessage.KINDS.iterator(); iter.hasNext();) {
-            last = next;
-            next = iter.next();
-            if (null == last) {
-                continue;
-            }
-            String label = "last: " + last + " next: " + next;
-            assertTrue(label, !next.isSameOrLessThan(null));
-            assertTrue(label, !next.isSameOrLessThan(last));
-            assertTrue(label, last.isSameOrLessThan(next));
-            assertTrue(label, next.isSameOrLessThan(next));
-        }    
+		for (IMessage.Kind kind : IMessage.KINDS) {
+			last = next;
+			next = kind;
+			if (null == last) {
+				continue;
+			}
+			String label = "last: " + last + " next: " + next;
+			assertTrue(label, !next.isSameOrLessThan(null));
+			assertTrue(label, !next.isSameOrLessThan(last));
+			assertTrue(label, last.isSameOrLessThan(next));
+			assertTrue(label, next.isSameOrLessThan(next));
+		}
     }
     
     public void testMessageHandler() {

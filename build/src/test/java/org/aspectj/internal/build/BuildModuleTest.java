@@ -106,24 +106,23 @@ public class BuildModuleTest extends TestCase {
 	}
     
     protected void deleteTempFiles() {
-        for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
-            File file = (File) iter.next();
-            if (!Util.delete(file)) {
-                File[] list = file.listFiles();
-                if (!Util.isEmpty(list)) {                
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("warning: BuildModuleTest unable to delete ");
-                    sb.append(file.toString());
-                    sb.append("\n"); // XXX platform
-                    for (int i = 0; i < list.length; i++) {
-                        sb.append("  ");
-                        sb.append(list[i].toString());
-                        sb.append("\n"); // XXX platform
-                    }
-                    System.err.println(sb.toString());
-                }
-            }
-        }
+		for (File file : tempFiles) {
+			if (!Util.delete(file)) {
+				File[] list = file.listFiles();
+				if (!Util.isEmpty(list)) {
+					StringBuffer sb = new StringBuffer();
+					sb.append("warning: BuildModuleTest unable to delete ");
+					sb.append(file.toString());
+					sb.append("\n"); // XXX platform
+					for (File value : list) {
+						sb.append("  ");
+						sb.append(value.toString());
+						sb.append("\n"); // XXX platform
+					}
+					System.err.println(sb.toString());
+				}
+			}
+		}
     }
 
     public void testAllJunitTests() {
@@ -318,21 +317,21 @@ public class BuildModuleTest extends TestCase {
             printedMessage = true;
         }
         if (debugging()) {
-            for (int i = 0; i < DEBUGS.length; i++) {
-                if (target.equals(DEBUGS[i])) {
-                    return true;
-                }
-            }
+			for (String debug : DEBUGS) {
+				if (target.equals(debug)) {
+					return true;
+				}
+			}
             return false;
         } else {
-            for (int i = 0; i < SKIPS.length; i++) {
-                if (SKIPS[i].equals(target)) {
-                    if (printInfoMessages) {
-                        System.err.println(target + " skipped build test [" + getClass().getName() + ".shouldBuild(..)]");                
-                    }
-                    return false;
-                }
-            }
+			for (String skip : SKIPS) {
+				if (skip.equals(target)) {
+					if (printInfoMessages) {
+						System.err.println(target + " skipped build test [" + getClass().getName() + ".shouldBuild(..)]");
+					}
+					return false;
+				}
+			}
         }
         return building;
     }
@@ -419,10 +418,10 @@ public class BuildModuleTest extends TestCase {
             java.setClasspath(cp);
             java.setClassname(classname);
             if (null != args) {
-                for (int i = 0; i < args.length; i++) {
-                    Argument arg = java.createArg();
-                    arg.setValue(args[i]);
-                }
+				for (String s : args) {
+					Argument arg = java.createArg();
+					arg.setValue(s);
+				}
             }
             try {
                 java.execute();

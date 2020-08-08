@@ -85,8 +85,8 @@ public class Ajc165Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		List<IMessage> ms = ajc.getLastCompilationResult().getWarningMessages();
 		boolean checked = true;
 		// Look for the message relating to 'List' and check the offsets
-		for (int i = 0; i < ms.size(); i++) {
-			LintMessage m = (LintMessage) ms.get(i);
+		for (IMessage iMessage : ms) {
+			LintMessage m = (LintMessage) iMessage;
 			if (m.toString().indexOf("List") != -1) {
 				// 225/228 on windows - 237/240 on linux
 				if (!(m.getSourceStart() == 225 || m.getSourceStart() == 237)) {

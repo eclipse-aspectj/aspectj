@@ -159,8 +159,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		List children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			IProgramElement element = (IProgramElement) iter.next();
+		for (Object child : children) {
+			IProgramElement element = (IProgramElement) child;
 			if (element.getKind().equals(IProgramElement.Kind.ADVICE)) {
 				if (handle1 == null) {
 					handle1 = element.getHandleIdentifier();
@@ -408,8 +408,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		List children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			IProgramElement element = (IProgramElement) iter.next();
+		for (Object child : children) {
+			IProgramElement element = (IProgramElement) child;
 			if (element.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
 				if (handle1 == null) {
 					handle1 = element.getHandleIdentifier();

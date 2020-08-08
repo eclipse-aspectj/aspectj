@@ -115,13 +115,13 @@ public class WeaveSpec extends CompileSpec {
 	
 	private void collectClassFiles(File inDir, List<File> inList, List<File> toExclude) {
 		File[] contents = inDir.listFiles();
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i].getName().endsWith(".class")) {
-				if (!toExclude.contains(contents[i])) {
-					inList.add(contents[i]);
+		for (File content : contents) {
+			if (content.getName().endsWith(".class")) {
+				if (!toExclude.contains(content)) {
+					inList.add(content);
 				}
-			} else if (contents[i].isDirectory()) {
-				collectClassFiles(contents[i],inList, toExclude);
+			} else if (content.isDirectory()) {
+				collectClassFiles(content, inList, toExclude);
 			}
 		}
 	}

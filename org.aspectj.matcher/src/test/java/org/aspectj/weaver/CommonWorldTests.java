@@ -49,8 +49,7 @@ public abstract class CommonWorldTests extends TestCase {
 
 	public void testPrimitiveTypes() {
 		ResolvedType[] primitives = world.resolve(primitiveTypes);
-		for (int i = 0, len = primitives.length; i < len; i++) {
-			ResolvedType ty = primitives[i];
+		for (ResolvedType ty : primitives) {
 			modifiersTest(ty, Modifier.PUBLIC | Modifier.FINAL);
 			fieldsTest(ty, ResolvedMember.NONE);
 			methodsTest(ty, ResolvedMember.NONE);
@@ -60,8 +59,7 @@ public abstract class CommonWorldTests extends TestCase {
 			isInterfaceTest(ty, false);
 			isClassTest(ty, false);
 			isAspectTest(ty, false);
-			for (int j = 0; j < len; j++) {
-				ResolvedType ty1 = primitives[j];
+			for (ResolvedType ty1 : primitives) {
 				if (ty.equals(ty1)) {
 					isCoerceableFromTest(ty, ty1, true);
 				} else if (ty.equals(UnresolvedType.BOOLEAN) || ty1.equals(UnresolvedType.BOOLEAN)
@@ -75,15 +73,15 @@ public abstract class CommonWorldTests extends TestCase {
 			// Result of this depends on whether autoboxing is supported
 			// isCoerceableFromTest(ty, UnresolvedType.OBJECT, getSupportsAutoboxing());
 
-			primAssignTest("B", new String[] {});
-			primAssignTest("S", new String[] { "B" });
-			primAssignTest("C", new String[] { "B" });
-			primAssignTest("I", new String[] { "B", "S", "C" });
-			primAssignTest("J", new String[] { "B", "S", "C", "I" });
-			primAssignTest("F", new String[] { "B", "S", "C", "I", "J" });
-			primAssignTest("D", new String[] { "B", "S", "C", "I", "J", "F" });
-			primAssignTest("Z", new String[] {});
-			primAssignTest("V", new String[] {});
+			primAssignTest("B", new String[]{});
+			primAssignTest("S", new String[]{"B"});
+			primAssignTest("C", new String[]{"B"});
+			primAssignTest("I", new String[]{"B", "S", "C"});
+			primAssignTest("J", new String[]{"B", "S", "C", "I"});
+			primAssignTest("F", new String[]{"B", "S", "C", "I", "J"});
+			primAssignTest("D", new String[]{"B", "S", "C", "I", "J", "F"});
+			primAssignTest("Z", new String[]{});
+			primAssignTest("V", new String[]{});
 
 		}
 	}
@@ -110,8 +108,7 @@ public abstract class CommonWorldTests extends TestCase {
 
 	public void testPrimitiveArrays() {
 		ResolvedType[] primitives = world.resolve(primitiveTypes);
-		for (int i = 0, len = primitives.length; i < len; i++) {
-			ResolvedType ty = primitives[i];
+		for (ResolvedType ty : primitives) {
 			UnresolvedType tx = UnresolvedType.forSignature("[" + ty.getSignature());
 			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
@@ -120,16 +117,15 @@ public abstract class CommonWorldTests extends TestCase {
 			methodsTest(aty, ResolvedMember.NONE);
 			interfaceTest(
 					aty,
-					new ResolvedType[] { world.getCoreType(UnresolvedType.CLONEABLE),
-							world.getCoreType(UnresolvedType.SERIALIZABLE) });
+					new ResolvedType[]{world.getCoreType(UnresolvedType.CLONEABLE),
+							world.getCoreType(UnresolvedType.SERIALIZABLE)});
 			superclassTest(aty, UnresolvedType.OBJECT);
 
 			pointcutsTest(aty, ResolvedMember.NONE);
 			isInterfaceTest(aty, false);
 			isClassTest(aty, false);
 			isAspectTest(aty, false);
-			for (int j = 0; j < len; j++) {
-				ResolvedType ty1 = primitives[j];
+			for (ResolvedType ty1 : primitives) {
 				isCoerceableFromTest(aty, ty1, false);
 				tx = UnresolvedType.forSignature("[" + ty1.getSignature());
 				ResolvedType aty1 = getWorld().resolve(tx, true);
@@ -144,8 +140,7 @@ public abstract class CommonWorldTests extends TestCase {
 			}
 		}
 		// double dimension arrays
-		for (int i = 0, len = primitives.length; i < len; i++) {
-			ResolvedType ty = primitives[i];
+		for (ResolvedType ty : primitives) {
 			UnresolvedType tx = UnresolvedType.forSignature("[[" + ty.getSignature());
 			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
@@ -154,16 +149,15 @@ public abstract class CommonWorldTests extends TestCase {
 			methodsTest(aty, ResolvedMember.NONE);
 			interfaceTest(
 					aty,
-					new ResolvedType[] { world.getCoreType(UnresolvedType.CLONEABLE),
-							world.getCoreType(UnresolvedType.SERIALIZABLE) });
+					new ResolvedType[]{world.getCoreType(UnresolvedType.CLONEABLE),
+							world.getCoreType(UnresolvedType.SERIALIZABLE)});
 			superclassTest(aty, UnresolvedType.OBJECT);
 
 			pointcutsTest(aty, ResolvedMember.NONE);
 			isInterfaceTest(aty, false);
 			isClassTest(aty, false);
 			isAspectTest(aty, false);
-			for (int j = 0; j < len; j++) {
-				ResolvedType ty1 = primitives[j];
+			for (ResolvedType ty1 : primitives) {
 				isCoerceableFromTest(aty, ty1, false);
 				tx = UnresolvedType.forSignature("[[" + ty1.getSignature());
 				ResolvedType aty1 = getWorld().resolve(tx, true);
@@ -201,15 +195,15 @@ public abstract class CommonWorldTests extends TestCase {
 
 	protected void interfaceTest(ResolvedType type, ResolvedType[] expectedInterfaces) {
 		ResolvedType[] interfaces = type.getDeclaredInterfaces();
-		for (int i = 0; i < expectedInterfaces.length; i++) {
+		for (ResolvedType expectedInterface : expectedInterfaces) {
 			boolean wasMissing = true;
-			for (int j = 0; j < interfaces.length; j++) {
-				if (interfaces[j].getSignature().equals(expectedInterfaces[i].getSignature())) {
+			for (ResolvedType anInterface : interfaces) {
+				if (anInterface.getSignature().equals(expectedInterface.getSignature())) {
 					wasMissing = false;
 				}
 			}
 			if (wasMissing) {
-				fail("Expected declared interface " + expectedInterfaces[i] + " but it wasn't found in "
+				fail("Expected declared interface " + expectedInterface + " but it wasn't found in "
 						+ Arrays.asList(interfaces));
 			}
 		}

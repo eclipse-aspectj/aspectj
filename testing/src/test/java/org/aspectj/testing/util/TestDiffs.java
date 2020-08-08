@@ -125,8 +125,8 @@ public class TestDiffs { // XXX pretty dumb implementation
         final String suffix = " " + label;
         final String LABEL = list.size() + suffix;
         out.println("## START " + LABEL);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-			TestResult result = (TestResult) iter.next();
+		for (Object o : list) {
+			TestResult result = (TestResult) o;
 			out.println(" " + result.test + " ## " + suffix);
 		}
         out.println("##   END " + LABEL);
@@ -146,14 +146,12 @@ public class TestDiffs { // XXX pretty dumb implementation
         if (!LangUtil.isEmpty(input) && !LangUtil.isEmpty(trim)) {
             for (ListIterator iter = result.listIterator(); iter.hasNext();) {
 				TestResult inputItem = (TestResult) iter.next();
-                for (Iterator iterator = trim.iterator();
-					iterator.hasNext();
-					) {
-					TestResult trimItem = (TestResult) iterator.next();
+				for (Object o : trim) {
+					TestResult trimItem = (TestResult) o;
 					if (inputItem.test.equals(trimItem.test)) {
-                        iter.remove();
-                        break;
-                    }
+						iter.remove();
+						break;
+					}
 				}
 			}
         }
@@ -163,13 +161,13 @@ public class TestDiffs { // XXX pretty dumb implementation
     
     /** split input List by whether the TestResult element passed or failed */
     private static void split(List input, ArrayList pass, ArrayList fail) {
-        for (ListIterator iter = input.listIterator(); iter.hasNext();) {
-			TestResult result = (TestResult) iter.next();
-            if (result.pass) {
-                pass.add(result);
-            } else {
-                fail.add(result);
-            }
+		for (Object o : input) {
+			TestResult result = (TestResult) o;
+			if (result.pass) {
+				pass.add(result);
+			} else {
+				fail.add(result);
+			}
 		}
     }
 

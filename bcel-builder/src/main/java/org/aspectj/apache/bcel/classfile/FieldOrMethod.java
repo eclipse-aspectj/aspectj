@@ -168,8 +168,7 @@ public abstract class FieldOrMethod extends Modifiers implements Node {
 		if (annotations == null) {
 			// Find attributes that contain annotation data
 			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
-			for (int i = 0; i < attributes.length; i++) {
-				Attribute attribute = attributes[i];
+			for (Attribute attribute : attributes) {
 				if (attribute instanceof RuntimeAnnos) {
 					RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attribute;
 					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());

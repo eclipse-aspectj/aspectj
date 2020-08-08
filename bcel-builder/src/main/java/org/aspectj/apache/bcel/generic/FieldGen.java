@@ -111,18 +111,17 @@ public class FieldGen extends FieldGenOrMethodGen {
 
 		Attribute[] attrs = field.getAttributes();
 
-		for (int i = 0; i < attrs.length; i++) {
-			if (attrs[i] instanceof ConstantValue) {
-				setValue(((ConstantValue) attrs[i]).getConstantValueIndex());
-			} else if (attrs[i] instanceof RuntimeAnnos) {
-				RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attrs[i];
+		for (Attribute attr : attrs) {
+			if (attr instanceof ConstantValue) {
+				setValue(((ConstantValue) attr).getConstantValueIndex());
+			} else if (attr instanceof RuntimeAnnos) {
+				RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attr;
 				List<AnnotationGen> l = runtimeAnnotations.getAnnotations();
-				for (Iterator<AnnotationGen> it = l.iterator(); it.hasNext();) {
-					AnnotationGen element = it.next();
+				for (AnnotationGen element : l) {
 					addAnnotation(new AnnotationGen(element, cp, false));
 				}
 			} else {
-				addAttribute(attrs[i]);
+				addAttribute(attr);
 			}
 		}
 	}

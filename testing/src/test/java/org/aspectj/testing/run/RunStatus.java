@@ -230,8 +230,8 @@ public class RunStatus implements IRunStatus {
 		}
 		if (includeChildren) {
 			IRunStatus[] kids = getChildren();
-			for (int i = 0; i < kids.length; i++) {
-				if (kids[i].hasAnyMessage(kind, orGreater, true)) {
+			for (IRunStatus kid : kids) {
+				if (kid.hasAnyMessage(kind, orGreater, true)) {
 					return true;
 				}
 			}
@@ -250,8 +250,8 @@ public class RunStatus implements IRunStatus {
 		}
 
 		IRunStatus[] kids = getChildren();
-		for (int i = 0; i < kids.length; i++) {
-			result = kids[i].getMessages(kind, orGreater, includeChildren);
+		for (IRunStatus kid : kids) {
+			result = kid.getMessages(kind, orGreater, includeChildren);
 			if (!LangUtil.isEmpty(result)) {
 				sink.addAll(Arrays.asList(result));
 			}
@@ -429,8 +429,8 @@ public class RunStatus implements IRunStatus {
 		if ((null != children) && (0 < children.size())) {
 			String label = "### --------- " + name;
 			int index = 0;
-			for (Iterator iter = children.iterator(); iter.hasNext();) {
-				IRunStatus childStatus = (IRunStatus) iter.next();
+			for (Object child : children) {
+				IRunStatus childStatus = (IRunStatus) child;
 				String childLabel = "\n" + label + " child[" + index++ + "] " + childStatus.getIdentifier();
 				sb.append(childLabel + " ---- start\n");
 				sb.append(childStatus.toString());

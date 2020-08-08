@@ -397,12 +397,11 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	
 	protected Method getMethodStartsWith(JavaClass jc, String prefix, int whichone) {
 		Method[] meths = jc.getMethods();
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
+		for (Method method : meths) {
 			System.out.println(method);
 			if (method.getName().startsWith(prefix)) {
 				whichone--;
-				if (whichone==0) {
+				if (whichone == 0) {
 					return method;
 				}
 			}
@@ -416,8 +415,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public List<LocalVariable> sortedLocalVariables(LocalVariableTable lvt) {
 		List<LocalVariable> l = new ArrayList<LocalVariable>();
 		LocalVariable lv[] = lvt.getLocalVariableTable();
-		for (int i = 0; i < lv.length; i++) {
-			LocalVariable lvEntry = lv[i];
+		for (LocalVariable lvEntry : lv) {
 			l.add(lvEntry);
 		}
 		Collections.sort(l, new MyComparator());
@@ -448,8 +446,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		StringBuffer sb = new StringBuffer();
 		sb.append("LocalVariableTable.  Entries=#" + lvt.getTableLength()).append("\n");
 		LocalVariable lv[] = lvt.getLocalVariableTable();
-		for (int i = 0; i < lv.length; i++) {
-			LocalVariable lvEntry = lv[i];
+		for (LocalVariable lvEntry : lv) {
 			sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
 					.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength()).append("\n");
 		}
@@ -493,10 +490,9 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	protected Method getMethodFromClass(JavaClass clazz, String methodName) {
 		Method[] meths = clazz.getMethods();
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
+		for (Method method : meths) {
 			if (method.getName().equals(methodName)) {
-				return meths[i];
+				return method;
 			}
 		}
 		return null;

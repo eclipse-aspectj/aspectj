@@ -131,12 +131,12 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 	private boolean suppressingNoExplicitConstructorCall() {
 		if (this.annotations == null)
 			return false;
-		for (int i = 0; i < this.annotations.length; i++) {
-			if (new String(this.annotations[i].resolvedType.signature()).equals(SUPPRESSAJWARNINGS)) {
-				if (this.annotations[i] instanceof MarkerAnnotation) {
+		for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation : this.annotations) {
+			if (new String(annotation.resolvedType.signature()).equals(SUPPRESSAJWARNINGS)) {
+				if (annotation instanceof MarkerAnnotation) {
 					return true;
-				} else if (this.annotations[i] instanceof SingleMemberAnnotation) {
-					SingleMemberAnnotation sma = (SingleMemberAnnotation) this.annotations[i];
+				} else if (annotation instanceof SingleMemberAnnotation) {
+					SingleMemberAnnotation sma = (SingleMemberAnnotation) annotation;
 					if (sma.memberValue instanceof ArrayInitializer) {
 						ArrayInitializer memberValue = (ArrayInitializer) sma.memberValue;
 						for (int j = 0; j < memberValue.expressions.length; j++) {

@@ -83,8 +83,8 @@ public abstract class StructureView {
 		} 
 		
 		if (node != null && node.getChildren() != null) {
-			for (Iterator it = node.getChildren().iterator(); it.hasNext(); ) {
-				IStructureViewNode foundNode = findCorrespondingViewNodeHelper((IStructureViewNode)it.next(), pNode); 		
+			for (Object o : node.getChildren()) {
+				IStructureViewNode foundNode = findCorrespondingViewNodeHelper((IStructureViewNode) o, pNode);
 				if (foundNode != null) return foundNode;
 			}
 		}

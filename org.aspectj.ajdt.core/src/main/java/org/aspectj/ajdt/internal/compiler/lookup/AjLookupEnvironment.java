@@ -172,12 +172,12 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// them in the factory
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-			for (int j = 0; j < b.length; j++) {
-				factory.addSourceTypeBinding(b[j], units[i]);
-				if (b[j].superclass instanceof MissingTypeBinding) {
+			for (SourceTypeBinding sourceTypeBinding : b) {
+				factory.addSourceTypeBinding(sourceTypeBinding, units[i]);
+				if (sourceTypeBinding.superclass instanceof MissingTypeBinding) {
 					// e37: Undoing the work in ClassScope.connectSuperClass() as it will lead to cascade errors
 					// TODO allow MissingTypeBinding through here and cope with it in all situations later?
-					b[j].superclass = units[i].scope.getJavaLangObject();
+					sourceTypeBinding.superclass = units[i].scope.getJavaLangObject();
 				}
 			}
 		}
@@ -195,8 +195,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			CompilationUnitScope cus = units[i].scope;
 			SourceTypeBinding[] stbs = cus.topLevelTypes;
-			for (int j = 0; j < stbs.length; j++) {
-				SourceTypeBinding stb = stbs[j];
+			for (SourceTypeBinding stb : stbs) {
 				typesToProcess.add(stb);
 				TypeDeclaration typeDeclaration = stb.scope.referenceContext;
 				if (typeDeclaration instanceof AspectDeclaration) {
@@ -255,8 +254,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 				CompilationUnitScope cus = units[i].scope;
 				SourceTypeBinding[] stbs = cus.topLevelTypes;
-				for (int j = 0; j < stbs.length; j++) {
-					SourceTypeBinding stb = stbs[j];
+				for (SourceTypeBinding stb : stbs) {
 					typesToProcess.add(stb);
 				}
 			}
@@ -287,20 +285,20 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-			for (int j = 0; j < b.length; j++) {
+			for (SourceTypeBinding sourceTypeBinding : b) {
 				ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.RESOLVING_POINTCUT_DECLARATIONS, b[j].sourceName);
-				resolvePointcutDeclarations(b[j].scope);
+						CompilationAndWeavingContext.RESOLVING_POINTCUT_DECLARATIONS, sourceTypeBinding.sourceName);
+				resolvePointcutDeclarations(sourceTypeBinding.scope);
 				CompilationAndWeavingContext.leavingPhase(tok);
 			}
 		}
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			SourceTypeBinding[] b = units[i].scope.topLevelTypes;
-			for (int j = 0; j < b.length; j++) {
+			for (SourceTypeBinding sourceTypeBinding : b) {
 				ContextToken tok = CompilationAndWeavingContext.enteringPhase(
-						CompilationAndWeavingContext.ADDING_DECLARE_WARNINGS_AND_ERRORS, b[j].sourceName);
-				addAdviceLikeDeclares(b[j].scope);
+						CompilationAndWeavingContext.ADDING_DECLARE_WARNINGS_AND_ERRORS, sourceTypeBinding.sourceName);
+				addAdviceLikeDeclares(sourceTypeBinding.scope);
 				CompilationAndWeavingContext.leavingPhase(tok);
 			}
 		}
@@ -390,8 +388,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		// now check our membertypes (pr119570)
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			SourceTypeBinding rb = (SourceTypeBinding) memberTypes[i];
+		for (ReferenceBinding memberType : memberTypes) {
+			SourceTypeBinding rb = (SourceTypeBinding) memberType;
 			if (!rb.superclass().equals(sourceType)) {
 				doSupertypesFirst(rb.superclass(), yetToProcess);
 			}
@@ -424,16 +422,14 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 		// Then look at the superinterface list
 		ReferenceBinding[] interfaceTypes = typeToWeave.superInterfaces();
-		for (int i = 0; i < interfaceTypes.length; i++) {
-			ReferenceBinding binding = interfaceTypes[i];
+		for (ReferenceBinding binding : interfaceTypes) {
 			if (typesToProcess.contains(binding) && binding instanceof SourceTypeBinding) {
 				// System.err.println("Recursing to superinterface "+new
 				// String(binding.getFileName()));
 				weaveIntertypes(typesToProcess, (SourceTypeBinding) binding, typeMungers, declareParents, declareAnnotationOnTypes,
 						mode);
-			}
-			else if (binding instanceof ParameterizedTypeBinding && (((ParameterizedTypeBinding)binding).type instanceof SourceTypeBinding) && typesToProcess.contains(((ParameterizedTypeBinding)binding).type)) {
-				weaveIntertypes(typesToProcess, (SourceTypeBinding) ((ParameterizedTypeBinding)binding).type, typeMungers, declareParents, declareAnnotationOnTypes, mode);
+			} else if (binding instanceof ParameterizedTypeBinding && (((ParameterizedTypeBinding) binding).type instanceof SourceTypeBinding) && typesToProcess.contains(((ParameterizedTypeBinding) binding).type)) {
+				weaveIntertypes(typesToProcess, (SourceTypeBinding) ((ParameterizedTypeBinding) binding).type, typeMungers, declareParents, declareAnnotationOnTypes, mode);
 			}
 		}
 		weaveInterTypeDeclarations(typeToWeave, typeMungers, declareParents, declareAnnotationOnTypes, false, mode);
@@ -460,8 +456,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		SourceTypeBinding sourceType = s.referenceContext.binding;
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			addAdviceLikeDeclares(((SourceTypeBinding) memberTypes[i]).scope);
+		for (ReferenceBinding memberType : memberTypes) {
+			addAdviceLikeDeclares(((SourceTypeBinding) memberType).scope);
 		}
 	}
 
@@ -479,8 +475,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		SourceTypeBinding sourceType = s.referenceContext.binding;
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			addCrosscuttingStructures(((SourceTypeBinding) memberTypes[i]).scope);
+		for (ReferenceBinding memberType : memberTypes) {
+			addCrosscuttingStructures(((SourceTypeBinding) memberType).scope);
 		}
 	}
 
@@ -491,14 +487,14 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		AbstractMethodDeclaration[] methods = dec.methods;
 		boolean initializedMethods = false;
 		if (methods != null) {
-			for (int i = 0; i < methods.length; i++) {
-				if (methods[i] instanceof PointcutDeclaration) {
+			for (AbstractMethodDeclaration method : methods) {
+				if (method instanceof PointcutDeclaration) {
 					hasPointcuts = true;
 					if (!initializedMethods) {
 						sourceType.methods(); // force initialization
 						initializedMethods = true;
 					}
-					((PointcutDeclaration) methods[i]).resolvePointcut(s);
+					((PointcutDeclaration) method).resolvePointcut(s);
 				}
 			}
 		}
@@ -510,8 +506,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			resolvePointcutDeclarations(((SourceTypeBinding) memberTypes[i]).scope);
+		for (ReferenceBinding memberType : memberTypes) {
+			resolvePointcutDeclarations(((SourceTypeBinding) memberType).scope);
 		}
 	}
 
@@ -567,8 +563,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			System.err.println("Unexpectedly found null for memberTypes of " + sourceType.debugName());
 		}
 		if (memberTypes != null) {
-			for (int i = 0, length = memberTypes.length; i < length; i++) {
-				buildInterTypeAndPerClause(((SourceTypeBinding) memberTypes[i]).scope);
+			for (ReferenceBinding memberType : memberTypes) {
+				buildInterTypeAndPerClause(((SourceTypeBinding) memberType).scope);
 			}
 		}
 	}
@@ -713,8 +709,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// Check if the type we are looking at is the topMostImplementor of a
 			// dangerous interface -
 			// report a problem if it is.
-			for (Iterator i = dangerousInterfaces.entrySet().iterator(); i.hasNext();) {
-				Map.Entry entry = (Map.Entry) i.next();
+			for (Object o : dangerousInterfaces.entrySet()) {
+				Map.Entry entry = (Map.Entry) o;
 				ResolvedType interfaceType = (ResolvedType) entry.getKey();
 				if (onType.isTopmostImplementor(interfaceType)) {
 					factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
@@ -804,8 +800,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 		}
 		if (mode == 0 || mode == 2) {
-			for (Iterator<ConcreteTypeMunger> i = typeMungers.iterator(); i.hasNext();) {
-				EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
+			for (ConcreteTypeMunger typeMunger : typeMungers) {
+				EclipseTypeMunger munger = (EclipseTypeMunger) typeMunger;
 				if (munger.matches(onType)) {
 					// if (needOldStyleWarning) {
 					// factory.showMessage(IMessage.WARNING, "The class for " + onType
@@ -827,8 +823,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			}
 
 			onType.checkInterTypeMungers();
-			for (Iterator i = onType.getInterTypeMungers().iterator(); i.hasNext();) {
-				EclipseTypeMunger munger = (EclipseTypeMunger) i.next();
+			for (ConcreteTypeMunger concreteTypeMunger : onType.getInterTypeMungers()) {
+				EclipseTypeMunger munger = (EclipseTypeMunger) concreteTypeMunger;
 				if (munger.getMunger() == null || munger.getMunger().getKind() != ResolvedTypeMunger.InnerClass) {
 					if (munger.munge(sourceType, onType)) {
 						if (factory.pushinCollector != null) {
@@ -860,9 +856,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 
 		ReferenceBinding[] memberTypes = sourceType.memberTypes;
-		for (int i = 0, length = memberTypes.length; i < length; i++) {
-			if (memberTypes[i] instanceof SourceTypeBinding) {
-				weaveInterTypeDeclarations((SourceTypeBinding) memberTypes[i], typeMungers, declareParents,
+		for (ReferenceBinding memberType : memberTypes) {
+			if (memberType instanceof SourceTypeBinding) {
+				weaveInterTypeDeclarations((SourceTypeBinding) memberType, typeMungers, declareParents,
 						declareAnnotationOnTypes, false, mode);
 			}
 		}
@@ -878,8 +874,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	private void processTypeMungersFromExistingWeaverState(SourceTypeBinding sourceType, ResolvedType onType) {
 		List<ConcreteTypeMunger> previouslyAppliedMungers = onType.getWeaverState().getTypeMungers(onType);
 
-		for (Iterator<ConcreteTypeMunger> i = previouslyAppliedMungers.iterator(); i.hasNext();) {
-			ConcreteTypeMunger m = i.next();
+		for (ConcreteTypeMunger m : previouslyAppliedMungers) {
 			EclipseTypeMunger munger = factory.makeEclipseTypeMunger(m);
 			if (munger.munge(sourceType, onType)) {
 				if (onType.isInterface() && munger.getMunger().needsAccessToTopmostImplementor()) {
@@ -899,8 +894,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ResolvedType resolvedSourceType = factory.fromEclipse(sourceType);
 		List<ResolvedType> newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
 		if (!newParents.isEmpty()) {
-			for (Iterator<ResolvedType> i = newParents.iterator(); i.hasNext();) {
-				ResolvedType parent = i.next();
+			for (ResolvedType parent : newParents) {
 				if (dangerousInterfaces.containsKey(parent)) {
 					ResolvedType onType = factory.fromEclipse(sourceType);
 					factory.showMessage(IMessage.ERROR, onType + ": " + dangerousInterfaces.get(parent),
@@ -1128,8 +1122,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 
 		Annotation currentAnnotations[] = sourceType.scope.referenceContext.annotations;
 		if (currentAnnotations != null) {
-			for (int i = 0; i < currentAnnotations.length; i++) {
-				Annotation annotation = currentAnnotations[i];
+			for (Annotation annotation : currentAnnotations) {
 				String a = CharOperation.toString(annotation.type.getTypeName());
 				String b = CharOperation.toString(toAdd[0].type.getTypeName());
 				// FIXME asc we have a lint for attempting to add an annotation
@@ -1209,9 +1202,9 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ResolvedMember[] methods = rt.getDeclaredMethods();
 		ResolvedMember decaMethod = null;
 		String nameToLookFor = decA.getAnnotationMethod();
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals(nameToLookFor)) {
-				decaMethod = methods[i];
+		for (ResolvedMember method : methods) {
+			if (method.getName().equals(nameToLookFor)) {
+				decaMethod = method;
 				break;
 			}
 		}

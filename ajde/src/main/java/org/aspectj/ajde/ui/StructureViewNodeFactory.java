@@ -49,14 +49,13 @@ public abstract class StructureViewNodeFactory {
 			IRelationshipMap relMap = (manager == null ? null : manager.getRelationshipMap());
 			List relationships = (relMap == null ? null : relMap.get(nodeHandle));
 			if (relationships != null) {
-				for (Iterator it = relationships.iterator(); it.hasNext();) {
-					IRelationship rel = (IRelationship) it.next();
+				for (Object relationship : relationships) {
+					IRelationship rel = (IRelationship) relationship;
 					if (rel != null && rel.getTargets().size() > 0) {
 						IStructureViewNode relNode = createRelationship(rel, iconRegistry.getIcon(rel.getKind()));
 						if (relNode != null) {
 							svNode.add(relNode, 0);
-							for (Iterator it2 = rel.getTargets().iterator(); it2.hasNext();) {
-								String handle = (String) it2.next();
+							for (String handle : rel.getTargets()) {
 								IProgramElement link = Ajde.getDefault().getModel().getHierarchy().findElementForHandle(handle);
 								if (link != null) {
 									IStructureViewNode linkNode = createLink(link, iconRegistry.getStructureIcon(link.getKind(),

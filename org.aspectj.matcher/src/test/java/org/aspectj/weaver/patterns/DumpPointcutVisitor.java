@@ -549,8 +549,8 @@ public class DumpPointcutVisitor implements PatternNodeVisitor {
 		"(if(true) && set(int BaseApp.i))"
 
 		};
-		for (int i = 0; i < s.length; i++) {
-			check(s[i]);
+		for (String value : s) {
+			check(value);
 		}
 	}
 

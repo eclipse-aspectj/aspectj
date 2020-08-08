@@ -82,8 +82,7 @@ public class AnnotationGen {
 	public void dump(DataOutputStream dos) throws IOException {
 		dos.writeShort(typeIndex); // u2 index of type name in cpool
 		dos.writeShort(pairs.size()); // u2 element_value pair count
-		for (int i = 0; i < pairs.size(); i++) {
-			NameValuePair envp = pairs.get(i);
+		for (NameValuePair envp : pairs) {
 			envp.dump(dos);
 		}
 	}

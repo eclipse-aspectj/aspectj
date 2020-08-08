@@ -74,8 +74,8 @@ public abstract class CommandTestCase extends TestCase {
 
 		args.add("-g"); // XXX need this to get sourcefile and line numbers, shouldn't
 
-		for (int i = 0; i < extraArgs.length; i++) {
-			args.add(extraArgs[i]);
+		for (String extraArg : extraArgs) {
+			args.add(extraArg);
 		}
 
 		args.add(Constants.TESTDATA_PATH + "/" + source);
@@ -132,10 +132,9 @@ public abstract class CommandTestCase extends TestCase {
 			assertTrue("expected error", nErrors > 0);
 		} else {
 			List errors = new ArrayList(Arrays.asList(myHandler.getErrors()));
-			for (int i = 0, len = expectedErrors.length; i < len; i++) {
-				int line = expectedErrors[i];
+			for (int line : expectedErrors) {
 				boolean found = false;
-				for (Iterator iter = errors.iterator(); iter.hasNext();) {
+				for (Iterator iter = errors.iterator(); iter.hasNext(); ) {
 					IMessage m = (IMessage) iter.next();
 					if (m.getSourceLocation() != null && m.getSourceLocation().getLine() == line) {
 						found = true;

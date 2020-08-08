@@ -341,8 +341,7 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		} else {
 			if (!onTypeBinding.isInterface()) {
 				FieldBinding[] existingFields = onTypeBinding.fields();
-				for (int f = 0; f < existingFields.length; f++) {
-					FieldBinding fieldBinding = existingFields[f];
+				for (FieldBinding fieldBinding : existingFields) {
 					if (CharOperation.equals(fieldBinding.name, sig.getName().toCharArray())) {
 						fieldMunger.version = NewFieldTypeMunger.VersionOne;
 					}

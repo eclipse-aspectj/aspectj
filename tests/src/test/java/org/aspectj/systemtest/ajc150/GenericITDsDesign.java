@@ -59,8 +59,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		JavaClass clazz = getClassFromDisk(ajc, classname);
 		Signature sigAttr = null;
 		Attribute[] attrs = clazz.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
+		for (Attribute attribute : attrs) {
 			if (attribute.getName().equals("Signature")) {
 				sigAttr = (Signature) attribute;
 			}
@@ -87,14 +86,14 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 
 	private BcelTypeMunger getMungerFromLine(String classname, int linenumber) {
 		List allMungers = getTypeMunger(classname);
-		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
-			BcelTypeMunger element = (BcelTypeMunger) iter.next();
+		for (Object munger : allMungers) {
+			BcelTypeMunger element = (BcelTypeMunger) munger;
 			if (element.getMunger().getSourceLocation().getLine() == linenumber) {
 				return element;
 			}
 		}
-		for (Iterator iter = allMungers.iterator(); iter.hasNext();) {
-			BcelTypeMunger element = (BcelTypeMunger) iter.next();
+		for (Object allMunger : allMungers) {
+			BcelTypeMunger element = (BcelTypeMunger) allMunger;
 			System.err.println("Line: " + element.getMunger().getSourceLocation().getLine() + "  > " + element);
 		}
 		fail("Couldn't find a type munger from line " + linenumber + " in class " + classname);
@@ -105,8 +104,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 		JavaClass theClass = getClassFromDisk(ajc, classname);
 		Hashtable<String,Field> retval = new Hashtable<>();
 		org.aspectj.apache.bcel.classfile.Field[] fs = theClass.getFields();
-		for (int i = 0; i < fs.length; i++) {
-			Field field = fs[i];
+		for (Field field : fs) {
 			retval.put(field.getName(), field);
 		}
 		return retval;

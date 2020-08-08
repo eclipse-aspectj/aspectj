@@ -82,8 +82,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * (element type: <code>IExtendedModifiers</code>)
 	 */
 	void printModifiers(List ext) {
-		for (Iterator it = ext.iterator(); it.hasNext(); ) {
-			ASTNode p = (ASTNode) it.next();
+		for (Object o : ext) {
+			ASTNode p = (ASTNode) o;
 			p.accept(this);
 			this.buffer.append(" ");//$NON-NLS-1$
 		}
@@ -144,8 +144,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append("@interface ");//$NON-NLS-1$
 		node.getName().accept(this);
 		this.buffer.append(" {");//$NON-NLS-1$
-		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext(); ) {
-			BodyDeclaration d = (BodyDeclaration) it.next();
+		for (Object o : node.bodyDeclarations()) {
+			BodyDeclaration d = (BodyDeclaration) o;
 			d.accept(this);
 		}
 		this.buffer.append("}\n");//$NON-NLS-1$
@@ -180,8 +180,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	public boolean visit(AnonymousClassDeclaration node) {
 		this.buffer.append("{\n");//$NON-NLS-1$
 		this.indent++;
-		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext(); ) {
-			BodyDeclaration b = (BodyDeclaration) it.next();
+		for (Object o : node.bodyDeclarations()) {
+			BodyDeclaration b = (BodyDeclaration) o;
 			b.accept(this);
 		}
 		this.indent--;
@@ -210,9 +210,9 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		int dims = at.getDimensions();
 		Type elementType = at.getElementType();
 		elementType.accept(this);
-		for (Iterator it = node.dimensions().iterator(); it.hasNext(); ) {
+		for (Object o : node.dimensions()) {
 			this.buffer.append("[");//$NON-NLS-1$
-			Expression e = (Expression) it.next();
+			Expression e = (Expression) o;
 			e.accept(this);
 			this.buffer.append("]");//$NON-NLS-1$
 			dims--;
@@ -283,8 +283,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	public boolean visit(Block node) {
 		this.buffer.append("{\n");//$NON-NLS-1$
 		this.indent++;
-		for (Iterator it = node.statements().iterator(); it.hasNext(); ) {
-			Statement s = (Statement) it.next();
+		for (Object o : node.statements()) {
+			Statement s = (Statement) o;
 			s.accept(this);
 		}
 		this.indent--;
@@ -407,12 +407,12 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getPackage() != null) {
 			node.getPackage().accept(this);
 		}
-		for (Iterator it = node.imports().iterator(); it.hasNext(); ) {
-			ImportDeclaration d = (ImportDeclaration) it.next();
+		for (Object value : node.imports()) {
+			ImportDeclaration d = (ImportDeclaration) value;
 			d.accept(this);
 		}
-		for (Iterator it = node.types().iterator(); it.hasNext(); ) {
-			AbstractTypeDeclaration d = (AbstractTypeDeclaration) it.next();
+		for (Object o : node.types()) {
+			AbstractTypeDeclaration d = (AbstractTypeDeclaration) o;
 			d.accept(this);
 		}
 		return false;
@@ -593,8 +593,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		}
 		if (!node.bodyDeclarations().isEmpty()) {
 			this.buffer.append("; ");//$NON-NLS-1$
-			for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext(); ) {
-				BodyDeclaration d = (BodyDeclaration) it.next();
+			for (Object o : node.bodyDeclarations()) {
+				BodyDeclaration d = (BodyDeclaration) o;
 				d.accept(this);
 				// other body declarations include trailing punctuation
 			}
@@ -723,9 +723,9 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		final List extendedOperands = node.extendedOperands();
 		if (extendedOperands.size() != 0) {
 			this.buffer.append(' ');
-			for (Iterator it = extendedOperands.iterator(); it.hasNext(); ) {
+			for (Object extendedOperand : extendedOperands) {
 				this.buffer.append(node.getOperator().toString()).append(' ');
-				Expression e = (Expression) it.next();
+				Expression e = (Expression) extendedOperand;
 				e.accept(this);
 			}
 		}
@@ -765,8 +765,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	public boolean visit(Javadoc node) {
 		printIndent();
 		this.buffer.append("/** ");//$NON-NLS-1$
-		for (Iterator it = node.tags().iterator(); it.hasNext(); ) {
-			ASTNode e = (ASTNode) it.next();
+		for (Object o : node.tags()) {
+			ASTNode e = (ASTNode) o;
 			e.accept(this);
 		}
 		this.buffer.append("\n */\n");//$NON-NLS-1$
@@ -1023,8 +1023,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			if (node.getJavadoc() != null) {
 				node.getJavadoc().accept(this);
 			}
-			for (Iterator it = node.annotations().iterator(); it.hasNext(); ) {
-				Annotation p = (Annotation) it.next();
+			for (Object o : node.annotations()) {
+				Annotation p = (Annotation) o;
 				p.accept(this);
 				this.buffer.append(" ");//$NON-NLS-1$
 			}
@@ -1296,8 +1296,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(") ");//$NON-NLS-1$
 		this.buffer.append("{\n");//$NON-NLS-1$
 		this.indent++;
-		for (Iterator it = node.statements().iterator(); it.hasNext(); ) {
-			Statement s = (Statement) it.next();
+		for (Object o : node.statements()) {
+			Statement s = (Statement) o;
 			s.accept(this);
 			this.indent--; // incremented in visit(SwitchCase)
 		}
@@ -1336,8 +1336,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			previousRequiresWhiteSpace = true;
 		}
 		boolean previousRequiresNewLine = false;
-		for (Iterator it = node.fragments().iterator(); it.hasNext(); ) {
-			ASTNode e = (ASTNode) it.next();
+		for (Object o : node.fragments()) {
+			ASTNode e = (ASTNode) o;
 			// assume text elements include necessary leading and trailing whitespace
 			// but Name, MemberRef, MethodRef, and nested TagElement do not include white space
 			boolean currentIncludesWhiteSpace = (e instanceof TextElement);
@@ -1398,8 +1398,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append("try ");//$NON-NLS-1$
 		node.getBody().accept(this);
 		this.buffer.append(" ");//$NON-NLS-1$
-		for (Iterator it = node.catchClauses().iterator(); it.hasNext(); ) {
-			CatchClause cc = (CatchClause) it.next();
+		for (Object o : node.catchClauses()) {
+			CatchClause cc = (CatchClause) o;
 			cc.accept(this);
 		}
 		if (node.getFinally() != null) {
@@ -1494,8 +1494,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append("{\n");//$NON-NLS-1$
 		this.indent++;
 		BodyDeclaration prev = null;
-		for (Iterator it = node.bodyDeclarations().iterator(); it.hasNext(); ) {
-			BodyDeclaration d = (BodyDeclaration) it.next();
+		for (Object o : node.bodyDeclarations()) {
+			BodyDeclaration d = (BodyDeclaration) o;
 			if (prev instanceof EnumConstantDeclaration) {
 				// enum constant declarations do not include punctuation
 				if (d instanceof EnumConstantDeclaration) {

@@ -133,12 +133,11 @@ public class FileUtil {
         // normalize sources to ignore
         final ArrayList expected = (!checkExpected ? null : new ArrayList());
         if (checkExpected) {
-            for (int i = 0; i < expectedPaths.length; i++) {
-                String srcPath = expectedPaths[i];
-                if (!LangUtil.isEmpty(srcPath)) {
-                    expected.add(org.aspectj.util.FileUtil.weakNormalize(srcPath));
-                }
-            }
+			for (String srcPath : expectedPaths) {
+				if (!LangUtil.isEmpty(srcPath)) {
+					expected.add(org.aspectj.util.FileUtil.weakNormalize(srcPath));
+				}
+			}
         }
         
         // gather, normalize paths changed
@@ -166,18 +165,16 @@ public class FileUtil {
                                     return false; 
                                 }                      
                             } else {
-                                for (Iterator iter = expected.iterator();
-									iter.hasNext();
-									) {
-									String exp = (String) iter.next();
-									if (path.startsWith(exp)) {                                        
-                                        String suffix = path.substring(exp.length());
-                                        if (-1 == suffix.indexOf("/")) { // normalized...
-                                            expected.remove(path);
-                                            // found - do not add to unexpected
-                                            return false; 
-                                        }
-                                    }
+								for (Object o : expected) {
+									String exp = (String) o;
+									if (path.startsWith(exp)) {
+										String suffix = path.substring(exp.length());
+										if (-1 == suffix.indexOf("/")) { // normalized...
+											expected.remove(path);
+											// found - do not add to unexpected
+											return false;
+										}
+									}
 								}
                             }
                         }
@@ -292,26 +289,26 @@ public class FileUtil {
             // go through files first
             File[] files = file.listFiles(ValidFileFilter.FILE_EXISTS); 
             if (null != files) {
-                for (int i = 0; i < files.length; i++) {
-                    if (!fileFilter.accept(files[i])) {
-                        return false;
-                    }
-                }
+				for (File value : files) {
+					if (!fileFilter.accept(value)) {
+						return false;
+					}
+				}
             }
             // now recurse to handle directories
             File[] dirs = file.listFiles(ValidFileFilter.DIR_EXISTS);
             if (null != dirs) {
-                for (int i = 0; i < dirs.length; i++) {
-                    if (userRecursion) {
-                        if (!fileFilter.accept(dirs[i])) {
-                            return false;
-                        }
-                    } else {
-                        if (!descendFileTree(dirs[i], fileFilter,userRecursion)) {
-                            return false;
-                        }
-                    }
-                }
+				for (File dir : dirs) {
+					if (userRecursion) {
+						if (!fileFilter.accept(dir)) {
+							return false;
+						}
+					} else {
+						if (!descendFileTree(dir, fileFilter, userRecursion)) {
+							return false;
+						}
+					}
+				}
             }
         } // readable directory (ignore unreadable ones) 
         return true;

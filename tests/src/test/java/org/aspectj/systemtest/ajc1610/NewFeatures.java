@@ -127,9 +127,9 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	private Method getPreClinitMethod(JavaClass myClass) {
 		Method lm[] = myClass.getMethods();
-		for (int i = 0; i < lm.length; i++) {
-			if (lm[i].getName().equals("ajc$preClinit")) {
-				return lm[i];
+		for (Method method : lm) {
+			if (method.getName().equals("ajc$preClinit")) {
+				return method;
 			}
 		}
 		return null;

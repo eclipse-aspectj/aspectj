@@ -27,17 +27,16 @@ public class WeaverMessagesTestCase extends TestCase {
 		Class<?> wmClass = WeaverMessages.class;
 		Field[] fields = wmClass.getDeclaredFields();
 		List<String> fieldList = new ArrayList<String>();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
+		for (Field f : fields) {
 			if (f.getType() == String.class) {
 				try {
 					String key = (String) f.get(null);
 //					String value = WeaverMessages.format(key);
-					assertFalse("Each key should be unique",fieldList.contains(key));
+					assertFalse("Each key should be unique", fieldList.contains(key));
 					fieldList.add(key);
 //					System.out.println(key + "," + value);
-				} catch (IllegalAccessException ex) {					
-				} catch(MissingResourceException mrEx) {
+				} catch (IllegalAccessException ex) {
+				} catch (MissingResourceException mrEx) {
 					fail("Missing resource: " + mrEx);
 				}
 			}

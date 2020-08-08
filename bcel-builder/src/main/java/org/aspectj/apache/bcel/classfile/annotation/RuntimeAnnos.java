@@ -64,8 +64,7 @@ public abstract class RuntimeAnnos extends Attribute {
 			dos.write(annotation_data, 0, length);
 		} else {
 			dos.writeShort(annotations.size());
-			for (Iterator<AnnotationGen> i = annotations.iterator(); i.hasNext();) {
-				AnnotationGen ann = i.next();
+			for (AnnotationGen ann : annotations) {
 				ann.dump(dos);
 			}
 		}

@@ -39,23 +39,23 @@ public class BuildConfigPopupMenu extends JPopupMenu {
 
 	public BuildConfigPopupMenu(final AbstractAction action) {
 		List configFiles = Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles();
-		for (Iterator it = configFiles.iterator(); it.hasNext(); ) {
-	    	final String buildConfig = (String)it.next();
-	    	JMenuItem buildItem = new JMenuItem(buildConfig);
-	    	buildItem.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
-	    	buildItem.addActionListener(
-	    		new ActionListener() {
-		    		public void actionPerformed(ActionEvent e) {
-		    			Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(buildConfig);
-		    			// A separate thread is required here because the buildProgresssMonitor
-		    			// that monitors the build needs to be in a different thread
-		    			// to that which is doing the build (swing threading issues)
-		    			Ajde.getDefault().runBuildInDifferentThread(buildConfig, true);
-				        action.actionPerformed(e);
-					}
-	    		});
-	    	buildItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.FILE_LST).getIconResource());
-	    	this.add(buildItem);
+		for (Object configFile : configFiles) {
+			final String buildConfig = (String) configFile;
+			JMenuItem buildItem = new JMenuItem(buildConfig);
+			buildItem.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
+			buildItem.addActionListener(
+					new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							Ajde.getDefault().getBuildConfigManager().setActiveConfigFile(buildConfig);
+							// A separate thread is required here because the buildProgresssMonitor
+							// that monitors the build needs to be in a different thread
+							// to that which is doing the build (swing threading issues)
+							Ajde.getDefault().runBuildInDifferentThread(buildConfig, true);
+							action.actionPerformed(e);
+						}
+					});
+			buildItem.setIcon((Icon) Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.FILE_LST).getIconResource());
+			this.add(buildItem);
 		}
 	}
 }

@@ -330,8 +330,7 @@ public class PointcutRewriter {
 		SortedSet<Pointcut> nodes = new TreeSet<Pointcut>(new PointcutEvaluationExpenseComparator());
 		collectAndNodes(apc, nodes);
 		// look for A and !A, or IfFalse
-		for (Iterator<Pointcut> iter = nodes.iterator(); iter.hasNext();) {
-			Pointcut element = iter.next();
+		for (Pointcut element : nodes) {
 			if (element instanceof NotPointcut) {
 				Pointcut body = ((NotPointcut) element).getNegatedPointcut();
 				if (nodes.contains(body)) {

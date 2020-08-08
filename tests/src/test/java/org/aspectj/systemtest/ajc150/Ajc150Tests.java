@@ -358,8 +358,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		boolean f = false;
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "PR82570_1");
 		Method[] meths = jc.getMethods();
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
+		for (Method method : meths) {
 			if (f)
 				System.err.println("Line number table for " + method.getName() + method.getSignature() + " = "
 						+ method.getLineNumberTable());

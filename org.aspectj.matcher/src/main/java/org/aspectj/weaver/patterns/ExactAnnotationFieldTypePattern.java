@@ -106,8 +106,7 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 		ResolvedMember[] annotationFields = theAnnotationType.getDeclaredMethods();
 		field = null;
 		boolean looksAmbiguous = false;
-		for (int i = 0; i < annotationFields.length; i++) {
-			ResolvedMember resolvedMember = annotationFields[i];
+		for (ResolvedMember resolvedMember : annotationFields) {
 			if (resolvedMember.getReturnType().equals(formalBinding.getType())) {
 				if (field != null) {
 					boolean haveProblem = true;

@@ -419,27 +419,27 @@ public class Ajctest extends Task implements PropertyChangeListener {
             String str = "";
             if (files.size() > 0) {
                 str += "files:" + "\n";
-                for (Iterator<File> i = files.iterator(); i.hasNext();) {
-                    str += "\t" + i.next() + "\n";
-                }
+				for (File file : files) {
+					str += "\t" + file + "\n";
+				}
             }
             if (argfiles.size() > 0) {
                 str += "argfiles:" + "\n";
-                for (Iterator<File> i = argfiles.iterator(); i.hasNext();) {
-                    str += "\t" + i.next() + "\n";
-                }
+				for (File argfile : argfiles) {
+					str += "\t" + argfile + "\n";
+				}
             }
             if (args.size() > 0) {
                 str += "args:" + "\n";
-                for (Iterator i = args.iterator(); i.hasNext();) {
-                    str += "\t" + i.next() + "\n";
-                }
+				for (Argument arg : args) {
+					str += "\t" + arg + "\n";
+				}
             }
             if (testclasses.size() > 0) {
                 str += "classes:" + "\n";
-                for (Iterator i = testclasses.iterator(); i.hasNext();) {
-                    str += "\t" + i.next() + "\n";
-                }
+				for (Run testclass : testclasses) {
+					str += "\t" + testclass + "\n";
+				}
             }
             return str;
         }
@@ -581,26 +581,24 @@ public class Ajctest extends Task implements PropertyChangeListener {
             File src = getDir(project);
             argfiles = new Vector<>();
             files = new Vector<>();
-            for(Iterator<Argfile> iter = argfileNames.iterator(); iter.hasNext();) {
-                String name = iter.next().name;
-                File argfile = new File(src, name);
-                if (check(argfile, name, location)) argfiles.add(argfile);
-            }
+			for (Argfile argfileName : argfileNames) {
+				String name = argfileName.name;
+				File argfile = new File(src, name);
+				if (check(argfile, name, location)) argfiles.add(argfile);
+			}
             if (havecludes || argfiles.size() <= 0) {
                 String[] filenames =
                     getDirectoryScanner(project).getIncludedFiles();
-                for (int j = 0; j < filenames.length; j++) {
-                    String name = filenames[j];
-                    if (name.endsWith(".java")) {
-                        File file = new File(src, name);
-                        if (check(file, name, location)) files.add(file);
-                    }
-                }
+				for (String name : filenames) {
+					if (name.endsWith(".java")) {
+						File file = new File(src, name);
+						if (check(file, name, location)) files.add(file);
+					}
+				}
             }
-            for (Iterator i = Ajctest.this.testclasses.iterator();
-                 i.hasNext();) {
-                this.testclasses.add((Run)i.next());
-            }
+			for (Run run : Ajctest.this.testclasses) {
+				this.testclasses.add(run);
+			}
             if (this.classpath == null) {
                 setClasspath(Ajctest.this.classpath);
             }
@@ -611,9 +609,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 this.ajdoc = Ajctest.this.ajdoc;
             }
             if (this.fork) {
-                for (Iterator<Run> i = this.testclasses.iterator(); i.hasNext();) {
-                    i.next().setFork(fork);
-                }
+				for (Run testclass : this.testclasses) {
+					testclass.setFork(fork);
+				}
             }
             if (!this.noclean) {
                 this.noclean = Ajctest.this.noclean;
@@ -691,35 +689,35 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private void log(String space, List<?> list, String title) {
         if (list == null || list.size() < 1) return;
         log(space + title);
-        for (Iterator<?> i = list.iterator(); i.hasNext();) {
-            log(space + "  " + i.next());
-        }
+		for (Object o : list) {
+			log(space + "  " + o);
+		}
     }
 
     private void execute(Testset testset, List<Arg> args) throws BuildException {
         if (testset.files.size() > 0) {
             log("\tfiles:");
-            for (Iterator<File> i = testset.files.iterator(); i.hasNext();) {
-                log("\t  " + i.next());
-            }
+			for (File file : testset.files) {
+				log("\t  " + file);
+			}
         }
         if (testset.argfiles.size() > 0) {
             log("\targfiles:");
-            for (Iterator<File> i = testset.argfiles.iterator(); i.hasNext();) {
-                log("\t  " + i.next());
-            }
+			for (File file : testset.argfiles) {
+				log("\t  " + file);
+			}
         }
         if (args.size() > 0) {
             log("\targs:");
-            for (Iterator<Arg> i = args.iterator(); i.hasNext();) {
-                log("\t  " + i.next());
-            }
+			for (Arg arg : args) {
+				log("\t  " + arg);
+			}
         }
         if (testset.testclasses.size() > 0) {
             log("\tclasses:");
-            for (Iterator<Run> i = testset.testclasses.iterator(); i.hasNext();) {
-                log("\t  " + i.next());
-            }
+			for (Run testclass : testset.testclasses) {
+				log("\t  " + testclass);
+			}
         }
         if (!testset.noclean &&
             (!isSet("noclean") && !isSet("nocompile"))) {
@@ -728,11 +726,11 @@ public class Ajctest extends Task implements PropertyChangeListener {
         }
         delete(workingdir);
         make(workingdir);
-        for (Iterator<String> i = testset.depends.iterator(); i.hasNext();) {
-            String target = i.next()+"";
-            // todo: capture failures here?
-            project.executeTarget(target);
-        }
+		for (String depend : testset.depends) {
+			String target = depend + "";
+			// todo: capture failures here?
+			project.executeTarget(target);
+		}
         int exit;
         if (!isSet("nodoc") && testset.ajdoc != null) {
             log("\tdoc... " + testset.ajdoc);
@@ -785,19 +783,18 @@ public class Ajctest extends Task implements PropertyChangeListener {
                  -1, "run");
 
         } else if (!isSet("norun")) {
-            for (Iterator<Run> i = testset.testclasses.iterator(); i.hasNext();) {
-                Run testclass = i.next();
-                log("\ttest..." + testclass.classname());
-                if (null != destdir) {
-                    testclass.setClassesDir(destdir.getAbsolutePath());
-                }
-                if ((exit = testclass.executeJava()) != 0) {
-                    post(testset, new Vector(), testclass.msgs, exit, "run");
-                } else {
-                    fire("run.good");
-                }
-                fire("run.done");
-            }
+			for (Run testclass : testset.testclasses) {
+				log("\ttest..." + testclass.classname());
+				if (null != destdir) {
+					testclass.setClassesDir(destdir.getAbsolutePath());
+				}
+				if ((exit = testclass.executeJava()) != 0) {
+					post(testset, new Vector(), testclass.msgs, exit, "run");
+				} else {
+					fire("run.good");
+				}
+				fire("run.done");
+			}
         }
         log("");
     }
@@ -1288,23 +1285,21 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private List<List<Arg>> argcombo(List<Argument> arguments) {
         List<Argument> combos = new Vector<>();
         List<Arg> always = new Vector<>();
-        for (Iterator<Argument> iter = arguments.iterator(); iter.hasNext();) {
-            Argument arg = iter.next();
-            if (arg.values.size() == 0) arg.values.add("");
-            if (!arg.always && !arg.values.contains(null)) arg.values.add(null);
-            if (arg.values.size() > 0) {
-                combos.add(arg);
-            } else if (arg.always) {
-                always.add(new Arg(arg.name, arg.values.get(0)+"", arg.isj));
-            }
-        }
+		for (Argument arg : arguments) {
+			if (arg.values.size() == 0) arg.values.add("");
+			if (!arg.always && !arg.values.contains(null)) arg.values.add(null);
+			if (arg.values.size() > 0) {
+				combos.add(arg);
+			} else if (arg.always) {
+				always.add(new Arg(arg.name, arg.values.get(0) + "", arg.isj));
+			}
+		}
         List<List<Arg>> argcombo = combinations(combos);
-        for (Iterator<Arg> iter = always.iterator(); iter.hasNext();) {
-            Arg arg = iter.next();
-            for (Iterator<List<Arg>> comboiter = argcombo.iterator(); comboiter.hasNext();) {
-                comboiter.next().add(arg);
-            }
-        }
+		for (Arg arg : always) {
+			for (List<Arg> argList : argcombo) {
+				argList.add(arg);
+			}
+		}
         return argcombo;
     }
 
@@ -1431,9 +1426,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public AjdocWrapper(Testset testset, List args) {
             super(testset, ajdocArgs(args), true);
             String[] cmds = testset.getAjdoc().getCommandline().getCommandline();
-            for (int i = 0; i < cmds.length; i++) {
-                this.args.add(cmds[i]);
-            }
+			for (String cmd : cmds) {
+				this.args.add(cmd);
+			}
         }
         String getMainClassName() {
             return "org.aspectj.tools.ajdoc.Main";
@@ -1485,34 +1480,34 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 cp.append(Path.systemClasspath);
             }
             cmd.createArgument().setPath(cp);
-            for (Iterator iter = args.iterator(); iter.hasNext();) {
-                Arg arg = (Arg)iter.next();
-                if (arg.isj) {
-                    cmd.createArgument().setValue(arg.name);
-                    if (!arg.value.equals("")) {
-                        cmd.createArgument().setValue(arg.value);
-                    }
-                }
-            }
+			for (Object item : args) {
+				Arg arg = (Arg) item;
+				if (arg.isj) {
+					cmd.createArgument().setValue(arg.name);
+					if (!arg.value.equals("")) {
+						cmd.createArgument().setValue(arg.value);
+					}
+				}
+			}
             cmd.createArgument().setValue(getMainClassName());
             boolean alreadySetDestDir = false;
             boolean alreadySetClasspath = false;
-            for (Iterator iter = args.iterator(); iter.hasNext();) {
-                Arg arg = (Arg)iter.next();
-                if (!arg.isj) {
-                    cmd.createArgument().setValue(arg.name);
-                    if (arg.name.equals("-d")) {
-                        setDestdir(arg.value+"");
-                        alreadySetDestDir = true;
-                    }
-                    if (arg.name.equals("-classpath")) {
-                        alreadySetClasspath = true;
-                    }
-                    if (!arg.value.equals("")) {
-                        cmd.createArgument().setValue(arg.value);
-                    }
-                }
-            }
+			for (Object o : args) {
+				Arg arg = (Arg) o;
+				if (!arg.isj) {
+					cmd.createArgument().setValue(arg.name);
+					if (arg.name.equals("-d")) {
+						setDestdir(arg.value + "");
+						alreadySetDestDir = true;
+					}
+					if (arg.name.equals("-classpath")) {
+						alreadySetClasspath = true;
+					}
+					if (!arg.value.equals("")) {
+						cmd.createArgument().setValue(arg.value);
+					}
+				}
+			}
             if (destdir == null) {
                 setDestdir(".");
             }
@@ -1530,13 +1525,13 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 cmd.createArgument().setValue("-classpath");
                 cmd.createArgument().setPath(_cp);
             }
-            for (Iterator iter = testset.files.iterator(); iter.hasNext();) {
-                cmd.createArgument().setFile((File)iter.next());
-            }
-            for (Iterator iter = testset.argfiles.iterator(); iter.hasNext();) {
-                cmd.createArgument().setValue("-argfile");
-                cmd.createArgument().setFile((File)iter.next());
-            }
+			for (File value : testset.files) {
+				cmd.createArgument().setFile(value);
+			}
+			for (File file : testset.argfiles) {
+				cmd.createArgument().setValue("-argfile");
+				cmd.createArgument().setFile(file);
+			}
             return cmd;
         }
     }
@@ -1622,19 +1617,18 @@ public class Ajctest extends Task implements PropertyChangeListener {
     private List<List<Arg>> combinations(List<Argument> arglist) {
         List<List<Arg>> result = new Vector<>();
         result.add(new Vector<Arg>());
-        for (Iterator<Argument> iter = arglist.iterator(); iter.hasNext();) {
-            Argument arg = iter.next();
-            int N = result.size();
-            for (int i = 0; i < N; i++) {
-                List<Arg> to = result.remove(0);
-                for (Iterator<String> valiter = arg.values.iterator(); valiter.hasNext();) {
-                    List<Arg> newlist = new Vector<>(to);
-                    Object val = valiter.next();
-                    if (val != null) newlist.add(new Arg(arg.name, val+"", arg.isj));
-                    result.add(newlist);
-                }
-            }
-        }
+		for (Argument arg : arglist) {
+			int N = result.size();
+			for (int i = 0; i < N; i++) {
+				List<Arg> to = result.remove(0);
+				for (String s : arg.values) {
+					List<Arg> newlist = new Vector<>(to);
+					Object val = s;
+					if (val != null) newlist.add(new Arg(arg.name, val + "", arg.isj));
+					result.add(newlist);
+				}
+			}
+		}
         return result;
     }
 
@@ -1764,9 +1758,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
                 Object[] names = new String[] {
                     "Task", "Type", "Number", "Time"
                 };
-                for (int i = 0; i < names.length; i++) {
-                    model.addColumn(names[i]);
-                }
+				for (Object name : names) {
+					model.addColumn(name);
+				}
                 table = new TJable(model, failures);
                 this.add(new JScrollPane(table), BorderLayout.CENTER);
             }
@@ -1841,19 +1835,19 @@ public class Ajctest extends Task implements PropertyChangeListener {
                         "Files",
                         "Classnames",
                     };
-                    for (int i = 0; i < os.length; i++) {
-                        String name = os[i]+"";
-                        JLabel label = new JLabel(name+":");
-                        JTextField comp = new JTextField(25);
-                        comp.setEditable(false);
-                        comp.setBackground(Color.white);
-                        comp.setBorder(BorderFactory.
-                                       createBevelBorder(BevelBorder.LOWERED));
-                        label.setLabelFor(comp);
-                        fields.put(name, comp);
-                        add(label, gbc.forLabel());
-                        add(comp, gbc.forField());
-                    }
+					for (Object o : os) {
+						String name = o + "";
+						JLabel label = new JLabel(name + ":");
+						JTextField comp = new JTextField(25);
+						comp.setEditable(false);
+						comp.setBackground(Color.white);
+						comp.setBorder(BorderFactory.
+								createBevelBorder(BevelBorder.LOWERED));
+						label.setLabelFor(comp);
+						fields.put(name, comp);
+						add(label, gbc.forLabel());
+						add(comp, gbc.forField());
+					}
                     add(new JLabel(), gbc.forLastLabel());
                 }
             }

@@ -97,8 +97,8 @@ public final class ModulePackages extends Attribute {
 	public final void dump(DataOutputStream stream) throws IOException {
 		super.dump(stream);
 		stream.writeShort(packageIndices.length);
-		for (int i = 0; i < packageIndices.length; i++) {
-			stream.writeShort(packageIndices[i]);
+		for (int packageIndex : packageIndices) {
+			stream.writeShort(packageIndex);
 		}
 	}
 
@@ -117,8 +117,8 @@ public final class ModulePackages extends Attribute {
 	@Override
 	public final String toString() {
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < packageIndices.length; i++) {
-			buf.append(cpool.getPackageName(packageIndices[i]) + "\n");
+		for (int packageIndex : packageIndices) {
+			buf.append(cpool.getPackageName(packageIndex) + "\n");
 		}
 		return buf.toString();
 	}

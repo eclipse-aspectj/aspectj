@@ -121,9 +121,9 @@ class BrowserView extends JPanel {
 
     public void updateConfigs(java.util.List configsList) {
         configs_comboBox.removeAllItems();
-        for (Iterator it = configsList.iterator(); it.hasNext(); ) {
-            configs_comboBox.addItem(it.next());
-        }
+		for (Object o : configsList) {
+			configs_comboBox.addItem(o);
+		}
     }
 
     public void setSelectedConfig(String config) {

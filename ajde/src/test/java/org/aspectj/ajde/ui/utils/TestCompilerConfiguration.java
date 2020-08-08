@@ -116,17 +116,17 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 			/* Allow the user to override the testProjectPath by using sourceRoots */
 			File[] srcBase = new File[] { new File(projectPath + File.separator + srcDirName) };
 
-			for (int j = 0; j < srcBase.length; j++) {
-				File[] fromResources = FileUtil.listFiles(srcBase[j], new FileFilter() {
+			for (File file : srcBase) {
+				File[] fromResources = FileUtil.listFiles(file, new FileFilter() {
 					public boolean accept(File pathname) {
 						String name = pathname.getName().toLowerCase();
 						return !name.endsWith(".class") && !name.endsWith(".java") && !name.endsWith(".aj")
 								&& !name.endsWith(".lst") && !name.endsWith(".jar");
 					}
 				});
-				for (int i = 0; i < fromResources.length; i++) {
-					String normPath = FileUtil.normalizedPath(fromResources[i], srcBase[j]);
-					sourcePathResources.put(normPath, fromResources[i]);
+				for (File fromResource : fromResources) {
+					String normPath = FileUtil.normalizedPath(fromResource, file);
+					sourcePathResources.put(normPath, fromResource);
 
 				}
 			}

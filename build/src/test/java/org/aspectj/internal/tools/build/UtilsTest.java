@@ -49,21 +49,20 @@ public class UtilsTest extends TestCase {
                             "aspectjrt" }) {
                 void checkOthers(OSGIBundle osgiBundle, StringBuffer sb) {
                     RequiredBundle[] bundles = osgiBundle.getRequiredBundles();
-                    for (int i = 0; i < bundles.length; i++) {
-                        RequiredBundle bundle = bundles[i];
-                        if ("aspectjrt".equals(bundle.name)) {
-                            if (!bundle.optional) {
-                                sb
-                                        .append("expected required bundle aspectjrt to be optional");
-                            }
-                            String version = "[1.5.0,1.5.5]";
-                            if (!(version.equals(bundle.versions))) {
-                                sb.append("expected version " + version
-                                        + " got " + bundle.versions
-                                        + " for required bundle aspectjrt");
-                            }
-                        }
-                    }
+					for (RequiredBundle bundle : bundles) {
+						if ("aspectjrt".equals(bundle.name)) {
+							if (!bundle.optional) {
+								sb
+										.append("expected required bundle aspectjrt to be optional");
+							}
+							String version = "[1.5.0,1.5.5]";
+							if (!(version.equals(bundle.versions))) {
+								sb.append("expected version " + version
+										+ " got " + bundle.versions
+										+ " for required bundle aspectjrt");
+							}
+						}
+					}
 
                 }
             } };
@@ -140,9 +139,9 @@ public class UtilsTest extends TestCase {
     /** disabled pending research */
     public void skip_testOSGIManifests() throws Exception {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < TESTS.length; i++) {
-            TESTS[i].run(sb);
-        }
+		for (ManifestTest test : TESTS) {
+			test.run(sb);
+		}
         if (0 < sb.length()) {
             fail(sb.toString());
         }

@@ -97,11 +97,11 @@ public class BuildArgParserTestCase extends TestCase {
     		List cp = config.getClasspath();
     		boolean jar1Found = false;
     		boolean jar2Found = false;
-    		for (Iterator iter = cp.iterator(); iter.hasNext();) {
-                String element = (String) iter.next();
-                if (element.indexOf("1.jar") != -1) jar1Found = true;
-                if (element.indexOf("2.jar") != -1) jar2Found = true;
-            }
+			for (Object o : cp) {
+				String element = (String) o;
+				if (element.indexOf("1.jar") != -1) jar1Found = true;
+				if (element.indexOf("2.jar") != -1) jar2Found = true;
+			}
     		assertTrue(
     			config.getClasspath().toString(),
     			jar1Found);
@@ -373,11 +373,11 @@ public class BuildArgParserTestCase extends TestCase {
    		List cp = config.getClasspath();
 		boolean jar1Found = false;
 		boolean jar2Found = false;
-		for (Iterator iter = cp.iterator(); iter.hasNext();) {
-            String element = (String) iter.next();
-            if (element.indexOf("1.jar") != -1) jar1Found = true;
-            if (element.indexOf("2.jar") != -1) jar2Found = true;
-        }
+		for (Object o : cp) {
+			String element = (String) o;
+			if (element.indexOf("1.jar") != -1) jar1Found = true;
+			if (element.indexOf("2.jar") != -1) jar2Found = true;
+		}
 		assertTrue(
 			config.getClasspath().toString(),
 			jar1Found);
@@ -405,8 +405,8 @@ public class BuildArgParserTestCase extends TestCase {
 		String b = new File(TEST_DIR + "../bug-40257/d1/d2/B.java").getCanonicalPath();
 		String c = new File(TEST_DIR + "../bug-40257/d3/C.java").getCanonicalPath();
 		List pathList = new ArrayList();
-		for (Iterator it = config.getFiles().iterator(); it.hasNext(); ) {
-			pathList.add(((File)it.next()).getCanonicalPath());
+		for (File file : config.getFiles()) {
+			pathList.add(file.getCanonicalPath());
 		}
 		assertTrue(pathList.contains(a));
 		assertTrue(pathList.contains(b));
@@ -544,9 +544,9 @@ public class BuildArgParserTestCase extends TestCase {
 	
 	private void checkPathSubset(List path) throws IOException {
 		String files[] = { "aspectjJar.file", "jarChild", "parent.zip" };
-		for (int i = 0; i < files.length; i++) {
-			File file = new File(NONSTANDARD_JAR_DIR+files[i]);
-			assertTrue("bad path: " + path, path.contains(file.getCanonicalPath()));			
+		for (String s : files) {
+			File file = new File(NONSTANDARD_JAR_DIR + s);
+			assertTrue("bad path: " + path, path.contains(file.getCanonicalPath()));
 		}
 	}
 

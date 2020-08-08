@@ -437,8 +437,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		// Go through the interfaces on the way back down
 		ResolvedType[] interfaces = resolvedType.getDeclaredInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			ResolvedType iface = interfaces[i];
+		for (ResolvedType anInterface : interfaces) {
+			ResolvedType iface = anInterface;
 			if (!genericsAware && iface.isParameterizedOrGenericType()) {
 				iface = iface.getRawType();
 			}
@@ -487,8 +487,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		// Go through the interfaces on the way back down
 		ResolvedType[] interfaces = resolvedType.getDeclaredInterfaces();
-		for (int i = 0; i < interfaces.length; i++) {
-			ResolvedType iface = interfaces[i];
+		for (ResolvedType anInterface : interfaces) {
+			ResolvedType iface = anInterface;
 			if (!genericsAware && (iface.isParameterizedType() || iface.isGenericType())) {
 				iface = iface.getRawType();
 			}
@@ -562,8 +562,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (!type.isMissing()) {
 				ResolvedMember[] methods = type.getDeclaredMethods();
 				if (methods != null) {
-					for (int i = 0; i < methods.length; i++) {
-						ResolvedMember method = methods[i];
+					for (ResolvedMember method : methods) {
 						if (matches(method, m)) {
 							return method;
 						}
@@ -584,8 +583,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			// Queue any interfaces not already checked:
 			ResolvedType[] superinterfaces = type.getDeclaredInterfaces();
 			if (superinterfaces != null) {
-				for (int i = 0; i < superinterfaces.length; i++) {
-					ResolvedType interf = superinterfaces[i];
+				for (ResolvedType interf : superinterfaces) {
 					if (!typesTolookat.contains(interf)) {
 						typesTolookat.add(interf);
 					}
@@ -612,8 +610,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * return null if not found
 	 */
 	private ResolvedMember lookupMember(Member m, ResolvedMember[] a) {
-		for (int i = 0; i < a.length; i++) {
-			ResolvedMember f = a[i];
+		for (ResolvedMember f : a) {
 			if (matches(f, m)) {
 				return f;
 			}
@@ -833,8 +830,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			while (typeIterator.hasNext()) {
 				ResolvedType ty = typeIterator.next();
 				// System.out.println("super: " + ty + ", " + );
-				for (Iterator<Declare> i = ty.getDeclares().iterator(); i.hasNext();) {
-					Declare dec = i.next();
+				for (Declare dec : ty.getDeclares()) {
 					if (dec.isAdviceLike()) {
 						if (includeAdviceLike) {
 							ret.add(dec);
@@ -1031,8 +1027,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			methods = getGenericType().getDeclaredMethods();
 		}
 		Map<String, UnresolvedType> typeVariableMap = getAjMemberParameterizationMap();
-		for (int i = 0, len = methods.length; i < len; i++) {
-			ShadowMunger munger = methods[i].getAssociatedShadowMunger();
+		for (ResolvedMember method : methods) {
+			ShadowMunger munger = method.getAssociatedShadowMunger();
 			if (munger != null) {
 				if (ajMembersNeedParameterization()) {
 					// munger.setPointcut(munger.getPointcut().parameterizeWith(
@@ -1041,7 +1037,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 					if (munger instanceof Advice) {
 						Advice advice = (Advice) munger;
 						// update to use the parameterized signature...
-						UnresolvedType[] ptypes = methods[i].getGenericParameterTypes();
+						UnresolvedType[] ptypes = method.getGenericParameterTypes();
 						UnresolvedType[] newPTypes = new UnresolvedType[ptypes.length];
 						for (int j = 0; j < ptypes.length; j++) {
 							if (ptypes[j] instanceof TypeVariableReferenceType) {
@@ -1081,9 +1077,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	private ResolvedMember[] filterInJavaVisible(ResolvedMember[] ms) {
 		List<ResolvedMember> l = new ArrayList<ResolvedMember>();
-		for (int i = 0, len = ms.length; i < len; i++) {
-			if (!ms[i].isAjSynthetic() && ms[i].getAssociatedShadowMunger() == null) {
-				l.add(ms[i]);
+		for (ResolvedMember m : ms) {
+			if (!m.isAjSynthetic() && m.getAssociatedShadowMunger() == null) {
+				l.add(m);
 			}
 		}
 		return l.toArray(new ResolvedMember[l.size()]);
@@ -1398,8 +1394,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			if (ret == null) {
 				// try interfaces then, but only ITDs now...
 				ResolvedType[] superInterfaces = onType.getDeclaredInterfaces();
-				for (int i = 0; i < superInterfaces.length; i++) {
-					ret = superInterfaces[i].lookupMethodInITDs(member);
+				for (ResolvedType superInterface : superInterfaces) {
+					ret = superInterface.lookupMethodInITDs(member);
 					if (ret != null) {
 						return ret;
 					}
@@ -1646,8 +1642,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 
 		ResolvedType[] superIs = getDeclaredInterfaces();
-		for (int i = 0; i < superIs.length; i++) {
-			ResolvedType superI = superIs[i];
+		for (ResolvedType superI : superIs) {
 			if (superI.genericTypeEquals(lookingFor)) {
 				return superI;
 			}
@@ -2128,17 +2123,18 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		ResolvedType runtimeException = world.resolve("java.lang.RuntimeException");
 		ResolvedType error = world.resolve("java.lang.Error");
 
-		outer: for (int i = 0, leni = childExceptions.length; i < leni; i++) {
+		outer:
+		for (ResolvedType childException : childExceptions) {
 			// System.err.println("checking: " + childExceptions[i]);
-			if (runtimeException.isAssignableFrom(childExceptions[i])) {
+			if (runtimeException.isAssignableFrom(childException)) {
 				continue;
 			}
-			if (error.isAssignableFrom(childExceptions[i])) {
+			if (error.isAssignableFrom(childException)) {
 				continue;
 			}
 
-			for (int j = 0, lenj = parentExceptions.length; j < lenj; j++) {
-				if (parentExceptions[j].isAssignableFrom(childExceptions[i])) {
+			for (ResolvedType parentException : parentExceptions) {
+				if (parentException.isAssignableFrom(childException)) {
 					continue outer;
 				}
 			}
@@ -2439,9 +2435,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	private void addPointcutsResolvingConflicts(List<ResolvedMember> acc, List<ResolvedMember> added, boolean isOverriding) {
-		for (Iterator<ResolvedMember> i = added.iterator(); i.hasNext();) {
-			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) i.next();
-			for (Iterator<ResolvedMember> j = acc.iterator(); j.hasNext();) {
+		for (ResolvedMember resolvedMember : added) {
+			ResolvedPointcutDefinition toAdd = (ResolvedPointcutDefinition) resolvedMember;
+			for (Iterator<ResolvedMember> j = acc.iterator(); j.hasNext(); ) {
 				ResolvedPointcutDefinition existing = (ResolvedPointcutDefinition) j.next();
 				if (toAdd == null || existing == null || existing == toAdd) {
 					continue;
@@ -2527,8 +2523,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return this;
 		}
 		boolean workToDo = false;
-		for (int i = 0; i < typeParameters.length; i++) {
-			if (typeParameters[i].isTypeVariableReference() || (typeParameters[i] instanceof BoundedReferenceType) || typeParameters[i].isParameterizedType()) {
+		for (UnresolvedType typeParameter : typeParameters) {
+			if (typeParameter.isTypeVariableReference() || (typeParameter instanceof BoundedReferenceType) || typeParameter.isParameterizedType()) {
 				workToDo = true;
 			}
 		}
@@ -2720,22 +2716,22 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				return false;
 			}
 
-			for (int i = 0; i < typeParameters.length; i++) {
-				ResolvedType aType = (ResolvedType) typeParameters[i];
+			for (UnresolvedType typeParameter : typeParameters) {
+				ResolvedType aType = (ResolvedType) typeParameter;
 				if (aType.isTypeVariableReference()
-				// Changed according to the problems covered in bug 222648
-				// Don't care what kind of type variable - the fact that there
-				// is one
-				// at all means we can't risk caching it against we get confused
-				// later
-				// by another variation of the parameterization that just
-				// happens to
-				// use the same type variable name
+					// Changed according to the problems covered in bug 222648
+					// Don't care what kind of type variable - the fact that there
+					// is one
+					// at all means we can't risk caching it against we get confused
+					// later
+					// by another variation of the parameterization that just
+					// happens to
+					// use the same type variable name
 
-				// assume the worst - if its definetly not a type declared one,
-				// it could be anything
-				// && ((TypeVariableReference)aType).getTypeVariable().
-				// getDeclaringElementKind()!=TypeVariable.TYPE
+					// assume the worst - if its definetly not a type declared one,
+					// it could be anything
+					// && ((TypeVariableReference)aType).getTypeVariable().
+					// getDeclaringElementKind()!=TypeVariable.TYPE
 				) {
 					parameterizedWithTypeVariable = FuzzyBoolean.YES;
 					return true;

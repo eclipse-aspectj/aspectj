@@ -434,14 +434,14 @@ public class Ajc2 extends Javac {
 
         // Otherwise we want to add all .java files to the compileList
         else {
-            for (int i = 0; i < files.length; i++) {
-                File newFile = new File(srcDir, files[i]);
-                if (newFile != null &&
-                    newFile.exists() &&
-                    newFile.getName().endsWith(".java")) {
-                    newFiles.add(newFile);
-                }
-            }
+			for (String file : files) {
+				File newFile = new File(srcDir, file);
+				if (newFile != null &&
+						newFile.exists() &&
+						newFile.getName().endsWith(".java")) {
+					newFiles.add(newFile);
+				}
+			}
         }
 
         // Add the new included files

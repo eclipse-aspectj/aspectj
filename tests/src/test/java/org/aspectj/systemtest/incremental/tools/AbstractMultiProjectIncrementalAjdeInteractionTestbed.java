@@ -65,8 +65,8 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 			// System.out.println("kvp: " + object + " = " + m.get(object));
 			// }
 			// }
-			for (Iterator<IProgramElement> i = node.getChildren().iterator(); i.hasNext();) {
-				dumptree( i.next(), indent + 2);
+			for (IProgramElement iProgramElement : node.getChildren()) {
+				dumptree(iProgramElement, indent + 2);
 			}
 		}
 	}
@@ -113,11 +113,10 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		IRelationshipMap relmap = getModelFor(project).getRelationshipMap();
 		int ctr = 0;
 		Set<String> entries = relmap.getEntries();
-		for (Iterator<String> iter = entries.iterator(); iter.hasNext();) {
-			String hid = (String) iter.next();
+		for (String hid : entries) {
 			List<IRelationship> rels = relmap.get(hid);
-			for (Iterator<IRelationship> iterator = rels.iterator(); iterator.hasNext();) {
-				ctr+=iterator.next().getTargets().size();
+			for (IRelationship rel : rels) {
+				ctr += rel.getTargets().size();
 			}
 		}
 		return ctr;
@@ -152,8 +151,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		String contents[] = location.list();
 		if (contents == null)
 			return;
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(location, string);
 			if (f.isDirectory()) {
 				collectUpFiles(f, base, collectionPoint);
@@ -206,8 +204,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		String contents[] = from.list();
 		if (contents == null)
 			return;
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(from, string);
 			File t = new File(to, string);
 

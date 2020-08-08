@@ -289,8 +289,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			return backingGenericMember.hasAnnotation(ofType);
 		}
 		if (annotationTypes != null) {
-			for (int i = 0, max = annotationTypes.length; i < max; i++) {
-				if (annotationTypes[i].equals(ofType)) {
+			for (ResolvedType annotationType : annotationTypes) {
+				if (annotationType.equals(ofType)) {
 					return true;
 				}
 			}
@@ -434,8 +434,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			s.writeByte(0);
 		} else {
 			s.writeByte(typeVariables.length);
-			for (int i = 0; i < typeVariables.length; i++) {
-				typeVariables[i].write(s);
+			for (TypeVariable typeVariable : typeVariables) {
+				typeVariable.write(s);
 			}
 		}
 		String gsig = getGenericSignature();
@@ -445,11 +445,11 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			s.writeByte(0xff);
 		} else {
 			s.writeByte(parameterTypes.length);
-			for (int i = 0; i < parameterTypes.length; i++) {
+			for (UnresolvedType parameterType : parameterTypes) {
 				if (s.canCompress()) {
-					s.writeCompressedSignature(parameterTypes[i].getSignature());
+					s.writeCompressedSignature(parameterType.getSignature());
 				} else {
-					UnresolvedType array_element = parameterTypes[i];
+					UnresolvedType array_element = parameterType;
 					array_element.write(s);
 				}
 			}
@@ -471,16 +471,16 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		StringBuffer sb = new StringBuffer();
 		if (typeVariables != null) {
 			sb.append("<");
-			for (int i = 0; i < typeVariables.length; i++) {
-				sb.append(typeVariables[i].getSignatureForAttribute()); // need
+			for (TypeVariable typeVariable : typeVariables) {
+				sb.append(typeVariable.getSignatureForAttribute()); // need
 				// a
 				// 'getSignatureForAttribute()'
 			}
 			sb.append(">");
 		}
 		sb.append("(");
-		for (int i = 0; i < parameterTypes.length; i++) {
-			ResolvedType ptype = (ResolvedType) parameterTypes[i];
+		for (UnresolvedType parameterType : parameterTypes) {
+			ResolvedType ptype = (ResolvedType) parameterType;
 			sb.append(ptype.getSignatureForAttribute());
 		}
 		sb.append(")");
@@ -492,14 +492,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		StringBuffer sb = new StringBuffer();
 		if (typeVariables != null) {
 			sb.append("<");
-			for (int i = 0; i < typeVariables.length; i++) {
-				sb.append(typeVariables[i].getSignature());
+			for (TypeVariable typeVariable : typeVariables) {
+				sb.append(typeVariable.getSignature());
 			}
 			sb.append(">");
 		}
 		sb.append("(");
-		for (int i = 0; i < parameterTypes.length; i++) {
-			UnresolvedType ptype = parameterTypes[i];
+		for (UnresolvedType ptype : parameterTypes) {
 			sb.append(ptype.getSignature());
 		}
 		sb.append(")");
@@ -509,8 +508,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 	public static void writeArray(ResolvedMember[] members, CompressingDataOutputStream s) throws IOException {
 		s.writeInt(members.length);
-		for (int i = 0, len = members.length; i < len; i++) {
-			members[i].write(s);
+		for (ResolvedMember member : members) {
+			member.write(s);
 		}
 	}
 
@@ -1058,8 +1057,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		}
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
-		for (int i = 0; i < myParameterTypes.length; i++) {
-			appendSigWithTypeVarBoundsRemoved(myParameterTypes[i], sig, new HashSet<UnresolvedType>());
+		for (UnresolvedType myParameterType : myParameterTypes) {
+			appendSigWithTypeVarBoundsRemoved(myParameterType, sig, new HashSet<UnresolvedType>());
 		}
 		myParameterSignatureWithBoundsRemoved = sig.toString();
 		return myParameterSignatureWithBoundsRemoved;
@@ -1239,9 +1238,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	public TypeVariable getTypeVariableNamed(String name) {
 		// Check locally...
 		if (typeVariables != null) {
-			for (int i = 0; i < typeVariables.length; i++) {
-				if (typeVariables[i].getName().equals(name)) {
-					return typeVariables[i];
+			for (TypeVariable typeVariable : typeVariables) {
+				if (typeVariable.getName().equals(name)) {
+					return typeVariable;
 				}
 			}
 		}

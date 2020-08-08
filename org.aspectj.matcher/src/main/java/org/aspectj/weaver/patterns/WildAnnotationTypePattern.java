@@ -93,8 +93,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			}
 			String v = annotationValues.get(k);
 			boolean validKey = false;
-			for (int i = 0; i < ms.length; i++) {
-				ResolvedMember resolvedMember = ms[i];
+			for (ResolvedMember resolvedMember : ms) {
 				if (resolvedMember.getName().equals(key) && resolvedMember.isAbstract()) {
 					validKey = true;
 					ResolvedType t = resolvedMember.getReturnType().resolve(scope.getWorld());
@@ -239,8 +238,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 //							}
 //							replacementValues.put(k, rt.getSignature());
 						} else {
-							scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.UNSUPPORTED_ANNOTATION_VALUE_TYPE,t), getSourceLocation()));
-							replacementValues.put(k,"");
+							scope.message(MessageUtil.error(WeaverMessages.format(WeaverMessages.UNSUPPORTED_ANNOTATION_VALUE_TYPE, t), getSourceLocation()));
+							replacementValues.put(k, "");
 						}
 					}
 				}
@@ -265,8 +264,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		}
 		if (isForParameterAnnotationMatch()) {
 			if (parameterAnnotations != null && parameterAnnotations.length != 0) {
-				for (int i = 0; i < parameterAnnotations.length; i++) {
-					if (typePattern.matches(parameterAnnotations[i], TypePattern.STATIC).alwaysTrue()) {
+				for (ResolvedType parameterAnnotation : parameterAnnotations) {
+					if (typePattern.matches(parameterAnnotation, TypePattern.STATIC).alwaysTrue()) {
 						return FuzzyBoolean.YES;
 					}
 				}
@@ -276,8 +275,8 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 			// matched by the typePattern.
 			ResolvedType[] annTypes = annotated.getAnnotationTypes();
 			if (annTypes != null && annTypes.length != 0) {
-				for (int i = 0; i < annTypes.length; i++) {
-					if (typePattern.matches(annTypes[i], TypePattern.STATIC).alwaysTrue()) {
+				for (ResolvedType annType : annTypes) {
+					if (typePattern.matches(annType, TypePattern.STATIC).alwaysTrue()) {
 						return FuzzyBoolean.YES;
 					}
 				}
@@ -368,8 +367,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 		} else {
 			s.writeInt(annotationValues.size());
 			Set<String> key = annotationValues.keySet();
-			for (Iterator<String> keys = key.iterator(); keys.hasNext();) {
-				String k = keys.next();
+			for (String k : key) {
 				s.writeUTF(k);
 				s.writeUTF(annotationValues.get(k));
 			}

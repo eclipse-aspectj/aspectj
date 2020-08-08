@@ -160,9 +160,9 @@ public class OptionsFrame extends JFrame {
 	private void saveOptions() {
 		try {
 			Component[] components = main_tabbedPane.getComponents();
-			for (int i = 0; i < components.length; i++) {
-				if (components[i] instanceof OptionsPanel) {
-					((OptionsPanel)components[i]).saveOptions();
+			for (Component component : components) {
+				if (component instanceof OptionsPanel) {
+					((OptionsPanel) component).saveOptions();
 				}
 			}
 		} catch (IOException ioe) {

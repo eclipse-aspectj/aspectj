@@ -98,8 +98,7 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	}
 
 	private void testModelIntegrityHelper(IProgramElement node) throws Exception {
-		for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement child = (IProgramElement) it.next();
+		for (IProgramElement child : node.getChildren()) {
 			if (node == child.getParent()) {
 				testModelIntegrityHelper(child);
 			} else {

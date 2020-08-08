@@ -281,10 +281,10 @@ public abstract class Builder {
         } finally {
             if (0 < errors.size()) {
                 String label = "error building " + buildSpec + ": ";
-                for (Iterator<String> iter = errors.iterator(); iter.hasNext();) {
-                    String m = label + iter.next();
-                    handler.error(m);
-                }
+				for (String error : errors) {
+					String m = label + error;
+					handler.error(m);
+				}
             }
         }
     }
@@ -294,15 +294,15 @@ public abstract class Builder {
      */
     public boolean cleanup() {
         boolean noErr = true;
-        for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
-            File file = (File) iter.next();
-            if (!Util.deleteContents(file) || !file.delete()) {
-                if (noErr) {
-                    noErr = false;
-                }
-                handler.log("unable to clean up " + file);
-            }
-        }
+		for (Object tempFile : tempFiles) {
+			File file = (File) tempFile;
+			if (!Util.deleteContents(file) || !file.delete()) {
+				if (noErr) {
+					noErr = false;
+				}
+				handler.log("unable to clean up " + file);
+			}
+		}
         return noErr;
     }
 
@@ -345,19 +345,18 @@ public abstract class Builder {
             if (isLogging()) {
                 handler.log("modules to build: " + Arrays.asList(buildList));
             }
-            for (int i = 0; i < buildList.length; i++) {
-                Result required = buildList[i];
-                if (!buildingEnabled) {
-                    return false;
-                }
-                String requiredName = required.getName();
-                if (!doneList.contains(requiredName)) {
-                    doneList.add(requiredName);
-                    if (!buildOnly(required, errors)) {
-                        return false;
-                    }
-                }
-            }
+			for (Result required : buildList) {
+				if (!buildingEnabled) {
+					return false;
+				}
+				String requiredName = required.getName();
+				if (!doneList.contains(requiredName)) {
+					doneList.add(requiredName);
+					if (!buildOnly(required, errors)) {
+						return false;
+					}
+				}
+			}
         }
         return true;
     }
@@ -439,14 +438,14 @@ public abstract class Builder {
                 handler);
         ProductModule[] productModules = discoverModules(buildSpec.productDir,
                 modules);
-        for (int i = 0; i < productModules.length; i++) {
-            if (buildSpec.verbose) {
-                handler.log("building product module " + productModules[i]);
-            }
-            if (!buildProductModule(productModules[i])) {
-                return false;
-            }
-        }
+		for (ProductModule module : productModules) {
+			if (buildSpec.verbose) {
+				handler.log("building product module " + module);
+			}
+			if (!buildProductModule(module)) {
+				return false;
+			}
+		}
         if (buildSpec.verbose) {
             handler.log("assembling product module for " + buildSpec);
         }
@@ -476,12 +475,12 @@ public abstract class Builder {
         String excludes = null;
         {
             StringBuffer buf = new StringBuffer();
-            for (int i = 0; i < productModules.length; i++) {
-                if (0 < buf.length()) {
-                    buf.append(",");
-                }
-                buf.append(productModules[i].relativePath);
-            }
+			for (ProductModule productModule : productModules) {
+				if (0 < buf.length()) {
+					buf.append(",");
+				}
+				buf.append(productModule.relativePath);
+			}
             if (0 < buf.length()) {
                 excludes = buf.toString();
             }
@@ -492,14 +491,13 @@ public abstract class Builder {
         }
 
         // copy binaries associated with module flag files
-        for (int i = 0; i < productModules.length; i++) {
-            final ProductModule product = productModules[i];
-            final Kind kind = Result.kind(Result.NORMAL, product.assembleAll);
-            Result result = product.module.getResult(kind);
-            String targPath = Util.path(targDirPath, product.relativePath);
-            File jarFile = result.getOutputFile();
-            copyFile(jarFile, new File(targPath), FILTER_OFF);
-        }
+		for (final ProductModule product : productModules) {
+			final Kind kind = Result.kind(Result.NORMAL, product.assembleAll);
+			Result result = product.module.getResult(kind);
+			String targPath = Util.path(targDirPath, product.relativePath);
+			File jarFile = result.getOutputFile();
+			copyFile(jarFile, new File(targPath), FILTER_OFF);
+		}
         handler.log("created product in " + targDir);
 
         // ---- create installer
@@ -533,9 +531,9 @@ public abstract class Builder {
             Result result = module.module.getResult(productKind);
             return buildAll(result, errors);
         } finally {
-            for (Iterator<String> iter = errors.iterator(); iter.hasNext();) {
-                handler.error("error building " + module + ": " + iter.next());
-            }
+			for (String error : errors) {
+				handler.error("error building " + module + ": " + error);
+			}
         }
     }
 
@@ -595,13 +593,12 @@ public abstract class Builder {
             File library = liter.next();
             final String fname = library.getName();
             if (null != fname) {
-                for (Iterator<String> iter = SKIP_LIBRARIES.iterator(); iter.hasNext();) {
-                    String name = iter.next();
-                    if (fname.equals(name)) {
-                        liter.remove();
-                        break;
-                    }
-                }
+				for (String name : SKIP_LIBRARIES) {
+					if (fname.equals(name)) {
+						liter.remove();
+						break;
+					}
+				}
             }
         }
     }

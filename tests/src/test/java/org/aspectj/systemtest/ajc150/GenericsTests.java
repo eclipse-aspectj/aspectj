@@ -886,10 +886,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 			Class<?> clz = Class.forName(classname,false,cl);
 			java.lang.reflect.Method[] ms = clz.getDeclaredMethods();
 			if (ms!=null) {
-				for (int i =0;i<ms.length;i++) {
-					String methodString = ms[i].getReturnType().getName()+" "+ms[i].getDeclaringClass().getName()+"."+
-							           ms[i].getName()+"("+stringify(ms[i].getParameterTypes())+")"+
-							           (isBridge(ms[i])?" [BridgeMethod]":"");
+				for (java.lang.reflect.Method m : ms) {
+					String methodString = m.getReturnType().getName() + " " + m.getDeclaringClass().getName() + "." +
+							m.getName() + "(" + stringify(m.getParameterTypes()) + ")" +
+							(isBridge(m) ? " [BridgeMethod]" : "");
 					methodsFound.add(methodString);
 					debugString.append("\n[").append(methodString).append("]");
 				}
@@ -901,10 +901,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		
 		// check the methods specified do exist
-		for (int i = 0; i < methods.length; i++) {
-			String string = methods[i];
+		for (String string : methods) {
 			if (!methodsFound.remove(string)) {
-				fail("Couldn't find ["+string+"] in the set of methods in "+classname+" => "+debugString);
+				fail("Couldn't find [" + string + "] in the set of methods in " + classname + " => " + debugString);
 			}
 		}
 		StringBuffer unexpectedMethods = new StringBuffer();
@@ -953,9 +952,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	    JavaClass clazz = getClass(ajc,classname);
 		Signature sigAttr = null;
 		Attribute[] attrs = clazz.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
-			if (attribute.getName().equals("Signature")) sigAttr = (Signature)attribute;
+		for (Attribute attribute : attrs) {
+			if (attribute.getName().equals("Signature")) sigAttr = (Signature) attribute;
 		}
 		return sigAttr;
 	}
@@ -965,11 +963,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		Attribute[] attrs = clazz.getAttributes();
 		int signatureCount = 0;
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
+		for (Attribute attribute : attrs) {
 			if (attribute.getName().equals("Signature")) {
 				signatureCount++;
-				sb.append("\n"+((Signature)attribute).getSignature());
+				sb.append("\n" + ((Signature) attribute).getSignature());
 			}
 		}
 		if (signatureCount>1) fail("Should be only one signature attribute but found "+signatureCount+sb.toString());

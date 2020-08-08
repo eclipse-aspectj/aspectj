@@ -209,8 +209,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 
 	protected Method getMethod(JavaClass cl, String methodname) {
 		Method[] methods = cl.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			if (m.getName().equals(methodname)) {
 				return m;
 			}
@@ -258,8 +257,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 
 	private String stringify(List<String> l) {
 		StringBuffer result = new StringBuffer();
-		for (Iterator<String> iter = l.iterator(); iter.hasNext();) {
-			String str = iter.next();
+		for (String str : l) {
 			result.append(str);
 			result.append("\n");
 		}

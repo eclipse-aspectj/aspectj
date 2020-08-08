@@ -193,9 +193,9 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		String betterChoices[] = { "java.util.concurrent.ConcurrentHashMap",
 				"edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap",
 				"EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap" };
-		for (int i = 0; i < betterChoices.length; i++) {
+		for (String betterChoice : betterChoices) {
 			try {
-				return Class.forName(betterChoices[i]);
+				return Class.forName(betterChoice);
 			} catch (ClassNotFoundException cnfe) {
 				// try the next one
 			} catch (SecurityException se) {

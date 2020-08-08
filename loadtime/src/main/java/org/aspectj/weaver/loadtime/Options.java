@@ -60,8 +60,7 @@ public class Options {
 		Collections.reverse(flags);
 
 		// do a first round on the message handler since it will report the options themselves
-		for (Iterator<String> iterator = flags.iterator(); iterator.hasNext();) {
-			String arg = iterator.next();
+		for (String arg : flags) {
 			if (arg.startsWith(OPTIONVALUED_messageHandler)) {
 				if (arg.length() > OPTIONVALUED_messageHandler.length()) {
 					String handlerClass = arg.substring(OPTIONVALUED_messageHandler.length()).trim();
@@ -77,8 +76,7 @@ public class Options {
 		}
 
 		// configure the other options
-		for (Iterator<String> iterator = flags.iterator(); iterator.hasNext();) {
-			String arg = iterator.next();
+		for (String arg : flags) {
 			if (arg.equals(OPTION_15)) {
 				weaverOption.java5 = true;
 			} else if (arg.equalsIgnoreCase(OPTION_lazyTjp)) {

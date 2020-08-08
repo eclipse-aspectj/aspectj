@@ -47,8 +47,8 @@ public abstract class RuntimeTypeAnnos extends Attribute {
 			dos.write(annotation_data,0,length);
 		} else {
 			dos.writeShort(typeAnnotations.length);
-			for (int i=0; i<typeAnnotations.length; i++) {
-				typeAnnotations[i].dump(dos);
+			for (TypeAnnotationGen typeAnnotation : typeAnnotations) {
+				typeAnnotation.dump(dos);
 			}
 		}
 	}

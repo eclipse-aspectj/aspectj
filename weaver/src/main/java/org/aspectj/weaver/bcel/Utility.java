@@ -669,9 +669,9 @@ public class Utility {
 					// We know the value is an array value
 					ArrayElementValue array = (ArrayElementValue) (vals.get(0)).getValue();
 					ElementValue[] values = array.getElementValuesArray();
-					for (int j = 0; j < values.length; j++) {
+					for (ElementValue elementValue : values) {
 						// We know values in the array are strings
-						SimpleElementValue value = (SimpleElementValue) values[j];
+						SimpleElementValue value = (SimpleElementValue) elementValue;
 						Lint.Kind lintKind = lint.getLintKind(value.getValueString());
 						if (lintKind != null) {
 							suppressedWarnings.add(lintKind);

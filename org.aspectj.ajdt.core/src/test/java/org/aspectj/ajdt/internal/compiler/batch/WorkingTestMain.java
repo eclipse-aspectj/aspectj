@@ -79,14 +79,14 @@ public class WorkingTestMain {
 		
 		args.add("-classpath");
 		args.add(Constants.aspectjrtClasspath());
-		
-		for (int i=0; i < argfiles.length; i++) {
-			args.add("@" + examplesDir + argfiles[i]);
+
+		for (String argfile : argfiles) {
+			args.add("@" + examplesDir + argfile);
 		}
 		
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
-		for (int i=0; i < classes.length; i++) {
-			TestUtil.runMain("out", classes[i]);
+		for (String aClass : classes) {
+			TestUtil.runMain("out", aClass);
 		}		
 	}
 	

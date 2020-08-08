@@ -361,8 +361,8 @@ public class BcelWeaver {
 		});
 
 		// For each file, add it either as a real .class file or as a resource
-		for (int i = 0; i < files.length; i++) {
-			addedClassFiles.add(addClassFile(files[i], inFile, outDir));
+		for (File file : files) {
+			addedClassFiles.add(addClassFile(file, inFile, outDir));
 		}
 
 		return addedClassFiles;
@@ -501,8 +501,7 @@ public class BcelWeaver {
 		needToReweaveWorld = xcutSet.hasChangedSinceLastReset();
 
 		// update mungers
-		for (Iterator<UnwovenClassFile> i = addedClasses.iterator(); i.hasNext();) {
-			UnwovenClassFile jc = i.next();
+		for (UnwovenClassFile jc : addedClasses) {
 			String name = jc.getClassName();
 			ResolvedType type = world.resolve(name);
 			// No overweaving guard. If you have one then when overweaving is on the
@@ -514,8 +513,7 @@ public class BcelWeaver {
 			}
 		}
 
-		for (Iterator<String> i = deletedTypenames.iterator(); i.hasNext();) {
-			String name = i.next();
+		for (String name : deletedTypenames) {
 			if (xcutSet.deleteAspect(UnresolvedType.forName(name))) {
 				needToReweaveWorld = true;
 			}
@@ -574,8 +572,7 @@ public class BcelWeaver {
 
 	private void addCustomMungers() {
 		if (customMungerFactory != null) {
-			for (Iterator<UnwovenClassFile> i = addedClasses.iterator(); i.hasNext();) {
-				UnwovenClassFile jc = i.next();
+			for (UnwovenClassFile jc : addedClasses) {
 				String name = jc.getClassName();
 				ResolvedType type = world.resolve(name);
 				if (type.isAspect()) {
@@ -822,12 +819,12 @@ public class BcelWeaver {
 		} else if (pc instanceof ConcreteCflowPointcut) {
 			ConcreteCflowPointcut cfp = (ConcreteCflowPointcut) pc;
 			int[] slots = cfp.getUsedFormalSlots();
-			for (int i = 0; i < slots.length; i++) {
-				bindings[slots[i]] = cfp;
-				if (foundFormals[slots[i]]) {
-					raiseAmbiguousBindingError(names[slots[i]], userPointcut);
+			for (int slot : slots) {
+				bindings[slot] = cfp;
+				if (foundFormals[slot]) {
+					raiseAmbiguousBindingError(names[slot], userPointcut);
 				} else {
-					foundFormals[slots[i]] = true;
+					foundFormals[slot] = true;
 				}
 			}
 		}
@@ -1065,8 +1062,8 @@ public class BcelWeaver {
 						selfMunger.forceMunge(clazz, true);
 						classType.finishedWith();
 						UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
-						for (int news = 0; news < newClasses.length; news++) {
-							requestor.acceptResult(newClasses[news]);
+						for (UnwovenClassFile newClass : newClasses) {
+							requestor.acceptResult(newClass);
 						}
 						wovenClassNames.add(classFile.getClassName());
 					}
@@ -1260,8 +1257,8 @@ public class BcelWeaver {
 			List l = world.getCrosscuttingMembersSet().getShadowMungers();
 			Set<AdviceLocation> alreadyWarnedLocations = new HashSet<AdviceLocation>();
 
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				ShadowMunger element = (ShadowMunger) iter.next();
+			for (Object o : l) {
+				ShadowMunger element = (ShadowMunger) o;
 				// This will stop us incorrectly reporting deow checkers:
 				if (element instanceof BcelAdvice) {
 					BcelAdvice ba = (BcelAdvice) element;
@@ -1430,8 +1427,8 @@ public class BcelWeaver {
 			if (newClasses[0].getClassName().equals(classFile.getClassName())) {
 				newClasses[0].setClassNameAsChars(classFile.getClassNameAsChars());
 			}
-			for (int i = 0; i < newClasses.length; i++) {
-				requestor.acceptResult(newClasses[i]);
+			for (UnwovenClassFile newClass : newClasses) {
+				requestor.acceptResult(newClass);
 			}
 		} else {
 			requestor.acceptResult(classFile);
@@ -1462,8 +1459,7 @@ public class BcelWeaver {
 		UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];
 		ret[0] = new UnwovenClassFile(clazz.getFileName(), clazz.getClassName(), clazz.getJavaClassBytesIncludingReweavable(world));
 		int index = 1;
-		for (Iterator<UnwovenClassFile.ChildClass> iter = childClasses.iterator(); iter.hasNext();) {
-			UnwovenClassFile.ChildClass element = iter.next();
+		for (UnwovenClassFile.ChildClass element : childClasses) {
 			UnwovenClassFile childClass = new UnwovenClassFile(clazz.getFileName() + "$" + element.name, element.bytes);
 			ret[index++] = childClass;
 		}
@@ -1509,8 +1505,7 @@ public class BcelWeaver {
 		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
 			anAnnotationChangeOccurred = aParentChangeOccurred = false;
 			List<DeclareParents> decpToRepeatNextTime = new ArrayList<DeclareParents>();
-			for (Iterator<DeclareParents> iter = decpToRepeat.iterator(); iter.hasNext();) {
-				DeclareParents decp = iter.next();
+			for (DeclareParents decp : decpToRepeat) {
 				boolean typeChanged = applyDeclareParents(decp, onType);
 				if (typeChanged) {
 					aParentChangeOccurred = true;
@@ -1929,8 +1924,7 @@ public class BcelWeaver {
 			writeZipEntry(getEntryName(mainClassName), clazz.getJavaClass(world).getBytes());
 			List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
 			if (!childClasses.isEmpty()) {
-				for (Iterator<UnwovenClassFile.ChildClass> i = childClasses.iterator(); i.hasNext();) {
-					UnwovenClassFile.ChildClass c = i.next();
+				for (UnwovenClassFile.ChildClass c : childClasses) {
 					writeZipEntry(getEntryName(mainClassName + "$" + c.name), c.bytes);
 				}
 			}

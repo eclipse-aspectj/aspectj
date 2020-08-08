@@ -102,12 +102,11 @@ public class FieldAnnotationsTest extends BcelTestCase {
 			String annotationName,String annotationElementName,String annotationElementValue) {
 		Field[] fields = clazz.getFields();
 
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
+		for (Field f : fields) {
 			AnnotationGen[] fieldAnnotations = f.getAnnotations();
 			if (f.getName().equals(fieldname)) {
-				checkAnnotation(fieldAnnotations[0],annotationName,annotationElementName,annotationElementValue);
-				
+				checkAnnotation(fieldAnnotations[0], annotationName, annotationElementName, annotationElementValue);
+
 			}
 		}
 	}
@@ -127,11 +126,10 @@ public class FieldAnnotationsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
-					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
+					fail("Expected element " + name + " to have value " + tostring + " but it had value " + element.getValue().stringifyValue());
 				}
 				return;
 			}

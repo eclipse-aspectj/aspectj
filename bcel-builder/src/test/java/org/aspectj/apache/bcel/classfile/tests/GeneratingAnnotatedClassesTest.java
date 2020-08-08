@@ -240,8 +240,7 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 		assertTrue("Expected one annotation but found " + annotations.length, annotations.length == 1);
 		List<NameValuePair> l = annotations[0].getValues();
 		boolean found = false;
-		for (Iterator<NameValuePair> iter = l.iterator(); iter.hasNext();) {
-			NameValuePair element = iter.next();
+		for (NameValuePair element : l) {
 			if (element.getNameString().equals("dval")) {
 				if (((SimpleElementValue) element.getValue()).stringifyValue().equals("33.4"))
 					found = true;

@@ -141,8 +141,8 @@ public class ClassGen extends Modifiers implements Cloneable {
 		Field[] fields = clazz.getFields();
 		String[] interfaces = clazz.getInterfaceNames();
 
-		for (int i = 0; i < interfaces.length; i++) {
-			addInterface(interfaces[i]);
+		for (String anInterface : interfaces) {
+			addInterface(anInterface);
 		}
 
 		// OPTIMIZE Could make unpacking lazy, done on first reference
@@ -165,12 +165,12 @@ public class ClassGen extends Modifiers implements Cloneable {
 			}
 		}
 
-		for (int i = 0; i < methods.length; i++) {
-			addMethod(methods[i]);
+		for (Method method : methods) {
+			addMethod(method);
 		}
 
-		for (int i = 0; i < fields.length; i++) {
-			addField(fields[i]);
+		for (Field field : fields) {
+			addField(field);
 		}
 	}
 
@@ -367,14 +367,12 @@ public class ClassGen extends Modifiers implements Cloneable {
 
 	public void setMethods(Method[] methods) {
 		methodsList.clear();
-		for (int m = 0; m < methods.length; m++)
-			addMethod(methods[m]);
+		for (Method method : methods) addMethod(method);
 	}
 
 	public void setFields(Field[] fs) {
 		fieldsList.clear();
-		for (int m = 0; m < fs.length; m++)
-			addField(fs[m]);
+		for (Field f : fs) addField(f);
 	}
 
 	public void setMethodAt(Method method, int pos) {
@@ -498,8 +496,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 			String[] names = getInterfaceNames();
 			if (names != null) {
 				Arrays.sort(names);
-				for (int i = 0; i < names.length; i++)
-					dos.writeUTF(names[i]);
+				for (String name : names) dos.writeUTF(name);
 			}
 
 			// 4. ordered list of fields (ignoring private static and private transient fields):

@@ -1101,8 +1101,8 @@ public class MessageUtil {
 			return true;
 		}
 		boolean result = true;
-		for (int i = 0; i < sources.length; i++) {
-			if (!sink.handleMessage(sources[i])) {
+		for (IMessage source : sources) {
+			if (!sink.handleMessage(source)) {
 				if (fastFail) {
 					return false;
 				}

@@ -56,20 +56,20 @@ class LstBuildConfigFileUpdater {
 	 * Adds an entry to multiple build configuration files.
 	 */
 	public void updateBuildConfigFiles(List buildConfigFiles, List<String> filesToUpdate, boolean addToConfiguration) {
-		for (int i = 0; i < buildConfigFiles.size(); i++) {
-			List<String> fileContents = readConfigFile((String) buildConfigFiles.get(i));
+		for (Object buildConfigFile : buildConfigFiles) {
+			List<String> fileContents = readConfigFile((String) buildConfigFile);
 			if (addToConfiguration) {
-				for (int j = 0; j < filesToUpdate.size(); j++) {
-					fileContents.add(filesToUpdate.get(j));
+				for (String s : filesToUpdate) {
+					fileContents.add(s);
 				}
 			} else {
-				for (int k = 0; k < filesToUpdate.size(); k++) {
-					if (fileContents.contains(filesToUpdate.get(k))) {
-						fileContents.remove(filesToUpdate.get(k));
+				for (String s : filesToUpdate) {
+					if (fileContents.contains(s)) {
+						fileContents.remove(s);
 					}
 				}
 			}
-			writeConfigFile((String) buildConfigFiles.get(i), fileContents);
+			writeConfigFile((String) buildConfigFile, fileContents);
 		}
 	}
 
@@ -122,16 +122,14 @@ class LstBuildConfigFileUpdater {
 		String fileContentsString = "";
 		// List filesToWrite = null;
 		Set<String> includedFiles = new HashSet<>();
-		for (Iterator<BuildConfigNode> it = importedNodes.iterator(); it.hasNext();) {
-			BuildConfigNode node = it.next();
+		for (BuildConfigNode node : importedNodes) {
 			fileContentsString += '@' + node.getResourcePath() + "\n";
 			String parentPath = new File(filePath).getParent();
 			String importedFilePath = parentPath + File.separator + node.getResourcePath();
 			includedFiles.addAll(getIncludedFiles(importedFilePath, parentPath));
 		}
 
-		for (Iterator<BuildConfigNode> it = files.iterator(); it.hasNext();) {
-			BuildConfigNode node = it.next();
+		for (BuildConfigNode node : files) {
 			if (node.getName().endsWith(".lst") && !node.getResourcePath().startsWith("..")) {
 				fileContentsString += '@';
 				fileContentsString += node.getResourcePath() + "\n";
@@ -150,8 +148,8 @@ class LstBuildConfigFileUpdater {
 			configParser.parseConfigFile(new File(path));
 			List<File> files = configParser.getFiles();
 			List<String> relativeFiles = new ArrayList<String>();
-			for (Iterator<File> it = files.iterator(); it.hasNext();) {
-				relativeFiles.add(relativizePath(it.next().getPath(), rootPath));
+			for (File file : files) {
+				relativeFiles.add(relativizePath(file.getPath(), rootPath));
 			}
 			return relativeFiles;
 		} catch (ConfigParser.ParseException pe) {

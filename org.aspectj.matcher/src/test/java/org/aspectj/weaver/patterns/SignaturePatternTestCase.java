@@ -144,12 +144,12 @@ public class SignaturePatternTestCase extends PatternsTestCase {
 	public void checkMatch(SignaturePattern p, Member[] yes, Member[] no) throws IOException {
 		p = p.resolveBindings(new TestScope(world, new FormalBinding[0]), new Bindings(0));
 
-		for (int i = 0; i < yes.length; i++) {
-			checkMatch(p, yes[i], true);
+		for (Member value : yes) {
+			checkMatch(p, value, true);
 		}
 
-		for (int i = 0; i < no.length; i++) {
-			checkMatch(p, no[i], false);
+		for (Member member : no) {
+			checkMatch(p, member, false);
 		}
 
 		checkSerialization(p);

@@ -145,8 +145,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			proceedInInners = false;
 			declaredExceptions = new UnresolvedType[0];
 
-			for (int i = 0; i < n; i++) {
-				Proceed call = proceedCalls.get(i);
+			for (Proceed call : proceedCalls) {
 				if (call.inInner) {
 					// System.err.println("proceed in inner: " + call);
 					proceedInInners = true;

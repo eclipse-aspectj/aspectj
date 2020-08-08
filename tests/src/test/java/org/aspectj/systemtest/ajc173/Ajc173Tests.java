@@ -61,8 +61,8 @@ public class Ajc173Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Method m = getMethodStartsWith(jc, "getName");
 		assertNotNull(m);
 		AnnotationGen[] ags = m.getAnnotations();
-		for (int i=0;i<ags.length;i++) {
-			System.out.println(ags[i]);
+		for (AnnotationGen ag : ags) {
+			System.out.println(ag);
 		}
 		assertEquals(1,ags.length);
 		assertEquals("LFoo;",ags[0].getTypeSignature());

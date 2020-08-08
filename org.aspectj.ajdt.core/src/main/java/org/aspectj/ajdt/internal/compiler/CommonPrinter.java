@@ -168,8 +168,8 @@ public class CommonPrinter {
 
 	protected StringBuilder printAnnotations(Annotation[] annotations) {
 		int length = annotations.length;
-		for (int i = 0; i < length; i++) {
-			printAnnotation(annotations[i]);
+		for (Annotation annotation : annotations) {
+			printAnnotation(annotation);
 			output.append(" "); //$NON-NLS-1$
 		}
 		return output;

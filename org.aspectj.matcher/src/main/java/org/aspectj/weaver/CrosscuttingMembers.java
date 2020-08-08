@@ -186,8 +186,7 @@ public class CrosscuttingMembers {
 		}
 		// Check we haven't already got a munger for this:
 		String signatureToLookFor = typeToExpose.getSignature();
-		for (Iterator<ConcreteTypeMunger> iterator = typeMungers.iterator(); iterator.hasNext();) {
-			ConcreteTypeMunger cTM = iterator.next();
+		for (ConcreteTypeMunger cTM : typeMungers) {
 			ResolvedTypeMunger rTM = cTM.getMunger();
 			if (rTM != null && rTM instanceof ExposeTypeMunger) {
 				String exposedType = ((ExposeTypeMunger) rTM).getExposedTypeSignature();
@@ -345,8 +344,7 @@ public class CrosscuttingMembers {
 		Set<Object> theseTypeMungers = new HashSet<Object>();
 		Set<Object> otherTypeMungers = new HashSet<Object>();
 		if (!careAboutShadowMungers) {
-			for (Iterator<ConcreteTypeMunger> iter = typeMungers.iterator(); iter.hasNext();) {
-				Object o = iter.next();
+			for (Object o : typeMungers) {
 				if (o instanceof ConcreteTypeMunger) {
 					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
 					if (!typeMunger.existsToSupportShadowMunging()) {
@@ -357,8 +355,7 @@ public class CrosscuttingMembers {
 				}
 			}
 
-			for (Iterator<ConcreteTypeMunger> iter = other.typeMungers.iterator(); iter.hasNext();) {
-				Object o = iter.next();
+			for (Object o : other.typeMungers) {
 				if (o instanceof ConcreteTypeMunger) {
 					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
 					if (!typeMunger.existsToSupportShadowMunging()) {
@@ -435,15 +432,13 @@ public class CrosscuttingMembers {
 			if (!careAboutShadowMungers) {
 				// this means we are in front end compilation and if the differences are purely mixin parents, we can continue OK
 				Set<DeclareParents> trimmedThis = new HashSet<DeclareParents>();
-				for (Iterator<DeclareParents> iterator = declareParents.iterator(); iterator.hasNext();) {
-					DeclareParents decp = iterator.next();
+				for (DeclareParents decp : declareParents) {
 					if (!decp.isMixin()) {
 						trimmedThis.add(decp);
 					}
 				}
 				Set<DeclareParents> trimmedOther = new HashSet<DeclareParents>();
-				for (Iterator<DeclareParents> iterator = other.declareParents.iterator(); iterator.hasNext();) {
-					DeclareParents decp = iterator.next();
+				for (DeclareParents decp : other.declareParents) {
 					if (!decp.isMixin()) {
 						trimmedOther.add(decp);
 					}
@@ -490,11 +485,11 @@ public class CrosscuttingMembers {
 		if (theseInlinedAroundMungers.size() != otherInlinedAroundMungers.size()) {
 			return false;
 		}
-		for (Iterator<ShadowMunger> iter = theseInlinedAroundMungers.iterator(); iter.hasNext();) {
-			Advice thisAdvice = (Advice) iter.next();
+		for (ShadowMunger theseInlinedAroundMunger : theseInlinedAroundMungers) {
+			Advice thisAdvice = (Advice) theseInlinedAroundMunger;
 			boolean foundIt = false;
-			for (Iterator<ShadowMunger> iterator = otherInlinedAroundMungers.iterator(); iterator.hasNext();) {
-				Advice otherAdvice = (Advice) iterator.next();
+			for (ShadowMunger otherInlinedAroundMunger : otherInlinedAroundMungers) {
+				Advice otherAdvice = (Advice) otherInlinedAroundMunger;
 				if (thisAdvice.equals(otherAdvice)) {
 					if (thisAdvice.getSignature() instanceof ResolvedMemberImpl) {
 						if (((ResolvedMemberImpl) thisAdvice.getSignature()).isEquivalentTo(otherAdvice.getSignature())) {

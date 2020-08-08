@@ -140,8 +140,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 			patternNode.traverse(visitor, null);
 			if (visitor.containedIncorrectTargetKind()) {
 				Set<ExactAnnotationTypePattern> keys = visitor.getIncorrectTargetKinds().keySet();
-				for (Iterator<ExactAnnotationTypePattern> iter = keys.iterator(); iter.hasNext();) {
-					PatternNode node = iter.next();
+				for (PatternNode node : keys) {
 					AnnotationTargetKind[] targetKinds = visitor.getIncorrectTargetKinds().get(node);
 					reportUnmatchedTargetKindMessage(targetKinds, node, scope, false);
 				}
@@ -208,12 +207,12 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 					return data;
 				}
 				List<AnnotationTargetKind> incorrectTargets = new ArrayList<AnnotationTargetKind>();
-				for (int i = 0; i < targetKinds.length; i++) {
-					if (targetKinds[i].getName().equals(kind.getName())
-							|| (targetKinds[i].getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())) {
+				for (AnnotationTargetKind targetKind : targetKinds) {
+					if (targetKind.getName().equals(kind.getName())
+							|| (targetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())) {
 						return data;
 					}
-					incorrectTargets.add(targetKinds[i]);
+					incorrectTargets.add(targetKind);
 				}
 				if (incorrectTargets.isEmpty()) {
 					return data;
@@ -227,8 +226,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 				}
 				// exception here is if parameter annotations are allowed
 				if (parameterTargettingAnnotationsAllowed) {
-					for (int i = 0; i < targetKinds.length; i++) {
-						AnnotationTargetKind annotationTargetKind = targetKinds[i];
+					for (AnnotationTargetKind annotationTargetKind : targetKinds) {
 						if (annotationTargetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch()) {
 							return data;
 						}
@@ -724,8 +722,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
 		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
-		for (int i = 0; i < decMethods.length; i++) {
-			ResolvedMember member = decMethods[i];
+		for (ResolvedMember member : decMethods) {
 			if (member.equals(ajcMethod)) {
 				return member;
 			}

@@ -256,8 +256,7 @@ public class Ajc1612Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "X");
 		Method[] meths = jc.getMethods();
 		boolean checked = false;
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
+		for (Method method : meths) {
 			if (method.getName().equals("ajc$before$X$2$3444dde4")) {
 				System.out.println(method.getName());
 				System.out.println(stringify(method.getLocalVariableTable()));

@@ -91,8 +91,7 @@ public abstract class AjdeTestCase extends TestCase {
 		String contents[] = from.list();
 		if (contents == null)
 			return;
-		for (int i = 0; i < contents.length; i++) {
-			String string = contents[i];
+		for (String string : contents) {
 			File f = new File(from, string);
 			File t = new File(to, string);
 

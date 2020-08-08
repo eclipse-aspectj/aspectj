@@ -50,12 +50,12 @@ public class HarnessJUnitUtil {
             if (HarnessJUnitUtil.isEmpty(options)) {
                 options = new String[][] {new String[0]};
             }
-            for (int i = 0; i < suites.length; i++) {
-                for (int j = 0; j < options.length; j++) {
-                    Test t = AjctestsAdapter.make(suites[i], options[j]);
-                    suite.addTest(t);
-                }
-            }
+			for (String s : suites) {
+				for (String[] option : options) {
+					Test t = AjctestsAdapter.make(s, option);
+					suite.addTest(t);
+				}
+			}
         }
         return suite;
     }

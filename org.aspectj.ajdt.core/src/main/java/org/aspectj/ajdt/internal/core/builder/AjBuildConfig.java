@@ -324,12 +324,11 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 				return pathname.getPath().endsWith(".class");
 			}
 		};
-		for (Iterator<File> iter = inPath.iterator(); iter.hasNext();) {
-			File inpathElement = iter.next();
+		for (File inpathElement : inPath) {
 			if (inpathElement.isDirectory()) {
 				File[] files = FileUtil.listFiles(inpathElement, filter);
-				for (int i = 0; i < files.length; i++) {
-					binaryFiles.add(new BinarySourceFile(inpathElement, files[i]));
+				for (File file : files) {
+					binaryFiles.add(new BinarySourceFile(inpathElement, file));
 				}
 			}
 		}
@@ -537,8 +536,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void join(Collection local, Collection global) {
-		for (Iterator iter = global.iterator(); iter.hasNext();) {
-			Object next = iter.next();
+		for (Object next : global) {
 			if (!local.contains(next)) {
 				local.add(next);
 			}
@@ -955,8 +953,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		allPaths = FileSystem.ClasspathNormalizer.normalize(allPaths);
 		this.checkedClasspaths = new FileSystem.Classpath[allPaths.size()];
 		allPaths.toArray(this.checkedClasspaths);
-		for (int i=0;i<checkedClasspaths.length;i++) {
-			if (checkedClasspaths[i] == null) {
+		for (Classpath checkedClasspath : checkedClasspaths) {
+			if (checkedClasspath == null) {
 				throw new IllegalStateException();
 			}
 		}

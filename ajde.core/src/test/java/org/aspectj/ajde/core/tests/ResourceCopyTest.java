@@ -155,8 +155,8 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 		HashSet<String> resources = new HashSet<>();
 		listSourceResources(indirName, resources);
 
-		for (int i = 0; i < toResources.length; i++) {
-			String fileName = FileUtil.normalizedPath(toResources[i], binBase);
+		for (File toResource : toResources) {
+			String fileName = FileUtil.normalizedPath(toResource, binBase);
 			boolean b = resources.remove(fileName);
 			assertTrue("Extraneous resources: " + fileName, b);
 		}
@@ -167,8 +167,8 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 	private void listSourceResources(String indirName, Set<String> resources) {
 		File srcBase = openFile(indirName);
 		File[] fromResources = FileUtil.listFiles(srcBase, aspectjResourceFileFilter);
-		for (int i = 0; i < fromResources.length; i++) {
-			String name = FileUtil.normalizedPath(fromResources[i], srcBase);
+		for (File fromResource : fromResources) {
+			String name = FileUtil.normalizedPath(fromResource, srcBase);
 			if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
 				resources.add(name);
 			}
@@ -263,12 +263,12 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 
 			File binBase = openFile(outdirName);
 			File[] toResources = FileUtil.listFiles(binBase, aspectjResourceFileFilter);
-			for (int i = 0; i < toResources.length; i++) {
-				String fileName = FileUtil.normalizedPath(toResources[i], binBase);
+			for (File toResource : toResources) {
+				String fileName = FileUtil.normalizedPath(toResource, binBase);
 
 				/* Ensure we copied the right JAR manifest */
 				if (fileName.equalsIgnoreCase("meta-inf/Manifest.mf")) {
-					byte[] outManifest = FileUtil.readAsByteArray(toResources[i]);
+					byte[] outManifest = FileUtil.readAsByteArray(toResource);
 					assertTrue("Wrong manifest has been copied", Arrays.equals(inManifest, outManifest));
 				}
 				boolean b = resources.remove(fileName);
