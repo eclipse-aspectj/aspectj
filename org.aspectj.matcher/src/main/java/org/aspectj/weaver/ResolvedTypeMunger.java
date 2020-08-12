@@ -217,8 +217,8 @@ public abstract class ResolvedTypeMunger {
 					File f = (File) ois.readObject();
 					Integer ii = (Integer) ois.readObject();
 					Integer offset = (Integer) ois.readObject();
-					ret = new SourceLocation(f, ii.intValue());
-					ret.setOffset(offset.intValue());
+					ret = new SourceLocation(f, ii);
+					ret.setOffset(offset);
 				}
 			} else {
 				boolean validLocation = b == 2;
@@ -259,11 +259,11 @@ public abstract class ResolvedTypeMunger {
 		} else {
 			s.writeByte(0);
 			ObjectOutputStream oos = new ObjectOutputStream(s);
-			oos.writeObject(new Boolean(location != null));
+			oos.writeObject(location != null);
 			if (location != null) {
 				oos.writeObject(location.getSourceFile());
-				oos.writeObject(new Integer(location.getLine()));
-				oos.writeObject(new Integer(location.getOffset()));
+				oos.writeObject(location.getLine());
+				oos.writeObject(location.getOffset());
 			}
 			oos.flush();
 			oos.close();

@@ -44,19 +44,19 @@ public class AjdtCommand implements ICommand {
 		buildManager = new AjBuildManager(handler); 
 		savedArgs = new String[args.length];
         System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
-        for (int i = 0; i < args.length; i++) {
+		for (String arg : args) {
 // AMC - PR58681. No need to abort on -help as the Eclipse compiler does the right thing.
 //            if ("-help".equals(args[i])) {
 //                // should be info, but handler usually suppresses
 //                MessageUtil.abort(handler, BuildArgParser.getUsage());
 //                return true;
-//            } else 
-        	if ("-X".equals(args[i])) {
-            	 // should be info, but handler usually suppresses
-                MessageUtil.abort(handler, BuildArgParser.getXOptionUsage());
-                return true;
-            }
-        }
+//            } else
+			if ("-X".equals(arg)) {
+				// should be info, but handler usually suppresses
+				MessageUtil.abort(handler, BuildArgParser.getXOptionUsage());
+				return true;
+			}
+		}
         return doCommand(handler, false);
     }
 
@@ -168,9 +168,9 @@ public class AjdtCommand implements ICommand {
     
     /** @return IMessage.WARNING unless message contains error or info */
     protected static IMessage.Kind inferKind(String message) { // XXX dubious
-        if (-1 != message.indexOf("error")) {
+        if (message.contains("error")) {
             return IMessage.ERROR;
-        } else if (-1 != message.indexOf("info")) {
+        } else if (message.contains("info")) {
             return IMessage.INFO;
         } else {
             return IMessage.WARNING;

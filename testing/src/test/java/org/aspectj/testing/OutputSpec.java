@@ -65,7 +65,7 @@ public class OutputSpec {
 				lineNo++;
 				String outputLine = strTok.nextToken().trim();
 				/* Avoid trying to match on ajSandbox source names that appear in messages */
-				if (outputLine.indexOf(line) == -1) {
+				if (!outputLine.contains(line)) {
 					matches = false;
 					break;
 				}
@@ -88,7 +88,7 @@ public class OutputSpec {
 		found.addAll(outputFound);
 		for (String lineFound : outputFound) {
 			for (String lineExpected : expectedOutputLines) {
-				if (lineFound.indexOf(lineExpected)!= -1) {
+				if (lineFound.contains(lineExpected)) {
 					found.remove(lineFound);
 					expected.remove(lineExpected);
 					continue;

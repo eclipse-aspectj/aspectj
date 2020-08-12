@@ -34,7 +34,7 @@ public interface ObjectChecker {
     public static final ObjectChecker ANY_ZERO = new ObjectChecker() {
         public boolean isValid(Object input) { 
             if (input instanceof Integer) {
-                return (0 == ((Integer) input).intValue());
+                return (0 == (Integer) input);
             } else {
                 return true;
             }

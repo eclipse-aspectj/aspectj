@@ -82,7 +82,7 @@ public class IntRange implements IntValidator, ObjectChecker, Serializable {
     /** @return true if integer instanceof Integer with acceptable intValue */
     public final boolean isValid(Object integer) {
         return ((integer instanceof Integer)
-                && (acceptInt(((Integer) integer).intValue())));
+                && (acceptInt((Integer) integer)));
     }
     
     /** @return true if min <= value < max */

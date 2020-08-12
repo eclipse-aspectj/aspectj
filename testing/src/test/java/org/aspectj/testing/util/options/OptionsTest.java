@@ -473,9 +473,9 @@ public class OptionsTest extends TestCase {
                 new String[] { "-g:vars,source" },
                 new String[] { "-verbose", "-g:vars,source" },
                 };
-        for (int i = 0; i < input.length; i++) {
-            optionChecker.checkOptions(input[i], input[i]);
-        }
+		for (String[] strings : input) {
+			optionChecker.checkOptions(strings, strings);
+		}
     }
 
     private OptionChecker getOptionChecker() {

@@ -376,8 +376,8 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 			// See if the messages match
 			int msgCount = 0;
 			List<TestMessageHandler.TestMessage> l = handler.getMessages();
-			for (Iterator<TestMessageHandler.TestMessage> iter = l.iterator(); iter.hasNext();) {
-				IMessage msg = iter.next().getContainedMessage();
+			for (TestMessageHandler.TestMessage testMessage : l) {
+				IMessage msg = testMessage.getContainedMessage();
 				if (debugTests)
 					System.out.println("Looking at [" + msg + "]");
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
@@ -416,8 +416,8 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 		try {
 			fw = new FileWriter(f);
 			List<TestMessageHandler.TestMessage> l = handler.getMessages();
-			for (Iterator<TestMessageHandler.TestMessage> iter = l.iterator(); iter.hasNext();) {
-				IMessage msg = iter.next().getContainedMessage();
+			for (TestMessageHandler.TestMessage testMessage : l) {
+				IMessage msg = testMessage.getContainedMessage();
 				if (msg.getKind().equals(IMessage.WEAVEINFO)) {
 					fw.write(msg.getMessage() + "\n");
 				}

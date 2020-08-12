@@ -439,32 +439,32 @@ public class Ajc10 extends MatchingTask {
 
         int numargfiles = 0;
         if (argfiles != null) {
-            for (Iterator i = argfiles.iterator(); i.hasNext();) {
-                String name = i.next()+"";
-                File argfile = project.resolveFile(name);
-                if (check(argfile, name, false, location)) {
-                    cmd.createArgument().setValue("-argfile");
-                    cmd.createArgument().setFile(argfile);
-                    numargfiles++;    
-                }
-            }
+			for (Object o : argfiles) {
+				String name = o + "";
+				File argfile = project.resolveFile(name);
+				if (check(argfile, name, false, location)) {
+					cmd.createArgument().setValue("-argfile");
+					cmd.createArgument().setFile(argfile);
+					numargfiles++;
+				}
+			}
         }
         int numfiles = 0;
         if (srcdir != null) {
             // todo: ignore any srcdir if any argfiles and no explicit includes
             String[] dirs = srcdir.list();
-            for (int i = 0; i < dirs.length; i++) {
-                File dir = project.resolveFile(dirs[i]);
-                check(dir, dirs[i], true, location);
-                String[] files = getDirectoryScanner(dir).getIncludedFiles();
-                for (int j = 0; j < files.length; j++) {
-                    File file = new File(dir, files[j]);
-                    if (FileUtil.hasSourceSuffix(file)) {
-                        cmd.createArgument().setFile(file);
-                        numfiles++;
-                    }
-                }
-            }
+			for (String value : dirs) {
+				File dir = project.resolveFile(value);
+				check(dir, value, true, location);
+				String[] files = getDirectoryScanner(dir).getIncludedFiles();
+				for (String s : files) {
+					File file = new File(dir, s);
+					if (FileUtil.hasSourceSuffix(file)) {
+						cmd.createArgument().setFile(file);
+						numfiles++;
+					}
+				}
+			}
         }
         if ((null != ignoredOptions) && (ignoredOptions.size() > 0)) {
             log("The following attributes were ignored " + ignoredOptions,
@@ -568,10 +568,10 @@ public class Ajc10 extends MatchingTask {
     public static String render(String[] args) {
         if (null == args) return "";
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < args.length; i++) {
-            sb.append(args[i]);
-            sb.append(" ");
-        }
+		for (String arg : args) {
+			sb.append(arg);
+			sb.append(" ");
+		}
         return sb.toString();
     }
 

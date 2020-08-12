@@ -55,8 +55,7 @@ public class IncrementalStateManager {
 	public static void persist() {
 		// check serialization works
 		Set<Map.Entry<String, AjState>> entries = incrementalStates.entrySet();
-		for (Iterator<Map.Entry<String, AjState>> iterator = entries.iterator(); iterator.hasNext();) {
-			Map.Entry<String, AjState> entry = iterator.next();
+		for (Map.Entry<String, AjState> entry : entries) {
 			System.out.println("Name " + entry.getKey());
 			File f = new File("n:/temp/foo.ajstate");
 			try {
@@ -77,8 +76,7 @@ public class IncrementalStateManager {
 	}
 
 	public static void clearIncrementalStates() {
-		for (Iterator iter = incrementalStates.values().iterator(); iter.hasNext();) {
-			AjState element = (AjState) iter.next();
+		for (AjState element : incrementalStates.values()) {
 			element.wipeAllKnowledge();
 		}
 		incrementalStates.clear();
@@ -101,8 +99,7 @@ public class IncrementalStateManager {
 			System.err.println("> findStateManagingOutputLocation(" + location + ") has " + allStates.size()
 					+ " states to look through");
 		}
-		for (Iterator<AjState> iter = allStates.iterator(); iter.hasNext();) {
-			AjState element = iter.next();
+		for (AjState element : allStates) {
 			AjBuildConfig ajbc = element.getBuildConfig();
 			if (ajbc == null) {
 				// FIXME asc why can it ever be null?
@@ -121,8 +118,8 @@ public class IncrementalStateManager {
 			CompilationResultDestinationManager outputManager = ajbc.getCompilationResultDestinationManager();
 			if (outputManager != null) {
 				List outputDirs = outputManager.getAllOutputLocations();
-				for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-					File dir = (File) iterator.next();
+				for (Object o : outputDirs) {
+					File dir = (File) o;
 					if (dir.equals(location)) {
 						if (debugIncrementalStates) {
 							System.err.println("< findStateManagingOutputLocation(" + location + ") returning " + element);

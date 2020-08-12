@@ -306,7 +306,7 @@ public class Harness {
 						}
 						Object value = result.status.getResult();
 						if ((value instanceof Boolean)
-								&& !((Boolean) value).booleanValue()) {
+								&& !(Boolean) value) {
 							System.exit(-1);
 						}
 					}
@@ -323,10 +323,10 @@ public class Harness {
 	 */
 	private void doEndSuite(File suiteFile, long elapsed) {
 		Collection c = features.values();
-		for (Iterator iter = c.iterator(); iter.hasNext();) {
-			Feature element = (Feature) iter.next();
+		for (Object o : c) {
+			Feature element = (Feature) o;
 			if (element.listener instanceof TestCompleteListener) {
-				((TestCompleteListener)element.listener).doEndSuite(suiteFile,elapsed);
+				((TestCompleteListener) element.listener).doEndSuite(suiteFile, elapsed);
 			}
 		}
 	}
@@ -1056,7 +1056,7 @@ class SubstringRunner implements StringRunner {
 			input = input.toLowerCase();
 		}
 		for (String substring : substrings) {
-			if (-1 != input.indexOf(substring)) {
+			if (input.contains(substring)) {
 				return true;
 			}
 		}
@@ -1150,7 +1150,7 @@ class MessageRunValidator implements IRunValidator {
 							continue; // hmm
 						}
 						String text = message.getMessage();
-						if ((null != text) && (-1 != text.indexOf(sought))) {
+						if ((null != text) && (text.contains(sought))) {
 							return true;
 						}
 					}

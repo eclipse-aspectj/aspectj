@@ -707,7 +707,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// 2 errors are reported when there is a clash - one against the aspect, one against the affected target type.
 		// each of the two errors are recorded against the compilation result for the aspect and the target
 		// So it comes out as 4 - but for now I am tempted to leave it because at least it shows there is a problem...
-		assertTrue("Was:" + getErrorMessages(p).get(0), getErrorMessages(p).get(0).toString().indexOf("conflicts") != -1);
+		assertTrue("Was:" + getErrorMessages(p).get(0), getErrorMessages(p).get(0).toString().contains("conflicts"));
 	}
 
 	public void testOutputLocationCallbacks2() {
@@ -789,8 +789,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		checkWasFullBuild();
 		assertEquals(1, getErrorMessages(p).size());
-		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().indexOf(
-				"Syntax error on token \")\", \"name pattern\" expected") != -1);
+		assertTrue(((Message) getErrorMessages(p).get(0)).getMessage().contains("Syntax error on token \")\", \"name pattern\" expected"));
 	}
 
 	public void testIncrementalMixin() {
@@ -921,8 +920,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkWasFullBuild();
 		List<IMessage> weaveMessages = getWeavingMessages(p);
 		if (weaveMessages.size() != 1) {
-			for (Iterator<IMessage> iterator = weaveMessages.iterator(); iterator.hasNext();) {
-				Object object = iterator.next();
+			for (Object object : weaveMessages) {
 				System.out.println(object);
 			}
 			fail("Expected just one weave message.  The aop.xml should have limited the weaving");
@@ -939,8 +937,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertNotNull(ps);
 		assertEquals(2, ps.size());
 		int count = 0;
-		for (Iterator<String> iterator = ps.iterator(); iterator.hasNext();) {
-			String type = iterator.next();
+		for (String type : ps) {
 			if (type.equals("java.io.Serializable")) {
 				count++;
 			}
@@ -997,14 +994,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			IRelationshipMap asmRelMap = getModelFor("P4").getRelationshipMap();
 			assertEquals("There should be two relationships in the relationship map", 2, asmRelMap.getEntries().size());
 
-			for (Iterator<String> iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
-				String sourceOfRelationship = (String) iter.next();
+			for (String sourceOfRelationship : asmRelMap.getEntries()) {
 				IProgramElement ipe = getModelFor("P4").getHierarchy().findElementForHandle(sourceOfRelationship);
 				assertNotNull("expected to find IProgramElement with handle " + sourceOfRelationship + " but didn't", ipe);
-				if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
+				if (ipe.getKind().equals(Kind.ADVICE)) {
 					assertEquals("expected source of relationship to be " + advice.toString() + " but found " + ipe.toString(),
 							advice, ipe);
-				} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+				} else if (ipe.getKind().equals(Kind.CODE)) {
 					assertEquals(
 							"expected source of relationship to be " + codeElement.toString() + " but found " + ipe.toString(),
 							codeElement, ipe);
@@ -1014,17 +1010,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 				}
 				List<IRelationship> relationships = asmRelMap.get(ipe);
 				assertNotNull("expected " + ipe.getName() + " to have some " + "relationships", relationships);
-				for (Iterator<IRelationship> iterator = relationships.iterator(); iterator.hasNext();) {
-					Relationship rel = (Relationship) iterator.next();
+				for (IRelationship relationship : relationships) {
+					Relationship rel = (Relationship) relationship;
 					List<String> targets = rel.getTargets();
-					for (Iterator<String> iterator2 = targets.iterator(); iterator2.hasNext();) {
-						String t = (String) iterator2.next();
+					for (String t : targets) {
 						IProgramElement link = getModelFor("P4").getHierarchy().findElementForHandle(t);
-						if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
+						if (ipe.getKind().equals(Kind.ADVICE)) {
 							assertEquals(
 									"expected target of relationship to be " + codeElement.toString() + " but found "
 											+ link.toString(), codeElement, link);
-						} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
+						} else if (ipe.getKind().equals(Kind.CODE)) {
 							assertEquals(
 									"expected target of relationship to be " + advice.toString() + " but found " + link.toString(),
 									advice, link);
@@ -1102,21 +1097,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement root = model.getHierarchy().getRoot();
 		ProgramElement theITD = (ProgramElement) findElementAtLine(root, 7);
 		Map<String, Object> m = theITD.kvpairs;
-		for (Iterator<String> iterator = m.keySet().iterator(); iterator.hasNext();) {
-			String type = iterator.next();
+		for (String type : m.keySet()) {
 			System.out.println(type + " = " + m.get(type));
 		}
 		// return type of the ITD
 		assertEquals("a.b.c.B", theITD.getCorrespondingType(true));
 		List<char[]> ptypes = theITD.getParameterTypes();
-		for (Iterator<char[]> iterator = ptypes.iterator(); iterator.hasNext();) {
-			char[] object = iterator.next();
+		for (char[] object : ptypes) {
 			System.out.println("p = " + new String(object));
 		}
 		ProgramElement decp = (ProgramElement) findElementAtLine(root, 8);
 		m = decp.kvpairs;
-		for (Iterator<String> iterator = m.keySet().iterator(); iterator.hasNext();) {
-			String type = iterator.next();
+		for (String type : m.keySet()) {
 			System.out.println(type + " = " + m.get(type));
 		}
 		List<String> l = decp.getParentTypes();
@@ -1167,15 +1159,15 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		List<IMessage> l = getErrorMessages(p);
-		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+		assertTrue(l.toString().contains("ManagedResource cannot be resolved to a type"));
 		// checkWasFullBuild();
 		alter(p, "inc1");
 		build(p);
 		// checkWasntFullBuild();
 		List<String> compilerErrors = getCompilerErrorMessages(p);
-		assertTrue(compilerErrors.toString().indexOf("NullPointerException") == -1);
+		assertTrue(!compilerErrors.toString().contains("NullPointerException"));
 		l = getErrorMessages(p);
-		assertTrue(l.toString().indexOf("ManagedResource cannot be resolved to a type") != -1);
+		assertTrue(l.toString().contains("ManagedResource cannot be resolved to a type"));
 	}
 
 	public void testIncrementalAnnoStyle_pr286341() {
@@ -1521,13 +1513,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 	private IProgramElement findFile(IProgramElement whereToLook, String filesubstring) {
 		if (whereToLook.getSourceLocation() != null && whereToLook.getKind().isSourceFile()
-				&& whereToLook.getSourceLocation().getSourceFile().toString().indexOf(filesubstring) != -1) {
+				&& whereToLook.getSourceLocation().getSourceFile().toString().contains(filesubstring)) {
 			return whereToLook;
 		}
 		for (IProgramElement element : whereToLook.getChildren()) {
 			Kind k = element.getKind();
 			ISourceLocation sloc = element.getSourceLocation();
-			if (sloc != null && k.isSourceFile() && sloc.getSourceFile().toString().indexOf(filesubstring) != -1) {
+			if (sloc != null && k.isSourceFile() && sloc.getSourceFile().toString().contains(filesubstring)) {
 				return element;
 			}
 			if (k.isSourceFile()) {
@@ -1723,8 +1715,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		List<IProgramElement> kids = start.getChildren();
 		if (kids != null) {
-			for (int i = 0; i < kids.size(); i++) {
-				IProgramElement found = getChild((IProgramElement) kids.get(i), name);
+			for (IProgramElement kid : kids) {
+				IProgramElement found = getChild((IProgramElement) kid, name);
 				if (found != null) {
 					return found;
 				}
@@ -2968,7 +2960,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<String> files = getCompiledFiles(projectName);
 		boolean found = false;
 		for (String object: files) {
-			if (object.indexOf(typeNameSubstring) != -1) {
+			if (object.contains(typeNameSubstring)) {
 				found = true;
 			}
 		}
@@ -3060,7 +3052,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<IMessage> warnings = getWarningMessages("PR133117");
 		List<IMessage> noGuardWarnings = new ArrayList<>();
 		for (IMessage warning: warnings) {
-			if (warning.getMessage().indexOf("Xlint:noGuardForLazyTjp") != -1) {
+			if (warning.getMessage().contains("Xlint:noGuardForLazyTjp")) {
 				noGuardWarnings.add(warning);
 			}
 		}
@@ -3144,7 +3136,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String decisions = AjdeInteractionTestbed.MyStateListener.getDecisions();
 		String expect = "Need to recompile 'A.aj'";
 		assertTrue("Couldn't find build decision: '" + expect + "' in the list of decisions made:\n" + decisions,
-				decisions.indexOf(expect) != -1);
+				decisions.contains(expect));
 	}
 
 	public void testPr133532_3() {
@@ -3939,8 +3931,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		if (rels == null) {
 			fail("Did not find any related elements!");
 		}
-		for (Iterator<IRelationship> iter = rels.iterator(); iter.hasNext();) {
-			IRelationship element = iter.next();
+		for (IRelationship element : rels) {
 			List<String> targets = element.getTargets();
 			if (output == null) {
 				output = new ArrayList<String>();

@@ -116,8 +116,7 @@ public class StructureModelTest extends AjdeCoreTestCase {
 	}
 
 	private void testModelIntegrityHelper(IProgramElement node) throws Exception {
-		for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement child = (IProgramElement) it.next();
+		for (IProgramElement child : node.getChildren()) {
 			if (node == child.getParent()) {
 				testModelIntegrityHelper(child);
 			} else {
@@ -131,8 +130,8 @@ public class StructureModelTest extends AjdeCoreTestCase {
 			public void preProcess(IProgramElement node) {
 				if (node.getChildren() == null)
 					return;
-				for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-					if (it.next() == null)
+				for (IProgramElement iProgramElement : node.getChildren()) {
+					if (iProgramElement == null)
 						throw new NullPointerException("null child on node: " + node.getName());
 				}
 			}

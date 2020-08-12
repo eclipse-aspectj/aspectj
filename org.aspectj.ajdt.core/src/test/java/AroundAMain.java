@@ -25,7 +25,7 @@ public class AroundAMain {//extends TestCase {
 			@Override
 			public Object run(Object[] args) throws Throwable {
 				//				System.out.println("run with: " + Arrays.asList(args));
-				return new Integer(10);
+				return 10;
 			}
 		};
 
@@ -33,7 +33,7 @@ public class AroundAMain {//extends TestCase {
 				"ajc$perSingletonInstance");
 
 		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$1$73ebb943", // was $AroundA$46
-				new Integer(10), true, closure);
+				10, true, closure);
 
 		Reflection.invoke(Class.forName("AroundA"), instance, "ajc$around$AroundA$2$a758212d",  // Was $AroundA$c5
 				"hello there", closure);

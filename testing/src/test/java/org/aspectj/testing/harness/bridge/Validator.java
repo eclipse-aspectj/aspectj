@@ -150,8 +150,8 @@ public class Validator {
 	public boolean nullcheck(Collection list, String message) {
 		if (nullcheck((Object) list, message + " list")) {
 			int i = 0;
-			for (Iterator iter = list.iterator(); iter.hasNext();) {
-				if (!nullcheck(iter.next(), message + "[" + i++ + "]")) {
+			for (Object o : list) {
+				if (!nullcheck(o, message + "[" + i++ + "]")) {
 					return false;
 				}
 			}
@@ -286,9 +286,8 @@ public class Validator {
 	public boolean canReadFiles(Collection dirs, String message) {
 		if (nullcheck((Object) dirs, message + " files")) {
 			int i = 0;
-			for (Iterator iter = dirs.iterator(); iter.hasNext();) {
-				Object o = iter.next();
-				if (! (o instanceof File)) {
+			for (Object o : dirs) {
+				if (!(o instanceof File)) {
 					fail(i + ": not a file " + o);
 				}
 				if (!canRead((File) o, message + "[" + i++ + "]")) {
@@ -319,9 +318,8 @@ public class Validator {
 	public boolean canReadDirs(Collection dirs, String message) {
 		if (nullcheck((Object) dirs, message + " dirs")) {
 			int i = 0;
-			for (Iterator iter = dirs.iterator(); iter.hasNext();) {
-				Object o = iter.next();
-				if (! (o instanceof File)) {
+			for (Object o : dirs) {
+				if (!(o instanceof File)) {
 					fail(i + ": not a file " + o);
 				}
 				if (!canReadDir((File) o, message + "[" + i++ + "]")) {
@@ -353,9 +351,8 @@ public class Validator {
 	public boolean canWriteFiles(Collection dirs, String message) {
 		if (nullcheck((Object) dirs, message + " files")) {
 			int i = 0;
-			for (Iterator iter = dirs.iterator(); iter.hasNext();) {
-				Object o = iter.next();
-				if (! (o instanceof File)) {
+			for (Object o : dirs) {
+				if (!(o instanceof File)) {
 					fail(i + ": not a file " + o);
 				}
 				if (!canWrite((File) o, message + "[" + i++ + "]")) {
@@ -387,9 +384,8 @@ public class Validator {
 	public boolean canWriteDirs(Collection dirs, String message) {
 		if (nullcheck((Object) dirs, message + " dirs")) {
 			int i = 0;
-			for (Iterator iter = dirs.iterator(); iter.hasNext();) {
-				Object o = iter.next();
-				if (! (o instanceof File)) {
+			for (Object o : dirs) {
+				if (!(o instanceof File)) {
 					fail(i + ": not a file " + o);
 				}
 				if (!canWriteDir((File) o, message + "[" + i++ + "]")) {

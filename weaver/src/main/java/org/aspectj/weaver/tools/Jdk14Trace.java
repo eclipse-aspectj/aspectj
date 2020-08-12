@@ -84,8 +84,7 @@ public class Jdk14Trace extends AbstractTrace {
 				Logger parent = logger.getParent();
 				if (parent != null) handlers = parent.getHandlers();
 			}
-			for (int i = 0; i < handlers.length; i++) {
-				Handler handler = handlers[i];
+			for (Handler handler : handlers) {
 				handler.setLevel(Level.FINER);
 			}
 		}

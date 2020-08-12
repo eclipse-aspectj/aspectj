@@ -107,11 +107,10 @@ public class EfficientTJPTests extends XMLBasedAjcTestCase {
 		try {
 			JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
 			Method[] meths = jc.getMethods();
-			for (int i = 0; i < meths.length; i++) {
-				Method method = meths[i];
+			for (Method method : meths) {
 				if (method.getName().equals("ajc$preClinit")) {
 					String code = method.getCode().getCodeString();
-					assertTrue("Expected to contain '"+text+"':\n"+code,code.contains(text));
+					assertTrue("Expected to contain '" + text + "':\n" + code, code.contains(text));
 					return;
 				}
 			}

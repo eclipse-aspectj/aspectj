@@ -199,8 +199,7 @@ public class Aj implements ClassPreProcessor {
 				System.err.println("Weaver adaptors before queue processing:");
 				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
 				Set<AdaptorKey> keys = m.keySet();
-				for (Iterator<AdaptorKey> iterator = keys.iterator(); iterator.hasNext();) {
-					Object object = iterator.next();
+				for (Object object : keys) {
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
 			}
@@ -223,8 +222,7 @@ public class Aj implements ClassPreProcessor {
 				System.err.println("Weaver adaptors after queue processing:");
 				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
 				Set<AdaptorKey> keys = m.keySet();
-				for (Iterator<AdaptorKey> iterator = keys.iterator(); iterator.hasNext();) {
-					Object object = iterator.next();
+				for (Object object : keys) {
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
 			}

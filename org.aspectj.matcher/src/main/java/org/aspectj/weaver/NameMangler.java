@@ -72,7 +72,7 @@ public class NameMangler {
 				return false; // body of an itd-m
 			}
 			return true;
-		} else if (methodName.indexOf("_aroundBody") != -1) {
+		} else if (methodName.contains("_aroundBody")) {
 			return true;
 		}
 		// these aren't the droids you're looking for...move along...... pr148727

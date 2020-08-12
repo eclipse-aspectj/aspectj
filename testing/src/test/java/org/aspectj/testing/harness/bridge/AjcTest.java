@@ -375,92 +375,91 @@ public class AjcTest extends RunSpecIterator {
             runtime.copy(parentRuntime);
             
             String[] globalOptions = runtime.extractOptions(VALID_OPTIONS, true);
-            for (int i = 0; i < globalOptions.length; i++) {
-				String option  = globalOptions[i];
-                if (!option.startsWith(OPTION_PREFIX)) {
-                    throw new Error("only expecting " + OPTION_PREFIX + "..: " + option);
-                }
-                option = option.substring(OPTION_PREFIX.length());
-                boolean keywordMustExist = false;
-                List<String> permittedTitles = null;
-                List<String> permittedTitleStrings = null;
-                String havePr = null;
-                if (option.startsWith(REQUIRE_KEYWORDS)) {
-                    option = option.substring(REQUIRE_KEYWORDS.length());
-                    keywordMustExist = true;
-                } else if (option.startsWith(SKIP_KEYWORDS)) {
-                    option = option.substring(SKIP_KEYWORDS.length());
-                } else if (option.startsWith(TITLE_LIST)) {
-                    option = option.substring(TITLE_LIST.length());
-                    permittedTitles = getTitles(option);
-                } else if (option.startsWith(TITLE_FAIL_LIST)) {
-                    option = option.substring(TITLE_FAIL_LIST.length());
-                    permittedTitles = getTitles(option, true);
-                } else if (option.startsWith(TITLE_CONTAINS)) {
-                    option = option.substring(TITLE_CONTAINS.length());
-                    permittedTitleStrings = getTitles(option);
-                } else if (option.startsWith(PICK_PR)) {
-                    if (0 == bugId) {
-                        skipMessage(handler, "bugId required, but no bugId for this test");
-                        return false;
-                    } else {
-                        havePr = "" + bugId;
-                    }
-                    option = option.substring(PICK_PR.length());
-                } else {
-                    throw new Error("unrecognized suffix: " + globalOptions[i]
-                        + " (expecting: " + OPTION_PREFIX + VALID_SUFFIXES + "...)");
-                }
-                if (null != permittedTitleStrings) {
-                    boolean gotHit = false;
-                    for (Iterator<String> iter = permittedTitleStrings.iterator();
-                        !gotHit && iter.hasNext();
-                        ) {
-                        String substring = (String) iter.next();
-                        if (-1 != this.description.indexOf(substring)) {
-                            gotHit = true;
-                        }
-                    }
-                    if (!gotHit) {
-                        String reason = "title " 
-                            + this.description
-                            + " does not contain any of "
-                            + option;
-                        skipMessage(handler, reason);
-                        return false;
-                    }
-                } else if (null != permittedTitles) {
-                    if (!permittedTitles.contains(this.description)) {
-                        String reason = "titlesList " 
-                            + option  
-                            + " did not contain " 
-                            + this.description;
-                        skipMessage(handler, reason);
-                        return false;
-                    }                    
-                } else {
-                    // all other options handled as comma-delimited lists
-                    List<String> specs = LangUtil.commaSplit(option);
-                    // XXX also throw Error on empty specs...
-                    for (Iterator<String> iter = specs.iterator(); iter.hasNext();) {
-                        String spec = (String) iter.next();
-                        if (null != havePr) {
-                            if (havePr.equals(spec)) { // String.equals()
-                                havePr = null;
-                            }
-                        } else if (keywordMustExist != keywords.contains(spec)) {
-                            String reason = "keyword " + spec  
-                                + " was " + (keywordMustExist ? "not found" : "found");
-                            skipMessage(handler, reason);
-                            return false;
-                        }
-                    }
-                    if (null != havePr) {
-                        skipMessage(handler, "bugId required, but not matched for this test");
-                        return false;
-                    }
-                }
-            }
+			for (String globalOption : globalOptions) {
+				String option = globalOption;
+				if (!option.startsWith(OPTION_PREFIX)) {
+					throw new Error("only expecting " + OPTION_PREFIX + "..: " + option);
+				}
+				option = option.substring(OPTION_PREFIX.length());
+				boolean keywordMustExist = false;
+				List<String> permittedTitles = null;
+				List<String> permittedTitleStrings = null;
+				String havePr = null;
+				if (option.startsWith(REQUIRE_KEYWORDS)) {
+					option = option.substring(REQUIRE_KEYWORDS.length());
+					keywordMustExist = true;
+				} else if (option.startsWith(SKIP_KEYWORDS)) {
+					option = option.substring(SKIP_KEYWORDS.length());
+				} else if (option.startsWith(TITLE_LIST)) {
+					option = option.substring(TITLE_LIST.length());
+					permittedTitles = getTitles(option);
+				} else if (option.startsWith(TITLE_FAIL_LIST)) {
+					option = option.substring(TITLE_FAIL_LIST.length());
+					permittedTitles = getTitles(option, true);
+				} else if (option.startsWith(TITLE_CONTAINS)) {
+					option = option.substring(TITLE_CONTAINS.length());
+					permittedTitleStrings = getTitles(option);
+				} else if (option.startsWith(PICK_PR)) {
+					if (0 == bugId) {
+						skipMessage(handler, "bugId required, but no bugId for this test");
+						return false;
+					} else {
+						havePr = "" + bugId;
+					}
+					option = option.substring(PICK_PR.length());
+				} else {
+					throw new Error("unrecognized suffix: " + globalOption
+							+ " (expecting: " + OPTION_PREFIX + VALID_SUFFIXES + "...)");
+				}
+				if (null != permittedTitleStrings) {
+					boolean gotHit = false;
+					for (Iterator<String> iter = permittedTitleStrings.iterator();
+						 !gotHit && iter.hasNext();
+					) {
+						String substring = (String) iter.next();
+						if (this.description.contains(substring)) {
+							gotHit = true;
+						}
+					}
+					if (!gotHit) {
+						String reason = "title "
+								+ this.description
+								+ " does not contain any of "
+								+ option;
+						skipMessage(handler, reason);
+						return false;
+					}
+				} else if (null != permittedTitles) {
+					if (!permittedTitles.contains(this.description)) {
+						String reason = "titlesList "
+								+ option
+								+ " did not contain "
+								+ this.description;
+						skipMessage(handler, reason);
+						return false;
+					}
+				} else {
+					// all other options handled as comma-delimited lists
+					List<String> specs = LangUtil.commaSplit(option);
+					// XXX also throw Error on empty specs...
+					for (String spec : specs) {
+						if (null != havePr) {
+							if (havePr.equals(spec)) { // String.equals()
+								havePr = null;
+							}
+						} else if (keywordMustExist != keywords.contains(spec)) {
+							String reason = "keyword " + spec
+									+ " was " + (keywordMustExist ? "not found" : "found");
+							skipMessage(handler, reason);
+							return false;
+						}
+					}
+					if (null != havePr) {
+						skipMessage(handler, "bugId required, but not matched for this test");
+						return false;
+					}
+				}
+			}
             return true;
         }  
 

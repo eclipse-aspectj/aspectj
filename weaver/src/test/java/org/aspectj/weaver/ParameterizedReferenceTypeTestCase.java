@@ -33,10 +33,10 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 	public void testDeclaredMethodWithParameter() {
 		ResolvedMember[] methods = listOfString.getDeclaredMethods();
 		ResolvedMember add = null;
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals("add")) {
-				if (methods[i].getParameterTypes().length == 1) {
-					add = methods[i];
+		for (ResolvedMember resolvedMember : methods) {
+			if (resolvedMember.getName().equals("add")) {
+				if (resolvedMember.getParameterTypes().length == 1) {
+					add = resolvedMember;
 					System.out.println(add);
 //					j8: boolean java.util.List<java.lang.String>.add(java.lang.Object)
 //					break;
@@ -47,10 +47,10 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		assertEquals("Ljava/lang/String;",parameterType.getSignature());
 		
 		ResolvedMember get = null;
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals("get")) {
-				if (methods[i].getParameterTypes().length == 1) {
-					get = methods[i];
+		for (ResolvedMember method : methods) {
+			if (method.getName().equals("get")) {
+				if (method.getParameterTypes().length == 1) {
+					get = method;
 					break;
 				}
 			}
@@ -63,9 +63,9 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 	public void testDeclaredMethodWithParameterizedReturnType() {
 		ResolvedMember[] methods = listOfString.getDeclaredMethods();
 		ResolvedMember iterator = null;
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals("iterator")) {
-				iterator = methods[i];
+		for (ResolvedMember method : methods) {
+			if (method.getName().equals("iterator")) {
+				iterator = method;
 				break;
 			}
 		}

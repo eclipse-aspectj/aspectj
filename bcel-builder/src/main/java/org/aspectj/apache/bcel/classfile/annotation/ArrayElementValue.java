@@ -55,8 +55,8 @@ public class ArrayElementValue extends ElementValue {
 	public void dump(DataOutputStream dos) throws IOException {
 		dos.writeByte(type); // u1 type of value (ARRAY == '[')
 		dos.writeShort(evalues.length);
-		for (int i = 0; i < evalues.length; i++) {
-			evalues[i].dump(dos);
+		for (ElementValue evalue : evalues) {
+			evalue.dump(dos);
 		}
 	}
 

@@ -341,13 +341,12 @@ public class Sandbox {
         ArrayList result = new ArrayList();
         NamesFilter filter = new NamesFilter(names);
         File[] bases = { testBaseDir, sandboxDir };
-        for (int i = 0; i < bases.length; i++) {
-            File base = bases[i];
-            if ((null == base) || !base.canRead()) {
-                continue;
-            }
-            result.addAll(Arrays.asList(FileUtil.listFiles(base, filter)));
-        }
+		for (File base : bases) {
+			if ((null == base) || !base.canRead()) {
+				continue;
+			}
+			result.addAll(Arrays.asList(FileUtil.listFiles(base, filter)));
+		}
         return (File[]) result.toArray(new File[0]);
     }
     File getTestBaseSrcDir(JavaRun caller) {
@@ -482,11 +481,10 @@ public class Sandbox {
         assertState(null != compileClasspath, "classpath not set");
         ArrayList result = new ArrayList();
         File[] src = compileClasspath;
-        for (int i = 0; i < src.length; i++) {
-			File f = src[i];
-            if ((null != f) && (f.isDirectory()) && (!readable || f.canRead())) {
-                result.add(f);
-            }
+		for (File f : src) {
+			if ((null != f) && (f.isDirectory()) && (!readable || f.canRead())) {
+				result.add(f);
+			}
 		}
         if (includeOutput && (null != classesDir) 
             && (!readable || classesDir.canRead())) {
@@ -505,16 +503,15 @@ public class Sandbox {
         assertState(null != compileClasspath, "classpath not set");
         ArrayList result = new ArrayList();
         File[][] src = new File[][] { compileClasspath, aspectpath };
-        for (int i = 0; i < src.length; i++) {
-            File[] paths = src[i];
-            int len = (null == paths ? 0 : paths.length);
-            for (int j = 0; j < len; j++) {
-                File f = paths[j];
-                if (FileUtil.isZipFile(f) && (!readable || f.canRead())) {
-                    result.add(f);
-                }
+		for (File[] paths : src) {
+			int len = (null == paths ? 0 : paths.length);
+			for (int j = 0; j < len; j++) {
+				File f = paths[j];
+				if (FileUtil.isZipFile(f) && (!readable || f.canRead())) {
+					result.add(f);
+				}
 			}
-        }
+		}
         return (File[]) result.toArray(new File[0]);
     }
     
@@ -562,11 +559,11 @@ public class Sandbox {
             if (null != file) {
                 String name = file.getName();
                 if ((null != name) && (null != names)) {
-                    for (int i = 0; i < names.length; i++) {
-                        if (name.equals(names[i])) {
-                            return true;
-                        }
-                    }
+					for (String s : names) {
+						if (name.equals(s)) {
+							return true;
+						}
+					}
                 }
             }
             return false;

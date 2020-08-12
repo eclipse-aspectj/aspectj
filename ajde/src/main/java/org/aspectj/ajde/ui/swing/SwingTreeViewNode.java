@@ -48,10 +48,10 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStruct
 		this.kind = Kind.DECLARATION;
 		
 		if (children != null) {
-			for (Iterator it = children.iterator(); it.hasNext(); ) { 
-				SwingTreeViewNode child = (SwingTreeViewNode)it.next();
+			for (Object o : children) {
+				SwingTreeViewNode child = (SwingTreeViewNode) o;
 				if (StructureViewNodeFactory.acceptNode(programElement, child.getStructureNode())) {
-					super.add(child);	
+					super.add(child);
 				}
 			}
 		}

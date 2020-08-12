@@ -141,9 +141,9 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Set entries = irm.getEntries();
 		boolean gotSomethingValid = false;
 		String expected = "<recursivepackage{RecursiveCatcher.java'RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
-		for (Iterator iterator = entries.iterator(); iterator.hasNext();) {
-			String str = (String) iterator.next();
-			if (str.indexOf(expected) != -1) {
+		for (Object entry : entries) {
+			String str = (String) entry;
+			if (str.contains(expected)) {
 				gotSomethingValid = true;
 			}
 		}

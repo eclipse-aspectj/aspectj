@@ -40,8 +40,7 @@ public class SimpleScope implements IScope {
 	}
 
 	public UnresolvedType lookupType(String name, IHasPosition location) {
-		for (int i = 0; i < importedNames.length; i++) {
-			String importedName = importedNames[i];
+		for (String importedName : importedNames) {
 			// make sure we're matching against the type name rather than part of it
 			// if (importedName.endsWith("." + name)) {
 			if (importedName.endsWith(name)) {
@@ -104,9 +103,9 @@ public class SimpleScope implements IScope {
 	}
 
 	public FormalBinding lookupFormal(String name) {
-		for (int i = 0, len = bindings.length; i < len; i++) {
-			if (bindings[i].getName().equals(name)) {
-				return bindings[i];
+		for (FormalBinding binding : bindings) {
+			if (binding.getName().equals(name)) {
+				return binding;
 			}
 		}
 		return null;

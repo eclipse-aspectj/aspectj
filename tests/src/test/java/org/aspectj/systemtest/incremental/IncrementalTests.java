@@ -179,7 +179,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testIncrementalResourceAdditionToInPath() throws Exception {
       runTest("incremental with addition of resource to inpath directory");
       RunResult result = run("Hello");
-      assertTrue("Should have been advised",result.getStdOut().indexOf("World") != -1);
+      assertTrue("Should have been advised", result.getStdOut().contains("World"));
       nextIncrement(false);
       assertFalse("Resource file should not exist yet",new File(ajc.getSandboxDirectory(),"AResourceFile.txt").exists());
       copyFileAndDoIncrementalBuild("changes/AResourceFile.txt", "indir/AResourceFile.txt");

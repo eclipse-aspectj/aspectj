@@ -225,8 +225,8 @@ public class ReferenceType extends ResolvedType {
 			return true;
 		}
 		if (annotationTypes != null) {
-			for (int i = 0; i < annotationTypes.length; i++) {
-				if (annotationTypes[i].equals(ofType)) {
+			for (ResolvedType annotationType : annotationTypes) {
+				if (annotationType.equals(ofType)) {
 					return true;
 				}
 			}
@@ -278,17 +278,17 @@ public class ReferenceType extends ResolvedType {
 	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType) {
 		AnnotationAJ[] axs = getDelegate().getAnnotations();
 		if (axs != null) {
-			for (int i = 0; i < axs.length; i++) {
-				if (axs[i].getTypeSignature().equals(ofType.getSignature())) {
-					return axs[i];
+			for (AnnotationAJ ax : axs) {
+				if (ax.getTypeSignature().equals(ofType.getSignature())) {
+					return ax;
 				}
 			}
 		}
 		if (annotations != null) {
 			String searchSig = ofType.getSignature();
-			for (int i = 0; i < annotations.length; i++) {
-				if (annotations[i].getTypeSignature().equals(searchSig)) {
-					return annotations[i];
+			for (AnnotationAJ annotation : annotations) {
+				if (annotation.getTypeSignature().equals(searchSig)) {
+					return annotation;
 				}
 			}
 		}
@@ -386,9 +386,9 @@ public class ReferenceType extends ResolvedType {
 		// ??? needs to be Methods, not just declared methods? JLS 5.5 unclear
 		ResolvedMember[] a = getDeclaredMethods();
 		ResolvedMember[] b = other.getDeclaredMethods();
-		for (int ai = 0, alen = a.length; ai < alen; ai++) {
-			for (int bi = 0, blen = b.length; bi < blen; bi++) {
-				if (!b[bi].isCompatibleWith(a[ai])) {
+		for (ResolvedMember member : a) {
+			for (ResolvedMember resolvedMember : b) {
+				if (!resolvedMember.isCompatibleWith(member)) {
 					return false;
 				}
 			}
@@ -507,11 +507,11 @@ public class ReferenceType extends ResolvedType {
 			if (((ReferenceType) this.getRawType()).isAssignableFrom(other)) {
 				boolean wildcardsAllTheWay = true;
 				ResolvedType[] myParameters = this.getResolvedTypeParameters();
-				for (int i = 0; i < myParameters.length; i++) {
-					if (!myParameters[i].isGenericWildcard()) {
+				for (ResolvedType myParameter : myParameters) {
+					if (!myParameter.isGenericWildcard()) {
 						wildcardsAllTheWay = false;
 					} else {
-						BoundedReferenceType boundedRT = (BoundedReferenceType) myParameters[i];
+						BoundedReferenceType boundedRT = (BoundedReferenceType) myParameter;
 						if (boundedRT.isExtends() || boundedRT.isSuper()) {
 							wildcardsAllTheWay = false;
 						}
@@ -910,8 +910,8 @@ public class ReferenceType extends ResolvedType {
 	public TypeVariable[] getTypeVariables() {
 		if (typeVariables == null) {
 			typeVariables = getDelegate().getTypeVariables();
-			for (int i = 0; i < this.typeVariables.length; i++) {
-				typeVariables[i].resolve(world);
+			for (TypeVariable typeVariable : this.typeVariables) {
+				typeVariable.resolve(world);
 			}
 		}
 		return typeVariables;
@@ -1131,8 +1131,8 @@ public class ReferenceType extends ResolvedType {
 		ret.append(PARAMETERIZED_TYPE_IDENTIFIER);
 		ret.append(rawSignature.substring(1, rawSignature.length() - 1));
 		ret.append("<");
-		for (int i = 0; i < someParameters.length; i++) {
-			ret.append(someParameters[i].getSignature());
+		for (ResolvedType someParameter : someParameters) {
+			ret.append(someParameter.getSignature());
 		}
 		ret.append(">;");
 		return ret.toString();
@@ -1144,18 +1144,18 @@ public class ReferenceType extends ResolvedType {
 		String rawSig = aGenericType.getErasureSignature();
 		ret.append(rawSig.substring(0, rawSig.length() - 1));
 		ret.append("<");
-		for (int i = 0; i < someParameters.length; i++) {
-			if (someParameters[i] instanceof ReferenceType) {
-				ret.append(((ReferenceType) someParameters[i])
+		for (UnresolvedType someParameter : someParameters) {
+			if (someParameter instanceof ReferenceType) {
+				ret.append(((ReferenceType) someParameter)
 						.getSignatureForAttribute());
-			} else if (someParameters[i] instanceof Primitive) {
-				ret.append(((Primitive) someParameters[i])
+			} else if (someParameter instanceof Primitive) {
+				ret.append(((Primitive) someParameter)
 						.getSignatureForAttribute());
 			} else {
 				throw new IllegalStateException(
 						"DebugFor325731: expected a ReferenceType or Primitive but was "
-								+ someParameters[i] + " of type "
-								+ someParameters[i].getClass().getName());
+								+ someParameter + " of type "
+								+ someParameter.getClass().getName());
 			}
 		}
 		ret.append(">;");
@@ -1200,8 +1200,8 @@ public class ReferenceType extends ResolvedType {
 			} else {
 				ResolvedType[] existing = getDelegate().getDeclaredInterfaces();
 				if (existing != null) {
-					for (int i = 0; i < existing.length; i++) {
-						if (existing[i].equals(newParent)) {
+					for (ResolvedType resolvedType : existing) {
+						if (resolvedType.equals(newParent)) {
 							return; // already has this interface
 						}
 					}

@@ -43,8 +43,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 			classpath.append(userPath);
 		}
 		List<File> outputDirs = getOutputLocationManager().getAllOutputLocations();
-		for (Iterator<File> iterator = outputDirs.iterator(); iterator.hasNext();) {
-			File dir = (File) iterator.next();
+		for (File dir : outputDirs) {
 			classpath.append(File.pathSeparator + dir.getAbsolutePath() + File.pathSeparator);
 		}
 		classpath.append(System.getProperty("java.class.path", "."));

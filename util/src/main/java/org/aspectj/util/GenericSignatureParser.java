@@ -194,8 +194,8 @@ public class GenericSignatureParser {
 			} else if (tokenStream[tokenIndex].equals("<")) {
 				ret.append("<");
 				TypeArgument[] tArgs = maybeParseTypeArguments();
-				for (int i = 0; i < tArgs.length; i++) {
-					ret.append(tArgs[i].toString());
+				for (TypeArgument tArg : tArgs) {
+					ret.append(tArg.toString());
 				}
 				ret.append(">");
 				outerType = new SimpleClassTypeSignature(identifier, tArgs);

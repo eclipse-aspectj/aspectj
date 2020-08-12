@@ -330,11 +330,11 @@ public interface IProgramElement extends Serializable {
 		};
 
 		public static Kind getKindForString(String kindString) {
-			for (int i = 0; i < ALL.length; i++) {
-				if (ALL[i].toString().equals(kindString)) {
-					return ALL[i];
-				}
-			}
+            for (Kind kind : ALL) {
+                if (kind.toString().equals(kindString)) {
+                    return kind;
+                }
+            }
 			return ERROR;
 		}
 

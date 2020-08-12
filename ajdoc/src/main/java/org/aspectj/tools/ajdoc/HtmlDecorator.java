@@ -58,8 +58,8 @@ class HtmlDecorator {
 		rootDir = newRootDir;
 		declIDTable = table;
 		docVisibilityModifier = docModifier;
-		for (int i = 0; i < inputFiles.length; i++) {
-			decorateHTMLFromIPEs(getProgramElements(model, inputFiles[i].getCanonicalPath()), rootDir.getCanonicalPath()
+		for (File inputFile : inputFiles) {
+			decorateHTMLFromIPEs(getProgramElements(model, inputFile.getCanonicalPath()), rootDir.getCanonicalPath()
 					+ Config.DIR_SEP_CHAR, docModifier, false);
 		}
 	}
@@ -67,8 +67,7 @@ class HtmlDecorator {
 	static void decorateHTMLFromIPEs(IProgramElement[] decls, String base, String docModifier, boolean exceededNestingLevel)
 			throws IOException {
 		if (decls != null) {
-			for (int i = 0; i < decls.length; i++) {
-				IProgramElement decl = decls[i];
+			for (IProgramElement decl : decls) {
 				decorateHTMLFromIPE(decl, base, docModifier, exceededNestingLevel);
 			}
 		}
@@ -193,7 +192,7 @@ class HtmlDecorator {
 				}
 				// only add aspect documentation if we're in the correct
 				// file for the given IProgramElement
-				if (file.getName().indexOf(fullname + ".html") != -1) {
+				if (file.getName().contains(fullname + ".html")) {
 					addAspectDocumentation(decl, fileContents, index);
 				}
 			} else {
@@ -203,7 +202,7 @@ class HtmlDecorator {
 			// moved this here because then can use the IProgramElement.Kind
 			// rather than checking to see if there's advice - this fixes
 			// the case with an inner aspect not having the title "Aspect"
-			if (decl.getKind().equals(IProgramElement.Kind.ASPECT) && file.getName().indexOf(decl.toSignatureString()) != -1) {
+			if (decl.getKind().equals(IProgramElement.Kind.ASPECT) && file.getName().contains(decl.toSignatureString())) {
 				// only want to change "Class" to "Aspect" if we're in the
 				// file corresponding to the IProgramElement
 				String fullname = "";
@@ -213,7 +212,7 @@ class HtmlDecorator {
 				} else {
 					fullname += decl.toSignatureString();
 				}
-				if (file.getName().indexOf(fullname + ".html") == -1) {
+				if (!file.getName().contains(fullname + ".html")) {
 					// we're still in the file for a parent IPE
 					continue;
 				}
@@ -311,8 +310,7 @@ class HtmlDecorator {
 		if (fieldsDeclaredOn != null && !constDeclaredOn.isEmpty()) {
 			insertDeclarationsSummary(fileBuffer, constDeclaredOn, ITD_CONSTRUCTOR_SUMMARY, index);
 		}
-		for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-			IProgramElement member = it.next();
+		for (IProgramElement member : node.getChildren()) {
 			if (member.getKind().equals(IProgramElement.Kind.POINTCUT)) {
 				pointcuts.add(member);
 			} else if (member.getKind().equals(IProgramElement.Kind.ADVICE)) {
@@ -365,8 +363,8 @@ class HtmlDecorator {
 		insertIndex += tableHead.length();
 
 		// insert the body of the table
-		for (int i = 0; i < decls.size(); i++) {
-			IProgramElement decl = (IProgramElement) decls.get(i);
+		for (Object o : decls) {
+			IProgramElement decl = (IProgramElement) o;
 			if (isAboveVisibility(decl)) {
 				// insert the table row accordingly
 				String comment = generateSummaryComment(decl);
@@ -413,8 +411,8 @@ class HtmlDecorator {
 
 	private static boolean declsAboveVisibilityExist(List decls) {
 		boolean exist = false;
-		for (Iterator it = decls.iterator(); it.hasNext();) {
-			IProgramElement element = (IProgramElement) it.next();
+		for (Object decl : decls) {
+			IProgramElement element = (IProgramElement) decl;
 			if (isAboveVisibility(element))
 				exist = true;
 		}
@@ -748,7 +746,7 @@ class HtmlDecorator {
 	 */
 	private static String getRelativePathFromHere(String packagePath) {
 		StringBuffer result = new StringBuffer("");
-		if (packagePath != null && (packagePath.indexOf("/") != -1)) {
+		if (packagePath != null && (packagePath.contains("/"))) {
 			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
 			while (sTok.hasMoreTokens()) {
 				sTok.nextToken(); // don't care about the token value
@@ -810,11 +808,11 @@ class HtmlDecorator {
 	static String generateHREFName(IProgramElement decl) {
 		StringBuffer hrefLinkBuffer = new StringBuffer();
 		char[] declChars = decl.toLabelString().toCharArray();
-		for (int i = 0; i < declChars.length; i++) {
-			if (declChars[i] == '"') {
+		for (char declChar : declChars) {
+			if (declChar == '"') {
 				hrefLinkBuffer.append("quot;");
 			} else {
-				hrefLinkBuffer.append(declChars[i]);
+				hrefLinkBuffer.append(declChar);
 			}
 		}
 		return hrefLinkBuffer.toString();

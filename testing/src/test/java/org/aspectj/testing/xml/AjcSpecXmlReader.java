@@ -462,21 +462,21 @@ public class AjcSpecXmlReader {
                 "../../../tests", "tests", "modules/tests"
             };
             File baseDir;
-            for (int j = 0; j < baseDirs.length; j++) {
-                baseDir = baseDirs[j];
-                if (!isDir(baseDir)) {
-                    continue;
-                }
-                for (int i = 0; i < locations.length; i++) {
-                    File dir = new File(baseDir, locations[i]);
-                    if (isDir(dir)) {
-                        File temp = new File(dir, NAME);
-                        if (temp.isFile() && temp.canRead()) {
-                            return temp.getPath();
-                        }
-                    }
-                }
-            }
+			for (File file : baseDirs) {
+				baseDir = file;
+				if (!isDir(baseDir)) {
+					continue;
+				}
+				for (String location : locations) {
+					File dir = new File(baseDir, location);
+					if (isDir(dir)) {
+						File temp = new File(dir, NAME);
+						if (temp.isFile() && temp.canRead()) {
+							return temp.getPath();
+						}
+					}
+				}
+			}
             return null;
         }
         public InputSource resolveEntity(

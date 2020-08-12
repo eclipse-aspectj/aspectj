@@ -113,7 +113,7 @@ public class Utility {
 	 */
 	public static String beautifyLocation(ISourceLocation isl) {
 		StringBuffer nice = new StringBuffer();
-		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().indexOf("no debug info available") != -1) {
+		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().contains("no debug info available")) {
 			nice.append("no debug info available");
 		} else {
 			// can't use File.getName() as this fails when a Linux box
@@ -580,9 +580,7 @@ public class Utility {
 			if (ih == null) {
 				return -1;
 			}
-			Iterator<InstructionTargeter> tIter = ih.getTargeters().iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter t = tIter.next();
+			for (InstructionTargeter t : ih.getTargeters()) {
 				if (t instanceof LineNumberTag) {
 					return ((LineNumberTag) t).getLineNumber();
 				}
@@ -669,9 +667,9 @@ public class Utility {
 					// We know the value is an array value
 					ArrayElementValue array = (ArrayElementValue) (vals.get(0)).getValue();
 					ElementValue[] values = array.getElementValuesArray();
-					for (int j = 0; j < values.length; j++) {
+					for (ElementValue elementValue : values) {
 						// We know values in the array are strings
-						SimpleElementValue value = (SimpleElementValue) values[j];
+						SimpleElementValue value = (SimpleElementValue) elementValue;
 						Lint.Kind lintKind = lint.getLintKind(value.getValueString());
 						if (lintKind != null) {
 							suppressedWarnings.add(lintKind);

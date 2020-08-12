@@ -49,9 +49,9 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		MessageHandler h = new MessageHandler();
 //		boolean result;
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < args.length; i++) {
-			sb.append("\n###### results for " + args[i]);
-			sb.append("\n" + me.run(new File(args[i]), h) + ": " + h);
+		for (String arg : args) {
+			sb.append("\n###### results for " + arg);
+			sb.append("\n" + me.run(new File(arg), h) + ": " + h);
 		}
 		System.err.flush();
 		System.out.flush();
@@ -174,7 +174,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		IMessageHolder compilerMessages,
         StringBuffer commandLine,
 		IMessageHandler handler) {
-        log("verifyCompile -  iteration ", new Integer(iteration), handler);
+        log("verifyCompile -  iteration ", iteration, handler);
 		log("verifyCompile -        def ", def, handler);
         log("verifyCompile -    command ", commandLine.toString(), handler);
 		log("verifyCompile -   messages ", compilerMessages, handler);
@@ -260,9 +260,9 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
     List<String> normalizeFilenames(String[] ra) { // XXX util
         ArrayList<String> result = new ArrayList<>();
         if (null != ra) {
-            for (int i = 0; i < ra.length; i++) {
-                result.add(normalizeFilename(ra[i]));
-            }
+			for (String s : ra) {
+				result.add(normalizeFilename(s));
+			}
             if (1 < ra.length) {
                 Collections.sort(result);
             }
@@ -312,7 +312,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			if (-1 != loc)
 				s = s.substring(loc + 1);
 			try {
-				exp[i] = Integer.valueOf(s).intValue();
+				exp[i] = Integer.valueOf(s);
 				sb.append(exp[i] + ((i < (exp.length - 1)) ? ", " : ""));
 			} catch (NumberFormatException e) {
 				info(handler, "bad " + label + ":" + expected[i]);
@@ -332,29 +332,28 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		info(handler, context);
 
 		BitSet foundSet = new BitSet(10);
-		for (int i = 0; i < exp.length; i++) {
-			final int expLine = exp[i];
+		for (final int expLine : exp) {
 			boolean found = false;
 			for (int j = 0; !found && (j < messages.length); j++) {
 				ISourceLocation sl = messages[j].getSourceLocation();
 				found = ((null != sl) && (expLine == sl.getLine()));
 				if (found) {
-					info(handler, "found " + label + " for: " + exp[i]);
+					info(handler, "found " + label + " for: " + expLine);
 					if (foundSet.get(j)) {
 						info(
-							handler,
-							"duplicate " + label + " expected: " + exp[i]);
+								handler,
+								"duplicate " + label + " expected: " + expLine);
 					}
 					foundSet.set(j);
 				}
 			}
 			if (!found) {
 				String s =
-					"expected "
-						+ label
-						+ " not found: "
-						+ exp[i]
-						+ context;
+						"expected "
+								+ label
+								+ " not found: "
+								+ expLine
+								+ context;
 				fail(handler, s); // bad short-circuit
 				if (!result) {
 					result = false;

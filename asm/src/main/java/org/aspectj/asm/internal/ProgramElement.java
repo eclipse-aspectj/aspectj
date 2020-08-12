@@ -364,7 +364,7 @@ public class ProgramElement implements IProgramElement {
 		if (b == null) {
 			return false;
 		}
-		return b.booleanValue();
+		return b;
 	}
 
 	public String[] getRemovedAnnotationTypes() {
@@ -432,7 +432,7 @@ public class ProgramElement implements IProgramElement {
 			// check if someone is calling us with something that is a signature already
 			assert name.charAt(0) != '[';
 
-			if (name.indexOf("<") == -1) {
+			if (!name.contains("<")) {
 				// not parameterized
 				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 			} else {
@@ -544,8 +544,8 @@ public class ProgramElement implements IProgramElement {
 		if (children == null) {
 			return;
 		}
-		for (Iterator<IProgramElement> it = children.iterator(); it.hasNext();) {
-			(it.next()).setParent(this);
+		for (IProgramElement child : children) {
+			child.setParent(this);
 		}
 	}
 
@@ -751,8 +751,7 @@ public class ProgramElement implements IProgramElement {
 			return Collections.emptyList();
 		}
 		List<char[]> params = new ArrayList<char[]>();
-		for (Iterator<char[]> iter = l.iterator(); iter.hasNext();) {
-			char[] param = iter.next();
+		for (char[] param : l) {
 			params.add(NameConvertor.convertFromSignature(param));
 		}
 		return params;

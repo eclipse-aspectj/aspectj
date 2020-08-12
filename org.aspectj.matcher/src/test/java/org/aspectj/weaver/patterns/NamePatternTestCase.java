@@ -64,8 +64,8 @@ public class NamePatternTestCase extends TestCase {
 	 * @param b
 	 */
 	private void checkMatch(String string, String[] patterns, boolean shouldMatch) {
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			NamePattern p = new NamePattern(patterns[i]);
+		for (String pattern : patterns) {
+			NamePattern p = new NamePattern(pattern);
 			checkMatch(string, p, shouldMatch);
 		}
 	}
@@ -82,8 +82,8 @@ public class NamePatternTestCase extends TestCase {
 	}
 
 	private void checkSerialization(String[] patterns) throws IOException {
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			NamePattern p = new NamePattern(patterns[i]);
+		for (String pattern : patterns) {
+			NamePattern p = new NamePattern(pattern);
 			checkSerialization(p);
 		}
 	}

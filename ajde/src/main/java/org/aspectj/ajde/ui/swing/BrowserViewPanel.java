@@ -67,12 +67,12 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
     public BrowserViewPanel(IconRegistry icons, java.util.List views, StructureViewProperties.Hierarchy visibleViewHierarchy) {
         try {
             view_comboBox = new JComboBox(views.toArray());
-            for (Iterator it = views.iterator(); it.hasNext(); ) {
-            	StructureViewProperties.Hierarchy hierarchy = (StructureViewProperties.Hierarchy)it.next();
-            	if (hierarchy == visibleViewHierarchy) {
-            		view_comboBox.setSelectedItem(hierarchy);
-            	}
-            }
+			for (Object view : views) {
+				StructureViewProperties.Hierarchy hierarchy = (StructureViewProperties.Hierarchy) view;
+				if (hierarchy == visibleViewHierarchy) {
+					view_comboBox.setSelectedItem(hierarchy);
+				}
+			}
             //GlobalViewProperties visibleView = (GlobalViewProperties)viewProperties.get(visibleViewHierarchy.toString());
             treeManager = new StructureTreeManager();//, visibleView);
             jbInit();

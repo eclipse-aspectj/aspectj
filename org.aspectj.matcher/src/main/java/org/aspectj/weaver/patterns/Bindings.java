@@ -97,9 +97,9 @@ public class Bindings {
 	public UnresolvedType[] getUsedFormalTypes() {
 		UnresolvedType[] ret = new UnresolvedType[bindings.length];
 		int index = 0;
-		for (int i = 0, len = bindings.length; i < len; i++) {
-			if (bindings[i] != null) {
-				ret[index++] = ((BindingTypePattern) bindings[i]).getExactType();
+		for (BindingPattern binding : bindings) {
+			if (binding != null) {
+				ret[index++] = ((BindingTypePattern) binding).getExactType();
 			}
 		}
 		UnresolvedType[] newRet = new UnresolvedType[index];

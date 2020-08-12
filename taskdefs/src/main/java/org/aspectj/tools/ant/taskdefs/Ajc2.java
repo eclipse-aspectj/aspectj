@@ -416,11 +416,10 @@ public class Ajc2 extends Javac {
         List newIncludes = new ArrayList();
         List newArguments = new ArrayList();
         if (argfiles != null) {
-            Iterator iter = argfiles.iterator();
-            while (iter.hasNext()) {
-                File argfile = ((Argfile)iter.next()).getFile();
-                expandArgfile(argfile, newIncludes, newArguments);
-            }
+			for (Object o : argfiles) {
+				File argfile = ((Argfile) o).getFile();
+				expandArgfile(argfile, newIncludes, newArguments);
+			}
         }
 
         // If there aren't any includes, but we've used an argfile then we should
@@ -434,21 +433,20 @@ public class Ajc2 extends Javac {
 
         // Otherwise we want to add all .java files to the compileList
         else {
-            for (int i = 0; i < files.length; i++) {
-                File newFile = new File(srcDir, files[i]);
-                if (newFile != null &&
-                    newFile.exists() &&
-                    newFile.getName().endsWith(".java")) {
-                    newFiles.add(newFile);
-                }
-            }
+			for (String file : files) {
+				File newFile = new File(srcDir, file);
+				if (newFile != null &&
+						newFile.exists() &&
+						newFile.getName().endsWith(".java")) {
+					newFiles.add(newFile);
+				}
+			}
         }
 
         // Add the new included files
-        Iterator iter = newIncludes.iterator();
-        while (iter.hasNext()) {
-            newFiles.add((File)iter.next());
-        }
+		for (Object newInclude : newIncludes) {
+			newFiles.add((File) newInclude);
+		}
 
         // This is the same behavior found in Javac
         int newFileSize = newFiles.size();
@@ -500,7 +498,7 @@ public class Ajc2 extends Javac {
                 }
 
                 // If there are stars we'll try to resolve the file here
-                else if (line.indexOf("*") != -1) {
+                else if (line.contains("*")) {
                     log("The argfile line '" + line + "' is invalid",
                         Project.MSG_WARN);
                 }

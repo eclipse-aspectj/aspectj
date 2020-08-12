@@ -438,10 +438,10 @@ public final class Module extends Attribute {
 			file.writeShort(moduleVersionIndex);
 			
 			file.writeShort(requires.length);
-			for (int i = 0; i < requires.length; i++) {
-				file.writeShort(requires[i].moduleIndex);
-				file.writeShort(requires[i].flags);
-				file.writeShort(requires[i].versionIndex);
+			for (Require require : requires) {
+				file.writeShort(require.moduleIndex);
+				file.writeShort(require.flags);
+				file.writeShort(require.versionIndex);
 			}
 			file.writeShort(exports.length);
 			for (Export export : exports) {

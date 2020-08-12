@@ -46,8 +46,8 @@ public class StructureViewManager {
 		public void elementsUpdated(IHierarchy model) {
 			// updating structure views:
 
-			for (Iterator it = structureViews.iterator(); it.hasNext();) {
-				treeViewBuilder.buildView((StructureView) it.next(), (AspectJElementHierarchy) model);
+			for (Object structureView : structureViews) {
+				treeViewBuilder.buildView((StructureView) structureView, (AspectJElementHierarchy) model);
 			}
 		}
 	};
@@ -119,8 +119,8 @@ public class StructureViewManager {
 			}
 		}
 
-		for (Iterator it = structureViews.iterator(); it.hasNext();) {
-			StructureView view = (StructureView) it.next();
+		for (Object structureView : structureViews) {
+			StructureView view = (StructureView) structureView;
 			if (!(view instanceof GlobalStructureView) || !recordHistory || defaultFileView == null) {
 				if (node.getKind().equals(IProgramElement.Kind.CODE)) {
 					IProgramElement parentNode = node.getParent();

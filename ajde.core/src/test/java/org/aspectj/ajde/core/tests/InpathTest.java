@@ -242,7 +242,7 @@ public class InpathTest extends AjdeCoreTestCase {
 			while (null != (entry = outjar.getNextEntry())) {
 				String fileName = entry.getName();
 				fileName = fileName.replace('\\', '/');
-				if (fileName.indexOf("CVS") == -1) {
+				if (!fileName.contains("CVS")) {
 					boolean b = expectedOutputJarContents.remove(fileName);
 					assertTrue("Unexpectedly found : " + fileName + " in outjar", b);
 				}
@@ -294,9 +294,8 @@ public class InpathTest extends AjdeCoreTestCase {
 
 		File binBase = openFile(outdirName);
 		String[] toResources = FileUtil.listFiles(binBase);
-		for (int i = 0; i < toResources.length; i++) {
-			String fileName = toResources[i];
-			if (fileName.indexOf("CVS") == -1) {
+		for (String fileName : toResources) {
+			if (!fileName.contains("CVS")) {
 				boolean b = expectedOutdirContents.remove(fileName);
 				assertTrue("Extraneous resources: " + fileName, b);
 			}
@@ -308,10 +307,10 @@ public class InpathTest extends AjdeCoreTestCase {
 	private void listSourceResources(String indirName, Set<String> resources) {
 		File srcBase = openFile(indirName);
 		File[] fromResources = FileUtil.listFiles(srcBase, aspectjResourceFileFilter);
-		for (int i = 0; i < fromResources.length; i++) {
-			String name = FileUtil.normalizedPath(fromResources[i], srcBase);
+		for (File fromResource : fromResources) {
+			String name = FileUtil.normalizedPath(fromResource, srcBase);
 			// System.err.println("Checking "+name);
-			if (!name.startsWith("CVS/") && (-1 == name.indexOf("/CVS/")) && !name.endsWith("/CVS")) {
+			if (!name.startsWith("CVS/") && (!name.contains("/CVS/")) && !name.endsWith("/CVS")) {
 				resources.add(name);
 			}
 		}

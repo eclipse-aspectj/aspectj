@@ -42,8 +42,8 @@ public class AnnotationPatternList extends PatternNode {
 
 	public AnnotationPatternList(AnnotationTypePattern[] arguments) {
 		this.typePatterns = arguments;
-		for (int i = 0; i < arguments.length; i++) {
-			if (arguments[i] == AnnotationTypePattern.ELLIPSIS) {
+		for (AnnotationTypePattern argument : arguments) {
+			if (argument == AnnotationTypePattern.ELLIPSIS) {
 				ellipsisCount++;
 			}
 		}
@@ -68,8 +68,8 @@ public class AnnotationPatternList extends PatternNode {
 	}
 
 	public void resolve(World inWorld) {
-		for (int i = 0; i < typePatterns.length; i++) {
-			typePatterns[i].resolve(inWorld);
+		for (AnnotationTypePattern typePattern : typePatterns) {
+			typePattern.resolve(inWorld);
 		}
 	}
 
@@ -85,11 +85,11 @@ public class AnnotationPatternList extends PatternNode {
 		// now work through the args and the patterns, skipping at ellipsis
 		FuzzyBoolean ret = FuzzyBoolean.YES;
 		int argsIndex = 0;
-		for (int i = 0; i < typePatterns.length; i++) {
-			if (typePatterns[i] == AnnotationTypePattern.ELLIPSIS) {
+		for (AnnotationTypePattern typePattern : typePatterns) {
+			if (typePattern == AnnotationTypePattern.ELLIPSIS) {
 				// match ellipsisMatchCount args
 				argsIndex += numArgsMatchedByEllipsis;
-			} else if (typePatterns[i] == AnnotationTypePattern.ANY) {
+			} else if (typePattern == AnnotationTypePattern.ANY) {
 				argsIndex++;
 			} else {
 				// match the argument type at argsIndex with the ExactAnnotationTypePattern
@@ -97,7 +97,7 @@ public class AnnotationPatternList extends PatternNode {
 				if (someArgs[argsIndex].isPrimitiveType()) {
 					return FuzzyBoolean.NO; // can never match
 				}
-				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern) typePatterns[i];
+				ExactAnnotationTypePattern ap = (ExactAnnotationTypePattern) typePattern;
 				FuzzyBoolean matches = ap.matchesRuntimeType(someArgs[argsIndex]);
 				if (matches == FuzzyBoolean.NO) {
 					return FuzzyBoolean.MAYBE; // could still match at runtime
@@ -175,8 +175,8 @@ public class AnnotationPatternList extends PatternNode {
 
 	public int hashCode() {
 		int result = 41;
-		for (int i = 0, len = typePatterns.length; i < len; i++) {
-			result = 37 * result + typePatterns[i].hashCode();
+		for (AnnotationTypePattern typePattern : typePatterns) {
+			result = 37 * result + typePattern.hashCode();
 		}
 		return result;
 	}
@@ -194,8 +194,8 @@ public class AnnotationPatternList extends PatternNode {
 
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeShort(typePatterns.length);
-		for (int i = 0; i < typePatterns.length; i++) {
-			typePatterns[i].write(s);
+		for (AnnotationTypePattern typePattern : typePatterns) {
+			typePattern.write(s);
 		}
 		writeLocation(s);
 	}
@@ -206,8 +206,8 @@ public class AnnotationPatternList extends PatternNode {
 
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (int i = 0; i < typePatterns.length; i++) {
-			typePatterns[i].traverse(visitor, ret);
+		for (AnnotationTypePattern typePattern : typePatterns) {
+			typePattern.traverse(visitor, ret);
 		}
 		return ret;
 	}

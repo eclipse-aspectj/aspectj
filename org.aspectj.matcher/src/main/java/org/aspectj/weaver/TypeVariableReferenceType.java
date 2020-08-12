@@ -100,11 +100,11 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 		typeVariable.resolve(world);
 		ResolvedType annotationType = ResolvedType.ANNOTATION.resolve(world);
 		UnresolvedType[] ifBounds = typeVariable.getSuperInterfaces();// AdditionalBounds();
-		for (int i = 0; i < ifBounds.length; i++) {
-			if (((ReferenceType) ifBounds[i]).isAnnotation()) {
+		for (UnresolvedType ifBound : ifBounds) {
+			if (((ReferenceType) ifBound).isAnnotation()) {
 				return true;
 			}
-			if (ifBounds[i].equals(annotationType)) {
+			if (ifBound.equals(annotationType)) {
 				return true; // annotation itself does not have the annotation flag set in Java!
 			}
 		}

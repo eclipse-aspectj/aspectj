@@ -116,15 +116,15 @@ public class ArgsTestCase extends TestCase {
 			Method oneIntegerM = A.class.getMethod("anInteger", new Class[] { Integer.class });
 
 			if (LangUtil.is15VMOrGreater()) {
-				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] { new Integer(5) });
-				checkMatches(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] { new Integer(5) });
-				checkMatches(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] { new Integer(5) });
-				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] { new Integer(5) });
+				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+				checkMatches(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
 			} else {
-				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] { new Integer(5) });
-				checkNoMatch(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] { new Integer(5) });
-				checkNoMatch(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] { new Integer(5) });
-				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] { new Integer(5) });
+				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+				checkNoMatch(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
+				checkNoMatch(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
 			}
 
 		} catch (Exception ex) {

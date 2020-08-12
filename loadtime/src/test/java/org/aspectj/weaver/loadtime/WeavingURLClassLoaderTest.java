@@ -359,7 +359,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 		} catch (Exception ex) {
 			// Expecting: java.lang.NoClassDefFoundError: LTWAspect
 			String m = ex.getMessage();
-			if (-1 == m.indexOf("java.lang.NoClassDefFoundError")) {
+			if (!m.contains("java.lang.NoClassDefFoundError")) {
 				fail("Expecting java.lang.NoClassDefFoundError but caught " + ex);
 			}
 		}
@@ -426,7 +426,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			// expecting error
 			String message = ex.getMessage();
 			// expecting error - seems to be wrapped wrong
-			if (-1 == message.indexOf("around advice")) {
+			if (!message.contains("around advice")) {
 				failWithException(ex);
 			}
 		} catch (Error ex) {
@@ -461,7 +461,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			invokeMain(clazz, new String[] {});
 			fail("Should reject bad aspect MissingFile");
 		} catch (AbortException ae) {
-			assertTrue("Unexpected cause: " + ae.getMessage(), ae.getMessage().indexOf("bad aspect library") != -1);
+			assertTrue("Unexpected cause: " + ae.getMessage(), ae.getMessage().contains("bad aspect library"));
 		}
 	}
 

@@ -72,8 +72,8 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		view_comboBox = new JComboBox();
 		view_comboBox.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
 
-		for (Iterator it = structureViews.iterator(); it.hasNext(); ) {
-			view_comboBox.addItem(it.next());
+		for (Object structureView : structureViews) {
+			view_comboBox.addItem(structureView);
 		}
 
 		try {
@@ -120,26 +120,26 @@ public class BrowserStructureViewToolPanel extends JPanel {
 	private JPopupMenu createFilterMenu() {
 		JPopupMenu filterMenu = new JPopupMenu();
 		IProgramElement.Accessibility[] accessibility = IProgramElement.Accessibility.ALL;
-		for (int i = 0; i < accessibility.length; i++) {
-			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(accessibility[i]);
-			menuItem.setIcon(Ajde.getDefault().getIconRegistry().getAccessibilitySwingIcon(accessibility[i]));
+		for (IProgramElement.Accessibility value : accessibility) {
+			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(value);
+			menuItem.setIcon(Ajde.getDefault().getIconRegistry().getAccessibilitySwingIcon(value));
 			filterMenu.add(menuItem);
 		}
 		filterMenu.add(new JSeparator());
 
 		IProgramElement.Kind[] kinds = IProgramElement.Kind.ALL;
-		for (int i = 0; i < kinds.length; i++) {
-			if (kinds[i].isMember()) {
-				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kinds[i]);
-				menuItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(kinds[i]).getIconResource());
+		for (IProgramElement.Kind kind : kinds) {
+			if (kind.isMember()) {
+				CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(kind);
+				menuItem.setIcon((Icon) Ajde.getDefault().getIconRegistry().getIcon(kind).getIconResource());
 				filterMenu.add(menuItem);
 			}
 		}
 		filterMenu.add(new JSeparator());
 
 		IProgramElement.Modifiers[] modifiers = IProgramElement.Modifiers.ALL;
-		for (int i = 0; i < modifiers.length; i++) {
-			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(modifiers[i]);
+		for (IProgramElement.Modifiers modifier : modifiers) {
+			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(modifier);
 			filterMenu.add(menuItem);
 		}
 		return filterMenu;
@@ -149,10 +149,10 @@ public class BrowserStructureViewToolPanel extends JPanel {
 		JPopupMenu relationsMenu = new JPopupMenu();
 
 		java.util.List relations = Ajde.getDefault().getStructureViewManager().getAvailableRelations();
-		for (Iterator it = relations.iterator(); it.hasNext(); ) {
-			IRelationship.Kind relation = (IRelationship.Kind)it.next();
+		for (Object o : relations) {
+			IRelationship.Kind relation = (IRelationship.Kind) o;
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);
-			menuItem.setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(relation).getIconResource());
+			menuItem.setIcon((Icon) Ajde.getDefault().getIconRegistry().getIcon(relation).getIconResource());
 			relationsMenu.add(menuItem);
 		}
 
@@ -164,10 +164,10 @@ public class BrowserStructureViewToolPanel extends JPanel {
 
 		StructureViewProperties.Granularity[] granularity = StructureViewProperties.Granularity.ALL;
 		ButtonGroup group = new ButtonGroup();
-		for (int i = 0; i < granularity.length; i++) {
-			RadioSelectionMenuButton menuItem = new RadioSelectionMenuButton(granularity[i], group);
+		for (StructureViewProperties.Granularity value : granularity) {
+			RadioSelectionMenuButton menuItem = new RadioSelectionMenuButton(value, group);
 			orderMenu.add(menuItem);
-			if (granularity[i].equals(StructureViewProperties.Granularity.MEMBER)) {
+			if (value.equals(StructureViewProperties.Granularity.MEMBER)) {
 				menuItem.setSelected(true);
 			}
 		}

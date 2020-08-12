@@ -187,10 +187,9 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	public Signature getSignatureAttribute(JavaClass clazz,String name) {
 		Method m = getMethod(clazz,name);
 		Attribute[] as = m.getAttributes();
-		for (int i = 0; i < as.length; i++) {
-			Attribute attribute = as[i];
+		for (Attribute attribute : as) {
 			if (attribute.getName().equals("Signature")) {
-				return (Signature)attribute;
+				return (Signature) attribute;
 			}
 		}
 		return null;
@@ -292,23 +291,23 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	    char[]  chars = brackets.toCharArray();
 	    int     count = 0;
 	    boolean open  = false;
-	
-	    for(int i=0; i<chars.length; i++) {
-	      switch(chars[i]) {
-	        case '[':
-		      if (open) throw new RuntimeException("Illegally nested brackets:" + brackets);
-		      open = true;
-		      break;
-	
-	        case ']':
-		      if (!open) throw new RuntimeException("Illegally nested brackets:" + brackets);
-		      open = false;
-		      count++;
-		      break;
-	
-	        default:
-	      }
-	    }
+
+		for (char aChar : chars) {
+			switch (aChar) {
+				case '[':
+					if (open) throw new RuntimeException("Illegally nested brackets:" + brackets);
+					open = true;
+					break;
+
+				case ']':
+					if (!open) throw new RuntimeException("Illegally nested brackets:" + brackets);
+					open = false;
+					count++;
+					break;
+
+				default:
+			}
+		}
 	
 	    if (open) throw new RuntimeException("Illegally nested brackets:" + brackets);
 	
@@ -454,14 +453,14 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	    StringBuffer buf = new StringBuffer("(");
 	
 	    if (methodArgs != null) {
-	      for (int i=0; i < methodArgs.length; i++) {
-		    String str = GenericSignatureParsingTest.getSignature(methodArgs[i]);
-	
-		    if (str.equals("V")) // void can't be a method argument
-		      throw new ClassFormatException("Invalid type: " + methodArgs[i]);
-	
-		    buf.append(str);
-	      }
+			for (String methodArg : methodArgs) {
+				String str = GenericSignatureParsingTest.getSignature(methodArg);
+
+				if (str.equals("V")) // void can't be a method argument
+					throw new ClassFormatException("Invalid type: " + methodArg);
+
+				buf.append(str);
+			}
 	    }
 	    
 	    buf.append(")" + GenericSignatureParsingTest.getSignature(returnType));

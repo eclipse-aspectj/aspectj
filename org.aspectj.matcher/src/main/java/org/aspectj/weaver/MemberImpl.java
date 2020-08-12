@@ -127,8 +127,8 @@ public class MemberImpl implements Member {
 	public static String typesToSignature(UnresolvedType[] paramTypes) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("(");
-		for (int i = 0; i < paramTypes.length; i++) {
-			buf.append(paramTypes[i].getSignature());
+		for (UnresolvedType paramType : paramTypes) {
+			buf.append(paramType.getSignature());
 		}
 		buf.append(")");
 		return buf.toString();

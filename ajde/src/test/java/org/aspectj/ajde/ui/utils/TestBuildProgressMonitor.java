@@ -55,7 +55,7 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 		if (text.startsWith("woven class ")) numWovenClassMessages++;
 		if (text.startsWith("compiled:")) numCompiledMessages++;
 		if (programmableString != null
-			&& text.indexOf(programmableString) != -1) {
+			&& text.contains(programmableString)) {
 			count--;
 			if (count==0) {
 				if (debugTests) System.out.println("Just got message '"+newText+"' - asking build to cancel");
@@ -77,18 +77,18 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 	}
 	
 	public boolean containsMessage(String prefix,String distinguishingMarks) {
-		for (Iterator iter = messagesReceived.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (Object o : messagesReceived) {
+			String element = (String) o;
 			if (element.startsWith(prefix) &&
-			    element.indexOf(distinguishingMarks)!=-1) return true;
+					element.contains(distinguishingMarks)) return true;
 		}
 		return false;
 	}
 	
 	public void dumpMessages() {
 		System.out.println("ProgressMonitorMessages");
-		for (Iterator iter = messagesReceived.iterator(); iter.hasNext();) {
-			String element = (String) iter.next();
+		for (Object o : messagesReceived) {
+			String element = (String) o;
 			System.out.println(element);
 		}
 	}

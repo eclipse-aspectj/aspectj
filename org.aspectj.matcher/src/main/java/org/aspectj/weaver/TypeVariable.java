@@ -113,9 +113,9 @@ public class TypeVariable {
 				UnresolvedType declaring = (UnresolvedType) declaringElement;
 				ReferenceType rd = (ReferenceType) declaring.resolve(world);
 				TypeVariable[] tVars = rd.getTypeVariables();
-				for (int i = 0; i < tVars.length; i++) {
-					if (tVars[i].getName().equals(getName())) {
-						resolvedTVar = tVars[i];
+				for (TypeVariable tVar : tVars) {
+					if (tVar.getName().equals(getName())) {
+						resolvedTVar = tVar;
 						break;
 					}
 				}
@@ -123,9 +123,9 @@ public class TypeVariable {
 				// look for type variable on method...
 				ResolvedMember declaring = (ResolvedMember) declaringElement;
 				TypeVariable[] tvrts = declaring.getTypeVariables();
-				for (int i = 0; i < tvrts.length; i++) {
-					if (tvrts[i].getName().equals(getName())) {
-						resolvedTVar = tvrts[i];
+				for (TypeVariable tvrt : tvrts) {
+					if (tvrt.getName().equals(getName())) {
+						resolvedTVar = tvrt;
 						// if (tvrts[i].isTypeVariableReference()) {
 						// TypeVariableReferenceType tvrt = (TypeVariableReferenceType) tvrts[i].resolve(inSomeWorld);
 						// TypeVariable tv = tvrt.getTypeVariable();
@@ -187,8 +187,8 @@ public class TypeVariable {
 			return false;
 		}
 		// candidate is a subtype of all superInterfaces
-		for (int i = 0; i < superInterfaces.length; i++) {
-			if (!isASubtypeOf(superInterfaces[i], candidate)) {
+		for (UnresolvedType superInterface : superInterfaces) {
+			if (!isASubtypeOf(superInterface, candidate)) {
 				return false;
 			}
 		}
@@ -230,10 +230,10 @@ public class TypeVariable {
 			ret.append(" extends ");
 			ret.append(getFirstBound().getName());
 			if (superInterfaces != null) {
-				for (int i = 0; i < superInterfaces.length; i++) {
-					if (!getFirstBound().equals(superInterfaces[i])) {
+				for (UnresolvedType superInterface : superInterfaces) {
+					if (!getFirstBound().equals(superInterface)) {
 						ret.append(" & ");
-						ret.append(superInterfaces[i].getName());
+						ret.append(superInterface.getName());
 					}
 				}
 			}
@@ -258,9 +258,9 @@ public class TypeVariable {
 			sb.append(superclass.getSignature());
 		}
 		if (superInterfaces.length != 0) {
-			for (int i = 0; i < superInterfaces.length; i++) {
+			for (UnresolvedType superInterface : superInterfaces) {
 				sb.append(":");
-				UnresolvedType iBound = superInterfaces[i];
+				UnresolvedType iBound = superInterface;
 				sb.append(iBound.getSignature());
 			}
 		}
@@ -278,9 +278,9 @@ public class TypeVariable {
 			sb.append(((ReferenceType)superclass).getSignatureForAttribute());
 		}
 		if (superInterfaces.length != 0) {
-			for (int i = 0; i < superInterfaces.length; i++) {
+			for (UnresolvedType superInterface : superInterfaces) {
 				sb.append(":");
-				ResolvedType iBound = (ResolvedType) superInterfaces[i];
+				ResolvedType iBound = (ResolvedType) superInterface;
 				sb.append(iBound.getSignatureForAttribute());
 			}
 		}
@@ -325,8 +325,7 @@ public class TypeVariable {
 			s.writeInt(0);
 		} else {
 			s.writeInt(superInterfaces.length);
-			for (int i = 0; i < superInterfaces.length; i++) {
-				UnresolvedType ibound = superInterfaces[i];
+			for (UnresolvedType ibound : superInterfaces) {
 				ibound.write(s);
 			}
 		}

@@ -187,7 +187,7 @@ public class ElementValueGenTest extends BcelTestCase {
 		ClassElementValue evg = new ClassElementValue(classType, cp);
 
 		assertTrue("Unexpected value for contained class: '" + evg.getClassString() + "'",
-				evg.getClassString().indexOf("Integer") != -1);
+				evg.getClassString().contains("Integer"));
 
 		checkSerialize(evg, cp);
 	}

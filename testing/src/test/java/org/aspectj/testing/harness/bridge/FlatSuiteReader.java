@@ -162,7 +162,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 			// so compile succeeds but run not attempted
 			//result.errors = Main.RA_ErrorLine;
 			// result.runOptions = Main.RA_String;
-		} else if (isNumber(first) || (-1 != first.indexOf(":"))) {
+		} else if (isNumber(first) || (first.contains(":"))) {
 			exp.addAll(makeMessages(IMessage.ERROR, words, 0, lastFile));
 		} else {
 			String[] args = new String[words.length - 1];
@@ -267,7 +267,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
             description.setLength(0);
             description.append((prefix + " " + suffix).trim());
             try {
-                result.setBugId(Integer.valueOf(pr).intValue());
+                result.setBugId(Integer.valueOf(pr));
             } catch (NumberFormatException e) {
                 throw new Error("unable to convert " + pr + " for " + result
                     + " at " + lineReader);
@@ -275,13 +275,13 @@ public class FlatSuiteReader implements SFileReader.Maker {
         }
         input = description.toString();
         String error = null;
-        if (-1 != input.indexOf("&")) {
+        if (input.contains("&")) {
             error = "char &";
-        } else if (-1 != input.indexOf("<")) {
+        } else if (input.contains("<")) {
             error = "char <";
-        } else if (-1 != input.indexOf(">")) {
+        } else if (input.contains(">")) {
             error = "char >";
-        } else if (-1 != input.indexOf("\"")) {
+        } else if (input.contains("\"")) {
             error = "char \"";
         }
         if (null != error) {

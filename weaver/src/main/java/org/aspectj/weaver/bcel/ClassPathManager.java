@@ -160,13 +160,13 @@ public class ClassPathManager {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		boolean start = true;
-		for (Iterator<Entry> i = entries.iterator(); i.hasNext();) {
+		for (Entry entry : entries) {
 			if (start) {
 				start = false;
 			} else {
 				buf.append(File.pathSeparator);
 			}
-			buf.append(i.next());
+			buf.append(entry);
 		}
 		return buf.toString();
 	}

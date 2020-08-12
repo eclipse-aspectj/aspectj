@@ -32,8 +32,8 @@ public class NamePattern extends PatternNode {
 	public NamePattern(char[] pattern) {
 		this.pattern = pattern;
 
-		for (int i = 0, len = pattern.length; i < len; i++) {
-			if (pattern[i] == '*') {
+		for (char c : pattern) {
+			if (c == '*') {
 				starCount++;
 			}
 		}

@@ -115,11 +115,10 @@ public abstract class RuntimeParamAnnos extends Attribute {
 			dos.write(annotation_data,0,length);
 		} else {
 			dos.writeByte(parameterAnnotations.size());
-			for (int i=0; i<parameterAnnotations.size(); i++) {
-				AnnotationGen[] annotations = parameterAnnotations.get(i);
+			for (AnnotationGen[] annotations : parameterAnnotations) {
 				dos.writeShort(annotations.length);
-				for (int j=0; j<annotations.length;j++) {
-					annotations[j].dump(dos);
+				for (AnnotationGen annotation : annotations) {
+					annotation.dump(dos);
 				}
 			}
 		}

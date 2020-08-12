@@ -126,8 +126,8 @@ public final class TestUtil {
 		// TODO support others loaded dynamically
 
 		Map<String,Object> map = new HashMap<>();
-		for (Iterator<Object> iter = LIB_RPATHS.keySet().iterator(); iter.hasNext();) {
-			String key = (String) iter.next();
+		for (Object o : LIB_RPATHS.keySet()) {
+			String key = (String) o;
 			String path = LIB_RPATHS.getProperty(key);
 			File file = null;
 			URL url = null;
@@ -206,14 +206,14 @@ public final class TestUtil {
 		}
 		StringBuffer path = new StringBuffer();
 		boolean started = false;
-		for (int i = 0; i < entries.length; i++) {
-			if (null != entries[i]) {
+		for (Object entry : entries) {
+			if (null != entry) {
 				if (started) {
 					path.append(File.pathSeparator);
 				} else {
 					started = true;
 				}
-				path.append(entries[i].toString());
+				path.append(entry.toString());
 			}
 		}
 		return path.toString();
@@ -476,11 +476,11 @@ public final class TestUtil {
 		}
 		String[] paths = FileUtil.listFiles(expectedBaseDir);
 		boolean result = true;
-		for (int i = 0; i < paths.length; i++) {
-			if (-1 != paths[i].indexOf("CVS")) {
+		for (String path : paths) {
+			if (path.contains("CVS")) {
 				continue;
 			}
-			if (!sameFiles(handler, expectedBaseDir, actualBaseDir, paths[i]) && result) {
+			if (!sameFiles(handler, expectedBaseDir, actualBaseDir, path) && result) {
 				result = false;
 				if (fastFail) {
 					break;

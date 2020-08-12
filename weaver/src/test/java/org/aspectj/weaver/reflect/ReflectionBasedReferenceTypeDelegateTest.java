@@ -257,23 +257,23 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedMember[] rms2 = rawReflectType.getDelegate().getDeclaredMethods();
 		StringBuffer errors = new StringBuffer();
 		Set one = new HashSet();
-		for (int i = 0; i < rms1.length; i++) {
-			one.add(rms1[i].toString());
+		for (ResolvedMember item : rms1) {
+			one.add(item.toString());
 		}
 		Set two = new HashSet();
-		for (int i = 0; i < rms2.length; i++) {
-			two.add(rms2[i].toString());
+		for (ResolvedMember value : rms2) {
+			two.add(value.toString());
 		}
-		for (int i = 0; i < rms2.length; i++) {
-			if (!one.contains(rms2[i].toString())) {
-				errors.append("Couldn't find " + rms2[i].toString() + " in the bcel set\n");
+		for (ResolvedMember member : rms2) {
+			if (!one.contains(member.toString())) {
+				errors.append("Couldn't find " + member.toString() + " in the bcel set\n");
 			}
 		}
-		for (int i = 0; i < rms1.length; i++) {
-			if (!two.contains(rms1[i].toString())) {
-				if (!barfIfClinitMissing && rms1[i].getName().equals("<clinit>"))
+		for (ResolvedMember resolvedMember : rms1) {
+			if (!two.contains(resolvedMember.toString())) {
+				if (!barfIfClinitMissing && resolvedMember.getName().equals("<clinit>"))
 					continue;
-				errors.append("Couldn't find " + rms1[i].toString() + " in the reflection set\n");
+				errors.append("Couldn't find " + resolvedMember.toString() + " in the reflection set\n");
 			}
 		}
 		assertTrue("Errors:" + errors.toString(), errors.length() == 0);

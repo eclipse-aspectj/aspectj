@@ -366,8 +366,8 @@ public class TypeFactory {
 		parameterizedSig.append(baseTypeSignature.substring(1, baseTypeSignature.length() - 1));
 		if (arguments.length > 0) {
 			parameterizedSig.append("<");
-			for (int i = 0; i < arguments.length; i++) {
-				parameterizedSig.append(arguments[i].getSignature());
+			for (UnresolvedType argument : arguments) {
+				parameterizedSig.append(argument.getSignature());
 			}
 			parameterizedSig.append(">");
 		}

@@ -157,8 +157,8 @@ public class BcelShadow extends Shadow {
 				s.mungers = new ArrayList<ShadowMunger>();
 			}
 			List<ShadowMunger> dest = s.mungers;
-			for (Iterator<ShadowMunger> i = src.iterator(); i.hasNext();) {
-				dest.add(i.next());
+			for (ShadowMunger shadowMunger : src) {
+				dest.add(shadowMunger);
 			}
 		}
 		return s;
@@ -365,8 +365,7 @@ public class BcelShadow extends Shadow {
 			// something stopped us making it a lazy tjp
 			// can't build tjp lazily, no suitable test...
 			int valid = 0;
-			for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
-				BcelAdvice element = iter.next();
+			for (BcelAdvice element : badAdvice) {
 				ISourceLocation sLoc = element.getSourceLocation();
 				if (sLoc != null && sLoc.getLine() > 0) {
 					valid++;
@@ -375,8 +374,7 @@ public class BcelShadow extends Shadow {
 			if (valid != 0) {
 				ISourceLocation[] badLocs = new ISourceLocation[valid];
 				int i = 0;
-				for (Iterator<BcelAdvice> iter = badAdvice.iterator(); iter.hasNext();) {
-					BcelAdvice element = iter.next();
+				for (BcelAdvice element : badAdvice) {
 					ISourceLocation sLoc = element.getSourceLocation();
 					if (sLoc != null) {
 						badLocs[i++] = sLoc;
@@ -557,9 +555,7 @@ public class BcelShadow extends Shadow {
 		if (startOfHandler.getInstruction().isStoreInstruction() && startOfHandler.getNext() != null) {
 			int slot = startOfHandler.getInstruction().getIndex();
 			// System.out.println("got store: " + startOfHandler.getInstruction() + ", " + index);
-			Iterator<InstructionTargeter> tIter = startOfHandler.getNext().getTargeters().iterator();
-			while (tIter.hasNext()) {
-				InstructionTargeter targeter = tIter.next();
+			for (InstructionTargeter targeter : startOfHandler.getNext().getTargeters()) {
 				if (targeter instanceof LocalVariableTag) {
 					LocalVariableTag t = (LocalVariableTag) targeter;
 					if (t.getSlot() == slot) {
@@ -1047,14 +1043,13 @@ public class BcelShadow extends Shadow {
 
 	private boolean checkLazyTjp() {
 		// check for around advice
-		for (Iterator<ShadowMunger> i = mungers.iterator(); i.hasNext();) {
-			ShadowMunger munger = i.next();
+		for (ShadowMunger munger : mungers) {
 			if (munger instanceof Advice) {
 				if (((Advice) munger).getKind() == AdviceKind.Around) {
 					if (munger.getSourceLocation() != null) { // do we know enough to bother reporting?
 						if (world.getLint().canNotImplementLazyTjp.isEnabled()) {
-							world.getLint().canNotImplementLazyTjp.signal(new String[] { toString() }, getSourceLocation(),
-									new ISourceLocation[] { munger.getSourceLocation() });
+							world.getLint().canNotImplementLazyTjp.signal(new String[]{toString()}, getSourceLocation(),
+									new ISourceLocation[]{munger.getSourceLocation()});
 						}
 					}
 					return false;
@@ -1454,8 +1449,7 @@ public class BcelShadow extends Shadow {
 			ResolvedType[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent
 			// gotten yet but we will get in
 			// subclasses?
-			for (int i = 0; i < rtx.length; i++) {
-				ResolvedType typeX = rtx[i];
+			for (ResolvedType typeX : rtx) {
 				targetAnnotationVars.put(typeX, new TypeAnnotationAccessVar(typeX, (BcelVar) getTargetVar()));
 			}
 			// populate.
@@ -1517,8 +1511,7 @@ public class BcelShadow extends Shadow {
 		if (foundMember == null) {
 			// check the ITD'd dooberries
 			List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
-			for (Iterator<ConcreteTypeMunger> iter = mungers.iterator(); iter.hasNext();) {
-				Object munger = iter.next();
+			for (Object munger : mungers) {
 				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
 				if (typeMunger.getMunger() instanceof NewMethodTypeMunger
 						|| typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
@@ -1639,8 +1632,7 @@ public class BcelShadow extends Shadow {
 
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
 		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
-		for (int i = 0; i < decMethods.length; i++) {
-			ResolvedMember member = decMethods[i];
+		for (ResolvedMember member : decMethods) {
 			if (member.equals(ajcMethod)) {
 				return member;
 			}
@@ -1649,8 +1641,7 @@ public class BcelShadow extends Shadow {
 	}
 
 	private ResolvedMember findField(ResolvedMember[] members, Member lookingFor) {
-		for (int i = 0; i < members.length; i++) {
-			ResolvedMember member = members[i];
+		for (ResolvedMember member : members) {
 			if (member.getName().equals(getSignature().getName()) && member.getType().equals(getSignature().getType())) {
 				return member;
 			}
@@ -1665,8 +1656,7 @@ public class BcelShadow extends Shadow {
 		withinAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
 
 		ResolvedType[] annotations = getEnclosingType().resolve(world).getAnnotationTypes();
-		for (int i = 0; i < annotations.length; i++) {
-			ResolvedType ann = annotations[i];
+		for (ResolvedType ann : annotations) {
 			Kind k = Shadow.StaticInitialization;
 			withinAnnotationVars.put(ann, new AnnotationAccessVar(this, k, ann, getEnclosingType(), null, true));
 		}
@@ -1680,8 +1670,7 @@ public class BcelShadow extends Shadow {
 
 		// For some shadow we are interested in annotations on the method containing that shadow.
 		ResolvedType[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
-		for (int i = 0; i < annotations.length; i++) {
-			ResolvedType ann = annotations[i];
+		for (ResolvedType ann : annotations) {
 			Kind k = (getEnclosingMethod().getMemberView().getKind() == Member.CONSTRUCTOR ? Shadow.ConstructorExecution
 					: Shadow.MethodExecution);
 			withincodeAnnotationVars.put(ann, new AnnotationAccessVar(this, k, ann, getEnclosingType(),
@@ -1732,8 +1721,7 @@ public class BcelShadow extends Shadow {
 
 		if (hasReturnInstructions) {
 			InstructionHandle gotoTarget = advice.getStart();
-			for (Iterator<InstructionHandle> i = returns.iterator(); i.hasNext();) {
-				InstructionHandle ih = i.next();
+			for (InstructionHandle ih : returns) {
 				retargetReturnInstruction(munger.hasExtraParameter(), returnValueVar, gotoTarget, ih);
 			}
 		}
@@ -2299,8 +2287,7 @@ public class BcelShadow extends Shadow {
 		InstructionList advice = new InstructionList();
 		// InstructionHandle adviceMethodInvocation;
 		{
-			for (Iterator<BcelVar> i = argsToCallLocalAdviceMethodWith.iterator(); i.hasNext();) {
-				BcelVar var = i.next();
+			for (BcelVar var : argsToCallLocalAdviceMethodWith) {
 				var.appendLoad(advice, fact);
 			}
 			// ??? we don't actually need to push NULL for the closure if we take care
@@ -2955,7 +2942,7 @@ public class BcelShadow extends Shadow {
 			aroundClosureInstance.appendStore(closureInstantiation, fact);
 
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int
-			closureInstantiation.append(fact.createConstant(Integer.valueOf(bitflags)));
+			closureInstantiation.append(fact.createConstant(bitflags));
 			if (needAroundClosureStacking) {
 				closureInstantiation.append(Utility.createInvoke(getFactory(), getWorld(),
 						new MemberImpl(Member.METHOD, UnresolvedType.forName("org.aspectj.runtime.internal.AroundClosure"),
@@ -3255,9 +3242,9 @@ public class BcelShadow extends Shadow {
 		if (targetVar != null && targetVar != thisVar) {
 			ret.put(targetVar.getSlot(), reti++);
 		}
-		for (int i = 0, len = argVars.length; i < len; i++) {
-			ret.put(argVars[i].getSlot(), reti);
-			reti += argVars[i].getType().getSize();
+		for (BcelVar argVar : argVars) {
+			ret.put(argVar.getSlot(), reti);
+			reti += argVar.getType().getSize();
 		}
 		if (thisJoinPointVar != null) {
 			ret.put(thisJoinPointVar.getSlot(), reti++);

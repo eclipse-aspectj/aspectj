@@ -143,8 +143,8 @@ public class TypePatternListTestCase extends PatternsTestCase {
 				"(int,  ..,  ..,  ..)", "(int,  ..,  .., int)", "(int,  .., int,  ..)", "(int,  .., int, int)",
 				"(int, int,  ..,  ..)", "(int, int,  .., int)", "(int, int, int,  ..)", "(int, int, int, int)" };
 
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			checkSerialization(patterns[i]);
+		for (String pattern : patterns) {
+			checkSerialization(pattern);
 		}
 	}
 

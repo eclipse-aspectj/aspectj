@@ -193,10 +193,10 @@ public class Util {
             return false;
         } else if (dir.isDirectory()) {
             File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; i++) {
-				if (!deleteContents(files[i]) || !files[i].delete()) {
-                    return false;
-                }
+			for (File file : files) {
+				if (!deleteContents(file) || !file.delete()) {
+					return false;
+				}
 			}
         }
         return true;
@@ -293,26 +293,26 @@ public class Util {
         if ((hits != expected.length) || (hits != actual.length)) {
             sb.append("unexpected [");
             String prefix = "";
-            for (int i = 0; i < actual.length; i++) {
-                if (null != actual[i]) {
-                    sb.append(prefix);
-                    prefix = ", ";
-                    sb.append("\"");
-                    sb.append(actual[i]);
-                    sb.append("\"");
-                }
-            }
+			for (String value : actual) {
+				if (null != value) {
+					sb.append(prefix);
+					prefix = ", ";
+					sb.append("\"");
+					sb.append(value);
+					sb.append("\"");
+				}
+			}
             sb.append("] missing [");
             prefix = "";
-            for (int i = 0; i < expected.length; i++) {
-                if (null != expected[i]) {
-                    sb.append(prefix);
-                    prefix = ", ";
-                    sb.append("\"");
-                    sb.append(expected[i]);
-                    sb.append("\"");
-                }
-            }
+			for (String s : expected) {
+				if (null != s) {
+					sb.append(prefix);
+					prefix = ", ";
+					sb.append("\"");
+					sb.append(s);
+					sb.append("\"");
+				}
+			}
             sb.append("]");
             return true;
         }

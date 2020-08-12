@@ -26,12 +26,12 @@ public class Member15TestCase extends TestCase {
 	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java/lang/Class"));
 	    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
 	    	ResolvedMember getAnnotations = null;
-	    	for (int i = 0; i < methods.length; i++) {
-				if (methods[i].getName().equals("getAnnotations")) {
-					getAnnotations = methods[i];
-					break;
-				}
-			}
+		  for (ResolvedMember method : methods) {
+			  if (method.getName().equals("getAnnotations")) {
+				  getAnnotations = method;
+				  break;
+			  }
+		  }
 	    	if (getAnnotations != null) { // so can run on non-Java 5
 //	    		System.out.println("got it");
 	    		assertFalse(getAnnotations.canBeParameterized());
@@ -46,9 +46,9 @@ public class Member15TestCase extends TestCase {
 	    	if (javaLangClass == null) return;  // for < 1.5
 	    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
 	    	ResolvedMember asSubclass = null;
-	    	for (int i = 0; i < methods.length; i++) {
-				if (methods[i].getName().equals("asSubclass")) {
-					asSubclass = methods[i];
+			for (ResolvedMember method : methods) {
+				if (method.getName().equals("asSubclass")) {
+					asSubclass = method;
 					break;
 				}
 			}
@@ -66,9 +66,9 @@ public class Member15TestCase extends TestCase {
 	    	if (javaUtilList == null) return;  // for < 1.5
 	    	ResolvedMember[] methods = javaUtilList.getDeclaredMethods();
 	    	ResolvedMember add = null;
-	    	for (int i = 0; i < methods.length; i++) {
-				if (methods[i].getName().equals("add")) {
-					add = methods[i];
+			for (ResolvedMember method : methods) {
+				if (method.getName().equals("add")) {
+					add = method;
 					break;
 				}
 			}

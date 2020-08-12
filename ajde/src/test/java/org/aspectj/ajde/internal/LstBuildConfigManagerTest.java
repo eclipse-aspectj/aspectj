@@ -53,7 +53,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		doBuild("bad-injar.lst");
 		messages = getMessages("bad-injar.lst");
 		message = (TestMessage)messages.get(0);
-		assertTrue(message.getContainedMessage().getMessage().indexOf("skipping missing, empty or corrupt inpath entry") != -1);
+		assertTrue(message.getContainedMessage().getMessage().contains("skipping missing, empty or corrupt inpath entry"));
 	}
 
 	public void testErrorMessages() throws IOException {
@@ -63,7 +63,7 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		  
 		List messages = getMessages("invalid-entry.lst");
 		TestMessage message = (TestMessage)messages.get(0);	
-		assertTrue(message.getContainedMessage().getMessage(), message.getContainedMessage().getMessage().indexOf("aaa.bbb") != -1);		
+		assertTrue(message.getContainedMessage().getMessage(), message.getContainedMessage().getMessage().contains("aaa.bbb"));
 	
 	}
 

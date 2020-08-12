@@ -438,7 +438,7 @@ public class Diffs {
 		} else if (null == actual) {
 			return false; // expected something
 		} else {
-			return (-1 != actual.indexOf(expected));
+			return (actual.contains(expected));
 		}
 	}
 
@@ -455,8 +455,7 @@ public class Diffs {
 			Collections.sort(sink, MESSAGE_LINEKIND);
 			return sink;
 		}
-		for (int i = 0; i < source.length; i++) {
-			IMessage message = source[i];
+		for (IMessage message : source) {
 			IMessage.Kind mkind = message.getKind();
 			boolean skipping = false;
 			for (int j = 0; !skipping && (j < skip.length); j++) {
@@ -521,12 +520,12 @@ public class Diffs {
 		LangUtil.throwIaxIfNull(handler, "handler");
 		LangUtil.throwIaxIfNull(kind, "kind");
 		if (different) {
-			for (Iterator iter = missing.iterator(); iter.hasNext();) {
-				String s = MessageUtil.renderMessage((IMessage) iter.next());
+			for (Object value : missing) {
+				String s = MessageUtil.renderMessage((IMessage) value);
 				MessageUtil.fail(handler, "missing " + label + ": " + s);
 			}
-			for (Iterator iter = unexpected.iterator(); iter.hasNext();) {
-				String s = MessageUtil.renderMessage((IMessage) iter.next());
+			for (Object o : unexpected) {
+				String s = MessageUtil.renderMessage((IMessage) o);
 				MessageUtil.fail(handler, "unexpected " + label + ": " + s);
 			}
 		}

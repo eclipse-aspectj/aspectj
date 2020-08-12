@@ -991,10 +991,10 @@ public abstract class World implements Dump.INode {
 		if (jps == null) {
 			return;
 		}
-		if (jps.indexOf("arrayconstruction") != -1) {
+		if (jps.contains("arrayconstruction")) {
 			optionalJoinpoint_ArrayConstruction = true;
 		}
-		if (jps.indexOf("synchronization") != -1) {
+		if (jps.contains("synchronization")) {
 			optionalJoinpoint_Synchronization = true;
 		}
 	}
@@ -1428,7 +1428,7 @@ public abstract class World implements Dump.INode {
 		public int compareByPrecedence(ResolvedType firstAspect, ResolvedType secondAspect) {
 			PrecedenceCacheKey key = new PrecedenceCacheKey(firstAspect, secondAspect);
 			if (cachedResults.containsKey(key)) {
-				return (cachedResults.get(key)).intValue();
+				return cachedResults.get(key);
 			} else {
 				int order = 0;
 				DeclarePrecedence orderer = null; // Records the declare
@@ -1453,7 +1453,7 @@ public abstract class World implements Dump.INode {
 						}
 					}
 				}
-				cachedResults.put(key, new Integer(order));
+				cachedResults.put(key, order);
 				return order;
 			}
 		}

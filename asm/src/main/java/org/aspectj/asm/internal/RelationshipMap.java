@@ -62,8 +62,7 @@ public class RelationshipMap extends HashMap<String, List<IRelationship>> implem
 			super.put(source, relationships);
 			return rel;
 		} else {
-			for (Iterator<IRelationship> it = relationships.iterator(); it.hasNext();) {
-				IRelationship curr = it.next();
+			for (IRelationship curr : relationships) {
 				if (curr.getKind() == kind && curr.getName().equals(relationshipName) && curr.hasRuntimeTest() == runtimeTest) {
 					return curr;
 				}

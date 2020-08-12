@@ -64,9 +64,9 @@ public class ModifiersPatternTestCase extends PatternsTestCase {
 	}
 
 	private void checkMatch(ModifiersPattern p, int[] matches, boolean shouldMatch) {
-		for (int i = 0; i < matches.length; i++) {
-			boolean result = p.matches(matches[i]);
-			String msg = "matches " + p + " to " + Modifier.toString(matches[i]) + " expected ";
+		for (int match : matches) {
+			boolean result = p.matches(match);
+			String msg = "matches " + p + " to " + Modifier.toString(match) + " expected ";
 			if (shouldMatch) {
 				assertTrue(msg + shouldMatch, result);
 			} else {
@@ -78,8 +78,8 @@ public class ModifiersPatternTestCase extends PatternsTestCase {
 	public void testSerialization() throws IOException {
 		String[] patterns = new String[] { "", "!public", "public", "public static", "private !static !strictfp", };
 
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			checkSerialization(patterns[i]);
+		for (String pattern : patterns) {
+			checkSerialization(pattern);
 		}
 	}
 

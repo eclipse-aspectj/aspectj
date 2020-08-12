@@ -80,15 +80,14 @@ public class EclipseSourceContext implements IEclipseSourceContext {
 		if (result == null) return; 
 		IProblem[] probs = result.getProblems();
 		if (probs!=null) {
-			for (int i = 0; i < probs.length; i++) {
-				IProblem problem = probs[i];
+			for (IProblem problem : probs) {
 				if (problem == null) continue;
-				if (problem.getID() == IProblem.UnusedMethodDeclaredThrownException 
+				if (problem.getID() == IProblem.UnusedMethodDeclaredThrownException
 						|| problem.getID() == IProblem.UnusedConstructorDeclaredThrownException) {
 					if (problem.getSourceLineNumber() == problemLineNumber) {
-						UnusedDeclaredThrownExceptionFilter filter = 
-							new UnusedDeclaredThrownExceptionFilter(problem);
-						result.removeProblems(filter);	
+						UnusedDeclaredThrownExceptionFilter filter =
+								new UnusedDeclaredThrownExceptionFilter(problem);
+						result.removeProblems(filter);
 					}
 				}
 			}

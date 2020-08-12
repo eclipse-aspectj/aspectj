@@ -174,49 +174,49 @@ public class CompilationResult {
 		} 
 		buff.append("\n");
 		int msgNo = 1;
-		for (Iterator iter = failMessages.iterator(); iter.hasNext();) {
+		for (IMessage failMessage : failMessages) {
 			buff.append("[fail ");
 			buff.append(msgNo++);
 			buff.append("] ");
-			buff.append(iter.next().toString());
+			buff.append(failMessage.toString());
 			buff.append("\n");
 		}
 		msgNo = 1;
-		for (Iterator iter = errorMessages.iterator(); iter.hasNext();) {
+		for (IMessage errorMessage : errorMessages) {
 			buff.append("[error ");
 			buff.append(msgNo++);
 			buff.append("] ");
-			buff.append(iter.next().toString());			
+			buff.append(errorMessage.toString());
 			buff.append("\n");
 		}
 		msgNo = 1;
-		for (Iterator iter = warningMessages.iterator(); iter.hasNext();) {
+		for (IMessage warningMessage : warningMessages) {
 			buff.append("[warning ");
 			buff.append(msgNo++);
 			buff.append("] ");
-			buff.append(iter.next().toString());			
+			buff.append(warningMessage.toString());
 			buff.append("\n");
 		}
 		msgNo = 1;
-		for (Iterator iter = infoMessages.iterator(); iter.hasNext();) {
+		for (IMessage infoMessage : infoMessages) {
 			buff.append("[info ");
 			buff.append(msgNo++);
 			buff.append("] ");
-			buff.append(iter.next().toString());			
+			buff.append(infoMessage.toString());
 			buff.append("\n");
 		}
 		msgNo = 1;
-		for (Iterator iter = weaveMessages.iterator(); iter.hasNext();) {
+		for (IMessage weaveMessage : weaveMessages) {
 			buff.append("[weaveInfo ");
 			buff.append(msgNo++);
 			buff.append("] ");
-			buff.append(iter.next().toString());			
+			buff.append(weaveMessage.toString());
 			buff.append("\n");
 		}
 		buff.append("\ncommand was: 'ajc");
-		for (int i = 0; i < args.length; i++) {
+		for (String arg : args) {
 			buff.append(' ');
-			buff.append(args[i]);
+			buff.append(arg);
 		}
 		buff.append("'\n");
 		return buff.toString();

@@ -42,8 +42,8 @@ public class EmacsStructureModelManager {
 		try {
 			// Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet();
 			Set fileSet = model.getHierarchy().getFileMapEntrySet();
-			for (Iterator it = fileSet.iterator(); it.hasNext();) {
-				IProgramElement peNode = (IProgramElement) ((Map.Entry) it.next()).getValue();
+			for (Object o : fileSet) {
+				IProgramElement peNode = (IProgramElement) ((Map.Entry) o).getValue();
 				dumpStructureToFile(peNode);
 			}
 		} catch (IOException ioe) {
@@ -95,9 +95,8 @@ public class EmacsStructureModelManager {
 
 		private void printDecls(IProgramElement node) {
 			print("(");
-			for (Iterator it = node.getChildren().iterator(); it.hasNext();) {
+			for (Object nodeObject : node.getChildren()) {
 				// this ignores relations on the compile unit
-				Object nodeObject = it.next();
 				// throw new RuntimeException("unimplemented");
 				// if (nodeObject instanceof IProgramElement) {
 				IProgramElement child = (IProgramElement) nodeObject;

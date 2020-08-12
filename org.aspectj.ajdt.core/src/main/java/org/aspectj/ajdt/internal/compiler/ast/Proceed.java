@@ -104,9 +104,9 @@ public class Proceed extends MessageSend {
 		}
 
 		boolean argsContainCast = false;
-		for (int i=0; i<arguments.length;i++) {
-			if (arguments[i] instanceof CastExpression) argsContainCast = true;
-		//	if (arguments[i].constant==null) arguments[i].constant=Constant.NotAConstant;
+		for (Expression argument : arguments) {
+			if (argument instanceof CastExpression) argsContainCast = true;
+			//	if (arguments[i].constant==null) arguments[i].constant=Constant.NotAConstant;
 		}
 //		TypeBinding[] argumentTypes = Binding.NO_PARAMETERS;
 //		if (this.arguments != null) {

@@ -94,9 +94,9 @@ public class JRockitAgentTest extends TestCase {
 			super(clone.getParent());
 
 			URL[] urls = clone.getURLs();
-			for (int i = 0; i < urls.length; i++) {
+			for (URL value : urls) {
 				Object pathElement;
-				URL url = urls[i];
+				URL url = value;
 				if (debug)
 					System.out.println("JRockitClassLoader.JRockitClassLoader() url=" + url.getPath());
 				File file = new File(encode(url.getFile()));

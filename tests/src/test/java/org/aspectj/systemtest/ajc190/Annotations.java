@@ -53,8 +53,7 @@ public class Annotations extends XMLBasedAjcTestCase {
 
 			JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Program");
 			Method[] meths = jc.getMethods();
-			for (int i = 0; i < meths.length; i++) {
-				Method method = meths[i];
+			for (Method method : meths) {
 				if (method.getName().equals("m1")) {
 					assertTrue("Didn't have annotations - were they lost? method=" + method.getName(),
 							method.getAnnotations().length == 1);

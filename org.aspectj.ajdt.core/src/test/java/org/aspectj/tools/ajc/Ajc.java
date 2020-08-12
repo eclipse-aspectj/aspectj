@@ -258,8 +258,8 @@ public class Ajc {
 	private boolean hasSpecifiedIncremental(String[] args) {
 		if (args == null)
 			return false;
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-incremental"))
+		for (String arg : args) {
+			if (arg.equals("-incremental"))
 				return true;
 		}
 		return false;
@@ -313,14 +313,14 @@ public class Ajc {
 	}
 
 	private void addMessagesTo(List<IMessage> aList, IMessage[] messages) {
-		for (int i = 0; i < messages.length; i++) {
-			aList.add(messages[i]);
+		for (IMessage message : messages) {
+			aList.add(message);
 		}
 	}
 
 	private boolean isIncremental(String[] args) {
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].trim().equals("-incremental"))
+		for (String arg : args) {
+			if (arg.trim().equals("-incremental"))
 				return true;
 		}
 		return false;
@@ -428,10 +428,10 @@ public class Ajc {
 							return (toMatch.equals(prefix));
 						}
 					});
-					for (int i = 0; i < toCopy.length; i++) {
-						String toPath = relativeToPath + toCopy[i];
+					for (String s : toCopy) {
+						String toPath = relativeToPath + s;
 						to = new File(sandbox, toPath);
-						FileUtil.copyFile(new File(from.getParentFile(), toCopy[i]), to);
+						FileUtil.copyFile(new File(from.getParentFile(), s), to);
 					}
 				} else {
 					FileUtil.copyFile(from, ret);
@@ -450,8 +450,7 @@ public class Ajc {
 		System.out.println("start of AJDE structure model:" + prefix); //$NON-NLS-1$
 
 		IRelationshipMap asmRelMap = model.getRelationshipMap();
-		for (Iterator<String> iter = asmRelMap.getEntries().iterator(); iter.hasNext();) {
-			String sourceOfRelationship =  iter.next();
+		for (String sourceOfRelationship : asmRelMap.getEntries()) {
 			System.err.println("Examining source relationship handle: " + sourceOfRelationship);
 			List<IRelationship> relationships = null;
 			if (useHandles) {
@@ -461,11 +460,10 @@ public class Ajc {
 				relationships = asmRelMap.get(ipe);
 			}
 			if (relationships != null) {
-				for (Iterator<IRelationship> iterator = relationships.iterator(); iterator.hasNext();) {
-					Relationship rel = (Relationship) iterator.next();
+				for (IRelationship relationship : relationships) {
+					Relationship rel = (Relationship) relationship;
 					List<String> targets = rel.getTargets();
-					for (Iterator<String> iterator2 = targets.iterator(); iterator2.hasNext();) {
-						String t = (String) iterator2.next();
+					for (String t : targets) {
 						IProgramElement link = model.getHierarchy().findElementForHandle(t);
 						System.out.println(""); //$NON-NLS-1$
 						System.out.println("      sourceOfRelationship " + sourceOfRelationship); //$NON-NLS-1$

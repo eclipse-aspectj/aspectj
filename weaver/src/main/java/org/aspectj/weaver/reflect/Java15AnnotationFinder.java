@@ -149,9 +149,9 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			if (anns == null)
 				anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
 			// convert to our Annotation type
-			for (int i = 0; i < anns.length; i++) {
-				if (anns[i].getTypeSignature().equals(ofType.getSignature())) {
-					return new BcelAnnotation(anns[i], world);
+			for (org.aspectj.apache.bcel.classfile.annotation.AnnotationGen ann : anns) {
+				if (ann.getTypeSignature().equals(ofType.getSignature())) {
+					return new BcelAnnotation(ann, world);
 				}
 			}
 			return null;
@@ -175,8 +175,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 					// onMember.getName()+"' in class '"+jc.getClassName()+"'");
 				} else {
 					Attribute[] attrs = bcelMethod.getAttributes();
-					for (int i = 0; i < attrs.length; i++) {
-						Attribute attribute = attrs[i];
+					for (Attribute attribute : attrs) {
 						if (attribute.getName().equals("AnnotationDefault")) {
 							AnnotationDefault def = (AnnotationDefault) attribute;
 							return def.getElementValue().stringifyValue();

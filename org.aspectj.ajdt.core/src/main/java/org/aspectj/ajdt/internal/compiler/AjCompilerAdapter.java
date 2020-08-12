@@ -180,8 +180,8 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		try {
 			// not great ... but one more check before we continue, see pr132314
 			if (!reportedErrors && units != null) {
-				for (int i = 0; i < units.length; i++) {
-					if (units[i] != null && units[i].compilationResult != null && units[i].compilationResult.hasErrors()) {
+				for (CompilationUnitDeclaration unit : units) {
+					if (unit != null && unit.compilationResult != null && unit.compilationResult.hasErrors()) {
 						reportedErrors = true;
 						break;
 					}
@@ -273,8 +273,8 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private List getBinarySourcesFrom(Map binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
 		List ret = new ArrayList();
-		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
-			String sourceFileName = (String) binIter.next();
+		for (Object o : binarySourceEntries.keySet()) {
+			String sourceFileName = (String) o;
 			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
 			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
@@ -286,16 +286,16 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	private void notifyRequestor() {
-		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
-			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+		for (Object o : resultsPendingWeave) {
+			InterimCompilationResult iresult = (InterimCompilationResult) o;
 			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
 		}
 	}
 
 	private void weave() throws IOException {
 		// ensure weaver state is set up correctly
-		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
-			InterimCompilationResult iresult = (InterimCompilationResult) iter.next();
+		for (Object o : resultsPendingWeave) {
+			InterimCompilationResult iresult = (InterimCompilationResult) o;
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
 				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}

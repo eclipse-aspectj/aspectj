@@ -163,8 +163,8 @@ public class TypeVariablePattern extends PatternNode {
 			hashCode = hashCode * 37 + lowerBound.hashCode();
 		}
 		if (interfaceBounds != null) {
-			for (int i = 0; i < interfaceBounds.length; i++) {
-				hashCode = 37 * hashCode + interfaceBounds[i].hashCode();
+			for (TypePattern interfaceBound : interfaceBounds) {
+				hashCode = 37 * hashCode + interfaceBound.hashCode();
 			}
 		}
 		return hashCode;
@@ -207,8 +207,8 @@ public class TypeVariablePattern extends PatternNode {
 			s.writeInt(0);
 		} else {
 			s.writeInt(interfaceBounds.length);
-			for (int i = 0; i < interfaceBounds.length; i++) {
-				interfaceBounds[i].write(s);
+			for (TypePattern interfaceBound : interfaceBounds) {
+				interfaceBound.write(s);
 			}
 		}
 		s.writeBoolean(hasLowerBound());

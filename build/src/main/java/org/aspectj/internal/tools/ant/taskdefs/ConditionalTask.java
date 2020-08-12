@@ -145,11 +145,11 @@ public abstract class ConditionalTask extends Task {
             return isOneOf(prop, trues) || isOneOf(prop, complement(falses));
         }
         private boolean isOneOf(String prop, String[] strings) {
-            for (int i = 0; i < strings.length; i++) {
-                if (strings[i].equals(prop)) {
-                    return true;
-                }
-            }
+			for (String string : strings) {
+				if (string.equals(prop)) {
+					return true;
+				}
+			}
             return false;
         }
         private String[] complement(String[] strings) {

@@ -59,8 +59,7 @@ class StubFileGenerator {
 			}
 
 			IProgramElement fileNode = model.getHierarchy().findElementForSourceFile(inputFile.getAbsolutePath());
-			for (Iterator it = fileNode.getChildren().iterator(); it.hasNext();) {
-				IProgramElement node = (IProgramElement) it.next();
+			for (IProgramElement node : fileNode.getChildren()) {
 				if (node.getKind().isPackageDeclaration()) {
 					// skip
 				} else if (node.getKind().equals(IProgramElement.Kind.IMPORT_REFERENCE)) {
@@ -84,8 +83,8 @@ class StubFileGenerator {
 
 	private static void processImportDeclaration(IProgramElement node, PrintWriter writer) throws IOException {
 		List imports = node.getChildren();
-		for (Iterator i = imports.iterator(); i.hasNext();) {
-			IProgramElement importNode = (IProgramElement) i.next();
+		for (Object anImport : imports) {
+			IProgramElement importNode = (IProgramElement) anImport;
 			writer.println(importNode.getSourceSignature());
 		}
 	}
@@ -111,8 +110,8 @@ class StubFileGenerator {
 
 	private static void processMembers(List/* IProgramElement */members, PrintWriter writer, boolean declaringTypeIsInterface)
 			throws DocException {
-		for (Iterator it = members.iterator(); it.hasNext();) {
-			IProgramElement member = (IProgramElement) it.next();
+		for (Object o : members) {
+			IProgramElement member = (IProgramElement) o;
 
 			if (member.getKind().isType()) {
 				if (!member.getParent().getKind().equals(IProgramElement.Kind.METHOD) && !StructureUtil.isAnonymous(member)) {// don't
@@ -154,7 +153,7 @@ class StubFileGenerator {
 
 				if (member.getKind().equals(IProgramElement.Kind.METHOD)
 						|| member.getKind().equals(IProgramElement.Kind.CONSTRUCTOR)) {
-					if (member.getParent().getKind().equals(IProgramElement.Kind.INTERFACE) || signature.indexOf("abstract ") != -1) {
+					if (member.getParent().getKind().equals(IProgramElement.Kind.INTERFACE) || signature.contains("abstract ")) {
 						writer.println(";");
 					} else {
 						writer.println(" { }");

@@ -310,8 +310,8 @@ public class PointcutRewriterTest extends TestCase {
 	public void testKindSetOfThis() {
 		Pointcut p = getPointcut("this(Foo)");
 		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object o : matches) {
+			Shadow.Kind kind = (Shadow.Kind) o;
 			assertFalse("No kinds that don't have a this", kind.neverHasThis());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
@@ -322,8 +322,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@this(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object match : matches) {
+			Shadow.Kind kind = (Shadow.Kind) match;
 			assertFalse("No kinds that don't have a this", kind.neverHasThis());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
@@ -336,8 +336,8 @@ public class PointcutRewriterTest extends TestCase {
 	public void testKindSetOfTarget() {
 		Pointcut p = getPointcut("target(Foo)");
 		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object o : matches) {
+			Shadow.Kind kind = (Shadow.Kind) o;
 			assertFalse("No kinds that don't have a target", kind.neverHasTarget());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
@@ -348,8 +348,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@target(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object match : matches) {
+			Shadow.Kind kind = (Shadow.Kind) match;
 			assertFalse("No kinds that don't have a target", kind.neverHasTarget());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
@@ -383,8 +383,8 @@ public class PointcutRewriterTest extends TestCase {
 	public void testKindSetOfWithinCode() {
 		Pointcut p = getPointcut("withincode(* foo(..))");
 		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object o : matches) {
+			Shadow.Kind kind = (Shadow.Kind) o;
 			assertFalse("No kinds that are themselves enclosing",
 					(kind.isEnclosingKind() && kind != Shadow.ConstructorExecution && kind != Shadow.Initialization));
 		}
@@ -398,8 +398,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@withincode(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Iterator iter = matches.iterator(); iter.hasNext();) {
-			Shadow.Kind kind = (Shadow.Kind) iter.next();
+		for (Object match : matches) {
+			Shadow.Kind kind = (Shadow.Kind) match;
 			assertFalse("No kinds that are themselves enclosing", kind.isEnclosingKind());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {

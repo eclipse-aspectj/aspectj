@@ -208,11 +208,10 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 	}
 
 	private void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
-					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
+					fail("Expected element " + name + " to have value " + tostring + " but it had value " + element.getValue().stringifyValue());
 				}
 				return;
 			}
@@ -385,8 +384,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 	public static List<String> getListOfAnnotationNames(AnnotationGen a) {
 	  	List<NameValuePair> l = a.getValues();
 	    List<String> names = new ArrayList<String>();
-	    for (Iterator<NameValuePair> i = l.iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : l) {
 			names.add(element.getNameString());
 		}
 	    return names;

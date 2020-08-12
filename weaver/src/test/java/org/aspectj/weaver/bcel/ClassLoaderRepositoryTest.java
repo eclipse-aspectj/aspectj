@@ -100,10 +100,10 @@ public class ClassLoaderRepositoryTest extends TestCase {
 			 threads[i] = new TestThread((i%3)*1000);
 			 threads[i].start();
 		 }
-		 for (int i=0; i<threads.length; i++) {
-			 threads[i].join();
-			 if (threads[i].getFailure() != null) {
-				 throw threads[i].getFailure();
+		 for (TestThread thread : threads) {
+			 thread.join();
+			 if (thread.getFailure() != null) {
+				 throw thread.getFailure();
 			 }
 		 }
 	 }

@@ -831,10 +831,10 @@ public class Tester {
    /** add expected events */
     public static void expectEvents(Object[] events) {
         if (null != events) {
-            for (int i = 0; i < events.length; i++) {
-				if (null != events[i]) {
-                    expectEvent(events[i].toString());
-                }
+			for (Object event : events) {
+				if (null != event) {
+					expectEvent(event.toString());
+				}
 			}
         }
     }
@@ -842,11 +842,11 @@ public class Tester {
     /** add expected events */
     public static void expectEvents(String[] events) {
         if (null != events) {
-            for (int i = 0; i < events.length; i++) {
-                if (null != events[i]) {
-                    expectEvent(events[i].toString());
-                }
-            }
+			for (String event : events) {
+				if (null != event) {
+					expectEvent(event.toString());
+				}
+			}
         }
     }
 
@@ -946,9 +946,9 @@ public class Tester {
 
     /** XXX deprecated */
     public static void printEvents() {  // XXX no clients?
-        for (Iterator<String> i = actualEvents.iterator(); i.hasNext(); ) {
-            System.out.println(i.next());               // XXX System.out
-        }
+		for (String actualEvent : actualEvents) {
+			System.out.println(actualEvent);               // XXX System.out
+		}
     }
 
     /**

@@ -380,7 +380,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 * @return a type object represnting that JVM bytecode signature.
 	 */
 	public static UnresolvedType forSignature(String signature) {
-		assert !(signature.startsWith("L") && signature.indexOf("<") != -1);
+		assert !(signature.startsWith("L") && signature.contains("<"));
 		switch (signature.charAt(0)) {
 		case 'B':
 			return UnresolvedType.BYTE;
@@ -753,7 +753,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			return name.replace('.','/');
 		}
 
-		if (name.indexOf("<") == -1) {
+		if (!name.contains("<")) {
 			// not parameterized
 			return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 		} else {
@@ -875,12 +875,11 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		if (vars == null || vars.length == 0) {
 			return null;
 		}
-		for (int i = 0; i < vars.length; i++) {
-			TypeVariable aVar = vars[i];
-			if (aVar.getName().equals(name)) {
-				return aVar;
-			}
-		}
+        for (TypeVariable aVar : vars) {
+            if (aVar.getName().equals(name)) {
+                return aVar;
+            }
+        }
 		return null;
 	}
 
@@ -904,7 +903,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public String getClassName() {
 		if (className == null) {
 			String name = getName();
-			if (name.indexOf("<") != -1) {
+			if (name.contains("<")) {
 				name = name.substring(0, name.indexOf("<"));
 			}
 			int index = name.lastIndexOf('.');

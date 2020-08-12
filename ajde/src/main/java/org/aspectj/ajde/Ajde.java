@@ -262,8 +262,8 @@ public class Ajde {
 			} else {
 				StringBuffer sb = new StringBuffer();
 				List outputDirs = compilerConfig.getOutputLocationManager().getAllOutputLocations();
-				for (Iterator iterator = outputDirs.iterator(); iterator.hasNext();) {
-					File dir = (File) iterator.next();
+				for (Object outputDir : outputDirs) {
+					File dir = (File) outputDir;
 					sb.append(dir.getAbsolutePath() + File.pathSeparator);
 				}
 				classpath = LangUtil.makeClasspath(null, compilerConfig.getClasspath(), sb.toString(), compilerConfig.getOutJar());

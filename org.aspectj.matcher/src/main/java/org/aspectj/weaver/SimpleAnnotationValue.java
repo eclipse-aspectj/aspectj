@@ -21,31 +21,31 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		super(kind);
 		switch (kind) {
 		case AnnotationValue.PRIMITIVE_BYTE:
-			theByte = ((Byte) value).byteValue();
+			theByte = (Byte) value;
 			break;
 		case AnnotationValue.PRIMITIVE_CHAR:
-			theChar = ((Character) value).charValue();
+			theChar = (Character) value;
 			break;
 		case AnnotationValue.PRIMITIVE_INT:
-			theInt = ((Integer) value).intValue();
+			theInt = (Integer) value;
 			break;
 		case AnnotationValue.STRING:
 			theString = (String) value;
 			break;
 		case AnnotationValue.PRIMITIVE_DOUBLE:
-			theDouble = ((Double) value).doubleValue();
+			theDouble = (Double) value;
 			break;
 		case AnnotationValue.PRIMITIVE_FLOAT:
-			theFloat = ((Float) value).floatValue();
+			theFloat = (Float) value;
 			break;
 		case AnnotationValue.PRIMITIVE_LONG:
-			theLong = ((Long) value).longValue();
+			theLong = (Long) value;
 			break;
 		case AnnotationValue.PRIMITIVE_SHORT:
-			theShort = ((Short) value).shortValue();
+			theShort = (Short) value;
 			break;
 		case AnnotationValue.PRIMITIVE_BOOLEAN:
-			theBoolean = ((Boolean) value).booleanValue();
+			theBoolean = (Boolean) value;
 			break;
 		default:
 			throw new BCException("Not implemented for this kind: " + whatKindIsThis(kind));

@@ -207,7 +207,7 @@ public class AjcTask extends MatchingTask {
 		int loc = path.lastIndexOf(prefix);
 		if ((-1 != loc) && ((loc + minLength) <= path.length())) {
 			String rest = path.substring(loc + prefixLength);
-			if (-1 != rest.indexOf(File.pathSeparator)) {
+			if (rest.contains(File.pathSeparator)) {
 				return null;
 			}
 			if (rest.startsWith(infix) || rest.startsWith(altInfix)) {
@@ -827,7 +827,7 @@ public class AjcTask extends MatchingTask {
 	 */
 	public void setInpathDirCopyFilter(String filter) {
 		if (null != filter) {
-			if (-1 == filter.indexOf("**/*.class")) {
+			if (!filter.contains("**/*.class")) {
 				filter = "**/*.class," + filter;
 			}
 		}
@@ -1161,9 +1161,9 @@ public class AjcTask extends MatchingTask {
 	String[] makeCommand() {
 		ArrayList result = new ArrayList();
 		if (0 < ignored.size()) {
-			for (Iterator iter = ignored.iterator(); iter.hasNext();) {
-				logVerbose("ignored: " + iter.next());
-			}
+            for (Object o : ignored) {
+                logVerbose("ignored: " + o);
+            }
 		}
 		// when copying resources, use temp jar for class output
 		// then copy temp jar contents and resources to output jar
@@ -1344,7 +1344,7 @@ public class AjcTask extends MatchingTask {
 					String message = fail.getMessage();
 					if (LangUtil.isEmpty(message)) {
 						message = "<no message>";
-					} else if (-1 != message.indexOf(USAGE_SUBSTRING)) {
+					} else if (message.contains(USAGE_SUBSTRING)) {
 						continue;
 					}
 					Throwable t = fail.getThrown();
@@ -1576,14 +1576,15 @@ public class AjcTask extends MatchingTask {
 			}
 		}
 		if (0 < adapterFiles.size()) {
-			for (Iterator iter = adapterFiles.iterator(); iter.hasNext();) {
-				File file = (File) iter.next();
-				if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
-					list.add(file.getAbsolutePath());
-				} else {
-					this.logger.warning("skipping file: " + file);
-				}
-			}
+            for (Object adapterFile : adapterFiles) {
+                File file = (File) adapterFile;
+                if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
+                    list.add(file.getAbsolutePath());
+                }
+                else {
+                    this.logger.warning("skipping file: " + file);
+                }
+            }
 		}
 	}
 

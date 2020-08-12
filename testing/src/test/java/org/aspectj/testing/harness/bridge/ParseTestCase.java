@@ -58,17 +58,17 @@ public class ParseTestCase extends TestCase {
         Sandbox sandbox = new Sandbox(new File("testdata"), validator);		
         IRunListener listenerNULL = null;		
         ISourceLocation sl = new SourceLocation(suiteFile, 0, 0,0);
-		for (Iterator iter = tests.iterator(); iter.hasNext();) {
-            status = new RunStatus(handler, runner);
-            AjcTest.Spec test = (AjcTest.Spec) iter.next();
-            test.setSourceLocation(sl);
+		for (Object o : tests) {
+			status = new RunStatus(handler, runner);
+			AjcTest.Spec test = (AjcTest.Spec) o;
+			test.setSourceLocation(sl);
 			IRunIterator child = test.makeRunIterator(sandbox, validator);
-            //test.setup(new String[0], validator); // XXX
+			//test.setup(new String[0], validator); // XXX
 			//IRun child = runner.wrap(test, null);
-            // huh? runIterator not generating child status?
-            //RunStatus childStatus = runner.makeChildStatus();
-            runner.runIterator(child, status, listenerNULL); 
-            MessageUtil.print(System.err, status);
+			// huh? runIterator not generating child status?
+			//RunStatus childStatus = runner.makeChildStatus();
+			runner.runIterator(child, status, listenerNULL);
+			MessageUtil.print(System.err, status);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class ParseTestCase extends TestCase {
         AjcTest.Spec test = new AjcTest.Spec();
         test.setDescription(title);
         test.setTestDirOffset(dir);
-        test.setBugId(Integer.valueOf(pr).intValue());
+        test.setBugId(Integer.valueOf(pr));
         test.setSourceLocation(sourceLocation);
 		//AjcTest test = new AjcTest(title, dir, pr, sourceLocation);
 		
@@ -175,7 +175,7 @@ public class ParseTestCase extends TestCase {
 			file = new File("XXX");  //XXX 
 		}
 		
-		int line = Integer.valueOf(getAttributeString(child, "line")).intValue();
+		int line = Integer.valueOf(getAttributeString(child, "line"));
 		
 		ISourceLocation sourceLocation = new SourceLocation(file, line, line, 0);
 		

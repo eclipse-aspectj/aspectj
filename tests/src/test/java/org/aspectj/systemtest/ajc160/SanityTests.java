@@ -97,8 +97,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		toIgnore = "_" + (toIgnore == null ? "" : toIgnore) + "_";
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);
 		Method[] methods = jc.getMethods();
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
+		for (Method method : methods) {
 			if (toIgnore.contains("_" + method.getName() + "_")) {
 				continue;
 			}
@@ -113,8 +112,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		if (attrs == null) {
 			return false;
 		}
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
+		for (Attribute attribute : attrs) {
 			if (attribute.getName().equals(attributeName)) {
 				return true;
 			}
@@ -122,8 +120,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			if (attribute.getName().equals("Code")) {
 				Code c = (Code) attribute;
 				Attribute[] codeAttributes = c.getAttributes();
-				for (int j = 0; j < codeAttributes.length; j++) {
-					Attribute codeAttribute = codeAttributes[j];
+				for (Attribute codeAttribute : codeAttributes) {
 					if (codeAttribute.getName().equals(attributeName)) {
 						return true;
 						// System.out.println(codeAttribute.getName());

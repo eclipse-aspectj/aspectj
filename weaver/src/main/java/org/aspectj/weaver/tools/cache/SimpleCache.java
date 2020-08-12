@@ -324,7 +324,7 @@ public class SimpleCache {
 			}
 			defineClassMethod.setAccessible(true);
 			clazz = defineClassMethod.invoke(loader, new Object[] { name,
-					bytes, new Integer(0), new Integer(bytes.length) });
+					bytes, 0, bytes.length});
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
 				e.printStackTrace();
@@ -354,8 +354,8 @@ public class SimpleCache {
 			}
 			defineClassWithProtectionDomainMethod.setAccessible(true);
 			clazz = defineClassWithProtectionDomainMethod.invoke(loader,
-					new Object[] { name, bytes, Integer.valueOf(0),
-							new Integer(bytes.length), protectionDomain });
+					new Object[] { name, bytes, 0,
+							bytes.length, protectionDomain });
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof LinkageError) {
 				e.printStackTrace();

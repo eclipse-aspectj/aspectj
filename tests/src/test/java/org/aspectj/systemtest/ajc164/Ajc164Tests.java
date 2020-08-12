@@ -427,8 +427,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			return whereToLook;
 		}
 		List<IProgramElement> kids = whereToLook.getChildren();
-		for (Iterator<IProgramElement> iterator = kids.iterator(); iterator.hasNext();) {
-			IProgramElement object = iterator.next();
+		for (IProgramElement object : kids) {
 			if (object.getSourceLocation() != null && object.getSourceLocation().getLine() == line) {
 				return object;
 			}

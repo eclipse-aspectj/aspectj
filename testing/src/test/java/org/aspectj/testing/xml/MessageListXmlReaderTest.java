@@ -38,8 +38,8 @@ public class MessageListXmlReaderTest extends TestCase {
 
     public void tearDown() {
     	if (!LangUtil.isEmpty(tempFiles)) {
-	    	for (Iterator iter = tempFiles.iterator(); iter.hasNext();) {
-				File file = (File) iter.next();
+			for (Object tempFile : tempFiles) {
+				File file = (File) tempFile;
 				if (file.canRead()) {
 					file.delete();
 				}

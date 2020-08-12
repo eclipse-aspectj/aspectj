@@ -79,7 +79,7 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
         if (null == javac) {
             throw new IllegalStateException("null javac");
         }
-        if (!((Boolean) inSelfCall.get()).booleanValue()
+        if (!(Boolean) inSelfCall.get()
             && afterCleaningDirs()) {
             // if we are not re-calling ourself and we cleaned dirs,
             // then re-call javac to get the list of all source files.

@@ -372,8 +372,7 @@ public class Dump {
 	private void dumpCompilerMessages(IMessageHolder messageHolder) {
 		println("---- Compiler Messages ---");
 		if (messageHolder != null) {
-			for (Iterator<IMessage> i = messageHolder.getUnmodifiableListView().iterator(); i.hasNext();) {
-				IMessage message = i.next();
+			for (IMessage message : messageHolder.getUnmodifiableListView()) {
 				println(message.toString());
 			}
 		} else {
@@ -419,15 +418,14 @@ public class Dump {
 			return;
 		}
 
-		for (int i = 0; i < array.length; i++) {
-			print.println(array[i]);
+		for (Object o : array) {
+			print.println(o);
 		}
 	}
 
 	private void println(Properties props) {
-		Iterator iter = props.keySet().iterator();
-		while (iter.hasNext()) {
-			String key = (String) iter.next();
+		for (Object o : props.keySet()) {
+			String key = (String) o;
 			String value = props.getProperty(key);
 			print.println(key + "=" + value);
 		}
@@ -454,8 +452,7 @@ public class Dump {
 		if (list == null || list.isEmpty()) {
 			println(NULL_OR_EMPTY);
 		} else {
-			for (Iterator i = list.iterator(); i.hasNext();) {
-				Object o = i.next();
+			for (Object o : list) {
 				if (o instanceof Exception) {
 					println((Exception) o);
 				} else {

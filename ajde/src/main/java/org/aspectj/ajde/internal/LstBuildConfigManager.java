@@ -173,8 +173,8 @@ public class LstBuildConfigManager implements BuildConfigManager {
 			}
 			node.addChild(dir);
 			// boolean foundMatch = false;
-			for (Iterator it = importedFiles.iterator(); it.hasNext();) {
-				File importedFile = (File) it.next();
+			for (Object file : importedFiles) {
+				File importedFile = (File) file;
 				if (importedFile.getParentFile().getAbsolutePath().equals(dir2.getAbsolutePath())) {
 					// foundMatch = true;
 					BuildConfigNode importedFileNode = new BuildConfigNode(importedFile.getName(), BuildConfigNode.Kind.FILE_LST,
@@ -215,8 +215,8 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 
 	private void addFilesToDirTree(BuildConfigModel model, List configFiles, List badEntries) {
-		for (Iterator it = configFiles.iterator(); it.hasNext();) {
-			String path = (String) it.next();
+		for (Object configFile : configFiles) {
+			String path = (String) configFile;
 			if (path.startsWith("..")) {
 				File file = new File(path);
 				BuildConfigNode node = new BuildConfigNode(file.getName(), BuildConfigNode.Kind.FILE_JAVA, path);

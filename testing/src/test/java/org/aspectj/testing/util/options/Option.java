@@ -226,11 +226,11 @@ public class Option implements Comparable {
             return "no input permitted at " + position;
         }
         String[] permitted = permittedArguments[position];
-        for (int i = 0; i < permitted.length; i++) {
-            if (input.equals(permitted[i])) {
-                return null;
-            }
-        }
+		for (String s : permitted) {
+			if (input.equals(s)) {
+				return null;
+			}
+		}
         return input + " not permitted, expecting one of "
             + Arrays.asList(permitted);
     }

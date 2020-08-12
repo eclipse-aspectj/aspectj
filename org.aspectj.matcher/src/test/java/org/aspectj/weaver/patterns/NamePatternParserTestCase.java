@@ -59,8 +59,7 @@ public class NamePatternParserTestCase extends TestCase {
 	 * @param b
 	 */
 	private void checkMatch(String[] patterns) {
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			String pattern = patterns[i];
+		for (String pattern : patterns) {
 			ITokenSource tokenSource = BasicTokenSource.makeTokenSource(
 					pattern, null);
 			NamePattern p1 = new PatternParser(tokenSource).parseNamePattern();

@@ -137,15 +137,15 @@ public class EclipseAdapterUtils {
 		// If the user has turned off classfile line number gen, then we may not be able to tell them
 		// about all secondary locations (pr209372)
 		int validPlaces = 0;
-		for (int ii = 0; ii < seeAlso.length; ii++) {
-			if (seeAlso[ii].getSourceLineNumber() >= 0)
+		for (IProblem value : seeAlso) {
+			if (value.getSourceLineNumber() >= 0)
 				validPlaces++;
 		}
 		ISourceLocation[] seeAlsoLocations = new ISourceLocation[validPlaces];
 		int pos = 0;
-		for (int i = 0; i < seeAlso.length; i++) {
-			if (seeAlso[i].getSourceLineNumber() >= 0) {
-				seeAlsoLocations[pos++] = new SourceLocation(new File(new String(seeAlso[i].getOriginatingFileName())), seeAlso[i]
+		for (IProblem iProblem : seeAlso) {
+			if (iProblem.getSourceLineNumber() >= 0) {
+				seeAlsoLocations[pos++] = new SourceLocation(new File(new String(iProblem.getOriginatingFileName())), iProblem
 						.getSourceLineNumber());
 			}
 		}
@@ -161,7 +161,7 @@ public class EclipseAdapterUtils {
 			declared = true;
 			extraDetails = extraDetails.substring(0, extraDetails.length() - "[deow=true]".length());
 		}
-		if (extraDetails != null && extraDetails.indexOf("[Xlint:") != -1) {
+		if (extraDetails != null && extraDetails.contains("[Xlint:")) {
 			isLintMessage = true;
 			lintkey = extraDetails.substring(extraDetails.indexOf("[Xlint:"));
 			lintkey = lintkey.substring("[Xlint:".length());

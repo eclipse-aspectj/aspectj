@@ -38,10 +38,9 @@ public class GenericsErasureTesting extends BcelTestCase {
 	public Signature getSignatureAttribute(JavaClass clazz,String name) {
 		Method m = getMethod(clazz,name);
 		Attribute[] as = m.getAttributes();
-		for (int i = 0; i < as.length; i++) {
-			Attribute attribute = as[i];
+		for (Attribute attribute : as) {
 			if (attribute.getName().equals("Signature")) {
-				return (Signature)attribute;
+				return (Signature) attribute;
 			}
 		}
 		return null;

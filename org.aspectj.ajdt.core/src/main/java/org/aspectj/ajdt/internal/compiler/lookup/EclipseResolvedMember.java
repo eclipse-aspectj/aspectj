@@ -80,8 +80,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		if (annotationTypes == null) {
 			return false;
 		}
-		for (int i = 0; i < annotationTypes.length; i++) {
-			ResolvedType type = annotationTypes[i];
+		for (ResolvedType type : annotationTypes) {
 			if (type.equals(ofType)) {
 				return true;
 			}
@@ -126,8 +125,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 			if (annos == null) {
 				return null;
 			}
-			for (int i = 0; i < annos.length; i++) {
-				Annotation anno = annos[i];
+			for (Annotation anno : annos) {
 				UnresolvedType ut = UnresolvedType.forSignature(new String(anno.resolvedType.signature()));
 				if (w.resolve(ut).equals(ofType)) {
 					// Found the one
@@ -335,10 +333,9 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 					// Grab the set of bindings with matching selector
 					MethodBinding[] mb = ((MethodBinding) realBinding).declaringClass.getMethods(methodBinding.selector);
 					if (mb != null) {
-						for (int m = 0, max = mb.length; m < max; m++) {
-							MethodBinding candidate = mb[m];
+						for (MethodBinding candidate : mb) {
 							if (candidate instanceof InterTypeMethodBinding) {
-								if (InterTypeMemberFinder.matches(mb[m], methodBinding)) {
+								if (InterTypeMemberFinder.matches(candidate, methodBinding)) {
 									InterTypeMethodBinding intertypeMethodBinding = (InterTypeMethodBinding) candidate;
 									Annotation[] annos = intertypeMethodBinding.sourceMethod.annotations;
 									return annos;

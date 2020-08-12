@@ -159,8 +159,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		List children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			IProgramElement element = (IProgramElement) iter.next();
+		for (Object child : children) {
+			IProgramElement element = (IProgramElement) child;
 			if (element.getKind().equals(IProgramElement.Kind.ADVICE)) {
 				if (handle1 == null) {
 					handle1 = element.getHandleIdentifier();
@@ -300,11 +300,11 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		String warning = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_WARNING,
 				"declare warning: \"warning\"").getHandleIdentifier();
 		assertTrue("shouldn't have incremented counter for declare warning handle " + "because only one declare warning statement",
-				warning.indexOf("!0") == -1 && warning.indexOf("!2") == -1);
+				!warning.contains("!0") && !warning.contains("!2"));
 		String error = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.DECLARE_ERROR, "declare error: \"error\"")
 				.getHandleIdentifier();
 		assertTrue("shouldn't have incremented counter for declare error handle " + "because only one declare error statement",
-				error.indexOf("!0") == -1 && error.indexOf("!2") == -1);
+				!error.contains("!0") && !error.contains("!2"));
 	}
 
 	// public void testOnlyIncrementSameAdviceKindFromInjar_pr159896() {
@@ -408,8 +408,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		List children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			IProgramElement element = (IProgramElement) iter.next();
+		for (Object child : children) {
+			IProgramElement element = (IProgramElement) child;
 			if (element.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
 				if (handle1 == null) {
 					handle1 = element.getHandleIdentifier();

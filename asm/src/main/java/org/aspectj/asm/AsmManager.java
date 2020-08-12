@@ -157,13 +157,12 @@ public class AsmManager implements IStructureModel {
 			IProgramElement fileNode = node;
 			ArrayList<IProgramElement> peNodes = new ArrayList<IProgramElement>();
 			getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
-			for (Iterator<IProgramElement> it = peNodes.iterator(); it.hasNext();) {
-				IProgramElement peNode = it.next();
+			for (IProgramElement peNode : peNodes) {
 				List<IProgramElement> entries = new ArrayList<IProgramElement>();
 				entries.add(peNode);
 				ISourceLocation sourceLoc = peNode.getSourceLocation();
 				if (null != sourceLoc) {
-					Integer hash = new Integer(sourceLoc.getLine());
+					Integer hash = sourceLoc.getLine();
 					List<IProgramElement> existingEntry = annotations.get(hash);
 					if (existingEntry != null) {
 						entries.addAll(existingEntry);
@@ -733,8 +732,8 @@ public class AsmManager implements IStructureModel {
 					if (relationshipsToRemove.size() == relationships.size()) {
 						sourcesToRemove.add(hid);
 					} else {
-						for (int i = 0; i < relationshipsToRemove.size(); i++) {
-							relationships.remove(relationshipsToRemove.get(i));
+						for (IRelationship iRelationship : relationshipsToRemove) {
+							relationships.remove(iRelationship);
 						}
 					}
 				}
@@ -815,8 +814,8 @@ public class AsmManager implements IStructureModel {
 					if (relationshipsToRemove.size() == relationships.size()) {
 						sourcesToRemove.add(hid);
 					} else {
-						for (int i = 0; i < relationshipsToRemove.size(); i++) {
-							relationships.remove(relationshipsToRemove.get(i));
+						for (IRelationship iRelationship : relationshipsToRemove) {
+							relationships.remove(iRelationship);
 						}
 					}
 				}
@@ -960,15 +959,13 @@ public class AsmManager implements IStructureModel {
 						List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
 						// Iterate through the relationships against this source
 						// handle
-						for (Iterator<IRelationship> reliter = relationships.iterator(); reliter.hasNext();) {
-							IRelationship rel = reliter.next();
+						for (IRelationship rel : relationships) {
 							List<String> targets = rel.getTargets();
 							List<String> targetsToRemove = new ArrayList<String>();
 
 							// Iterate through the targets for this relationship
-							for (Iterator<String> targetIter = targets.iterator(); targetIter.hasNext();) {
-								String targethid = targetIter.next();
-//								tgthandlecounter++;
+							for (String targethid : targets) {
+								//								tgthandlecounter++;
 								// Do we already know it doesn't exist?
 								if (nonExistingHandles.contains(targethid)) {
 									if (dumpDeltaProcessing) {
@@ -1040,8 +1037,7 @@ public class AsmManager implements IStructureModel {
 							} else {
 								// MEMORY LEAK - we don't remove the
 								// relationships !!
-								for (int i = 0; i < relationshipsToRemove.size(); i++) {
-									IRelationship irel = relationshipsToRemove.get(i);
+								for (IRelationship irel : relationshipsToRemove) {
 									verifyAssumption(mapper.remove(hid, irel), "Failed to remove relationship " + irel.getName()
 											+ " for shid " + hid);
 								}
@@ -1055,8 +1051,7 @@ public class AsmManager implements IStructureModel {
 				}
 			}
 			// Remove sources that have no valid relationships any more
-			for (Iterator<String> srciter = sourcesToRemove.iterator(); srciter.hasNext();) {
-				String hid = srciter.next();
+			for (String hid : sourcesToRemove) {
 				mapper.removeAll(hid);
 				IProgramElement ipe = hierarchy.getElement(hid);
 				if (ipe != null) {
@@ -1194,9 +1189,9 @@ public class AsmManager implements IStructureModel {
 			String node = ipe.getKind().toString();
 			Integer ctr = nodeTypeCount.get(node);
 			if (ctr == null) {
-				nodeTypeCount.put(node, new Integer(1));
+				nodeTypeCount.put(node, 1);
 			} else {
-				ctr = new Integer(ctr.intValue() + 1);
+				ctr = ctr + 1;
 				nodeTypeCount.put(node, ctr);
 			}
 		}

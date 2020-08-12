@@ -134,8 +134,8 @@ public class BridgeUtil {
                 || LangUtil.isEmpty(rhs_s)) {
                 return 0;
             }
-            if ((-1 != lhs_s.indexOf(rhs_s))
-                || (-1 != rhs_s.indexOf(lhs_s))) {
+            if ((lhs_s.contains(rhs_s))
+                || (rhs_s.contains(lhs_s))) {
                 return 0;
             }
             return String.CASE_INSENSITIVE_ORDER.compare(lhs_s, rhs_s);
@@ -458,10 +458,10 @@ public class BridgeUtil {
         final int numTests = numIncomplete + numChildren + numSkips;
         int numFails = 0;
         if (!LangUtil.isEmpty(children)) {
-            for (int i = 0; i < children.length; i++) {
-                if (!RunValidator.NORMAL.runPassed(children[i])) {
-                    numFails++;
-                }
+			for (IRunStatus child : children) {
+				if (!RunValidator.NORMAL.runPassed(child)) {
+					numFails++;
+				}
 			}
         }
         final int numPass = children.length - numFails;

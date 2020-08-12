@@ -209,18 +209,17 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 			MethodBinding binding = world.makeMethodBinding(munger.getSignature(), munger.getTypeVariableAliases());
 			findOrCreateInterTypeMemberFinder(sourceType).addInterTypeMethod(binding);
 			TypeVariableBinding[] typeVariables = binding.typeVariables;
-			for (int i = 0; i < typeVariables.length; i++) {
-				TypeVariableBinding tv = typeVariables[i];
+			for (TypeVariableBinding tv : typeVariables) {
 				String name = new String(tv.sourceName);
 				TypeVariableBinding[] tv2 = sourceMethod.binding.typeVariables;
-				for (int j = 0; j < tv2.length; j++) {
-					if (new String(tv2[j].sourceName).equals(name)) {
-						typeVariables[i].declaringElement = binding;
+				for (TypeVariableBinding typeVariableBinding : tv2) {
+					if (new String(typeVariableBinding.sourceName).equals(name)) {
+						tv.declaringElement = binding;
 					}
 				}
 			}
-			for (int i = 0; i < typeVariables.length; i++) {
-				if (typeVariables[i].declaringElement == null) {
+			for (TypeVariableBinding typeVariable : typeVariables) {
+				if (typeVariable.declaringElement == null) {
 					throw new RuntimeException("Declaring element not set");
 				}
 

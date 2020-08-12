@@ -41,7 +41,7 @@ public class AjdocOutputChecker {
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf(requiredString) != -1) {
+			if (line.contains(requiredString)) {
 				reader.close();
 				return true;
 			}
@@ -61,8 +61,7 @@ public class AjdocOutputChecker {
 	 */	
 	public static List<String> getMissingStringsInFile(File htmlFile, String[] requiredStrings) throws Exception {
 		List<String> missingStrings = new ArrayList<String>();
-		for (int i = 0; i < requiredStrings.length; i++) {
-			String string = requiredStrings[i];
+		for (String string : requiredStrings) {
 			if (!containsString(htmlFile, string)) {
 				missingStrings.add(string);
 			}
@@ -90,11 +89,11 @@ public class AjdocOutputChecker {
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf(sectionHeader) != -1) {
+			if (line.contains(sectionHeader)) {
 				String nextLine = reader.readLine();
 				while (nextLine != null && 
-						(nextLine.indexOf("========") == -1)) {
-					if (nextLine.indexOf(requiredString) != -1) {
+						(!nextLine.contains("========"))) {
+					if (nextLine.contains(requiredString)) {
 						reader.close();
 						return true;
 					}
@@ -122,9 +121,8 @@ public class AjdocOutputChecker {
 	public static List<String> getMissingStringsInSection(File htmlFile,
 			String[] requiredStrings, String sectionHeader) throws Exception {
 		List<String> missingStrings = new ArrayList<String>();
-		for (int i = 0; i < requiredStrings.length; i++) {
-			String string = requiredStrings[i];
-			if (!containsStringWithinSection(htmlFile,string,sectionHeader)) {
+		for (String string : requiredStrings) {
+			if (!containsStringWithinSection(htmlFile, string, sectionHeader)) {
 				missingStrings.add(string);
 			}
 		}
@@ -153,11 +151,11 @@ public class AjdocOutputChecker {
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf("START OF CLASS DATA") != -1) {
+			if (line.contains("START OF CLASS DATA")) {
 				// found the required class data section
 				String subLine = reader.readLine();
 				while(subLine != null 
-						&& (subLine.indexOf("========") == -1)){
+						&& (!subLine.contains("========"))){
 					int relIndex = subLine.indexOf(relationship.toString());
 					int targetIndex = subLine.indexOf(target);
 					if ((relIndex != -1) && (targetIndex != -1)) {
@@ -197,24 +195,24 @@ public class AjdocOutputChecker {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
 		}
-		if (sectionHeader.indexOf("DETAIL") == -1) {
+		if (!sectionHeader.contains("DETAIL")) {
 			return false;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf(sectionHeader) != -1) {
+			if (line.contains(sectionHeader)) {
 				// found the required main section
 				String nextLine = reader.readLine();
-				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
+				while (nextLine != null && (!nextLine.contains("========"))) {
 					// On JDK11 it looks like <a id="doIt()"> on earlier JDKs it can look like <a name="doit">
-					if ((LangUtil.is11VMOrGreater() && nextLine.indexOf("ID=\""+source+"\"") != -1 || nextLine.indexOf("id=\""+source+"\"") != -1) ||
-						 nextLine.indexOf("NAME=\""+source+"\"") != -1 || nextLine.indexOf("name=\""+source+"\"") != -1) {
+					if ((LangUtil.is11VMOrGreater() && nextLine.contains("ID=\"" + source + "\"") || nextLine.contains("id=\"" + source + "\"")) ||
+							nextLine.contains("NAME=\"" + source + "\"") || nextLine.contains("name=\"" + source + "\"")) {
 						// found the required subsection
 						String subLine = reader.readLine();
 						while(subLine != null 
-								&& (subLine.indexOf("========") == -1)
-								&& (subLine.indexOf("NAME") == -1 && subLine.indexOf("name") == -1)) {
+								&& (!subLine.contains("========"))
+								&& (!subLine.contains("NAME") && !subLine.contains("name"))) {
 							int relIndex = subLine.indexOf(relationship.toString());
 							int targetIndex = subLine.indexOf(target);
 							if ((relIndex != -1) && (targetIndex != -1)) {
@@ -261,22 +259,22 @@ public class AjdocOutputChecker {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
 		}
-		if (sectionHeader.indexOf("SUMMARY") == -1) {
+		if (!sectionHeader.contains("SUMMARY")) {
 			return false;
 		}
 		BufferedReader reader = new BufferedReader(new FileReader(htmlFile));
 		String line = reader.readLine();
 		while (line != null) {
-			if (line.indexOf(sectionHeader) != -1) {
+			if (line.contains(sectionHeader)) {
 				// found the required main section
 				String nextLine = reader.readLine();
-				while (nextLine != null && (nextLine.indexOf("========") == -1)) {
-					if (nextLine.indexOf(source) != -1) {
+				while (nextLine != null && (!nextLine.contains("========"))) {
+					if (nextLine.contains(source)) {
 						// found the required subsection
 						String subLine = nextLine;
 						while(subLine != null 
-								&& (subLine.indexOf("========") == -1)
-								&& (subLine.indexOf("<TR BGCOLOR=\"white\" CLASS=\"TableRowColor\">") == -1)) {
+								&& (!subLine.contains("========"))
+								&& (!subLine.contains("<TR BGCOLOR=\"white\" CLASS=\"TableRowColor\">"))) {
 							int relIndex = subLine.indexOf(relationship.toString());
 							int targetIndex = subLine.indexOf(target);
 							if ((relIndex != -1) && (targetIndex != -1)) {

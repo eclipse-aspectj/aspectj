@@ -98,7 +98,7 @@ public class ValidFileFilter implements FileFilter {
                 if ((null != prefix) && (!(path.startsWith(prefix)))) {
                     return false;
                 }
-                if ((null != substring) && (-1 == path.indexOf(substring))) {
+                if ((null != substring) && (!path.contains(substring))) {
                     return false;
                 }
                 if ((null != suffix) && (!(path.endsWith(suffix)))) {

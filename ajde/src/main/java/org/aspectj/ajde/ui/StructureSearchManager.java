@@ -45,14 +45,13 @@ public class StructureSearchManager {
 
 	private List<IProgramElement> findMatchesHelper(IProgramElement node, String pattern, IProgramElement.Kind kind, List<IProgramElement> matches) {
 
-		if (node != null && node.getName().indexOf(pattern) != -1) {
+		if (node != null && node.getName().contains(pattern)) {
 			if (kind == null || node.getKind().equals(kind)) {
 				matches.add(node);
 			}
 		}
 		if (node != null && node.getChildren() != null) {
-			for (Iterator<IProgramElement> it = node.getChildren().iterator(); it.hasNext();) {
-				IProgramElement nextNode = it.next();
+			for (IProgramElement nextNode : node.getChildren()) {
 				if (nextNode != null) {
 					findMatchesHelper(nextNode, pattern, kind, matches);
 				}

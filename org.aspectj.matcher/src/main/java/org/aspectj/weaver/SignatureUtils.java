@@ -219,8 +219,8 @@ public class SignatureUtils {
 		if (types == null)
 			return "";
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0, len = types.length; i < len; i++) {
-			buf.append(makeString(types[i]));
+		for (UnresolvedType type : types) {
+			buf.append(makeString(type));
 			buf.append(':');
 		}
 		return buf.toString();
@@ -230,8 +230,8 @@ public class SignatureUtils {
 		if (names == null)
 			return "";
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0, len = names.length; i < len; i++) {
-			buf.append(names[i]);
+		for (String name : names) {
+			buf.append(name);
 			buf.append(':');
 		}
 		return buf.toString();

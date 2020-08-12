@@ -89,8 +89,8 @@ public class ArgsPointcut extends NameBindingPointcut {
 		// want to ignore.
 		if (shadow.getKind() == Shadow.AdviceExecution) {
 			int numExtraArgs = 0;
-			for (int i = 0; i < argumentsToMatchAgainst.length; i++) {
-				String argumentSignature = argumentsToMatchAgainst[i].getSignature();
+			for (ResolvedType resolvedType : argumentsToMatchAgainst) {
+				String argumentSignature = resolvedType.getSignature();
 				if (argumentSignature.startsWith(ASPECTJ_JP_SIGNATURE_PREFIX)
 						|| argumentSignature.startsWith(ASPECTJ_SYNTHETIC_SIGNATURE_PREFIX)) {
 					numExtraArgs++;
@@ -124,9 +124,9 @@ public class ArgsPointcut extends NameBindingPointcut {
 	public List<BindingTypePattern> getBindingTypePatterns() {
 		List<BindingTypePattern> l = new ArrayList<BindingTypePattern>();
 		TypePattern[] pats = arguments.getTypePatterns();
-		for (int i = 0; i < pats.length; i++) {
-			if (pats[i] instanceof BindingTypePattern) {
-				l.add((BindingTypePattern)pats[i]);
+		for (TypePattern pat : pats) {
+			if (pat instanceof BindingTypePattern) {
+				l.add((BindingTypePattern) pat);
 			}
 		}
 		return l;

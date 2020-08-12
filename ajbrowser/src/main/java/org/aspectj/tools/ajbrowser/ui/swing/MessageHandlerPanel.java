@@ -73,8 +73,8 @@ public class MessageHandlerPanel extends JPanel {
 	private void createList(List<IMessage> messages) {
 		list = new JList();
 		listModel = new DefaultListModel();
-		for (Iterator<IMessage> iterator = messages.iterator(); iterator.hasNext();) {
-			listModel.addElement(iterator.next());
+		for (IMessage message : messages) {
+			listModel.addElement(message);
 		}
 	}
 

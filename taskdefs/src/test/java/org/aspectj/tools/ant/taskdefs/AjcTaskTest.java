@@ -178,7 +178,7 @@ public class AjcTaskTest extends TestCase {
                 String m = e.getMessage();
                 if (null == m) {
                     assertTrue("not " + exceptionString, false);
-                } else if (-1 == m.indexOf(exceptionString)) {
+                } else if (!m.contains(exceptionString)) {
                     assertEquals(exceptionString, e.getMessage());
                 }
             }
@@ -187,17 +187,17 @@ public class AjcTaskTest extends TestCase {
     }
 
     private void checkContains(String[] cmd, String option, boolean contains) {
-        for (int i = 0; i < cmd.length; i++) {
-            if (option.equals(cmd[i])) {
-                if (contains) {
-                    return;
-                } else {
-                    assertTrue(
-                        "not expecting " + option + " in " + Arrays.asList(cmd),
-                        false);
-                }
-            }
-        }
+		for (String s : cmd) {
+			if (option.equals(s)) {
+				if (contains) {
+					return;
+				} else {
+					assertTrue(
+							"not expecting " + option + " in " + Arrays.asList(cmd),
+							false);
+				}
+			}
+		}
         if (contains) {
             assertTrue(
                 "expecting " + option + " in " + Arrays.asList(cmd),
@@ -218,7 +218,7 @@ public class AjcTaskTest extends TestCase {
         if (NOFILE.equals(input)) {
             // add nothing
         } else if (input.endsWith(".lst")) {
-            if (-1 != input.indexOf(",")) {
+            if (input.contains(",")) {
                 throw new IllegalArgumentException(
                     "lists not supported: " + input);
             } else if (null == testdataDir) {
@@ -279,8 +279,8 @@ public class AjcTaskTest extends TestCase {
 		AjcTask task = getTask(NOFILE, null);
 		String[] cmd = task.makeCommand();
 
-		for (int i = 0; i < cmd.length; i++) {
-			assertTrue(!"-d".equals(cmd[i]));
+		for (String s : cmd) {
+			assertTrue(!"-d".equals(s));
 		}
 	}
 
@@ -398,14 +398,14 @@ public class AjcTaskTest extends TestCase {
         String[] expected = {"copyMe.htm", "pack/includeme",
                 "pack/Pack.class", "Default.class"};
         String[] unexpected = {"doNotCopy", "skipTxtFiles.txt", "pack/something.txt"};
-        for (int i = 0; i < expected.length; i++) {
-            JarEntry entry = jarFile.getJarEntry(expected[i]);
-            assertTrue(expected[i] + " not found", null != entry);
-        }
-        for (int i = 0; i < unexpected.length; i++) {
-            JarEntry entry = jarFile.getJarEntry(unexpected[i]);
-            assertTrue(unexpected[i] + " found", null == entry);
-        }
+		for (String value : expected) {
+			JarEntry entry = jarFile.getJarEntry(value);
+			assertTrue(value + " not found", null != entry);
+		}
+		for (String s : unexpected) {
+			JarEntry entry = jarFile.getJarEntry(s);
+			assertTrue(s + " found", null == entry);
+		}
     }
 
     public void testInpathDirCopyFilterError() {
@@ -656,30 +656,30 @@ public class AjcTaskTest extends TestCase {
 
 	public void testVersions() {
         String[] inputs = AjcTask.TARGET_INPUTS;
-		for (int i = 0; i < inputs.length; i++) {
+		for (String value : inputs) {
 			AjcTask task = getTask(NOFILE);
-            task.setTarget(inputs[i]);
+			task.setTarget(value);
 			String[] cmd = task.makeCommand();
-            checkContains(cmd, "-target", true);
-            checkContains(cmd, inputs[i], true);
+			checkContains(cmd, "-target", true);
+			checkContains(cmd, value, true);
 		}
 
         inputs = AjcTask.SOURCE_INPUTS;
-        for (int i = 0; i < inputs.length; i++) {
-            AjcTask task = getTask(NOFILE);
-            task.setSource(inputs[i]);
-            String[] cmd = task.makeCommand();
-            checkContains(cmd, "-source", true);
-            checkContains(cmd, inputs[i], true);
-        }
+		for (String s : inputs) {
+			AjcTask task = getTask(NOFILE);
+			task.setSource(s);
+			String[] cmd = task.makeCommand();
+			checkContains(cmd, "-source", true);
+			checkContains(cmd, s, true);
+		}
 
         inputs = AjcTask.COMPLIANCE_INPUTS;
-        for (int i = 0; i < inputs.length; i++) {
-            AjcTask task = getTask(NOFILE);
-            task.setCompliance(inputs[i]);
-            String[] cmd = task.makeCommand();
-            checkContains(cmd, inputs[i], true);
-        }
+		for (String input : inputs) {
+			AjcTask task = getTask(NOFILE);
+			task.setCompliance(input);
+			String[] cmd = task.makeCommand();
+			checkContains(cmd, input, true);
+		}
 	}
 
 	public void testClasspath() {
@@ -695,7 +695,7 @@ public class AjcTaskTest extends TestCase {
 		}
 		assertTrue(
 			"expecting aspectj in classpath",
-			(-1 != classpath.indexOf("aspectjrt.jar")));
+			(classpath.contains("aspectjrt.jar")));
 	}
 
 	CompilerArg createCompilerArg(String value) {
@@ -792,7 +792,7 @@ public class AjcTaskTest extends TestCase {
         boolean matched = false;
         for (int i = 0; !matched && (i < results.length); i++) {
             String s = results[i];
-            matched = (null != s) && (-1 != s.indexOf(DEFAULT));
+            matched = (null != s) && (s.contains(DEFAULT));
         }
         if (!matched) {
             fail(DEFAULT + " not found in " + Arrays.asList(results));
@@ -807,11 +807,11 @@ public class AjcTaskTest extends TestCase {
 			"reweavable:compress",
 			"noInline"
 		};
-		for (int i = 0; i < xopts.length; i++) {
+		for (String xopt : xopts) {
 			AjcTask task = getTask(NOFILE);
-			task.setX(xopts[i]);
+			task.setX(xopt);
 			String[] cmd = task.makeCommand();
-			checkContains(cmd,"-X" + xopts[i],true);
+			checkContains(cmd, "-X" + xopt, true);
 		}
 
 	}
@@ -1080,8 +1080,8 @@ class VerboseCommandEditor implements ICommandEditor {
 	public static final String VERBOSE = "-verbose";
 	@Override
 	public String[] editCommand(String[] command) {
-		for (int i = 0; i < command.length; i++) {
-			if (VERBOSE.equals(command[i])) {
+		for (String s : command) {
+			if (VERBOSE.equals(s)) {
 				return command;
 			}
 		}

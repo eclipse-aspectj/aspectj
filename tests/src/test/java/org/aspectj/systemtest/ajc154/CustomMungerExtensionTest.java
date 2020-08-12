@@ -58,13 +58,13 @@ public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 
 		CustomMungerFactory factory = (CustomMungerFactory) compiler.getCustomMungerFactory();
 		assertTrue(factory.getAllCreatedCustomShadowMungers().size() > 0);
-		for (Iterator<ShadowMunger> i = factory.getAllCreatedCustomShadowMungers().iterator(); i.hasNext();) {
-			assertTrue(((DumbShadowMunger) i.next()).called);
+		for (ShadowMunger shadowMunger : factory.getAllCreatedCustomShadowMungers()) {
+			assertTrue(((DumbShadowMunger) shadowMunger).called);
 		}
 
 		assertTrue(factory.getAllCreatedCustomTypeMungers().size() > 0);
-		for (Iterator<ConcreteTypeMunger> i = factory.getAllCreatedCustomTypeMungers().iterator(); i.hasNext();) {
-			assertTrue(((DumbTypeMunger) i.next()).called);
+		for (ConcreteTypeMunger concreteTypeMunger : factory.getAllCreatedCustomTypeMungers()) {
+			assertTrue(((DumbTypeMunger) concreteTypeMunger).called);
 		}
 	}
 

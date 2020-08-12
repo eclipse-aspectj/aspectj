@@ -133,8 +133,8 @@ public final class BootstrapMethods extends Attribute {
 			file.writeShort(bootstrapMethodRef);
 			int len = bootstrapArguments.length;
 			file.writeShort(len);
-			for (int i=0;i<len;i++) {
-				file.writeShort(bootstrapArguments[i]);
+			for (int bootstrapArgument : bootstrapArguments) {
+				file.writeShort(bootstrapArgument);
 			}
 		}
 		
@@ -192,8 +192,8 @@ public final class BootstrapMethods extends Attribute {
 		} else {
 			int blen = bootstrapMethods.length;
 			file.writeShort(blen);
-			for (int i = 0; i < blen; i++) {
-				bootstrapMethods[i].dump(file);
+			for (BootstrapMethod bootstrapMethod : bootstrapMethods) {
+				bootstrapMethod.dump(file);
 			}
 		}
 	}
@@ -224,8 +224,8 @@ public final class BootstrapMethods extends Attribute {
 			int [] args = bm.getBootstrapArguments();
 			line.append(" argcount:").append(args==null?0:args.length).append(" ");
 			if (args!=null) {
-				for (int a=0;a<args.length;a++) {
-					line.append(args[a]).append("(").append(getConstantPool().getConstant(args[a])).append(") ");
+				for (int arg : args) {
+					line.append(arg).append("(").append(getConstantPool().getConstant(arg)).append(") ");
 				}
 			}
 			

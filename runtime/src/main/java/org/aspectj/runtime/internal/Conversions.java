@@ -20,25 +20,25 @@ public final class Conversions {
 
 	// we might want to keep a cache of small integers around
 	public static Object intObject(int i) {
-		return new Integer(i);
+		return i;
 	}
 	public static Object shortObject(short i) {
-		return new Short(i);
+		return i;
 	}
 	public static Object byteObject(byte i) {
-		return new Byte(i);
+		return i;
 	}
 	public static Object charObject(char i) {
-		return new Character(i);
+		return i;
 	}
 	public static Object longObject(long i) {
-		return new Long(i);
+		return i;
 	}
 	public static Object floatObject(float i) {
-		return new Float(i);
+		return i;
 	}
 	public static Object doubleObject(double i) {
-		return new Double(i);
+		return i;
 	}
 	public static Object booleanObject(boolean i) {
 		return i;
@@ -112,7 +112,7 @@ public final class Conversions {
 		if (o == null) {
 			return 0;
 		} else if (o instanceof Character) {
-			return ((Character)o).charValue();
+			return (Character) o;
 		} else {
 			throw new ClassCastException(o.getClass().getName() +
 					" can not be converted to char");
@@ -122,7 +122,7 @@ public final class Conversions {
 		if (o == null) {
 			return false;
 		} else if (o instanceof Boolean) {
-			return ((Boolean)o).booleanValue();
+			return (Boolean) o;
 		} else {
 			throw new ClassCastException(o.getClass().getName() +
 					" can not be converted to boolean");

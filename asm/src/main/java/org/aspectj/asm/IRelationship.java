@@ -75,9 +75,9 @@ public interface IRelationship extends Serializable {
 		 * @return the Kind instance
 		 */
 		public static Kind getKindFor(String stringFormOfRelationshipKind) {
-			for (int i = 0; i < ALL.length; i++) {
-				if (ALL[i].name.equals(stringFormOfRelationshipKind)) {
-					return ALL[i];
+			for (Kind kind : ALL) {
+				if (kind.name.equals(stringFormOfRelationshipKind)) {
+					return kind;
 				}
 			}
 			return null;

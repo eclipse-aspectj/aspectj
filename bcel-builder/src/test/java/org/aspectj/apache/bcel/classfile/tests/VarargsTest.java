@@ -65,11 +65,10 @@ public class VarargsTest extends BcelTestCase {
 	public void checkMarkedVarargs(JavaClass clazz,String methodname,boolean shouldBeMarked) {
 		Method[] methods = clazz.getMethods();
 
-		for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		for (Method m : methods) {
 			if (m.getName().equals(methodname)) {
-				assertTrue("Method '"+methodname+"' should answer varargs="+shouldBeMarked,
-						m.isVarargs()==shouldBeMarked);
+				assertTrue("Method '" + methodname + "' should answer varargs=" + shouldBeMarked,
+						m.isVarargs() == shouldBeMarked);
 			}
 		}
 	}
@@ -78,11 +77,10 @@ public class VarargsTest extends BcelTestCase {
 	// helper methods
 	
 	public void checkValue(AnnotationGen a,String name,String tostring) {
-		for (Iterator<NameValuePair> i = a.getValues().iterator(); i.hasNext();) {
-			NameValuePair element = i.next();
+		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
 				if (!element.getValue().stringifyValue().equals(tostring)) {
-					fail("Expected element "+name+" to have value "+tostring+" but it had value "+element.getValue().stringifyValue());
+					fail("Expected element " + name + " to have value " + tostring + " but it had value " + element.getValue().stringifyValue());
 				}
 				return;
 			}

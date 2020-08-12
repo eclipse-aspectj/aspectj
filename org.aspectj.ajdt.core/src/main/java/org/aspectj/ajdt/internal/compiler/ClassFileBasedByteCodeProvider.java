@@ -42,13 +42,13 @@ public class ClassFileBasedByteCodeProvider
 		ClassFile[] cfs = result.getClassFiles();
 		UnwovenClassFile[] ret = new UnwovenClassFile[result.compiledTypes.size()];
 		int i=0;
-		for (Iterator iterator = result.compiledTypes.keySet().iterator(); iterator.hasNext();) {
-			char[] className = (char[])iterator.next();
-			ClassFile cf = (ClassFile)result.compiledTypes.get(className);
+		for (Object o : result.compiledTypes.keySet()) {
+			char[] className = (char[]) o;
+			ClassFile cf = (ClassFile) result.compiledTypes.get(className);
 			// OPTIMIZE use char[] for classname
 			ClassFileBasedByteCodeProvider p = new ClassFileBasedByteCodeProvider(cf);
 			String fileName = nameProvider.getOutputClassFileName(cf.fileName(), result);
-			ret[i++] = new UnwovenClassFileWithThirdPartyManagedBytecode(fileName,new String(className).replace('/','.'),p);
+			ret[i++] = new UnwovenClassFileWithThirdPartyManagedBytecode(fileName, new String(className).replace('/', '.'), p);
 		}
 		return ret;
 	}

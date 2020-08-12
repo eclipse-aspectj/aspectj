@@ -355,8 +355,8 @@ public class AnnotationPatternTestCase extends TestCase {
 		}
 
 		public boolean hasAnnotation(UnresolvedType ofType) {
-			for (int i = 0; i < annotationTypes.length; i++) {
-				if (annotationTypes[i].equals(ofType.getName())) {
+			for (String annotationType : annotationTypes) {
+				if (annotationType.equals(ofType.getName())) {
 					return true;
 				}
 			}

@@ -84,10 +84,8 @@ public class AjcMessageHandler extends MessageHandler {
 		this.ignoreWarnings = ignoreWarnings;
 		int fails = 0;
 		int errors = 0;
-		for (Iterator iter = expectedMessagesAsList.iterator();
-			iter.hasNext();
-			) {
-			IMessage m = (IMessage) iter.next();
+		for (Object o : expectedMessagesAsList) {
+			IMessage m = (IMessage) o;
 			IMessage.Kind kind = m.getKind();
 			if (IMessage.FAIL.isSameOrLessThan(kind)) {
 				fails++;
@@ -250,12 +248,10 @@ public class AjcMessageHandler extends MessageHandler {
 	private boolean expecting(IMessage message) {
 		boolean match = false;
 		if (null != message) {
-			for (Iterator iter = expectedMessagesAsList.iterator();
-				iter.hasNext();
-				) {
+			for (Object o : expectedMessagesAsList) {
 				// amc - we have to compare against all messages to consume multiple
 				// text matches on same line. Return true if any matches.
-				if (0 == COMP_IMessage.compare(message, iter.next())) {
+				if (0 == COMP_IMessage.compare(message, o)) {
 					match = true;
 				}
 			}
@@ -271,16 +267,16 @@ public class AjcMessageHandler extends MessageHandler {
 		// remove all expected fail+ (COSTLY)
 		ArrayList<IMessage> list = new ArrayList<>();
 		int leftToFilter = numExpectedFailed;
-		for (int i = 0; i < result.length; i++) {
+		for (IMessage iMessage : result) {
 			if ((0 == leftToFilter)
-				|| !IMessage.FAIL.isSameOrLessThan(result[i].getKind())) {
-				list.add(result[i]);
+					|| !IMessage.FAIL.isSameOrLessThan(iMessage.getKind())) {
+				list.add(iMessage);
 			} else {
 				// see if this failure was expected
-				if (expectedMessagesHasMatchFor(result[i])) {
+				if (expectedMessagesHasMatchFor(iMessage)) {
 					leftToFilter--; // ok, don't add
 				} else {
-					list.add(result[i]);
+					list.add(iMessage);
 				}
 			}
 		}
@@ -293,10 +289,8 @@ public class AjcMessageHandler extends MessageHandler {
 	 * @return true if actual message is matched in the expected messages
 	 */
 	private boolean expectedMessagesHasMatchFor(IMessage actual) {
-		for (Iterator iter = expectedMessagesAsList.iterator();
-			iter.hasNext();
-			) {
-			IMessage expected = (IMessage) iter.next();
+		for (Object o : expectedMessagesAsList) {
+			IMessage expected = (IMessage) o;
 			if (0 == COMP_IMessage.compare(expected, actual)) {
 				return true;
 			}
@@ -316,8 +310,8 @@ public class AjcMessageHandler extends MessageHandler {
 	private void render(// LangUtil instead?
 	StringBuffer result, String prefix, String suffix, List items) {
 		if ((null != items)) {
-			for (Iterator iter = items.iterator(); iter.hasNext();) {
-				result.append(prefix + iter.next() + suffix);
+			for (Object item : items) {
+				result.append(prefix + item + suffix);
 			}
 		}
 	}

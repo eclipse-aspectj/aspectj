@@ -190,8 +190,8 @@ public class BuildArgParser extends Main {
 			}
 
 			if (buildConfig.getSourceRoots() != null) {
-				for (Iterator i = buildConfig.getSourceRoots().iterator(); i.hasNext();) {
-					fileList.addAll(collectSourceRootFiles((File) i.next()));
+				for (File file : buildConfig.getSourceRoots()) {
+					fileList.addAll(collectSourceRootFiles(file));
 				}
 			}
 
@@ -416,8 +416,8 @@ public class BuildArgParser extends Main {
 		if (parser.classpath == null) {
 			addClasspath(System.getProperty("java.class.path", ""), ret);
 			List fixedList = new ArrayList();
-			for (Iterator it = ret.iterator(); it.hasNext();) {
-				String entry = (String) it.next();
+			for (Object o : ret) {
+				String entry = (String) o;
 				if (!entry.endsWith("aspectjtools.jar")) {
 					fixedList.add(entry);
 				}
@@ -438,8 +438,8 @@ public class BuildArgParser extends Main {
 			File dirFile = new File(tokenizer.nextToken());
 			if (dirFile.canRead() && dirFile.isDirectory()) {
 				File[] files = dirFile.listFiles(FileUtil.ZIP_FILTER);
-				for (int i = 0; i < files.length; i++) {
-					classpathCollector.add(files[i].getAbsolutePath());
+				for (File file : files) {
+					classpathCollector.add(file.getAbsolutePath());
 				}
 			} else {
 				// XXX alert on invalid -extdirs entries

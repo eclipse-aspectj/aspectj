@@ -64,8 +64,8 @@ public class SoftMessage implements IMessage {
 			return;
 		}
 		List list = messages.getUnmodifiableListView();
-		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			writeXml(out, (IMessage) iter.next());
+		for (Object o : list) {
+			writeXml(out, (IMessage) o);
 		}
 	}
 
@@ -77,8 +77,8 @@ public class SoftMessage implements IMessage {
 		if ((null == out) || (null == messages)) {
 			return;
 		}
-		for (int i = 0; i < messages.length; i++) {
-			writeXml(out, messages[i]);
+		for (IMessage iMessage : messages) {
+			writeXml(out, iMessage);
 		}
 	}
 
@@ -125,9 +125,9 @@ public class SoftMessage implements IMessage {
         List extras = message.getExtraSourceLocations();
         if (!LangUtil.isEmpty(extras)) {
             out.endAttributes();
-            for (Iterator iter = extras.iterator(); iter.hasNext();) {
-				/*ISourceLocation element = (ISourceLocation)*/ iter.next();
-                SoftSourceLocation.writeXml(out, sl);            
+			for (Object extra : extras) {
+				/*ISourceLocation element = (ISourceLocation)*/
+				SoftSourceLocation.writeXml(out, sl);
 			}
         }
 		out.endElement(elementName);
@@ -294,7 +294,7 @@ public class SoftMessage implements IMessage {
 		if (null != sourceLocation) {
 			throw new IllegalStateException("cannot set line after creating source location");
 		}
-		this.line = Integer.valueOf(line).intValue();
+		this.line = Integer.valueOf(line);
 		SourceLocation.validLine(this.line);
 	}
 

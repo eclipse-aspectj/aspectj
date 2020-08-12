@@ -78,9 +78,8 @@ public class ExtensionTest extends AjcTestCase {
 
 	private IProgramElement getChild(IProgramElement parent, String s) {
 		List<IProgramElement> kids = parent.getChildren();
-		for (Iterator<IProgramElement> iter = kids.iterator(); iter.hasNext();) {
-			IProgramElement element = (IProgramElement) iter.next();
-			if (element.getName().indexOf(s) != -1)
+		for (IProgramElement element : kids) {
+			if (element.getName().contains(s))
 				return element;
 		}
 		return null;
@@ -91,14 +90,14 @@ public class ExtensionTest extends AjcTestCase {
 	private void findChild(String s, IProgramElement ipe) {
 		if (ipe == null)
 			return;
-		if (ipe.getName().indexOf(s) != -1) {
+		if (ipe.getName().contains(s)) {
 			foundNode = ipe;
 			return;
 		}
 		if (ipe.getChildren() != null) {
 			List kids = ipe.getChildren();
-			for (Iterator iter = kids.iterator(); iter.hasNext();) {
-				IProgramElement element = (IProgramElement) iter.next();
+			for (Object kid : kids) {
+				IProgramElement element = (IProgramElement) kid;
 				findChild(s, element);
 			}
 		}
@@ -113,8 +112,8 @@ public class ExtensionTest extends AjcTestCase {
 				System.out.println(ipe.toLabelString());// getName());
 			if (ipe.getChildren() != null) {
 				List kids = ipe.getChildren();
-				for (Iterator iter = kids.iterator(); iter.hasNext();) {
-					IProgramElement element = (IProgramElement) iter.next();
+				for (Object kid : kids) {
+					IProgramElement element = (IProgramElement) kid;
 					walkit(element, indent + 2);
 				}
 			}

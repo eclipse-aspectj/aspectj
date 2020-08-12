@@ -208,7 +208,7 @@ public class JavaRun implements IAjcRun {
 			}
 			if (thrown instanceof RunSecurityManager.ExitCalledException) {
 				int i = ((RunSecurityManager.ExitCalledException) thrown).exitCode;
-				status.finish(new Integer(i));
+				status.finish(i);
 			} else if (thrown instanceof RunSecurityManager.AwtUsedException) {
 				MessageUtil.fail(status, "test code should not use the AWT event queue");
 				throw (RunSecurityManager.AwtUsedException) thrown;
@@ -224,7 +224,7 @@ public class JavaRun implements IAjcRun {
 			}
 		} catch (RunSecurityManager.ExitCalledException e) {
 			// XXX need to update run validator (a) to accept null result or (b) to require zero result, and set 0 if completed normally
-			status.finish(new Integer(e.exitCode));
+			status.finish(e.exitCode);
 		} catch (ClassNotFoundException e) {
 			String[] classes = FileUtil.listFiles(sandbox.classesDir);
 			MessageUtil.info(status, "sandbox.classes: " + Arrays.asList(classes));
@@ -434,7 +434,7 @@ public class JavaRun implements IAjcRun {
 	protected boolean expectedException(Throwable thrown) {
 		if (null != spec.expectedException) {
 			String cname = thrown.getClass().getName();
-			if (-1 != cname.indexOf(spec.expectedException)) {
+			if (cname.contains(spec.expectedException)) {
 				return true; // caller sets value for returns normally
 			}
 		}
@@ -443,7 +443,7 @@ public class JavaRun implements IAjcRun {
 
 	protected boolean expectedException(ByteArrayOutputStream bout) {
 		return ((null != spec.expectedException)
-				&& (-1 != bout.toString().indexOf(spec.expectedException)));
+				&& (bout.toString().contains(spec.expectedException)));
 	}
 
 	/**

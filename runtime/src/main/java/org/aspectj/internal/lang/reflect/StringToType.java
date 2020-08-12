@@ -40,7 +40,7 @@ public class StringToType {
 	public static Type stringToType(String typeName, Class classScope) 
 	throws ClassNotFoundException {
 		try {
-			if (typeName.indexOf("<") == -1) {
+			if (!typeName.contains("<")) {
 				return AjTypeSystem.getAjType(Class.forName(typeName,false,classScope.getClassLoader()));
 			} else {
 				return makeParameterizedType(typeName,classScope);
@@ -48,9 +48,9 @@ public class StringToType {
 		} catch (ClassNotFoundException e) {
 			// could be a type variable
 			TypeVariable[] tVars = classScope.getTypeParameters();
-			for (int i = 0; i < tVars.length; i++) {
-				if (tVars[i].getName().equals(typeName)) {
-					return tVars[i];
+			for (TypeVariable tVar : tVars) {
+				if (tVar.getName().equals(typeName)) {
+					return tVar;
 				}
 			}
 			throw new ClassNotFoundException(typeName);

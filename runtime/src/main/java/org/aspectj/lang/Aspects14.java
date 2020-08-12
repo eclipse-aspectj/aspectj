@@ -95,7 +95,7 @@ public class Aspects14 {
      */
     public static boolean hasAspect(Class aspectClass) throws NoAspectBoundException {
         try {
-            return ((Boolean)getSingletonOrThreadHasAspect(aspectClass).invoke(null, EMPTY_OBJECT_ARRAY)).booleanValue();
+            return (Boolean) getSingletonOrThreadHasAspect(aspectClass).invoke(null, EMPTY_OBJECT_ARRAY);
         } catch (Exception e) {
             return false;
         }
@@ -110,7 +110,7 @@ public class Aspects14 {
      */
     public static boolean hasAspect(Class aspectClass, Object perObject) throws NoAspectBoundException {
         try {
-            return ((Boolean)getPerObjectHasAspect(aspectClass).invoke(null, new Object[]{perObject})).booleanValue();
+            return (Boolean) getPerObjectHasAspect(aspectClass).invoke(null, new Object[]{perObject});
         } catch (Exception e) {
             return false;
         }
@@ -125,7 +125,7 @@ public class Aspects14 {
      */
     public static boolean hasAspect(Class aspectClass, Class perTypeWithin) throws NoAspectBoundException {
         try {
-            return ((Boolean)getPerTypeWithinHasAspect(aspectClass).invoke(null, new Object[]{perTypeWithin})).booleanValue();
+            return (Boolean) getPerTypeWithinHasAspect(aspectClass).invoke(null, new Object[]{perTypeWithin});
         } catch (Exception e) {
             return false;
         }

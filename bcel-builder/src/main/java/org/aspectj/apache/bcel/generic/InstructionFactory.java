@@ -119,8 +119,8 @@ public class InstructionFactory implements InstructionConstants {
 			return new InvokeInstruction(Constants.INVOKESTATIC, index);
 		case Constants.INVOKEINTERFACE:
 			int nargs = 0;
-			for (int i = 0; i < arg_types.length; i++) {
-				nargs += arg_types[i].getSize();
+			for (Type arg_type : arg_types) {
+				nargs += arg_type.getSize();
 			}
 			return new INVOKEINTERFACE(index, nargs + 1, 0);
 		default:
@@ -148,8 +148,8 @@ public class InstructionFactory implements InstructionConstants {
 		case Constants.INVOKEINTERFACE:
 			Type[] argumentTypes = Type.getArgumentTypes(signature);
 			int nargs = 0;
-			for (int i = 0; i < argumentTypes.length; i++) {// Count size of arguments
-				nargs += argumentTypes[i].getSize();
+			for (Type argumentType : argumentTypes) {// Count size of arguments
+				nargs += argumentType.getSize();
 			}
 			return new INVOKEINTERFACE(index, nargs + 1, 0);
 		default:

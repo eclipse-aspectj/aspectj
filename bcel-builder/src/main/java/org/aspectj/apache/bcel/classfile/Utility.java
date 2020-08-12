@@ -243,7 +243,7 @@ public abstract class Utility {
 		StringBuffer buf = new StringBuffer("(");
 		String type;
 		int index;
-		int var_index = (access.indexOf("static") >= 0) ? 0 : 1;
+		int var_index = (access.contains("static")) ? 0 : 1;
 
 		try { // Read all declarations between for `(' and `)'
 			if (signature.charAt(0) != '(') {
@@ -522,26 +522,26 @@ public abstract class Utility {
 		char[] ch = label.toCharArray();
 		StringBuffer buf = new StringBuffer();
 
-		for (int i = 0; i < ch.length; i++) {
-			switch (ch[i]) {
-			case '\n':
-				buf.append("\\n");
-				break;
-			case '\r':
-				buf.append("\\r");
-				break;
-			case '\"':
-				buf.append("\\\"");
-				break;
-			case '\'':
-				buf.append("\\'");
-				break;
-			case '\\':
-				buf.append("\\\\");
-				break;
-			default:
-				buf.append(ch[i]);
-				break;
+		for (char c : ch) {
+			switch (c) {
+				case '\n':
+					buf.append("\\n");
+					break;
+				case '\r':
+					buf.append("\\r");
+					break;
+				case '\"':
+					buf.append("\\\"");
+					break;
+				case '\'':
+					buf.append("\\'");
+					break;
+				case '\\':
+					buf.append("\\\\");
+					break;
+				default:
+					buf.append(c);
+					break;
 			}
 		}
 

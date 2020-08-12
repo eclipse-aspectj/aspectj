@@ -422,7 +422,7 @@ public class Checklics extends MatchingTask {
 			if ((null == line) || (0 == line.length())) {
 				return;
 			}
-			if (!gotLicense && (null != license) && (-1 != line.indexOf(license))) {
+			if (!gotLicense && (null != license) && (line.contains(license))) {
 				gotLicense = true;
 			}
 			if (!gotCopyright && (null != copyright)) {
@@ -670,7 +670,7 @@ class Header {
 			start = loc + 4;
 		}
 
-		return (-1 != line.indexOf("*/"));
+		return (line.contains("*/"));
 	}
 
 } // class Header

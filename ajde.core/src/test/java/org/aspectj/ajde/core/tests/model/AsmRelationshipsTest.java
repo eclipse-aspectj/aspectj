@@ -139,8 +139,7 @@ public class AsmRelationshipsTest extends AjdeCoreTestCase {
 				.findElementForLabel(aspect, IProgramElement.Kind.ADVICE, beforeExec);
 		assertNotNull(beforeExecNode);
 		IRelationship rel = manager.getRelationshipMap().get(beforeExecNode, IRelationship.Kind.ADVICE, relName);
-		for (Iterator<String> it = rel.getTargets().iterator(); it.hasNext();) {
-			String currHandle = it.next();
+		for (String currHandle : rel.getTargets()) {
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(to))
 				return;
 		}
@@ -186,8 +185,7 @@ public class AsmRelationshipsTest extends AjdeCoreTestCase {
 		// String set = to;
 		IRelationship rel2 = manager.getRelationshipMap().get(clazz, IRelationship.Kind.DECLARE_INTER_TYPE, backRelName);
 		// String handle2 = (String)rel2.getTargets().get(0);
-		for (Iterator<String> it = rel2.getTargets().iterator(); it.hasNext();) {
-			String currHandle = it.next();
+		for (String currHandle : rel2.getTargets()) {
 			if (manager.getHierarchy().findElementForHandle(currHandle).toLabelString().equals(from))
 				return;
 		}

@@ -171,14 +171,14 @@ public class Main implements Config {
 	 */
 	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
 		ArrayList<String> dirList = new ArrayList<String>();
-		for (int i = 0; i < inputFiles.length; i++) {
-			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFiles[i]);
+		for (File inputFile : inputFiles) {
+			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFile);
 			// Only copy the package.html file once.
 			if (dirList.contains(packageName))
 				continue;
 
 			// Check to see if there exist a package.html file for this package.
-			String dir = inputFiles[i].getAbsolutePath().substring(0, inputFiles[i].getAbsolutePath().lastIndexOf(File.separator));
+			String dir = inputFile.getAbsolutePath().substring(0, inputFile.getAbsolutePath().lastIndexOf(File.separator));
 			File input = new File(dir + Config.DIR_SEP_CHAR + "package.html");
 			File inDir = new File(dir + Config.DIR_SEP_CHAR + "doc-files");
 			// If it does not exist lets go to the next package.
@@ -226,8 +226,8 @@ public class Main implements Config {
 		for (; i < ajcOptions.size(); i++) {
 			argsToCompiler[i] = ajcOptions.elementAt(i);
 		}
-		for (int j = 0; j < inputFiles.length; j++) {
-			argsToCompiler[i] = inputFiles[j].getAbsolutePath();
+		for (File inputFile : inputFiles) {
+			argsToCompiler[i] = inputFile.getAbsolutePath();
 			// System.out.println(">> file to ajc: " + inputFiles[j].getAbsolutePath());
 			i++;
 		}
@@ -281,8 +281,8 @@ public class Main implements Config {
 			for (int k = 0; k < signatureFiles.length; k++) {
 				javadocargs[options.size() + k] = StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath());
 			}
-			for (int k = 0; k < signatureFiles.length; k++) {
-				files.add(StructureUtil.translateAjPathName(signatureFiles[k].getCanonicalPath()));
+			for (File signatureFile : signatureFiles) {
+				files.add(StructureUtil.translateAjPathName(signatureFile.getCanonicalPath()));
 			}
 		}
 		if (LangUtil.is19VMOrGreater()) {
@@ -321,8 +321,8 @@ public class Main implements Config {
 					return f.getName().equals("package-summary.html");
 				}
 			});
-			for (int j = 0; j < files.length; j++) {
-				removeDeclIDsFromFile(files[j].getAbsolutePath(), false);
+			for (File file : files) {
+				removeDeclIDsFromFile(file.getAbsolutePath(), false);
 			}
 		}
 	}
@@ -478,8 +478,8 @@ public class Main implements Config {
 				// System.err.println(argList);
 				args = new String[argList.size()];
 				int counter = 0;
-				for (Iterator<String> it = argList.iterator(); it.hasNext();) {
-					args[counter] = it.next();
+				for (String s : argList) {
+					args[counter] = s;
 					counter++;
 				}
 			} catch (FileNotFoundException e) {
@@ -530,8 +530,8 @@ public class Main implements Config {
 		if (vargs.size() == 0) {
 			displayHelpAndExit(null);
 		}
-		for (int i = 0; i < vargs.size(); i++) {
-			String arg = (String) vargs.get(i);
+		for (Object varg : vargs) {
+			String arg = (String) varg;
 			ignoreArg = false;
 			if (addNextAsDocDir) {
 				docDir = arg;
@@ -694,16 +694,16 @@ public class Main implements Config {
 									int index2 = name.length();
 									if ((index1 >= 0 && index2 >= 0)
 											&& (name.substring(index1, index2).equals(".java") || name.substring(index1, index2)
-													.equals(".aj"))) {
+											.equals(".aj"))) {
 										return true;
 									} else {
 										return false;
 									}
 								}
 							});
-							for (int j = 0; j < files.length; j++) {
+							for (String file : files) {
 								filenames.addElement(sourcepath.elementAt(c) + Config.DIR_SEP_CHAR + arg
-										+ Config.DIR_SEP_CHAR + files[j]);
+										+ Config.DIR_SEP_CHAR + file);
 							}
 						} else if (c == sourcepath.size()) { // last element on classpath
 							System.out.println("ajdoc: No package, class, or source file " + "found named " + arg + ".");

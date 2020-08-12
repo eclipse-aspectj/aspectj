@@ -129,8 +129,8 @@ public class CompileCommand implements ICommand {
 		try {
 			out = new FileOutputStream(result);
 			PrintStream outs = new PrintStream(out, true);
-			for (int i = 0; i < args.length; i++) {
-				outs.println(args[i]);
+			for (String arg : args) {
+				outs.println(arg);
 			}
 			return result;
 		} catch (IOException e) {

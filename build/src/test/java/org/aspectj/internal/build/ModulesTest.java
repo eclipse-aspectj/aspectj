@@ -62,12 +62,12 @@ public class ModulesTest extends TestCase {
         } else {
             File[] files = file.listFiles();
             boolean result = true;
-            for (int i = 0; i < files.length; i++) {
-                if (!ModulesTest.delete(files[i])
-                    && result) {
-                    result = false;
-                }
-            }
+			for (File value : files) {
+				if (!ModulesTest.delete(value)
+						&& result) {
+					result = false;
+				}
+			}
             return (file.delete() && result);
         }
     }
@@ -80,11 +80,10 @@ public class ModulesTest extends TestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-        for (Iterator<File> iter = tempFiles.iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
-            if (!ModulesTest.delete(file)) {
-                System.err.println("warning: ModulesTest unable to delete " + file);
-            }
+		for (File file : tempFiles) {
+			if (!ModulesTest.delete(file)) {
+				System.err.println("warning: ModulesTest unable to delete " + file);
+			}
 		}
 	}
 	
@@ -270,13 +269,13 @@ public class ModulesTest extends TestCase {
         
         File libDir = new File(distDir, "tools/lib");
         String[] jars = { "tools", "rt", "weaver", "lib"};
-        for (int i = 0; i < jars.length; i++) {
-            File jar = new File(libDir, "aspectj" + jars[i] + ".jar");
-            assertTrue(jar.getPath(), jar.canRead()); 
-            if (10 > jar.length()) {
-                assertTrue(jar + " too small", false);
-            }
-        }
+		for (String s : jars) {
+			File jar = new File(libDir, "aspectj" + s + ".jar");
+			assertTrue(jar.getPath(), jar.canRead());
+			if (10 > jar.length()) {
+				assertTrue(jar + " too small", false);
+			}
+		}
     }
     /**
      * Show messages from the task.

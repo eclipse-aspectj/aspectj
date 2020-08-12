@@ -102,8 +102,8 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 		}
 		Class[] superinterfaces = type.getInterfaces();
 		if (superinterfaces != null) {
-			for (int i = 0; i < superinterfaces.length; i++) {
-				m = search(superinterfaces[i], name, params, searched);
+			for (Class superinterface : superinterfaces) {
+				m = search(superinterface, name, params, searched);
 				if (m != null) {
 					return m;
 				}

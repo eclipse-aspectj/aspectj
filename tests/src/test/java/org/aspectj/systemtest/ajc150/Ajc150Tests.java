@@ -358,8 +358,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		boolean f = false;
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "PR82570_1");
 		Method[] meths = jc.getMethods();
-		for (int i = 0; i < meths.length; i++) {
-			Method method = meths[i];
+		for (Method method : meths) {
 			if (f)
 				System.err.println("Line number table for " + method.getName() + method.getSignature() + " = "
 						+ method.getLineNumberTable());
@@ -413,7 +412,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
 			pw.flush();
 			String tree = baos.toString();
-			assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.indexOf("Red  [enumvalue]") != -1);
+			assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.contains("Red  [enumvalue]"));
 		}
 	}
 

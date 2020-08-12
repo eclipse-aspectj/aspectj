@@ -148,8 +148,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 		public void clear() {
 			processQueue();
 			Set<Object> keys = map.keySet();
-			for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
-				Object name = iterator.next();
+			for (Object name : keys) {
 				map.remove(name);
 			}
 		}

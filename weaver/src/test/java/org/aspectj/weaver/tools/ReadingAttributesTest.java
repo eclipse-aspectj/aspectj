@@ -34,10 +34,10 @@ public class ReadingAttributesTest extends TestCase {
 		JavaClass jc = getClassFrom(new File("n:/temp"), "com.springsource.petclinic.domain.Visit");
 		assertNotNull(jc);
 		Attribute[] attrs = jc.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			System.out.println(attrs[i].getName());
-			if (attrs[i].getName().endsWith("WeaverState")) {
-				Unknown u = (Unknown) attrs[i];
+		for (Attribute attr : attrs) {
+			System.out.println(attr.getName());
+			if (attr.getName().endsWith("WeaverState")) {
+				Unknown u = (Unknown) attr;
 				VersionedDataInputStream vdis = new VersionedDataInputStream(new ByteArrayInputStream(u.getBytes()), null);
 				// WeaverStateInfo wsi =
 				WeaverStateInfo.read(vdis, null);

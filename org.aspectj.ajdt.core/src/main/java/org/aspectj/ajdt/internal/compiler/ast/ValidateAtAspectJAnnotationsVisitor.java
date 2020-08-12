@@ -370,8 +370,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		if (arguments == null) {
 			return names;
 		} else {
-			for (int i = 0; i < arguments.length; i++) {
-				names.add(new String(arguments[i].name));
+			for (Argument argument : arguments) {
+				names.add(new String(argument.name));
 			}
 			return names;
 		}
@@ -486,10 +486,10 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		MemberValuePair[] mvps = ann.memberValuePairs;
 		if (mvps == null)
 			return null;
-		for (int i = 0; i < mvps.length; i++) {
-			if (CharOperation.equals(memberName.toCharArray(), mvps[i].name)) {
-				if (mvps[i].value instanceof StringLiteral) {
-					StringLiteral sv = (StringLiteral) mvps[i].value;
+		for (MemberValuePair mvp : mvps) {
+			if (CharOperation.equals(memberName.toCharArray(), mvp.name)) {
+				if (mvp.value instanceof StringLiteral) {
+					StringLiteral sv = (StringLiteral) mvp.value;
 					location[0] = sv.sourceStart;
 					location[1] = sv.sourceEnd;
 					return new String(sv.source());
@@ -686,45 +686,45 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 		public AspectJAnnotations(Annotation[] annotations) {
 			if (annotations == null)
 				return;
-			for (int i = 0; i < annotations.length; i++) {
-				if (annotations[i].resolvedType == null)
+			for (Annotation annotation : annotations) {
+				if (annotation.resolvedType == null)
 					continue; // user messed up annotation declaration
-				char[] sig = annotations[i].resolvedType.signature();
+				char[] sig = annotation.resolvedType.signature();
 				if (CharOperation.equals(afterAdviceSig, sig)) {
 					adviceKind = AdviceKind.After;
-					addAdviceAnnotation(annotations[i]);
+					addAdviceAnnotation(annotation);
 				} else if (CharOperation.equals(afterReturningAdviceSig, sig)) {
 					adviceKind = AdviceKind.AfterReturning;
-					addAdviceAnnotation(annotations[i]);
+					addAdviceAnnotation(annotation);
 				} else if (CharOperation.equals(afterThrowingAdviceSig, sig)) {
 					adviceKind = AdviceKind.AfterThrowing;
-					addAdviceAnnotation(annotations[i]);
+					addAdviceAnnotation(annotation);
 				} else if (CharOperation.equals(beforeAdviceSig, sig)) {
 					adviceKind = AdviceKind.Before;
-					addAdviceAnnotation(annotations[i]);
+					addAdviceAnnotation(annotation);
 				} else if (CharOperation.equals(aroundAdviceSig, sig)) {
 					adviceKind = AdviceKind.Around;
-					addAdviceAnnotation(annotations[i]);
+					addAdviceAnnotation(annotation);
 				} else if (CharOperation.equals(adviceNameSig, sig)) {
 					hasAdviceNameAnnotation = true;
-					adviceNameAnnotation = annotations[i];
+					adviceNameAnnotation = annotation;
 				} else if (CharOperation.equals(declareParentsSig, sig)) {
 					hasDeclareParents = true;
 				} else if (CharOperation.equals(aspectSig, sig)) {
 					if (hasAspectAnnotation) {
 						hasMultipleAspectAnnotations = true;
-						duplicateAspectAnnotation = annotations[i];
+						duplicateAspectAnnotation = annotation;
 					} else {
 						hasAspectAnnotation = true;
-						aspectAnnotation = annotations[i];
+						aspectAnnotation = annotation;
 					}
 				} else if (CharOperation.equals(pointcutSig, sig)) {
 					if (hasPointcutAnnotation) {
 						hasMultiplePointcutAnnotations = true;
-						duplicatePointcutAnnotation = annotations[i];
+						duplicatePointcutAnnotation = annotation;
 					} else {
 						hasPointcutAnnotation = true;
-						pointcutAnnotation = annotations[i];
+						pointcutAnnotation = annotation;
 					}
 
 				}

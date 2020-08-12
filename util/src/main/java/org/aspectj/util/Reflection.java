@@ -57,8 +57,7 @@ public class Reflection {
 
 	public static Method getMatchingMethod(Class<?> class_, String name, Object[] args) {
 		Method[] meths = class_.getMethods();
-		for (int i=0; i < meths.length; i++) {
-			Method meth = meths[i];
+		for (Method meth : meths) {
 			if (meth.getName().equals(name) && isCompatible(meth, args)) {
 				return meth;
 			}
@@ -101,25 +100,24 @@ public class Reflection {
         ArrayList<File> libs = new ArrayList<File>();
         ArrayList<URL> urls = new ArrayList<URL>();
         String[] entries = LangUtil.splitClasspath(classpath);
-        for (int i = 0; i < entries.length; i++) {
-            String entry = entries[i];
-            URL url = makeURL(entry);
-            if (null != url) {
-                urls.add(url);
-            }
-            File file = new File(entries[i]);
+		for (String entry : entries) {
+			URL url = makeURL(entry);
+			if (null != url) {
+				urls.add(url);
+			}
+			File file = new File(entry);
 // tolerate bad entries b/c bootclasspath sometimes has them
 //            if (!file.canRead()) {
 //                throw new IllegalArgumentException("cannot read " + file);
 //            }
-            if (FileUtil.isZipFile(file)) {
-                libs.add(file);
-            } else if (file.isDirectory()) {
-                dirs.add(file);
-            } else {
-                // not URL, zip, or dir - unsure what to do
-            }
-        }
+			if (FileUtil.isZipFile(file)) {
+				libs.add(file);
+			} else if (file.isDirectory()) {
+				dirs.add(file);
+			} else {
+				// not URL, zip, or dir - unsure what to do
+			}
+		}
         File[] dirRa = (File[]) dirs.toArray(new File[0]);
         File[] libRa = (File[]) libs.toArray(new File[0]);
         URL[] urlRa = (URL[]) urls.toArray(new URL[0]);

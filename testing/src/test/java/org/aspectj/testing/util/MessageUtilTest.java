@@ -104,25 +104,20 @@ public class MessageUtilTest extends TestCase {
 
     MessageHandler getSampleMessages() {
         MessageHandler result = new MessageHandler();
-        for (Iterator kinds = IMessage.KINDS.iterator(); kinds.hasNext();) {
-			IMessage.Kind kind = (IMessage.Kind) kinds.next();
-			for (Iterator locs = getSampleLocations().iterator(); locs.hasNext();) {
-				ISourceLocation sourceLoc = (ISourceLocation) locs.next();
-                for (Iterator texts = getSampleMessageTexts().iterator();
-                    texts.hasNext();
-					) {
-					String text = (String) texts.next();
-					for (Iterator exs = getSampleExceptions().iterator();
-						exs.hasNext();
-						) {
-						Throwable thrown = (Throwable) exs.next();
-					    result.handleMessage(new Message(text, kind, thrown, sourceLoc));
+		for (IMessage.Kind kind : IMessage.KINDS) {
+			for (Object item : getSampleLocations()) {
+				ISourceLocation sourceLoc = (ISourceLocation) item;
+				for (Object value : getSampleMessageTexts()) {
+					String text = (String) value;
+					for (Object o : getSampleExceptions()) {
+						Throwable thrown = (Throwable) o;
+						result.handleMessage(new Message(text, kind, thrown, sourceLoc));
 					}
-                    result.handleMessage(new Message(text, kind, null, sourceLoc));
+					result.handleMessage(new Message(text, kind, null, sourceLoc));
 				}
-                result.handleMessage(new Message("", kind, null, sourceLoc));
+				result.handleMessage(new Message("", kind, null, sourceLoc));
 			}
-            result.handleMessage(new Message("", kind, null, null));
+			result.handleMessage(new Message("", kind, null, null));
 		}
         return result;
     }

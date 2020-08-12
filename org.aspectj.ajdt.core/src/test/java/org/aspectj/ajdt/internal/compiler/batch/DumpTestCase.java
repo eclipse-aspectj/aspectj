@@ -123,7 +123,7 @@ public class DumpTestCase extends TestCase {
 			String record;
 			while ((null != (record = reader.readLine())) && (result == false)) {
 				if (record.startsWith("----")) currentHeading = record;
-				else if ((record.indexOf(contents) != -1) && currentHeading.indexOf(heading) != -1) result = true;
+				else if ((record.contains(contents)) && currentHeading.contains(heading)) result = true;
 			}
 			reader.close();
 		}

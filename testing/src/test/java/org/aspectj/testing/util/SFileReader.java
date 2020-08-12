@@ -41,15 +41,15 @@ public class SFileReader {
         ArrayList result = new ArrayList();
         ObjectChecker collector = new StandardObjectChecker(String.class, result);
         SFileReader me = new SFileReader(null);
-        for (int i = 0; i < args.length; i++) {
-		  Node node = me.readNodes(new File(args[i]), null, true, System.err);	
-            if (!Node.visit(node, collector, null)) {
-                System.err.println("halted during copy of " +args[i]);
-            } else {
-              String s = org.aspectj.testing.util.LangUtil.debugStr(null, "\n  ", null,
-                null, result.toArray(), "\n  ", "");
-              System.err.println(args[i] + ": " + s);
-            }
+		for (String arg : args) {
+			Node node = me.readNodes(new File(arg), null, true, System.err);
+			if (!Node.visit(node, collector, null)) {
+				System.err.println("halted during copy of " + arg);
+			} else {
+				String s = org.aspectj.testing.util.LangUtil.debugStr(null, "\n  ", null,
+						null, result.toArray(), "\n  ", "");
+				System.err.println(arg + ": " + s);
+			}
 		}
     }
     

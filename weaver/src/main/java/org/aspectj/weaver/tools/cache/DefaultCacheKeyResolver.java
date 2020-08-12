@@ -55,15 +55,14 @@ public class DefaultCacheKeyResolver implements CacheKeyResolver {
 		// Add the list of loader urls to the hash list
 		if (cl != null && cl instanceof URLClassLoader) {
 			URL[] urls = ((URLClassLoader) cl).getURLs();
-			for (int i = 0; i < urls.length; i++) {
-				hashableStrings.add(urls[i].toString());
+			for (URL url : urls) {
+				hashableStrings.add(url.toString());
 			}
 		}
 
 		hashableStrings.addAll(aspects);
 		Collections.sort(hashableStrings);
-		for (Iterator<String> it = hashableStrings.iterator(); it.hasNext(); ) {
-			String url = it.next();
+		for (String url : hashableStrings) {
 			hashable.append(url);
 		}
 		String hash = null;

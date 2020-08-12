@@ -29,45 +29,45 @@ public class DelegatingOutputStream extends OutputStream {
 	
 	public void close() throws IOException {
 		target.close();
-		
-		for (Iterator i = delegates.iterator(); i.hasNext();) {
-			OutputStream delegate = (OutputStream)i.next();
+
+		for (Object o : delegates) {
+			OutputStream delegate = (OutputStream) o;
 			delegate.close();
 		}
 	}
 
 	public void flush() throws IOException {
 		target.flush();
-		
-		for (Iterator i = delegates.iterator(); i.hasNext();) {
-			OutputStream delegate = (OutputStream)i.next();
+
+		for (Object o : delegates) {
+			OutputStream delegate = (OutputStream) o;
 			delegate.flush();
 		}
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
 		if (verbose) target.write(b, off, len);
-		
-		for (Iterator i = delegates.iterator(); i.hasNext();) {
-			OutputStream delegate = (OutputStream)i.next();
-			delegate.write(b,off,len);
+
+		for (Object o : delegates) {
+			OutputStream delegate = (OutputStream) o;
+			delegate.write(b, off, len);
 		}
 	}
 
 	public void write(byte[] b) throws IOException {
 		if (verbose) target.write(b);
-		
-		for (Iterator i = delegates.iterator(); i.hasNext();) {
-			OutputStream delegate = (OutputStream)i.next();
+
+		for (Object o : delegates) {
+			OutputStream delegate = (OutputStream) o;
 			delegate.write(b);
 		}
 	}
 
 	public void write(int b) throws IOException {
 		if (verbose) target.write(b);
-		
-		for (Iterator i = delegates.iterator(); i.hasNext();) {
-			OutputStream delegate = (OutputStream)i.next();
+
+		for (Object o : delegates) {
+			OutputStream delegate = (OutputStream) o;
 			delegate.write(b);
 		}
 	}

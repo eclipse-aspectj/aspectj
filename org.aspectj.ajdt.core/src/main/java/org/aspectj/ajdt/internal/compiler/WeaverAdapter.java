@@ -234,8 +234,8 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 			return true;
 		}
 		char[] victim = null;
-		for (Iterator iter = aMap.keySet().iterator(); iter.hasNext();) {
-			char[] thisKey = (char[]) iter.next();
+		for (Object o : aMap.keySet()) {
+			char[] thisKey = (char[]) o;
 			if (CharOperation.equals(thisKey, key)) {
 				// if (skey.equals(new String(thisKey))) {
 				victim = thisKey;

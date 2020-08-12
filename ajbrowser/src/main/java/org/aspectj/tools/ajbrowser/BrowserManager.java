@@ -183,9 +183,9 @@ public class BrowserManager {
 
 	private List<String> getConfigFilesList(String[] configFiles) {
 		List<String> configs = new ArrayList<String>();
-		for (int i = 0; i < configFiles.length; i++) {
-			if (configFiles[i].endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
-				configs.add(configFiles[i]);
+		for (String configFile : configFiles) {
+			if (configFile.endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
+				configs.add(configFile);
 			}
 		}
 		return configs;

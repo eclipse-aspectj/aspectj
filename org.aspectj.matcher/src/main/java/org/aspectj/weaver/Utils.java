@@ -25,14 +25,14 @@ public class Utils {
 			return false;
 		}
 		// Go through the annotation types on the advice
-		for (int i = 0; i < anns.length; i++) {
-			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(anns[i].getTypeSignature())) {
+		for (AnnotationAJ ann : anns) {
+			if (UnresolvedType.SUPPRESS_AJ_WARNINGS.getSignature().equals(ann.getTypeSignature())) {
 				// Two possibilities:
 				// 1. there are no values specified (i.e. @SuppressAjWarnings)
 				// 2. there are values specified (i.e. @SuppressAjWarnings("A") or @SuppressAjWarnings({"A","B"})
-				String value = anns[i].getStringFormOfValue("value");
+				String value = ann.getStringFormOfValue("value");
 				// Slightly lazy, just doing a string indexof
-				if (value == null || value.indexOf(lintkey) != -1) {
+				if (value == null || value.contains(lintkey)) {
 					return true;
 				}
 			}

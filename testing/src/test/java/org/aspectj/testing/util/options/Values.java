@@ -63,11 +63,11 @@ public class Values {
             input = new Value[length];
             length = 0;
             Value[] temp;
-            for (int i = 0; i < values.length; i++) {
-                temp = values[i].asArray();
-                System.arraycopy(temp, 0, input, length, temp.length);
-                length += temp.length;            
-            }
+			for (Values value : values) {
+				temp = value.asArray();
+				System.arraycopy(temp, 0, input, length, temp.length);
+				length += temp.length;
+			}
         }
         return new Values(input);
     }
@@ -260,19 +260,19 @@ public class Values {
             throw new IllegalArgumentException(
                 "expecting force-off: " + value);
         }
-        for (int i = 0; i < matches.length; i++) {
-            Option.Value match = input[matches[i]];
-            if ((null != match) && value.sameValueIdentifier(match)) {
-                if (match.prefix.forceOn()) {
-                    return "force conflict between "
-                        + value
-                        + " and "
-                        + match;
-                } else {
-                    input[matches[i]] = null; // unset matches[i]? 
-                }
-            }
-        }
+		for (int j : matches) {
+			Value match = input[j];
+			if ((null != match) && value.sameValueIdentifier(match)) {
+				if (match.prefix.forceOn()) {
+					return "force conflict between "
+							+ value
+							+ " and "
+							+ match;
+				} else {
+					input[j] = null; // unset matches[i]?
+				}
+			}
+		}
         return null;
     }
 
@@ -388,22 +388,22 @@ public class Values {
      */
     private static String[] render(Value[] values) {
         ArrayList list = new ArrayList();
-        for (int i = 0; i < values.length; i++) {
-            if (null != values[i]) {
-                String[] output = values[i].unflatten();
-                if (LangUtil.isEmpty(output)) {
-                    throw new Error("no output for " + values[i]);
-                }
+		for (Value value : values) {
+			if (null != value) {
+				String[] output = value.unflatten();
+				if (LangUtil.isEmpty(output)) {
+					throw new Error("no output for " + value);
+				}
 
-                String s = values[i].prefix.render(output[0]);
-                if (null != s) { // this means the prefix is set
-                    list.add(s);
-                    for (int j = 1; j < output.length; j++) {
-                        list.add(output[j]);
-                    }
-                }
-            }
-        }
+				String s = value.prefix.render(output[0]);
+				if (null != s) { // this means the prefix is set
+					list.add(s);
+					for (int j = 1; j < output.length; j++) {
+						list.add(output[j]);
+					}
+				}
+			}
+		}
         return (String[]) list.toArray(new String[list.size()]);
     }
 
@@ -545,34 +545,34 @@ public class Values {
     protected Option.Value[] find(Selector filter, boolean findAll) {
         LangUtil.throwIaxIfNull(filter, "filter");
         ArrayList result = new ArrayList();
-        for (int i = 0; i < values.length; i++) {
-            final boolean accepted;
-            try {
-                accepted = filter.accept(values[i]);
-            } catch (Error e) {
-                if (Selector.STOP != e) {
-                    throw e;
-                }
-                break;
-            }
-            if (accepted) {
-                result.add(values[i]);
-                if (findAll != FIND_ALL) {
-                    break;
-                }
-            }
-        }
+		for (Value value : values) {
+			final boolean accepted;
+			try {
+				accepted = filter.accept(value);
+			} catch (Error e) {
+				if (Selector.STOP != e) {
+					throw e;
+				}
+				break;
+			}
+			if (accepted) {
+				result.add(value);
+				if (findAll != FIND_ALL) {
+					break;
+				}
+			}
+		}
         return toArray(result);
     }
 
     private Option.Value[] valuesNotNull() {
         if (null == valuesNotNull) {
             ArrayList list = new ArrayList();
-            for (int i = 0; i < this.values.length; i++) {
-                if (null != this.values[i]) {
-                    list.add(this.values[i]);
-                }
-            }
+			for (Value value : this.values) {
+				if (null != value) {
+					list.add(value);
+				}
+			}
             valuesNotNull = toArray(list);
         }
         return valuesNotNull;

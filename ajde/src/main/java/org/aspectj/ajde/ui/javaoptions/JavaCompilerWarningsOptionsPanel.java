@@ -67,10 +67,10 @@ public class JavaCompilerWarningsOptionsPanel extends OptionsPanel {
 	
 	public void saveOptions() throws IOException {	
 		Set s = warningComboBoxes.entrySet();
-		for (Iterator iterator = s.iterator(); iterator.hasNext();) {
-			Map.Entry entry = (Entry) iterator.next();
+		for (Object o : s) {
+			Entry entry = (Entry) o;
 			String javaOption = (String) entry.getKey();
-			JComboBox combo = (JComboBox)entry.getValue();
+			JComboBox combo = (JComboBox) entry.getValue();
 			String value = (String) combo.getSelectedItem();
 			javaBuildOptions.setOption(javaOption, value);
 		}

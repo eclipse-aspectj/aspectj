@@ -89,11 +89,11 @@ public class XMLWriter {
         if (null != input) {
             String[] items = XMLWriter.unflattenList(input);
             if (!LangUtil.isEmpty(items)) {
-                for (int i = 0; i < items.length; i++) {
-                    if (!LangUtil.isEmpty(items[i])) {
-                        list.add(items[i]);
-                    }
-                }
+				for (String item : items) {
+					if (!LangUtil.isEmpty(item)) {
+						list.add(item);
+					}
+				}
             }
         }    
     }
@@ -124,20 +124,19 @@ public class XMLWriter {
         StringBuffer sb = new StringBuffer();
         if (null != list) {
             boolean printed = false;
-            for (int i = 0; i < list.length; i++) {
-                Object o = list[i];
-                if (null != o) {
-                    if (printed) {
-                        sb.append(",");
-                    } else {
-                        printed = true;
-                    }
-                    String s = o.toString();
-                    if (-1 != s.indexOf(",")) {
-                        throw new IllegalArgumentException("comma in " + s);
-                    }
-                    sb.append(s);
-                }
+			for (Object o : list) {
+				if (null != o) {
+					if (printed) {
+						sb.append(",");
+					} else {
+						printed = true;
+					}
+					String s = o.toString();
+					if (s.contains(",")) {
+						throw new IllegalArgumentException("comma in " + s);
+					}
+					sb.append(s);
+				}
 			}
         }
         return sb.toString();

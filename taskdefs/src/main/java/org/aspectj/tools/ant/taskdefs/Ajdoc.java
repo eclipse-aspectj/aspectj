@@ -178,9 +178,9 @@ public class Ajdoc extends MatchingTask {
             File baseDir = fs.getDir(getProject());
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             String[] files = ds.getIncludedFiles();
-            for (int i = 0; i < files.length; i++) {
-            	sourcefiles.add((new File(baseDir, files[i])).getAbsolutePath());
-            }
+			for (String file : files) {
+				sourcefiles.add((new File(baseDir, file)).getAbsolutePath());
+			}
         }
     }
     
@@ -606,17 +606,16 @@ public class Ajdoc extends MatchingTask {
                 cmd.createArgument().setValue("-docletpath");
                 cmd.createArgument().setPath(doclet.path);
             }
-            for (Iterator i = doclet.params.iterator(); i.hasNext();) {
-                Param param = (Param)i.next();
-                if (param.name == null) {
-                    throw new BuildException("Doclet params cannot be null!",
-                                             getLocation());
-                }
-                cmd.createArgument().setValue(param.name);
-                if (param.value == null) {
-                    cmd.createArgument().setValue(param.value);
-                }
-            }
+			for (Param param : doclet.params) {
+				if (param.name == null) {
+					throw new BuildException("Doclet params cannot be null!",
+							getLocation());
+				}
+				cmd.createArgument().setValue(param.name);
+				if (param.value == null) {
+					cmd.createArgument().setValue(param.value);
+				}
+			}
         }
         Map<String,List<String>> groupMap = new HashMap<String,List<String>>();
         for (Group group: groups) {
@@ -647,48 +646,48 @@ public class Ajdoc extends MatchingTask {
             cmd.createArgument().setValue(pkgstr);
         }
         if (argfiles != null) {
-            for (Iterator i = argfiles.iterator(); i.hasNext();) {
-                String name = i.next()+"";
-                File argfile = getProject().resolveFile(name);
-                if (check(argfile, name, false, getLocation())) {
-                    cmd.createArgument().setValue("-argfile");
-                    cmd.createArgument().setFile(argfile);
-                }
-            }
+			for (File file : argfiles) {
+				String name = file + "";
+				File argfile = getProject().resolveFile(name);
+				if (check(argfile, name, false, getLocation())) {
+					cmd.createArgument().setValue("-argfile");
+					cmd.createArgument().setFile(argfile);
+				}
+			}
         }
         if (packageList != null) {
             cmd.createArgument().setValue("@" + packageList);
         }
         if (null != packagenames) {
-            for (Iterator<String> i = packagenames.iterator(); i.hasNext();) {
-                cmd.createArgument().setValue((String)i.next());
-            }
+			for (String packagename : packagenames) {
+				cmd.createArgument().setValue(packagename);
+			}
         }
         // support for include parameter as a MatchingTask
         int numfiles = 0;
         if (sourcepath != null) {
             String[] dirs = sourcepath.list();
-            for (int i = 0; i < dirs.length; i++) {
-                File dir = getProject().resolveFile(dirs[i]);
-                check(dir, dirs[i], true, getLocation());
-                String[] files = getDirectoryScanner(dir).getIncludedFiles();
-                for (int j = 0; j < files.length; j++) {
-                    File file = new File(dir, files[j]);
-                    if (file.getName().endsWith(".java")
-                        || file.getName().endsWith(".aj")) {
-                        cmd.createArgument().setFile(file);
-                        numfiles++;
-                    }
-                }
-            }
+			for (String value : dirs) {
+				File dir = getProject().resolveFile(value);
+				check(dir, value, true, getLocation());
+				String[] files = getDirectoryScanner(dir).getIncludedFiles();
+				for (String s : files) {
+					File file = new File(dir, s);
+					if (file.getName().endsWith(".java")
+							|| file.getName().endsWith(".aj")) {
+						cmd.createArgument().setFile(file);
+						numfiles++;
+					}
+				}
+			}
         }
 
     	addFileSets();
         if (sourcefiles != null) {
-            for (Iterator<String> i = sourcefiles.iterator(); i.hasNext();) {
-                // let ajdoc resolve sourcefiles relative to sourcepath,
-                cmd.createArgument().setValue(i.next());
-            }
+			for (String sourcefile : sourcefiles) {
+				// let ajdoc resolve sourcefiles relative to sourcepath,
+				cmd.createArgument().setValue(sourcefile);
+			}
         }
         // XXX PR682 weak way to report errors - need to refactor
         int result = compile();

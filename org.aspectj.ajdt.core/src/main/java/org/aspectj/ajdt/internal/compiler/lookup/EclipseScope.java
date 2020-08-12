@@ -181,8 +181,7 @@ public class EclipseScope implements IScope {
 		}
 
 		ImportBinding[] imports = cuScope.imports;
-		for (int i = 0; i < imports.length; i++) {
-			ImportBinding importBinding = imports[i];
+		for (ImportBinding importBinding : imports) {
 			String importName = new String(CharOperation.concatWith(importBinding.compoundName, '.'));
 
 			// XXX wrong behavior for java.util.Map.*
@@ -194,8 +193,8 @@ public class EclipseScope implements IScope {
 		}
 
 		TypeBinding[] topTypes = cuScope.topLevelTypes;
-		for (int i = 0; i < topTypes.length; i++) {
-			importedNamesList.add(world.fromBinding(topTypes[i]).getName());
+		for (TypeBinding topType : topTypes) {
+			importedNamesList.add(world.fromBinding(topType).getName());
 		}
 
 		importedNames = importedNamesList.toArray(new String[importedNamesList.size()]);
@@ -211,8 +210,8 @@ public class EclipseScope implements IScope {
 		addClassAndParentsToPrefixes(binding.superclass(), importedPrefixesList);
 		ReferenceBinding[] superinterfaces = binding.superInterfaces();
 		if (superinterfaces != null) {
-			for (int i = 0; i < superinterfaces.length; i++) {
-				addClassAndParentsToPrefixes(superinterfaces[i], importedPrefixesList);
+			for (ReferenceBinding superinterface : superinterfaces) {
+				addClassAndParentsToPrefixes(superinterface, importedPrefixesList);
 			}
 		}
 	}
@@ -233,9 +232,9 @@ public class EclipseScope implements IScope {
 	// XXX add good errors when would bind to extra parameters
 	@Override
 	public FormalBinding lookupFormal(String name) {
-		for (int i = 0, len = bindings.length; i < len; i++) {
-			if (bindings[i].getName().equals(name))
-				return bindings[i];
+		for (FormalBinding binding : bindings) {
+			if (binding.getName().equals(name))
+				return binding;
 		}
 		return null;
 	}

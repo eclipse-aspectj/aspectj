@@ -68,8 +68,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		Map<String,File> classNameToFileMap = state.getClassNameToFileMap();
 		assertFalse("expected there to be classes ", classNameToFileMap.isEmpty());
 		Set<Map.Entry<String,File>> entrySet = classNameToFileMap.entrySet();
-		for (Iterator<Map.Entry<String,File>> iterator = entrySet.iterator(); iterator.hasNext();) {
-			Map.Entry<String,File> entry = iterator.next();
+		for (Map.Entry<String, File> entry : entrySet) {
 			String className = entry.getKey();
 			String fullClassName = expectedOutputDir + File.separator + className.replace('.', File.separatorChar) + ".class";
 			File file = entry.getValue();
@@ -114,7 +113,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
-			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
+			if (!ucf.getFilename().contains(expectedOutputDir)) {
 				fileNames.add(ucf.getFilename());
 			}
 		}
@@ -153,7 +152,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		// the unwovenClassFiles should have filenames that point to the output dir
 		// (which in this case is the sandbox dir) and not where they came from.
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
-			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
+			if (!ucf.getFilename().contains(expectedOutputDir)) {
 				fileNames.add(ucf.getFilename());
 			}
 		}
@@ -183,7 +182,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		List<String> fileNames = new ArrayList<>();
 
 		for (UnwovenClassFile ucf: unwovenClassFiles) {
-			if (ucf.getFilename().indexOf(expectedOutputDir) == -1) {
+			if (!ucf.getFilename().contains(expectedOutputDir)) {
 				fileNames.add(ucf.getFilename());
 			}
 		}

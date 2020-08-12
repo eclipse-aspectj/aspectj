@@ -141,8 +141,7 @@ class BcelMethod extends ResolvedMemberImpl {
 			AnnotationAJ[] annos = getAnnotations();
 			if (annos != null && annos.length != 0) {
 				AnnotationAJ[] axs = getAnnotations();
-				for (int i = 0; i < axs.length; i++) {
-					AnnotationAJ annotationX = axs[i];
+				for (AnnotationAJ annotationX : axs) {
 					String typename = annotationX.getTypeName();
 					if (typename.charAt(0) == PACKAGE_INITIAL_CHAR) {
 						if (typename.equals("org.aspectj.lang.annotation.Pointcut")
@@ -164,7 +163,7 @@ class BcelMethod extends ResolvedMemberImpl {
 										while (argsList.size() < requiredCount) {
 											argsList.add("arg" + argsList.size());
 										}
-										setParameterNames(argsList.toArray(new String[] {}));
+										setParameterNames(argsList.toArray(new String[]{}));
 										return;
 									}
 								}
@@ -246,8 +245,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	@Override
 	public String getAnnotationDefaultValue() {
 		Attribute[] attrs = method.getAttributes();
-		for (int i = 0; i < attrs.length; i++) {
-			Attribute attribute = attrs[i];
+		for (Attribute attribute : attrs) {
 			if (attribute.getName().equals("AnnotationDefault")) {
 				AnnotationDefault def = (AnnotationDefault) attribute;
 				return def.getElementValue().stringifyValue();
@@ -261,9 +259,9 @@ class BcelMethod extends ResolvedMemberImpl {
 		Attribute[] as = method.getAttributes();
 		List<String> names = new ArrayList<String>();
 		// String[] strs = new String[as.length];
-		for (int j = 0; j < as.length; j++) {
-			if (!onlyIncludeAjOnes || as[j].getName().startsWith(AjAttribute.AttributePrefix)) {
-				names.add(as[j].getName());
+		for (Attribute a : as) {
+			if (!onlyIncludeAjOnes || a.getName().startsWith(AjAttribute.AttributePrefix)) {
+				names.add(a.getName());
 			}
 		}
 		return names.toArray(new String[] {});
@@ -361,9 +359,9 @@ class BcelMethod extends ResolvedMemberImpl {
 		if ((bitflags & HAS_ANNOTATIONS) == 0) {
 			return null;
 		}
-		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i].getTypeName().equals(ofType.getName())) {
-				return annotations[i];
+		for (AnnotationAJ annotation : annotations) {
+			if (annotation.getTypeName().equals(ofType.getName())) {
+				return annotation;
 			}
 		}
 		return null;
@@ -660,8 +658,8 @@ class BcelMethod extends ResolvedMemberImpl {
 			// synthetic is an attribute
 			String[] synthetics = getAttributeNames(false);
 			if (synthetics != null) {
-				for (int i = 0; i < synthetics.length; i++) {
-					if (synthetics[i].equals("Synthetic")) {
+				for (String synthetic : synthetics) {
+					if (synthetic.equals("Synthetic")) {
 						bitflags |= IS_SYNTHETIC;
 						break;
 					}

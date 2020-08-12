@@ -235,8 +235,8 @@ public class TypePatternTestCase extends PatternsTestCase {
 		String[] patterns = new String[] { "java.lang.Object", "java.lang.Object+", "java.lang.Integer", "int", "java..*",
 				"java..util..*", "*.*.Object", "*", };
 
-		for (int i = 0, len = patterns.length; i < len; i++) {
-			checkSerialization(patterns[i]);
+		for (String pattern : patterns) {
+			checkSerialization(pattern);
 		}
 	}
 

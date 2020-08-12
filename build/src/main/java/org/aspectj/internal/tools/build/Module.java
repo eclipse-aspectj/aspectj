@@ -79,13 +79,13 @@ public class Module {
             return;
         }
         File[] files = srcDir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                sourceFiles(files[i], result);
-            } else if (isSourceFile(files[i])) {
-                result.add(files[i]);
-            }
-        }
+		for (File file : files) {
+			if (file.isDirectory()) {
+				sourceFiles(file, result);
+			} else if (isSourceFile(file)) {
+				result.add(file);
+			}
+		}
     }
 
     private static void addIfNew(List<File> source, List<File> sink) {
@@ -107,14 +107,13 @@ public class Module {
         addIfNew(result.getLibJars(), known);
         addIfNew(result.getExportedLibJars(), known);
         Result[] reqs = result.getRequired();
-        for (int i = 0; i < reqs.length; i++) {
-            Result requiredResult = reqs[i];
-            File requiredJar = requiredResult.getOutputFile();
-            if (!known.contains(requiredJar)) {
-                known.add(requiredJar);
-                doFindJarRequirements(requiredResult, known);
-            }
-        }
+		 for (Result requiredResult : reqs) {
+			 File requiredJar = requiredResult.getOutputFile();
+			 if (!known.contains(requiredJar)) {
+				 known.add(requiredJar);
+				 doFindJarRequirements(requiredResult, known);
+			 }
+		 }
     }
 
     /** @return true if this is a source file */
@@ -238,31 +237,29 @@ public class Module {
         }
         final long time = outputFile.lastModified();
         File file;
-        for (Iterator<File> iter = result.getSrcDirs().iterator(); iter.hasNext();) {
-            File srcDir = iter.next();
-            for (Iterator<File> srcFiles = sourceFiles(srcDir); srcFiles.hasNext();) {
-                file = srcFiles.next();
-                if (outOfDate(time, file)) {
-                    return true;
-                }
-            }
-        }
+		for (File srcDir : result.getSrcDirs()) {
+			for (Iterator<File> srcFiles = sourceFiles(srcDir); srcFiles.hasNext(); ) {
+				file = srcFiles.next();
+				if (outOfDate(time, file)) {
+					return true;
+				}
+			}
+		}
         // required modules
         Result[] reqs = result.getRequired();
-        for (int i = 0; i < reqs.length; i++) {
-            Result requiredResult = reqs[i];
-            file = requiredResult.getOutputFile();
-            if (outOfDate(time, file)) {
-                return true;
-            }
-        }
+		for (Result requiredResult : reqs) {
+			file = requiredResult.getOutputFile();
+			if (outOfDate(time, file)) {
+				return true;
+			}
+		}
         // libraries
-        for (Iterator<File> iter = result.getLibJars().iterator(); iter.hasNext();) {
-            file = iter.next();
-            if (outOfDate(time, file)) {
-                return true;
-            }
-        }
+		for (File value : result.getLibJars()) {
+			file = value;
+			if (outOfDate(time, file)) {
+				return true;
+			}
+		}
         return false;
     }
 
@@ -345,14 +342,13 @@ public class Module {
             Util.closeSilently(fin);
         }
         RequiredBundle[] bundles = bundle.getRequiredBundles();
-        for (int i = 0; i < bundles.length; i++) {
-            RequiredBundle required = bundles[i];
-            update("src", "/" + required.name, required.text, false);
-        }
+		for (RequiredBundle required : bundles) {
+			update("src", "/" + required.name, required.text, false);
+		}
         String[] libs = bundle.getClasspath();
-        for (int i = 0; i < libs.length; i++) {
-            update("lib", libs[i], libs[i], false);
-        }
+		for (String lib : libs) {
+			update("lib", lib, lib, false);
+		}
 
         return true;
     }
@@ -448,7 +444,7 @@ public class Module {
         	if (path.equals("org.eclipse.ajdt.core.ASPECTJRT_CONTAINER")) {
         		classpathVariables.add("ASPECTJRT_LIB");
         	} else {
-	            if (-1 == path.indexOf("JRE")) { // warn non-JRE containers
+	            if (!path.contains("JRE")) { // warn non-JRE containers
 	                messager.log("cannot handle con yet: " + toString);
 	            }
         	}
@@ -478,11 +474,11 @@ public class Module {
 
     private void warnVariable(String path, String toString) {
         String[] known = { "JRE_LIB", "ASPECTJRT_LIB", "JRE15_LIB" };
-        for (int i = 0; i < known.length; i++) {
-            if (known[i].equals(path)) {
-                return;
-            }
-        }
+		for (String s : known) {
+			if (s.equals(path)) {
+				return;
+			}
+		}
         messager.log("Module cannot handle var yet: " + toString);
     }
 
@@ -618,7 +614,7 @@ public class Module {
             boolean inQuote = false;
             while (st.hasMoreTokens()) {
                 String s = st.nextToken();
-                if ((1 == s.length()) && (-1 != DELIM.indexOf(s))) {
+                if ((1 == s.length()) && (DELIM.contains(s))) {
                     if ("\"".equals(s)) { // end quote (or escaped)
                         if (inQuote) {
                             inQuote = false;
@@ -645,9 +641,9 @@ public class Module {
 
         public void acceptLine(String line) {
             String[] tokens = tokenize(line);
-            for (int i = 0; i < tokens.length; i++) {
-                next(tokens[i]);
-            }
+			for (String token : tokens) {
+				next(token);
+			}
         }
 
         private Properties attributesToProperties() {

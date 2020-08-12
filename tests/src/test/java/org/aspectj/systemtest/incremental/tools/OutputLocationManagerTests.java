@@ -114,11 +114,11 @@ public class OutputLocationManagerTests extends AbstractMultiProjectIncrementalA
 		public File getOutputLocationForClass(File compilationUnit) {
 			String relativePath = "";
 			String compilationUnitName = compilationUnit.getAbsolutePath();
-			if (compilationUnitName.indexOf("srcRootOne") != -1) {
+			if (compilationUnitName.contains("srcRootOne")) {
 				relativePath = "target/main/classes";
-			} else if (compilationUnitName.indexOf("srcRootTwo") != -1) {
+			} else if (compilationUnitName.contains("srcRootTwo")) {
 				relativePath = "target/test/classes";
-			} else if (compilationUnitName.indexOf("srcRootThree") != -1) {
+			} else if (compilationUnitName.contains("srcRootThree")) {
 				relativePath = "target/anotherTest/classes";
 			}
 			File ret = new File(projectHome, relativePath);

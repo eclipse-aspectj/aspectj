@@ -707,8 +707,8 @@ class InstallContext {
 	public boolean isTextFile(File file) {
 		String name = file.getName();
 
-		for (int i = 0; i < TEXT_EXTENSIONS.length; i++) {
-			if (name.endsWith(TEXT_EXTENSIONS[i])) {
+		for (String textExtension : TEXT_EXTENSIONS) {
+			if (name.endsWith(textExtension)) {
 				return true;
 			}
 		}
@@ -1243,10 +1243,9 @@ class ConfigureLauncherPane extends WizardPane {
 			paths = unixPaths;
 		}
 
-		for (int suffixIndex = 0; suffixIndex < suffixes.length; suffixIndex++) {
-			String suffix = suffixes[suffixIndex];
-			for (int prefixIndex = 0; prefixIndex < paths.length; prefixIndex++) {
-				String prefix = paths[prefixIndex];
+		for (String suffix : suffixes) {
+			for (String path : paths) {
+				String prefix = path;
 				prefix = applyProperties(prefix);
 				File test = new File(prefix + suffix);
 				if (isLegalJavaHome(test)) {
