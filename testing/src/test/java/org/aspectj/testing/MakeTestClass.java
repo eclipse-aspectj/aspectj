@@ -60,7 +60,7 @@ public class MakeTestClass {
 	private static final String FOOTER =
 		"}\n";
 	
-	private List<AjcTest> tests = new ArrayList<AjcTest>();
+	private List<AjcTest> tests = new ArrayList<>();
 	private String className;
 	private String suiteFile;
 	

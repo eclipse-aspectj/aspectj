@@ -47,7 +47,7 @@ public class BrowserOutputLocationManager implements IOutputLocationManager {
 	}
 
 	public List<File> getAllOutputLocations() {
-		List<File> outputDirs = new ArrayList<File>();
+		List<File> outputDirs = new ArrayList<>();
 		outputDirs.add(new File(getCommonOutputDir()));
 		return outputDirs;
 	}

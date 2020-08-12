@@ -168,7 +168,7 @@ public abstract class ResolvedTypeMunger {
 	}
 
 	protected static Set<ResolvedMember> readSuperMethodsCalled(VersionedDataInputStream s) throws IOException {
-		Set<ResolvedMember> ret = new HashSet<ResolvedMember>();
+		Set<ResolvedMember> ret = new HashSet<>();
 		int n = -1;
 		if (s.isAtLeast169()) {
 			n = s.readByte();
@@ -189,7 +189,7 @@ public abstract class ResolvedTypeMunger {
 			s.writeByte(0);
 			return;
 		}
-		List<ResolvedMember> ret = new ArrayList<ResolvedMember>(superMethodsCalled);
+		List<ResolvedMember> ret = new ArrayList<>(superMethodsCalled);
 		Collections.sort(ret);
 		int n = ret.size();
 		s.writeByte(n);
@@ -378,7 +378,7 @@ public abstract class ResolvedTypeMunger {
 				count = s.readInt();
 			}
 			if (count != 0) {
-				List<String> aliases = new ArrayList<String>();
+				List<String> aliases = new ArrayList<>();
 				for (int i = 0; i < count; i++) {
 					aliases.add(s.readUTF());
 				}

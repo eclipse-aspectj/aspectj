@@ -152,10 +152,10 @@ public class BuildArgParser extends Main {
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
 
-			List<File> xmlfileList = new ArrayList<File>();
+			List<File> xmlfileList = new ArrayList<>();
 			xmlfileList.addAll(parser.getXmlFiles());
 
-			List<File> fileList = new ArrayList<File>();
+			List<File> fileList = new ArrayList<>();
 			List<File> files = parser.getFiles();
 			if (!LangUtil.isEmpty(files)) {
 				if (incrementalMode) {
@@ -165,7 +165,7 @@ public class BuildArgParser extends Main {
 				}
 			}
 
-			List<String> javaArgList = new ArrayList<String>();
+			List<String> javaArgList = new ArrayList<>();
 			// disable all special eclipse warnings by default - why???
 			// ??? might want to instead override getDefaultOptions()
 			javaArgList.add("-warn:none");
@@ -280,7 +280,7 @@ public class BuildArgParser extends Main {
 	}
 
 	private ArrayList<String> toArrayList(java.util.List<File> files) {
-		ArrayList<String> arrayList = new ArrayList<String>();
+		ArrayList<String> arrayList = new ArrayList<>();
 		for (File file: files) {
 			arrayList.add(file.getAbsolutePath());
 		}
@@ -363,7 +363,7 @@ public class BuildArgParser extends Main {
 	}
 
 	public List<String> getBootclasspath(AjcConfigParser parser) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 
 		if (parser.bootclasspath == null) {
 			if (LangUtil.is19VMOrGreater()) {
@@ -378,13 +378,13 @@ public class BuildArgParser extends Main {
 	}
 	
 	public List<String> getModulepath(AjcConfigParser parser) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		addClasspath(parser.modulepath, ret);
 		return ret;
 	}
 
 	public List<String> getModulesourcepath(AjcConfigParser parser) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		addClasspath(parser.modulesourcepath, ret);
 		return ret;
 	}
@@ -565,7 +565,7 @@ public class BuildArgParser extends Main {
 				buildConfig.setMakeReflectable(true);
 			} else if (arg.equals("-sourceroots")) {
 				if (args.size() > nextArgIndex) {
-					List<File> sourceRoots = new ArrayList<File>();
+					List<File> sourceRoots = new ArrayList<>();
 					StringTokenizer st = new StringTokenizer(args.get(nextArgIndex).getValue(),
 							File.pathSeparator);
 					while (st.hasMoreTokens()) {

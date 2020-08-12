@@ -50,21 +50,21 @@ public class CrosscuttingMembers {
 
 	private PerClause perClause;
 
-	private List<ShadowMunger> shadowMungers = new ArrayList<ShadowMunger>(4);
-	private List<ConcreteTypeMunger> typeMungers = new ArrayList<ConcreteTypeMunger>(4);
-	private List<ConcreteTypeMunger> lateTypeMungers = new ArrayList<ConcreteTypeMunger>(0);
+	private List<ShadowMunger> shadowMungers = new ArrayList<>(4);
+	private List<ConcreteTypeMunger> typeMungers = new ArrayList<>(4);
+	private List<ConcreteTypeMunger> lateTypeMungers = new ArrayList<>(0);
 
-	private Set<DeclareParents> declareParents = new HashSet<DeclareParents>();
-	private Set<DeclareSoft> declareSofts = new HashSet<DeclareSoft>();
-	private List<Declare> declareDominates = new ArrayList<Declare>(4);
+	private Set<DeclareParents> declareParents = new HashSet<>();
+	private Set<DeclareSoft> declareSofts = new HashSet<>();
+	private List<Declare> declareDominates = new ArrayList<>(4);
 
 	// These are like declare parents type mungers
-	private Set<DeclareAnnotation> declareAnnotationsOnType = new LinkedHashSet<DeclareAnnotation>();
-	private Set<DeclareAnnotation> declareAnnotationsOnField = new LinkedHashSet<DeclareAnnotation>();
-	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new LinkedHashSet<DeclareAnnotation>();
+	private Set<DeclareAnnotation> declareAnnotationsOnType = new LinkedHashSet<>();
+	private Set<DeclareAnnotation> declareAnnotationsOnField = new LinkedHashSet<>();
+	private Set<DeclareAnnotation> declareAnnotationsOnMethods = new LinkedHashSet<>();
 	// declareAnnotationsOnMethods includes constructors too
 
-	private Set<DeclareTypeErrorOrWarning> declareTypeEow = new HashSet<DeclareTypeErrorOrWarning>();
+	private Set<DeclareTypeErrorOrWarning> declareTypeEow = new HashSet<>();
 
 	private boolean shouldConcretizeIfNeeded = true;
 
@@ -74,8 +74,8 @@ public class CrosscuttingMembers {
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 
-	private final Hashtable<String, Object> cflowFields = new Hashtable<String, Object>();
-	private final Hashtable<String, Object> cflowBelowFields = new Hashtable<String, Object>();
+	private final Hashtable<String, Object> cflowFields = new Hashtable<>();
+	private final Hashtable<String, Object> cflowBelowFields = new Hashtable<>();
 
 	// public void addConcreteShadowMungers(Collection c) {
 	// shadowMungers.addAll(c);
@@ -237,7 +237,7 @@ public class CrosscuttingMembers {
 	}
 
 	public Collection<ShadowMunger> getCflowEntries() {
-		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
+		List<ShadowMunger> ret = new ArrayList<>();
 		for (ShadowMunger m : shadowMungers) {
 			if (m instanceof Advice) {
 				Advice a = (Advice) m;
@@ -276,8 +276,8 @@ public class CrosscuttingMembers {
 
 		if (careAboutShadowMungers) {
 			// bug 129163: use set equality rather than list equality
-			Set<ShadowMunger> theseShadowMungers = new HashSet<ShadowMunger>();
-			Set<ShadowMunger> theseInlinedAroundMungers = new HashSet<ShadowMunger>();
+			Set<ShadowMunger> theseShadowMungers = new HashSet<>();
+			Set<ShadowMunger> theseInlinedAroundMungers = new HashSet<>();
 			for (ShadowMunger munger : shadowMungers) {
 				if (munger instanceof Advice) {
 					Advice adviceMunger = (Advice) munger;
@@ -293,10 +293,10 @@ public class CrosscuttingMembers {
 					theseShadowMungers.add(munger);
 				}
 			}
-			Set<ShadowMunger> tempSet = new HashSet<ShadowMunger>();
+			Set<ShadowMunger> tempSet = new HashSet<>();
 			tempSet.addAll(other.shadowMungers);
-			Set<ShadowMunger> otherShadowMungers = new HashSet<ShadowMunger>();
-			Set<ShadowMunger> otherInlinedAroundMungers = new HashSet<ShadowMunger>();
+			Set<ShadowMunger> otherShadowMungers = new HashSet<>();
+			Set<ShadowMunger> otherInlinedAroundMungers = new HashSet<>();
 			for (ShadowMunger munger : tempSet) {
 				if (munger instanceof Advice) {
 					Advice adviceMunger = (Advice) munger;
@@ -341,8 +341,8 @@ public class CrosscuttingMembers {
 		// if we dont care about shadow mungers then ignore those
 		// typeMungers which are created to help with the implementation
 		// of shadowMungers
-		Set<Object> theseTypeMungers = new HashSet<Object>();
-		Set<Object> otherTypeMungers = new HashSet<Object>();
+		Set<Object> theseTypeMungers = new HashSet<>();
+		Set<Object> otherTypeMungers = new HashSet<>();
 		if (!careAboutShadowMungers) {
 			for (Object o : typeMungers) {
 				if (o instanceof ConcreteTypeMunger) {
@@ -431,13 +431,13 @@ public class CrosscuttingMembers {
 			// the up front comparison
 			if (!careAboutShadowMungers) {
 				// this means we are in front end compilation and if the differences are purely mixin parents, we can continue OK
-				Set<DeclareParents> trimmedThis = new HashSet<DeclareParents>();
+				Set<DeclareParents> trimmedThis = new HashSet<>();
 				for (DeclareParents decp : declareParents) {
 					if (!decp.isMixin()) {
 						trimmedThis.add(decp);
 					}
 				}
-				Set<DeclareParents> trimmedOther = new HashSet<DeclareParents>();
+				Set<DeclareParents> trimmedOther = new HashSet<>();
 				for (DeclareParents decp : other.declareParents) {
 					if (!decp.isMixin()) {
 						trimmedOther.add(decp);

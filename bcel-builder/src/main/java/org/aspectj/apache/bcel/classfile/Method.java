@@ -223,7 +223,7 @@ public final class Method extends FieldOrMethod {
 		boolean foundSome = false;
 		// Build a list of annotation arrays, one per argument
 		if (parameterAnnotationsInvis != null || parameterAnnotationsVis != null) {
-			List<AnnotationGen[]> annotationsForEachParameter = new ArrayList<AnnotationGen[]>();
+			List<AnnotationGen[]> annotationsForEachParameter = new ArrayList<>();
 			AnnotationGen[] visibleOnes = null;
 			AnnotationGen[] invisibleOnes = null;
 			for (int i = 0; i < parameterCount; i++) {

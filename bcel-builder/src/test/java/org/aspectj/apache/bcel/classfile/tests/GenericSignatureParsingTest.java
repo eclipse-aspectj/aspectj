@@ -415,7 +415,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	   * @return              Array of argument types
 	   */
 	  public static final String[] methodSignatureArgumentTypes(String signature,boolean chopit) throws ClassFormatException {
-	    ArrayList<String> vec = new ArrayList<String>();
+	    ArrayList<String> vec = new ArrayList<>();
 	    int       index;
 	    String[]  types;
 	

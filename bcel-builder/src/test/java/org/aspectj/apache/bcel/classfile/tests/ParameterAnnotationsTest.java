@@ -551,7 +551,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,true, cp);
@@ -564,7 +564,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		ArrayElementValue array = new ArrayElementValue(cp);
 		array.addElement(new AnnotationElementValue(a,cp)); 
 		NameValuePair nvp = new NameValuePair("value",array,cp);
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
@@ -577,7 +577,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvGen);
 
 		AnnotationGen a = new AnnotationGen(t, elements,false, cp);

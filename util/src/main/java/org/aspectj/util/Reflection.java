@@ -96,9 +96,9 @@ public class Reflection {
             runMainInSameVM(mainClass, args);
             return;            
         }
-        ArrayList<File> dirs = new ArrayList<File>();
-        ArrayList<File> libs = new ArrayList<File>();
-        ArrayList<URL> urls = new ArrayList<URL>();
+        ArrayList<File> dirs = new ArrayList<>();
+        ArrayList<File> libs = new ArrayList<>();
+        ArrayList<URL> urls = new ArrayList<>();
         String[] entries = LangUtil.splitClasspath(classpath);
 		for (String entry : entries) {
 			URL url = makeURL(entry);

@@ -37,7 +37,7 @@ public class JavadocTest extends AjcTestCase {
 	public void testMissingJavadoc() {
 		String[] args = new String[] { "World.java", "-warn:allJavadoc", "-1.4" };
 
-		List<Message> warningMessages = new ArrayList<Message>();
+		List<Message> warningMessages = new ArrayList<>();
 		// These warnings are against public textX() methods declared in the World.java
 		// type. These test methods are spread between AJ constructs, meaning
 		// if someone messes up and the javadoc is not associated with the aspectj

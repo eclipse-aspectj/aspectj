@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 public class AjcTaskCompileCommandTest extends TestCase {
     static boolean loggedWarning = false;
     static boolean runAllTests = true;
-    static ArrayList<File> tempFiles = new ArrayList<File>();
+    static ArrayList<File> tempFiles = new ArrayList<>();
     
     private static File getClassesDir() {
         File tempDir = FileUtil.getTempDir("AjcTaskCompileCommandTest-classes");
@@ -115,7 +115,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
     void runSimpleTest(String path, int expectedErrors) {
         File file = new File(path);
         assertTrue(path, file.canRead());
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         addCommonArgs(list);
         if (path.endsWith(".lst")) {
             list.add("-argfile");

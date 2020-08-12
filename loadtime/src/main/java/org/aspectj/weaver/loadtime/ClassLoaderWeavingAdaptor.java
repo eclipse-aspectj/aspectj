@@ -69,33 +69,33 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private boolean initialized;
 
-	private List<TypePattern> dumpTypePattern = new ArrayList<TypePattern>();
+	private List<TypePattern> dumpTypePattern = new ArrayList<>();
 	private boolean dumpBefore = false;
 	private boolean dumpDirPerClassloader = false;
 
 	private boolean hasExcludes = false;
-	private List<TypePattern> excludeTypePattern = new ArrayList<TypePattern>(); // anything
-	private List<String> excludeStartsWith = new ArrayList<String>(); // com.foo..*
-	private List<String> excludeStarDotDotStar = new ArrayList<String>(); // *..*CGLIB*
-	private List<String> excludeExactName = new ArrayList<String>(); // com.foo.Bar
-	private List<String> excludeEndsWith = new ArrayList<String>(); // com.foo.Bar
-	private List<String[]> excludeSpecial = new ArrayList<String[]>();
+	private List<TypePattern> excludeTypePattern = new ArrayList<>(); // anything
+	private List<String> excludeStartsWith = new ArrayList<>(); // com.foo..*
+	private List<String> excludeStarDotDotStar = new ArrayList<>(); // *..*CGLIB*
+	private List<String> excludeExactName = new ArrayList<>(); // com.foo.Bar
+	private List<String> excludeEndsWith = new ArrayList<>(); // com.foo.Bar
+	private List<String[]> excludeSpecial = new ArrayList<>();
 
 	private boolean hasIncludes = false;
-	private List<TypePattern> includeTypePattern = new ArrayList<TypePattern>();
-	private List<String> includeStartsWith = new ArrayList<String>();
-	private List<String> includeExactName = new ArrayList<String>();
+	private List<TypePattern> includeTypePattern = new ArrayList<>();
+	private List<String> includeStartsWith = new ArrayList<>();
+	private List<String> includeExactName = new ArrayList<>();
 	private boolean includeStar = false;
 
-	private List<TypePattern> aspectExcludeTypePattern = new ArrayList<TypePattern>();
-	private List<String> aspectExcludeStartsWith = new ArrayList<String>();
-	private List<TypePattern> aspectIncludeTypePattern = new ArrayList<TypePattern>();
-	private List<String> aspectIncludeStartsWith = new ArrayList<String>();
+	private List<TypePattern> aspectExcludeTypePattern = new ArrayList<>();
+	private List<String> aspectExcludeStartsWith = new ArrayList<>();
+	private List<TypePattern> aspectIncludeTypePattern = new ArrayList<>();
+	private List<String> aspectIncludeStartsWith = new ArrayList<>();
 
 	private StringBuffer namespace;
 	private IWeavingContext weavingContext;
 
-	private List<ConcreteAspectCodeGen> concreteAspects = new ArrayList<ConcreteAspectCodeGen>();
+	private List<ConcreteAspectCodeGen> concreteAspects = new ArrayList<>();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
 
@@ -218,7 +218,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @return
 	 */
 	List<String> getAspectClassNames(List<Definition> definitions) {
-		List<String> aspects = new LinkedList<String>();
+		List<String> aspects = new LinkedList<>();
 		for (Definition def : definitions) {
 			List<String> defAspects = def.getAspectClassNames();
 			if (defAspects != null) {
@@ -238,7 +238,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			trace.enter("parseDefinitions", this);
 		}
 
-		List<Definition> definitions = new ArrayList<Definition>();
+		List<Definition> definitions = new ArrayList<>();
 		try {
 			info("register classloader " + getClassLoaderName(loader));
 			// TODO av underoptimized: we will parse each XML once per CL that see it
@@ -277,7 +277,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					Enumeration<URL> xmls = weavingContext.getResources(nextDefinition);
 					// System.out.println("? registerDefinitions: found-aop.xml=" + xmls.hasMoreElements() + ", loader=" + loader);
 
-					Set<URL> seenBefore = new HashSet<URL>();
+					Set<URL> seenBefore = new HashSet<>();
 					while (xmls.hasMoreElements()) {
 						URL xml = xmls.nextElement();
 						if (trace.isTraceEnabled()) {
@@ -1002,7 +1002,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	public void flushGeneratedClasses() {
 		// System.err.println("? ClassLoaderWeavingAdaptor.flushGeneratedClasses() generatedClasses=" + generatedClasses);
-		generatedClasses = new HashMap<String, IUnwovenClassFile>();
+		generatedClasses = new HashMap<>();
 	}
 
 	/**

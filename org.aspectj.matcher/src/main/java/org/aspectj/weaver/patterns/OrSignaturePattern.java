@@ -46,7 +46,7 @@ public class OrSignaturePattern extends AbstractSignaturePattern {
 
 	public List<ExactTypePattern> getExactDeclaringTypes() {
 		if (exactDeclaringTypes == null) {
-			exactDeclaringTypes = new ArrayList<ExactTypePattern>();
+			exactDeclaringTypes = new ArrayList<>();
 			exactDeclaringTypes.addAll(leftSp.getExactDeclaringTypes());
 			exactDeclaringTypes.addAll(rightSp.getExactDeclaringTypes());
 		}

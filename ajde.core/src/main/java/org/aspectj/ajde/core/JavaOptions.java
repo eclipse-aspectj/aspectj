@@ -68,7 +68,7 @@ public final class JavaOptions {
 	public static Map<String,String> getDefaultJavaOptions() {
 		if (defaultOptionsMap != null) return defaultOptionsMap;
 		
-		defaultOptionsMap = new HashMap<String,String>();
+		defaultOptionsMap = new HashMap<>();
 		defaultOptionsMap.put(COMPLIANCE_LEVEL, VERSION_14);
 		defaultOptionsMap.put(SOURCE_COMPATIBILITY_LEVEL, VERSION_13);
 		defaultOptionsMap.put(PRESERVE_ALL_LOCALS, OPTIMIZE);

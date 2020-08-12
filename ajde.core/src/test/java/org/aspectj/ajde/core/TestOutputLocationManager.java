@@ -67,7 +67,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	@Override
 	public List<File> getAllOutputLocations() {
 		if (allOutputLocations == null) {
-			allOutputLocations = new ArrayList<File>();
+			allOutputLocations = new ArrayList<>();
 			initLocations();
 			allOutputLocations.add(classOutputLoc);
 			if (!classOutputLoc.equals(resourceOutputLoc)) {

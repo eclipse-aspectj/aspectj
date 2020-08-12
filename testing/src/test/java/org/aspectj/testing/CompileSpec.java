@@ -26,7 +26,7 @@ import org.aspectj.tools.ajc.CompilationResult;
  */
 public class CompileSpec implements ITestStep {
 
-	private List<ExpectedMessageSpec> expected = new ArrayList<ExpectedMessageSpec>();
+	private List<ExpectedMessageSpec> expected = new ArrayList<>();
 	
 	private String files;
 	private boolean includeClassesDir;
@@ -266,8 +266,8 @@ public class CompileSpec implements ITestStep {
 			args.append(getExtdirs());
 			args.append(" ");
 		}
-		List<String> fileList = new ArrayList<String>();
-		List<String> jarList = new ArrayList<String>();
+		List<String> fileList = new ArrayList<>();
+		List<String> jarList = new ArrayList<>();
 		// convention that any jar on file list should be added to inpath
 		String files = getFiles();
 	    if (files == null) files = "";
@@ -310,14 +310,14 @@ public class CompileSpec implements ITestStep {
 
 	protected AjcTestCase.MessageSpec buildMessageSpec() {
 		List<AjcTestCase.Message> infos = null;
-		List<AjcTestCase.Message> warnings = new ArrayList<AjcTestCase.Message>();
-		List<AjcTestCase.Message> errors = new ArrayList<AjcTestCase.Message>();
-		List<AjcTestCase.Message> fails = new ArrayList<AjcTestCase.Message>();
-		List<AjcTestCase.Message> weaveInfos = new ArrayList<AjcTestCase.Message>();
+		List<AjcTestCase.Message> warnings = new ArrayList<>();
+		List<AjcTestCase.Message> errors = new ArrayList<>();
+		List<AjcTestCase.Message> fails = new ArrayList<>();
+		List<AjcTestCase.Message> weaveInfos = new ArrayList<>();
 		for (ExpectedMessageSpec exMsg: expected) {
 			String kind = exMsg.getKind();
 			if (kind.equals("info")) {
-				if (infos == null) infos = new ArrayList<AjcTestCase.Message>();
+				if (infos == null) infos = new ArrayList<>();
 				infos.add(exMsg.toMessage());
 			} else if (kind.equals("warning")) {
 				warnings.add(exMsg.toMessage());

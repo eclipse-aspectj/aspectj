@@ -100,7 +100,7 @@ class LstBuildConfigFileUpdater {
 						null);
 				Ajde.getDefault().getMessageHandler().handleMessage(msg);
 			}
-			List<String> fileContents = new ArrayList<String>();
+			List<String> fileContents = new ArrayList<>();
 			BufferedReader reader = new BufferedReader(new FileReader(configFile));
 			String line = reader.readLine();
 			while (line != null) {
@@ -146,13 +146,13 @@ class LstBuildConfigFileUpdater {
 			ConfigParser configParser = new ConfigParser();
 			configParser.parseConfigFile(new File(path));
 			List<File> files = configParser.getFiles();
-			List<String> relativeFiles = new ArrayList<String>();
+			List<String> relativeFiles = new ArrayList<>();
 			for (File file : files) {
 				relativeFiles.add(relativizePath(file.getPath(), rootPath));
 			}
 			return relativeFiles;
 		} catch (ConfigParser.ParseException pe) {
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
 	}
 

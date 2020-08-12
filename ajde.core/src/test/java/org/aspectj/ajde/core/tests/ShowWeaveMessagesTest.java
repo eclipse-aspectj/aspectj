@@ -202,10 +202,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryAdvice() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectAdvice.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -216,10 +216,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryITD() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryITD: Simple.jar + AspectITD.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectITD.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -230,10 +230,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryDeclare() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryDeclare: Simple.jar + AspectDeclare.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectDeclare.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -247,10 +247,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryDeclareSoft() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryDeclareSoft: Simple.jar + AspectDeclareSoft.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectDeclareSoft.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -261,10 +261,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryAdviceInPackageFromJar() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryAdviceInPackageFromJar: Simple.jar + AspectInPackage.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectInPackage.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -275,10 +275,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryAdviceInPackage() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryAdviceInPackage: Simple.jar + AspectInPackage.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("pkg"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -291,10 +291,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryAdviceNoDebugInfo() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryAdvice: Simple.jar + AspectAdvice.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectAdvice_nodebug.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -319,10 +319,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryDeclareNoDebugInfo() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryDeclareNoDebugInfo: Simple.jar + AspectDeclare.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectDeclare_nodebug.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();
@@ -336,10 +336,10 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	public void testWeaveMessagesBinaryDeclareSoftNoDebugInfo() {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesBinaryDeclareSoftNoDebugInfo: Simple.jar + AspectDeclareSoft.jar");
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		inpath.add(openFile("Simple_nodebug.jar"));
 		compilerConfig.setInpath(inpath);
-		Set<File> aspectpath = new HashSet<File>();
+		Set<File> aspectpath = new HashSet<>();
 		aspectpath.add(openFile("AspectDeclareSoft_nodebug.jar"));
 		compilerConfig.setAspectPath(aspectpath);
 		doBuild();

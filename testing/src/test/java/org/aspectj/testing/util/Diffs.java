@@ -445,7 +445,7 @@ public class Diffs {
 	private static ArrayList getExcept(
 		IMessage[] source,
 		IMessage.Kind[] skip) {
-		ArrayList<IMessage> sink = new ArrayList<IMessage>();
+		ArrayList<IMessage> sink = new ArrayList<>();
 		if (LangUtil.isEmpty(source)) {
 			return sink;
 		}

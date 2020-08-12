@@ -38,7 +38,7 @@ public class CountingMessageHandler implements IMessageHandler {
 	public CountingMessageHandler(IMessageHandler delegate) {
 		LangUtil.throwIaxIfNull(delegate, "delegate");
 		this.delegate = delegate;
-		this.counters = new Hashtable<IMessage.Kind, IntHolder>();
+		this.counters = new Hashtable<>();
 		proxy = (delegate instanceof CountingMessageHandler ? (CountingMessageHandler) delegate : null);
 	}
 

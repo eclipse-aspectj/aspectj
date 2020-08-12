@@ -113,7 +113,7 @@ public class LangUtil {
 	}
 
 	private static List<Integer> getFirstNumbers(String vm) {
-		List<Integer> result = new ArrayList<Integer>();
+		List<Integer> result = new ArrayList<>();
 		StringTokenizer st = new StringTokenizer(vm,".-_");
 		try {
 			result.add(Integer.parseInt(st.nextToken()));
@@ -312,7 +312,7 @@ public class LangUtil {
 			return new String[0];
 		}
 		StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
-		ArrayList<String> result = new ArrayList<String>(st.countTokens());
+		ArrayList<String> result = new ArrayList<>(st.countTokens());
 		while (st.hasMoreTokens()) {
 			String entry = st.nextToken();
 			if (!LangUtil.isEmpty(entry)) {
@@ -354,7 +354,7 @@ public class LangUtil {
 		if (null == input) {
 			return Collections.emptyList();
 		}
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 
 		if (LangUtil.isEmpty(delim) || (!input.contains(delim))) {
 			result.add(input.trim());
@@ -376,7 +376,7 @@ public class LangUtil {
 		if (LangUtil.isEmpty(text)) {
 			return Collections.emptyList();
 		}
-		List<String> strings = new ArrayList<String>();
+		List<String> strings = new ArrayList<>();
 		StringTokenizer tok = new StringTokenizer(text);
 		while (tok.hasMoreTokens()) {
 			strings.add(tok.nextToken());
@@ -740,7 +740,7 @@ public class LangUtil {
 		if (0 == sourceLength) {
 			resultSize = 0;
 		} else {
-			result = new ArrayList<Object>(sourceLength);
+			result = new ArrayList<>(sourceLength);
 			for (int i = 0; i < sourceLength; i++) {
 				if ((null != source[i]) && (sinkType.isAssignableFrom(source[i].getClass()))) {
 					result.add(source[i]);
@@ -897,7 +897,7 @@ public class LangUtil {
 		if (null == checker || (null == stack) || (0 == stack.length())) {
 			return;
 		}
-		final LinkedList<String> lines = new LinkedList<String>();
+		final LinkedList<String> lines = new LinkedList<>();
 		StringTokenizer st = new StringTokenizer(stack.toString(), "\n\r");
 		while (st.hasMoreTokens() && (0 < --maxLines)) {
 			lines.add(st.nextToken());
@@ -995,7 +995,7 @@ public class LangUtil {
 		if ((null == array) || (1 > array.length)) {
 			return Collections.emptyList();
 		}
-		ArrayList<T> list = new ArrayList<T>();
+		ArrayList<T> list = new ArrayList<>();
 		list.addAll(Arrays.asList(array));
 		return list;
 	}
@@ -1073,7 +1073,7 @@ public class LangUtil {
 	 */
 	public static ProcessController makeProcess(ProcessController controller, String classpath, String mainClass, String[] args) {
 		File java = LangUtil.getJavaExecutable();
-		ArrayList<String> cmd = new ArrayList<String>();
+		ArrayList<String> cmd = new ArrayList<>();
 		cmd.add(java.getAbsolutePath());
 		cmd.add("-classpath");
 		cmd.add(classpath);
@@ -1262,7 +1262,7 @@ public class LangUtil {
 			LangUtil.throwIaxIfNull(java, "java");
 			LangUtil.throwIaxIfNull(mainClass, "mainClass");
 			LangUtil.throwIaxIfNull(args, "args");
-			ArrayList<String> cmd = new ArrayList<String>();
+			ArrayList<String> cmd = new ArrayList<>();
 			cmd.add(java.getAbsolutePath());
 			cmd.add("-classpath");
 			cmd.add(classpath);

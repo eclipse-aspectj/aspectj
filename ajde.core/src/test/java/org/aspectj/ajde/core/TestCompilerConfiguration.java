@@ -39,7 +39,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	private String outjar;
 	private Map<String, String> javaOptions;
 	private String nonStandardOptions;
-	private List<String> projectSourceFiles = new ArrayList<String>();
+	private List<String> projectSourceFiles = new ArrayList<>();
 	private Map<String, File> sourcePathResources;
 
 	private String srcDirName = "src";
@@ -76,7 +76,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	public Map<String, String> getJavaOptionsMap() {
 		if (javaOptions == null) {
-			javaOptions = new Hashtable<String, String>();
+			javaOptions = new Hashtable<>();
 			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_13);
 			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_13);
 		}
@@ -111,7 +111,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	public Map<String, File> getSourcePathResources() {
 		if (sourcePathResources == null) {
-			sourcePathResources = new HashMap<String, File>();
+			sourcePathResources = new HashMap<>();
 
 			/* Allow the user to override the testProjectPath by using sourceRoots */
 			File[] srcBase = new File[] { new File(projectPath + File.separator + srcDirName) };

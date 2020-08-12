@@ -223,7 +223,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	private static List<IProgramElement.Modifiers> genModifiers(int modifiers) {
-		List<IProgramElement.Modifiers> modifiersList = new ArrayList<IProgramElement.Modifiers>();
+		List<IProgramElement.Modifiers> modifiersList = new ArrayList<>();
 		if ((modifiers & AccStatic) != 0) {
 			modifiersList.add(IProgramElement.Modifiers.STATIC);
 		}
@@ -551,7 +551,7 @@ public class ProgramElement implements IProgramElement {
 
 	public void addChild(IProgramElement child) {
 		if (children == null || children == Collections.EMPTY_LIST) {
-			children = new ArrayList<IProgramElement>();
+			children = new ArrayList<>();
 		}
 		children.add(child);
 		child.setParent(this);
@@ -559,7 +559,7 @@ public class ProgramElement implements IProgramElement {
 
 	public void addChild(int position, IProgramElement child) {
 		if (children == null || children == Collections.EMPTY_LIST) {
-			children = new ArrayList<IProgramElement>();
+			children = new ArrayList<>();
 		}
 		children.add(position, child);
 		child.setParent(this);
@@ -750,7 +750,7 @@ public class ProgramElement implements IProgramElement {
 		if (l == null || l.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<char[]> params = new ArrayList<char[]>();
+		List<char[]> params = new ArrayList<>();
 		for (char[] param : l) {
 			params.add(NameConvertor.convertFromSignature(param));
 		}
@@ -805,7 +805,7 @@ public class ProgramElement implements IProgramElement {
 
 	private void fixMap() {
 		if (kvpairs == Collections.EMPTY_MAP) {
-			kvpairs = new HashMap<String, Object>();
+			kvpairs = new HashMap<>();
 		}
 	}
 

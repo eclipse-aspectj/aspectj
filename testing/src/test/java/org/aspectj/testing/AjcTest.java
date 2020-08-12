@@ -47,7 +47,7 @@ public class AjcTest {
 		is14VMOrGreater = LangUtil.is14VMOrGreater();
 	}
 
-	private List<ITestStep> testSteps = new ArrayList<ITestStep>();
+	private List<ITestStep> testSteps = new ArrayList<>();
 
 	private String dir;
 	private String pr;

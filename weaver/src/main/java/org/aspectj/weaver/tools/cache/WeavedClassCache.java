@@ -78,7 +78,7 @@ public class WeavedClassCache {
 	private final CacheKeyResolver resolver;
 	private final String name;
 
-	private static final List<WeavedClassCache> cacheRegistry = new LinkedList<WeavedClassCache>();
+	private static final List<WeavedClassCache> cacheRegistry = new LinkedList<>();
 
 	protected WeavedClassCache(GeneratedClassHandler existingClassHandler,
 							   IMessageHandler messageHandler,
@@ -259,7 +259,7 @@ public class WeavedClassCache {
 	 */
 	public static List<WeavedClassCache> getCaches() {
 		synchronized (cacheRegistry) {
-			return new LinkedList<WeavedClassCache>(cacheRegistry);
+			return new LinkedList<>(cacheRegistry);
 		}
 	}
 

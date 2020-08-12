@@ -53,7 +53,7 @@ public class Ajc extends DefaultCompilerAdapter {
         "-encoding", "-target" });
 
     private static List<String> finalList(String[] args) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.addAll(Arrays.asList(args));
         return Collections.unmodifiableList(result);
     }

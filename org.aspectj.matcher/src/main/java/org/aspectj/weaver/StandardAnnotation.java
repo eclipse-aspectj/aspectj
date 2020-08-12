@@ -116,7 +116,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 		AnnotationNameValuePair nvp = nvPairs.get(0);
 		ArrayAnnotationValue aav = (ArrayAnnotationValue) nvp.getValue();
 		AnnotationValue[] avs = aav.getValues();
-		Set<String> targets = new HashSet<String>();
+		Set<String> targets = new HashSet<>();
 		for (AnnotationValue av : avs) {
 			EnumAnnotationValue value = (EnumAnnotationValue) av;
 			targets.add(value.getValue());
@@ -134,7 +134,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 
 	public void addNameValuePair(AnnotationNameValuePair pair) {
 		if (nvPairs == null) {
-			nvPairs = new ArrayList<AnnotationNameValuePair>();
+			nvPairs = new ArrayList<>();
 		}
 		nvPairs.add(pair);
 	}

@@ -29,7 +29,7 @@ public class ModifiersPattern extends PatternNode {
 	private static Map<String, Integer> modifierFlags = null;
 
 	static {
-		modifierFlags = new HashMap<String, Integer>();
+		modifierFlags = new HashMap<>();
 		int flag = 1;
 		while (flag <= Modifier.STRICT) {
 			String flagName = Modifier.toString(flag);

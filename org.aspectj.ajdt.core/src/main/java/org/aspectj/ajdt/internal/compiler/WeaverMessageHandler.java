@@ -209,7 +209,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 
 	private IProblem[] buildSeeAlsoProblems(IProblem originalProblem, List sourceLocations, CompilationResult problemSource,
 			boolean usedBinarySourceFileName) {
-		List<IProblem> ret = new ArrayList<IProblem>();
+		List<IProblem> ret = new ArrayList<>();
 
 		for (Object sourceLocation : sourceLocations) {
 			ISourceLocation loc = (ISourceLocation) sourceLocation;

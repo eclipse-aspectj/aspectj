@@ -32,8 +32,8 @@ public class BrowserMessageHandler implements IUIBuildMessageHandler {
 	private List<IMessage> messages;
 
 	public BrowserMessageHandler() {
-		ignoring = new ArrayList<IMessage.Kind>();
-		messages = new ArrayList<IMessage>();
+		ignoring = new ArrayList<>();
+		messages = new ArrayList<>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);
 	}

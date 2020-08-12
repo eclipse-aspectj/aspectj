@@ -43,7 +43,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	// Access to the handleMap and typeMap are now synchronized - at least the find methods and the updateHandleMap function
 	// see pr305788
 	private Map<String, IProgramElement> fileMap = null;
-	private Map<String, IProgramElement> handleMap = new HashMap<String, IProgramElement>();
+	private Map<String, IProgramElement> handleMap = new HashMap<>();
 	private Map<String, IProgramElement> typeMap = null;
 
 	public AspectJElementHierarchy(AsmManager asm) {
@@ -84,8 +84,8 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	public void setRoot(IProgramElement root) {
 		this.root = root;
-		handleMap = new HashMap<String, IProgramElement>();
-		typeMap = new HashMap<String, IProgramElement>();
+		handleMap = new HashMap<>();
+		typeMap = new HashMap<>();
 	}
 
 	public void addToFileMap(String key, IProgramElement value) {
@@ -230,7 +230,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		if ((children.get(0)).getKind() == IProgramElement.Kind.SOURCE_FOLDER) {
 			String searchPackageName = (packagename == null ? "" : packagename); // default package means match on ""
 			// dealing with source folders
-			List<IProgramElement> matchingPackageNodes = new ArrayList<IProgramElement>();
+			List<IProgramElement> matchingPackageNodes = new ArrayList<>();
 			for (IProgramElement sourceFolder : children) {
 				List<IProgramElement> possiblePackageNodes = sourceFolder.getChildren();
 				for (IProgramElement possiblePackageNode : possiblePackageNodes) {
@@ -248,11 +248,11 @@ public class AspectJElementHierarchy implements IHierarchy {
 			// thing to return in the list
 			if (packagename == null) {
 				// default package
-				List<IProgramElement> result = new ArrayList<IProgramElement>();
+				List<IProgramElement> result = new ArrayList<>();
 				result.add(root);
 				return result;
 			}
-			List<IProgramElement> result = new ArrayList<IProgramElement>();
+			List<IProgramElement> result = new ArrayList<>();
 			for (IProgramElement possiblePackage : children) {
 				if (possiblePackage.getKind() == IProgramElement.Kind.PACKAGE && possiblePackage.getName().equals(packagename)) {
 					result.add(possiblePackage);
@@ -643,7 +643,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	// TODO rename this method ... it does more than just the handle map
 	public void updateHandleMap(Set<String> deletedFiles) {
 		// Only delete the entries we need to from the handle map - for performance reasons
-		List<String> forRemoval = new ArrayList<String>();
+		List<String> forRemoval = new ArrayList<>();
 		Set<String> k = null;
 		synchronized (this) {
 			k = handleMap.keySet();

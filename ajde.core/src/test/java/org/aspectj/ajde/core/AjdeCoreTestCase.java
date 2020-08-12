@@ -139,7 +139,7 @@ public abstract class AjdeCoreTestCase extends TestCase {
 	}
 
 	public List<String> getSourceFileList(String[] files) {
-		List<String> sourceFiles = new ArrayList<String>();
+		List<String> sourceFiles = new ArrayList<>();
 		for (String file : files) {
 			sourceFiles.add(getAbsoluteProjectDir() + File.separator + file);
 		}

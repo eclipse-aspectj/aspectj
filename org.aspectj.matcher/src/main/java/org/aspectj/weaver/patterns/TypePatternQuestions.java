@@ -22,7 +22,7 @@ import org.aspectj.weaver.ResolvedType;
 
 
 public class TypePatternQuestions {
-	private Map<Question,FuzzyBoolean> questionsAndAnswers = new HashMap<Question,FuzzyBoolean>();
+	private Map<Question,FuzzyBoolean> questionsAndAnswers = new HashMap<>();
 	
 	public FuzzyBoolean askQuestion(TypePattern pattern, ResolvedType type,
 									TypePattern.MatchKind kind)

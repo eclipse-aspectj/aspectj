@@ -40,7 +40,7 @@ public class ExactTypePattern extends TypePattern {
 	private static final Map<String, Class<?>> boxedTypesMap;
 
 	static {
-		primitiveTypesMap = new HashMap<String, Class<?>>();
+		primitiveTypesMap = new HashMap<>();
 		primitiveTypesMap.put("int", int.class);
 		primitiveTypesMap.put("short", short.class);
 		primitiveTypesMap.put("long", long.class);
@@ -49,7 +49,7 @@ public class ExactTypePattern extends TypePattern {
 		primitiveTypesMap.put("float", float.class);
 		primitiveTypesMap.put("double", double.class);
 
-		boxedPrimitivesMap = new HashMap<String, Class<?>>();
+		boxedPrimitivesMap = new HashMap<>();
 		boxedPrimitivesMap.put("java.lang.Integer", Integer.class);
 		boxedPrimitivesMap.put("java.lang.Short", Short.class);
 		boxedPrimitivesMap.put("java.lang.Long", Long.class);
@@ -58,7 +58,7 @@ public class ExactTypePattern extends TypePattern {
 		boxedPrimitivesMap.put("java.lang.Float", Float.class);
 		boxedPrimitivesMap.put("java.lang.Double", Double.class);
 
-		boxedTypesMap = new HashMap<String, Class<?>>();
+		boxedTypesMap = new HashMap<>();
 		boxedTypesMap.put("int", Integer.class);
 		boxedTypesMap.put("short", Short.class);
 		boxedTypesMap.put("long", Long.class);

@@ -423,7 +423,7 @@ class BcelAdvice extends Advice {
 			return Collections.emptyList();
 		}
 
-		Collection<ResolvedType> ret = new ArrayList<ResolvedType>();
+		Collection<ResolvedType> ret = new ArrayList<>();
 		World world = concreteAspect.getWorld();
 		ResolvedType runtimeException = world.getCoreType(UnresolvedType.RUNTIME_EXCEPTION);
 		ResolvedType error = world.getCoreType(UnresolvedType.ERROR);

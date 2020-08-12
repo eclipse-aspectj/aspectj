@@ -91,7 +91,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private WeavingAdaptorMessageHolder messageHolder;
 	private boolean abortOnError = false;
 	protected GeneratedClassHandler generatedClassHandler;
-	protected Map<String, IUnwovenClassFile> generatedClasses = new HashMap<String, IUnwovenClassFile>();
+	protected Map<String, IUnwovenClassFile> generatedClasses = new HashMap<>();
 	public BcelObjectType delegateForCurrentClass; // lazily initialized, should be used to prevent parsing bytecode multiple
 	// times
 	protected ProtectionDomain activeProtectionDomain;
@@ -138,7 +138,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	protected List<String> getFullClassPath(ClassLoader loader) {
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		for (; loader != null; loader = loader.getParent()) {
 			if (loader instanceof URLClassLoader) {
 				URL[] urls = ((URLClassLoader) loader).getURLs();
@@ -165,7 +165,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	private List<String> getFullAspectPath(ClassLoader loader) {
-		List<String> list = new LinkedList<String>();
+		List<String> list = new LinkedList<>();
 		for (; loader != null; loader = loader.getParent()) {
 			if (loader instanceof WeavingClassLoader) {
 				URL[] urls = ((WeavingClassLoader) loader).getAspectURLs();
@@ -602,7 +602,7 @@ public class WeavingAdaptor implements IMessageContext {
 	}
 
 	private static List<String> makeClasspath(String cp) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		if (cp != null) {
 			StringTokenizer tok = new StringTokenizer(cp, File.pathSeparator);
 			while (tok.hasMoreTokens()) {
@@ -723,7 +723,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 		public void flushMessages() {
 			if (savedMessages == null) {
-				savedMessages = new ArrayList<IMessage>();
+				savedMessages = new ArrayList<>();
 				savedMessages.addAll(super.getUnmodifiableListView());
 				clearMessages();
 				for (IMessage message : savedMessages) {
@@ -794,7 +794,7 @@ public class WeavingAdaptor implements IMessageContext {
 		@Override
 		public List<IMessage> getUnmodifiableListView() {
 			// System.err.println("? WeavingAdaptorMessageHolder.getUnmodifiableListView() savedMessages=" + savedMessages);
-			List<IMessage> allMessages = new ArrayList<IMessage>();
+			List<IMessage> allMessages = new ArrayList<>();
 			allMessages.addAll(savedMessages);
 			allMessages.addAll(super.getUnmodifiableListView());
 			return allMessages;
@@ -803,7 +803,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	protected class WeavingAdaptorMessageWriter extends MessageWriter {
 
-		private final Set<IMessage.Kind> ignoring = new HashSet<IMessage.Kind>();
+		private final Set<IMessage.Kind> ignoring = new HashSet<>();
 		private final IMessage.Kind failKind;
 
 		public WeavingAdaptorMessageWriter(PrintWriter writer) {
@@ -859,7 +859,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private class WeavingClassFileProvider implements IClassFileProvider {
 
 		private final UnwovenClassFile unwovenClass;
-		private final List<UnwovenClassFile> unwovenClasses = new ArrayList<UnwovenClassFile>();
+		private final List<UnwovenClassFile> unwovenClasses = new ArrayList<>();
 		private IUnwovenClassFile wovenClass;
 		private boolean isApplyAtAspectJMungersOnly = false;
 

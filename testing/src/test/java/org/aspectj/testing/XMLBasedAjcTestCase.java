@@ -60,10 +60,10 @@ import junit.framework.TestSuite;
  */
 public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
-	private static Map<String,AjcTest> testMap = new HashMap<String,AjcTest>();
+	private static Map<String,AjcTest> testMap = new HashMap<>();
 	private static boolean suiteLoaded = false;
 	private AjcTest currentTest = null;
-	private Stack<Boolean> clearTestAfterRun = new Stack<Boolean>();
+	private Stack<Boolean> clearTestAfterRun = new Stack<>();
 
 	public XMLBasedAjcTestCase() {
 	}
@@ -284,7 +284,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		if (!suiteLoaded) {
-			testMap = new HashMap<String,AjcTest>();
+			testMap = new HashMap<>();
 			System.out.println("LOADING SUITE: " + getSpecFile().getPath());
 			Digester d = getDigester();
 			try {
@@ -413,7 +413,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * Sort it by name then start position
 	 */
 	public List<LocalVariable> sortedLocalVariables(LocalVariableTable lvt) {
-		List<LocalVariable> l = new ArrayList<LocalVariable>();
+		List<LocalVariable> l = new ArrayList<>();
 		LocalVariable lv[] = lvt.getLocalVariableTable();
 		for (LocalVariable lvEntry : lv) {
 			l.add(lvEntry);

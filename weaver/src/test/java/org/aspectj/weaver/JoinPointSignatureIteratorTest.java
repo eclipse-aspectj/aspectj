@@ -78,29 +78,29 @@ public class JoinPointSignatureIteratorTest extends TestCase {
 	public static Map<String, List<String>> expectedResults = new HashMap<>();
 
 	static {
-		List<String> sigs = new ArrayList<String>();
+		List<String> sigs = new ArrayList<>();
 		sigs.add("java.lang.Object $Proxy1.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object MessageService.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		expectedResults.put("java.lang.Object $Proxy1.get1(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList<String>();
+		sigs = new ArrayList<>();
 		sigs.add("java.lang.Object $Proxy1.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object MessageService.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		expectedResults.put("java.lang.Object $Proxy1.get2(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList<String>();
+		sigs = new ArrayList<>();
 		sigs.add("java.lang.Object $Proxy1.get1(java.lang.Long)");
 		expectedResults.put("java.lang.Object $Proxy1.get1(java.lang.Long)", sigs);
 
-		sigs = new ArrayList<String>();
+		sigs = new ArrayList<>();
 		sigs.add("java.lang.Object GenericService.get1(java.io.Serializable)");
 		expectedResults.put("java.lang.Object GenericService.get1(java.io.Serializable)", sigs);
 
-		sigs = new ArrayList<String>();
+		sigs = new ArrayList<>();
 		sigs.add("java.lang.Object GenericService.get2(java.io.Serializable)");
 		expectedResults.put("java.lang.Object GenericService.get2(java.io.Serializable)", sigs);
 	}

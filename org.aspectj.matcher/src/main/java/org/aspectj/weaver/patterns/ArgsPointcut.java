@@ -122,7 +122,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 	}
 
 	public List<BindingTypePattern> getBindingTypePatterns() {
-		List<BindingTypePattern> l = new ArrayList<BindingTypePattern>();
+		List<BindingTypePattern> l = new ArrayList<>();
 		TypePattern[] pats = arguments.getTypePatterns();
 		for (TypePattern pat : pats) {
 			if (pat instanceof BindingTypePattern) {

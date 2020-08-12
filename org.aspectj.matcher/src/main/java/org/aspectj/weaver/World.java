@@ -378,7 +378,7 @@ public abstract class World implements Dump.INode {
 		// MessageUtil.error(messageHandler,
 		// WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE,ty.getName()));
 		if (dumpState_cantFindTypeExceptions == null) {
-			dumpState_cantFindTypeExceptions = new ArrayList<RuntimeException>();
+			dumpState_cantFindTypeExceptions = new ArrayList<>();
 		}
 		if (dumpState_cantFindTypeExceptions.size() < 100) { // limit growth
 			dumpState_cantFindTypeExceptions.add(new RuntimeException("Can't find type " + ty.getName()));
@@ -1045,11 +1045,11 @@ public abstract class World implements Dump.INode {
 		public int policy = USE_WEAK_REFS;
 
 		// Map of types that never get thrown away
-		final Map<String, ResolvedType> tMap = new HashMap<String, ResolvedType>();
+		final Map<String, ResolvedType> tMap = new HashMap<>();
 
 		// Map of types that may be ejected from the cache if we need space
 		final Map<String, Reference<ResolvedType>> expendableMap = Collections
-				.synchronizedMap(new WeakHashMap<String, Reference<ResolvedType>>());
+				.synchronizedMap(new WeakHashMap<>());
 
 		private final World w;
 
@@ -1057,13 +1057,13 @@ public abstract class World implements Dump.INode {
 		private boolean memoryProfiling = false;
 		private int maxExpendableMapSize = -1;
 		private int collectedTypes = 0;
-		private final ReferenceQueue<ResolvedType> rq = new ReferenceQueue<ResolvedType>();
+		private final ReferenceQueue<ResolvedType> rq = new ReferenceQueue<>();
 
 		TypeMap(World w) {
 			// Demotion activated when switched on and loadtime weaving or in AJDT
 			demotionSystemActive = w.isDemotionActive() && (w.isLoadtimeWeaving() || w.couldIncrementalCompileFollow());
-			addedSinceLastDemote = new ArrayList<String>();
-			writtenClasses = new ArrayList<String>();
+			addedSinceLastDemote = new ArrayList<>();
+			writtenClasses = new ArrayList<>();
 			this.w = w;
 			memoryProfiling = false;// !w.getMessageHandler().isIgnoring(Message.INFO);
 		}
@@ -1115,7 +1115,7 @@ public abstract class World implements Dump.INode {
 				addedSinceLastDemote.clear();
 			} else {
 				// Compile time demotion strategy
-				List<String> forRemoval = new ArrayList<String>();
+				List<String> forRemoval = new ArrayList<>();
 				for (String key : addedSinceLastDemote) {
 					ResolvedType type = tMap.get(key);
 					if (type == null) {
@@ -1189,9 +1189,9 @@ public abstract class World implements Dump.INode {
 					// might be GC'd independently.
 					expendableMap.remove(key);
 					if (policy == USE_SOFT_REFS) {
-						expendableMap.put(key, new SoftReference<ResolvedType>(type));
+						expendableMap.put(key, new SoftReference<>(type));
 					} else {
-						expendableMap.put(key, new WeakReference<ResolvedType>(type));
+						expendableMap.put(key, new WeakReference<>(type));
 					}
 				}
 			}
@@ -1265,15 +1265,15 @@ public abstract class World implements Dump.INode {
 					// Dont use reference queue for tracking if not profiling...
 					if (policy == USE_WEAK_REFS) {
 						if (memoryProfiling) {
-							expendableMap.put(key, new WeakReference<ResolvedType>(type, rq));
+							expendableMap.put(key, new WeakReference<>(type, rq));
 						} else {
-							expendableMap.put(key, new WeakReference<ResolvedType>(type));
+							expendableMap.put(key, new WeakReference<>(type));
 						}
 					} else if (policy == USE_SOFT_REFS) {
 						if (memoryProfiling) {
-							expendableMap.put(key, new SoftReference<ResolvedType>(type, rq));
+							expendableMap.put(key, new SoftReference<>(type, rq));
 						} else {
-							expendableMap.put(key, new SoftReference<ResolvedType>(type));
+							expendableMap.put(key, new SoftReference<>(type));
 						}
 						// } else {
 						// expendableMap.put(key, type);
@@ -1418,7 +1418,7 @@ public abstract class World implements Dump.INode {
 
 		public AspectPrecedenceCalculator(World forSomeWorld) {
 			world = forSomeWorld;
-			cachedResults = new HashMap<PrecedenceCacheKey, Integer>();
+			cachedResults = new HashMap<>();
 		}
 
 		/**
@@ -1521,7 +1521,7 @@ public abstract class World implements Dump.INode {
 	// --- I would rather stash this against a reference type - but we don't
 	// guarantee referencetypes are unique for
 	// so we can't :(
-	private final Map<Class<?>, TypeVariable[]> workInProgress1 = new HashMap<Class<?>, TypeVariable[]>();
+	private final Map<Class<?>, TypeVariable[]> workInProgress1 = new HashMap<>();
 
 	public TypeVariable[] getTypeVariablesCurrentlyBeingProcessed(Class<?> baseClass) {
 		return workInProgress1.get(baseClass);
@@ -1756,7 +1756,7 @@ public abstract class World implements Dump.INode {
 	 */
 	public void registerPointcutHandler(PointcutDesignatorHandler designatorHandler) {
 		if (pointcutDesignators == null) {
-			pointcutDesignators = new HashSet<PointcutDesignatorHandler>();
+			pointcutDesignators = new HashSet<>();
 		}
 		pointcutDesignators.add(designatorHandler);
 	}
@@ -1841,7 +1841,7 @@ public abstract class World implements Dump.INode {
 
 	// map from aspect > excluded types
 	// memory issue here?
-	private Map<ResolvedType, Set<ResolvedType>> exclusionMap = new HashMap<ResolvedType, Set<ResolvedType>>();
+	private Map<ResolvedType, Set<ResolvedType>> exclusionMap = new HashMap<>();
 
 	public Map<ResolvedType, Set<ResolvedType>> getExclusionMap() {
 		return exclusionMap;
@@ -1886,10 +1886,10 @@ public abstract class World implements Dump.INode {
 		long typeCount;
 		long perJoinpointCount;
 		long perTypes;
-		Map<String, Long> joinpointsPerPointcut = new HashMap<String, Long>();
-		Map<String, Long> timePerPointcut = new HashMap<String, Long>();
-		Map<String, Long> fastMatchTimesPerPointcut = new HashMap<String, Long>();
-		Map<String, Long> fastMatchTypesPerPointcut = new HashMap<String, Long>();
+		Map<String, Long> joinpointsPerPointcut = new HashMap<>();
+		Map<String, Long> timePerPointcut = new HashMap<>();
+		Map<String, Long> fastMatchTimesPerPointcut = new HashMap<>();
+		Map<String, Long> fastMatchTypesPerPointcut = new HashMap<>();
 
 		TimeCollector(World world) {
 			this.perJoinpointCount = world.timersPerJoinpoint;
@@ -1897,8 +1897,8 @@ public abstract class World implements Dump.INode {
 			this.world = world;
 			this.joinpointCount = 0;
 			this.typeCount = 0;
-			this.joinpointsPerPointcut = new HashMap<String, Long>();
-			this.timePerPointcut = new HashMap<String, Long>();
+			this.joinpointsPerPointcut = new HashMap<>();
+			this.timePerPointcut = new HashMap<>();
 		}
 
 		public void report() {

@@ -49,7 +49,7 @@ public class DefaultCacheKeyResolver implements CacheKeyResolver {
 	public String createClassLoaderScope(ClassLoader cl, List<String> aspects) {
 		String name = cl != null ? cl.getClass().getSimpleName() : "unknown";
 
-		List<String> hashableStrings = new LinkedList<String>();
+		List<String> hashableStrings = new LinkedList<>();
 		StringBuilder hashable = new StringBuilder(256);
 
 		// Add the list of loader urls to the hash list

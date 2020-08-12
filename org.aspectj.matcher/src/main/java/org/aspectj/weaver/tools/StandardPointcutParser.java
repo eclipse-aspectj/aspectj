@@ -53,14 +53,14 @@ public class StandardPointcutParser {
 
 	private World world;
 	private final Set<PointcutPrimitive> supportedPrimitives;
-	private final Set<PointcutDesignatorHandler> pointcutDesignators = new HashSet<PointcutDesignatorHandler>();
+	private final Set<PointcutDesignatorHandler> pointcutDesignators = new HashSet<>();
 
 	/**
 	 * @return a Set containing every PointcutPrimitive except if, cflow, and cflowbelow (useful for passing to PointcutParser
 	 *         constructor).
 	 */
 	public static Set<PointcutPrimitive> getAllSupportedPointcutPrimitives() {
-		Set<PointcutPrimitive> primitives = new HashSet<PointcutPrimitive>();
+		Set<PointcutPrimitive> primitives = new HashSet<>();
 		primitives.add(PointcutPrimitive.ADVICE_EXECUTION);
 		primitives.add(PointcutPrimitive.ARGS);
 		primitives.add(PointcutPrimitive.CALL);

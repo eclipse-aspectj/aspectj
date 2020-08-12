@@ -96,7 +96,7 @@ public class InterTypeScope extends ClassScope {
 			TypeVariableBinding tvb = sourceType.typeVariables()[aliased];
 			tvb.fPackage = sourceType.fPackage;
 			if (usedAliases == null)
-				usedAliases = new HashMap<TypeVariableBinding, String>();
+				usedAliases = new HashMap<>();
 			usedAliases.put(tvb, variableName);
 			return tvb;
 		} else {

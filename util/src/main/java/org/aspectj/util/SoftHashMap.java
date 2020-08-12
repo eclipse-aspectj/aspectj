@@ -19,7 +19,7 @@ public class SoftHashMap<K,V> extends AbstractMap<K,V> {
 	private ReferenceQueue<? super V> rq = new ReferenceQueue();
 
 	public SoftHashMap() {
-		this.map = new HashMap<K,SpecialValue>();
+		this.map = new HashMap<>();
 	}
 	
 	class SpecialValue extends SoftReference<V> {
@@ -65,7 +65,7 @@ public class SoftHashMap<K,V> extends AbstractMap<K,V> {
 	@Override
 	public java.util.Set<Map.Entry<K,V>> entrySet() {
 		if (map.isEmpty()) { return Collections.<K,V>emptyMap().entrySet(); }
-		Map<K,V> currentContents = new HashMap<K,V>();
+		Map<K,V> currentContents = new HashMap<>();
 		for (Map.Entry<K,SpecialValue> entry: map.entrySet()) {
 			V currentValueForEntry = entry.getValue().get();
 			if (currentValueForEntry != null) {

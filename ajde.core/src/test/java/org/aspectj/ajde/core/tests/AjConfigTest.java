@@ -60,7 +60,7 @@ public class AjConfigTest extends AjdeCoreTestCase {
 	}
 
 	public void testAspectPath() {
-		Set<File> aspects = new HashSet<File>();
+		Set<File> aspects = new HashSet<>();
 		compilerConfig.setAspectPath(aspects);
 		AjBuildConfig buildConfig = genAjBuildConfig();
 		List<File> aPath = buildConfig.getAspectpath();
@@ -83,7 +83,7 @@ public class AjConfigTest extends AjdeCoreTestCase {
 	}
 
 	public void testInpath() {
-		Set<File> jars = new HashSet<File>();
+		Set<File> jars = new HashSet<>();
 		compilerConfig.setInpath(jars);
 		AjBuildConfig buildConfig = genAjBuildConfig();
 		List<File> inJars = buildConfig.getInpath();
@@ -130,7 +130,7 @@ public class AjConfigTest extends AjdeCoreTestCase {
 	}
 
 	public void testSourcePathResources() {
-		Map<String, File> m = new HashMap<String, File>();
+		Map<String, File> m = new HashMap<>();
 		m.put("newFile.txt", getWorkingDir());
 		compilerConfig.setSourcePathResources(m);
 		AjBuildConfig buildConfig = genAjBuildConfig();

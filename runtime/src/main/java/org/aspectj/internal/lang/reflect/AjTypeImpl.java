@@ -270,7 +270,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Field[] getDeclaredFields() {
 		Field[] fields = clazz.getDeclaredFields();
-		List<Field> filteredFields = new ArrayList<Field>();
+		List<Field> filteredFields = new ArrayList<>();
 		for (Field field : fields) 
 			if (!field.getName().startsWith(ajcMagic) 
 				&& !field.isAnnotationPresent(DeclareWarning.class)
@@ -296,7 +296,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Field[] getFields() {
 		Field[] fields = clazz.getFields();
-		List<Field> filteredFields = new ArrayList<Field>();
+		List<Field> filteredFields = new ArrayList<>();
 		for (Field field : fields)
 			if (!field.getName().startsWith(ajcMagic) 
 					&& !field.isAnnotationPresent(DeclareWarning.class)
@@ -331,7 +331,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Method[] getDeclaredMethods() {
 		Method[] methods = clazz.getDeclaredMethods();
-		List<Method> filteredMethods = new ArrayList<Method>();
+		List<Method> filteredMethods = new ArrayList<>();
 		for (Method method : methods) {
 			if (isReallyAMethod(method)) filteredMethods.add(method);
 		}
@@ -345,7 +345,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Method[] getMethods() {
 		Method[] methods = clazz.getMethods();
-		List<Method> filteredMethods = new ArrayList<Method>();
+		List<Method> filteredMethods = new ArrayList<>();
 		for (Method method : methods) {
 			if (isReallyAMethod(method)) filteredMethods.add(method);
 		}
@@ -391,7 +391,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Pointcut[] getDeclaredPointcuts() {
 		if (declaredPointcuts != null) return declaredPointcuts;
-		List<Pointcut> pointcuts = new ArrayList<Pointcut>();
+		List<Pointcut> pointcuts = new ArrayList<>();
 		Method[] methods = clazz.getDeclaredMethods();
 		for (Method method : methods) {
 			Pointcut pc = asPointcut(method);
@@ -408,7 +408,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public Pointcut[] getPointcuts() {
 		if (pointcuts != null) return pointcuts;
-		List<Pointcut> pcuts = new ArrayList<Pointcut>();
+		List<Pointcut> pcuts = new ArrayList<>();
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods) {
 			Pointcut pc = asPointcut(method);
@@ -465,7 +465,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	private Advice[] getDeclaredAdvice(Set ofAdviceTypes) {
 		if (declaredAdvice == null) initDeclaredAdvice();
-		List<Advice> adviceList = new ArrayList<Advice>();
+		List<Advice> adviceList = new ArrayList<>();
 		for (Advice a : declaredAdvice) {
 			if (ofAdviceTypes.contains(a.getKind())) adviceList.add(a);
 		}
@@ -476,7 +476,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	private void initDeclaredAdvice() {
 		Method[] methods = clazz.getDeclaredMethods();
-		List<Advice> adviceList = new ArrayList<Advice>();
+		List<Advice> adviceList = new ArrayList<>();
 		for (Method method : methods) {
 			Advice advice = asAdvice(method);
 			if (advice != null) adviceList.add(advice);
@@ -490,7 +490,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	private Advice[] getAdvice(Set ofAdviceTypes) {
 		if (advice == null) initAdvice();
-		List<Advice> adviceList = new ArrayList<Advice>();
+		List<Advice> adviceList = new ArrayList<>();
 		for (Advice a : advice) {
 			if (ofAdviceTypes.contains(a.getKind())) adviceList.add(a);
 		}
@@ -501,7 +501,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	private void initAdvice() {
 		Method[] methods = clazz.getMethods();
-		List<Advice> adviceList = new ArrayList<Advice>();
+		List<Advice> adviceList = new ArrayList<>();
 		for (Method method : methods) {
 			Advice advice = asAdvice(method);
 			if (advice != null) adviceList.add(advice);
@@ -584,7 +584,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public InterTypeMethodDeclaration[] getDeclaredITDMethods() {
 		if (this.declaredITDMethods == null) {
-			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
+			List<InterTypeMethodDeclaration> itdms = new ArrayList<>();
 			Method[] baseMethods = clazz.getDeclaredMethods();
 			for (Method m : baseMethods) {
 				if (!m.getName().contains("ajc$interMethodDispatch1$")) continue;
@@ -631,7 +631,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	public InterTypeMethodDeclaration[] getITDMethods() {
 		if (this.itdMethods == null) {
-			List<InterTypeMethodDeclaration> itdms = new ArrayList<InterTypeMethodDeclaration>();
+			List<InterTypeMethodDeclaration> itdms = new ArrayList<>();
 			Method[] baseMethods = clazz.getDeclaredMethods();
 			for (Method m : baseMethods) {
 				if (!m.getName().contains("ajc$interMethod$")) continue;
@@ -704,7 +704,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	public InterTypeConstructorDeclaration[] getDeclaredITDConstructors() {
 		if (this.declaredITDCons == null) {
-			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
+			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<>();
 			Method[] baseMethods = clazz.getDeclaredMethods();
 			for (Method m : baseMethods) {
 				if (!m.getName().contains("ajc$postInterConstructor")) continue;
@@ -746,7 +746,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 
 	public InterTypeConstructorDeclaration[] getITDConstructors() {
 		if (this.itdCons == null) {
-			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<InterTypeConstructorDeclaration>();
+			List<InterTypeConstructorDeclaration> itdcs = new ArrayList<>();
 			Method[] baseMethods = clazz.getMethods();
 			for (Method m : baseMethods) {
 				if (!m.getName().contains("ajc$postInterConstructor")) continue;
@@ -780,7 +780,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public InterTypeFieldDeclaration[] getDeclaredITDFields() {
-		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
+		List<InterTypeFieldDeclaration> itdfs = new ArrayList<>();
 		if (this.declaredITDFields == null) {
 			Method[] baseMethods = clazz.getDeclaredMethods();
 			for(Method m : baseMethods) {
@@ -826,7 +826,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public InterTypeFieldDeclaration[] getITDFields() {
-		List<InterTypeFieldDeclaration> itdfs = new ArrayList<InterTypeFieldDeclaration>();
+		List<InterTypeFieldDeclaration> itdfs = new ArrayList<>();
 		if (this.itdFields == null) {
 			Method[] baseMethods = clazz.getMethods();
 			for(Method m : baseMethods) {
@@ -857,7 +857,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public DeclareErrorOrWarning[] getDeclareErrorOrWarnings() {
-		List<DeclareErrorOrWarning> deows = new ArrayList<DeclareErrorOrWarning>();
+		List<DeclareErrorOrWarning> deows = new ArrayList<>();
 		for (Field field : clazz.getDeclaredFields()) {
 			try {
 				if (field.isAnnotationPresent(DeclareWarning.class)) {
@@ -894,7 +894,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public DeclareParents[] getDeclareParents() {
-		List<DeclareParents> decps = new ArrayList<DeclareParents>();
+		List<DeclareParents> decps = new ArrayList<>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (method.isAnnotationPresent(ajcDeclareParents.class)) {
 				ajcDeclareParents decPAnn = method.getAnnotation(ajcDeclareParents.class);
@@ -934,7 +934,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public DeclareSoft[] getDeclareSofts() {
-		List<DeclareSoft> decs = new ArrayList<DeclareSoft>();
+		List<DeclareSoft> decs = new ArrayList<>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (method.isAnnotationPresent(ajcDeclareSoft.class)) {
 				ajcDeclareSoft decSAnn = method.getAnnotation(ajcDeclareSoft.class);
@@ -955,7 +955,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public DeclareAnnotation[] getDeclareAnnotations() {
-		List<DeclareAnnotation> decAs = new ArrayList<DeclareAnnotation>();
+		List<DeclareAnnotation> decAs = new ArrayList<>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (method.isAnnotationPresent(ajcDeclareAnnotation.class)) {
 				ajcDeclareAnnotation decAnn = method.getAnnotation(ajcDeclareAnnotation.class);
@@ -988,7 +988,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	}
 
 	public DeclarePrecedence[] getDeclarePrecedence() {
-		List<DeclarePrecedence> decps = new ArrayList<DeclarePrecedence>();
+		List<DeclarePrecedence> decps = new ArrayList<>();
 		
 		// @AspectJ Style
 		if (clazz.isAnnotationPresent(org.aspectj.lang.annotation.DeclarePrecedence.class)) {

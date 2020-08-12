@@ -30,7 +30,7 @@ import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
 public class Lint {
-	Map<String, Lint.Kind> kinds = new HashMap<String, Lint.Kind>();
+	Map<String, Lint.Kind> kinds = new HashMap<>();
 	/* private */World world;
 
 	public final Kind invalidAbsoluteTypeName = new Kind("invalidAbsoluteTypeName", "no match for this type name: {0}");

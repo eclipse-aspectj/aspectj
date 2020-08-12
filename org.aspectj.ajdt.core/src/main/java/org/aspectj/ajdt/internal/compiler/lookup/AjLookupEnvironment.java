@@ -93,7 +93,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	public EclipseFactory factory = null;
 
 	// private boolean builtInterTypesAndPerClauses = false;
-	private final List<SourceTypeBinding> pendingTypesToWeave = new ArrayList<SourceTypeBinding>();
+	private final List<SourceTypeBinding> pendingTypesToWeave = new ArrayList<>();
 
 	// Q: What are dangerousInterfaces?
 	// A: An interface is considered dangerous if an ITD has been made upon it
@@ -190,8 +190,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		// need to build inter-type declarations for all AspectDeclarations at
 		// this point
 		// this MUST be done in order from super-types to subtypes
-		List<SourceTypeBinding> typesToProcess = new ArrayList<SourceTypeBinding>();
-		List<SourceTypeBinding> aspectsToProcess = new ArrayList<SourceTypeBinding>();
+		List<SourceTypeBinding> typesToProcess = new ArrayList<>();
+		List<SourceTypeBinding> aspectsToProcess = new ArrayList<>();
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			CompilationUnitScope cus = units[i].scope;
 			SourceTypeBinding[] stbs = cus.topLevelTypes;
@@ -250,7 +250,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		boolean typeProcessingOrderIsImportant = declareParents.size() > 0 || declareAnnotationOnTypes.size() > 0; // DECAT
 
 		if (typeProcessingOrderIsImportant) {
-			typesToProcess = new ArrayList<SourceTypeBinding>();
+			typesToProcess = new ArrayList<>();
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 				CompilationUnitScope cus = units[i].scope;
 				SourceTypeBinding[] stbs = cus.topLevelTypes;
@@ -259,7 +259,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				}
 			}
 
-			List<SourceTypeBinding> stb2 = new ArrayList<SourceTypeBinding>();
+			List<SourceTypeBinding> stb2 = new ArrayList<>();
 			stb2.addAll(typesToProcess);
 
 			while (typesToProcess.size() > 0) {
@@ -730,8 +730,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// not-exposed to weaver
 			// messages...
 
-			List<DeclareParents> decpToRepeat = new ArrayList<DeclareParents>();
-			List<DeclareAnnotation> decaToRepeat = new ArrayList<DeclareAnnotation>();
+			List<DeclareParents> decpToRepeat = new ArrayList<>();
+			List<DeclareAnnotation> decaToRepeat = new ArrayList<>();
 			boolean anyNewParents = false;
 			boolean anyNewAnnotations = false;
 
@@ -768,7 +768,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				}
 			}
 
-			List<Object> forRemoval = new ArrayList<Object>();
+			List<Object> forRemoval = new ArrayList<>();
 			// now lets loop over and over until we have done all we can
 			while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
 				anyNewParents = anyNewAnnotations = false;
@@ -927,7 +927,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if ((bits & TagBits.AnnotationTargetMASK) == 0) {
 			return "";
 		}
-		Set<String> s = new HashSet<String>();
+		Set<String> s = new HashSet<>();
 		if ((bits & TagBits.AnnotationForAnnotationType) != 0) {
 			s.add("ANNOTATION_TYPE");
 		}

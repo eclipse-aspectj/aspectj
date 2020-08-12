@@ -39,7 +39,7 @@ public class IncrementalStateManager {
 	// SECRETAPI will consume more memory, so turn on at your own risk ;) Set to 'true' when memory usage is understood
 	public static boolean recordIncrementalStates = false;
 	public static boolean debugIncrementalStates = false;
-	private static Hashtable<String, AjState> incrementalStates = new Hashtable<String, AjState>();
+	private static Hashtable<String, AjState> incrementalStates = new Hashtable<>();
 
 	public static void recordSuccessfulBuild(String buildConfig, AjState state) {
 		if (!recordIncrementalStates) {

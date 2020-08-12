@@ -165,7 +165,7 @@ public class ThisOrTargetPointcut extends NameBindingPointcut {
 	@Override
 	public List<BindingTypePattern> getBindingTypePatterns() {
 		if (typePattern instanceof BindingTypePattern) {
-			List<BindingTypePattern> l = new ArrayList<BindingTypePattern>();
+			List<BindingTypePattern> l = new ArrayList<>();
 			l.add((BindingTypePattern)typePattern);
 			return l;
 		} else {

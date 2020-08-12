@@ -606,7 +606,7 @@ public abstract class Utility {
 				riaIndex = cp.addUtf8("RuntimeInvisibleAnnotations");
 			}
 
-			List<RuntimeAnnos> newAttributes = new ArrayList<RuntimeAnnos>();
+			List<RuntimeAnnos> newAttributes = new ArrayList<>();
 			if (rvaData.length > 2) {
 				newAttributes.add(new RuntimeVisAnnos(rvaIndex, rvaData.length, rvaData, cp));
 			}
@@ -699,7 +699,7 @@ public abstract class Utility {
 				riaIndex = cp.addUtf8("RuntimeInvisibleParameterAnnotations");
 			}
 
-			List<RuntimeParamAnnos> newAttributes = new ArrayList<RuntimeParamAnnos>();
+			List<RuntimeParamAnnos> newAttributes = new ArrayList<>();
 
 			if (totalVisCount > 0) {
 				newAttributes.add(new RuntimeVisParamAnnos(rvaIndex, rvaData.length, rvaData, cp));

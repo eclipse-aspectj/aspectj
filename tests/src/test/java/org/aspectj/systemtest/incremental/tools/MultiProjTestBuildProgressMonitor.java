@@ -23,8 +23,8 @@ public class MultiProjTestBuildProgressMonitor implements IBuildProgressMonitor 
 
 	public boolean VERBOSE = false;
 
-	private List<String> compiledFiles = new ArrayList<String>();
-	private List<String> wovenClasses = new ArrayList<String>();
+	private List<String> compiledFiles = new ArrayList<>();
+	private List<String> wovenClasses = new ArrayList<>();
 
 	private long starttime = 0;
 	private long totaltimetaken = 0;

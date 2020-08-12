@@ -191,7 +191,7 @@ public class IfPointcut extends Pointcut {
 			}
 
 			Test ret = Literal.TRUE;
-			List<Var> args = new ArrayList<Var>();
+			List<Var> args = new ArrayList<>();
 
 			// code style
 			if (extraParameterFlags >= 0) {

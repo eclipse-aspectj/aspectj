@@ -42,7 +42,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		configureProcessorOptions("ProcessorConsumer1","DemoProcessor");
 		configureNonStandardCompileOptions("ProcessorConsumer1", "-showWeaveInfo");
 
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -70,7 +70,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		configureProcessorPath("ProcessorConsumer2", getCompilerForProjectWithName("ProcessorProject2").getCompilerConfiguration().getOutputLocationManager().getDefaultOutputLocation().toString()+File.pathSeparator+
 				new File(testdataSrcDir + File.separatorChar + "ProcessorProject2" + File.separatorChar + "base"+File.separatorChar+"src").toString());
 		
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -108,7 +108,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 
 		configureNonStandardCompileOptions("ProcessorConsumer1", "-showWeaveInfo");
 
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -144,7 +144,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 	}
 	
 	private void checkCompiledFiles(String projectName, String... expectedCompiledFiles) {
-		List<String> compiledFiles = new ArrayList<String>(getCompiledFiles(projectName));
+		List<String> compiledFiles = new ArrayList<>(getCompiledFiles(projectName));
 		if (compiledFiles.size()!=expectedCompiledFiles.length) {
 			fail("Expected #"+expectedCompiledFiles.length+" files to be compiled but found that #"+compiledFiles.size()+" files were compiled.\nCompiled="+compiledFiles);
 		}

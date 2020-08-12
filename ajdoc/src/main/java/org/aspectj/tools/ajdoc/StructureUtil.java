@@ -42,7 +42,7 @@ public class StructureUtil {
 	 * @return null if a relationship of that kind is not found
 	 */
 	public static List<String> getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
-		List<IRelationship> relations = new ArrayList<IRelationship>();
+		List<IRelationship> relations = new ArrayList<>();
 		List<IRelationship> rels = node.getModel().getRelationshipMap().get(node);
 		if (rels != null) {
 			relations.addAll(rels);
@@ -64,7 +64,7 @@ public class StructureUtil {
 		}
 		if (relations == null || relations.isEmpty())
 			return null;
-		List<String> targets = new ArrayList<String>();
+		List<String> targets = new ArrayList<>();
 		for (IRelationship rtn : relations) {
 			if (rtn.getKind().equals(kind) && ((relName != null && relName.equals(rtn.getName())) || relName == null)) {
 				List<String> targs = rtn.getTargets();
@@ -79,7 +79,7 @@ public class StructureUtil {
 	}
 
 	static List<IProgramElement> getDeclareInterTypeTargets(IProgramElement node, IProgramElement.Kind kind) {
-		List<IProgramElement> targets = new ArrayList<IProgramElement>();
+		List<IProgramElement> targets = new ArrayList<>();
 		List<String> stringTargets = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE);
 		if (stringTargets == null) {
 			return null;

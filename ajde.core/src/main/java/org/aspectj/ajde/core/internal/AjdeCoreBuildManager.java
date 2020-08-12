@@ -272,7 +272,7 @@ public class AjdeCoreBuildManager {
 		if (propcp != null && propcp.length() != 0) {
 			StringTokenizer st = new StringTokenizer(propcp, File.pathSeparator);
 			List<String> configClasspath = config.getClasspath();
-			ArrayList<String> toAdd = new ArrayList<String>();
+			ArrayList<String> toAdd = new ArrayList<>();
 			while (st.hasMoreTokens()) {
 				String entry = st.nextToken();
 				if (!configClasspath.contains(entry)) {
@@ -280,7 +280,7 @@ public class AjdeCoreBuildManager {
 				}
 			}
 			if (0 < toAdd.size()) {
-				ArrayList<String> both = new ArrayList<String>(configClasspath.size() + toAdd.size());
+				ArrayList<String> both = new ArrayList<>(configClasspath.size() + toAdd.size());
 				both.addAll(configClasspath);
 				both.addAll(toAdd);
 				config.setClasspath(both);
@@ -376,7 +376,7 @@ public class AjdeCoreBuildManager {
 		// Break a string into a string array of non-standard options.
 		// Allows for one option to include a ' '. i.e. assuming it has been quoted, it
 		// won't accidentally get treated as a pair of options (can be needed for xlint props file option)
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 		int ind = nonStdOptions.indexOf('\"');
 		int ind2 = nonStdOptions.indexOf('\"', ind + 1);
 		if ((ind > -1) && (ind2 > -1)) { // dont tokenize within double quotes
@@ -404,7 +404,7 @@ public class AjdeCoreBuildManager {
 
 	/** Local helper method for splitting option strings */
 	private List<String> tokenizeString(String str) {
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 		StringTokenizer tok = new StringTokenizer(str);
 		while (tok.hasMoreTokens()) {
 			tokens.add(tok.nextToken());

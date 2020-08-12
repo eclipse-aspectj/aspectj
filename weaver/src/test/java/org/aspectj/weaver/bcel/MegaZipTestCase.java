@@ -60,7 +60,7 @@ public class MegaZipTestCase extends WeaveTestCase {
 	}
 
 	public List<ShadowMunger> getShadowMungers() {
-		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
+		List<ShadowMunger> ret = new ArrayList<>();
 		ret.add(makeConcreteAdvice("before" + "(): call(* *.println(..)) -> static void fluffy.Aspect.before_method_call()"));
 		ret.add(makeConcreteAdvice("afterReturning"
 				+ "(): call(* *.println(..)) -> static void fluffy.Aspect.afterReturning_method_call()"));

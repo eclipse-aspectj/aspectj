@@ -713,7 +713,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testOutputLocationCallbacks2() {
 		String p = "pr268827_ol_res";
 		initialiseProject(p);
-		Map<String,File> m = new HashMap<String,File>();
+		Map<String,File> m = new HashMap<>();
 		m.put("a.txt", new File(getFile(p, "src/a.txt")));
 		configureResourceMap(p, m);
 		CustomOLM olm = new CustomOLM(getProjectRelativePath(p, ".").toString());
@@ -808,7 +808,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "pr266420";
 		initialiseProject(p);
 
-		Hashtable<String,String> javaOptions = new Hashtable<String,String>();
+		Hashtable<String,String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -1635,7 +1635,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testInvalidAspectpath_pr121395() {
 		initialiseProject("P1");
 		File f = new File("foo.jar");
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(f);
 		configureAspectPath("P1", s);
 		build("P1"); // This first build will be batch
@@ -2188,7 +2188,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		List<String> viaIteratorList = exhaustTypeIterator(typeA.getHierarchy(wantGenerics, false));
 		List<ResolvedType> typeDirectlyList = typeA.getHierarchyWithoutIterator(true, true, wantGenerics);
 		assertFalse(viaIteratorList.isEmpty());
-		List<String> directlyList = new ArrayList<String>();
+		List<String> directlyList = new ArrayList<>();
 		for (ResolvedType type : typeDirectlyList) {
 			String n = type.getName();
 			if (!directlyList.contains(n)) {
@@ -2252,7 +2252,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private List<ResolvedMember> getThemAll(Iterator<ResolvedMember> methods) {
-		List<ResolvedMember> allOfThem = new ArrayList<ResolvedMember>();
+		List<ResolvedMember> allOfThem = new ArrayList<>();
 		while (methods.hasNext()) {
 			allOfThem.add(methods.next());
 		}
@@ -2260,7 +2260,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private List<String> exhaustTypeIterator(Iterator<ResolvedType> types) {
-		List<String> allOfThem = new ArrayList<String>();
+		List<String> allOfThem = new ArrayList<>();
 		while (types.hasNext()) {
 			allOfThem.add(types.next().getName());
 		}
@@ -3614,7 +3614,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_1() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -3646,7 +3646,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_2() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -3676,7 +3676,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_3() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<String, String>();
+		Hashtable<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -3709,7 +3709,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// set up the inpath to have the directory on it's path
 		File f = new File(inpathDir);
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(f);
 		configureInPath("inpathTesting", s);
 		build("inpathTesting");
@@ -3744,7 +3744,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// set up the inpath to have the directory on it's path
 		System.out.println(inpathDir);
 		File f = new File(inpathDir);
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(f);
 		configureInPath(p, s);
 		build(p);
@@ -3775,7 +3775,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// set up the inpath to have the directory on it's path
 		File f = new File(inpathDir);
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(f);
 		configureInPath(p, s);
 
@@ -3813,9 +3813,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// set up the inpath to have the directory on it's path
 		System.out.println(inpathDir);
 		File f = new File(inpathDir);
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(f);
-		Map<File, String> m = new HashMap<File, String>();
+		Map<File, String> m = new HashMap<>();
 		m.put(f, "wibble");
 		configureOutputLocationManager(p, new TestOutputLocationManager(getProjectRelativePath(p, ".").toString(), m));
 
@@ -3934,7 +3934,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		for (IRelationship element : rels) {
 			List<String> targets = element.getTargets();
 			if (output == null) {
-				output = new ArrayList<String>();
+				output = new ArrayList<>();
 			}
 			output.addAll(targets);
 		}

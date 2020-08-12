@@ -31,12 +31,12 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 	private Member signaturesOfMember;
 	private ResolvedMember firstDefiningMember;
 	private World world;
-	private List<JoinPointSignature> discoveredSignatures = new ArrayList<JoinPointSignature>();
+	private List<JoinPointSignature> discoveredSignatures = new ArrayList<>();
 	private List<JoinPointSignature> additionalSignatures = Collections.emptyList();
 	private Iterator<JoinPointSignature> discoveredSignaturesIterator = null;
 	private Iterator<ResolvedType> superTypeIterator = null;
 	private boolean isProxy = false;
-	private Set<ResolvedType> visitedSuperTypes = new HashSet<ResolvedType>();
+	private Set<ResolvedType> visitedSuperTypes = new HashSet<>();
 	private List<SearchPair> yetToBeProcessedSuperMembers = null;
 
 	private boolean iteratingOverDiscoveredSignatures = true;
@@ -131,7 +131,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 			// a common case
 			discoveredSignatures.add(new JoinPointSignature(firstDefiningMember, originalDeclaringType));
 		} else {
-			List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
+			List<ResolvedType> declaringTypes = new ArrayList<>();
 			accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
 			for (ResolvedType declaringType : declaringTypes) {
 				discoveredSignatures.add(new JoinPointSignature(firstDefiningMember, declaringType));
@@ -192,7 +192,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) superType.lookupResolvedMember(firstDefiningMember, true,
 						isProxy);
 				if (foundMember != null && isVisibleTo(firstDefiningMember, foundMember)) {
-					List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
+					List<ResolvedType> declaringTypes = new ArrayList<>();
 					// declaring type can be unresolved if the member can from an ITD...
 					ResolvedType resolvedDeclaringType = foundMember.getDeclaringType().resolve(world);
 					accumulateTypesInBetween(superType, resolvedDeclaringType, declaringTypes);
@@ -206,7 +206,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 						member = new JoinPointSignature(foundMember, declaringType);
 						discoveredSignatures.add(member); // for next time we are reset
 						if (additionalSignatures == Collections.EMPTY_LIST) {
-							additionalSignatures = new ArrayList<JoinPointSignature>();
+							additionalSignatures = new ArrayList<>();
 						}
 						additionalSignatures.add(member); // for this time
 					}
@@ -216,12 +216,12 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 								foundMember.declaringType.resolve(world));
 						discoveredSignatures.add(member); // for next time we are reset
 						if (additionalSignatures == Collections.EMPTY_LIST) {
-							additionalSignatures = new ArrayList<JoinPointSignature>();
+							additionalSignatures = new ArrayList<>();
 						}
 						additionalSignatures.add(member); // for this time
 					}
 					if (yetToBeProcessedSuperMembers == null) {
-						yetToBeProcessedSuperMembers = new ArrayList<SearchPair>();
+						yetToBeProcessedSuperMembers = new ArrayList<>();
 					}
 					yetToBeProcessedSuperMembers.add(new SearchPair(foundMember, superType));
 					return true;

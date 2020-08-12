@@ -186,10 +186,10 @@ public class LinkCheck {
         LangUtil.throwIaxIfNull(checkExists, "checkExists");
         LangUtil.throwIaxIfNull(checkContents, "checkContents");
         this.messages = new Messages(handler);
-        linksToCheck = new ArrayList<Link>();
-        checkedUrls = new ArrayList<String>();
-        refsToCheck = new ArrayList<String>();
-        validRefs = new ArrayList<String>();
+        linksToCheck = new ArrayList<>();
+        checkedUrls = new ArrayList<>();
+        refsToCheck = new ArrayList<>();
+        validRefs = new ArrayList<>();
         parser = new HTMLEditorKit() {
             public HTMLEditorKit.Parser getParser() {
                 return super.getParser();
@@ -221,7 +221,7 @@ public class LinkCheck {
     }
 
     public synchronized void run() {
-        ArrayList<Link> list = new ArrayList<Link>();
+        ArrayList<Link> list = new ArrayList<>();
         while (0 < linksToCheck.size()) {
             messages.checkingLinks(linksToCheck.size());
             list.clear();

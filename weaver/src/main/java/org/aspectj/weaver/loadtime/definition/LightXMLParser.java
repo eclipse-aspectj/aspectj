@@ -25,7 +25,7 @@ public class LightXMLParser {
 	private char pushedBackChar;
 	private Reader reader;
 
-	private static Map<String, char[]> entities = new HashMap<String, char[]>();
+	private static Map<String, char[]> entities = new HashMap<>();
 
 	static {
 		entities.put("amp", new char[] { '&' });
@@ -37,7 +37,7 @@ public class LightXMLParser {
 
 	public LightXMLParser() {
 		this.name = null;
-		this.attributes = new HashMap<String, Object>();
+		this.attributes = new HashMap<>();
 		this.children = new ArrayList();
 	}
 
@@ -51,7 +51,7 @@ public class LightXMLParser {
 
 	public void parseFromReader(Reader reader) throws Exception {
 		this.pushedBackChar = NULL_CHAR;
-		this.attributes = new HashMap<String, Object>();
+		this.attributes = new HashMap<>();
 		this.name = null;
 		this.children = new ArrayList();
 		this.reader = reader;

@@ -93,7 +93,7 @@ public abstract class BcelTestCase extends TestCase {
 
 	protected Attribute[] findAttribute(String name, JavaClass clazz) {
 		Attribute[] all = clazz.getAttributes();
-		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
+		List<Attribute> chosenAttrsList = new ArrayList<>();
 		for (Attribute attribute : all) {
 			if (verbose)
 				System.err.println("Attribute: " + attribute.getName());
@@ -104,7 +104,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	protected Attribute findAttribute(String name, Attribute[] all) {
-		List<Attribute> chosenAttrsList = new ArrayList<Attribute>();
+		List<Attribute> chosenAttrsList = new ArrayList<>();
 		for (Attribute attribute : all) {
 			if (verbose)
 				System.err.println("Attribute: " + attribute.getName());
@@ -158,7 +158,7 @@ public abstract class BcelTestCase extends TestCase {
 		SimpleElementValue evg = new SimpleElementValue(ElementValue.STRING, cp, aFruit);
 		NameValuePair nvGen = new NameValuePair("fruit", evg, cp);
 		ObjectType t = new ObjectType("SimpleStringAnnotation");
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvGen);
 		return new AnnotationGen(t, elements, visibility, cp);
 	}

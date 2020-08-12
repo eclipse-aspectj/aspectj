@@ -42,7 +42,7 @@ public class ReferenceType extends ResolvedType {
 	 * swapped during incremental compilation, the delegate of the derivatives
 	 * is swapped also.
 	 */
-	private final List<WeakReference<ReferenceType>> derivativeTypes = new ArrayList<WeakReference<ReferenceType>>();
+	private final List<WeakReference<ReferenceType>> derivativeTypes = new ArrayList<>();
 
 	/**
 	 * For parameterized types (or the raw type) - this field points to the
@@ -62,7 +62,7 @@ public class ReferenceType extends ResolvedType {
 	ResolvedMember[] parameterizedMethods = null;
 	ResolvedMember[] parameterizedFields = null;
 	ResolvedMember[] parameterizedPointcuts = null;
-	WeakReference<ResolvedType[]> parameterizedInterfaces = new WeakReference<ResolvedType[]>(
+	WeakReference<ResolvedType[]> parameterizedInterfaces = new WeakReference<>(
 			null);
 	Collection<Declare> parameterizedDeclares = null;
 	// Collection parameterizedTypeMungers = null;
@@ -116,13 +116,13 @@ public class ReferenceType extends ResolvedType {
 		// checkDuplicates(dependent);
 		synchronized (derivativeTypes) {
 			this.derivativeTypes
-					.add(new WeakReference<ReferenceType>(dependent));
+					.add(new WeakReference<>(dependent));
 		}
 	}
 
 	public void checkDuplicates(ReferenceType newRt) {
 		synchronized (derivativeTypes) {
-			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<>();
 			for (WeakReference<ReferenceType> derivativeTypeReference : derivativeTypes) {
 				ReferenceType derivativeType = derivativeTypeReference.get();
 				if (derivativeType == null) {
@@ -756,7 +756,7 @@ public class ReferenceType extends ResolvedType {
 					interfaces[i] = delegateInterfaces[i];
 				}
 			}
-			parameterizedInterfaces = new WeakReference<ResolvedType[]>(
+			parameterizedInterfaces = new WeakReference<>(
 					interfaces);
 			return interfaces;
 		} else if (isRawType()) {
@@ -778,12 +778,12 @@ public class ReferenceType extends ResolvedType {
 							.parameterizedWith(toUseForParameterization);
 				}
 			}
-			parameterizedInterfaces = new WeakReference<ResolvedType[]>(
+			parameterizedInterfaces = new WeakReference<>(
 					interfaces);
 			return interfaces;
 		}
 		if (getDelegate().isCacheable()) {
-			parameterizedInterfaces = new WeakReference<ResolvedType[]>(
+			parameterizedInterfaces = new WeakReference<>(
 					delegateInterfaces);
 		}
 		return delegateInterfaces;
@@ -937,7 +937,7 @@ public class ReferenceType extends ResolvedType {
 		Collection<Declare> declares = null;
 		if (ajMembersNeedParameterization()) {
 			Collection<Declare> genericDeclares = getDelegate().getDeclares();
-			parameterizedDeclares = new ArrayList<Declare>();
+			parameterizedDeclares = new ArrayList<>();
 			Map<String, UnresolvedType> parameterizationMap = getAjMemberParameterizationMap();
 			for (Declare declareStatement : genericDeclares) {
 				parameterizedDeclares.add(declareStatement.parameterizeWith(
@@ -968,7 +968,7 @@ public class ReferenceType extends ResolvedType {
 		return getDelegate().getModifiers();
 	}
 
-	WeakReference<ResolvedType> superclassReference = new WeakReference<ResolvedType>(
+	WeakReference<ResolvedType> superclassReference = new WeakReference<>(
 			null);
 
 	@Override
@@ -984,7 +984,7 @@ public class ReferenceType extends ResolvedType {
 						getMemberParameterizationMap()).resolve(getWorld());
 			}
 			if (getDelegate().isCacheable()) {
-				superclassReference = new WeakReference<ResolvedType>(ret);
+				superclassReference = new WeakReference<>(ret);
 			}
 			return newSuperclass;
 		}
@@ -999,7 +999,7 @@ public class ReferenceType extends ResolvedType {
 					getWorld());
 		}
 		if (getDelegate().isCacheable()) {
-			superclassReference = new WeakReference<ResolvedType>(ret);
+			superclassReference = new WeakReference<>(ret);
 		}
 		return ret;
 	}
@@ -1019,7 +1019,7 @@ public class ReferenceType extends ResolvedType {
 		}
 		this.delegate = delegate;
 		synchronized (derivativeTypes) {
-			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<>();
 			for (WeakReference<ReferenceType> derivativeRef : derivativeTypes) {
 				ReferenceType derivative = derivativeRef.get();
 				if (derivative != null) {
@@ -1048,7 +1048,7 @@ public class ReferenceType extends ResolvedType {
 		parameterizedInterfaces.clear();
 		parameterizedMethods = null;
 		parameterizedPointcuts = null;
-		superclassReference = new WeakReference<ResolvedType>(null);
+		superclassReference = new WeakReference<>(null);
 	}
 
 	public int getEndPos() {
@@ -1171,7 +1171,7 @@ public class ReferenceType extends ResolvedType {
 		newInterfaces = null;
 		typeVariables = null;
 		parameterizedInterfaces.clear();
-		superclassReference = new WeakReference<ResolvedType>(null);
+		superclassReference = new WeakReference<>(null);
 		if (getDelegate() != null) {
 			delegate.ensureConsistent();
 		}
@@ -1192,7 +1192,7 @@ public class ReferenceType extends ResolvedType {
 		}
 		if (newParent.isClass()) {
 			newSuperclass = newParent;
-			superclassReference = new WeakReference<ResolvedType>(null);
+			superclassReference = new WeakReference<>(null);
 		} else {
 			if (newInterfaces == null) {
 				newInterfaces = new ResolvedType[1];
@@ -1253,7 +1253,7 @@ public class ReferenceType extends ResolvedType {
 	 */
 	public ReferenceType findDerivativeType(ResolvedType[] typeParameters) {
 		synchronized (derivativeTypes) {
-			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<WeakReference<ReferenceType>>();
+			List<WeakReference<ReferenceType>> forRemoval = new ArrayList<>();
 			for (WeakReference<ReferenceType> derivativeTypeRef : derivativeTypes) {
 				ReferenceType derivativeType = derivativeTypeRef.get();
 				if (derivativeType == null) {

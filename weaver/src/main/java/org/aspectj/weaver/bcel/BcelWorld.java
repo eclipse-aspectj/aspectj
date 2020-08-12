@@ -264,7 +264,7 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	private static List<String> makeDefaultClasspath(String cp) {
-		List<String> classPath = new ArrayList<String>();
+		List<String> classPath = new ArrayList<>();
 		classPath.addAll(getPathEntries(cp));
 		classPath.addAll(getPathEntries(ClassPath.getClassPath()));
 		return classPath;
@@ -272,7 +272,7 @@ public class BcelWorld extends World implements Repository {
 	}
 
 	private static List<String> getPathEntries(String s) {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		StringTokenizer tok = new StringTokenizer(s, File.pathSeparator);
 		while (tok.hasMoreTokens()) {
 			ret.add(tok.nextToken());
@@ -880,7 +880,7 @@ public class BcelWorld extends World implements Repository {
 		}
 		onType.clearInterTypeMungers();
 
-		List<DeclareParents> decpToRepeat = new ArrayList<DeclareParents>();
+		List<DeclareParents> decpToRepeat = new ArrayList<>();
 
 		boolean aParentChangeOccurred = false;
 		boolean anAnnotationChangeOccurred = false;
@@ -914,7 +914,7 @@ public class BcelWorld extends World implements Repository {
 
 		while ((aParentChangeOccurred || anAnnotationChangeOccurred) && !decpToRepeat.isEmpty()) {
 			anAnnotationChangeOccurred = aParentChangeOccurred = false;
-			List<DeclareParents> decpToRepeatNextTime = new ArrayList<DeclareParents>();
+			List<DeclareParents> decpToRepeatNextTime = new ArrayList<>();
 			for (DeclareParents decp: decpToRepeat) {
 				if (applyDeclareParents(decp, onType)) {
 					aParentChangeOccurred = true;
@@ -1063,7 +1063,7 @@ public class BcelWorld extends World implements Repository {
 								}
 								anythingMissing = true;
 								if (aspectRequiredTypes == null) {
-									aspectRequiredTypes = new HashMap<String,String>();
+									aspectRequiredTypes = new HashMap<>();
 								}
 								// Record that it has an invalid type reference
 								aspectRequiredTypes.put(aspectName,requiredTypeName);
@@ -1112,12 +1112,12 @@ public class BcelWorld extends World implements Repository {
 		return aspectRequiredTypes.containsKey(aspectName);
 	}
 
-	private List<String> aspectRequiredTypesProcessed = new ArrayList<String>();
+	private List<String> aspectRequiredTypesProcessed = new ArrayList<>();
 	private Map<String, String> aspectRequiredTypes = null;
 
 	public void addAspectRequires(String aspectClassName, String requiredType) {
 		if (aspectRequiredTypes == null) {
-			aspectRequiredTypes = new HashMap<String, String>();
+			aspectRequiredTypes = new HashMap<>();
 		}
 		aspectRequiredTypes.put(aspectClassName,requiredType);
 	}
@@ -1137,10 +1137,10 @@ public class BcelWorld extends World implements Repository {
 		private int mode;
 
 		private boolean initialized = false; // Lazily done
-		private List<Definition> definitions = new ArrayList<Definition>();
+		private List<Definition> definitions = new ArrayList<>();
 
-		private List<String> resolvedIncludedAspects = new ArrayList<String>();
-		private Map<String, TypePattern> scopes = new HashMap<String, TypePattern>();
+		private List<String> resolvedIncludedAspects = new ArrayList<>();
+		private Map<String, TypePattern> scopes = new HashMap<>();
 
 		// these are not set for LTW mode (exclusion of these fast match patterns is handled before the weaver/world are used)
 		private List<String> includedFastMatchPatterns = Collections.emptyList();
@@ -1180,7 +1180,7 @@ public class BcelWorld extends World implements Repository {
 		public void ensureInitialized() {
 			if (!initialized) {
 				try {
-					resolvedIncludedAspects = new ArrayList<String>();
+					resolvedIncludedAspects = new ArrayList<>();
 					// Process the definitions into something more optimal
 					for (Definition definition : definitions) {
 						List<String> aspectNames = definition.getAspectClassNames();
@@ -1217,8 +1217,8 @@ public class BcelWorld extends World implements Repository {
 						try {
 							List<String> includePatterns = definition.getIncludePatterns();
 							if (includePatterns.size() > 0) {
-								includedPatterns = new ArrayList<TypePattern>();
-								includedFastMatchPatterns = new ArrayList<String>();
+								includedPatterns = new ArrayList<>();
+								includedFastMatchPatterns = new ArrayList<>();
 							}
 							for (String includePattern : includePatterns) {
 								if (includePattern.endsWith("..*")) {
@@ -1231,8 +1231,8 @@ public class BcelWorld extends World implements Repository {
 							}
 							List<String> excludePatterns = definition.getExcludePatterns();
 							if (excludePatterns.size() > 0) {
-								excludedPatterns = new ArrayList<TypePattern>();
-								excludedFastMatchPatterns = new ArrayList<String>();
+								excludedPatterns = new ArrayList<>();
+								excludedFastMatchPatterns = new ArrayList<>();
 							}
 							for (String excludePattern : excludePatterns) {
 								if (excludePattern.endsWith("..*")) {
@@ -1308,7 +1308,7 @@ public class BcelWorld extends World implements Repository {
 
 	public void addTypeDelegateResolver(TypeDelegateResolver typeDelegateResolver) {
 		if (typeDelegateResolvers == null) {
-			typeDelegateResolvers = new ArrayList<TypeDelegateResolver>();
+			typeDelegateResolvers = new ArrayList<>();
 		}
 		typeDelegateResolvers.add(typeDelegateResolver);
 	}

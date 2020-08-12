@@ -39,8 +39,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
  * The member finder looks after intertype declared members on a type, there is one member finder per type that was hit by an ITD.
  */
 public class InterTypeMemberFinder implements IMemberFinder {
-	private List<FieldBinding> interTypeFields = new ArrayList<FieldBinding>();
-	private List<MethodBinding> interTypeMethods = new ArrayList<MethodBinding>();
+	private List<FieldBinding> interTypeFields = new ArrayList<>();
+	private List<MethodBinding> interTypeMethods = new ArrayList<>();
 
 	public SourceTypeBinding sourceTypeBinding;
 
@@ -254,7 +254,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		MethodBinding[] orig = sourceTypeBinding.methodsBase();
 		// if (interTypeMethods.isEmpty()) return orig;
 
-		List<MethodBinding> ret = new ArrayList<MethodBinding>(Arrays.asList(orig));
+		List<MethodBinding> ret = new ArrayList<>(Arrays.asList(orig));
 		for (MethodBinding method : interTypeMethods) {
 			ret.add(method);
 		}
@@ -299,7 +299,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 			return orig;
 		}
 
-		Set<MethodBinding> ret = new HashSet<MethodBinding>(Arrays.asList(orig));
+		Set<MethodBinding> ret = new HashSet<>(Arrays.asList(orig));
 		// System.err.println("declared method: " + ret + " inters = " + interTypeMethods);
 
 		for (MethodBinding method : interTypeMethods) {

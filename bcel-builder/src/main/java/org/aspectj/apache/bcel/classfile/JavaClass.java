@@ -286,7 +286,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	public AnnotationGen[] getAnnotations() {
 		if (annotationsOutOfDate) {
 			// Find attributes that contain annotation data
-			List<AnnotationGen> accumulatedAnnotations = new ArrayList<AnnotationGen>();
+			List<AnnotationGen> accumulatedAnnotations = new ArrayList<>();
 			for (Attribute attribute : attributes) {
 				if (attribute instanceof RuntimeAnnos) {
 					RuntimeAnnos runtimeAnnotations = (RuntimeAnnos) attribute;
@@ -742,7 +742,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 */
 	public JavaClass[] getSuperClasses() {
 		JavaClass clazz = this;
-		List<JavaClass> vec = new ArrayList<JavaClass>();
+		List<JavaClass> vec = new ArrayList<>();
 		for (clazz = clazz.getSuperClass(); clazz != null; clazz = clazz.getSuperClass()) {
 			vec.add(clazz);
 		}
@@ -772,8 +772,8 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	 * Get all interfaces implemented by this JavaClass (transitively).
 	 */
 	public Collection<JavaClass> getAllInterfaces() {
-		Queue<JavaClass> queue = new LinkedList<JavaClass>();
-		List<JavaClass> interfaceList = new ArrayList<JavaClass>();
+		Queue<JavaClass> queue = new LinkedList<>();
+		List<JavaClass> interfaceList = new ArrayList<>();
 
 		queue.add(this);
 

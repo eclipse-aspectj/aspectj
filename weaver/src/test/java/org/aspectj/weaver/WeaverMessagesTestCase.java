@@ -26,7 +26,7 @@ public class WeaverMessagesTestCase extends TestCase {
 		
 		Class<?> wmClass = WeaverMessages.class;
 		Field[] fields = wmClass.getDeclaredFields();
-		List<String> fieldList = new ArrayList<String>();
+		List<String> fieldList = new ArrayList<>();
 		for (Field f : fields) {
 			if (f.getType() == String.class) {
 				try {

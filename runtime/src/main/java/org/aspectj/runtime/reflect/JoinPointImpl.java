@@ -149,7 +149,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
  	public void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
 		if (arcs == null) {
-			arcs = new Stack<AroundClosure>();
+			arcs = new Stack<>();
 		}
 		if (arc==null) {
 			this.arcs.pop();

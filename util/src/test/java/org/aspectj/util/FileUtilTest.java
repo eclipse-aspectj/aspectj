@@ -129,7 +129,7 @@ public class FileUtilTest extends TestCase {
 	 * @return sorted String[] of all paths to all files under dir ending with one of the listed suffixes but not starting with "."
 	 */
 	public static String[] dirPaths(File dir, String[] suffixes) {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		doDirPaths(dir, result);
 		// if suffixes required, remove those without suffixes
 		if (!LangUtil.isEmpty(suffixes)) {
@@ -192,7 +192,7 @@ public class FileUtilTest extends TestCase {
 
 	public FileUtilTest(String s) {
 		super(s);
-		tempFiles = new ArrayList<File>();
+		tempFiles = new ArrayList<>();
 	}
 
 	public void tearDown() {
@@ -459,10 +459,10 @@ public class FileUtilTest extends TestCase {
 		contents += contents;
 		FileUtil.writeAsString(file, contents);
 		tempFiles.add(file);
-		List<String> sourceList = new ArrayList<String>();
+		List<String> sourceList = new ArrayList<>();
 		sourceList.add(file.getPath());
 
-		final ArrayList<String> errors = new ArrayList<String>();
+		final ArrayList<String> errors = new ArrayList<>();
 		final PrintStream errorSink = new PrintStream(System.err, true) {
 			public void println(String error) {
 				errors.add(error);

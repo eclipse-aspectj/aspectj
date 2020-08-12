@@ -26,7 +26,7 @@ import org.aspectj.internal.lang.reflect.AjTypeImpl;
 public class AjTypeSystem {
 	
 		private static Map<Class, WeakReference<AjType>> ajTypes = 
-			Collections.synchronizedMap(new WeakHashMap<Class,WeakReference<AjType>>());
+			Collections.synchronizedMap(new WeakHashMap<>());
 
 		/**
 		 * Return the AspectJ runtime type representation of the given Java type.
@@ -45,14 +45,14 @@ public class AjTypeSystem {
 				if (theAjType != null) {
 					return theAjType;
 				} else {
-					theAjType = new AjTypeImpl<T>(fromClass);
-					ajTypes.put(fromClass, new WeakReference<AjType>(theAjType));
+					theAjType = new AjTypeImpl<>(fromClass);
+					ajTypes.put(fromClass, new WeakReference<>(theAjType));
 					return theAjType;
 				}
 			}
 			// neither key nor value was found
-			AjType<T> theAjType =  new AjTypeImpl<T>(fromClass);
-			ajTypes.put(fromClass, new WeakReference<AjType>(theAjType));
+			AjType<T> theAjType = new AjTypeImpl<>(fromClass);
+			ajTypes.put(fromClass, new WeakReference<>(theAjType));
 			return theAjType;
 		}
 }

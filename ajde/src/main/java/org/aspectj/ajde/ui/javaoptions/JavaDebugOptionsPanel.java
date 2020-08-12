@@ -103,7 +103,7 @@ public class JavaDebugOptionsPanel extends OptionsPanel {
 
 		JComboBox<String> debug = null;
 		if (javaOptionToSet.equals(JavaOptions.PRESERVE_ALL_LOCALS)) {
-			debug = new JComboBox<String>(preserveOptions);
+			debug = new JComboBox<>(preserveOptions);
 			String value = javaBuildOptions.getJavaBuildOptionsMap().get(javaOptionToSet);
 			if (value.equals(JavaOptions.PRESERVE)) {
 				debug.setSelectedIndex(0);
@@ -111,7 +111,7 @@ public class JavaDebugOptionsPanel extends OptionsPanel {
 				debug.setSelectedIndex(1);
 			}
 		} else {
-			debug = new JComboBox<String>(debugOptions);
+			debug = new JComboBox<>(debugOptions);
 			String value = javaBuildOptions.getJavaBuildOptionsMap().get(javaOptionToSet);
 			if (value.equals(JavaOptions.GENERATE)) {
 				debug.setSelectedIndex(0);

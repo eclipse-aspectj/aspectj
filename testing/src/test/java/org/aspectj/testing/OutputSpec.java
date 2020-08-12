@@ -19,7 +19,7 @@ import org.aspectj.util.LangUtil;
 
 public class OutputSpec {
 
-	private List<String> expectedOutputLines = new ArrayList<String>();
+	private List<String> expectedOutputLines = new ArrayList<>();
 
 	public void addLine(OutputLine line) {
 		if (line.getVm() == null || matchesThisVm(line.getVm())) {
@@ -82,9 +82,9 @@ public class OutputSpec {
 			createFailureMessage(output, -1, outputFound.size());
 			return;
 		}
-		List<String> expected = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
 		expected.addAll(expectedOutputLines);
-		List<String> found = new ArrayList<String>();
+		List<String> found = new ArrayList<>();
 		found.addAll(outputFound);
 		for (String lineFound : outputFound) {
 			for (String lineExpected : expectedOutputLines) {
@@ -119,7 +119,7 @@ public class OutputSpec {
 	}
 
 	private List<String> getOutputFound(String output) {
-		List<String> found = new ArrayList<String>();
+		List<String> found = new ArrayList<>();
 		StringTokenizer strTok = new StringTokenizer(output,"\n");
 		while(strTok.hasMoreTokens()) {
 			String outputLine = strTok.nextToken().trim();

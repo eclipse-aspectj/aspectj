@@ -119,7 +119,7 @@ public class AjcTest extends RunSpecIterator {
                 REQUIRE_KEYWORDS, SKIP_KEYWORDS, PICK_PR }));
         
         /** Map String titlesName to List (String) of titles to accept */
-        private static final Map<String,List<String>> TITLES = new HashMap<String,List<String>>();
+        private static final Map<String,List<String>> TITLES = new HashMap<>();
         
         private static List<String> getTitles(String titlesName) {
             return getTitles(titlesName, false);
@@ -161,7 +161,7 @@ public class AjcTest extends RunSpecIterator {
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
         private static List<String> parseTitlesList(String titlesList) {
-            ArrayList<String> result = new ArrayList<String>();
+            ArrayList<String> result = new ArrayList<>();
             String last = null;
             StringTokenizer st = new StringTokenizer(titlesList, ",");
             while (st.hasMoreTokens()) {
@@ -206,7 +206,7 @@ public class AjcTest extends RunSpecIterator {
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
         private static List<String> readTitlesFile(File titlesFile, boolean fail) {
-            ArrayList<String> result = new ArrayList<String>();
+            ArrayList<String> result = new ArrayList<>();
             Reader reader = null;
             try {
                 reader = new FileReader(titlesFile);

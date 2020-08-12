@@ -43,7 +43,7 @@ public class CrosscuttingMembersSet {
 	private transient World world;
 
 	// FIXME AV - ? we may need a sequencedHashMap there to ensure source based precedence for @AJ advice
-	private final Map<ResolvedType, CrosscuttingMembers> members = new HashMap<ResolvedType, CrosscuttingMembers>();
+	private final Map<ResolvedType, CrosscuttingMembers> members = new HashMap<>();
 
 	// List of things to be verified once the type system is 'complete'
 	private transient List<IVerificationRequired> verificationList = null;
@@ -139,7 +139,7 @@ public class CrosscuttingMembersSet {
 	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType, boolean inWeavePhase) {
 		// System.err.println("Looking at descendants of "+aspectType.getName());
 		Set<ResolvedType> knownAspects = members.keySet();
-		Set<ResolvedType> toBeReplaced = new HashSet<ResolvedType>();
+		Set<ResolvedType> toBeReplaced = new HashSet<>();
 		for (ResolvedType candidateDescendant : knownAspects) {
 			// allowMissing = true - if something is missing, it really probably is not a descendant
 			if ((candidateDescendant != aspectType) && (aspectType.isAssignableFrom(candidateDescendant, true))) {
@@ -192,7 +192,7 @@ public class CrosscuttingMembersSet {
 
 	public List<ShadowMunger> getShadowMungers() {
 		if (shadowMungers == null) {
-			List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
+			List<ShadowMunger> ret = new ArrayList<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getShadowMungers());
 			}
@@ -203,7 +203,7 @@ public class CrosscuttingMembersSet {
 
 	public List<ConcreteTypeMunger> getTypeMungers() {
 		if (typeMungers == null) {
-			List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+			List<ConcreteTypeMunger> ret = new ArrayList<>();
 			for (CrosscuttingMembers xmembers : members.values()) {
 				// With 1.6.9 there is a change that enables use of more optimal accessors (accessors for private fields).
 				// Here is where we determine if two aspects are asking for access to the same field. If they are
@@ -252,7 +252,7 @@ public class CrosscuttingMembersSet {
 		for (ConcreteTypeMunger typeMunger : typeMungers) {
 			if (typeMunger.getMunger() != null && typeMunger.getMunger().getKind() == kind) {
 				if (collected == null) {
-					collected = new ArrayList<ConcreteTypeMunger>();
+					collected = new ArrayList<>();
 				}
 				collected.add(typeMunger);
 			}
@@ -280,7 +280,7 @@ public class CrosscuttingMembersSet {
 
 	public List<ConcreteTypeMunger> getLateTypeMungers() {
 		if (lateTypeMungers == null) {
-			List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+			List<ConcreteTypeMunger> ret = new ArrayList<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getLateTypeMungers());
 			}
@@ -291,11 +291,11 @@ public class CrosscuttingMembersSet {
 
 	public List<DeclareSoft> getDeclareSofts() {
 		if (declareSofts == null) {
-			Set<DeclareSoft> ret = new HashSet<DeclareSoft>();
+			Set<DeclareSoft> ret = new HashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareSofts());
 			}
-			declareSofts = new ArrayList<DeclareSoft>();
+			declareSofts = new ArrayList<>();
 			declareSofts.addAll(ret);
 		}
 		return declareSofts;
@@ -303,11 +303,11 @@ public class CrosscuttingMembersSet {
 
 	public List<DeclareParents> getDeclareParents() {
 		if (declareParents == null) {
-			Set<DeclareParents> ret = new HashSet<DeclareParents>();
+			Set<DeclareParents> ret = new HashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareParents());
 			}
-			declareParents = new ArrayList<DeclareParents>();
+			declareParents = new ArrayList<>();
 			declareParents.addAll(ret);
 		}
 		return declareParents;
@@ -318,11 +318,11 @@ public class CrosscuttingMembersSet {
 	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnTypes() {
 		if (declareAnnotationOnTypes == null) {
-			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareAnnotationOnTypes());
 			}
-			declareAnnotationOnTypes = new ArrayList<DeclareAnnotation>();
+			declareAnnotationOnTypes = new ArrayList<>();
 			declareAnnotationOnTypes.addAll(ret);
 		}
 		return declareAnnotationOnTypes;
@@ -333,11 +333,11 @@ public class CrosscuttingMembersSet {
 	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnFields() {
 		if (declareAnnotationOnFields == null) {
-			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareAnnotationOnFields());
 			}
-			declareAnnotationOnFields = new ArrayList<DeclareAnnotation>();
+			declareAnnotationOnFields = new ArrayList<>();
 			declareAnnotationOnFields.addAll(ret);
 		}
 		return declareAnnotationOnFields;
@@ -348,11 +348,11 @@ public class CrosscuttingMembersSet {
 	 */
 	public List<DeclareAnnotation> getDeclareAnnotationOnMethods() {
 		if (declareAnnotationOnMethods == null) {
-			Set<DeclareAnnotation> ret = new LinkedHashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> ret = new LinkedHashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareAnnotationOnMethods());
 			}
-			declareAnnotationOnMethods = new ArrayList<DeclareAnnotation>();
+			declareAnnotationOnMethods = new ArrayList<>();
 			declareAnnotationOnMethods.addAll(ret);
 			// world.sortDeclareAnnotations(declareAnnotationOnMethods);
 		}
@@ -364,11 +364,11 @@ public class CrosscuttingMembersSet {
 	 */
 	public List<DeclareTypeErrorOrWarning> getDeclareTypeEows() {
 		if (declareTypeEows == null) {
-			Set<DeclareTypeErrorOrWarning> ret = new HashSet<DeclareTypeErrorOrWarning>();
+			Set<DeclareTypeErrorOrWarning> ret = new HashSet<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareTypeErrorOrWarning());
 			}
-			declareTypeEows = new ArrayList<DeclareTypeErrorOrWarning>();
+			declareTypeEows = new ArrayList<>();
 			declareTypeEows.addAll(ret);
 		}
 		return declareTypeEows;
@@ -376,7 +376,7 @@ public class CrosscuttingMembersSet {
 
 	public List<Declare> getDeclareDominates() {
 		if (declareDominates == null) {
-			List<Declare> ret = new ArrayList<Declare>();
+			List<Declare> ret = new ArrayList<>();
 			for (CrosscuttingMembers crosscuttingMembers : members.values()) {
 				ret.addAll(crosscuttingMembers.getDeclareDominates());
 			}
@@ -412,7 +412,7 @@ public class CrosscuttingMembersSet {
 	 */
 	public void recordNecessaryCheck(IVerificationRequired verification) {
 		if (verificationList == null) {
-			verificationList = new ArrayList<IVerificationRequired>();
+			verificationList = new ArrayList<>();
 		}
 		verificationList.add(verification);
 	}

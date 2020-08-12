@@ -342,7 +342,7 @@ public class DeclareParents extends Declare {
 			return Collections.emptyList();
 		}
 
-		List<ResolvedType> ret = new ArrayList<ResolvedType>();
+		List<ResolvedType> ret = new ArrayList<>();
 		for (int i = 0; i < parents.size(); i++) {
 			ResolvedType t = maybeGetNewParent(onType, parents.get(i), onType.getWorld(), reportErrors);
 			if (t != null) {

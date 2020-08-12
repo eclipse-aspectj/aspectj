@@ -22,7 +22,7 @@ import java.util.Vector;
  * accumulated.
  */
 public class AccumulatingFileFilter extends ValidFileFilter {
-    Vector<File> files = new Vector<File>();
+    Vector<File> files = new Vector<>();
     public final boolean accept(File f) {
         if (super.accept(f) && (accumulate(f))) {
             files.add(f);

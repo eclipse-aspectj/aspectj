@@ -83,7 +83,7 @@ public class DocumentParser extends DefaultHandler {
 
 	private Definition.ConcreteAspect activeConcreteAspectDefinition;
 
-	private static Hashtable<String, Definition> parsedFiles = new Hashtable<String, Definition>();
+	private static Hashtable<String, Definition> parsedFiles = new Hashtable<>();
 	private static boolean CACHE;
 	private static final boolean LIGHTPARSER;
 

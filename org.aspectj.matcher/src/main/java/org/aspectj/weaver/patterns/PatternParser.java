@@ -259,7 +259,7 @@ public class PatternParser {
 	}
 
 	public DeclarePrecedence parseDominates() {
-		List<TypePattern> l = new ArrayList<TypePattern>();
+		List<TypePattern> l = new ArrayList<>();
 		do {
 			l.add(parseTypePattern());
 		} while (maybeEat(","));
@@ -282,7 +282,7 @@ public class PatternParser {
 		}
 		boolean isExtends = t.getString().equals("extends");
 
-		List<TypePattern> l = new ArrayList<TypePattern>();
+		List<TypePattern> l = new ArrayList<>();
 		do {
 			l.add(parseTypePattern());
 		} while (maybeEat(","));
@@ -679,7 +679,7 @@ public class PatternParser {
 	}
 
 	public List<String> parseDottedIdentifier() {
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		ret.add(parseIdentifier());
 		while (maybeEat(".")) {
 			ret.add(parseIdentifier());
@@ -915,7 +915,7 @@ public class PatternParser {
 	// Parse annotation values. In an expression in @A(a=b,c=d) this method will be
 	// parsing the a=b,c=d.)
 	public Map<String, String> parseAnnotationValues() {
-		Map<String, String> values = new HashMap<String, String>();
+		Map<String, String> values = new HashMap<>();
 		boolean seenDefaultValue = false;
 		do {
 			String possibleKeyString = parseAnnotationNameValuePattern();
@@ -1133,7 +1133,7 @@ public class PatternParser {
 	}
 
 	public TypePattern parseGenericsWildcardTypePattern() {
-		List<NamePattern> names = new ArrayList<NamePattern>();
+		List<NamePattern> names = new ArrayList<>();
 		names.add(new NamePattern("?"));
 		TypePattern upperBound = null;
 		TypePattern[] additionalInterfaceBounds = new TypePattern[0];
@@ -1242,7 +1242,7 @@ public class PatternParser {
 	// }
 
 	public List<NamePattern> parseDottedNamePattern() {
-		List<NamePattern> names = new ArrayList<NamePattern>();
+		List<NamePattern> names = new ArrayList<>();
 		StringBuffer buf = new StringBuffer();
 		IToken previous = null;
 		boolean justProcessedEllipsis = false; // Remember if we just dealt with an ellipsis (PR61536)
@@ -1464,7 +1464,7 @@ public class PatternParser {
 	}
 
 	public TypePatternList parseArgumentsPattern(boolean parameterAnnotationsPossible) {
-		List<TypePattern> patterns = new ArrayList<TypePattern>();
+		List<TypePattern> patterns = new ArrayList<>();
 		eat("(");
 
 		// ()
@@ -1485,7 +1485,7 @@ public class PatternParser {
 	}
 
 	public AnnotationPatternList parseArgumentsAnnotationPattern() {
-		List<AnnotationTypePattern> patterns = new ArrayList<AnnotationTypePattern>();
+		List<AnnotationTypePattern> patterns = new ArrayList<>();
 		eat("(");
 		if (maybeEat(")")) {
 			return new AnnotationPatternList();
@@ -1509,8 +1509,8 @@ public class PatternParser {
 		IToken t = tokenSource.peek();
 		if (t.isIdentifier() && t.getString().equals("throws")) {
 			tokenSource.next();
-			List<TypePattern> required = new ArrayList<TypePattern>();
-			List<TypePattern> forbidden = new ArrayList<TypePattern>();
+			List<TypePattern> required = new ArrayList<>();
+			List<TypePattern> forbidden = new ArrayList<>();
 			do {
 				boolean isForbidden = maybeEat("!");
 				// ???might want an error for a second ! without a paren
@@ -1694,7 +1694,7 @@ public class PatternParser {
 		if (!maybeEat("<")) {
 			return null;
 		}
-		List<TypeVariablePattern> typeVars = new ArrayList<TypeVariablePattern>();
+		List<TypeVariablePattern> typeVars = new ArrayList<>();
 		TypeVariablePattern t = parseTypeVariable();
 		typeVars.add(t);
 		while (maybeEat(",")) {
@@ -1712,7 +1712,7 @@ public class PatternParser {
 		if (!maybeEat("<")) {
 			return null;
 		}
-		List<String> typeVarNames = new ArrayList<String>();
+		List<String> typeVarNames = new ArrayList<>();
 		do {
 			typeVarNames.add(parseIdentifier());
 		} while (maybeEat(","));
@@ -1726,7 +1726,7 @@ public class PatternParser {
 		if (!maybeEat("<")) {
 			return null;
 		}
-		List<TypePattern> typePats = new ArrayList<TypePattern>();
+		List<TypePattern> typePats = new ArrayList<>();
 		do {
 			TypePattern tp = parseTypePattern(true, false);
 			typePats.add(tp);
@@ -1752,7 +1752,7 @@ public class PatternParser {
 	}
 
 	private TypePattern[] maybeParseAdditionalInterfaceBounds() {
-		List<TypePattern> boundsList = new ArrayList<TypePattern>();
+		List<TypePattern> boundsList = new ArrayList<>();
 		while (maybeEat("&")) {
 			TypePattern tp = parseTypePattern();
 			boundsList.add(tp);

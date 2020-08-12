@@ -75,7 +75,7 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 		NameValuePair envp = values.get(0);
 		ArrayElementValue aev = (ArrayElementValue) envp.getValue();
 		ElementValue[] evs = aev.getElementValuesArray();
-		Set<String> targets = new HashSet<String>();
+		Set<String> targets = new HashSet<>();
 		for (ElementValue elementValue : evs) {
 			EnumElementValue ev = (EnumElementValue) elementValue;
 			targets.add(ev.getEnumValueString());

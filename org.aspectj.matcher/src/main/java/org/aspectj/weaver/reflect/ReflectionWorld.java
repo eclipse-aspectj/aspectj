@@ -35,12 +35,12 @@ import org.aspectj.weaver.World;
  */
 public class ReflectionWorld extends World implements IReflectionWorld {
 
-	private static Map<WeakClassLoaderReference, ReflectionWorld> rworlds = Collections.synchronizedMap(new HashMap<WeakClassLoaderReference, ReflectionWorld>());
+	private static Map<WeakClassLoaderReference, ReflectionWorld> rworlds = Collections.synchronizedMap(new HashMap<>());
 
 	private WeakClassLoaderReference classLoaderReference;
 	private AnnotationFinder annotationFinder;
 	private boolean mustUseOneFourDelegates = false; // for testing
-	private Map<String,Class<?>> inProgressResolutionClasses = new HashMap<String,Class<?>>();
+	private Map<String,Class<?>> inProgressResolutionClasses = new HashMap<>();
 	
 	public static ReflectionWorld getReflectionWorldFor(WeakClassLoaderReference classLoaderReference) {
 		

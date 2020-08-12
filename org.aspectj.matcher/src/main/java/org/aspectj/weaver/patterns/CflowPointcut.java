@@ -194,7 +194,7 @@ public class CflowPointcut extends Pointcut {
 			entryBindings.popEnclosingDefinitition();
 		}
 
-		List<ShadowMunger> innerCflowEntries = new ArrayList<ShadowMunger>(xcut.getCflowEntries());
+		List<ShadowMunger> innerCflowEntries = new ArrayList<>(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
 		// Four routes of interest through this code (did I hear someone say
@@ -248,7 +248,7 @@ public class CflowPointcut extends Pointcut {
 			return ret;
 		} else {
 
-			List<Slot> slots = new ArrayList<Slot>();
+			List<Slot> slots = new ArrayList<>();
 
 			for (int i = 0, len = freeVars.length; i < len; i++) {
 				int freeVar = freeVars[i];

@@ -719,7 +719,7 @@ public class AjcTask extends MatchingTask {
 	public CompilerArg createCompilerarg() {
 		CompilerArg compilerArg = new CompilerArg();
 		if (compilerArgs == null) {
-			compilerArgs = new ArrayList<CompilerArg>();
+			compilerArgs = new ArrayList<>();
 		}
 		compilerArgs.add(compilerArg);
 		return compilerArg;

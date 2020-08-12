@@ -71,9 +71,9 @@ public class ConstantPool implements Node {
 	private Constant[] pool;
 	private int poolSize; // number of entries in the pool (could be < pool.length as the array is resized in 'chunks')
 
-	private Map<String, Integer> utf8Cache = new HashMap<String, Integer>();
-	private Map<String, Integer> methodCache = new HashMap<String, Integer>();
-	private Map<String, Integer> fieldCache = new HashMap<String, Integer>();
+	private Map<String, Integer> utf8Cache = new HashMap<>();
+	private Map<String, Integer> methodCache = new HashMap<>();
+	private Map<String, Integer> fieldCache = new HashMap<>();
 
 	public int getSize() {
 		return poolSize;

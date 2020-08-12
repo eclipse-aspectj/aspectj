@@ -157,8 +157,8 @@ public class EclipseScope implements IScope {
 		if (importedNames != null)
 			return;
 
-		List<String> importedNamesList = new ArrayList<String>();
-		List<String> importedPrefixesList = new ArrayList<String>();
+		List<String> importedNamesList = new ArrayList<>();
+		List<String> importedPrefixesList = new ArrayList<>();
 
 		Scope currentScope = scope;
 		// add any enclosing types to this list

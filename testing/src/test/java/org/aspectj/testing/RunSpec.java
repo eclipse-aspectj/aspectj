@@ -27,7 +27,7 @@ import org.aspectj.util.FileUtil;
  */
 public class RunSpec implements ITestStep {
 
-	private List<ExpectedMessageSpec> expected = new ArrayList<ExpectedMessageSpec>();
+	private List<ExpectedMessageSpec> expected = new ArrayList<>();
 	private String classToRun;
 	private String moduleToRun;  // alternative to classToRun on JDK9+
 	private String baseDir;

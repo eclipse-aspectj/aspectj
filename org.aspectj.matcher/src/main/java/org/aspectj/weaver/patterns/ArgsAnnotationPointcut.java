@@ -180,7 +180,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	public List<BindingPattern> getBindingAnnotationTypePatterns() {
-		List<BindingPattern> l = new ArrayList<BindingPattern>();
+		List<BindingPattern> l = new ArrayList<>();
 		AnnotationTypePattern[] pats = arguments.getAnnotationPatterns();
 		for (AnnotationTypePattern pat : pats) {
 			if (pat instanceof BindingAnnotationTypePattern) {

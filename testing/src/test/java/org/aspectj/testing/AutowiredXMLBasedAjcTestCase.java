@@ -35,7 +35,7 @@ import junit.framework.TestSuite;
  */
 public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
 
-    private Map<String,AjcTest> testMap = new HashMap<String,AjcTest>();
+    private Map<String,AjcTest> testMap = new HashMap<>();
 
     public void addTest(AjcTest test) {
         testMap.put(test.getTitle(), test);

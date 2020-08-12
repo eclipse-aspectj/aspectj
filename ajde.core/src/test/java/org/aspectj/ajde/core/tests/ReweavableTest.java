@@ -324,7 +324,7 @@ public class ReweavableTest extends AjdeCoreTestCase {
 		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
-		compilerConfig.setProjectSourceFiles(new ArrayList<String>());
+		compilerConfig.setProjectSourceFiles(new ArrayList<>());
 		doBuild(true);
 
 		String expMessage = "aspect tjp.GetInfo cannot be found when reweaving tjp.Demo";
@@ -356,7 +356,7 @@ public class ReweavableTest extends AjdeCoreTestCase {
 		Set<File> paths = new HashSet<>();
 		paths.add(openFile(binDir));
 		compilerConfig.setInpath(paths);
-		compilerConfig.setProjectSourceFiles(new ArrayList<String>());
+		compilerConfig.setProjectSourceFiles(new ArrayList<>());
 		doBuild(true);
 
 		String expMessage = "successfully verified type tjp.GetInfo exists";

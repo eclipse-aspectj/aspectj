@@ -57,7 +57,7 @@ public class FlatFileCacheBacking extends AsynchronousFileCacheBacking {
     }
 
     protected Map<String, byte[]> readClassBytes (Map<String,IndexEntry> indexMap, File[] files) {
-        Map<String, byte[]> result=new TreeMap<String, byte[]>();
+        Map<String, byte[]> result= new TreeMap<>();
         if (LangUtil.isEmpty(files)) {
             return result;
         }

@@ -73,7 +73,7 @@ public class AsmManager implements IStructureModel {
 
 	private static boolean completingTypeBindings = false;
 
-	private final List<IHierarchyListener> structureListeners = new ArrayList<IHierarchyListener>();
+	private final List<IHierarchyListener> structureListeners = new ArrayList<>();
 
 	// The model is 'manipulated' by the AjBuildManager.setupModel() code which
 	// trashes all the
@@ -95,10 +95,10 @@ public class AsmManager implements IStructureModel {
 	private final CanonicalFilePathMap canonicalFilePathMap = new CanonicalFilePathMap();
 	// Record the Set<File> for which the model has been modified during the
 	// last incremental build
-	private final Set<File> lastBuildChanges = new HashSet<File>();
+	private final Set<File> lastBuildChanges = new HashSet<>();
 
 	// Record the Set<File> of aspects that wove the files listed in lastBuildChanges
-	final Set<File> aspectsWeavingInLastBuild = new HashSet<File>();
+	final Set<File> aspectsWeavingInLastBuild = new HashSet<>();
 
 	// static {
 	// setReporting("c:/model.nfo",true,true,true,true);
@@ -149,16 +149,16 @@ public class AsmManager implements IStructureModel {
 			return null;
 		}
 
-		HashMap<Integer, List<IProgramElement>> annotations = new HashMap<Integer, List<IProgramElement>>();
+		HashMap<Integer, List<IProgramElement>> annotations = new HashMap<>();
 		IProgramElement node = hierarchy.findElementForSourceFile(sourceFile);
 		if (node == IHierarchy.NO_STRUCTURE) {
 			return null;
 		} else {
 			IProgramElement fileNode = node;
-			ArrayList<IProgramElement> peNodes = new ArrayList<IProgramElement>();
+			ArrayList<IProgramElement> peNodes = new ArrayList<>();
 			getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
 			for (IProgramElement peNode : peNodes) {
-				List<IProgramElement> entries = new ArrayList<IProgramElement>();
+				List<IProgramElement> entries = new ArrayList<>();
 				entries.add(peNode);
 				ISourceLocation sourceLoc = peNode.getSourceLocation();
 				if (null != sourceLoc) {
@@ -296,7 +296,7 @@ public class AsmManager implements IStructureModel {
 	private static class CanonicalFilePathMap {
 		private static final int MAX_SIZE = 4000;
 
-		private final Map<String, String> pathMap = new HashMap<String, String>(20);
+		private final Map<String, String> pathMap = new HashMap<>(20);
 
 		// // guards to ensure correctness and liveness
 		// private boolean cacheInUse = false;
@@ -549,7 +549,7 @@ public class AsmManager implements IStructureModel {
 
 		boolean modelModified = false;
 
-		Set<String> deletedNodes = new HashSet<String>();
+		Set<String> deletedNodes = new HashSet<>();
 		for (File fileForCompilation : files) {
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
 			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
@@ -690,15 +690,15 @@ public class AsmManager implements IStructureModel {
 			return;
 		}
 
-		Set<String> sourcesToRemove = new HashSet<String>();
-		Map<String, String> handleToTypenameCache = new HashMap<String, String>();
+		Set<String> sourcesToRemove = new HashSet<>();
+		Map<String, String> handleToTypenameCache = new HashMap<>();
 		// Iterate over the source handles in the relationships map, the aim
 		// here is to remove any 'affected by'
 		// relationships where the source of the relationship is the specified
 		// type (since it will be readded
 		// when the type is woven)
 		Set<String> sourcehandlesSet = mapper.getEntries();
-		List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
+		List<IRelationship> relationshipsToRemove = new ArrayList<>();
 		for (String hid : sourcehandlesSet) {
 			if (isPhantomHandle(hid)) {
 				// inpath handle - but for which type?
@@ -780,7 +780,7 @@ public class AsmManager implements IStructureModel {
 						continue;
 					}
 					List<String> targets = rel.getTargets();
-					List<String> targetsToRemove = new ArrayList<String>();
+					List<String> targetsToRemove = new ArrayList<>();
 
 					// find targets that target the type we are interested in,
 					// they need removing
@@ -928,8 +928,8 @@ public class AsmManager implements IStructureModel {
 
 			// Now sort out the relationships map
 			// IRelationshipMap irm = AsmManager.getDefault().getRelationshipMap();
-			Set<String> sourcesToRemove = new HashSet<String>();
-			Set<String> nonExistingHandles = new HashSet<String>(); // Cache of handles that we
+			Set<String> sourcesToRemove = new HashSet<>();
+			Set<String> nonExistingHandles = new HashSet<>(); // Cache of handles that we
 			// *know* are invalid
 //			int srchandlecounter = 0;
 //			int tgthandlecounter = 0;
@@ -956,12 +956,12 @@ public class AsmManager implements IStructureModel {
 					} else {
 						// Ok, so the source is valid, what about the targets?
 						List<IRelationship> relationships = mapper.get(hid);
-						List<IRelationship> relationshipsToRemove = new ArrayList<IRelationship>();
+						List<IRelationship> relationshipsToRemove = new ArrayList<>();
 						// Iterate through the relationships against this source
 						// handle
 						for (IRelationship rel : relationships) {
 							List<String> targets = rel.getTargets();
-							List<String> targetsToRemove = new ArrayList<String>();
+							List<String> targetsToRemove = new ArrayList<>();
 
 							// Iterate through the targets for this relationship
 							for (String targethid : targets) {
@@ -1168,7 +1168,7 @@ public class AsmManager implements IStructureModel {
 	 * A ModelInfo object captures basic information about the structure model. It is used for testing and producing debug info.
 	 */
 	public static class ModelInfo {
-		private final Hashtable<String, Integer> nodeTypeCount = new Hashtable<String, Integer>();
+		private final Hashtable<String, Integer> nodeTypeCount = new Hashtable<>();
 		private final Properties extraProperties = new Properties();
 
 		private ModelInfo(IHierarchy hierarchy, IRelationshipMap relationshipMap) {

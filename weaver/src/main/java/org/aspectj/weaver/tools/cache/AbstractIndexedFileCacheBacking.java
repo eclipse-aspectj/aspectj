@@ -59,7 +59,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
     		return EMPTY_KEYS;
     	}
 
-        Collection<String>  matches=new LinkedList<String>();
+        Collection<String>  matches= new LinkedList<>();
         synchronized(index) {
             for (String key : index.keySet()) {
                 if (key.matches(regex)) {
@@ -96,7 +96,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
     protected abstract Map<String, IndexEntry> getIndex ();
 
     protected Map<String, IndexEntry> readIndex (File cacheDir, File cacheFile) {
-        Map<String, IndexEntry> indexMap=new TreeMap<String, IndexEntry>();
+        Map<String, IndexEntry> indexMap= new TreeMap<>();
         IndexEntry[]            idxValues=readIndex(cacheFile);
         if (LangUtil.isEmpty(idxValues)) {
         	if ((logger != null) && logger.isTraceEnabled()) {

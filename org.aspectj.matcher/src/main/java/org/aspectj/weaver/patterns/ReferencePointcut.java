@@ -197,7 +197,7 @@ public class ReferencePointcut extends Pointcut {
 			if (onType.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
 				// the type parameters presented
-				typeVariableMap = new HashMap<String, UnresolvedType>();
+				typeVariableMap = new HashMap<>();
 				ResolvedType underlyingGenericType = ((ResolvedType) onType).getGenericType();
 				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
 				ResolvedType[] typeParams = ((ResolvedType) onType).getResolvedTypeParameters();
@@ -344,7 +344,7 @@ public class ReferencePointcut extends Pointcut {
 			if (searchStart.isParameterizedType()) {
 				// build a type map mapping type variable names in the generic type to
 				// the type parameters presented
-				typeVariableMap = new HashMap<String, UnresolvedType>();
+				typeVariableMap = new HashMap<>();
 				ResolvedType underlyingGenericType = searchStart.getGenericType();
 				TypeVariable[] tVars = underlyingGenericType.getTypeVariables();
 				ResolvedType[] typeParams = searchStart.getResolvedTypeParameters();

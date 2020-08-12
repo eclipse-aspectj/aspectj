@@ -154,7 +154,7 @@ public class BcelShadow extends Shadow {
 		if (mungers.size() > 0) {
 			List<ShadowMunger> src = mungers;
 			if (s.mungers == Collections.EMPTY_LIST) {
-				s.mungers = new ArrayList<ShadowMunger>();
+				s.mungers = new ArrayList<>();
 			}
 			List<ShadowMunger> dest = s.mungers;
 			for (ShadowMunger shadowMunger : src) {
@@ -299,7 +299,7 @@ public class BcelShadow extends Shadow {
 
 	public void addAdvicePreventingLazyTjp(BcelAdvice advice) {
 		if (badAdvice == null) {
-			badAdvice = new ArrayList<BcelAdvice>();
+			badAdvice = new ArrayList<>();
 		}
 		badAdvice.add(advice);
 	}
@@ -1431,7 +1431,7 @@ public class BcelShadow extends Shadow {
 		if (thisAnnotationVars != null) {
 			return;
 		}
-		thisAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
+		thisAnnotationVars = new HashMap<>();
 		// populate..
 	}
 
@@ -1445,7 +1445,7 @@ public class BcelShadow extends Shadow {
 			}
 			targetAnnotationVars = thisAnnotationVars;
 		} else {
-			targetAnnotationVars = new HashMap<ResolvedType, TypeAnnotationAccessVar>();
+			targetAnnotationVars = new HashMap<>();
 			ResolvedType[] rtx = this.getTargetType().resolve(world).getAnnotationTypes(); // what about annotations we havent
 			// gotten yet but we will get in
 			// subclasses?
@@ -1549,7 +1549,7 @@ public class BcelShadow extends Shadow {
 		if (kindedAnnotationVars != null) {
 			return;
 		}
-		kindedAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
+		kindedAnnotationVars = new HashMap<>();
 
 		ResolvedType[] annotations = null;
 		Member shadowSignature = getSignature();
@@ -1653,7 +1653,7 @@ public class BcelShadow extends Shadow {
 		if (withinAnnotationVars != null) {
 			return;
 		}
-		withinAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
+		withinAnnotationVars = new HashMap<>();
 
 		ResolvedType[] annotations = getEnclosingType().resolve(world).getAnnotationTypes();
 		for (ResolvedType ann : annotations) {
@@ -1666,7 +1666,7 @@ public class BcelShadow extends Shadow {
 		if (withincodeAnnotationVars != null) {
 			return;
 		}
-		withincodeAnnotationVars = new HashMap<ResolvedType, AnnotationAccessVar>();
+		withincodeAnnotationVars = new HashMap<>();
 
 		// For some shadow we are interested in annotations on the method containing that shadow.
 		ResolvedType[] annotations = getEnclosingMethod().getMemberView().getAnnotationTypes();
@@ -1734,7 +1734,7 @@ public class BcelShadow extends Shadow {
 	 * @return a list of all the return instructions in the range of this shadow
 	 */
 	private List<InstructionHandle> findReturnInstructions() {
-		List<InstructionHandle> returns = new ArrayList<InstructionHandle>();
+		List<InstructionHandle> returns = new ArrayList<>();
 		for (InstructionHandle ih = range.getStart(); ih != range.getEnd(); ih = ih.getNext()) {
 			if (ih.getInstruction().isReturnInstruction()) {
 				returns.add(ih);
@@ -2187,14 +2187,14 @@ public class BcelShadow extends Shadow {
 		// Parameters are: this if there is one, target if there is one and its different to this, then original arguments
 		// at the shadow, then tjp
 		String extractedShadowMethodName = NameMangler.aroundShadowMethodName(getSignature(), shadowClass.getNewGeneratedNameTag());
-		List<String> parameterNames = new ArrayList<String>();
+		List<String> parameterNames = new ArrayList<>();
 		boolean shadowClassIsInterface = shadowClass.isInterface();
 		LazyMethodGen extractedShadowMethod = extractShadowInstructionsIntoNewMethod(extractedShadowMethodName,
 				shadowClassIsInterface?Modifier.PUBLIC:Modifier.PRIVATE,
 				munger.getSourceLocation(), parameterNames,shadowClassIsInterface);
 
-		List<BcelVar> argsToCallLocalAdviceMethodWith = new ArrayList<BcelVar>();
-		List<BcelVar> proceedVarList = new ArrayList<BcelVar>();
+		List<BcelVar> argsToCallLocalAdviceMethodWith = new ArrayList<>();
+		List<BcelVar> proceedVarList = new ArrayList<>();
 		int extraParamOffset = 0;
 
 		// Create the extra parameters that are needed for passing to proceed
@@ -2845,7 +2845,7 @@ public class BcelShadow extends Shadow {
 		boolean shadowClassIsInterface = getEnclosingClass().isInterface();
 		LazyMethodGen callbackMethod = extractShadowInstructionsIntoNewMethod(
 				NameMangler.aroundShadowMethodName(getSignature(), getEnclosingClass().getNewGeneratedNameTag()), shadowClassIsInterface?Modifier.PUBLIC:0,
-				munger.getSourceLocation(), new ArrayList<String>(),shadowClassIsInterface);
+				munger.getSourceLocation(), new ArrayList<>(),shadowClassIsInterface);
 
 		BcelVar[] adviceVars = munger.getExposedStateAsBcelVars(true);
 

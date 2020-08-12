@@ -64,7 +64,7 @@ public class AnnotationGenTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvGen);
 
 		// Build an annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
@@ -91,13 +91,13 @@ public class AnnotationGenTest extends BcelTestCase {
 
 		ObjectType t = new ObjectType("SimpleAnnotation");
 
-		List<NameValuePair> elements = new ArrayList<NameValuePair>();
+		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvGen);
 
 		// Build a RV annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
 		AnnotationGen a = new AnnotationGen(t, elements, true, cp);
 
-		Vector<AnnotationGen> v = new Vector<AnnotationGen>();
+		Vector<AnnotationGen> v = new Vector<>();
 		v.add(a);
 		Collection<RuntimeAnnos> attributes = Utility.getAnnotationAttributes(cp, v);
 		boolean foundRV = false;
@@ -113,7 +113,7 @@ public class AnnotationGenTest extends BcelTestCase {
 		// Build a RIV annotation of type 'SimpleAnnotation' with 'id=4' as the only value :)
 		AnnotationGen a2 = new AnnotationGen(t, elements, false, cp);
 
-		Vector<AnnotationGen> v2 = new Vector<AnnotationGen>();
+		Vector<AnnotationGen> v2 = new Vector<>();
 		v2.add(a2);
 		Collection<RuntimeAnnos> attributes2 = Utility.getAnnotationAttributes(cp, v2);
 		boolean foundRIV = false;

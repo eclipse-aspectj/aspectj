@@ -67,7 +67,7 @@ public class ClassPathManager {
 	// The max number is configured through the property:
 	// org.aspectj.weaver.openarchives
 	// and it defaults to 1000
-	private List<ZipFile> openArchives = new ArrayList<ZipFile>();
+	private List<ZipFile> openArchives = new ArrayList<>();
 
 	static {
 		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",
@@ -82,7 +82,7 @@ public class ClassPathManager {
 		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, new Object[] { classpath==null?"null":classpath.toString(), handler });
 		}
-		entries = new ArrayList<Entry>();
+		entries = new ArrayList<>();
 		for (String classpathEntry: classpath) {
 			addPath(classpathEntry,handler);
 		}
@@ -328,9 +328,9 @@ public class ClassPathManager {
 		static class JImageState {
 			private final String jrtFsPath;
 			private final FileSystem fs;
-			Map<String,Path> fileCache = new SoftHashMap<String, Path>();
+			Map<String,Path> fileCache = new SoftHashMap<>();
 			boolean packageCacheInitialized = false;
-			Map<String,Path> packageCache = new HashMap<String, Path>();
+			Map<String,Path> packageCache = new HashMap<>();
 
 			public JImageState(String jrtFsPath, FileSystem fs) {
 				this.jrtFsPath = jrtFsPath;
@@ -516,7 +516,7 @@ public class ClassPathManager {
 
 		public List<ZipEntryClassFile> getAllClassFiles() throws IOException {
 			ensureOpen();
-			List<ZipEntryClassFile> ret = new ArrayList<ZipEntryClassFile>();
+			List<ZipEntryClassFile> ret = new ArrayList<>();
 			for (Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements();) {
 				ZipEntry entry = e.nextElement();
 				String name = entry.getName();

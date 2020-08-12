@@ -126,7 +126,7 @@ public final class LazyClassGen {
 
 	int highestLineNumber = 0; // ---- JSR 45 info
 
-	private final SortedMap<String, InlinedSourceFileInfo> inlinedFiles = new TreeMap<String, InlinedSourceFileInfo>();
+	private final SortedMap<String, InlinedSourceFileInfo> inlinedFiles = new TreeMap<>();
 
 	private boolean regenerateGenericSignatureAttribute = false;
 
@@ -136,10 +136,10 @@ public final class LazyClassGen {
 	private final World world;
 	private final String packageName = null;
 
-	private final List<BcelField> fields = new ArrayList<BcelField>();
-	private final List<LazyMethodGen> methodGens = new ArrayList<LazyMethodGen>();
-	private final List<LazyClassGen> classGens = new ArrayList<LazyClassGen>();
-	private final List<AnnotationGen> annotations = new ArrayList<AnnotationGen>();
+	private final List<BcelField> fields = new ArrayList<>();
+	private final List<LazyMethodGen> methodGens = new ArrayList<>();
+	private final List<LazyClassGen> classGens = new ArrayList<>();
+	private final List<AnnotationGen> annotations = new ArrayList<>();
 	private int childCounter = 0;
 
 	private final InstructionFactory fact;
@@ -818,7 +818,7 @@ public final class LazyClassGen {
 
 	// non-recursive, may be a bug, ha ha.
 	private List<LazyClassGen> getClassGens() {
-		List<LazyClassGen> ret = new ArrayList<LazyClassGen>();
+		List<LazyClassGen> ret = new ArrayList<>();
 		ret.add(this);
 		ret.addAll(classGens);
 		return ret;
@@ -828,7 +828,7 @@ public final class LazyClassGen {
 		if (classGens.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<UnwovenClassFile.ChildClass> ret = new ArrayList<UnwovenClassFile.ChildClass>();
+		List<UnwovenClassFile.ChildClass> ret = new ArrayList<>();
 		for (LazyClassGen clazz : classGens) {
 			byte[] bytes = clazz.getJavaClass(world).getBytes();
 			String name = clazz.getName();
@@ -1044,8 +1044,8 @@ public final class LazyClassGen {
 	//
 
 	// reflective thisJoinPoint support
-	private Map<BcelShadow, Field> tjpFields = new HashMap<BcelShadow, Field>();
-	Map<CacheKey, Field> annotationCachingFieldCache = new HashMap<CacheKey, Field>();
+	private Map<BcelShadow, Field> tjpFields = new HashMap<>();
+	Map<CacheKey, Field> annotationCachingFieldCache = new HashMap<>();
 	private int tjpFieldsCounter = -1; // -1 means not yet initialized
 	private int annoFieldsCounter = 0;
 	public static final ObjectType proceedingTjpType = new ObjectType("org.aspectj.lang.ProceedingJoinPoint");
@@ -1254,12 +1254,12 @@ public final class LazyClassGen {
 	}
 
 	private InstructionList[] initializeAllTjps() {
-		Vector<InstructionList> lists = new Vector<InstructionList>();
+		Vector<InstructionList> lists = new Vector<>();
 
 		InstructionList list = initInstructionList();
 		lists.add(list);
 
-		List<Map.Entry<BcelShadow, Field>> entries = new ArrayList<Map.Entry<BcelShadow, Field>>(tjpFields.entrySet());
+		List<Map.Entry<BcelShadow, Field>> entries = new ArrayList<>(tjpFields.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<BcelShadow, Field>>() {
 			@Override
 			public int compare(Map.Entry<BcelShadow, Field> a, Map.Entry<BcelShadow, Field> b) {

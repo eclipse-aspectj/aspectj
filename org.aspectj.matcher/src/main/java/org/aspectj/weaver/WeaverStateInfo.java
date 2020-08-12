@@ -89,7 +89,7 @@ public class WeaverStateInfo {
 	}
 
 	public WeaverStateInfo(boolean reweavable) {
-		this(new ArrayList<Entry>(), false, reweavable, reweavableCompressedModeDefault, reweavableDiffModeDefault);
+		this(new ArrayList<>(), false, reweavable, reweavableCompressedModeDefault, reweavableDiffModeDefault);
 	}
 
 	private WeaverStateInfo(List<Entry> typeMungers, boolean oldStyle, boolean reweavableMode, boolean reweavableCompressedMode,
@@ -99,7 +99,7 @@ public class WeaverStateInfo {
 		this.reweavable = reweavableMode;
 		this.reweavableCompressedMode = reweavableCompressedMode;
 		this.reweavableDiffMode = reweavableMode ? reweavableDiffMode : false;
-		this.aspectsAffectingType = new HashSet<String>();
+		this.aspectsAffectingType = new HashSet<>();
 		this.unwovenClassFile = null;
 	}
 
@@ -147,7 +147,7 @@ public class WeaverStateInfo {
 			}
 
 			int n = s.readShort();
-			List<Entry> l = new ArrayList<Entry>();
+			List<Entry> l = new ArrayList<>();
 			for (int i = 0; i < n; i++) {
 				// conditional on version
 				UnresolvedType aspectType = null;
@@ -257,7 +257,7 @@ public class WeaverStateInfo {
 
 	public List<ConcreteTypeMunger> getTypeMungers(ResolvedType onType) {
 		World world = onType.getWorld();
-		List<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> ret = new ArrayList<>();
 		for (Entry entry : typeMungers) {
 			ResolvedType aspectType = world.resolve(entry.aspectType, true);
 			if (aspectType.isMissing()) {
