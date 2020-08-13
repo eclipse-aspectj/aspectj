@@ -44,12 +44,14 @@ public class ClasspathManagerTestCase extends TestCase {
 	
 	private static String findJvm(String pattern, String jar) {
 		String start = System.getProperty("user.home")+"/jvms";
-		for (File f: new File(start).listFiles()) {
-			if (f.isDirectory() && Pattern.matches(pattern, f.getName())) {
-				File result = walk(f, jar);
-				if (result !=null) {
-					System.out.println("For "+pattern+" found "+result.getAbsolutePath());
-					return result.getAbsolutePath();
+		if (new File(start).isDirectory()) {
+			for (File f : new File(start).listFiles()) {
+				if (f.isDirectory() && Pattern.matches(pattern, f.getName())) {
+					File result = walk(f, jar);
+					if (result != null) {
+						System.out.println("For " + pattern + " found " + result.getAbsolutePath());
+						return result.getAbsolutePath();
+					}
 				}
 			}
 		}
