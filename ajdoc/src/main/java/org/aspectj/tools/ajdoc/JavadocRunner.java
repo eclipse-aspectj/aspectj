@@ -32,10 +32,10 @@ class JavadocRunner {
 
 	static boolean has14ToolsAvailable() {
 		try {
-			Class jdMainClass = com.sun.tools.javadoc.Main.class;
-			Class[] paramTypes = new Class[] { String[].class };
+			Class<?> jdMainClass = Class.forName("com.sun.tools.javadoc.Main");
+			Class<?>[] paramTypes = new Class[] { String[].class };
 			jdMainClass.getMethod("execute", paramTypes);
-		} catch (NoClassDefFoundError e) {
+		} catch (NoClassDefFoundError | ClassNotFoundException e) {
 			return false;
 		} catch (UnsupportedClassVersionError e) {
 			return false;
@@ -73,13 +73,13 @@ class JavadocRunner {
 		
 		try {
 			// for JDK 1.4 and above call the execute method...
-			Class jdMainClass = com.sun.tools.javadoc.Main.class;
+			Class<?> jdMainClass = Class.forName("com.sun.tools.javadoc.Main");
 			Method executeMethod = null;
 			try {
 				Class[] paramTypes = new Class[] { String[].class };
 				executeMethod = jdMainClass.getMethod("execute", paramTypes);
 			} catch (NoSuchMethodException e) {
-				com.sun.tools.javadoc.Main.main(javadocargs);
+				executeMethod = jdMainClass.getMethod("main", String[].class);
 				// throw new UnsupportedOperationException("ajdoc requires a tools library from JDK 1.4 or later.");
 			}
 			try {
@@ -96,6 +96,8 @@ class JavadocRunner {
 		} catch (SecurityException se) {
 			// Do nothing since we expect it to be thrown
 			// System.out.println( ">> se: " + se.getMessage() );
+		} catch (ClassNotFoundException | NoSuchMethodException e) {
+			throw new RuntimeException("Failed to invoke javadoc");
 		}
 		// Set the security manager back
 		// System.setSecurityManager(defaultSecurityManager);
