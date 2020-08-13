@@ -922,10 +922,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
      */
 	public static boolean isBridge(java.lang.reflect.Method m) {
         // why not importing java.lang.reflect.Method? No BCEL clash?
-        if (!LangUtil.is15VMOrGreater()) {
-            return false;
-        }
-        try {
+		try {
             final Class<?>[] noparms = new Class[0];
             java.lang.reflect.Method isBridge 
                 = java.lang.reflect.Method.class.getMethod("isBridge", noparms);

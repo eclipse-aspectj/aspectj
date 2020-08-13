@@ -81,14 +81,12 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 
 	public void testAnnotationPatternMatchingOnTypes() {
-		if (LangUtil.is15VMOrGreater()) {
-			ResolvedType rtx = loadType("AnnotatedClass");
-			initAnnotationTypePatterns();
+		ResolvedType rtx = loadType("AnnotatedClass");
+		initAnnotationTypePatterns();
 
-			// One should match
-			assertTrue("@Foo should not match on the AnnotatedClass", fooTP.matches(rtx).alwaysFalse());
-			assertTrue("@SimpleAnnotation should match on the AnnotatedClass", simpleAnnotationTP.matches(rtx).alwaysTrue());
-		}
+		// One should match
+		assertTrue("@Foo should not match on the AnnotatedClass", fooTP.matches(rtx).alwaysFalse());
+		assertTrue("@SimpleAnnotation should match on the AnnotatedClass", simpleAnnotationTP.matches(rtx).alwaysTrue());
 
 	}
 
@@ -167,35 +165,31 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 
 	public void testAnnotationPatternMatchingOnMethods() {
-		if (LangUtil.is15VMOrGreater()) {
-			ResolvedType rtx = loadType("AnnotatedClass");
-			ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
+		ResolvedType rtx = loadType("AnnotatedClass");
+		ResolvedMember aMethod = rtx.getDeclaredMethods()[1];
 
-			assertTrue("Haven't got the right method, I'm looking for 'm1()': " + aMethod.getName(), aMethod.getName().equals("m1"));
+		assertTrue("Haven't got the right method, I'm looking for 'm1()': " + aMethod.getName(), aMethod.getName().equals("m1"));
 
-			initAnnotationTypePatterns();
+		initAnnotationTypePatterns();
 
-			// One should match
-			assertTrue("@Foo should not match on the AnnotatedClass.m1() method", fooTP.matches(aMethod).alwaysFalse());
-			assertTrue("@SimpleAnnotation should match on the AnnotatedClass.m1() method", simpleAnnotationTP.matches(aMethod)
-					.alwaysTrue());
-		}
+		// One should match
+		assertTrue("@Foo should not match on the AnnotatedClass.m1() method", fooTP.matches(aMethod).alwaysFalse());
+		assertTrue("@SimpleAnnotation should match on the AnnotatedClass.m1() method", simpleAnnotationTP.matches(aMethod)
+				.alwaysTrue());
 	}
 
 	public void testAnnotationPatternMatchingOnFields() {
-		if (LangUtil.is15VMOrGreater()) {
-			ResolvedType rtx = loadType("AnnotatedClass");
-			ResolvedMember aField = rtx.getDeclaredFields()[0];
+		ResolvedType rtx = loadType("AnnotatedClass");
+		ResolvedMember aField = rtx.getDeclaredFields()[0];
 
-			assertTrue("Haven't got the right field, I'm looking for 'i'" + aField.getName(), aField.getName().equals("i"));
+		assertTrue("Haven't got the right field, I'm looking for 'i'" + aField.getName(), aField.getName().equals("i"));
 
-			initAnnotationTypePatterns();
+		initAnnotationTypePatterns();
 
-			// One should match
-			assertTrue("@Foo should not match on the AnnotatedClass.i field", fooTP.matches(aField).alwaysFalse());
-			assertTrue("@SimpleAnnotation should match on the AnnotatedClass.i field", simpleAnnotationTP.matches(aField)
-					.alwaysTrue());
-		}
+		// One should match
+		assertTrue("@Foo should not match on the AnnotatedClass.i field", fooTP.matches(aField).alwaysFalse());
+		assertTrue("@SimpleAnnotation should match on the AnnotatedClass.i field", simpleAnnotationTP.matches(aField)
+				.alwaysTrue());
 
 	}
 

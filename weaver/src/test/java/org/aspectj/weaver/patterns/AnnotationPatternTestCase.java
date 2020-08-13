@@ -253,52 +253,46 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public void testExactAnnotationPatternMatching() {
-		if (LangUtil.is15VMOrGreater()) {
-			PatternParser p = new PatternParser("@Foo");
-			AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
-			ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
-			AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo" });
-			assertTrue("matches element with Foo", ap.matches(ae).alwaysTrue());
-			AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[] { "Boo" });
-			assertTrue("does not match element with Boo", ap.matches(ae2).alwaysFalse());
-		}
+		PatternParser p = new PatternParser("@Foo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo" });
+		assertTrue("matches element with Foo", ap.matches(ae).alwaysTrue());
+		AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new String[] { "Boo" });
+		assertTrue("does not match element with Boo", ap.matches(ae2).alwaysFalse());
 	}
 
 	public void testBindingAnnotationPatternMatching() {
-		if (LangUtil.is15VMOrGreater()) {
-			PatternParser p = new PatternParser("foo");
-			AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
-			try {
-				ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
-			} catch (AbortException abEx) {
-				assertEquals("Binding not supported in @pcds (1.5.0 M1 limitation): null", abEx.getMessage());
-			}
-			// uncomment these next lines once binding is supported
-			// AnnotatedElementImpl ae = new AnnotatedElementImpl(new
-			// String[]{"Foo"});
-			// assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue())
-			// ;
-			// AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new
-			// String[]{"Boo"});
-			// assertTrue("does not match element with Boo",ap.matches(ae2).
-			// alwaysFalse());
+		PatternParser p = new PatternParser("foo");
+		AnnotationTypePattern ap = p.parseAnnotationNameOrVarTypePattern();
+		try {
+			ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
+		} catch (AbortException abEx) {
+			assertEquals("Binding not supported in @pcds (1.5.0 M1 limitation): null", abEx.getMessage());
 		}
+		// uncomment these next lines once binding is supported
+		// AnnotatedElementImpl ae = new AnnotatedElementImpl(new
+		// String[]{"Foo"});
+		// assertTrue("matches element with Foo",ap.matches(ae).alwaysTrue())
+		// ;
+		// AnnotatedElementImpl ae2 = new AnnotatedElementImpl(new
+		// String[]{"Boo"});
+		// assertTrue("does not match element with Boo",ap.matches(ae2).
+		// alwaysFalse());
 	}
 
 	public void testAndAnnotationPatternMatching() {
-		if (LangUtil.is15VMOrGreater()) {
-			PatternParser p = new PatternParser("@Foo @Boo");
-			AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
-			ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
-			AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo", "Boo" });
-			assertTrue("matches foo and boo", ap.matches(ae).alwaysTrue());
-			ae = new AnnotatedElementImpl(new String[] { "Foo" });
-			assertTrue("does not match foo", ap.matches(ae).alwaysFalse());
-			ae = new AnnotatedElementImpl(new String[] { "Boo" });
-			assertTrue("does not match boo", ap.matches(ae).alwaysFalse());
-			ae = new AnnotatedElementImpl(new String[] { "Goo" });
-			assertTrue("does not match goo", ap.matches(ae).alwaysFalse());
-		}
+		PatternParser p = new PatternParser("@Foo @Boo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo", "Boo" });
+		assertTrue("matches foo and boo", ap.matches(ae).alwaysTrue());
+		ae = new AnnotatedElementImpl(new String[] { "Foo" });
+		assertTrue("does not match foo", ap.matches(ae).alwaysFalse());
+		ae = new AnnotatedElementImpl(new String[] { "Boo" });
+		assertTrue("does not match boo", ap.matches(ae).alwaysFalse());
+		ae = new AnnotatedElementImpl(new String[] { "Goo" });
+		assertTrue("does not match goo", ap.matches(ae).alwaysFalse());
 	}
 
 	//	
@@ -318,15 +312,13 @@ public class AnnotationPatternTestCase extends TestCase {
 	// }
 	//	
 	public void testNotAnnotationPatternMatching() {
-		if (LangUtil.is15VMOrGreater()) {
-			PatternParser p = new PatternParser("!@Foo");
-			AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
-			ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
-			AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo", "Boo" });
-			assertTrue("does not match foo and boo", ap.matches(ae).alwaysFalse());
-			ae = new AnnotatedElementImpl(new String[] { "Boo" });
-			assertTrue("matches boo", ap.matches(ae).alwaysTrue());
-		}
+		PatternParser p = new PatternParser("!@Foo");
+		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
+		ap = ap.resolveBindings(makeSimpleScope(), new Bindings(3), true);
+		AnnotatedElementImpl ae = new AnnotatedElementImpl(new String[] { "Foo", "Boo" });
+		assertTrue("does not match foo and boo", ap.matches(ae).alwaysFalse());
+		ae = new AnnotatedElementImpl(new String[] { "Boo" });
+		assertTrue("matches boo", ap.matches(ae).alwaysTrue());
 	}
 
 	public void testAnyAnnotationPatternMatching() {

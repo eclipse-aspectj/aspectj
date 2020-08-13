@@ -165,8 +165,6 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 	 * Weave 'declare @type, @constructor, @method and @field' and check the weave messages that come out.
 	 */
 	public void testWeaveMessagesDeclareAnnotation() {
-		if (!LangUtil.is15VMOrGreater())
-			return; // annotation classes won't be about pre 15
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Six.lst");
 		compilerConfig.setProjectSourceFiles(getSourceFileList(six));

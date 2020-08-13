@@ -34,10 +34,10 @@ public class AjcTest {
 	private static boolean is14VMOrGreater = false;
 
 	static { // matching logic is also in org.aspectj.util.LangUtil
-		is1dot4VMOrGreater = LangUtil.is1dot4VMOrGreater();
-		is15VMOrGreater = LangUtil.is15VMOrGreater();
-		is16VMOrGreater = LangUtil.is16VMOrGreater();
-		is17VMOrGreater = LangUtil.is17VMOrGreater();
+		is1dot4VMOrGreater = true;
+		is15VMOrGreater = true;
+		is16VMOrGreater = true;
+		is17VMOrGreater = true;
 		is18VMOrGreater = LangUtil.is18VMOrGreater();
 		is19VMOrGreater = LangUtil.is19VMOrGreater();
 		is10VMOrGreater = LangUtil.is10VMOrGreater();
