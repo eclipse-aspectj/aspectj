@@ -38,7 +38,7 @@ public class AjcTest {
 		is15VMOrGreater = true;
 		is16VMOrGreater = true;
 		is17VMOrGreater = true;
-		is18VMOrGreater = LangUtil.is18VMOrGreater();
+		is18VMOrGreater = true;
 		is19VMOrGreater = LangUtil.is19VMOrGreater();
 		is10VMOrGreater = LangUtil.is10VMOrGreater();
 		is11VMOrGreater = LangUtil.is11VMOrGreater();

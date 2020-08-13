@@ -29,12 +29,8 @@ public class TestsModuleTests extends TestCase {
 		// compiler tests, wrapped for JUnit
 		if (LangUtil.is19VMOrGreater()) {
 			suite.addTest(AllTests19.suite());
-		} else if (LangUtil.is18VMOrGreater()) {
-			suite.addTest(AllTests18.suite());
 		} else {
-			// suite.addTest(AllTests15.suite());
-			suite.addTest(AllTests17.suite()); // there are currently (28/11/06) no tests specific to a 1.6/1.7 vm - so we can do
-			// this
+			suite.addTest(AllTests18.suite());
 		}
 		return suite;
 	}
