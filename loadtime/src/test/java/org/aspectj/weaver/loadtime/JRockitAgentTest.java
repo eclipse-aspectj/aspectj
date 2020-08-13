@@ -54,7 +54,7 @@ public class JRockitAgentTest extends TestCase {
 	}
 
 	public void testJrockitRecursionProtection() {
-		if (LangUtil.is11VMOrGreater()) {
+		if (LangUtil.is19VMOrGreater()) {
 			// Skip test, not castable to URLClassLoader
 			return;
 		}
