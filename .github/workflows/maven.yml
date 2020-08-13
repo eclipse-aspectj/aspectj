@@ -26,4 +26,4 @@ jobs:
     - run: java -version
     - run: mvn --version
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -Dorg.aspectj.tools.ajc.Ajc.verbose=false -B package --file pom.xml

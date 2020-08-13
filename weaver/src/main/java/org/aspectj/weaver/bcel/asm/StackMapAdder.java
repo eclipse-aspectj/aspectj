@@ -45,6 +45,7 @@ public class StackMapAdder {
 			cr.accept(cv, 0);
 			return cw.toByteArray();
 		} catch (Throwable t) {
+			// If in here fixing an error about version, change the ASMX in class above!
 			System.err.println("AspectJ Internal Error: unable to add stackmap attributes. " + t.getMessage());
 			t.printStackTrace();
 			AsmDetector.isAsmAround = false;
@@ -55,7 +56,7 @@ public class StackMapAdder {
 	private static class AspectJClassVisitor extends ClassVisitor {
 
 		public AspectJClassVisitor(ClassVisitor classwriter) {
-			super(Opcodes.ASM7, classwriter);
+			super(Opcodes.ASM8, classwriter);
 		}
 
 		@Override
@@ -68,7 +69,7 @@ public class StackMapAdder {
 		// created by a ClassWriter (see top level class comment)
 		static class AJMethodVisitor extends MethodVisitor {
 			public AJMethodVisitor(MethodVisitor mv) {
-				super(Opcodes.ASM7,mv);
+				super(Opcodes.ASM8,mv);
 			}
 		}
 

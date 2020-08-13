@@ -35,7 +35,6 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
 
 /**
  * This is an old implementation of ajdoc that does not use an OO style. However, it does the job, and should serve to evolve a
@@ -104,11 +103,6 @@ public class Main implements Config {
 
 	public static void main(String[] args) {
 		clearState();
-		if (!JavadocRunner.has14ToolsAvailable()) {
-			System.err.println("ajdoc requires a JDK 1.4 or later tools jar - exiting");
-			aborted = true;
-			return;
-		}
 
 		// STEP 1: parse the command line and do other global setup
 		sourcepath.addElement("."); // add the current directory to the classapth
@@ -267,11 +261,9 @@ public class Main implements Config {
 			for (int k = 0; k < fileList.size(); k++) {
 				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
 			}
-			if (LangUtil.is19VMOrGreater()) {
-				options = new Vector<>();
-				for (String a: javadocargs) {
-					options.add(a);
-				}
+			options = new Vector<>();
+			for (String a: javadocargs) {
+				options.add(a);
 			}
 		} else {
 			javadocargs = new String[options.size() + signatureFiles.length];
@@ -285,11 +277,7 @@ public class Main implements Config {
 				files.add(StructureUtil.translateAjPathName(signatureFile.getCanonicalPath()));
 			}
 		}
-		if (LangUtil.is19VMOrGreater()) {
-			JavadocRunner.callJavadocViaToolProvider(options, files);
-		} else {
-			JavadocRunner.callJavadoc(javadocargs);
-		}
+		JavadocRunner.callJavadocViaToolProvider(options, files);
 	}
 
 	/**
