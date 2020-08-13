@@ -204,7 +204,8 @@
            <line text="Annotation count is 4"/>
            <line text="@AnnoChar(value=z, ccc=a)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
            <line text="@AnnoChar(value='z', ccc='a')" vm="9+"/>
-           <line text="@AnnoDouble(value=99.0, ddd=3.0)"/>
+           <line text="@AnnoDouble(ddd=3.0, value=99.0)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
+           <line text="@AnnoDouble(value=99.0, ddd=3.0)" vm="11,12,13,14+"/>
            <line text="@AnnoFloat(value=6.0, fff=4.0)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
            <line text="@AnnoFloat(value=6.0f, fff=4.0f)" vm="9+"/>
            <line text="@AnnoShort(value=8, sss=3)"/>
