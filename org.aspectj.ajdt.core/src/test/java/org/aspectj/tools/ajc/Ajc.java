@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.tools.ajc;
 
@@ -17,11 +17,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import junit.framework.AssertionFailedError;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
@@ -31,9 +28,9 @@ import org.aspectj.asm.internal.Relationship;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
@@ -45,13 +42,13 @@ import org.aspectj.util.FileUtil;
  * The expected usage of Ajc is through the TestCase superclass, AjcTestCase, which provides helper methods that conveniently drive
  * the base functions exposed by this class.
  * </p>
- * 
+ *
  * @see org.aspectj.tools.ajc.AjcTestCase
  */
 public class Ajc {
 
 	private static final String BUILD_OUTPUT_FOLDER = "target";
-	
+
 	public static final String outputFolder(String module) {
 		return File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes";
 	}
@@ -63,54 +60,54 @@ public class Ajc {
 		}
 		return s.toString();
 	}
-	
+
 	// ALSO SEE ANTSPEC AND AJCTESTCASE
-	private static final String TESTER_PATH = outputFolder("testing-client") + outputFolder("runtime") + outputFolder("bcel-builder") 
-//			+ File.pathSeparator + ".." + File.separator + "runtime" + File.separator + BUILD_OUTPUT_FOLDER //
-//			+ File.pathSeparator + ".."	+ File.separator + "aspectj5rt" + File.separator + BUILD_OUTPUT_FOLDER //
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar" //
-//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel.jar" //
-//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator
-//			+ "bcel-verifier.jar" +
+	private static final String TESTER_PATH = outputFolder("testing-client") + outputFolder("runtime") + outputFolder("bcel-builder")
+	//			+ File.pathSeparator + ".." + File.separator + "runtime" + File.separator + BUILD_OUTPUT_FOLDER //
+	//			+ File.pathSeparator + ".."	+ File.separator + "aspectj5rt" + File.separator + BUILD_OUTPUT_FOLDER //
+	+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar" //
+	//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel.jar" //
+	//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator
+	//			+ "bcel-verifier.jar" +
 
-			+ outputFolder("bridge")
-			+ outputFolder("loadtime")
-			+ outputFolder("weaver")
-			+ outputFolder("org.aspectj.matcher")
-			+ outputFolder("bridge");
-//			File.pathSeparator + ".." + File.separator + "bridge" + File.separator + "bin" + File.pathSeparator + ".."
-//			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator
-//			+ ".."
-//			+ File.separator
-//			+ "weaver"
-//			+ File.separator
-//			+ "bin"
-//			+ File.pathSeparator
-//			+ ".."
-//			+ File.separator
-//			+ "weaver5"
-//			+ File.separator
-//			+ "bin"
-//			+ File.pathSeparator
-//			+ ".."
-//			+ File.separator
-//			+ "org.aspectj.matcher"
-//			+ File.separator
-//			+ "bin"
+	+ outputFolder("bridge")
+	+ outputFolder("loadtime")
+	+ outputFolder("weaver")
+	+ outputFolder("org.aspectj.matcher")
+	+ outputFolder("bridge");
+	//			File.pathSeparator + ".." + File.separator + "bridge" + File.separator + "bin" + File.pathSeparator + ".."
+	//			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator
+	//			+ ".."
+	//			+ File.separator
+	//			+ "weaver"
+	//			+ File.separator
+	//			+ "bin"
+	//			+ File.pathSeparator
+	//			+ ".."
+	//			+ File.separator
+	//			+ "weaver5"
+	//			+ File.separator
+	//			+ "bin"
+	//			+ File.pathSeparator
+	//			+ ".."
+	//			+ File.separator
+	//			+ "org.aspectj.matcher"
+	//			+ File.separator
+	//			+ "bin"
 
-			// When the build machine executes the tests, it is using code built into jars rather than code build into
-			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
-//			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "bridge.jar"
-//			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator
-//			+ "org.aspectj.matcher.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-//			+ File.separator + "util.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-//			+ File.separator + "loadtime.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-//			+ File.separator + "weaver.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-//			+ File.separator + "weaver5.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-//			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
-//			+ File.separator + "testing-client.jar"
-//			// hmmm, this next one should perhaps point to an aj-build jar...
-//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
+	// When the build machine executes the tests, it is using code built into jars rather than code build into
+	// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
+	//			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "bridge.jar"
+	//			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator
+	//			+ "org.aspectj.matcher.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+	//			+ File.separator + "util.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+	//			+ File.separator + "loadtime.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+	//			+ File.separator + "weaver.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+	//			+ File.separator + "weaver5.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
+	//			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
+	//			+ File.separator + "testing-client.jar"
+	//			// hmmm, this next one should perhaps point to an aj-build jar...
+	//			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
 
 	private CompilationResult result;
 	private File sandbox;
@@ -120,7 +117,7 @@ public class Ajc {
 	private int incrementalStage = 10;
 	private boolean shouldEmptySandbox = true;
 	private final AjcCommandController controller;
-	private static boolean verbose = System.getProperty("org.aspectj.tools.ajc.Ajc.verbose", "true").equals("true");
+	public static boolean verbose = System.getProperty("org.aspectj.tools.ajc.Ajc.verbose", "true").equals("true");
 
 	/**
 	 * Constructs a new Ajc instance, with a new AspectJ compiler inside.
@@ -156,16 +153,16 @@ public class Ajc {
 	 * </p>
 	 * <p>
 	 * For example, given a baseDir of "tests/pr12345" and a compile command: "ajc src/A.java src/B.java", the files in
-	 * 
+	 *
 	 * <pre>
 	 *    tests/pr12345/
 	 *                  src/
 	 *                      A.java
 	 *                      B.java
 	 * </pre>
-	 * 
+	 *
 	 * are copied to:
-	 * 
+	 *
 	 * <pre>
 	 *     ajcSandbox/ajcTestxxx.tmp/
 	 *                               src/
@@ -185,7 +182,7 @@ public class Ajc {
 	 * <ul>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @param args The compiler arguments.
 	 * @return a CompilationResult object with all the messages produced by the compiler, a description of the ajc command that was
 	 *         issued, and the standard output and error of the compile (excluding messages which are provided separately)
@@ -272,7 +269,7 @@ public class Ajc {
 	 * Throws an IllegalStateException if you try and call this method without first doing a compile that specified the -incremental
 	 * option.
 	 * </p>
-	 * 
+	 *
 	 * @return A CompilationResult giving the results of the most recent increment.
 	 * @throws IOException
 	 */
@@ -408,10 +405,10 @@ public class Ajc {
 			String relativeToPath = (fromParent != null) ? (fromParent.getPath() + File.separator) : "";
 			if (baseDir != null) {
 				from = new File(baseDir, from.getPath());
-//				if (ensureDirsExist) {
-//					File toMkdir = (ret.getPath().endsWith(".jar") || ret.getPath().endsWith(".zip"))?ret.getParentFile():ret;
-//					toMkdir.mkdirs();
-//				}
+				//				if (ensureDirsExist) {
+				//					File toMkdir = (ret.getPath().endsWith(".jar") || ret.getPath().endsWith(".zip"))?ret.getParentFile():ret;
+				//					toMkdir.mkdirs();
+				//				}
 			}
 			if (!from.exists())
 				return ret;
@@ -421,6 +418,7 @@ public class Ajc {
 				if (from.isFile()) {
 					final String prefix = from.getName().substring(0, from.getName().lastIndexOf('.'));
 					String[] toCopy = from.getParentFile().list(new FilenameFilter() {
+						@Override
 						public boolean accept(File dir, String name) {
 							if (name.indexOf('.') == -1)
 								return false;
@@ -488,9 +486,10 @@ class AjcCommandController extends Main.CommandController {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.tools.ajc.Main.CommandController#doRepeatCommand()
 	 */
+	@Override
 	boolean doRepeatCommand(ICommand command) {
 		this.command = command;
 		return false; // ensure that control returns to caller
@@ -498,9 +497,10 @@ class AjcCommandController extends Main.CommandController {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.tools.ajc.Main.CommandController#running()
 	 */
+	@Override
 	public boolean running() {
 		return false; // so that we can come back for more...
 	}
@@ -514,6 +514,7 @@ class AjcCommandController extends Main.CommandController {
 
 class AbortInterceptor implements IMessageHandler {
 
+	@Override
 	public boolean handleMessage(IMessage message) throws AbortException {
 		if (message.getKind() == IMessage.ABORT) {
 			System.err.println("***** Abort Message Received ******");
@@ -527,15 +528,18 @@ class AbortInterceptor implements IMessageHandler {
 		return false;
 	}
 
+	@Override
 	public boolean isIgnoring(Kind kind) {
 		if (kind != IMessage.ABORT)
 			return true;
 		return false;
 	}
 
+	@Override
 	public void dontIgnore(Kind kind) {
 	}
 
+	@Override
 	public void ignore(Kind kind) {
 	}
 }
