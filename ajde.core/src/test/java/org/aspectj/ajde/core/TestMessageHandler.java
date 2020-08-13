@@ -29,9 +29,9 @@ public class TestMessageHandler implements IBuildMessageHandler {
 	private List<TestMessage> errors;
 
 	public TestMessageHandler() {
-		ignoring = new ArrayList<Kind>();
-		messages = new ArrayList<TestMessage>();
-		errors = new ArrayList<TestMessage>();
+		ignoring = new ArrayList<>();
+		messages = new ArrayList<>();
+		errors = new ArrayList<>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);
 	}

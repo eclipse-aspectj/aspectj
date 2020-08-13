@@ -84,8 +84,8 @@ public class AspectDeclaration extends TypeDeclaration {
 	public ResolvedMember aspectOfMethod;
 	public ResolvedMember ptwGetWithinTypeNameMethod;
 	public ResolvedMember hasAspectMethod;
-	public Map<ResolvedMember, Binding> accessForInline = new LinkedHashMap<ResolvedMember, Binding>();
-	public Map<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair> superAccessForInline = new HashMap<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair>();
+	public Map<ResolvedMember, Binding> accessForInline = new LinkedHashMap<>();
+	public Map<ResolvedMember, AccessForInlineVisitor.SuperAccessMethodPair> superAccessForInline = new HashMap<>();
 	public boolean isPrivileged;
 	public EclipseSourceType concreteName;
 	public ReferenceType typeX;
@@ -418,7 +418,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 
 	protected List<EclipseAttributeAdapter> makeEffectiveSignatureAttribute(ResolvedMember sig, Shadow.Kind kind, boolean weaveBody) {
-		List<EclipseAttributeAdapter> l = new ArrayList<EclipseAttributeAdapter>(1);
+		List<EclipseAttributeAdapter> l = new ArrayList<>(1);
 		l.add(new EclipseAttributeAdapter(new AjAttribute.EffectiveSignatureAttribute(sig, kind, weaveBody)));
 		return l;
 	}

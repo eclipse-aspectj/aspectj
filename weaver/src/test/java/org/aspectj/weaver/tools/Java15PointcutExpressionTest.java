@@ -140,7 +140,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 
 	}
 	
-	private static final Set<PointcutPrimitive> DEFAULT_SUPPORTED_PRIMITIVES = new HashSet<PointcutPrimitive>();
+	private static final Set<PointcutPrimitive> DEFAULT_SUPPORTED_PRIMITIVES = new HashSet<>();
 
 	 static {
 	  DEFAULT_SUPPORTED_PRIMITIVES.add(PointcutPrimitive.EXECUTION);
@@ -286,7 +286,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  tps[parameterNumber].getAnnotationPattern().toString();
 	  
 	  // parameter type annotation checking
-	  Set<String> expected = new HashSet<String>();
+	  Set<String> expected = new HashSet<>();
 	  expected.addAll(mpnv.getParameterTypeAnnotations());
 	  
 	  StringTokenizer st = new StringTokenizer(expectedParameterTypeAnnotations==null?"":expectedParameterTypeAnnotations);
@@ -305,7 +305,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  }
 	  
 	  // parameter annotation checking
-	  expected = new HashSet<String>();
+	  expected = new HashSet<>();
 	  expected.addAll(mpnv.getParameterAnnotations());
 	  
 	  st = new StringTokenizer(expectedParameterAnnotations==null?"":expectedParameterAnnotations);
@@ -327,8 +327,8 @@ public class Java15PointcutExpressionTest extends TestCase {
 	
 	static class MyPatternNodeVisitor extends AbstractPatternNodeVisitor {
 		private StringBuffer stringRep = new StringBuffer();
-		private List<String> parameterAnnotations = new ArrayList<String>();
-		private List<String> parameterTypeAnnotations = new ArrayList<String>();
+		private List<String> parameterAnnotations = new ArrayList<>();
+		private List<String> parameterTypeAnnotations = new ArrayList<>();
 		
 		public String getStringRepresentation() { return stringRep.toString(); }
 		public List<String> getParameterAnnotations() { return parameterAnnotations; }

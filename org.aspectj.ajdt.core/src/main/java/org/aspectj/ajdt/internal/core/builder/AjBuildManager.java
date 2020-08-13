@@ -138,7 +138,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private boolean batchCompile = true;
 	private INameEnvironment environment;
 
-	private Map<String, List<UnwovenClassFile>> /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap<String, List<UnwovenClassFile>>();
+	private Map<String, List<UnwovenClassFile>> /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap<>();
 
 	// FIXME asc should this really be in here?
 	// private AsmManager structureModel;
@@ -708,7 +708,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 * aspects which are sent to that ouptut directory
 	 */
 	private Map<File, List<String>> findOutputDirsForAspects() {
-		Map<File, List<String>> outputDirsToAspects = new HashMap<File, List<String>>();
+		Map<File, List<String>> outputDirsToAspects = new HashMap<>();
 		Map<String, char[]> aspectNamesToFileNames = state.getAspectNamesToFileNameMap();
 		if (buildConfig.getCompilationResultDestinationManager() == null
 				|| buildConfig.getCompilationResultDestinationManager().getAllOutputLocations().size() == 1) {
@@ -717,7 +717,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			if (buildConfig.getCompilationResultDestinationManager() != null) {
 				outputDir = buildConfig.getCompilationResultDestinationManager().getDefaultOutputLocation();
 			}
-			List<String> aspectNames = new ArrayList<String>();
+			List<String> aspectNames = new ArrayList<>();
 			if (aspectNamesToFileNames != null) {
 				Set<String> keys = aspectNamesToFileNames.keySet();
 				for (String name : keys) {
@@ -729,7 +729,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			List outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
             for (Object dir : outputDirs) {
                 File outputDir = (File) dir;
-                outputDirsToAspects.put(outputDir, new ArrayList<String>());
+                outputDirsToAspects.put(outputDir, new ArrayList<>());
             }
 			if (aspectNamesToFileNames != null) {
 				Set<Map.Entry<String, char[]>> entrySet = aspectNamesToFileNames.entrySet();
@@ -739,7 +739,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                     File outputDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
                             new File(new String(fileName)));
                     if (!outputDirsToAspects.containsKey(outputDir)) {
-                        outputDirsToAspects.put(outputDir, new ArrayList<String>());
+                        outputDirsToAspects.put(outputDir, new ArrayList<>());
                     }
                     ((List) outputDirsToAspects.get(outputDir)).add(aspectName);
                 }
@@ -796,7 +796,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		}
 		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList()));
 
-		model.setFileMap(new HashMap<String, IProgramElement>());
+		model.setFileMap(new HashMap<>());
 		// setStructureModel(model);
 		state.setStructureModel(structureModel);
 		// state.setRelationshipMap(AsmManager.getDefault().getRelationshipMap());
@@ -903,7 +903,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				File[] binSrcs = FileUtil.listFiles(inPathElement, binarySourceFilter);
                 for (File binSrc : binSrcs) {
                     UnwovenClassFile ucf = bcelWeaver.addClassFile(binSrc, inPathElement, outputDir);
-                    List<UnwovenClassFile> ucfl = new ArrayList<UnwovenClassFile>();
+                    List<UnwovenClassFile> ucfl = new ArrayList<>();
                     ucfl.add(ucf);
                     state.recordBinarySource(binSrc.getPath(), ucfl);
                 }

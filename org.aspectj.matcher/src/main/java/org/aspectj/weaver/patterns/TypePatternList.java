@@ -531,7 +531,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	public List<UnresolvedType> getExactTypes() {
-		List<UnresolvedType> ret = new ArrayList<UnresolvedType>();
+		List<UnresolvedType> ret = new ArrayList<>();
 		for (TypePattern typePattern : typePatterns) {
 			UnresolvedType t = typePattern.getExactType();
 			if (!ResolvedType.isMissing(t)) {

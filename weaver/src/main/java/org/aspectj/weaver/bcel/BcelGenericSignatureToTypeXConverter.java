@@ -37,7 +37,7 @@ public class BcelGenericSignatureToTypeXConverter {
 
 	public static ResolvedType classTypeSignature2TypeX(GenericSignature.ClassTypeSignature aClassTypeSignature,
 			GenericSignature.FormalTypeParameter[] typeParams, World world) throws GenericSignatureFormatException {
-		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<GenericSignature.FormalTypeParameter, ReferenceType>();
+		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<>();
 		ResolvedType ret = classTypeSignature2TypeX(aClassTypeSignature, typeParams, world, typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;
@@ -100,7 +100,7 @@ public class BcelGenericSignatureToTypeXConverter {
 
 	public static ResolvedType fieldTypeSignature2TypeX(GenericSignature.FieldTypeSignature aFieldTypeSignature,
 			GenericSignature.FormalTypeParameter[] typeParams, World world) throws GenericSignatureFormatException {
-		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<GenericSignature.FormalTypeParameter, ReferenceType>();
+		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<>();
 		ResolvedType ret = fieldTypeSignature2TypeX(aFieldTypeSignature, typeParams, world, typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;
@@ -133,7 +133,7 @@ public class BcelGenericSignatureToTypeXConverter {
 
 	public static TypeVariable formalTypeParameter2TypeVariable(GenericSignature.FormalTypeParameter aFormalTypeParameter,
 			GenericSignature.FormalTypeParameter[] typeParams, World world) throws GenericSignatureFormatException {
-		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<GenericSignature.FormalTypeParameter, ReferenceType>();
+		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<>();
 		return formalTypeParameter2TypeVariable(aFormalTypeParameter, typeParams, world, typeMap);
 	}
 
@@ -185,7 +185,7 @@ public class BcelGenericSignatureToTypeXConverter {
 
 	public static ResolvedType typeSignature2TypeX(GenericSignature.TypeSignature aTypeSig,
 			GenericSignature.FormalTypeParameter[] typeParams, World world) throws GenericSignatureFormatException {
-		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<GenericSignature.FormalTypeParameter, ReferenceType>();
+		Map<GenericSignature.FormalTypeParameter, ReferenceType> typeMap = new HashMap<>();
 		ResolvedType ret = typeSignature2TypeX(aTypeSig, typeParams, world, typeMap);
 		fixUpCircularDependencies(ret, typeMap);
 		return ret;

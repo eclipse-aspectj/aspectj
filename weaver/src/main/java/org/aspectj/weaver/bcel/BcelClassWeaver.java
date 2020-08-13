@@ -119,17 +119,17 @@ class BcelClassWeaver implements IClassWeaver {
 	private final ConstantPool cpg; // alias of clazz.getConstantPoolGen()
 	private final InstructionFactory fact; // alias of clazz.getFactory();
 
-	private final List<LazyMethodGen> addedLazyMethodGens = new ArrayList<LazyMethodGen>();
-	private final Set<ResolvedMember> addedDispatchTargets = new HashSet<ResolvedMember>();
+	private final List<LazyMethodGen> addedLazyMethodGens = new ArrayList<>();
+	private final Set<ResolvedMember> addedDispatchTargets = new HashSet<>();
 
 	private boolean inReweavableMode = false;
 
 	private List<IfaceInitList> addedSuperInitializersAsList = null;
-	private final Map<ResolvedType, IfaceInitList> addedSuperInitializers = new HashMap<ResolvedType, IfaceInitList>();
-	private final List<ConcreteTypeMunger> addedThisInitializers = new ArrayList<ConcreteTypeMunger>();
-	private final List<ConcreteTypeMunger> addedClassInitializers = new ArrayList<ConcreteTypeMunger>();
+	private final Map<ResolvedType, IfaceInitList> addedSuperInitializers = new HashMap<>();
+	private final List<ConcreteTypeMunger> addedThisInitializers = new ArrayList<>();
+	private final List<ConcreteTypeMunger> addedClassInitializers = new ArrayList<>();
 
-	private final Map<ResolvedMember, ResolvedMember> mapToAnnotationHolder = new HashMap<ResolvedMember, ResolvedMember>();
+	private final Map<ResolvedMember, ResolvedMember> mapToAnnotationHolder = new HashMap<>();
 
 	// private BcelShadow clinitShadow = null;
 
@@ -137,7 +137,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * This holds the initialization and pre-initialization shadows for this class that were actually matched by mungers (if no
 	 * match, then we don't even create the shadows really).
 	 */
-	private final List<BcelShadow> initializationShadows = new ArrayList<BcelShadow>();
+	private final List<BcelShadow> initializationShadows = new ArrayList<>();
 
 	private BcelClassWeaver(BcelWorld world, LazyClassGen clazz, List<ShadowMunger> shadowMungers,
 			List<ConcreteTypeMunger> typeMungers, List<ConcreteTypeMunger> lateTypeMungers) {
@@ -209,7 +209,7 @@ class BcelClassWeaver implements IClassWeaver {
 				if (kind.isSet(couldMatchKinds)) {
 					byte k = kind.getKey();
 					if (indexedShadowMungers[k] == null) {
-						indexedShadowMungers[k] = new ArrayList<ShadowMunger>();
+						indexedShadowMungers[k] = new ArrayList<>();
 						if (!kind.isEnclosingKind()) {
 							canMatchBodyShadows = true;
 						}
@@ -254,7 +254,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private static class IfaceInitList implements PartialOrder.PartialComparable {
 		final ResolvedType onType;
-		List<ConcreteTypeMunger> list = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> list = new ArrayList<>();
 
 		IfaceInitList(ResolvedType onType) {
 			this.onType = onType;
@@ -418,7 +418,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 		Set<String> aspectsAffectingType = null;
 		if (inReweavableMode || clazz.getType().isAspect()) {
-			aspectsAffectingType = new HashSet<String>();
+			aspectsAffectingType = new HashSet<>();
 		}
 
 		boolean isChanged = false;
@@ -457,7 +457,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// sort according to: Major: type hierarchy
 		// within each list: dominates
 		// don't forget to sort addedThisInitialiers according to dominates
-		addedSuperInitializersAsList = new ArrayList<IfaceInitList>(addedSuperInitializers.values());
+		addedSuperInitializersAsList = new ArrayList<>(addedSuperInitializers.values());
 		addedSuperInitializersAsList = PartialOrder.sort(addedSuperInitializersAsList);
 		if (addedSuperInitializersAsList == null) {
 			throw new BCException("circularity in inter-types");
@@ -471,7 +471,7 @@ class BcelClassWeaver implements IClassWeaver {
 		// now go through each method, and match against each method. This
 		// sets up each method's {@link LazyMethodGen#matchedShadows} field,
 		// and it also possibly adds to {@link #initializationShadows}.
-		List<LazyMethodGen> methodGens = new ArrayList<LazyMethodGen>(clazz.getMethodGens());
+		List<LazyMethodGen> methodGens = new ArrayList<>(clazz.getMethodGens());
 		for (LazyMethodGen member : methodGens) {
 			if (!member.hasBody()) {
 				continue;
@@ -504,7 +504,7 @@ class BcelClassWeaver implements IClassWeaver {
 			// Repeat next step until nothing left to inline...cant go on
 			// infinetly as compiler will have detected and reported
 			// "Recursive constructor invocation"
-			List<LazyMethodGen> recursiveCtors = new ArrayList<LazyMethodGen>();
+			List<LazyMethodGen> recursiveCtors = new ArrayList<>();
 			while (inlineSelfConstructors(methodGens, recursiveCtors)) {
 			}
 			positionAndImplement(initializationShadows);
@@ -789,7 +789,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 		// Keep a set of all methods from this type - it'll help us to check if bridge methods
 		// have already been created, we don't want to do it twice!
-		Set<String> methodsSet = new HashSet<String>();
+		Set<String> methodsSet = new HashSet<>();
 		for (LazyMethodGen aMethod : methods) {
 			StringBuilder sb = new StringBuilder(aMethod.getName());
 			sb.append(aMethod.getSignature());
@@ -825,7 +825,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			String pkgName = clazz.getPackageName();
 			UnresolvedType[] bm = BcelWorld.fromBcel(bridgeToCandidate.getArgumentTypes());
-			List<ResolvedMember> overriddenMethodsCollector = new ArrayList<ResolvedMember>();
+			List<ResolvedMember> overriddenMethodsCollector = new ArrayList<>();
 			checkForOverride(theSuperclass, name, psig, rsig, bridgeToCandidate.getAccessFlags(), pkgName, bm, overriddenMethodsCollector);
 			if (overriddenMethodsCollector.size() != 0) {
 				for (ResolvedMember overriddenMethod : overriddenMethodsCollector) {
@@ -876,7 +876,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Weave any declare @method/@ctor statements into the members of the supplied class
 	 */
 	private boolean weaveDeclareAtMethodCtor(LazyClassGen clazz) {
-		List<Integer> reportedProblems = new ArrayList<Integer>();
+		List<Integer> reportedProblems = new ArrayList<>();
 
 		List<DeclareAnnotation> allDecams = world.getDeclareAnnotationOnMethods();
 		if (allDecams.isEmpty()) {
@@ -899,7 +899,7 @@ class BcelClassWeaver implements IClassWeaver {
 			return false; // nothing to do
 		}
 
-		Set<DeclareAnnotation> unusedDecams = new HashSet<DeclareAnnotation>();
+		Set<DeclareAnnotation> unusedDecams = new HashSet<>();
 		unusedDecams.addAll(decaMs);
 
 		// These methods may have been targeted with declare annotation.  Example: ITD on an interface
@@ -915,7 +915,7 @@ class BcelClassWeaver implements IClassWeaver {
 				resolvedmember.setAnnotationTypes(method.getAnnotationTypes());
 				resolvedmember.setAnnotations(method.getAnnotations());
 
-				List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+				List<DeclareAnnotation> worthRetrying = new ArrayList<>();
 				boolean modificationOccured = false;
 				for (DeclareAnnotation decam: decaMs) {
 					if (decam.matches(resolvedmember, world)) {
@@ -947,7 +947,7 @@ class BcelClassWeaver implements IClassWeaver {
 				while (!worthRetrying.isEmpty() && modificationOccured) {
 					modificationOccured = false;
 					// lets have another go
-					List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+					List<DeclareAnnotation> forRemoval = new ArrayList<>();
 					for (DeclareAnnotation decam : worthRetrying) {
 						if (decam.matches(resolvedmember, world)) {
 							if (doesAlreadyHaveAnnotation(resolvedmember, decam, reportedProblems,false)) {
@@ -984,7 +984,7 @@ class BcelClassWeaver implements IClassWeaver {
 				if (!mg.getName().startsWith(NameMangler.PREFIX)) {
 
 					// Single first pass
-					List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+					List<DeclareAnnotation> worthRetrying = new ArrayList<>();
 					boolean modificationOccured = false;
 					List<AnnotationGen> annotationsToAdd = null;
 					for (DeclareAnnotation decaM : decaMs) {
@@ -998,7 +998,7 @@ class BcelClassWeaver implements IClassWeaver {
 							}
 
 							if (annotationsToAdd == null) {
-								annotationsToAdd = new ArrayList<AnnotationGen>();
+								annotationsToAdd = new ArrayList<>();
 							}
 							AnnotationGen a = ((BcelAnnotation) decaM.getAnnotation()).getBcelAnnotation();
 							AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
@@ -1028,7 +1028,7 @@ class BcelClassWeaver implements IClassWeaver {
 					while (!worthRetrying.isEmpty() && modificationOccured) {
 						modificationOccured = false;
 						// lets have another go
-						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+						List<DeclareAnnotation> forRemoval = new ArrayList<>();
 						for (DeclareAnnotation decaM : worthRetrying) {
 							if (decaM.matches(mg.getMemberView(), world)) {
 								if (doesAlreadyHaveAnnotation(mg.getMemberView(), decaM, reportedProblems,true)) {
@@ -1040,7 +1040,7 @@ class BcelClassWeaver implements IClassWeaver {
 								}
 
 								if (annotationsToAdd == null) {
-									annotationsToAdd = new ArrayList<AnnotationGen>();
+									annotationsToAdd = new ArrayList<>();
 								}
 								AnnotationGen a = ((BcelAnnotation) decaM.getAnnotation()).getBcelAnnotation();
 								// create copy to get the annotation type into the right constant pool
@@ -1128,7 +1128,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * in type.
 	 */
 	private List<DeclareAnnotation> getMatchingSubset(List<DeclareAnnotation> declareAnnotations, ResolvedType type) {
-		List<DeclareAnnotation> subset = new ArrayList<DeclareAnnotation>();
+		List<DeclareAnnotation> subset = new ArrayList<>();
 		for (DeclareAnnotation da : declareAnnotations) {
 			if (da.couldEverMatch(type)) {
 				subset.add(da);
@@ -1141,7 +1141,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * Get a subset of all the type mungers defined on this aspect
 	 */
 	private List<ConcreteTypeMunger> getITDSubset(LazyClassGen clazz, ResolvedTypeMunger.Kind wantedKind) {
-		List<ConcreteTypeMunger> subset = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> subset = new ArrayList<>();
 		for (ConcreteTypeMunger typeMunger : clazz.getBcelObjectType().getTypeMungers()) {
 			if (typeMunger.getMunger().getKind() == wantedKind) {
 				subset.add(typeMunger);
@@ -1196,7 +1196,7 @@ class BcelClassWeaver implements IClassWeaver {
 		for (ConcreteTypeMunger itdField : itdFields) {
 			BcelTypeMunger fieldMunger = (BcelTypeMunger) itdField;
 			ResolvedMember itdIsActually = fieldMunger.getSignature();
-			Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<>();
 			boolean modificationOccured = false;
 
 			for (DeclareAnnotation decaF : decaFs) {
@@ -1235,7 +1235,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
-				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+				List<DeclareAnnotation> forRemoval = new ArrayList<>();
 				for (DeclareAnnotation decaF : worthRetrying) {
 					if (decaF.matches(itdIsActually, world)) {
 						if (decaF.isRemover()) {
@@ -1280,7 +1280,7 @@ class BcelClassWeaver implements IClassWeaver {
 			// for (Iterator iter = itdsForMethodAndConstructor.iterator(); iter.hasNext();) {
 			// BcelTypeMunger methodctorMunger = (BcelTypeMunger) iter.next();
 			ResolvedMember unMangledInterMethod = methodctorMunger.getSignature();
-			List<DeclareAnnotation> worthRetrying = new ArrayList<DeclareAnnotation>();
+			List<DeclareAnnotation> worthRetrying = new ArrayList<>();
 			boolean modificationOccured = false;
 
 			for (DeclareAnnotation decaMC : decaMCs) {
@@ -1306,7 +1306,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			while (!worthRetrying.isEmpty() && modificationOccured) {
 				modificationOccured = false;
-				List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+				List<DeclareAnnotation> forRemoval = new ArrayList<>();
 				for (DeclareAnnotation decaMC : worthRetrying) {
 					if (decaMC.matches(unMangledInterMethod, world)) {
 						LazyMethodGen annotationHolder = locateAnnotationHolderForFieldMunger(clazz, methodctorMunger);
@@ -1371,7 +1371,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 * as well as on the interfieldinit method.
 	 */
 	private boolean weaveDeclareAtField(LazyClassGen clazz) {
-		List<Integer> reportedProblems = new ArrayList<Integer>();
+		List<Integer> reportedProblems = new ArrayList<>();
 		List<DeclareAnnotation> allDecafs = world.getDeclareAnnotationOnFields();
 		if (allDecafs.isEmpty()) {
 			return false;
@@ -1389,12 +1389,12 @@ class BcelClassWeaver implements IClassWeaver {
 
 		List<BcelField> fields = clazz.getFieldGens();
 		if (fields != null) {
-			Set<DeclareAnnotation> unusedDecafs = new HashSet<DeclareAnnotation>();
+			Set<DeclareAnnotation> unusedDecafs = new HashSet<>();
 			unusedDecafs.addAll(decafs);
 			for (BcelField field : fields) {
 				if (!field.getName().startsWith(NameMangler.PREFIX)) {
 					// Single first pass
-					Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<DeclareAnnotation>();
+					Set<DeclareAnnotation> worthRetrying = new LinkedHashSet<>();
 					boolean modificationOccured = false;
 					AnnotationAJ[] dontAddMeTwice = field.getAnnotations();
 
@@ -1443,7 +1443,7 @@ class BcelClassWeaver implements IClassWeaver {
 					while (!worthRetrying.isEmpty() && modificationOccured) {
 						modificationOccured = false;
 						// lets have another go with any remaining ones
-						List<DeclareAnnotation> forRemoval = new ArrayList<DeclareAnnotation>();
+						List<DeclareAnnotation> forRemoval = new ArrayList<>();
 						for (DeclareAnnotation decaF : worthRetrying) {
 							if (decaF.matches(field, world)) {
 								if (decaF.isRemover()) {
@@ -1592,7 +1592,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private Set<String> findAspectsForMungers(LazyMethodGen mg) {
-		Set<String> aspectsAffectingType = new HashSet<String>();
+		Set<String> aspectsAffectingType = new HashSet<>();
 		for (BcelShadow shadow : mg.matchedShadows) {
 			for (ShadowMunger munger : shadow.getMungers()) {
 				if (munger instanceof BcelAdvice) {
@@ -1611,7 +1611,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private boolean inlineSelfConstructors(List<LazyMethodGen> methodGens, List<LazyMethodGen> recursiveCtors) {
 		boolean inlinedSomething = false;
-		List<LazyMethodGen> newRecursiveCtors = new ArrayList<LazyMethodGen>();
+		List<LazyMethodGen> newRecursiveCtors = new ArrayList<>();
 		for (LazyMethodGen methodGen : methodGens) {
 			if (!methodGen.getName().equals("<init>")) {
 				continue;
@@ -1783,7 +1783,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// search for 'returns' and make them jump to the
 				// aload_<n>,monitorexit
 				InstructionHandle walker = body.getStart();
-				List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
+				List<InstructionHandle> rets = new ArrayList<>();
 				while (walker != null) {
 					if (walker.getInstruction().isReturnInstruction()) {
 						rets.add(walker);
@@ -1984,7 +1984,7 @@ class BcelClassWeaver implements IClassWeaver {
 				// search for 'returns' and make them to the
 				// aload_<n>,monitorexit
 				InstructionHandle walker = body.getStart();
-				List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
+				List<InstructionHandle> rets = new ArrayList<>();
 				while (walker != null) { // !walker.equals(body.getEnd())) {
 					if (walker.getInstruction().isReturnInstruction()) {
 						rets.add(walker);
@@ -2101,7 +2101,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 			// search for 'returns' and make them to the aload_<n>,monitorexit
 			InstructionHandle walker = body.getStart();
-			List<InstructionHandle> rets = new ArrayList<InstructionHandle>();
+			List<InstructionHandle> rets = new ArrayList<>();
 			while (walker != null) { // !walker.equals(body.getEnd())) {
 				if (walker.getInstruction().isReturnInstruction()) {
 					rets.add(walker);
@@ -2192,7 +2192,7 @@ class BcelClassWeaver implements IClassWeaver {
 		InstructionList ret = new InstructionList();
 		InstructionList sourceList = donor.getBody();
 
-		Map<InstructionHandle, InstructionHandle> srcToDest = new HashMap<InstructionHandle, InstructionHandle>();
+		Map<InstructionHandle, InstructionHandle> srcToDest = new HashMap<>();
 		ConstantPool donorCpg = donor.getEnclosingClass().getConstantPool();
 		ConstantPool recipientCpg = recipient.getEnclosingClass().getConstantPool();
 
@@ -2296,8 +2296,8 @@ class BcelClassWeaver implements IClassWeaver {
 		}
 
 		// second pass: retarget branch instructions, copy ranges and tags
-		Map<Tag, Tag> tagMap = new HashMap<Tag, Tag>();
-		Map<BcelShadow, BcelShadow> shadowMap = new HashMap<BcelShadow, BcelShadow>();
+		Map<Tag, Tag> tagMap = new HashMap<>();
+		Map<BcelShadow, BcelShadow> shadowMap = new HashMap<>();
 		for (InstructionHandle dest = ret.getStart(), src = sourceList.getStart(); dest != null; dest = dest.getNext(), src = src
 				.getNext()) {
 			Instruction inst = dest.getInstruction();
@@ -2630,7 +2630,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 	private boolean match(LazyMethodGen mg) {
 		BcelShadow enclosingShadow;
-		List<BcelShadow> shadowAccumulator = new ArrayList<BcelShadow>();
+		List<BcelShadow> shadowAccumulator = new ArrayList<>();
 		boolean isOverweaving = world.isOverWeaving();
 		boolean startsAngly = mg.getName().charAt(0) == '<';
 		// we want to match ajsynthetic constructors...
@@ -3040,7 +3040,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 */
 	private ResolvedMember findResolvedMemberNamed(ResolvedType type, String methodName, UnresolvedType[] params) {
 		ResolvedMember[] allMethods = type.getDeclaredMethods();
-		List<ResolvedMember> candidates = new ArrayList<ResolvedMember>();
+		List<ResolvedMember> candidates = new ArrayList<>();
 		for (ResolvedMember candidate : allMethods) {
 			if (candidate.getName().equals(methodName)) {
 				if (candidate.getArity() == params.length) {

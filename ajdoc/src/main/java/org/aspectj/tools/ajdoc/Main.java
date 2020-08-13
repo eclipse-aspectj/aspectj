@@ -86,13 +86,13 @@ public class Main implements Config {
 	private static String outputWorkingDir = Config.WORKING_DIR;
 
 	public static void clearState() {
-		options = new Vector<String>();
-		ajcOptions = new Vector<String>();
-		filenames = new Vector<String>();
-		fileList = new Vector<String>();
-		packageList = new Vector<String>();
+		options = new Vector<>();
+		ajcOptions = new Vector<>();
+		filenames = new Vector<>();
+		fileList = new Vector<>();
+		packageList = new Vector<>();
 		docModifier = "package";
-		sourcepath = new Vector<String>();
+		sourcepath = new Vector<>();
 		verboseMode = false;
 		packageMode = false;
 		rootDir = null;
@@ -170,7 +170,7 @@ public class Main implements Config {
 	 * package-summary properly.
 	 */
 	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
-		ArrayList<String> dirList = new ArrayList<String>();
+		ArrayList<String> dirList = new ArrayList<>();
 		for (File inputFile : inputFiles) {
 			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFile);
 			// Only copy the package.html file once.
@@ -239,7 +239,7 @@ public class Main implements Config {
 		System.out.println("> Calling javadoc...");
 		String[] javadocargs = null;
 
-		List<String> files = new ArrayList<String>();
+		List<String> files = new ArrayList<>();
 		if (packageMode) {
 			int numExtraArgs = 2;
 			if (authorStandardDocletSwitch)
@@ -268,7 +268,7 @@ public class Main implements Config {
 				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
 			}
 			if (LangUtil.is19VMOrGreater()) {
-				options = new Vector<String>();
+				options = new Vector<>();
 				for (String a: javadocargs) {
 					options.add(a);
 				}
@@ -362,7 +362,7 @@ public class Main implements Config {
 	}
 
 	static Vector<String> getSourcePath() {
-		Vector<String> sourcePath = new Vector<String>();
+		Vector<String> sourcePath = new Vector<>();
 		boolean found = false;
 		for (int i = 0; i < options.size(); i++) {
 			String currOption = options.elementAt(i);
@@ -471,7 +471,7 @@ public class Main implements Config {
 				String line = "";
 				line = br.readLine();
 				StringTokenizer st = new StringTokenizer(line, " ");
-				List<String> argList = new ArrayList<String>();
+				List<String> argList = new ArrayList<>();
 				while (st.hasMoreElements()) {
 					argList.add(st.nextToken());
 				}
@@ -490,7 +490,7 @@ public class Main implements Config {
 				ioe.printStackTrace();
 			}
 		}
-		List<String> vargs = new LinkedList<String>(Arrays.asList(args));
+		List<String> vargs = new LinkedList<>(Arrays.asList(args));
 		vargs.add("-Xset:minimalModel=false");
 		parseArgs(vargs, new File(".")); // !!!
 
@@ -722,7 +722,7 @@ public class Main implements Config {
 	}
 
 	static void expandAtSignFile(String filename, File currentWorkingDir) {
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 
 		File atFile = qualifiedFile(filename, currentWorkingDir);
 		String atFileParent = atFile.getParent();

@@ -349,7 +349,7 @@ public interface IProgramElement extends Serializable {
 		}
 
 		public static List<Kind> getNonAJMemberKinds() {
-			List<Kind> list = new ArrayList<Kind>();
+			List<Kind> list = new ArrayList<>();
 			list.add(METHOD);
 			list.add(ENUM_VALUE);
 			list.add(FIELD);

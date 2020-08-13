@@ -236,7 +236,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 				"-d",
 				classesDir.getAbsolutePath()};
 		return Collections.unmodifiableList(
-			new ArrayList<String>(Arrays.asList(input)));
+				new ArrayList<>(Arrays.asList(input)));
 	}
 
 	protected File makeDir(

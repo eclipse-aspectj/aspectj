@@ -493,7 +493,7 @@ public abstract class AjcTestCase extends TestCase {
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
 	protected List<Message> newMessageList(Message m1) {
-		List<Message> ret = new ArrayList<Message>();
+		List<Message> ret = new ArrayList<>();
 		ret.add(m1);
 		return ret;
 	}
@@ -502,7 +502,7 @@ public abstract class AjcTestCase extends TestCase {
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
 	protected List<Message> newMessageList(Message m1, Message m2) {
-		List<Message> ret = new ArrayList<Message>();
+		List<Message> ret = new ArrayList<>();
 		ret.add(m1);
 		ret.add(m2);
 		return ret;
@@ -512,7 +512,7 @@ public abstract class AjcTestCase extends TestCase {
 	 * Helper method to build a new message list for passing to a MessageSpec.
 	 */
 	protected List<Message> newMessageList(Message m1, Message m2, Message m3) {
-		List<Message> ret = new ArrayList<Message>();
+		List<Message> ret = new ArrayList<>();
 		ret.add(m1);
 		ret.add(m2);
 		ret.add(m3);
@@ -785,7 +785,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	private List<String >tokenizeCommand(String command) {
 		StringTokenizer st = new StringTokenizer(command," ", false);
-		ArrayList<String> arguments = new ArrayList<String>();
+		ArrayList<String> arguments = new ArrayList<>();
 		while(st.hasMoreElements()){
 			String nextToken =st.nextToken();
 			arguments.add(nextToken);
@@ -959,7 +959,7 @@ public abstract class AjcTestCase extends TestCase {
 		if (in == Collections.EMPTY_LIST)
 			return in;
 
-		List<T> out = new ArrayList<T>();
+		List<T> out = new ArrayList<>();
 		for (T t : in) {
 			out.add(t);
 		}

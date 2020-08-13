@@ -248,7 +248,7 @@ public class StructureModelUtil {
 		} else {
 			packageContents = packageNode.getChildren();
 		}
-		List<IProgramElement> files = new ArrayList<IProgramElement>();
+		List<IProgramElement> files = new ArrayList<>();
 		for (IProgramElement packageItem : packageContents) {
 			if (packageItem.getKind() == IProgramElement.Kind.FILE_JAVA
 					|| packageItem.getKind() == IProgramElement.Kind.FILE_ASPECTJ) {

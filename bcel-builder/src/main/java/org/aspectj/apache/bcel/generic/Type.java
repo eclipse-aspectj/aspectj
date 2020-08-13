@@ -113,7 +113,7 @@ public abstract class Type {
 	public static final Type[] STRINGARRAY6 = new Type[] { STRING, STRING, STRING, STRING, STRING, STRING };
 	public static final Type[] STRINGARRAY7 = new Type[] { STRING, STRING, STRING, STRING, STRING, STRING, STRING };
 
-	private static Map<String, Type> commonTypes = new HashMap<String, Type>();
+	private static Map<String, Type> commonTypes = new HashMap<>();
 
 	static {
 		commonTypes.put(STRING.getSignature(), STRING);
@@ -314,7 +314,7 @@ public abstract class Type {
 	 */
 	// OPTIMIZE crap impl
 	public static Type[] getArgumentTypes(String signature) {
-		List<Type> argumentTypes = new ArrayList<Type>();
+		List<Type> argumentTypes = new ArrayList<>();
 		int index;
 		Type[] types;
 

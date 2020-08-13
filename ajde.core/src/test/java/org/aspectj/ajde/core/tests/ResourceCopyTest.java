@@ -68,7 +68,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 	}
 
 	public void testInjarsToOutjar() {
-		Set<File> injars = new HashSet<File>();
+		Set<File> injars = new HashSet<>();
 		File injar1 = openFile(injar1Name);
 		injars.add(injar1);
 		compilerConfig.setInpath(injars);
@@ -81,7 +81,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 	}
 
 	public void testDuplicateResources() {
-		Set<File> injars = new HashSet<File>();
+		Set<File> injars = new HashSet<>();
 		File injar1 = openFile(injar1Name);
 		File injar2 = openFile(injar2Name);
 		injars.add(injar1);
@@ -110,7 +110,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 	}
 
 	public void testInjarsToBin() {
-		Set<File> injars = new HashSet<File>();
+		Set<File> injars = new HashSet<>();
 		File injar1 = openFile(injar1Name);
 		injars.add(injar1);
 		compilerConfig.setInpath(injars);
@@ -133,7 +133,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 	// }
 
 	public void testInjarsToOutjarOddNames() {
-		Set<File> injars = new HashSet<File>();
+		Set<File> injars = new HashSet<>();
 		File injar1 = openFile("input1");
 		File outjar = openFile(outjarName + ".fozout");
 		injars.add(injar1);

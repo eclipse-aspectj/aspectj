@@ -218,7 +218,7 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// must have all abstractions defined
-		List<String> elligibleAbstractions = new ArrayList<String>();
+		List<String> elligibleAbstractions = new ArrayList<>();
 
 		Collection<ResolvedMember> abstractMethods = getOutstandingAbstractMethods(parent);
 		for (ResolvedMember method : abstractMethods) {
@@ -254,7 +254,7 @@ public class ConcreteAspectCodeGen {
 				}
 			}
 		}
-		List<String> pointcutNames = new ArrayList<String>();
+		List<String> pointcutNames = new ArrayList<>();
 		for (Definition.Pointcut abstractPc : concreteAspect.pointcuts) {
 			pointcutNames.add(abstractPc.name);
 		}
@@ -283,7 +283,7 @@ public class ConcreteAspectCodeGen {
 	}
 
 	private Collection<ResolvedMember> getOutstandingAbstractMethods(ResolvedType type) {
-		Map<String, ResolvedMember> collector = new HashMap<String, ResolvedMember>();
+		Map<String, ResolvedMember> collector = new HashMap<>();
 		// let's get to the top of the hierarchy and then walk down ...
 		// recording abstract methods then removing
 		// them if they get defined further down the hierarchy
@@ -411,7 +411,7 @@ public class ConcreteAspectCodeGen {
 			cg.addAnnotation(ag);
 		} else {
 			// List elems = new ArrayList();
-			List<NameValuePair> elems = new ArrayList<NameValuePair>();
+			List<NameValuePair> elems = new ArrayList<>();
 			elems.add(new NameValuePair("value",
 					new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), perclauseString), cg.getConstantPool()));
 			AnnotationGen ag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Aspect"), elems, true,
@@ -420,7 +420,7 @@ public class ConcreteAspectCodeGen {
 		}
 		if (concreteAspect.precedence != null) {
 			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), concreteAspect.precedence);
-			List<NameValuePair> elems = new ArrayList<NameValuePair>();
+			List<NameValuePair> elems = new ArrayList<>();
 			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 			AnnotationGen agprec = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/DeclarePrecedence"), elems, true,
 					cg.getConstantPool());
@@ -440,7 +440,7 @@ public class ConcreteAspectCodeGen {
 			// TODO AV - respect visibility instead of opening up as public?
 			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
 			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), abstractPc.expression);
-			List<NameValuePair> elems = new ArrayList<NameValuePair>();
+			List<NameValuePair> elems = new ArrayList<>();
 			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 			AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Pointcut"), elems, true,
 					cg.getConstantPool());
@@ -462,7 +462,7 @@ public class ConcreteAspectCodeGen {
 
 				FieldGen field = new FieldGen(Modifier.FINAL, ObjectType.STRING, "rule" + (counter++), cg.getConstantPool());
 				SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), deow.pointcut);
-				List<NameValuePair> elems = new ArrayList<NameValuePair>();
+				List<NameValuePair> elems = new ArrayList<>();
 				elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 				AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/Declare"
 						+ (deow.isError ? "Error" : "Warning")), elems, true, cg.getConstantPool());
@@ -601,7 +601,7 @@ public class ConcreteAspectCodeGen {
 			// Discover the name and name/value pairs
 			String name = annotationString.substring(0,paren);
 			// break the rest into pieces based on the commas
-			List<String> values = new ArrayList<String>();
+			List<String> values = new ArrayList<>();
 			int pos = paren+1;
 			int depth = 0;
 			int len = annotationString.length();
@@ -776,7 +776,7 @@ public class ConcreteAspectCodeGen {
 			reportError("declare is using an annotation type that does not have runtime retention: "+typename);
 			return null;
 		}
-		List<NameValuePair> elems = new ArrayList<NameValuePair>();
+		List<NameValuePair> elems = new ArrayList<>();
 		return new AnnotationGen(new ObjectType(annoname), elems, true, cp);
 	}
 	
@@ -820,8 +820,8 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// Extract parameter types and names
-		List<Type> paramTypes = new ArrayList<Type>();
-		List<String> paramNames = new ArrayList<String>();
+		List<Type> paramTypes = new ArrayList<>();
+		List<String> paramNames = new ArrayList<>();
 		if (signature.charAt(1) != ')') {
 			// there are parameters to convert into a signature
 			StringBuilder convertedSignature = new StringBuilder("(");
@@ -968,7 +968,7 @@ public class ConcreteAspectCodeGen {
 	 */
 	private AnnotationAJ buildAdviceAnnotation(LazyClassGen cg, PointcutAndAdvice paa) {
 		SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), paa.pointcut);
-		List<NameValuePair> elems = new ArrayList<NameValuePair>();
+		List<NameValuePair> elems = new ArrayList<>();
 		elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
 		AnnotationGen mag = new AnnotationGen(new ObjectType("org/aspectj/lang/annotation/" + paa.adviceKind.toString()), elems,
 				true, cg.getConstantPool());

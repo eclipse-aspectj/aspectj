@@ -156,7 +156,7 @@ public class InstructionHandle implements java.io.Serializable {
 	 */
 	public void addTargeter(InstructionTargeter t) {
 		if (targeters == Collections.EMPTY_SET) {
-			targeters = new HashSet<InstructionTargeter>();
+			targeters = new HashSet<>();
 		}
 		targeters.add(t);
 	}
@@ -170,7 +170,7 @@ public class InstructionHandle implements java.io.Serializable {
 	}
 
 	public Set<InstructionTargeter> getTargetersCopy() {
-		Set<InstructionTargeter> copy = new HashSet<InstructionTargeter>();
+		Set<InstructionTargeter> copy = new HashSet<>();
 		copy.addAll(targeters);
 		return copy;
 	}

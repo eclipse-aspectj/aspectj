@@ -36,13 +36,13 @@ public abstract class RuntimeParamAnnos extends Attribute {
             int nameIdx, int len, ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible; 
-		parameterAnnotations = new ArrayList<AnnotationGen[]>();
+		parameterAnnotations = new ArrayList<>();
 	}
 	
 	public RuntimeParamAnnos(byte attrid,boolean visible,int nameIdx,int len,byte[] data,ConstantPool cpool) {
 		super(attrid,nameIdx,len,cpool);
 		this.visible = visible;
-		parameterAnnotations = new ArrayList<AnnotationGen[]>();
+		parameterAnnotations = new ArrayList<>();
 		annotation_data = data;
 	}
 	
@@ -88,7 +88,7 @@ public abstract class RuntimeParamAnnos extends Attribute {
 			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(annotation_data));
 			int numParameters = dis.readUnsignedByte();
 			if (numParameters > 0) {
-				List<AnnotationGen[]> inflatedParameterAnnotations = new ArrayList<AnnotationGen[]>();
+				List<AnnotationGen[]> inflatedParameterAnnotations = new ArrayList<>();
 				for (int i=0; i<numParameters; i++) {
 					int numAnnotations = dis.readUnsignedShort();
 					if (numAnnotations == 0 ) {

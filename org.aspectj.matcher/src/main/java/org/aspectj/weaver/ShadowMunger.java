@@ -93,7 +93,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 										+ "' due to scope exclusion in XML definition"));
 					}
 					if (excludedTypes == null) {
-						excludedTypes = new HashSet<ResolvedType>();
+						excludedTypes = new HashSet<>();
 						excludedTypes.add(type);
 						world.getExclusionMap().put(declaringType, excludedTypes);
 					} else {

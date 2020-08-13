@@ -83,7 +83,7 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testAssignable01() {
 		List list = new ArrayList();
-		List<String> listOfString = new ArrayList<String>();
+		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
@@ -192,7 +192,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	public void testAssignable02() {
 		List list = new ArrayList();
 		ArrayList arraylist = null;
-		List<String> listOfString = new ArrayList<String>();
+		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
 		ArrayList<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
@@ -200,7 +200,7 @@ public class ReferenceTypeTestCase extends TestCase {
 		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
-		List<Integer> listOfInteger = new ArrayList<Integer>();
+		List<Integer> listOfInteger = new ArrayList<>();
 		ArrayList<String> arrayListOfString;
 		ArrayList<Integer> arraylistOfInteger;
 		// interfaces too List<? extends A,B>
@@ -275,7 +275,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	public void testAssignable03_method_m2() {
 		List list = new ArrayList();
 		ArrayList arraylist = null;
-		List<String> listOfString = new ArrayList<String>();
+		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
 		ArrayList<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
@@ -284,7 +284,7 @@ public class ReferenceTypeTestCase extends TestCase {
 		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
-		List<Integer> listOfInteger = new ArrayList<Integer>();
+		List<Integer> listOfInteger = new ArrayList<>();
 		ArrayList<String> arrayListOfString;
 		ArrayList<Integer> arraylistOfInteger;
 		// interfaces too List<? extends A,B>
@@ -362,7 +362,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	public void testAssignable04_method_m3() {
 		List list = new ArrayList();
 		ArrayList arraylist = null;
-		List<String> listOfString = new ArrayList<String>();
+		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
 		ArrayList<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
@@ -371,7 +371,7 @@ public class ReferenceTypeTestCase extends TestCase {
 		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
-		List<Integer> listOfInteger = new ArrayList<Integer>();
+		List<Integer> listOfInteger = new ArrayList<>();
 		ArrayList arrayList = null;
 		ArrayList<String> arrayListOfString;
 		ArrayList<Integer> arraylistOfInteger;
@@ -478,7 +478,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	public void testAssignable03_method_m4() {
 		List list = new ArrayList();
 		ArrayList arraylist = null;
-		List<String> listOfString = new ArrayList<String>();
+		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
 		ArrayList<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
@@ -486,7 +486,7 @@ public class ReferenceTypeTestCase extends TestCase {
 		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
-		List<Integer> listOfInteger = new ArrayList<Integer>();
+		List<Integer> listOfInteger = new ArrayList<>();
 		ArrayList<String> arrayListOfString;
 		ArrayList<Integer> arraylistOfInteger;
 		// interfaces too List<? extends A,B>
@@ -564,7 +564,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	// copy of the real one in BcelClassWeaver
 	public static class IfaceInitList implements PartialOrder.PartialComparable {
 		final ResolvedType onType;
-		List<ConcreteTypeMunger> list = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> list = new ArrayList<>();
 
 		IfaceInitList(ResolvedType onType) {
 			this.onType = onType;

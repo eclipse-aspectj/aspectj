@@ -84,7 +84,7 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	public void weaveTest(String name, String outName, ShadowMunger planner) throws IOException {
-		List<ShadowMunger> l = new ArrayList<ShadowMunger>(1);
+		List<ShadowMunger> l = new ArrayList<>(1);
 		l.add(planner);
 		weaveTest(name, outName, l);
 	}
@@ -215,7 +215,7 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	public List<ShadowMunger> makeAdviceAll(String kind, boolean matchOnlyPrintln) {
-		List<ShadowMunger> ret = new ArrayList<ShadowMunger>();
+		List<ShadowMunger> ret = new ArrayList<>();
 		if (matchOnlyPrintln) {
 			ret.add(makeConcreteAdvice(kind + "(): call(* *.println(..)) -> static void Aspect.ajc_" + kind + "_method_execution()"));
 		} else {

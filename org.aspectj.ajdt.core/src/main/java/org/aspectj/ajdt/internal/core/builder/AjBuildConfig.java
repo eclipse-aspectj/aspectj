@@ -55,27 +55,27 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private File outputJar;
 	private String outxmlName;
 	private CompilationResultDestinationManager compilationResultDestinationManager = null;
-	private List<File> sourceRoots = new ArrayList<File>();
+	private List<File> sourceRoots = new ArrayList<>();
 	private List<File> changedFiles;
-	private List<File> files = new ArrayList<File>();
-	private List<File> xmlfiles = new ArrayList<File>();
+	private List<File> files = new ArrayList<>();
+	private List<File> xmlfiles = new ArrayList<>();
 	private String processor;
 	private String processorPath;
-	private List<BinarySourceFile> binaryFiles = new ArrayList<BinarySourceFile>(); // .class files in indirs...
-	private List<File> inJars = new ArrayList<File>();
-	private List<File> inPath = new ArrayList<File>();
-	private Map<String, File> sourcePathResources = new HashMap<String, File>();
-	private List<File> aspectpath = new ArrayList<File>();
-	private List<String> classpath = new ArrayList<String>();
-	private List<String> modulepath = new ArrayList<String>();
+	private List<BinarySourceFile> binaryFiles = new ArrayList<>(); // .class files in indirs...
+	private List<File> inJars = new ArrayList<>();
+	private List<File> inPath = new ArrayList<>();
+	private Map<String, File> sourcePathResources = new HashMap<>();
+	private List<File> aspectpath = new ArrayList<>();
+	private List<String> classpath = new ArrayList<>();
+	private List<String> modulepath = new ArrayList<>();
 	// Expensive to compute (searching modules, parsing module-info)
 	private ArrayList<Classpath> modulepathClasspathEntries = null;
-	private List<String> modulesourcepath = new ArrayList<String>();
+	private List<String> modulesourcepath = new ArrayList<>();
 	// Expensive to compute (searching modules, parsing module-info)
 	private ArrayList<Classpath> modulesourcepathClasspathEntries = null;
 	private Classpath[] checkedClasspaths = null;
-	private List<String> bootclasspath = new ArrayList<String>();
-	private List<String> cpElementsWithModifiedContents = new ArrayList<String>();
+	private List<String> bootclasspath = new ArrayList<>();
+	private List<String> cpElementsWithModifiedContents = new ArrayList<>();
 	private IModule moduleDesc;
 
 	private File configFile;
@@ -251,7 +251,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	}
 	
 	private List<Classpath> processFilePath(List<File> path, java.lang.String encoding) {
-		List<Classpath> entries = new ArrayList<Classpath>();
+		List<Classpath> entries = new ArrayList<>();
 		for (File file: path) {
 			entries.add(FileSystem.getClasspath(file.getAbsolutePath(), encoding, null, ClasspathLocation.BINARY, null));
 		}
@@ -259,7 +259,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	}
 
 	private List<Classpath> processStringPath(List<String> path, java.lang.String encoding) {
-		List<Classpath> entries = new ArrayList<Classpath>();
+		List<Classpath> entries = new ArrayList<>();
 		for (String file: path) {
 			entries.add(FileSystem.getClasspath(file, encoding, null, ClasspathLocation.BINARY, null));
 		}
@@ -317,7 +317,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	public void processInPath() {
 		// remember all the class files in directories on the inpath
-		binaryFiles = new ArrayList<BinarySourceFile>();
+		binaryFiles = new ArrayList<>();
 		FileFilter filter = new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -377,7 +377,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 *         classpath), and output dir or jar
 	 */
 	public List<String> getFullClasspath() {
-		List<String> full = new ArrayList<String>();
+		List<String> full = new ArrayList<>();
 		full.addAll(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
 		for (File file: inJars) {
 			full.add(file.getAbsolutePath());
@@ -581,7 +581,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			// Possibly a name=value comma separated list of configurations
 			if (lintMode.contains("=")) {
 				this.lintMode = AJLINT_DEFAULT;
-				lintOptionsMap = new HashMap<String,String>();
+				lintOptionsMap = new HashMap<>();
 				StringTokenizer tokenizer = new StringTokenizer(lintMode,",");
 				while (tokenizer.hasMoreElements()) {
 					String option = tokenizer.nextToken();
@@ -596,7 +596,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		}
 
 		if (lintValue != null || lintOptionsMap != null ) {
-			Map<String, String> lintOptions = new HashMap<String, String>();
+			Map<String, String> lintOptions = new HashMap<>();
 			setOption(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName, lintValue, lintOptions);
 			setOption(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName, lintValue, lintOptions);
 			setOption(AjCompilerOptions.OPTION_ReportUnresolvableMember, lintValue, lintOptions);
@@ -930,7 +930,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		// What to do about bootclasspath on java 9?
 		
 		// ArrayList<Classpath> allPaths = handleBootclasspath(bootclasspaths, customEncoding);
-		ArrayList<FileSystem.Classpath> allPaths = new ArrayList<FileSystem.Classpath>(); 
+		ArrayList<FileSystem.Classpath> allPaths = new ArrayList<>();
 	 	allPaths.addAll(processStringPath(bootclasspath, encoding));
 		allPaths.addAll(processFilePath(inJars, encoding));
 	 	allPaths.addAll(processFilePath(inPath, encoding)); 

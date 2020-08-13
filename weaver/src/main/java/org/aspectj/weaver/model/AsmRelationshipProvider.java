@@ -404,7 +404,7 @@ public class AsmRelationshipProvider {
 		IProgramElement root = model.getHierarchy().getRoot();
 		IProgramElement binaries = model.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
 		if (binaries == null) {
-			binaries = new ProgramElement(model, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<IProgramElement>());
+			binaries = new ProgramElement(model, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<>());
 			root.addChild(binaries);
 		}
 		// if (aspect.getPackageName() != null) {
@@ -413,7 +413,7 @@ public class AsmRelationshipProvider {
 		IProgramElement pkgNode = model.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
 		// note packages themselves have no source location
 		if (pkgNode == null) {
-			pkgNode = new ProgramElement(model, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<IProgramElement>());
+			pkgNode = new ProgramElement(model, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<>());
 			binaries.addChild(pkgNode);
 			pkgNode.addChild(classFileNode);
 		} else {
@@ -539,7 +539,7 @@ public class AsmRelationshipProvider {
 		IProgramElement root = asm.getHierarchy().getRoot();
 		IProgramElement binaries = asm.getHierarchy().findElementForLabel(root, IProgramElement.Kind.SOURCE_FOLDER, "binaries");
 		if (binaries == null) {
-			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<IProgramElement>());
+			binaries = new ProgramElement(asm, "binaries", IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<>());
 			root.addChild(binaries);
 		}
 		// if (aspect.getPackageName() != null) {
@@ -548,7 +548,7 @@ public class AsmRelationshipProvider {
 		IProgramElement pkgNode = asm.getHierarchy().findElementForLabel(binaries, IProgramElement.Kind.PACKAGE, packagename);
 		// note packages themselves have no source location
 		if (pkgNode == null) {
-			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<IProgramElement>());
+			pkgNode = new ProgramElement(asm, packagename, IProgramElement.Kind.PACKAGE, new ArrayList<>());
 			binaries.addChild(pkgNode);
 			pkgNode.addChild(classFileNode);
 		} else {
@@ -764,7 +764,7 @@ public class AsmRelationshipProvider {
 		if (ts == null) {
 			pe.setParameterSignatures(Collections.<char[]>emptyList(), Collections.<String>emptyList());
 		} else {
-			List<char[]> paramSigs = new ArrayList<char[]>();
+			List<char[]> paramSigs = new ArrayList<>();
 			for (UnresolvedType t : ts) {
 				paramSigs.add(t.getSignature().toCharArray());
 			}
@@ -783,7 +783,7 @@ public class AsmRelationshipProvider {
 
 	private static void setParentTypesOnDeclareParentsNode(DeclareParents decp, IProgramElement decpElement) {
 		TypePatternList tpl = decp.getParents();
-		List<String> parents = new ArrayList<String>();
+		List<String> parents = new ArrayList<>();
 		for (int i = 0; i < tpl.size(); i++) {
 			parents.add(tpl.get(i).getExactType().getName().replaceAll("\\$", "."));
 		}

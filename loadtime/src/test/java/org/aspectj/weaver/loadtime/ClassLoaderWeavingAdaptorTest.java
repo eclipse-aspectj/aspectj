@@ -686,7 +686,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	static class TestWeavingContext extends DefaultWeavingContext {
 
-		List<Definition> testList = new ArrayList<Definition>();
+		List<Definition> testList = new ArrayList<>();
 
 		public TestWeavingContext(ClassLoader loader) {
 			super(loader);

@@ -108,7 +108,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private Map<String, List<UnwovenClassFile>> binarySourceSetForFullWeave = new HashMap<String, List<UnwovenClassFile>>();
+	private Map<String, List<UnwovenClassFile>> binarySourceSetForFullWeave = new HashMap<>();
 
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;
@@ -118,7 +118,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	private AjState incrementalCompilationState;
 
 	// Maintains a list of whats weaving - whilst the pipeline is stalled, this accumulates aspects.
-	List<InterimCompilationResult> resultsPendingWeave = new ArrayList<InterimCompilationResult>();
+	List<InterimCompilationResult> resultsPendingWeave = new ArrayList<>();
 
 	// pipelining info
 	private boolean pipelineStalled = true;
@@ -200,8 +200,8 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		}
 
 		// Break the units into two lists...
-		List<CompilationUnitDeclaration> aspects = new ArrayList<CompilationUnitDeclaration>();
-		List<CompilationUnitDeclaration> nonaspects = new ArrayList<CompilationUnitDeclaration>();
+		List<CompilationUnitDeclaration> aspects = new ArrayList<>();
+		List<CompilationUnitDeclaration> nonaspects = new ArrayList<>();
 		for (CompilationUnitDeclaration unit : units) {
 			if (containsAnAspect(unit)) {
 				aspects.add(unit);
@@ -255,7 +255,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
-		resultsPendingWeave = new ArrayList<InterimCompilationResult>();
+		resultsPendingWeave = new ArrayList<>();
 		reportedErrors = false;
 		droppingBackToFullBuild = false;
 	}
@@ -475,7 +475,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	private List<InterimCompilationResult> getBinarySourcesFrom(Map<String, List<UnwovenClassFile>> binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
-		List<InterimCompilationResult> ret = new ArrayList<InterimCompilationResult>();
+		List<InterimCompilationResult> ret = new ArrayList<>();
 		for (String sourceFileName : binarySourceEntries.keySet()) {
 			List<UnwovenClassFile> unwovenClassFiles = binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"

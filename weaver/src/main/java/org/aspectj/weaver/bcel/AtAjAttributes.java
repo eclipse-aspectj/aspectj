@@ -109,7 +109,7 @@ public class AtAjAttributes {
 		/**
 		 * The list of AjAttribute.XXX that we are populating from the @AJ read
 		 */
-		List<AjAttribute> ajAttributes = new ArrayList<AjAttribute>();
+		List<AjAttribute> ajAttributes = new ArrayList<>();
 
 		/**
 		 * The resolved type (class) for which we are reading @AJ for (be it class, method, field annotations)
@@ -721,7 +721,7 @@ public class AtAjAttributes {
 					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
 					IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 					// first add the declare implements like
-					List<TypePattern> parents = new ArrayList<TypePattern>(1);
+					List<TypePattern> parents = new ArrayList<>(1);
 					parents.add(parent);
 					DeclareParents dp = new DeclareParents(typePattern, parents, false);
 					dp.resolve(binding); // resolves the parent and child parts of the decp
@@ -923,8 +923,8 @@ public class AtAjAttributes {
 		// supplied as just the class return value of the annotated method
 		NameValuePair interfaceListSpecified = getAnnotationElement(declareMixinAnnotation, "interfaces");
 
-		List<TypePattern> newParents = new ArrayList<TypePattern>(1);
-		List<ResolvedType> newInterfaceTypes = new ArrayList<ResolvedType>(1);
+		List<TypePattern> newParents = new ArrayList<>(1);
+		List<ResolvedType> newInterfaceTypes = new ArrayList<>(1);
 		if (interfaceListSpecified != null) {
 			ArrayElementValue arrayOfInterfaceTypes = (ArrayElementValue) interfaceListSpecified.getValue();
 			int numberOfTypes = arrayOfInterfaceTypes.getElementValuesArraySize();
@@ -1558,7 +1558,7 @@ public class AtAjAttributes {
 			throw new UnreadableDebugInfoException();
 		}
 
-		List<FormalBinding> bindings = new ArrayList<FormalBinding>();
+		List<FormalBinding> bindings = new ArrayList<>();
 		for (int i = 0; i < argumentNames.length; i++) {
 			String argumentName = argumentNames[i];
 			UnresolvedType argumentType = UnresolvedType.forSignature(method.getArgumentTypes()[i].getSignature());
@@ -1726,7 +1726,7 @@ public class AtAjAttributes {
 		}
 
 		final int startAtStackIndex = method.isStatic() ? 0 : 1;
-		final List<MethodArgument> arguments = new ArrayList<MethodArgument>();
+		final List<MethodArgument> arguments = new ArrayList<>();
 		LocalVariableTable lt = method.getLocalVariableTable();
 		if (lt != null) {
 			LocalVariable[] lvt = lt.getLocalVariableTable();
@@ -1807,7 +1807,7 @@ public class AtAjAttributes {
 	private static String[] extractArgNamesFromAnnotationValue(Method method, String argNamesFromAnnotation,
 			AjAttributeMethodStruct methodStruct) {
 		StringTokenizer st = new StringTokenizer(argNamesFromAnnotation, " ,");
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		while (st.hasMoreTokens()) {
 			args.add(st.nextToken());
 		}
@@ -1899,7 +1899,7 @@ public class AtAjAttributes {
 	private static void setIgnoreUnboundBindingNames(Pointcut pointcut, FormalBinding[] bindings) {
 		// register ImplicitBindings as to be ignored since unbound
 		// TODO is it likely to fail in a bad way if f.e. this(jp) etc ?
-		List<String> ignores = new ArrayList<String>();
+		List<String> ignores = new ArrayList<>();
 		for (FormalBinding formalBinding : bindings) {
 			if (formalBinding instanceof FormalBinding.ImplicitFormalBinding) {
 				ignores.add(formalBinding.getName());

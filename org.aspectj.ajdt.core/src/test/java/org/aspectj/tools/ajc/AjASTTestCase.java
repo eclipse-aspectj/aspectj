@@ -86,7 +86,7 @@ public abstract class AjASTTestCase extends TestCase {
 
 
 	protected List<SourceRange> getSourceRanges(int[][] sourceRanges) {
-		List<SourceRange> convertedRanges = new ArrayList<SourceRange>();
+		List<SourceRange> convertedRanges = new ArrayList<>();
 
 		for (int[] sourceRange : sourceRanges) {
 			convertedRanges.add(new SourceRange(sourceRange[0],

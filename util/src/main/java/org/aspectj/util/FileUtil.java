@@ -686,7 +686,7 @@ public class FileUtil {
 	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
 	 */
 	public static String[] listFiles(File srcDir) {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		if ((null != srcDir) && srcDir.canRead()) {
 			listFiles(srcDir, null, result);
 		}
@@ -706,7 +706,7 @@ public class FileUtil {
 	 * @return ArrayList with String paths of File under srcDir (relative to srcDir)
 	 */
 	public static File[] listFiles(File srcDir, FileFilter fileFilter) {
-		ArrayList<File> result = new ArrayList<File>();
+		ArrayList<File> result = new ArrayList<>();
 		if ((null != srcDir) && srcDir.canRead()) {
 			listFiles(srcDir, result, fileFilter);
 		}
@@ -719,7 +719,7 @@ public class FileUtil {
 	 * @return List of File objects
 	 */
 	public static List<File> listClassFiles(File dir) {
-		ArrayList<File> result = new ArrayList<File>();
+		ArrayList<File> result = new ArrayList<>();
 		if ((null != dir) && dir.canRead()) {
 			listClassFiles(dir, result);
 		}
@@ -750,7 +750,7 @@ public class FileUtil {
 		LangUtil.throwIaxIfNull(paths, "paths");
 		File[] result = null;
 		if (!LangUtil.isEmpty(suffixes)) {
-			ArrayList<File> list = new ArrayList<File>();
+			ArrayList<File> list = new ArrayList<>();
             for (String path : paths) {
                 for (String suffix : suffixes) {
                     if (path.endsWith(suffix)) {
@@ -1273,7 +1273,7 @@ public class FileUtil {
 		if (LangUtil.isEmpty(sought) || LangUtil.isEmpty(sources)) {
 			return Collections.emptyList();
 		}
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
         for (String path : sources) {
             String error = lineSeek(sought, path, listAll, result);
             if ((null != error) && (null != errorSink)) {
@@ -1427,7 +1427,7 @@ public class FileUtil {
 	}
 
 	public static List<String> makeClasspath(URL[] urls) {
-		List<String> ret = new LinkedList<String>();
+		List<String> ret = new LinkedList<>();
 		if (urls != null) {
             for (URL url : urls) {
                 ret.add(toPathString(url));

@@ -32,7 +32,7 @@ import org.aspectj.weaver.World;
 public class JavaLangTypeToResolvedTypeConverter {
 
 	// Used to prevent recursion - we record what we are working on and return it if asked again *whilst* working on it
-	private Map<Type, TypeVariableReferenceType> typeVariablesInProgress = new HashMap<Type, TypeVariableReferenceType>();
+	private Map<Type, TypeVariableReferenceType> typeVariablesInProgress = new HashMap<>();
 	private final World world;
 
 	public JavaLangTypeToResolvedTypeConverter(World aWorld) {

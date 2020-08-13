@@ -28,7 +28,7 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
     
 	private String programmableString;
 	private int count;
-	private List<String> messagesReceived = new ArrayList<String>();
+	private List<String> messagesReceived = new ArrayList<>();
 	private int currentVal;
 	private boolean isCancelRequested = false;
 		

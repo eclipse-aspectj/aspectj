@@ -96,7 +96,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 		}
 
 		public SoftHashMap() {
-			this(new HashMap<Object,SpecialValue>());
+			this(new HashMap<>());
 		}
 
 		public SoftHashMap(Map<Object,SpecialValue> map, boolean b) {

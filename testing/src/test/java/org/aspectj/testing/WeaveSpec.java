@@ -45,7 +45,7 @@ public class WeaveSpec extends CompileSpec {
 		String failMessage = "test \"" + getTest().getTitle() + "\" failed";
 		try {
 			File base = new File(getBaseDir());
-			classFilesFromClasses = new ArrayList<File>();
+			classFilesFromClasses = new ArrayList<>();
 			setFiles(classesFiles);
 			String[] args = buildArgs();
 			CompilationResult result = inTestCase.ajc(base,args);
@@ -94,7 +94,7 @@ public class WeaveSpec extends CompileSpec {
 		File outJar = new File(inDir,name);
 		FileOutputStream fos = new FileOutputStream(outJar);
 		JarOutputStream jarOut = new JarOutputStream(fos);
-		List<File> classFiles = new ArrayList<File>();
+		List<File> classFiles = new ArrayList<>();
 		List<File> toExclude = isClasses ? Collections.<File>emptyList() : classFilesFromClasses;
 		collectClassFiles(inDir,classFiles,toExclude);
 		if (isClasses) classFilesFromClasses = classFiles;

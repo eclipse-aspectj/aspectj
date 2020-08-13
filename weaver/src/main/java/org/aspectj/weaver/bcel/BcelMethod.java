@@ -155,7 +155,7 @@ class BcelMethod extends ResolvedMemberImpl {
 									if (nvPair.getNameString().equals("argNames")) {
 										String argNames = nvPair.getValue().stringifyValue();
 										StringTokenizer argNameTokenizer = new StringTokenizer(argNames, " ,");
-										List<String> argsList = new ArrayList<String>();
+										List<String> argsList = new ArrayList<>();
 										while (argNameTokenizer.hasMoreTokens()) {
 											argsList.add(argNameTokenizer.nextToken());
 										}
@@ -257,7 +257,7 @@ class BcelMethod extends ResolvedMemberImpl {
 	// for testing - use with the method above
 	public String[] getAttributeNames(boolean onlyIncludeAjOnes) {
 		Attribute[] as = method.getAttributes();
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		// String[] strs = new String[as.length];
 		for (Attribute a : as) {
 			if (!onlyIncludeAjOnes || a.getName().startsWith(AjAttribute.AttributePrefix)) {

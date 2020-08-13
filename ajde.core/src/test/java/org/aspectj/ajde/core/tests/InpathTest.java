@@ -71,7 +71,7 @@ public class InpathTest extends AjdeCoreTestCase {
 	 * Expected result = output jar file contains contents of indir1 and class file for source that was in src
 	 */
 	public void testInpathToOutjar() {
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		File indir1 = openFile(indir1Name);
 		inpath.add(indir1);
 		compilerConfig.setInpath(inpath);
@@ -83,7 +83,7 @@ public class InpathTest extends AjdeCoreTestCase {
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found " + handler.getMessages(), handler.getMessages().isEmpty());
 
-		Set<String> expectedOutputJarContents = new HashSet<String>();
+		Set<String> expectedOutputJarContents = new HashSet<>();
 		// From indir1
 		// If we don't copy resources, these next three files won't make it.
 		// expectedOutputJarContents.add("META-INF/MANIFEST.MF");
@@ -100,7 +100,7 @@ public class InpathTest extends AjdeCoreTestCase {
 	 * 
 	 */
 	public void testInpathToBin() {
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		File indir1 = openFile(indir1Name);
 		inpath.add(indir1);
 		compilerConfig.setInpath(inpath);
@@ -109,7 +109,7 @@ public class InpathTest extends AjdeCoreTestCase {
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found " + handler.getMessages(), handler.getMessages().isEmpty());
 
-		Set<String> expectedBindirContents = new HashSet<String>();
+		Set<String> expectedBindirContents = new HashSet<>();
 		// From indir1
 		// If we don't copy resources, these next three files won't make it
 		// expectedBindirContents.add("META-INF/MANIFEST.MF");
@@ -133,7 +133,7 @@ public class InpathTest extends AjdeCoreTestCase {
 	 * An extra check is done at the end of this test to verify that HelloWorld has changed size (due to the weaving).
 	 */
 	public void testInpathToOutjar2() {
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		File indir2 = openFile(indir2Name);
 		inpath.add(indir2);
 		compilerConfig.setInpath(inpath);
@@ -145,7 +145,7 @@ public class InpathTest extends AjdeCoreTestCase {
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found " + handler.getMessages(), handler.getMessages().isEmpty());
 
-		Set<String> expectedOutputJarContents = new HashSet<String>();
+		Set<String> expectedOutputJarContents = new HashSet<>();
 		// From indir1
 		expectedOutputJarContents.add("example/HelloWorld.class");
 
@@ -181,7 +181,7 @@ public class InpathTest extends AjdeCoreTestCase {
 	 * 
 	 */
 	public void testInpathAndInjarToBin() {
-		Set<File> inpath = new HashSet<File>();
+		Set<File> inpath = new HashSet<>();
 		File indir2 = openFile(indir2Name);
 		inpath.add(indir2);
 		inpath.add(openFile(injarName));
@@ -191,7 +191,7 @@ public class InpathTest extends AjdeCoreTestCase {
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found " + handler.getMessages(), handler.getMessages().isEmpty());
 
-		Set<String> expectedBindirContents = new HashSet<String>();
+		Set<String> expectedBindirContents = new HashSet<>();
 
 		// From indir1
 		expectedBindirContents.add("example/HelloWorld.class");

@@ -209,11 +209,11 @@ public class Ajc {
 		System.setOut(pout);
 		System.setErr(perr);
 
-		List<IMessage> fails = new ArrayList<IMessage>();
-		List<IMessage> errors = new ArrayList<IMessage>();
-		List<IMessage> warnings = new ArrayList<IMessage>();
-		List<IMessage> infos = new ArrayList<IMessage>();
-		List<IMessage> weaves = new ArrayList<IMessage>();
+		List<IMessage> fails = new ArrayList<>();
+		List<IMessage> errors = new ArrayList<>();
+		List<IMessage> warnings = new ArrayList<>();
+		List<IMessage> infos = new ArrayList<>();
+		List<IMessage> weaves = new ArrayList<>();
 
 		try {
 			if (!isIncremental && shouldEmptySandbox) {

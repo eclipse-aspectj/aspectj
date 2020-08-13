@@ -45,7 +45,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 	/** used when message text is null */
 	public static final String NO_MESSAGE_TEXT = "AbortException (no message)";
 
-	private static final ArrayList<AbortException> porters = new ArrayList<AbortException>();
+	private static final ArrayList<AbortException> porters = new ArrayList<>();
 
 	/**
 	 * Get a porter exception from the pool. Porter exceptions do <b>not</b> have valid stack traces. They are used only to avoid

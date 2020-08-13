@@ -44,7 +44,7 @@ public class AnnotationGen {
 	}
 
 	private List<NameValuePair> copyValues(List<NameValuePair> in, ConstantPool cpool, boolean copyPoolEntries) {
-		List<NameValuePair> out = new ArrayList<NameValuePair>();
+		List<NameValuePair> out = new ArrayList<>();
 		for (NameValuePair nvp : in) {
 			out.add(new NameValuePair(nvp, cpool, copyPoolEntries));
 		}
@@ -89,7 +89,7 @@ public class AnnotationGen {
 
 	public void addElementNameValuePair(NameValuePair evp) {
 		if (pairs == Collections.EMPTY_LIST) {
-			pairs = new ArrayList<NameValuePair>();
+			pairs = new ArrayList<>();
 		}
 		pairs.add(evp);
 	}

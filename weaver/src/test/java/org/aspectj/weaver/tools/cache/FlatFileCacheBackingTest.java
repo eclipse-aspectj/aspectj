@@ -74,7 +74,7 @@ public class FlatFileCacheBackingTest extends AsynchronousFileCacheBackingTestSu
 		long newCrc = generateNewBytes();
 		assertTrue("Bad new CRC", newCrc != (-1L));
 
-		Map<String, File> badFiles = new TreeMap<String, File>();
+		Map<String, File> badFiles = new TreeMap<>();
 		for (IndexEntry entry : entries) {
 			String key = entry.key;
 			if (key.startsWith("badData")) {
@@ -116,7 +116,7 @@ public class FlatFileCacheBackingTest extends AsynchronousFileCacheBackingTestSu
 		File indexFile = getIndexFile();
 		writeIndex(indexFile, entries);
 
-		Map<String, File> dataFiles = new TreeMap<String, File>();
+		Map<String, File> dataFiles = new TreeMap<>();
 		for (IndexEntry entry : entries) {
 			String key = entry.key;
 			if (key.startsWith("withData")) {

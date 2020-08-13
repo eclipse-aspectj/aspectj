@@ -46,7 +46,7 @@ public final class Iterators {
 	 */
 	public static <T> Filter<T> dupFilter() {
 		return new Filter<T>() {
-			final Set<T> seen = new HashSet<T>(); // should have weak ptrs?
+			final Set<T> seen = new HashSet<>(); // should have weak ptrs?
 
 			public Iterator<T> filter(final Iterator<T> in) {
 				return new Iterator<T>() {

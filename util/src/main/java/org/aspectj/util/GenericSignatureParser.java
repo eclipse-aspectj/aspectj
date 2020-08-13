@@ -46,7 +46,7 @@ public class GenericSignatureParser {
 		GenericSignature.ClassSignature classSig = new GenericSignature.ClassSignature();
 		// FormalTypeParameters-opt
 		if (maybeEat("<")) {
-			List<FormalTypeParameter> formalTypeParametersList = new ArrayList<FormalTypeParameter>();
+			List<FormalTypeParameter> formalTypeParametersList = new ArrayList<>();
 			do {
 				formalTypeParametersList.add(parseFormalTypeParameter());
 			} while (!maybeEat(">"));
@@ -54,7 +54,7 @@ public class GenericSignatureParser {
 			formalTypeParametersList.toArray(classSig.formalTypeParameters);
 		}
 		classSig.superclassSignature = parseClassTypeSignature();
-		List<ClassTypeSignature> superIntSigs = new ArrayList<ClassTypeSignature>();
+		List<ClassTypeSignature> superIntSigs = new ArrayList<>();
 		while (tokenIndex < tokenStream.length) {
 			superIntSigs.add(parseClassTypeSignature());
 		}
@@ -75,7 +75,7 @@ public class GenericSignatureParser {
 		TypeSignature returnType = null;
 		// FormalTypeParameters-opt
 		if (maybeEat("<")) {
-			List<FormalTypeParameter> formalTypeParametersList = new ArrayList<FormalTypeParameter>();
+			List<FormalTypeParameter> formalTypeParametersList = new ArrayList<>();
 			do {
 				formalTypeParametersList.add(parseFormalTypeParameter());
 			} while (!maybeEat(">"));
@@ -84,7 +84,7 @@ public class GenericSignatureParser {
 		}
 		// Parameters
 		eat("(");
-		List<TypeSignature> paramList = new ArrayList<TypeSignature>();
+		List<TypeSignature> paramList = new ArrayList<>();
 		while (!maybeEat(")")) {
 			FieldTypeSignature fsig = parseFieldTypeSignature(true);
 			if (fsig != null) {
@@ -100,7 +100,7 @@ public class GenericSignatureParser {
 		if (returnType == null)
 			returnType = new GenericSignature.BaseTypeSignature(eatIdentifier());
 		// throws
-		List<FieldTypeSignature> throwsList = new ArrayList<FieldTypeSignature>();
+		List<FieldTypeSignature> throwsList = new ArrayList<>();
 		while (maybeEat("^")) {
 			FieldTypeSignature fsig = parseFieldTypeSignature(false);
 			throwsList.add(fsig);
@@ -132,7 +132,7 @@ public class GenericSignatureParser {
 			ftp.classBound = new ClassTypeSignature("Ljava/lang/Object;", "Ljava/lang/Object");
 		}
 		// Optional InterfaceBounds
-		List<FieldTypeSignature> optionalBounds = new ArrayList<FieldTypeSignature>();
+		List<FieldTypeSignature> optionalBounds = new ArrayList<>();
 		while (maybeEat(":")) {
 			optionalBounds.add(parseFieldTypeSignature(false));
 		}
@@ -218,7 +218,7 @@ public class GenericSignatureParser {
 	private SimpleClassTypeSignature[] parseNestedTypesHelper(StringBuffer ret) {
 		boolean brokenSignature = false;
 		SimpleClassTypeSignature[] nestedTypes;
-		List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<SimpleClassTypeSignature>();
+		List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<>();
 		while (maybeEat(".")) {
 			ret.append(".");
 			SimpleClassTypeSignature sig = parseSimpleClassTypeSignature();
@@ -270,7 +270,7 @@ public class GenericSignatureParser {
 
 	private TypeArgument[] maybeParseTypeArguments() {
 		if (maybeEat("<")) {
-			List<TypeArgument> typeArgs = new ArrayList<TypeArgument>();
+			List<TypeArgument> typeArgs = new ArrayList<>();
 			do {
 				TypeArgument arg = parseTypeArgument();
 				typeArgs.add(arg);
@@ -317,7 +317,7 @@ public class GenericSignatureParser {
 	public String[] tokenize(String signatureString) {
 		char[] chars = signatureString.toCharArray();
 		int index = 0;
-		List<String> tokens = new ArrayList<String>();
+		List<String> tokens = new ArrayList<>();
 		StringBuffer identifier = new StringBuffer();
 		boolean inParens = false;
 		boolean inArray = false;

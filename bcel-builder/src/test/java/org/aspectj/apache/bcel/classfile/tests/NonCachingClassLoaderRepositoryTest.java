@@ -121,7 +121,7 @@ public class NonCachingClassLoaderRepositoryTest extends TestCase {
 	}
 
 	public void testConcurrency() throws ClassNotFoundException, InterruptedException {
-		List<DoneChecker> loaders = new ArrayList<DoneChecker>();
+		List<DoneChecker> loaders = new ArrayList<>();
 		int i1 = 1000;
 		for (int i = 0; i < i1; i++) {
 			DoneChecker loader = new Loader();

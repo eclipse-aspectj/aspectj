@@ -101,8 +101,8 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	protected ResolvedMember[] declaredMethods = null;
 	protected ResolvedMember[] declaredFields = null;
 
-	public List<Declare> declares = new ArrayList<Declare>();
-	public List<EclipseTypeMunger> typeMungers = new ArrayList<EclipseTypeMunger>();
+	public List<Declare> declares = new ArrayList<>();
+	public List<EclipseTypeMunger> typeMungers = new ArrayList<>();
 
 	private final EclipseFactory factory;
 
@@ -258,9 +258,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	}
 
 	protected void fillDeclaredMembers() {
-		List<ResolvedMember> declaredPointcuts = new ArrayList<ResolvedMember>();
-		List<ResolvedMember> declaredMethods = new ArrayList<ResolvedMember>();
-		List<ResolvedMember> declaredFields = new ArrayList<ResolvedMember>();
+		List<ResolvedMember> declaredPointcuts = new ArrayList<>();
+		List<ResolvedMember> declaredMethods = new ArrayList<>();
+		List<ResolvedMember> declaredFields = new ArrayList<>();
 
 		MethodBinding[] ms = binding.methods(); // the important side-effect of this call is to make
 		// sure bindings are completed
@@ -610,7 +610,7 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		// }
 		// return targetKind;
 		if (isAnnotation()) {
-			List<AnnotationTargetKind> targetKinds = new ArrayList<AnnotationTargetKind>();
+			List<AnnotationTargetKind> targetKinds = new ArrayList<>();
 
 			if ((binding.getAnnotationTagBits() & TagBits.AnnotationForAnnotationType) != 0) {
 				targetKinds.add(AnnotationTargetKind.ANNOTATION_TYPE);

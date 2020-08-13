@@ -149,7 +149,7 @@ public abstract class Builder {
         if ((null == text) || (0 == text.length())) {
             return Collections.EMPTY_LIST;
         }
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
         StringTokenizer tok = new StringTokenizer(text, ",");
         while (tok.hasMoreTokens()) {
             String token = tok.nextToken().trim();
@@ -275,7 +275,7 @@ public abstract class Builder {
             return buildProduct(buildSpec);
         }
         Result result = specifyResultFor(buildSpec);
-        ArrayList<String> errors = new ArrayList<String>();
+        ArrayList<String> errors = new ArrayList<>();
         try {
             return buildAll(result, errors);
         } finally {
@@ -340,7 +340,7 @@ public abstract class Builder {
      */
     protected final boolean buildAll(Result result, List<String> errors) {
         Result[] buildList = skipUptodate(getAntecedantResults(result));
-        ArrayList<String> doneList = new ArrayList<String>();
+        ArrayList<String> doneList = new ArrayList<>();
         if ((null != buildList) && (0 < buildList.length)) {
             if (isLogging()) {
                 handler.log("modules to build: " + Arrays.asList(buildList));
@@ -543,7 +543,7 @@ public abstract class Builder {
      * deliverables.
      */
     protected ProductModule[] discoverModules(File productDir, Modules modules) {
-        final ArrayList<File> found = new ArrayList<File>();
+        final ArrayList<File> found = new ArrayList<>();
         FileFilter filter = new FileFilter() {// empty jar files
             public boolean accept(File file) {
                 if ((null != file) && file.canRead()
@@ -555,7 +555,7 @@ public abstract class Builder {
             }
         };
         Util.visitFiles(productDir, filter);
-        ArrayList<ProductModule> results = new ArrayList<ProductModule>();
+        ArrayList<ProductModule> results = new ArrayList<>();
         for (File file: found) {
             String jarName = moduleAliasFor(file.getName().toLowerCase());
             if (jarName.endsWith(".jar") || jarName.endsWith(".zip")) { // XXXFileLiteral

@@ -199,7 +199,7 @@ public class WildTypePattern extends TypePattern {
 	// part of the declared type name (generated code often uses $s in type
 	// names). More work required on our part to get this right...
 	public static char[][] splitNames(String s, boolean convertDollar) {
-		List<char[]> ret = new ArrayList<char[]>();
+		List<char[]> ret = new ArrayList<>();
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
@@ -387,7 +387,7 @@ public class WildTypePattern extends TypePattern {
 
 	private boolean innerMatchesExactly(String s, boolean isAnonymous, boolean convertDollar /* isNested */) {
 
-		List<char[]> ret = new ArrayList<char[]>();
+		List<char[]> ret = new ArrayList<>();
 		int startIndex = 0;
 		while (true) {
 			int breakIndex = s.indexOf('.', startIndex); // what about /
@@ -1157,7 +1157,7 @@ public class WildTypePattern extends TypePattern {
 	private String[] preMatch(String[] possibleMatches) {
 		// if (namePatterns.length != 1) return CollectionUtil.NO_STRINGS;
 
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		for (String possibleMatch : possibleMatches) {
 			char[][] names = splitNames(possibleMatch, true); // ??? not most efficient
 			if (namePatterns[0].matches(names[names.length - 1])) {

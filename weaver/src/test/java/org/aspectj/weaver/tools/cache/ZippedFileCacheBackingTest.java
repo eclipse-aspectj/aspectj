@@ -40,7 +40,7 @@ public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTest
         File	indexFile=getIndexFile();
         writeIndex(indexFile, entries);
 
-        Map<String,byte[]>  entriesMap=new TreeMap<String,byte[]>();
+        Map<String,byte[]>  entriesMap= new TreeMap<>();
         for (IndexEntry ie : entries) {
             if (ie.ignored) {
                 continue;
@@ -73,7 +73,7 @@ public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTest
     }
 
     public void testReadWriteZipClassBytes () throws IOException {
-        Map<String,byte[]>  entriesMap=new TreeMap<String,byte[]>();
+        Map<String,byte[]>  entriesMap= new TreeMap<>();
         for (int    index=0; index < Byte.SIZE; index++) {
             String  name="classBytes#" + index;
             random.nextBytes(bytes);
@@ -104,7 +104,7 @@ public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTest
         long newCrc=generateNewBytes();
         assertTrue("Bad new CRC", newCrc != (-1L));
 
-        Map<String,byte[]>  entriesMap=new TreeMap<String,byte[]>();
+        Map<String,byte[]>  entriesMap= new TreeMap<>();
         for (IndexEntry ie : entries) {
             if (ie.ignored) {
                 continue;

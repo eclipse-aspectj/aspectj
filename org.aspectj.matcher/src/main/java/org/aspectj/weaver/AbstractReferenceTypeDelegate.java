@@ -112,7 +112,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	}
 
 	protected GenericSignature.FormalTypeParameter[] getFormalTypeParametersFromOuterClass() {
-		List<GenericSignature.FormalTypeParameter> typeParameters = new ArrayList<GenericSignature.FormalTypeParameter>();
+		List<GenericSignature.FormalTypeParameter> typeParameters = new ArrayList<>();
 		ResolvedType outerClassType = getOuterClass();
 		if (!(outerClassType instanceof ReferenceType)) {
 			if (outerClassType == null) {

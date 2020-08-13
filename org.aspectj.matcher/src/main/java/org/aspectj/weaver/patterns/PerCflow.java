@@ -101,7 +101,7 @@ public class PerCflow extends PerClause {
 		// EMPTY
 		// )
 		// ;
-		List<ShadowMunger> innerCflowEntries = new ArrayList<ShadowMunger>(xcut.getCflowEntries());
+		List<ShadowMunger> innerCflowEntries = new ArrayList<>(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 
 		xcut.addConcreteShadowMunger(Advice.makePerCflowEntry(world, concreteEntry, isBelow, cflowStackField, inAspect,

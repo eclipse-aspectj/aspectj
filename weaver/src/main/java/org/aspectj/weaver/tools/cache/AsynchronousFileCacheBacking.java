@@ -50,7 +50,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * The actual persistence is implemented by the <U>concrete</U> classes
  */
 public abstract class AsynchronousFileCacheBacking extends AbstractIndexedFileCacheBacking {
-    private static final BlockingQueue<AsyncCommand>   commandsQ=new LinkedBlockingQueue<AsyncCommand>();
+    private static final BlockingQueue<AsyncCommand>   commandsQ= new LinkedBlockingQueue<>();
     private static final ExecutorService    execService=Executors.newSingleThreadExecutor();
     private static Future<?> commandsRunner;
 
@@ -180,7 +180,7 @@ public abstract class AsynchronousFileCacheBacking extends AbstractIndexedFileCa
             if (index.isEmpty()) {
                 return Collections.emptyList();
             } else {
-                return new ArrayList<IndexEntry>(index.values());
+                return new ArrayList<>(index.values());
             }
         }
     }

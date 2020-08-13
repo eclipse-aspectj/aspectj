@@ -48,15 +48,15 @@ public class Definition {
 		weaverOptions = new StringBuffer();
 		dumpBefore = false;
 		perClassloaderDumpDir = false;
-		dumpPatterns = new ArrayList<String>();
-		includePatterns = new ArrayList<String>();
-		excludePatterns = new ArrayList<String>();
-		aspectClassNames = new ArrayList<String>();
-		aspectExcludePatterns = new ArrayList<String>();
-		aspectIncludePatterns = new ArrayList<String>();
-		concreteAspects = new ArrayList<Definition.ConcreteAspect>();
-		scopedAspects = new HashMap<String, String>();
-		requiredTypesForAspects = new HashMap<String, String>();
+		dumpPatterns = new ArrayList<>();
+		includePatterns = new ArrayList<>();
+		excludePatterns = new ArrayList<>();
+		aspectClassNames = new ArrayList<>();
+		aspectExcludePatterns = new ArrayList<>();
+		aspectIncludePatterns = new ArrayList<>();
+		concreteAspects = new ArrayList<>();
+		scopedAspects = new HashMap<>();
+		requiredTypesForAspects = new HashMap<>();
 	}
 
 	public String getWeaverOptions() {
@@ -135,10 +135,10 @@ public class Definition {
 				this.extend = extend;
 			}
 			this.precedence = precedence;
-			this.pointcuts = new ArrayList<Definition.Pointcut>();
-			this.declareAnnotations = new ArrayList<Definition.DeclareAnnotation>();
-			this.pointcutsAndAdvice = new ArrayList<Definition.PointcutAndAdvice>();
-			this.deows = new ArrayList<Definition.DeclareErrorOrWarning>();
+			this.pointcuts = new ArrayList<>();
+			this.declareAnnotations = new ArrayList<>();
+			this.pointcutsAndAdvice = new ArrayList<>();
+			this.deows = new ArrayList<>();
 			this.perclause = perclause;
 		}
 	}

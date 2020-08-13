@@ -93,7 +93,7 @@ public class AnnotationPatternMatchingTestCase extends TestCase {
 	}
 
 	static class MyMessageHandler implements IMessageHandler {
-		public List<IMessage> messages = new ArrayList<IMessage>();
+		public List<IMessage> messages = new ArrayList<>();
 
 		public boolean handleMessage(IMessage message) throws AbortException {
 			messages.add(message);

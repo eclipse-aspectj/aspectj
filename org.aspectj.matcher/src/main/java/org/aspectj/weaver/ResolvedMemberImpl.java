@@ -123,9 +123,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			// }
 		}
 
-		List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
+		List<ResolvedType> declaringTypes = new ArrayList<>();
 		accumulateTypesInBetween(originalDeclaringType, firstDefiningType, declaringTypes);
-		Set<ResolvedMember> memberSignatures = new LinkedHashSet<ResolvedMember>();
+		Set<ResolvedMember> memberSignatures = new LinkedHashSet<>();
 		for (ResolvedType declaringType : declaringTypes) {
 			memberSignatures.add(new JoinPointSignature(firstDefiningMember, declaringType));
 		}
@@ -136,7 +136,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			// every type between the firstDefiningMember and the root defining
 			// member.
 			Iterator<ResolvedType> superTypeIterator = firstDefiningType.getDirectSupertypes();
-			List<ResolvedType> typesAlreadyVisited = new ArrayList<ResolvedType>();
+			List<ResolvedType> typesAlreadyVisited = new ArrayList<>();
 			accumulateMembersMatching(firstDefiningMember, superTypeIterator, typesAlreadyVisited, memberSignatures, false);
 		}
 
@@ -188,7 +188,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 				ResolvedMemberImpl foundMember = (ResolvedMemberImpl) toLookIn.lookupResolvedMember(memberToMatch, true,
 						ignoreGenerics);
 				if (foundMember != null && isVisibleTo(memberToMatch, foundMember)) {
-					List<ResolvedType> declaringTypes = new ArrayList<ResolvedType>();
+					List<ResolvedType> declaringTypes = new ArrayList<>();
 					// declaring type can be unresolved if the member can from
 					// an ITD...
 					ResolvedType resolvedDeclaringType = foundMember.getDeclaringType().resolve(toLookIn.getWorld());
@@ -763,7 +763,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
-		Map<String, UnresolvedType> typeMap = new HashMap<String, UnresolvedType>();
+		Map<String, UnresolvedType> typeMap = new HashMap<>();
 		boolean typeParametersSupplied = typeParameters != null && typeParameters.length > 0;
 		if (typeVariables != null) {
 			// If no 'replacements' were supplied in the typeParameters array
@@ -1058,7 +1058,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		StringBuffer sig = new StringBuffer();
 		UnresolvedType[] myParameterTypes = getGenericParameterTypes();
 		for (UnresolvedType myParameterType : myParameterTypes) {
-			appendSigWithTypeVarBoundsRemoved(myParameterType, sig, new HashSet<UnresolvedType>());
+			appendSigWithTypeVarBoundsRemoved(myParameterType, sig, new HashSet<>());
 		}
 		myParameterSignatureWithBoundsRemoved = sig.toString();
 		return myParameterSignatureWithBoundsRemoved;

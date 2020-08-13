@@ -248,7 +248,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	@Override
 	public List<BindingPattern> getBindingAnnotationTypePatterns() {
 		if (annotationTypePattern instanceof BindingAnnotationTypePattern) {
-			List<BindingPattern> l = new ArrayList<BindingPattern>();
+			List<BindingPattern> l = new ArrayList<>();
 			l.add((BindingPattern)annotationTypePattern);
 			return l;
 		} else {

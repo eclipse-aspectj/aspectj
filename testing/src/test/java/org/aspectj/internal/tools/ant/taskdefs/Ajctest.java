@@ -1616,7 +1616,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 
     private List<List<Arg>> combinations(List<Argument> arglist) {
         List<List<Arg>> result = new Vector<>();
-        result.add(new Vector<Arg>());
+        result.add(new Vector<>());
 		for (Argument arg : arglist) {
 			int N = result.size();
 			for (int i = 0; i < N; i++) {

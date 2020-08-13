@@ -132,7 +132,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	private void constructUpToDateLstFile(String pname, String configname) {
 		File projectBase = new File(sandboxDir, pname);
 		File toConstruct = new File(projectBase, configname);
-		List<String> filesForCompilation = new ArrayList<String>();
+		List<String> filesForCompilation = new ArrayList<>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 
 		try {

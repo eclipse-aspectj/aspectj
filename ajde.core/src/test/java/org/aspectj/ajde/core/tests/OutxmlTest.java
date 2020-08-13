@@ -112,7 +112,7 @@ public class OutxmlTest extends AjdeCoreTestCase {
 	 */
 	public void testOutxmlToOutjarWithAop_xml () {
 		File f = new File( getAbsoluteProjectDir() + File.separator + "src-resources" + File.separator + "testjar.jar");
-		Set<File> roots = new HashSet<File>();
+		Set<File> roots = new HashSet<>();
 		roots.add(f);
 		compilerConfig.setInpath(roots);
 		

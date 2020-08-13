@@ -62,7 +62,7 @@ public abstract class CommandTestCase extends TestCase {
 	}
 
 	public static void checkCompile(String source, String[] extraArgs, int[] expectedErrors, String sandboxName) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("-verbose");
 
 		args.add("-d");
@@ -87,7 +87,7 @@ public abstract class CommandTestCase extends TestCase {
 	}
 
 	public void checkMultipleCompile(String source) throws InterruptedException {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("-verbose");
 
 		args.add("-d");

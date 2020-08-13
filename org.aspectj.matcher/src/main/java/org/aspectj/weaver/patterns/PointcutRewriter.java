@@ -327,7 +327,7 @@ public class PointcutRewriter {
 	}
 
 	private Pointcut simplifyAnd(AndPointcut apc) {
-		SortedSet<Pointcut> nodes = new TreeSet<Pointcut>(new PointcutEvaluationExpenseComparator());
+		SortedSet<Pointcut> nodes = new TreeSet<>(new PointcutEvaluationExpenseComparator());
 		collectAndNodes(apc, nodes);
 		// look for A and !A, or IfFalse
 		for (Pointcut element : nodes) {
@@ -361,7 +361,7 @@ public class PointcutRewriter {
 	}
 
 	private Pointcut sortOrs(Pointcut pc) {
-		SortedSet<Pointcut> nodes = new TreeSet<Pointcut>(new PointcutEvaluationExpenseComparator());
+		SortedSet<Pointcut> nodes = new TreeSet<>(new PointcutEvaluationExpenseComparator());
 		collectOrNodes(pc, nodes);
 		// write out with cheapest on left
 		Iterator<Pointcut> iter = nodes.iterator();

@@ -87,13 +87,13 @@ public class CompilationAndWeavingContext {
 			"type munging for @AspectJ aspectOf" };
 
 	// context stacks, one per thread
-	private static ThreadLocal<Stack<ContextStackEntry>> contextMap = new ThreadLocal<Stack<ContextStackEntry>>();
+	private static ThreadLocal<Stack<ContextStackEntry>> contextMap = new ThreadLocal<>();
 
 	// single thread mode stack
-	private static Stack<ContextStackEntry> contextStack = new Stack<ContextStackEntry>();
+	private static Stack<ContextStackEntry> contextStack = new Stack<>();
 
 	// formatters, by phase id
-	private static Map<Integer, ContextFormatter> formatterMap = new HashMap<Integer, ContextFormatter>();
+	private static Map<Integer, ContextFormatter> formatterMap = new HashMap<>();
 
 	private static ContextFormatter defaultFormatter = new DefaultFormatter();
 
@@ -131,7 +131,7 @@ public class CompilationAndWeavingContext {
 	 */
 	public static String getCurrentContext() {
 		Stack<ContextStackEntry> contextStack = getContextStack();
-		Stack<String> explanationStack = new Stack<String>();
+		Stack<String> explanationStack = new Stack<>();
 		for (ContextStackEntry entry : contextStack) {
 			Object data = entry.getData();
 			if (data != null) {
@@ -150,7 +150,7 @@ public class CompilationAndWeavingContext {
 	public static ContextToken enteringPhase(int phaseId, Object data) {
 		Stack<ContextStackEntry> contextStack = getContextStack();
 		ContextTokenImpl nextToken = nextToken();
-		contextStack.push(new ContextStackEntry(nextToken, phaseId, new WeakReference<Object>(data)));
+		contextStack.push(new ContextStackEntry(nextToken, phaseId, new WeakReference<>(data)));
 		return nextToken;
 	}
 
@@ -183,7 +183,7 @@ public class CompilationAndWeavingContext {
 		} else {
 			Stack<ContextStackEntry> contextStack = contextMap.get();
 			if (contextStack == null) {
-				contextStack = new Stack<ContextStackEntry>();
+				contextStack = new Stack<>();
 				contextMap.set(contextStack);
 			}
 			return contextStack;

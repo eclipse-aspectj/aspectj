@@ -60,7 +60,7 @@ public class AjdocOutputChecker {
 	 * @throws Exception
 	 */	
 	public static List<String> getMissingStringsInFile(File htmlFile, String[] requiredStrings) throws Exception {
-		List<String> missingStrings = new ArrayList<String>();
+		List<String> missingStrings = new ArrayList<>();
 		for (String string : requiredStrings) {
 			if (!containsString(htmlFile, string)) {
 				missingStrings.add(string);
@@ -120,7 +120,7 @@ public class AjdocOutputChecker {
 	 */
 	public static List<String> getMissingStringsInSection(File htmlFile,
 			String[] requiredStrings, String sectionHeader) throws Exception {
-		List<String> missingStrings = new ArrayList<String>();
+		List<String> missingStrings = new ArrayList<>();
 		for (String string : requiredStrings) {
 			if (!containsStringWithinSection(htmlFile, string, sectionHeader)) {
 				missingStrings.add(string);

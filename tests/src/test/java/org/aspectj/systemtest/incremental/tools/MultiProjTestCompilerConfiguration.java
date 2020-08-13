@@ -107,7 +107,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		if (javaOptionsMap != null && !javaOptionsMap.isEmpty())
 			return javaOptionsMap;
 
-		Hashtable<String, String> ht = new Hashtable<String, String>();
+		Hashtable<String, String> ht = new Hashtable<>();
 		ht.put("org.eclipse.jdt.core.compiler.compliance", "1.5");
 		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
 		ht.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -158,7 +158,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public void addDependancy(String projectItDependsOn) {
 		if (dependants == null) {
-			dependants = new ArrayList<String>();
+			dependants = new ArrayList<>();
 		}
 		dependants.add(projectItDependsOn);
 	}
@@ -211,7 +211,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public void addProjectSourceFileChanged(File f) {
 		if (this.modifiedFiles == null) {
-			this.modifiedFiles = new ArrayList<File>();
+			this.modifiedFiles = new ArrayList<>();
 		}
 		if (f != null) {
 			modifiedFiles.add(f);
@@ -220,7 +220,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 
 	public void addClasspathEntryChanged(String f) {
 		if (this.modifiedDirs == null) {
-			this.modifiedDirs = new ArrayList<String>();
+			this.modifiedDirs = new ArrayList<>();
 		}
 		if (f != null) {
 			modifiedDirs.add(f);

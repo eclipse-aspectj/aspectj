@@ -87,7 +87,7 @@ public class PointcutParserTest extends TestCase {
 				.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(p, this.getClass()
 						.getClassLoader());
 		assertEquals("Should use the set we pass in", p, parser.getSupportedPrimitives());
-		Set<PointcutPrimitive> q = new HashSet<PointcutPrimitive>();
+		Set<PointcutPrimitive> q = new HashSet<>();
 		q.add(PointcutPrimitive.ARGS);
 		parser = PointcutParser.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(q, this
 				.getClass().getClassLoader());

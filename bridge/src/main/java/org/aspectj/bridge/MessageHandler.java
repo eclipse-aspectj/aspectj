@@ -48,8 +48,8 @@ public class MessageHandler implements IMessageHolder {
 	 * @param accumulateOnly the result of handleMessage (i.e., if true, then only accumulate messages - stop processing
 	 */
 	public MessageHandler(boolean accumulateOnly) {
-		messages = new ArrayList<IMessage>();
-		ignoring = new ArrayList<IMessage.Kind>();
+		messages = new ArrayList<>();
+		ignoring = new ArrayList<>();
 		init(accumulateOnly);
 		ignore(IMessage.WEAVEINFO); // Off by default, need to explicitly be enabled (see -showWeaveInfo)
 	}
@@ -207,7 +207,7 @@ public class MessageHandler implements IMessageHolder {
 		if (null == kind) {
 			return messages.toArray(IMessage.RA_IMessage);
 		}
-		ArrayList<IMessage> result = new ArrayList<IMessage>();
+		ArrayList<IMessage> result = new ArrayList<>();
 		if (!orGreater) {
 			for (IMessage m : messages) {
 				if (kind == m.getKind()) {

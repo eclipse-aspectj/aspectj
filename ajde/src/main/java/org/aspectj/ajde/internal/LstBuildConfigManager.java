@@ -39,7 +39,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 
 
 	private List<String> allBuildConfigFiles;
-	private List<BuildConfigListener> listeners = new ArrayList<BuildConfigListener>();
+	private List<BuildConfigListener> listeners = new ArrayList<>();
 	private LstBuildConfigFileUpdater fileUpdater = new LstBuildConfigFileUpdater();
 	protected String currConfigFilePath = null;
 
@@ -63,8 +63,8 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		String rootPath = configFile.getParent();
 		String configFileName = configFile.getName();
 		BuildConfigModel model = new BuildConfigModel(configFilePath);
-		List<File> configFiles = new ArrayList<File>();
-		List<File> importedFiles = new ArrayList<File>();
+		List<File> configFiles = new ArrayList<>();
+		List<File> importedFiles = new ArrayList<>();
 		List<String> badEntries = null;
 		try {
 			LstBuildConfigFileParser configParser = new LstBuildConfigFileParser(configFilePath);
@@ -134,7 +134,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 
 	private List<String> relativizeFilePaths(List<File> configFiles, String rootPath) {
-		List<String> relativePathsList = new ArrayList<String>();
+		List<String> relativePathsList = new ArrayList<>();
 		for (File file : configFiles) {
 			relativePathsList.add(fileUpdater.relativizePath(file.getPath(), rootPath));
 		}
@@ -308,7 +308,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	@Override
 	public List<String> getAllBuildConfigFiles() {
 		if (allBuildConfigFiles == null) {
-			allBuildConfigFiles = new ArrayList<String>();
+			allBuildConfigFiles = new ArrayList<>();
 			if (getActiveConfigFile() != null) {
 				allBuildConfigFiles.add(getActiveConfigFile());
 			}

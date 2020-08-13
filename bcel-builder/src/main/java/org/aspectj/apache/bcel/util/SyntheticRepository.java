@@ -80,12 +80,12 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 public class SyntheticRepository implements Repository {
 	private static final String DEFAULT_PATH = ClassPath.getClassPath();
 
-	private static HashMap<ClassPath, SyntheticRepository> _instances = new HashMap<ClassPath, SyntheticRepository>(); // CLASSPATH
+	private static HashMap<ClassPath, SyntheticRepository> _instances = new HashMap<>(); // CLASSPATH
 																														// X
 																														// REPOSITORY
 
 	private ClassPath _path = null;
-	private WeakHashMap<String, JavaClass> _loadedClasses = new WeakHashMap<String, JavaClass>(); // CLASSNAME X JAVACLASS
+	private WeakHashMap<String, JavaClass> _loadedClasses = new WeakHashMap<>(); // CLASSNAME X JAVACLASS
 
 	private SyntheticRepository(ClassPath path) {
 		_path = path;

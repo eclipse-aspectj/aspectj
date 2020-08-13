@@ -33,11 +33,11 @@ public class WeavedClassCacheTest extends AbstractCacheBackingTestSupport {
 	}
 
 	public class MemoryCacheBacking implements CacheBacking {
-		HashMap<String, CachedClassEntry> cache = new HashMap<String, CachedClassEntry>();
+		HashMap<String, CachedClassEntry> cache = new HashMap<>();
 
 		public String[] getKeys(String regex) {
 			Set<String> keys = cache.keySet();
-			List<String> matches = new LinkedList<String>();
+			List<String> matches = new LinkedList<>();
 			for (String key : keys) {
 				if (key.matches(regex)) {
 					matches.add(key);
@@ -86,7 +86,7 @@ public class WeavedClassCacheTest extends AbstractCacheBackingTestSupport {
 
 	public class TestGeneratedClassHandler implements GeneratedClassHandler {
 		public int accepts = 0;
-		public List<String> classesISaw = new LinkedList<String>();
+		public List<String> classesISaw = new LinkedList<>();
 
 		public void acceptClass (String name, byte[] originalBytes, byte[] wovenBytes) {
 			accepts++;

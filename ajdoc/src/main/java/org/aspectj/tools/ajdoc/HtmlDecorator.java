@@ -48,7 +48,7 @@ class HtmlDecorator {
 	private static final String ITD_FIELD_SUMMARY = "Inter-Type Field Summary";
 	private static final String ITD_CONSTRUCTOR_SUMMARY = "Inter-Type Constructor Summary";
 
-	static List<String> visibleFileList = new ArrayList<String>();
+	static List<String> visibleFileList = new ArrayList<>();
 	static Hashtable declIDTable = null;
 	static File rootDir = null;
 	static String docVisibilityModifier;
@@ -295,9 +295,9 @@ class HtmlDecorator {
 	}
 
 	static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index) {
-		List<IProgramElement> pointcuts = new ArrayList<IProgramElement>();
-		List<IProgramElement> advice = new ArrayList<IProgramElement>();
-		List<IProgramElement> declares = new ArrayList<IProgramElement>();
+		List<IProgramElement> pointcuts = new ArrayList<>();
+		List<IProgramElement> advice = new ArrayList<>();
+		List<IProgramElement> declares = new ArrayList<>();
 		List<IProgramElement> methodsDeclaredOn = StructureUtil.getDeclareInterTypeTargets(node, IProgramElement.Kind.INTER_TYPE_METHOD);
 		if (methodsDeclaredOn != null && !methodsDeclaredOn.isEmpty()) {
 			insertDeclarationsSummary(fileBuffer, methodsDeclaredOn, ITD_METHOD_SUMMARY, index);

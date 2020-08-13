@@ -33,7 +33,7 @@ public class BuildConfigNode {
 	protected String name = "";
 	protected Kind kind;
 	// children.listIterator() should support remove() operation
-	protected List<BuildConfigNode> children = new ArrayList<BuildConfigNode>();
+	protected List<BuildConfigNode> children = new ArrayList<>();
 	protected IMessage message = null;
 	protected ISourceLocation sourceLocation = null;
 
@@ -78,7 +78,7 @@ public class BuildConfigNode {
 
 	public void addChild(BuildConfigNode child) {
 		if (children == null) {
-			children = new ArrayList<BuildConfigNode>();
+			children = new ArrayList<>();
 		}
 		children.add(child);
 		child.setParent(this);
@@ -86,7 +86,7 @@ public class BuildConfigNode {
 
 	public void addChild(int position, BuildConfigNode child) {
 		if (children == null) {
-			children = new ArrayList<BuildConfigNode>();
+			children = new ArrayList<>();
 		}
 		children.add(position, child);
 		child.setParent(this);

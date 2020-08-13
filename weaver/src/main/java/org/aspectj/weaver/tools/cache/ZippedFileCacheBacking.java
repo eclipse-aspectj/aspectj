@@ -156,7 +156,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
                           e);
             }
 
-            entriesMap = new TreeMap<String,byte[]>();
+            entriesMap = new TreeMap<>();
             okEntries = false;
         }
 
@@ -196,7 +196,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
             }
 
             if (toDelete == null) {
-                toDelete = new TreeSet<String>();
+                toDelete = new TreeSet<>();
             }
             toDelete.add(key);
         }
@@ -259,7 +259,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
             return Collections.emptyMap();
         }
 
-        Map<String,byte[]>      result=new TreeMap<String,byte[]>();
+        Map<String,byte[]>      result= new TreeMap<>();
         byte[]                  copyBuf=new byte[4096];
         ByteArrayOutputStream   out=new ByteArrayOutputStream(copyBuf.length);
         ZipFile                 zipFile=new ZipFile(file);

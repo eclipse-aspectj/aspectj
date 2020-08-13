@@ -71,7 +71,7 @@ public class BuildConfigModel {
 	}
 
 	public List<BuildConfigNode> getActiveNodes(BuildConfigNode.Kind kind) {
-		List<BuildConfigNode> nodes = new ArrayList<BuildConfigNode>();
+		List<BuildConfigNode> nodes = new ArrayList<>();
 		getActiveNodesHelper(root, kind, nodes);
 		return nodes;
 	}

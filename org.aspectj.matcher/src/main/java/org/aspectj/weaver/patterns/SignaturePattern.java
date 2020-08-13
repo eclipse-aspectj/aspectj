@@ -174,7 +174,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	private class TypePatternVisitor extends AbstractPatternNodeVisitor {
 
 		private IScope scope;
-		private Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> incorrectTargetKinds = new HashMap<ExactAnnotationTypePattern, AnnotationTargetKind[]>();
+		private Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> incorrectTargetKinds = new HashMap<>();
 		private boolean targetsOtherThanTypeAllowed;
 		private boolean parameterTargettingAnnotationsAllowed;
 
@@ -206,7 +206,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 				if (targetKinds == null) {
 					return data;
 				}
-				List<AnnotationTargetKind> incorrectTargets = new ArrayList<AnnotationTargetKind>();
+				List<AnnotationTargetKind> incorrectTargets = new ArrayList<>();
 				for (AnnotationTargetKind targetKind : targetKinds) {
 					if (targetKind.getName().equals(kind.getName())
 							|| (targetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())) {
@@ -990,7 +990,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	@Override
 	public List<ExactTypePattern> getExactDeclaringTypes() {
 		if (declaringType instanceof ExactTypePattern) {
-			List<ExactTypePattern> l = new ArrayList<ExactTypePattern>();
+			List<ExactTypePattern> l = new ArrayList<>();
 			l.add((ExactTypePattern) declaringType);
 			return l;
 		} else {

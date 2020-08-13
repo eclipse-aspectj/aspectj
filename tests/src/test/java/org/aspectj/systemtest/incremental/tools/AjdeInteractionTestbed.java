@@ -77,7 +77,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 
 	public void addXmlConfigFile(String projectName, String xmlfile) {
-		List<String> l = new ArrayList<String>();
+		List<String> l = new ArrayList<>();
 		l.add(xmlfile);
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setProjectXmlConfigFiles(l);
@@ -116,7 +116,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 	public void configureAspectPath(String projectName, File aspectpath) {
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(aspectpath);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setAspectPath(s);
 	}
@@ -137,7 +137,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	}
 
 	public static void configureInPath(String projectName, File inpath) {
-		Set<File> s = new HashSet<File>();
+		Set<File> s = new HashSet<>();
 		s.add(inpath);
 		AjCompiler compiler = CompilerFactory.getCompilerForProjectWithDir(sandboxDir + File.separator + projectName);
 		((MultiProjTestCompilerConfiguration) compiler.getCompilerConfiguration()).setInpath(s);
@@ -241,7 +241,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		File projectBase = new File(sandboxDir, pname);
 		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
 		List<String> currentFiles = icc.getProjectSourceFiles();
-		List<String> filesForCompilation = new ArrayList<String>();
+		List<String> filesForCompilation = new ArrayList<>();
 		collectUpFiles(projectBase, projectBase, filesForCompilation);
 		boolean changed = false;
 		for (String s : filesForCompilation) {
@@ -263,7 +263,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		File projectBase = new File(sandboxDir, pname);
 		ICompilerConfiguration icc = compiler.getCompilerConfiguration();
 		List<String> currentXmlFiles = icc.getProjectXmlConfigFiles();
-		List<String> collector = new ArrayList<String>();
+		List<String> collector = new ArrayList<>();
 		collectUpXmlFiles(projectBase, projectBase, collector);
 		boolean changed = false;
 		for (String s : collector) {
@@ -501,7 +501,7 @@ public class AjdeInteractionTestbed extends TestCase {
 
 		public static boolean informedAboutKindOfBuild;
 		public static boolean fullBuildOccurred;
-		public static List<String> detectedDeletions = new ArrayList<String>();
+		public static List<String> detectedDeletions = new ArrayList<>();
 		public static StringBuffer decisions = new StringBuffer();
 
 		public static void reset() {

@@ -137,7 +137,7 @@ public abstract class AsynchronousFileCacheBackingTestSupport
             return Collections.emptyMap();
         }
 
-        Map<String, File>  files=new TreeMap<String, File>();
+        Map<String, File>  files= new TreeMap<>();
         for (IndexEntry entry : entries) {
             File    file=createDataFile(entry);
             if (file != null) {

@@ -155,7 +155,7 @@ public class MemberImpl implements Member {
 	private static Object[] signatureToTypes(String sig) {
 		boolean hasParameters = sig.charAt(1) != ')';
 		if (hasParameters) {
-			List<UnresolvedType> l = new ArrayList<UnresolvedType>();
+			List<UnresolvedType> l = new ArrayList<>();
 			int i = 1;
 			boolean hasAnyAnglies = sig.indexOf('<') != -1;
 			while (true) {
@@ -442,7 +442,7 @@ public class MemberImpl implements Member {
 
 	public Collection<ResolvedType> getDeclaringTypes(World world) {
 		ResolvedType myType = getDeclaringType().resolve(world);
-		Collection<ResolvedType> ret = new HashSet<ResolvedType>();
+		Collection<ResolvedType> ret = new HashSet<>();
 		if (kind == CONSTRUCTOR) {
 			// this is wrong if the member doesn't exist, but that doesn't
 			// matter

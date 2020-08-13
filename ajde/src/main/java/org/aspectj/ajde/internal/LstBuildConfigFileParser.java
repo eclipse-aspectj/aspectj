@@ -24,8 +24,8 @@ import org.aspectj.ajdt.ajc.ConfigParser;
  */
 public class LstBuildConfigFileParser extends ConfigParser {
 
-	private List<File> importedFiles = new ArrayList<File>();
-	private List<String> problemEntries = new ArrayList<String>();
+	private List<File> importedFiles = new ArrayList<>();
+	private List<String> problemEntries = new ArrayList<>();
 
 	// private String currFilePath;
 

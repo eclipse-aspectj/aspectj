@@ -289,7 +289,7 @@ public class TypeFactory {
 
 	private static UnresolvedType[] createTypeParams(String typeParameterSpecification) {
 		String remainingToProcess = typeParameterSpecification;
-		List<UnresolvedType> types = new ArrayList<UnresolvedType>();
+		List<UnresolvedType> types = new ArrayList<>();
 		while (remainingToProcess.length() != 0) {
 			int endOfSig = 0;
 			int anglies = 0;

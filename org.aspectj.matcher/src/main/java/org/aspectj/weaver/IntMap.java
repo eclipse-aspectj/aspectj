@@ -24,7 +24,7 @@ public class IntMap {
 	// XXX begin hack to avoid a signature refactoring in Pointcut
 	private ResolvedType concreteAspect;
 	private ShadowMunger enclosingAdvice;
-	private List<ResolvedPointcutDefinition> enclosingDefinition = new ArrayList<ResolvedPointcutDefinition>();
+	private List<ResolvedPointcutDefinition> enclosingDefinition = new ArrayList<>();
 
 	public void pushEnclosingDefinition(ResolvedPointcutDefinition def) {
 		enclosingDefinition.add(def);

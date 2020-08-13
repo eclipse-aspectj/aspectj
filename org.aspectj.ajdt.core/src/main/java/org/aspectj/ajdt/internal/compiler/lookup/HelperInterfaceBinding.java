@@ -30,7 +30,7 @@ import org.aspectj.weaver.UnresolvedType;
 public class HelperInterfaceBinding extends SourceTypeBinding {
 	private UnresolvedType typeX;
 	SourceTypeBinding enclosingType;
-	List<MethodBinding> methods = new ArrayList<MethodBinding>();
+	List<MethodBinding> methods = new ArrayList<>();
 
 	public HelperInterfaceBinding(SourceTypeBinding enclosingType, UnresolvedType typeX) {
 		super();

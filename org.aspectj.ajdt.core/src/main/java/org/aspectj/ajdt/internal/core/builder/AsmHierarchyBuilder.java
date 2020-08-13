@@ -541,7 +541,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			Declare decl = dDeclaration.declareDecl;
 			if (decl instanceof DeclareParents) {
 				TypePatternList tpl = ((DeclareParents) decl).getParents();
-				List<String> parents = new ArrayList<String>();
+				List<String> parents = new ArrayList<>();
 				for (int i = 0; i < tpl.size(); i++) {
 					parents.add(tpl.get(i).getExactType().getName().replaceAll("\\$", "."));
 				}

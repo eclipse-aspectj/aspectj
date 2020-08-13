@@ -37,9 +37,9 @@ public class MultiProjTestMessageHandler implements IBuildMessageHandler {
 
 	public MultiProjTestMessageHandler() {
 		ignoring = new ArrayList<>();
-		errorMessages = new ArrayList<IMessage>();
-		warningMessages = new ArrayList<IMessage>();
-		weavingMessages = new ArrayList<IMessage>();
+		errorMessages = new ArrayList<>();
+		warningMessages = new ArrayList<>();
+		weavingMessages = new ArrayList<>();
 		compilerErrors = new ArrayList<>();
 		ignore(IMessage.INFO);
 		ignore(IMessage.WEAVEINFO);

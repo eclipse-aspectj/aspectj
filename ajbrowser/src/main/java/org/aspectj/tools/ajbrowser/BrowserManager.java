@@ -61,7 +61,7 @@ public class BrowserManager {
 	private UserPreferencesAdapter preferencesAdapter;
 	private static TopFrame topFrame = null;
 
-	private List<String> configFiles = new ArrayList<String>();
+	private List<String> configFiles = new ArrayList<>();
 	private JavaBuildOptions javaBuildOptions;
 
 	public static BrowserManager getDefault() {
@@ -182,7 +182,7 @@ public class BrowserManager {
 	}
 
 	private List<String> getConfigFilesList(String[] configFiles) {
-		List<String> configs = new ArrayList<String>();
+		List<String> configs = new ArrayList<>();
 		for (String configFile : configFiles) {
 			if (configFile.endsWith(BuildConfigManager.CONFIG_FILE_SUFFIX)) {
 				configs.add(configFile);

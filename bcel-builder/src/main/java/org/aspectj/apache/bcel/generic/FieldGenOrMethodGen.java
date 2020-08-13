@@ -76,8 +76,8 @@ public abstract class FieldGenOrMethodGen extends Modifiers {
 	protected String name;
 	protected Type type;
 	protected ConstantPool cp;
-	private ArrayList<Attribute> attributeList = new ArrayList<Attribute>();
-	protected ArrayList<AnnotationGen> annotationList = new ArrayList<AnnotationGen>();
+	private ArrayList<Attribute> attributeList = new ArrayList<>();
+	protected ArrayList<AnnotationGen> annotationList = new ArrayList<>();
 
 	protected FieldGenOrMethodGen() {
 	}

@@ -265,7 +265,7 @@ public class Aj implements ClassPreProcessor {
 			if (loadersToSkipProperty != null && loadersToSkip == null) {
 				if (st.hasMoreTokens()) {
 //					System.out.println("aj.weaving.loadersToSkip is set. Skipping loaders: '"+loadersToSkipProperty+"'");
-					loadersToSkip = new ArrayList<String>();
+					loadersToSkip = new ArrayList<>();
 				}
 				while (st.hasMoreTokens()) {
 					String nextLoader = st.nextToken();
@@ -283,7 +283,7 @@ public class Aj implements ClassPreProcessor {
 	static class WeaverContainer {
 
 		final static Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> weavingAdaptors = 
-				Collections.synchronizedMap(new HashMap<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor>());
+				Collections.synchronizedMap(new HashMap<>());
 
 		static WeavingAdaptor getWeaver(ClassLoader loader, IWeavingContext weavingContext) {
 			ExplicitlyInitializedClassLoaderWeavingAdaptor adaptor = null;

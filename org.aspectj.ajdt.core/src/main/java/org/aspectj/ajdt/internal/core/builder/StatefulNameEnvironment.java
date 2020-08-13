@@ -39,10 +39,10 @@ public class StatefulNameEnvironment implements IModuleAwareNameEnvironment {
 
 	public StatefulNameEnvironment(IModuleAwareNameEnvironment baseEnvironment, Map<String,File> classesFromName, AjState state) {
 		this.classesFromName = classesFromName;
-		this.inflatedClassFilesCache = new HashMap<String,NameEnvironmentAnswer>();
+		this.inflatedClassFilesCache = new HashMap<>();
 		this.baseEnvironment = baseEnvironment;
 		this.state = state;
-		packageNames = new HashSet<String>();
+		packageNames = new HashSet<>();
 		for (String className: classesFromName.keySet()) {
 			addAllPackageNames(className);
 		}

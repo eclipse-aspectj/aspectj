@@ -166,7 +166,7 @@ public class AjBuildConfigTest extends TestCase {
 
 	static class TestMessageHandler implements IMessageHandler {
 
-		List<IMessage> messages = new ArrayList<IMessage>();
+		List<IMessage> messages = new ArrayList<>();
 
 		@Override
 		public boolean isIgnoring(Kind kind) {

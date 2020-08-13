@@ -77,9 +77,9 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	private void init() {
-		this.annotationMethods = new ArrayList<String>();
+		this.annotationMethods = new ArrayList<>();
 		annotationMethods.add("unknown");
-		this.annotationStrings = new ArrayList<String>();
+		this.annotationStrings = new ArrayList<>();
 		annotationStrings.add("@<annotation>");
 	}
 

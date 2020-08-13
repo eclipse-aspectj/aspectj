@@ -156,7 +156,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	// This set contains pairs of types whose signatures are concatenated
 	// together, this means with a fast lookup we can tell if two types
 	// are equivalent.
-	protected static Set<String> validBoxing = new HashSet<String>();
+	protected static Set<String> validBoxing = new HashSet<>();
 
 	static {
 		validBoxing.add("Ljava/lang/Byte;B");
@@ -327,7 +327,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public Iterator<ResolvedType> getHierarchy(final boolean wantGenerics, final boolean wantDeclaredParents) {
 
 		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
-			List<String> alreadySeen = new ArrayList<String>(); // Strings are signatures (ResolvedType.getSignature())
+			List<String> alreadySeen = new ArrayList<>(); // Strings are signatures (ResolvedType.getSignature())
 
 			@Override
 			public Iterator<ResolvedType> get(ResolvedType type) {
@@ -337,7 +337,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				// relatively expensive but hopefully uncommon
 				if (!wantDeclaredParents && type.hasNewParentMungers()) {
 					// Throw away interfaces from that array if they were decp'd onto here
-					List<Integer> forRemoval = new ArrayList<Integer>();
+					List<Integer> forRemoval = new ArrayList<>();
 					for (ConcreteTypeMunger munger : type.interTypeMungers) {
 						if (munger.getMunger() != null) {
 							ResolvedTypeMunger m = munger.getMunger();
@@ -391,8 +391,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * declared on the superinterfaces. This is expensive - use the getMethods() method if you can!
 	 */
 	public List<ResolvedMember> getMethodsWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
-		List<ResolvedMember> methods = new ArrayList<ResolvedMember>();
-		Set<String> knowninterfaces = new HashSet<String>();
+		List<ResolvedMember> methods = new ArrayList<>();
+		Set<String> knowninterfaces = new HashSet<>();
 		addAndRecurse(knowninterfaces, methods, this, includeITDs, allowMissing, genericsAware);
 		return methods;
 	}
@@ -405,8 +405,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * @return list of resolvedtypes in this types hierarchy, including this type first
 	 */
 	public List<ResolvedType> getHierarchyWithoutIterator(boolean includeITDs, boolean allowMissing, boolean genericsAware) {
-		List<ResolvedType> types = new ArrayList<ResolvedType>();
-		Set<String> visited = new HashSet<String>();
+		List<ResolvedType> types = new ArrayList<>();
+		Set<String> visited = new HashSet<>();
 		recurseHierarchy(visited, types, this, includeITDs, allowMissing, genericsAware);
 		return types;
 	}
@@ -554,7 +554,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * process interfaces multiple times.
 	 */
 	public ResolvedMember lookupMethod(Member m) {
-		List<ResolvedType> typesTolookat = new ArrayList<ResolvedType>();
+		List<ResolvedType> typesTolookat = new ArrayList<>();
 		typesTolookat.add(this);
 		int pos = 0;
 		while (pos < typesTolookat.size()) {
@@ -807,7 +807,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return Collections.emptyList();
 		}
 
-		List<Declare> ret = new ArrayList<Declare>();
+		List<Declare> ret = new ArrayList<>();
 		// if (this.isAbstract()) {
 		// for (Iterator i = getDeclares().iterator(); i.hasNext();) {
 		// Declare dec = (Declare) i.next();
@@ -850,7 +850,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return Collections.emptyList();
 		}
 
-		List<ShadowMunger> acc = new ArrayList<ShadowMunger>();
+		List<ShadowMunger> acc = new ArrayList<>();
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
 		Iterators.Getter<ResolvedType, ResolvedType> typeGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
 			@Override
@@ -987,7 +987,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			return Collections.emptyMap();
 		}
 		TypeVariable[] tvs = getGenericType().getTypeVariables();
-		Map<String, UnresolvedType> parameterizationMap = new HashMap<String, UnresolvedType>();
+		Map<String, UnresolvedType> parameterizationMap = new HashMap<>();
 		if (tvs.length != typeParameters.length) {
 			world.getMessageHandler()
 					.handleMessage(
@@ -1021,7 +1021,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public List<ShadowMunger> getDeclaredAdvice() {
-		List<ShadowMunger> l = new ArrayList<ShadowMunger>();
+		List<ShadowMunger> l = new ArrayList<>();
 		ResolvedMember[] methods = getDeclaredMethods();
 		if (isParameterizedType()) {
 			methods = getGenericType().getDeclaredMethods();
@@ -1076,7 +1076,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	private ResolvedMember[] filterInJavaVisible(ResolvedMember[] ms) {
-		List<ResolvedMember> l = new ArrayList<ResolvedMember>();
+		List<ResolvedMember> l = new ArrayList<>();
 		for (ResolvedMember m : ms) {
 			if (!m.isAjSynthetic() && m.getAssociatedShadowMunger() == null) {
 				l.add(m);
@@ -1405,14 +1405,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return ret;
 	}
 
-	protected List<ConcreteTypeMunger> interTypeMungers = new ArrayList<ConcreteTypeMunger>();
+	protected List<ConcreteTypeMunger> interTypeMungers = new ArrayList<>();
 
 	public List<ConcreteTypeMunger> getInterTypeMungers() {
 		return interTypeMungers;
 	}
 
 	public List<ConcreteTypeMunger> getInterTypeParentMungers() {
-		List<ConcreteTypeMunger> l = new ArrayList<ConcreteTypeMunger>();
+		List<ConcreteTypeMunger> l = new ArrayList<>();
 		for (ConcreteTypeMunger element : interTypeMungers) {
 			if (element.getMunger() instanceof NewParentTypeMunger) {
 				l.add(element);
@@ -1425,13 +1425,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * ??? This method is O(N*M) where N = number of methods and M is number of inter-type declarations in my super
 	 */
 	public List<ConcreteTypeMunger> getInterTypeMungersIncludingSupers() {
-		ArrayList<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+		ArrayList<ConcreteTypeMunger> ret = new ArrayList<>();
 		collectInterTypeMungers(ret);
 		return ret;
 	}
 
 	public List<ConcreteTypeMunger> getInterTypeParentMungersIncludingSupers() {
-		ArrayList<ConcreteTypeMunger> ret = new ArrayList<ConcreteTypeMunger>();
+		ArrayList<ConcreteTypeMunger> ret = new ArrayList<>();
 		collectInterTypeParentMungers(ret);
 		return ret;
 	}
@@ -2311,8 +2311,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 		private Getter<ResolvedType, ResolvedType> ifaceGetter;
 		Iterator<ResolvedType> delegate = null;
-		public Queue<ResolvedType> toPersue = new LinkedList<ResolvedType>();
-		public Set<ResolvedType> visited = new HashSet<ResolvedType>();
+		public Queue<ResolvedType> toPersue = new LinkedList<>();
+		public Set<ResolvedType> visited = new HashSet<>();
 
 		SuperInterfaceWalker(Iterators.Getter<ResolvedType, ResolvedType> ifaceGetter) {
 			this.ifaceGetter = ifaceGetter;
@@ -2373,7 +2373,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		// interTypeMungers.clear();
 		// BUG? Why can't this be clear() instead: 293620 c6
-		interTypeMungers = new ArrayList<ConcreteTypeMunger>();
+		interTypeMungers = new ArrayList<>();
 	}
 
 	public boolean isTopmostImplementor(ResolvedType interfaceType) {
@@ -2410,7 +2410,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	public List<ResolvedMember> getExposedPointcuts() {
-		List<ResolvedMember> ret = new ArrayList<ResolvedMember>();
+		List<ResolvedMember> ret = new ArrayList<>();
 		if (getSuperclass() != null) {
 			ret.addAll(getSuperclass().getExposedPointcuts());
 		}

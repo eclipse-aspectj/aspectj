@@ -1848,7 +1848,7 @@ class TypeCategoryTypeVisitor extends AjASTVisitor {
 }
 
 class TypePatternSourceRangeVisitor extends AjASTVisitor {
-	private List<SourceRange> sourceRanges = new ArrayList<SourceRange>();
+	private List<SourceRange> sourceRanges = new ArrayList<>();
 
 	public List<SourceRange> getVisitedSourceRanges() {
 		return sourceRanges;

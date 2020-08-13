@@ -17,7 +17,7 @@ import org.aspectj.weaver.ConstantPoolReader;
 import org.aspectj.weaver.ConstantPoolWriter;
 
 public class ConstantPoolSimulator implements ConstantPoolWriter, ConstantPoolReader {
-	List<String> list = new ArrayList<String>();
+	List<String> list = new ArrayList<>();
 
 	public int writeUtf8(String string) {
 		int i = list.indexOf(string);

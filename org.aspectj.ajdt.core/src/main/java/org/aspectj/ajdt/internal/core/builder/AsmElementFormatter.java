@@ -422,9 +422,9 @@ public class AsmElementFormatter {
 			pe.setParameterNames(Collections.<String>emptyList());
 			pe.setParameterSignatures(Collections.<char[]>emptyList(), Collections.<String>emptyList());
 		} else {
-			List<String> names = new ArrayList<String>();
-			List<char[]> paramSigs = new ArrayList<char[]>();
-			List<String> paramSourceRefs = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
+			List<char[]> paramSigs = new ArrayList<>();
+			List<String> paramSourceRefs = new ArrayList<>();
 			boolean problemWithSourceRefs = false;
 			for (Argument argument : argArray) {
 				String argName = new String(argument.name);

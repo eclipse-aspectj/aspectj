@@ -74,7 +74,7 @@ public class Ajdoc extends MatchingTask {
     private boolean fork;
 	private String source;
 	private Html bottom;
-    private Vector<FileSet> fileSets = new Vector<FileSet>();
+    private Vector<FileSet> fileSets = new Vector<>();
     /** reset all to initial values - permit gc if Ajdoc is held */
     public Ajdoc() {
         reset();
@@ -94,8 +94,8 @@ public class Ajdoc extends MatchingTask {
         internalclasspath  = null;
         argfiles  = null;
         docletpath  = null;
-        links = new ArrayList<Link>();
-        groups = new ArrayList<Group>();
+        links = new ArrayList<>();
+        groups = new ArrayList<>();
         doclet  = null;
         failonerror  = false;
         fork = false;
@@ -165,7 +165,7 @@ public class Ajdoc extends MatchingTask {
     
     private void addFileSets() {
     	if(sourcefiles == null)
-    		sourcefiles = new ArrayList<String>();
+    		sourcefiles = new ArrayList<>();
     	
         Enumeration<FileSet> e = fileSets.elements();
         while (e.hasMoreElements()) {
@@ -186,7 +186,7 @@ public class Ajdoc extends MatchingTask {
     
     public void setPackagenames(String list) {
         (packagenames == null ?
-         packagenames = new ArrayList<String>() :
+         packagenames = new ArrayList<>() :
          packagenames).addAll(strings(list, true));
     }
     
@@ -264,7 +264,7 @@ public class Ajdoc extends MatchingTask {
 
     public List<File> createArgfiles() {
         return (argfiles == null ?
-                argfiles = new ArrayList<File>() :
+                argfiles = new ArrayList<>() :
                 argfiles);
     }
 
@@ -480,7 +480,7 @@ public class Ajdoc extends MatchingTask {
     public class Doclet {
         protected String name;
         protected Path path;
-        protected List<Param> params = new ArrayList<Param>();
+        protected List<Param> params = new ArrayList<>();
         public Doclet() {}
         public void setName(String name) {
             this.name = name;
@@ -617,7 +617,7 @@ public class Ajdoc extends MatchingTask {
 				}
 			}
         }
-        Map<String,List<String>> groupMap = new HashMap<String,List<String>>();
+        Map<String,List<String>> groupMap = new HashMap<>();
         for (Group group: groups) {
             if (group.title == null) {
                 throw new BuildException("Group names cannot be null!",
@@ -629,7 +629,7 @@ public class Ajdoc extends MatchingTask {
             }
             List<String> packages = groupMap.get(group.title);
             if (packages == null) {
-                packages = new ArrayList<String>();
+                packages = new ArrayList<>();
             }
             packages.addAll(group.packages);
             groupMap.put(group.title, packages);
@@ -719,7 +719,7 @@ public class Ajdoc extends MatchingTask {
 
     protected final <T> List<T> list(String str, Mapper<T> mapper) {
         if (str == null) return Collections.emptyList();
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         for (StringTokenizer t = new StringTokenizer(str, ",", false);
              t.hasMoreTokens();) {
             list.add(mapper.map(t.nextToken().trim()));

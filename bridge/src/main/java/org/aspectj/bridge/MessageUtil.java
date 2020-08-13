@@ -409,7 +409,7 @@ public class MessageUtil {
 		if (null == kind) {
 			return messages;
 		}
-		ArrayList<IMessage> result = new ArrayList<IMessage>();
+		ArrayList<IMessage> result = new ArrayList<>();
 		for (IMessage message : messages) {
 			if (kind == message.getKind()) {
 				result.add(message);
@@ -478,7 +478,7 @@ public class MessageUtil {
 			return IMessage.RA_IMessage;
 		}
 		LangUtil.throwIaxIfNull(visitor, "visitor");
-		ArrayList<IMessage> result = (accumulate ? new ArrayList<IMessage>() : null);
+		ArrayList<IMessage> result = (accumulate ? new ArrayList<>() : null);
 		for (IMessage m : messages) {
 			if (visitor.handleMessage(m)) {
 				if (accumulate) {
