@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 9, 10, 11, 12, 13, 14 ]
+        java: [ 8, 11, 14 ]
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK ${{ matrix.java }}
@@ -26,4 +26,4 @@ jobs:
     - run: java -version
     - run: mvn --version
     - name: Build with Maven
-      run: mvn -Dorg.aspectj.tools.ajc.Ajc.verbose=false -B package --file pom.xml
+      run: mvn -Daspectj.tests.verbose=false -B package --file pom.xml
