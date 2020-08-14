@@ -80,7 +80,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 			classLoaderString = loader.getClass().getName()+":"+Integer.toString(System.identityHashCode(loader));
 		}
 		classLoaderParentString = (loader.getParent() == null ? "<NullParent>" : loader.getParent().toString());
-		setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		setBehaveInJava5Way(true);
 		annotationFinder = ReflectionWorld.makeAnnotationFinderIfAny(loader, this);
 	}
 

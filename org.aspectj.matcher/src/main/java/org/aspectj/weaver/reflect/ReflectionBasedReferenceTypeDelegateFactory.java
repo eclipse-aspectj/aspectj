@@ -36,11 +36,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			ClassLoader usingClassLoader) {
 		try {
 			Class c = Class.forName(forReferenceType.getName(), false, usingClassLoader);
-			if (LangUtil.is15VMOrGreater()) {
-				ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, c, usingClassLoader, inWorld);
-				if (rbrtd != null) {
-					return rbrtd; // can be null if we didn't find the class the delegate logic loads
-				}
+			ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, c, usingClassLoader, inWorld);
+			if (rbrtd != null) {
+				return rbrtd; // can be null if we didn't find the class the delegate logic loads
 			}
 			return new ReflectionBasedReferenceTypeDelegate(c, usingClassLoader, inWorld, forReferenceType);
 		} catch (ClassNotFoundException cnfEx) {
@@ -50,11 +48,9 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	
 	public static ReflectionBasedReferenceTypeDelegate createDelegate(ReferenceType forReferenceType, World inWorld,
 			Class<?> clazz) {
-		if (LangUtil.is15VMOrGreater()) {
-			ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, clazz, clazz.getClassLoader(), inWorld);
-			if (rbrtd != null) {
-				return rbrtd; // can be null if we didn't find the class the delegate logic loads
-			}
+		ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, clazz, clazz.getClassLoader(), inWorld);
+		if (rbrtd != null) {
+			return rbrtd; // can be null if we didn't find the class the delegate logic loads
 		}
 		return new ReflectionBasedReferenceTypeDelegate(clazz, clazz.getClassLoader(), inWorld, forReferenceType);
 	}
@@ -90,30 +86,28 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	}
 
 	private static GenericSignatureInformationProvider createGenericSignatureProvider(World inWorld) {
-		if (LangUtil.is15VMOrGreater()) {
-			try {
-				Class providerClass = Class.forName("org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider");
-				Constructor cons = providerClass.getConstructor(new Class[] { World.class });
-				GenericSignatureInformationProvider ret = (GenericSignatureInformationProvider) cons
-						.newInstance(new Object[] { inWorld });
-				return ret;
-			} catch (ClassNotFoundException cnfEx) {
-				// drop through and create a 14 provider...
-				// throw new
-				// IllegalStateException("Attempted to create Java 1.5 generic signature provider but org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider was not found on classpath");
-			} catch (NoSuchMethodException nsmEx) {
-				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + nsmEx
-						+ " occured");
-			} catch (InstantiationException insEx) {
-				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + insEx
-						+ " occured");
-			} catch (InvocationTargetException invEx) {
-				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + invEx
-						+ " occured");
-			} catch (IllegalAccessException illAcc) {
-				throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + illAcc
-						+ " occured");
-			}
+		try {
+			Class providerClass = Class.forName("org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider");
+			Constructor cons = providerClass.getConstructor(new Class[] { World.class });
+			GenericSignatureInformationProvider ret = (GenericSignatureInformationProvider) cons
+					.newInstance(new Object[] { inWorld });
+			return ret;
+		} catch (ClassNotFoundException cnfEx) {
+			// drop through and create a 14 provider...
+			// throw new
+			// IllegalStateException("Attempted to create Java 1.5 generic signature provider but org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider was not found on classpath");
+		} catch (NoSuchMethodException nsmEx) {
+			throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + nsmEx
+					+ " occured");
+		} catch (InstantiationException insEx) {
+			throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + insEx
+					+ " occured");
+		} catch (InvocationTargetException invEx) {
+			throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + invEx
+					+ " occured");
+		} catch (IllegalAccessException illAcc) {
+			throw new IllegalStateException("Attempted to create Java 1.5 generic signature provider but: " + illAcc
+					+ " occured");
 		}
 		return new Java14GenericSignatureInformationProvider();
 	}

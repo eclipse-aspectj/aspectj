@@ -389,11 +389,7 @@ public class Ajc11Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void test092() {
-		if (LangUtil.is17VMOrGreater()) {
-			runTest("Compiler crash in ajc 1.1 - terrible error for inaccessible constructor - 1.7");
-		} else {
-			runTest("Compiler crash in ajc 1.1 - terrible error for inaccessible constructor");
-		}
+		runTest("Compiler crash in ajc 1.1 - terrible error for inaccessible constructor - 1.7");
 	}
 
 	public void test093() {

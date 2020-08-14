@@ -1,7 +1,5 @@
 package org.aspectj.tests;
 
-import org.aspectj.systemtest.AllTests;
-import org.aspectj.systemtest.AllTests14;
 import org.aspectj.systemtest.AllTests17;
 import org.aspectj.systemtest.AllTests18;
 import org.aspectj.systemtest.AllTests19;
@@ -31,20 +29,8 @@ public class TestsModuleTests extends TestCase {
 		// compiler tests, wrapped for JUnit
 		if (LangUtil.is19VMOrGreater()) {
 			suite.addTest(AllTests19.suite());
-		} else if (LangUtil.is18VMOrGreater()) {
-			suite.addTest(AllTests18.suite());
-		} else if (LangUtil.is15VMOrGreater()) {
-			// suite.addTest(AllTests15.suite());
-			suite.addTest(AllTests17.suite()); // there are currently (28/11/06) no tests specific to a 1.6/1.7 vm - so we can do
-			// this
-		} else if (LangUtil.is1dot4VMOrGreater()) {
-			System.err.println("Skipping tests for 1.5");
-			// suite.addTest(TestUtil.skipTest("for 1.5"));
-			suite.addTest(AllTests14.suite());
 		} else {
-			System.err.println("Skipping tests for 1.4 and 1.5");
-			// suite.addTest(TestUtil.skipTest("for 1.4 and 1.5"));
-			suite.addTest(AllTests.suite());
+			suite.addTest(AllTests18.suite());
 		}
 		return suite;
 	}

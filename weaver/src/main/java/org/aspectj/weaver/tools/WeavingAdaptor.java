@@ -200,9 +200,7 @@ public class WeavingAdaptor implements IMessageContext {
 		bcelWorld = new BcelWorld(classPath, messageHandler, null);
 		bcelWorld.setXnoInline(false);
 		bcelWorld.getLint().loadDefaultProperties();
-		if (LangUtil.is15VMOrGreater()) {
-			bcelWorld.setBehaveInJava5Way(true);
-		}
+		bcelWorld.setBehaveInJava5Way(true);
 
 		weaver = new BcelWeaver(bcelWorld);
 		registerAspectLibraries(aspectPath);

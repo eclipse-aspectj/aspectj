@@ -291,7 +291,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	}
 	
 	private String toName(String name) {
-		if (LangUtil.is18VMOrGreater() && !LangUtil.is11VMOrGreater()) {
+		if (!LangUtil.is11VMOrGreater()) {
 			name = name.replace('(','-');
 			name = name.replace(')','-');
 		}

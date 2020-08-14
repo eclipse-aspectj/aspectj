@@ -115,17 +115,10 @@ public class ArgsTestCase extends TestCase {
 			Method oneIntM = A.class.getMethod("anInt", new Class[] { int.class });
 			Method oneIntegerM = A.class.getMethod("anInteger", new Class[] { Integer.class });
 
-			if (LangUtil.is15VMOrGreater()) {
-				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
-				checkMatches(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
-				checkMatches(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
-				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
-			} else {
-				checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
-				checkNoMatch(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
-				checkNoMatch(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
-				checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
-			}
+			checkMatches(oneInt.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+			checkMatches(oneInt.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
+			checkMatches(oneInteger.matchesMethodExecution(oneIntM), new A(), new A(), new Object[] {5});
+			checkMatches(oneInteger.matchesMethodExecution(oneIntegerM), new A(), new A(), new Object[] {5});
 
 		} catch (Exception ex) {
 			fail("Unexpected exception " + ex);
@@ -173,8 +166,6 @@ public class ArgsTestCase extends TestCase {
 
 	/** this condition can occur on the build machine only, and is way too complex to fix right now... */
 	private boolean needToSkipPointcutParserTests() {
-		if (!LangUtil.is15VMOrGreater())
-			return false;
 		try {
 			Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate", false, this.getClass()
 					.getClassLoader());// ReflectionBasedReferenceTypeDelegate.class.getClassLoader());

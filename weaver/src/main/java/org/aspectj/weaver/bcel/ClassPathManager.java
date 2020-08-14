@@ -108,9 +108,7 @@ public class ClassPathManager {
 			}
 			try {
 				if (name.toLowerCase().endsWith(LangUtil.JRT_FS)) { // Java9+
-					if (LangUtil.is18VMOrGreater()) {
-						entries.add(new JImageEntry(name));
-					}
+					entries.add(new JImageEntry(name));
 				} else {
 					entries.add(new ZipFileEntry(f));
 				}

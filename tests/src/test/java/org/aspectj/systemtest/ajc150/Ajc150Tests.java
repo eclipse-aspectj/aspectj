@@ -406,14 +406,12 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testBadASMforEnums() throws IOException {
 		runTest("bad asm for enums");
 
-		if (LangUtil.is15VMOrGreater()) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintWriter pw = new PrintWriter(baos);
-			AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
-			pw.flush();
-			String tree = baos.toString();
-			assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.contains("Red  [enumvalue]"));
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(baos);
+		AsmManager.dumptree(pw, AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
+		pw.flush();
+		String tree = baos.toString();
+		assertTrue("Expected 'Red [enumvalue]' somewhere in here:" + tree, tree.contains("Red  [enumvalue]"));
 	}
 
 	public void npeOnTypeNotFound() {
@@ -840,11 +838,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void testJava5SpecificFeaturesUsedAtJava14OrLower() {
-		if (LangUtil.is17VMOrGreater()) {
-			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7");
-		} else {
-			runTest("java 5 pointcuts and declares at pre-java 5 compliance levels");
-		}
+		runTest("java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7");
 	}
 
 	public void testAnonymousTypes() {

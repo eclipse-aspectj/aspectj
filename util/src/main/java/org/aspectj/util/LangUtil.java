@@ -125,22 +125,27 @@ public class LangUtil {
 		return result;
 	}
 
+	@Deprecated
 	public static boolean isOnePointThreeVMOrGreater() {
 		return 1.3 <= vmVersion;
 	}
 
+	@Deprecated
 	public static boolean is1dot4VMOrGreater() {
 		return 1.4 <= vmVersion;
 	}
 
+	@Deprecated
 	public static boolean is15VMOrGreater() {
 		return 1.5 <= vmVersion;
 	}
 
+	@Deprecated
 	public static boolean is16VMOrGreater() {
 		return 1.6 <= vmVersion;
 	}
 
+	@Deprecated
 	public static boolean is17VMOrGreater() {
 		return 1.7 <= vmVersion;
 	}
