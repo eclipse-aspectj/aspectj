@@ -24,6 +24,6 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - run: java -version
-    - run: mvn --version
+    - run: ./mvnw --version
     - name: Build with Maven
-      run: mvn -Daspectj.tests.verbose=false -B package --file pom.xml
+      run: ./mvnw -Daspectj.tests.verbose=false -B package --file pom.xml
