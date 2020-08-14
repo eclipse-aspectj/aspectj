@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2003 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * Copyright (c) 2003 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Matthew Webster     initial implementation
  *     Helen Hawkins       Converted to new interface (bug 148190)
  *******************************************************************/
@@ -29,9 +29,9 @@ public class OutxmlTest extends AjdeCoreTestCase {
 
 	public static final String PROJECT_DIR = "OutxmlTest";
 	public static final String BIN_DIR = "bin";
-	public static final String OUTJAR_NAME = "/bin/test.jar"; 
-	public static final String DEFAULT_AOPXML_NAME = Constants.AOP_AJC_XML; 
-	public static final String CUSTOM_AOPXML_NAME = "custom/aop.xml"; 
+	public static final String OUTJAR_NAME = "/bin/test.jar";
+	public static final String DEFAULT_AOPXML_NAME = Constants.AOP_AJC_XML;
+	public static final String CUSTOM_AOPXML_NAME = "custom/aop.xml";
 
 	private String[] files = new String[]{
 			"src" + File.separator + "TestAbstractAspect.aj",
@@ -39,7 +39,7 @@ public class OutxmlTest extends AjdeCoreTestCase {
 			"src" + File.separator + "TestConcreteAspect.aj",
 			"src" + File.separator + "TestInterface.java"
 	};
-	
+
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
@@ -56,7 +56,7 @@ public class OutxmlTest extends AjdeCoreTestCase {
 		handler = null;
 		compilerConfig = null;
 	}
-	
+
 	/**
 	 * Aim: Test "-outxml" option produces the correct xml file
 	 */
@@ -65,31 +65,31 @@ public class OutxmlTest extends AjdeCoreTestCase {
 		compilerConfig.setNonStandardOptions("-outxml");
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found "
-				+ handler.getMessages(), handler.getMessages().isEmpty());		
+				+ handler.getMessages(), handler.getMessages().isEmpty());
 		File aopxml = openFile(BIN_DIR + "/" + DEFAULT_AOPXML_NAME);
 		assertTrue(DEFAULT_AOPXML_NAME + " missing",aopxml.exists());
 	}
-	
+
 	/**
-	 * Aim: Test "-outxmlfile filename" option produces the correct 
+	 * Aim: Test "-outxmlfile filename" option produces the correct
 	 * xml file
-	 * 
+	 *
 	 */
 	public void testOutxmlfileToFile () {
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		compilerConfig.setNonStandardOptions("-outxmlfile custom/aop.xml");
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found "
-				+ handler.getMessages(), handler.getMessages().isEmpty());		
-		
+				+ handler.getMessages(), handler.getMessages().isEmpty());
+
 		File aopxml = openFile(BIN_DIR + "/" + CUSTOM_AOPXML_NAME);
 		assertTrue(CUSTOM_AOPXML_NAME + " missing",aopxml.exists());
 	}
 
 	/**
-	 * Aim: Test "-outxml" option produces the correct 
+	 * Aim: Test "-outxml" option produces the correct
 	 * xml entry in outjar file
-	 * 
+	 *
 	 */
 	public void testOutxmlToOutjar () {
 		File outjar = openFile(OUTJAR_NAME);
@@ -98,44 +98,44 @@ public class OutxmlTest extends AjdeCoreTestCase {
 		compilerConfig.setNonStandardOptions("-outxml");
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found "
-				+ handler.getMessages(), handler.getMessages().isEmpty());		
-		
+				+ handler.getMessages(), handler.getMessages().isEmpty());
+
 		File aopxml = openFile(BIN_DIR + "/" + DEFAULT_AOPXML_NAME);
 		assertFalse(DEFAULT_AOPXML_NAME + " should not exisit",aopxml.exists());
 		assertJarContainsEntry(outjar,DEFAULT_AOPXML_NAME);
 	}
 
 	/**
-	 * Aim: Test "-outxml" option produces a warning if "META-INF/aop.xml 
+	 * Aim: Test "-outxml" option produces a warning if "META-INF/aop.xml
 	 * already exists in source
-	 * 
+	 *
 	 */
 	public void testOutxmlToOutjarWithAop_xml () {
 		File f = new File( getAbsoluteProjectDir() + File.separator + "src-resources" + File.separator + "testjar.jar");
 		Set<File> roots = new HashSet<>();
 		roots.add(f);
 		compilerConfig.setInpath(roots);
-		
+
 		File outjar = openFile(OUTJAR_NAME);
 		compilerConfig.setOutjar(outjar.getAbsolutePath());
 		compilerConfig.setNonStandardOptions("-outxml");
 		doBuild(true);
 		assertFalse("Expected compiler errors or warnings but didn't find any "
 				+ handler.getMessages(), handler.getMessages().isEmpty());
-		
+
 		List<TestMessage> msgs = handler.getMessages();
-		String msg = ((TestMessageHandler.TestMessage)msgs.get(0)).getContainedMessage().getMessage();
+		String msg = msgs.get(0).getContainedMessage().getMessage();
 		String exp = "-outxml/-outxmlfile option ignored because resource already exists:";
 		assertTrue("Expected message to start with : " + exp + " but found message " + msg,msg.startsWith(exp));
-		
+
 		File aopxml = openFile(BIN_DIR + "/" + DEFAULT_AOPXML_NAME);
 		assertFalse(DEFAULT_AOPXML_NAME + " should not exisit",aopxml.exists());
 		assertJarContainsEntry(outjar,DEFAULT_AOPXML_NAME);
 	}
 
-	
+
 	/**
-	 * Aim: Test "-outxmlfile filename" option produces the correct 
+	 * Aim: Test "-outxmlfile filename" option produces the correct
 	 * xml entry in outjar file
 	 */
 	public void testOutxmlfileToOutjar () {
@@ -145,17 +145,15 @@ public class OutxmlTest extends AjdeCoreTestCase {
 		compilerConfig.setNonStandardOptions("-outxmlfile custom/aop.xml");
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found "
-				+ handler.getMessages(), handler.getMessages().isEmpty());		
-		
+				+ handler.getMessages(), handler.getMessages().isEmpty());
+
 		File aopxml = openFile(BIN_DIR + "/" + CUSTOM_AOPXML_NAME);
 		assertFalse(CUSTOM_AOPXML_NAME + " should not exisit",aopxml.exists());
 		assertJarContainsEntry(outjar,CUSTOM_AOPXML_NAME);
 	}
 
 	private void assertJarContainsEntry (File file, String entryName) {
-	
-		try {
-			JarFile jarFile = new JarFile(file);
+		try (JarFile jarFile = new JarFile(file)) {
 			JarEntry jarEntry = jarFile.getJarEntry(entryName);
 			assertNotNull(entryName + " missing",jarEntry);
 		}

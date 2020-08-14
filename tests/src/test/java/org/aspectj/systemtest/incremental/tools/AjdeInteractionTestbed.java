@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2005 Contributors.All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * Copyright (c) 2005 Contributors.All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Andy Clement      initial implementation
  *     Helen Hawkins     Converted to new interface (bug 148190)
  *******************************************************************/
@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,14 +34,14 @@ import junit.framework.TestCase;
 
 /**
  * This class uses Ajde in the same way that an IDE (e.g. AJDT) does.
- * 
+ *
  * The build is driven through 'doBuild(projectName)' but the build can be configured by the methods beginning 'configure***'.
  * Information about what happened during a build is accessible through the get*, was*, print* public methods...
- * 
+ *
  */
 public class AjdeInteractionTestbed extends TestCase {
 
-	public static boolean VERBOSE = false; // do you want the gory details?
+	public static boolean VERBOSE = System.getProperty("aspectj.tests.verbose","true").equalsIgnoreCase("true");
 
 	public static String testdataSrcDir = "../tests/multiIncremental";
 	protected static File sandboxDir;
@@ -552,5 +551,5 @@ public class AjdeInteractionTestbed extends TestCase {
 			decisions.append(s).append("\n");
 			log(s);
 		}
-	};
+	}
 }

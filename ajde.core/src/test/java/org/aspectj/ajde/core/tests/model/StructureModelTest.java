@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     AMC 21.01.2003 fixed for new source location in eclipse.org
  *     Helen Hawkins    Converted to new interface (bug 148190)
  * ******************************************************************/
@@ -15,7 +15,6 @@ package org.aspectj.ajde.core.tests.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
@@ -57,7 +56,7 @@ public class StructureModelTest extends AjdeCoreTestCase {
 		File testFile = openFile("figures" + File.separator + "Figure.java");
 		IProgramElement node = manager.getHierarchy().findElementForSourceFile(testFile.getAbsolutePath());
 		assertTrue("find result", node != null);
-		String child = ((IProgramElement) node.getChildren().get(2)).getName();
+		String child = node.getChildren().get(2).getName();
 		assertTrue("expected Figure got child " + child, child.equals("Figure"));
 	}
 
@@ -65,9 +64,9 @@ public class StructureModelTest extends AjdeCoreTestCase {
 		File testFile = openFile("figures" + File.separator + "Main.java");
 		IProgramElement node = manager.getHierarchy().findElementForSourceFile(testFile.getAbsolutePath());
 		assertTrue("find result", node != null);
-		IProgramElement pNode = (IProgramElement) (node).getChildren().get(3);
+		IProgramElement pNode = (node).getChildren().get(3);
 		assertEquals(IProgramElement.Kind.ASPECT, pNode.getKind());
-		IProgramElement pointcut = (IProgramElement) pNode.getChildren().get(0);
+		IProgramElement pointcut = pNode.getChildren().get(0);
 		assertTrue("kind", pointcut.getKind().equals(IProgramElement.Kind.POINTCUT));
 		assertTrue("found node: " + pointcut.getName(), pointcut.toLabelString().equals("testptct()"));
 	}

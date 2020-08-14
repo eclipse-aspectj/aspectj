@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.ajde.core.internal;
@@ -13,7 +13,6 @@ package org.aspectj.ajde.core.internal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -70,7 +69,7 @@ public class AjdeCoreBuildManager {
 
 	/**
 	 * Execute a full or incremental build
-	 * 
+	 *
 	 * @param fullBuild true if requesting a full build, false if requesting to try an incremental build
 	 */
 	public void performBuild(boolean fullBuild) {
@@ -160,12 +159,12 @@ public class AjdeCoreBuildManager {
 	private String getFormattedOptionsString() {
 		ICompilerConfiguration compilerConfig = compiler.getCompilerConfiguration();
 		return "Building with settings: " + "\n-> output paths: "
-				+ formatCollection(compilerConfig.getOutputLocationManager().getAllOutputLocations()) + "\n-> classpath: "
-				+ compilerConfig.getClasspath() + "\n-> -inpath " + formatCollection(compilerConfig.getInpath()) + "\n-> -outjar "
-				+ formatOptionalString(compilerConfig.getOutJar()) + "\n-> -aspectpath "
-				+ formatCollection(compilerConfig.getAspectPath()) + "\n-> -sourcePathResources "
-				+ formatMap(compilerConfig.getSourcePathResources()) + "\n-> non-standard options: "
-				+ compilerConfig.getNonStandardOptions() + "\n-> javaoptions:" + formatMap(compilerConfig.getJavaOptionsMap());
+		+ formatCollection(compilerConfig.getOutputLocationManager().getAllOutputLocations()) + "\n-> classpath: "
+		+ compilerConfig.getClasspath() + "\n-> -inpath " + formatCollection(compilerConfig.getInpath()) + "\n-> -outjar "
+		+ formatOptionalString(compilerConfig.getOutJar()) + "\n-> -aspectpath "
+		+ formatCollection(compilerConfig.getAspectPath()) + "\n-> -sourcePathResources "
+		+ formatMap(compilerConfig.getSourcePathResources()) + "\n-> non-standard options: "
+		+ compilerConfig.getNonStandardOptions() + "\n-> javaoptions:" + formatMap(compilerConfig.getJavaOptionsMap());
 	}
 
 	private String formatCollection(Collection<?> options) {
@@ -209,7 +208,7 @@ public class AjdeCoreBuildManager {
 	/**
 	 * Generate a new AjBuildConfig from the compiler configuration associated with this AjdeCoreBuildManager or from a
 	 * configuration file.
-	 * 
+	 *
 	 * @return null if invalid configuration, corresponding AjBuildConfig otherwise
 	 */
 	public AjBuildConfig generateAjBuildConfig() {

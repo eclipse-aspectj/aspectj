@@ -1,17 +1,16 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * ******************************************************************/
 
 package org.aspectj.ajde.core.tests.model;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;

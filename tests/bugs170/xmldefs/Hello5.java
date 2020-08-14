@@ -26,11 +26,20 @@ public class Hello5 {
 		        	
 	        		System.out.println("Annotation count is "+annos.length);
 	        		for (Annotation anno: la) {
-	        			System.out.println(anno);
+	        			print(anno);
 	        		}
 	        	}
         	} catch (Exception e) {
         		e.printStackTrace();
+        	}
+        }
+        
+        static void print(Annotation anno) {
+        	if (anno instanceof AnnoDouble) {
+        		AnnoDouble ad = ((AnnoDouble)anno);
+        		System.out.println("@AnnoDouble(value="+ad.value()+",ddd="+ad.ddd()+")");
+        	} else {
+        		System.out.println(anno);
         	}
         }
         
