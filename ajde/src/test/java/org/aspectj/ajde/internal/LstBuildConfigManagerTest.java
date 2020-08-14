@@ -28,10 +28,6 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 	
 	private BuildConfigManager buildConfigManager = new LstBuildConfigManager();
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(LstBuildConfigManagerTest.class);
-	}
-
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
 		result.addTestSuite(LstBuildConfigManagerTest.class);	

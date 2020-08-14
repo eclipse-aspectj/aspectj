@@ -34,10 +34,6 @@ public class StructureModelUtilTest extends AjdeCoreTestCase {
 			"figures" + File.separator + "primitives" + File.separator + "planar" + File.separator + "Point.java",
 			"figures" + File.separator + "primitives" + File.separator + "solid" + File.separator + "SolidPoint.java" };
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(StructureModelUtilTest.class);
-	}
-
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
 		result.addTestSuite(StructureModelUtilTest.class);

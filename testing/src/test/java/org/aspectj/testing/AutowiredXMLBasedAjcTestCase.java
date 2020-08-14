@@ -48,7 +48,7 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
         return testMap;
     }
 
-    public static Test loadSuite(Class<?> testCaseClass) {
+    public static Test loadSuite(Class<? extends TestCase> testCaseClass) {
         TestSuite suite = new TestSuite(testCaseClass.getName());
         //suite.addTestSuite(testCaseClass);
 

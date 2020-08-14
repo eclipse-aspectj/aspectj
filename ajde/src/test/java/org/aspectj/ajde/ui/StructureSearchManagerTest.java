@@ -26,10 +26,6 @@ import junit.framework.TestSuite;
  * @author Mik Kersten
  */
 public class StructureSearchManagerTest extends AjdeTestCase {
-	
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(StructureSearchManagerTest.class);
-	}
 
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
