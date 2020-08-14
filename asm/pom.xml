@@ -7,7 +7,6 @@
     <groupId>org.aspectj</groupId>
     <artifactId>aspectj-parent</artifactId>
     <version>1.9.7.BUILD-SNAPSHOT</version>
-    <relativePath>..</relativePath>
   </parent>
 
   <artifactId>asm</artifactId>
