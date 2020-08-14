@@ -14,14 +14,6 @@
 	<packaging>pom</packaging>
 	<name>AspectJ Matcher</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>matcher</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<plugins>
 
