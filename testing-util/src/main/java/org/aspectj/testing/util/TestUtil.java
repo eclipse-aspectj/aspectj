@@ -28,18 +28,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.net.URLClassLoader;
+import java.util.*;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
@@ -56,7 +46,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import junit.runner.TestCaseClassLoader;
+import sun.net.www.ParseUtil;
 
 /**
  * Things that junit should perhaps have, but doesn't. Note the file-comparison methods require JDiff to run, but JDiff types are
@@ -383,7 +373,7 @@ public final class TestUtil {
 	public static Object runMethod(String classPath, String className, String methodName, Object[] args) {
 		classPath += File.pathSeparator + System.getProperty("java.class.path");
 
-		ClassLoader loader = new TestCaseClassLoader(classPath);
+		ClassLoader loader = new URLClassLoader(pathToURLs(classPath), null);
 
 		Class c = null;
 		try {
@@ -392,6 +382,33 @@ public final class TestUtil {
 			Assert.assertTrue("unexpected exception: " + e, false);
 		}
 		return Reflection.invokestaticN(c, methodName, args);
+	}
+
+	/**
+	 * @see sun.misc.URLClassPath#pathToURLs(String)
+	 */
+	public static URL[] pathToURLs(String path) {
+		StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
+		URL[] urls = new URL[st.countTokens()];
+		int count = 0;
+		while (st.hasMoreTokens()) {
+			File f = new File(st.nextToken());
+			try {
+				f = new File(f.getCanonicalPath());
+			} catch (IOException x) {
+				// use the non-canonicalized filename
+			}
+			try {
+				urls[count++] = ParseUtil.fileToEncodedURL(f);
+			} catch (IOException x) { }
+		}
+
+		if (urls.length != count) {
+			URL[] tmp = new URL[count];
+			System.arraycopy(urls, 0, tmp, 0, count);
+			urls = tmp;
+		}
+		return urls;
 	}
 
 	/**

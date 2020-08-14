@@ -38,10 +38,6 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	private File testFile;
 	private StructureViewProperties properties;
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(StructureViewManagerTest.class);
-	}
-
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
 		result.addTestSuite(StructureViewManagerTest.class);
