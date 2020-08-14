@@ -36,7 +36,12 @@ public class OutputSpec {
 	private boolean matchesThisVm(String vm) {
 		// vm might be 1.2, 1.3, 1.4, 1.5 or 1.9 possibly with a '+' in there
 		// For now assume + is attached to there only being one version, like "9+"
-		if (vm.contains(LangUtil.getVmVersionString())) {
+		//		System.out.println("Checking "+vm+" for "+LangUtil.getVmVersionString());
+		String v = LangUtil.getVmVersionString();
+		if (v.endsWith(".0")) {
+			v = v.substring(0,v.length()-2);
+		}
+		if (vm.contains(v)) {
 			return true;
 		}
 		if (vm.endsWith("+")) {

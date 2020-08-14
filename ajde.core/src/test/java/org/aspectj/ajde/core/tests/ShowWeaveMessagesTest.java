@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *    Andy Clement     Initial version
  *    Helen Hawkins    Converted to new interface (bug 148190)
  * ******************************************************************/
@@ -19,7 +19,6 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,24 +34,24 @@ import org.aspectj.util.LangUtil;
  * Weaving messages are complicated things. There are multiple places where weaving takes place and the places vary depending on
  * whether we are doing a binary weave or going from source. All places that output weaving messages are tagged: // TAG:
  * WeavingMessage so you can easily find them!
- * 
+ *
  * Advice is the simplest to deal with as that is advice weaving is always done in the weaver.
- * 
+ *
  * Next is intertype declarations. These are also always done in the weaver but in the case of a binary weave we don't know the
  * originating source line for the ITD.
- * 
+ *
  * Finally, declares. Declare Parents: extends Can only be done when going from source, if attempted by a binary weave then an error
  * message (compiler limitation) is produced. Declare Parents: implements Is (currently!) done at both compile time and weave time.
  * If going from source then the message is produced by the code in the compiler. if going from binary then the message is produced
  * by the weaver. Declare Soft: Comes out with 'advice' as a special kind of advice: softener advice
- * 
- * 
+ *
+ *
  * Q: Where are the messages turned on/off? A: It is a bit messy. See BuildArgParser.genBuildConfig(). Basically that method is the
  * first time we parse the option set. Whether weaving messages are on or off is stored in the build config. As soon as we have
  * parser the options and determined that weave messages are on, we grab the top level message handler and tell it not to ignore
  * WeaveInfo messages.
- * 
- * 
+ *
+ *
  * TODO - Other forms of declare? Do they need messages? e.g. declare precedence *
  */
 public class ShowWeaveMessagesTest extends AjdeCoreTestCase {

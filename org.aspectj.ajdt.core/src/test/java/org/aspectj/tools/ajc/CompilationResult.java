@@ -1,18 +1,17 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.tools.ajc;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;
@@ -20,7 +19,7 @@ import org.aspectj.bridge.IMessage;
 /**
  * Utility class that makes the results of a compiler run available.
  * <p>
- * Instances of this class are returned by the Ajc.compile() and 
+ * Instances of this class are returned by the Ajc.compile() and
  * doIncrementalCompile() methods (and the AjcTestCase.ajc() wrapper).
  * </p>
  * <p>
@@ -33,7 +32,7 @@ import org.aspectj.bridge.IMessage;
  * </p>
  */
 public class CompilationResult {
-	
+
 	private String[] args;
 	private String stdOut;
 	private String stdErr;
@@ -46,7 +45,7 @@ public class CompilationResult {
 	/**
 	 * Build a compilation result - called by the Ajc.compile and
 	 * Ajc.doIncrementalCompile methods. Should be no need for you
-	 * to construct an instance yourself. 
+	 * to construct an instance yourself.
 	 */
 	protected CompilationResult(
 			String[] args,
@@ -62,24 +61,24 @@ public class CompilationResult {
 		this.stdErr = stdErr;
 		this.infoMessages = (infoMessages == null) ? Collections.<IMessage>emptyList() : infoMessages;
 		this.errorMessages = (errorMessages == null) ? Collections.<IMessage>emptyList() : errorMessages;
-		this.warningMessages = (warningMessages == null) ? Collections.<IMessage>emptyList() : warningMessages;		
-		this.failMessages = (failMessages == null) ? Collections.<IMessage>emptyList() : failMessages;		
-		this.weaveMessages = (weaveMessages == null) ? Collections.<IMessage>emptyList() : weaveMessages;		
+		this.warningMessages = (warningMessages == null) ? Collections.<IMessage>emptyList() : warningMessages;
+		this.failMessages = (failMessages == null) ? Collections.<IMessage>emptyList() : failMessages;
+		this.weaveMessages = (weaveMessages == null) ? Collections.<IMessage>emptyList() : weaveMessages;
 	}
-	
+
 	/**
 	 * The arguments that were passed to the compiler.
 	 */
 	public String[] getArgs() { return args; }
 	/**
-	 * The standard output written by the compiler, excluding any messages. 
+	 * The standard output written by the compiler, excluding any messages.
 	 */
 	public String getStandardOutput() { return stdOut; }
 	/**
-	 * The standard error written by the compiler, excluding any messages. 
+	 * The standard error written by the compiler, excluding any messages.
 	 */
 	public String getStandardError() { return stdErr; }
-	
+
 	/**
 	 * True if the compiler issued any messages of any kind.
 	 */
@@ -104,7 +103,7 @@ public class CompilationResult {
 	 * True if the compiler issued one or more weave info messages.
 	 */
 	public boolean hasWeaveMessages() { return !weaveMessages.isEmpty(); }
-		
+
 	/**
 	 * The informational messages produced by the compiler. The list
 	 * entries are the <code>IMessage</code> objects created during the
@@ -145,9 +144,9 @@ public class CompilationResult {
 	 * @see org.aspectj.tools.ajc.AjcTestCase
 	 */
 	public List<IMessage>  getFailMessages() { return failMessages; }
-	
+
 	public List<IMessage> getWeaveMessages() { return weaveMessages; }
-	
+
 	/**
 	 * Returns string containing message count summary, list of messages
 	 * by type, and the actual ajc compilation command that was issued.
@@ -171,7 +170,7 @@ public class CompilationResult {
 			buff.append(" fail, )");
 			buff.append(weaveMessages.size());
 			buff.append(" weaveInfo");
-		} 
+		}
 		buff.append("\n");
 		int msgNo = 1;
 		for (IMessage failMessage : failMessages) {
