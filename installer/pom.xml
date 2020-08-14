@@ -12,7 +12,7 @@
 
 	<artifactId>installer</artifactId>
 	<packaging>pom</packaging>
-	<name>AspectJ Intaller</name>
+	<name>AspectJ Installer</name>
 
 	<dependencies>
 		<dependency>
