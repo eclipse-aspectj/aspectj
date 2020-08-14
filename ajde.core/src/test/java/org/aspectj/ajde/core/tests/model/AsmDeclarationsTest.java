@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * ******************************************************************/
 package org.aspectj.ajde.core.tests.model;
 
@@ -19,7 +19,7 @@ import org.aspectj.asm.IProgramElement;
 
 public class AsmDeclarationsTest extends AjdeCoreTestCase {
 
-	private AsmManager manager = null;
+	//	private AsmManager manager = null;
 	private IHierarchy model = null;
 
 	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
@@ -33,7 +33,7 @@ public class AsmDeclarationsTest extends AjdeCoreTestCase {
 		compilerConfig.setProjectSourceFiles(getSourceFileList(files));
 		compilerConfig.setNonStandardOptions("-Xset:minimalModel=false");
 		doBuild();
-		manager = AsmManager.lastActiveStructureModel;
+		//		manager = AsmManager.lastActiveStructureModel;
 		model = AsmManager.lastActiveStructureModel.getHierarchy();
 	}
 
@@ -72,10 +72,10 @@ public class AsmDeclarationsTest extends AjdeCoreTestCase {
 	public void testFileInPackageAndDefaultPackage() {
 		IProgramElement root = model.getRoot();
 		assertEquals(root.toLabelString(), "coverage");
-		IProgramElement pkg = (IProgramElement) root.getChildren().get(1);
+		IProgramElement pkg = root.getChildren().get(1);
 		assertEquals(pkg.toLabelString(), "pkg");
-		assertEquals(((IProgramElement) pkg.getChildren().get(0)).toLabelString(), "InPackage.java");
-		assertEquals(((IProgramElement) ((IProgramElement) root.getChildren().get(0)).getChildren().get(0)).toLabelString(),
+		assertEquals(pkg.getChildren().get(0).toLabelString(), "InPackage.java");
+		assertEquals(root.getChildren().get(0).getChildren().get(0).toLabelString(),
 				"ModelCoverage.java");
 	}
 
@@ -105,9 +105,9 @@ public class AsmDeclarationsTest extends AjdeCoreTestCase {
 		// check the next two relative to this one
 		int declareIndex = decParentsNode.getParent().getChildren().indexOf(decParentsNode);
 		String decParentsPtnMessage = "declare parents: extends Observable";
-		assertEquals(decParentsPtnMessage, ((IProgramElement) aspect.getChildren().get(declareIndex + 1)).toLabelString());
+		assertEquals(decParentsPtnMessage, aspect.getChildren().get(declareIndex + 1).toLabelString());
 		String decParentsTPMessage = "declare parents: extends Observable";
-		assertEquals(decParentsTPMessage, ((IProgramElement) aspect.getChildren().get(declareIndex + 2)).toLabelString());
+		assertEquals(decParentsTPMessage, aspect.getChildren().get(declareIndex + 2).toLabelString());
 
 		String decSoftMessage = "declare soft: SizeException";
 		IProgramElement decSoftNode = model.findElementForSignature(aspect, IProgramElement.Kind.DECLARE_SOFT, "declare soft");

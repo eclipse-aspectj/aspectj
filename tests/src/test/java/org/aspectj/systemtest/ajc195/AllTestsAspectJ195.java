@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc195;
 
+import org.aspectj.util.LangUtil;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -18,7 +20,9 @@ public class AllTestsAspectJ195 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.5 tests");
 		suite.addTest(Ajc195Tests.suite());
-		suite.addTest(SanityTestsJava13.suite());
+		if (LangUtil.is13VMOrGreater()) {
+			suite.addTest(SanityTestsJava13.suite());
+		}
 		return suite;
 	}
 }

@@ -7,6 +7,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc196;
 
+import org.aspectj.util.LangUtil;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -17,8 +19,10 @@ public class AllTestsAspectJ196 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.6 tests");
-		suite.addTest(Ajc196Tests.suite());
-		suite.addTest(SanityTestsJava14.suite());
+		if (LangUtil.is14VMOrGreater()) {
+			suite.addTest(Ajc196Tests.suite());
+			suite.addTest(SanityTestsJava14.suite());
+		}
 		return suite;
 	}
 }

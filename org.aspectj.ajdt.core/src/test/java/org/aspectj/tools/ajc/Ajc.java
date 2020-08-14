@@ -117,7 +117,7 @@ public class Ajc {
 	private int incrementalStage = 10;
 	private boolean shouldEmptySandbox = true;
 	private final AjcCommandController controller;
-	public static boolean verbose = System.getProperty("org.aspectj.tools.ajc.Ajc.verbose", "true").equals("true");
+	public static boolean verbose = System.getProperty("aspectj.tests.verbose", "true").equals("true");
 
 	/**
 	 * Constructs a new Ajc instance, with a new AspectJ compiler inside.
