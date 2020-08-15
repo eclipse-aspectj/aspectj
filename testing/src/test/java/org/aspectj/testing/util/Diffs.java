@@ -452,7 +452,7 @@ public class Diffs {
 
 		if (LangUtil.isEmpty(skip)) {
 			sink.addAll(Arrays.asList(source));
-			Collections.sort(sink, MESSAGE_LINEKIND);
+			sink.sort(MESSAGE_LINEKIND);
 			return sink;
 		}
 		for (IMessage message : source) {
@@ -467,7 +467,7 @@ public class Diffs {
 				sink.add(message);
 			}
 		}
-		Collections.sort(sink, MESSAGE_LINEKIND);
+		sink.sort(MESSAGE_LINEKIND);
 		return sink;
 	}
 

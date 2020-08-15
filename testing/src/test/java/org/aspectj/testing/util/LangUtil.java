@@ -941,11 +941,11 @@ public class LangUtil {
         
         ArrayList expected = new ArrayList();
         expected.addAll(expectedListIn);
-        Collections.sort(expected, comparator);
+        expected.sort(comparator);
         
         ArrayList actual = new ArrayList();
         actual.addAll(actualListIn);
-        Collections.sort(actual, comparator);        
+        actual.sort(comparator);
         Iterator actualIter = actual.iterator();        
         Object act = null;
         

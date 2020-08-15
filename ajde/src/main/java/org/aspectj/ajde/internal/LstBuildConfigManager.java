@@ -291,7 +291,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	private void sortModel(BuildConfigNode node, Comparator<BuildConfigNode> comparator) {
 		if (node == null || node.getChildren() == null)
 			return;
-		Collections.sort(node.getChildren(), comparator);
+		node.getChildren().sort(comparator);
 		for (BuildConfigNode nextNode : node.getChildren()) {
 			if (nextNode != null)
 				sortModel(nextNode, comparator);

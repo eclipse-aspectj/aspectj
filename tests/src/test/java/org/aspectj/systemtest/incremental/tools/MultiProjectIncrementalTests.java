@@ -2170,8 +2170,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertFalse(typeA.isMissing());
 		List<ResolvedMember> viaIteratorList = getThemAll(typeA.getMethods(wantGenerics, true));
 		List<ResolvedMember> directlyList = typeA.getMethodsWithoutIterator(true, true, wantGenerics);
-		Collections.sort(viaIteratorList, new ResolvedMemberComparator());
-		Collections.sort(directlyList, new ResolvedMemberComparator());
+		viaIteratorList.sort(new ResolvedMemberComparator());
+		directlyList.sort(new ResolvedMemberComparator());
 		compare(viaIteratorList, directlyList, name);
 		// System.out.println(toString(viaIteratorList, directlyList, genericsAware));
 	}

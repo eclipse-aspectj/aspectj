@@ -2593,7 +2593,7 @@ class BcelClassWeaver implements IClassWeaver {
 	}
 
 	private void weaveInAddedMethods() {
-		Collections.sort(addedLazyMethodGens, new Comparator<LazyMethodGen>() {
+		addedLazyMethodGens.sort(new Comparator<LazyMethodGen>() {
 			public int compare(LazyMethodGen aa, LazyMethodGen bb) {
 				int i = aa.getName().compareTo(bb.getName());
 				if (i != 0) {

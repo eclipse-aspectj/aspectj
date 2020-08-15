@@ -421,7 +421,7 @@ class Samples {
     List<Sample> getSortedSamples(Comparator<Sample> comparer) {
         ArrayList<Sample> result = new ArrayList<>();
         result.addAll(samples);
-        Collections.sort(result, comparer);
+        result.sort(comparer);
         return result;
     }
 }
