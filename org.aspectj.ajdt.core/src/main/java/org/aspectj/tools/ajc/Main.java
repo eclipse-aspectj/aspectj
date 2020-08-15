@@ -141,7 +141,7 @@ public class Main {
 	}
 
 	private static boolean flagInArgs(String flag, String[] args) {
-		return ((null != args) && (Arrays.asList(args).indexOf(flag) != -1));
+		return ((null != args) && (Arrays.asList(args).contains(flag)));
 	}
 
 	/**
