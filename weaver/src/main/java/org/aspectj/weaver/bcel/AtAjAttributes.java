@@ -1905,7 +1905,7 @@ public class AtAjAttributes {
 				ignores.add(formalBinding.getName());
 			}
 		}
-		pointcut.m_ignoreUnboundBindingForNames = ignores.toArray(new String[ignores.size()]);
+		pointcut.m_ignoreUnboundBindingForNames = ignores.toArray(new String[0]);
 	}
 
 	/**

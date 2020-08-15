@@ -116,13 +116,14 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add(getSandboxName());
 		
 		args.add("-classpath");
-		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
+		args.add(getRuntimeClasspath() + File.pathSeparator +
+			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
 		args.add(Constants.TESTDATA_PATH + "/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
 		//myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
-		/*boolean result = */command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+		/*boolean result = */command.runCommand((String[])args.toArray(new String[0]), myHandler);
 
 		//System.err.println("messages: " + Arrays.asList(myHandler.getMessages(IMessage.INFO, true)));
 		// DON'T yet have a way of testing that we actually got a particular info message
@@ -142,7 +143,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
 		myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
-		/*boolean result = */command.runCommand((String[])args.toArray(new String[args.size()]), myHandler);
+		/*boolean result = */command.runCommand((String[])args.toArray(new String[0]), myHandler);
 
 		assertEquals("error for org.aspectj.lang.JoinPoint not found", 1, myHandler.getErrors().length);
 	}

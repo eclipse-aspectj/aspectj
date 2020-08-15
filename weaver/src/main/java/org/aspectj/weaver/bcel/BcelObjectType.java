@@ -399,7 +399,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (pointcuts.size() == 0) {
 			this.pointcuts = ResolvedPointcutDefinition.NO_POINTCUTS;
 		} else {
-			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[0]);
 		}
 
 		resolveAnnotationDeclares(l);

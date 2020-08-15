@@ -160,7 +160,7 @@ public class BasicTokenSource implements ITokenSource {
 
 		//System.out.println(tokens);
 		
-		return new BasicTokenSource((IToken[])tokens.toArray(new IToken[tokens.size()]), context);
+		return new BasicTokenSource((IToken[])tokens.toArray(new IToken[0]), context);
 	}
 
 	private static String makeString(char ch) {

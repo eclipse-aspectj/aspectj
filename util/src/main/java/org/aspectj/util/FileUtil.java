@@ -710,7 +710,7 @@ public class FileUtil {
 		if ((null != srcDir) && srcDir.canRead()) {
 			listFiles(srcDir, result, fileFilter);
 		}
-		return result.toArray(new File[result.size()]);
+		return result.toArray(new File[0]);
 	}
 
 	/**

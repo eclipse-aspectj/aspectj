@@ -112,7 +112,7 @@ public class AstUtil {
 	}
 
 	public static void setStatements(MethodDeclaration ret, List statements) {
-		ret.statements = (Statement[]) statements.toArray(new Statement[statements.size()]);
+		ret.statements = (Statement[]) statements.toArray(new Statement[0]);
 	}
 
 	public static SingleNameReference makeLocalVariableReference(LocalVariableBinding binding) {

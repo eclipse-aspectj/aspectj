@@ -897,7 +897,7 @@ class HtmlDecorator {
 		};
 
 		file.walk(walker);
-		return (IProgramElement[]) nodes.toArray(new IProgramElement[nodes.size()]);
+		return (IProgramElement[]) nodes.toArray(new IProgramElement[0]);
 	}
 
 	/**

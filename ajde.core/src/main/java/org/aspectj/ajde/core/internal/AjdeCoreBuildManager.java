@@ -256,7 +256,7 @@ public class AjdeCoreBuildManager {
 				}
 				args[p++] = "-xmlConfigured";
 			} else {
-				args = l.toArray(new String[l.size()]);
+				args = l.toArray(new String[0]);
 			}
 		}
 

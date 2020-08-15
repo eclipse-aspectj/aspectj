@@ -138,7 +138,7 @@ public class Ajc extends DefaultCompilerAdapter {
                 argsList.add(args[i]);
             }
         }
-        return (String[])argsList.toArray(new String[argsList.size()]);
+        return (String[])argsList.toArray(new String[0]);
     }
     
     /**

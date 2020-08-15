@@ -349,9 +349,9 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			declaredFields.add(factory.makeResolvedMember(f));
 		}
 
-		this.declaredPointcuts = declaredPointcuts.toArray(new ResolvedPointcutDefinition[declaredPointcuts.size()]);
-		this.declaredMethods = declaredMethods.toArray(new ResolvedMember[declaredMethods.size()]);
-		this.declaredFields = declaredFields.toArray(new ResolvedMember[declaredFields.size()]);
+		this.declaredPointcuts = declaredPointcuts.toArray(new ResolvedPointcutDefinition[0]);
+		this.declaredMethods = declaredMethods.toArray(new ResolvedMember[0]);
+		this.declaredFields = declaredFields.toArray(new ResolvedMember[0]);
 	}
 	
 	private final static char[] valuesCharArray = "values".toCharArray();

@@ -402,7 +402,7 @@ public class Values {
 				}
 			}
 		}
-        return (String[]) list.toArray(new String[list.size()]);
+        return (String[]) list.toArray(new String[0]);
     }
 
     private final Option.Value[] values;

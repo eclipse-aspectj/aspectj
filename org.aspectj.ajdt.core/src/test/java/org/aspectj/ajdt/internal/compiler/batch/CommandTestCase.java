@@ -112,7 +112,7 @@ public abstract class CommandTestCase extends TestCase {
 		ICommand command = new AjdtCommand();
 		MessageHandler myHandler = new MessageHandler();
 		myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
-		boolean result = command.runCommand((String[]) args.toArray(new String[args.size()]), myHandler);
+		boolean result = command.runCommand((String[]) args.toArray(new String[0]), myHandler);
 		System.out.println("result: " + result);
 		// System.out.println("errors: " + Arrays.asList(myHandler.getErrors()));
 		// System.out.println("warnings: " + Arrays.asList(myHandler.getWarnings()));

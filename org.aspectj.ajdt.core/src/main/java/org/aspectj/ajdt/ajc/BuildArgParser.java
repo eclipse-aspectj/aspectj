@@ -177,7 +177,7 @@ public class BuildArgParser extends Main {
 //			javaArgList.add("-bootclasspath");
 //			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
 			javaArgList.addAll(parser.getUnparsedArgs());
-			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
+			super.configure(javaArgList.toArray(new String[0]));
 
 			if (parser.getModuleInfoArgument() != null) {
 				IModule moduleDesc = super.getModuleDesc(parser.getModuleInfoArgument());

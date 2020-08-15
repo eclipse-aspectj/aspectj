@@ -336,7 +336,7 @@ public final class LazyMethodGen implements Traceable {
 	public AnnotationAJ[] getAnnotations() {
 		initialize();
 		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
-			return newAnnotations.toArray(new AnnotationAJ[newAnnotations.size()]);
+			return newAnnotations.toArray(new AnnotationAJ[0]);
 		}
 		return null;
 	}

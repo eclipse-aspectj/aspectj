@@ -196,7 +196,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 		ConstantPool cp = this.cpool.getFinalConstantPool();
 
 		return new JavaClass(classnameIndex, superclassnameIndex, filename, major, minor, modifiers, cp, interfaces, fields,
-				methods, attributes.toArray(new Attribute[attributes.size()]));// OPTIMIZE avoid toArray()?
+				methods, attributes.toArray(new Attribute[0]));// OPTIMIZE avoid toArray()?
 	}
 
 	public void addInterface(String name) {

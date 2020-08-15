@@ -50,7 +50,7 @@ public class AnnotationPatternList extends PatternNode {
 	}
 
 	public AnnotationPatternList(List<AnnotationTypePattern> l) {
-		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[l.size()]));
+		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[0]));
 	}
 
 	protected AnnotationTypePattern[] getAnnotationPatterns() {

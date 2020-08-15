@@ -741,7 +741,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		for (clazz = clazz.getSuperClass(); clazz != null; clazz = clazz.getSuperClass()) {
 			vec.add(clazz);
 		}
-		return vec.toArray(new JavaClass[vec.size()]);
+		return vec.toArray(new JavaClass[0]);
 	}
 
 	/**
