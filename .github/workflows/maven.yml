@@ -24,6 +24,12 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - run: java -version
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - run: ./mvnw --version
     - name: Build with Maven
       run: ./mvnw -Daspectj.tests.verbose=false -B package --file pom.xml
