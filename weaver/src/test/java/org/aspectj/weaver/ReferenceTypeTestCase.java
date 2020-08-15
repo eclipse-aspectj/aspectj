@@ -599,8 +599,7 @@ public class ReferenceTypeTestCase extends TestCase {
 			// ReferenceType.r = 0;
 			long stime = System.nanoTime();
 			for (int j = 0; j < 10; j++) {
-				List objects2 = new ArrayList();
-				objects2.addAll(objects);
+				List objects2 = new ArrayList(objects);
 				PartialOrder.sort(objects2);
 			}
 			long etime = System.nanoTime();

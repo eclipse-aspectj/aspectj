@@ -1000,8 +1000,7 @@ public class LangUtil {
 		if ((null == array) || (1 > array.length)) {
 			return Collections.emptyList();
 		}
-		ArrayList<T> list = new ArrayList<>();
-		list.addAll(Arrays.asList(array));
+		ArrayList<T> list = new ArrayList<>(Arrays.asList(array));
 		return list;
 	}
 

@@ -508,8 +508,7 @@ public class FileUtilTest extends TestCase {
 				errors.add(error);
 			}
 		};
-		List<String> sourceList = new ArrayList<>();
-		sourceList.addAll(Arrays.asList(sources));
+		List<String> sourceList = new ArrayList<>(Arrays.asList(sources));
 		sourceList = Collections.unmodifiableList(sourceList);
 		for (int k = 0; k < sources.length; k++) {
 			List<String> result = FileUtil.lineSeek("" + k, sourceList, true, errorSink);

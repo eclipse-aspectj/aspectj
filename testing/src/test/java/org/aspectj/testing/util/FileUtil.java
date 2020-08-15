@@ -185,9 +185,8 @@ public class FileUtil {
                 // skip if not file or not right time
                 return false;
             }
-        };      
-        ArrayList unexp = new ArrayList();
-        unexp.addAll(Arrays.asList(dir.listFiles(touchedCollector)));
+        };
+		ArrayList unexp = new ArrayList(Arrays.asList(dir.listFiles(touchedCollector)));
         
         // report any unexpected changes
         return Diffs.makeDiffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);

@@ -121,8 +121,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			List safeFiles = Collections.unmodifiableList(files);
 			log("Compiling ", safeFiles, handler);
 			if (1 == i) {
-				ArrayList<String> argList = new ArrayList<>();
-				argList.addAll(getBaseArgs(targetSrc, targetClasses));
+				ArrayList<String> argList = new ArrayList<>(getBaseArgs(targetSrc, targetClasses));
 				File[] fra = (File[]) safeFiles.toArray(new File[0]);
 				// sigh
 				argList.addAll(

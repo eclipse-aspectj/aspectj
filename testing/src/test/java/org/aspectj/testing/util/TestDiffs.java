@@ -141,8 +141,7 @@ public class TestDiffs { // XXX pretty dumb implementation
 	 * @return ArrayList with all input except those in trim (by name)
 	 */
 	private static ArrayList trimByName(List input, List trim) {
-		ArrayList result = new ArrayList();
-        result.addAll(input);
+		ArrayList result = new ArrayList(input);
         if (!LangUtil.isEmpty(input) && !LangUtil.isEmpty(trim)) {
             for (ListIterator iter = result.listIterator(); iter.hasNext();) {
 				TestResult inputItem = (TestResult) iter.next();
@@ -281,8 +280,7 @@ public class TestDiffs { // XXX pretty dumb implementation
         actualFailed = safeList(failed);
 
         // stillPassing: expected.passed w/o broken, missingPasses
-        passed = new ArrayList();
-        passed.addAll(expectedPassed);
+		passed = new ArrayList(expectedPassed);
         passed = trimByName(passed, this.broken);
         ArrayList missingPasses = new ArrayList();
         ArrayList missingFails = new ArrayList();
@@ -291,8 +289,7 @@ public class TestDiffs { // XXX pretty dumb implementation
         stillPassing = safeList(passed);
 
         // stillFailing: expected.failed w/o fixed, missingFails
-        failed = new ArrayList();
-        failed.addAll(expectedFailed);
+		failed = new ArrayList(expectedFailed);
         failed = trimByName(failed, this.fixed);
         failed = trimByName(failed, missingFails); 
         stillFailing = safeList(failed);

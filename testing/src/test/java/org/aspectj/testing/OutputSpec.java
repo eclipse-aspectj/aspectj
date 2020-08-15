@@ -87,10 +87,8 @@ public class OutputSpec {
 			createFailureMessage(output, -1, outputFound.size());
 			return;
 		}
-		List<String> expected = new ArrayList<>();
-		expected.addAll(expectedOutputLines);
-		List<String> found = new ArrayList<>();
-		found.addAll(outputFound);
+		List<String> expected = new ArrayList<>(expectedOutputLines);
+		List<String> found = new ArrayList<>(outputFound);
 		for (String lineFound : outputFound) {
 			for (String lineExpected : expectedOutputLines) {
 				if (lineFound.contains(lineExpected)) {

@@ -402,8 +402,7 @@ public class LangUtil {
      * @see Util#combine(Object[], Object[])
      */
     public static String[] combine(String[] one, String[] two) {
-        ArrayList twoList = new ArrayList();
-        twoList.addAll(org.aspectj.util.LangUtil.arrayAsList(two));
+		ArrayList twoList = new ArrayList(org.aspectj.util.LangUtil.arrayAsList(two));
         ArrayList result = new ArrayList();
         if (null != one) {
 			for (String s : one) {
@@ -938,13 +937,11 @@ public class LangUtil {
         if ((0 == actualListIn.size()) && (0 == expectedListIn.size()) ) {
             return;
         }
-        
-        ArrayList expected = new ArrayList();
-        expected.addAll(expectedListIn);
+
+		ArrayList expected = new ArrayList(expectedListIn);
         expected.sort(comparator);
-        
-        ArrayList actual = new ArrayList();
-        actual.addAll(actualListIn);
+
+		ArrayList actual = new ArrayList(actualListIn);
         actual.sort(comparator);
         Iterator actualIter = actual.iterator();        
         Object act = null;

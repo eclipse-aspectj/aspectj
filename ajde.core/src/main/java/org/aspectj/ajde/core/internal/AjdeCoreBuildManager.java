@@ -225,8 +225,7 @@ public class AjdeCoreBuildManager {
 			if (projectSourceFiles == null) {
 				return null;
 			}
-			List<String> l = new ArrayList<>();
-			l.addAll(projectSourceFiles);
+			List<String> l = new ArrayList<>(projectSourceFiles);
 			// If the processor options are specified build the command line options for the JDT compiler to see
 			String processor = compilerConfig.getProcessor();
 			if (processor != null && processor.length() != 0) {

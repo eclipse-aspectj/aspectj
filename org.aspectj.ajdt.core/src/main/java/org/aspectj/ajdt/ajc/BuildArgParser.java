@@ -152,8 +152,7 @@ public class BuildArgParser extends Main {
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
 
-			List<File> xmlfileList = new ArrayList<>();
-			xmlfileList.addAll(parser.getXmlFiles());
+			List<File> xmlfileList = new ArrayList<>(parser.getXmlFiles());
 
 			List<File> fileList = new ArrayList<>();
 			List<File> files = parser.getFiles();

@@ -293,8 +293,7 @@ public class CrosscuttingMembers {
 					theseShadowMungers.add(munger);
 				}
 			}
-			Set<ShadowMunger> tempSet = new HashSet<>();
-			tempSet.addAll(other.shadowMungers);
+			Set<ShadowMunger> tempSet = new HashSet<>(other.shadowMungers);
 			Set<ShadowMunger> otherShadowMungers = new HashSet<>();
 			Set<ShadowMunger> otherInlinedAroundMungers = new HashSet<>();
 			for (ShadowMunger munger : tempSet) {

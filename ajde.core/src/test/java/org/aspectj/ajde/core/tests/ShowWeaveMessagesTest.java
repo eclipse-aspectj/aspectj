@@ -367,8 +367,7 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 			String line = null;
 			while ((line = fr.readLine()) != null)
 				fileContents.add(line);
-			List<String> originalFileContents = new ArrayList<>();
-			originalFileContents.addAll(fileContents);
+			List<String> originalFileContents = new ArrayList<>(fileContents);
 
 			// See if the messages match
 			int msgCount = 0;

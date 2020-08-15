@@ -213,8 +213,7 @@ public class Harness {
 		// read arguments
 		final ArrayList<String> globals = new ArrayList<>();
 		final ArrayList<String> files = new ArrayList<>();
-		final LinkedList<String> argList = new LinkedList<>();
-		argList.addAll(Arrays.asList(args));
+		final LinkedList<String> argList = new LinkedList<>(Arrays.asList(args));
 		for (int i = 0; i < argList.size(); i++) {
 			String arg = argList.get(i);
 			List<String> aliases = aliasOptions(arg);

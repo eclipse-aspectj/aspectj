@@ -269,8 +269,7 @@ public class LangUtilTest extends TestCase {
         if (unmodifiable) {
             return Collections.unmodifiableList(Arrays.asList(ra));
         } else {
-            ArrayList list = new ArrayList();
-            list.addAll(Arrays.asList(ra));
+			ArrayList list = new ArrayList(Arrays.asList(ra));
             return list;
         }
     }
@@ -317,8 +316,7 @@ public class LangUtilTest extends TestCase {
         String label = one + "?=" + two;
         assertTrue(label, (null == one) == (null == two));
         if (null != one) {
-            ArrayList aone = new ArrayList();
-            aone.addAll(one);
+			ArrayList aone = new ArrayList(one);
             ArrayList atwo = new ArrayList();
             aone.addAll(two);
             Collections.sort(aone);

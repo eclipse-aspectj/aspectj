@@ -923,8 +923,7 @@ class BcelClassWeaver implements IClassWeaver {
 			return false; // nothing to do
 		}
 
-		Set<DeclareAnnotation> unusedDecams = new HashSet<>();
-		unusedDecams.addAll(decaMs);
+		Set<DeclareAnnotation> unusedDecams = new HashSet<>(decaMs);
 
 		// These methods may have been targeted with declare annotation.  Example: ITD on an interface
 		// where the top most implementor gets a real method.  The top most implementor method
@@ -1413,8 +1412,7 @@ class BcelClassWeaver implements IClassWeaver {
 
 		List<BcelField> fields = clazz.getFieldGens();
 		if (fields != null) {
-			Set<DeclareAnnotation> unusedDecafs = new HashSet<>();
-			unusedDecafs.addAll(decafs);
+			Set<DeclareAnnotation> unusedDecafs = new HashSet<>(decafs);
 			for (BcelField field : fields) {
 				if (!field.getName().startsWith(NameMangler.PREFIX)) {
 					// Single first pass

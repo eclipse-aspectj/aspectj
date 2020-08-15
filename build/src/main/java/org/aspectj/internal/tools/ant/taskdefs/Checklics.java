@@ -469,8 +469,7 @@ class HeaderInfo {
 		this.lastLine = lastLine;
 		this.file = file;
 		this.hasLicense = hasLicense;
-		List<String> newYears = new ArrayList<>();
-		newYears.addAll(years);
+		List<String> newYears = new ArrayList<>(years);
 		Collections.sort(newYears);
 		this.years = Collections.unmodifiableList(newYears);
 		if ((null == file) || !file.canWrite()) {

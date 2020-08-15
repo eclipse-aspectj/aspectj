@@ -250,8 +250,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				Collections.addAll(typesToProcess, stbs);
 			}
 
-			List<SourceTypeBinding> stb2 = new ArrayList<>();
-			stb2.addAll(typesToProcess);
+			List<SourceTypeBinding> stb2 = new ArrayList<>(typesToProcess);
 
 			while (typesToProcess.size() > 0) {
 				// A side effect of weaveIntertypes() is that the processed type is removed from the collection

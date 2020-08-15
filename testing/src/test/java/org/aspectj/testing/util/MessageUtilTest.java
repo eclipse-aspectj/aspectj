@@ -71,9 +71,8 @@ public class MessageUtilTest extends TestCase {
 
     List getSampleMessageTexts() {
         if (null == messageTexts) {
-            ArrayList result = new ArrayList();
-            result.addAll(Arrays.asList(new String[]
-                { "one", "two", "now is the time for all good men..." }));
+			ArrayList result = new ArrayList(Arrays.asList(new String[]
+					{"one", "two", "now is the time for all good men..."}));
             messageTexts = result;
         }
         return messageTexts;

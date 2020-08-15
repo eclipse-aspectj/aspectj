@@ -1159,7 +1159,6 @@ public class AjcTask extends MatchingTask {
 
 	// package-private for testing
 	String[] makeCommand() {
-		ArrayList result = new ArrayList();
 		if (0 < ignored.size()) {
             for (Object o : ignored) {
                 logVerbose("ignored: " + o);
@@ -1182,7 +1181,7 @@ public class AjcTask extends MatchingTask {
 			outjarFixedup = true;
 		}
 
-		result.addAll(cmd.extractArguments());
+		ArrayList result = new ArrayList(cmd.extractArguments());
 		addListArgs(result);
 
 		String[] command = (String[]) result.toArray(new String[0]);

@@ -377,8 +377,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 *         classpath), and output dir or jar
 	 */
 	public List<String> getFullClasspath() {
-		List<String> full = new ArrayList<>();
-		full.addAll(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
+		List<String> full = new ArrayList<>(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
 		for (File file: inJars) {
 			full.add(file.getAbsolutePath());
 		}
