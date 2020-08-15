@@ -253,20 +253,12 @@ public class PushinCollector {
 			// can be null for binary weave (there is no source method)
 			return;
 		}
-		List<AbstractMethodDeclaration> amds = newDeclarations.get(sourceType);
-		if (amds == null) {
-			amds = new ArrayList<>();
-			newDeclarations.put(sourceType, amds);
-		}
+		List<AbstractMethodDeclaration> amds = newDeclarations.computeIfAbsent(sourceType, k -> new ArrayList<>());
 		amds.add(sourceMethod);
 	}
 
 	public void tagAsMunged(SourceTypeBinding sourceType, String annotationString) {
-		List<String> annos = additionalAnnotations.get(sourceType);
-		if (annos == null) {
-			annos = new ArrayList<>();
-			additionalAnnotations.put(sourceType, annos);
-		}
+		List<String> annos = additionalAnnotations.computeIfAbsent(sourceType, k -> new ArrayList<>());
 		annos.add(annotationString);
 	}
 
@@ -320,11 +312,7 @@ public class PushinCollector {
 
 	public void tagAsMunged(SourceTypeBinding sourceType, TypePattern typePattern) {
 		if (typePattern instanceof ExactTypePattern) {
-			List<ExactTypePattern> annos = additionalParents.get(sourceType);
-			if (annos == null) {
-				annos = new ArrayList<>();
-				additionalParents.put(sourceType, annos);
-			}
+			List<ExactTypePattern> annos = additionalParents.computeIfAbsent(sourceType, k -> new ArrayList<>());
 			annos.add((ExactTypePattern) typePattern);
 		}
 	}

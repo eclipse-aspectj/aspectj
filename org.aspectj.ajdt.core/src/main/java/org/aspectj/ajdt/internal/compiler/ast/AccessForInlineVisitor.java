@@ -172,11 +172,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		}
 
 		// Avoid repeatedly building ResolvedMembers by using info on any done previously in this visitor
-		Map<FieldBinding, ResolvedMember> alreadyResolvedMembers = alreadyProcessedReceivers.get(receiverType);
-		if (alreadyResolvedMembers == null) {
-			alreadyResolvedMembers = new HashMap<>();
-			alreadyProcessedReceivers.put(receiverType, alreadyResolvedMembers);
-		}
+		Map<FieldBinding, ResolvedMember> alreadyResolvedMembers = alreadyProcessedReceivers.computeIfAbsent(receiverType, k -> new HashMap<>());
 		ResolvedMember m = alreadyResolvedMembers.get(binding);
 		if (m == null) {
 			m = world.makeResolvedMember(binding, receiverType);

@@ -167,11 +167,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						}
 						String tname = target.getName();
 						String pname = newParent.getName();
-						List<String> newparents = declareParentsMap.get(tname);
-						if (newparents == null) {
-							newparents = new ArrayList<>();
-							declareParentsMap.put(tname, newparents);
-						}
+						List<String> newparents = declareParentsMap.computeIfAbsent(tname, k -> new ArrayList<>());
 						newparents.add(pname);
 						AsmRelationshipProvider.addRelationship(model, weaver.getLazyClassGen().getType(), munger, declaringAspect);
 					}
