@@ -69,7 +69,7 @@ public class Module {
 
     /** @return all source files under srcDir */
     private static Iterator<File> sourceFiles(File srcDir) {
-        ArrayList<File> result = new ArrayList<>();
+        List<File> result = new ArrayList<>();
         sourceFiles(srcDir, result);
         return result.iterator();
     }

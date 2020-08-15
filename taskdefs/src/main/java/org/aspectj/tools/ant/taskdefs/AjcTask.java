@@ -2037,7 +2037,7 @@ public class AjcTask extends MatchingTask {
 		// }
 
 		List extractArguments() {
-			ArrayList result = new ArrayList();
+			List result = new ArrayList();
 			String[] cmds = command.getArguments();
 			if (!LangUtil.isEmpty(cmds)) {
 				result.addAll(Arrays.asList(cmds));

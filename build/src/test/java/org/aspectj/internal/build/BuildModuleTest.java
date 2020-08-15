@@ -16,10 +16,7 @@ package org.aspectj.internal.build;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -80,7 +77,7 @@ public class BuildModuleTest extends TestCase {
         }
     }
         
-    ArrayList<File> tempFiles = new ArrayList<>();
+    List<File> tempFiles = new ArrayList<>();
     private File jarDir;
     private boolean deleteJars;
     boolean building;  // must be enabled for tests to run
@@ -343,7 +340,7 @@ public class BuildModuleTest extends TestCase {
         try {
             zipFile = new ZipFile(weaverAllJar);
             Enumeration e = zipFile.entries();
-            ArrayList<String> entryNames = new ArrayList<>();
+            List<String> entryNames = new ArrayList<>();
             while (e.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
                 String name = entry.getName();

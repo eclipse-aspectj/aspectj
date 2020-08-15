@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
 import org.aspectj.testing.harness.bridge.AjcTest;
@@ -35,7 +36,7 @@ import junit.framework.TestCase;
  */
 public class AjcSpecXmlReaderTest extends TestCase {
 
-	ArrayList<File> tempFiles = new ArrayList<>();
+	List<File> tempFiles = new ArrayList<>();
 	/**
 	 * Constructor for AjcSpecXmlReaderTest.
 	 * @param name
@@ -111,7 +112,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         String xml2Path = path + ".tmp.xml";
 
         final File file1 = new File(xmlPath);
-        final ArrayList<File> toDelete = new ArrayList<>();
+        final List<File> toDelete = new ArrayList<>();
         final AjcSpecXmlReader writer = AjcSpecXmlReader.getReader();
 
         assertTrue("" + file1, file1.canRead());
@@ -154,7 +155,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcSpecXmlReader writer = AjcSpecXmlReader.getReader();
         File file0 = new File(txtPath);
         File file1 = new File(xmlPath);
-        ArrayList<File> toDelete = new ArrayList<>();
+        List<File> toDelete = new ArrayList<>();
         AjcTest.Suite.Spec suite0 = null;
         if (file0.canRead()) {
             System.out.println("reading " + file0);

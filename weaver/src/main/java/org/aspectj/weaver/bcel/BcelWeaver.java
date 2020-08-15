@@ -946,7 +946,7 @@ public class BcelWeaver {
 
 			manifest = new Manifest();
 
-			Attributes attributes = manifest.getMainAttributes();
+			Map attributes = manifest.getMainAttributes();
 			attributes.put(Name.MANIFEST_VERSION, WEAVER_MANIFEST_VERSION);
 			attributes.put(CREATED_BY, WEAVER_CREATED_BY);
 		}

@@ -16,6 +16,7 @@ package org.aspectj.testing.run;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Aggregate listeners into one and run synchronously in order added.
@@ -23,7 +24,7 @@ import java.util.Iterator;
  */
 public class RunListeners extends RunListener implements IRunListener {
 
-    ArrayList listeners;
+    List listeners;
     public RunListeners() {
         listeners = new ArrayList();
     }

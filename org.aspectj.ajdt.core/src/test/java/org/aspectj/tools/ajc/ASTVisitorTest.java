@@ -421,7 +421,7 @@ public class ASTVisitorTest extends TestCase {
 	
 	private void checkJLS3(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		HashMap<String,String> options = new HashMap<>();
+		Map<String,String> options = new HashMap<>();
 		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
 		parser.setCompilerOptions(options);
 		parser.setSource(source.toCharArray());

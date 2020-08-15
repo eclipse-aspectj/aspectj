@@ -17,6 +17,7 @@ package org.aspectj.ajde.ui.swing;
 import java.awt.BorderLayout;
 //import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -55,7 +56,7 @@ class PointcutWizard extends JFrame {
 
     public PointcutWizard(java.util.List signatures) {
  //       this.signatures = signatures;
-        ArrayList views = new ArrayList();
+        List views = new ArrayList();
         views.add(StructureViewProperties.Hierarchy.INHERITANCE);
 //        typeTreeView = new BrowserViewPanel(AjdeUIManager.getDefault().getIconRegistry(), views, StructureViewProperties.Hierarchy.INHERITANCE);
         

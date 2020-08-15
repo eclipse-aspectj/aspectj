@@ -157,7 +157,7 @@ public class Main implements Config {
 	 * package-summary properly.
 	 */
 	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
-		ArrayList<String> dirList = new ArrayList<>();
+		List<String> dirList = new ArrayList<>();
 		for (File inputFile : inputFiles) {
 			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFile);
 			// Only copy the package.html file once.

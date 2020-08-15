@@ -176,7 +176,7 @@ public class Harness {
 	/** just don't say anything! */
 	protected boolean silentHarness;
 
-	private HashMap<String,Feature> features;
+	private Map<String,Feature> features;
 
 	/** if true, do not delete temporary files. */
 	private boolean keepTemp;
@@ -212,7 +212,7 @@ public class Harness {
 		LangUtil.throwIaxIfFalse(!LangUtil.isEmpty(args), "empty args");
 		// read arguments
 		final ArrayList<String> globals = new ArrayList<>();
-		final ArrayList<String> files = new ArrayList<>();
+		final List<String> files = new ArrayList<>();
 		final LinkedList<String> argList = new LinkedList<>(Arrays.asList(args));
 		for (int i = 0; i < argList.size(); i++) {
 			String arg = argList.get(i);
@@ -604,7 +604,7 @@ public class Harness {
 	/** print known aliases at the end of the syntax message */
 	protected void printAliases(PrintStream out) {
 		LangUtil.throwIaxIfNull(out, "out");
-		Properties props = getOptionAliases();
+		Map props = getOptionAliases();
 		if (null == props) {
 			return;
 		}
@@ -699,7 +699,7 @@ class FeatureHarness extends Harness {
 													"-junit" + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava"
 			};
 	static {
-		Properties optionAliases = Harness.getOptionAliases();
+		Map optionAliases = Harness.getOptionAliases();
 		if (null != optionAliases) {
 			for (int i = 1; i < ALIASES.length; i += 2) {
 				optionAliases.put(ALIASES[i-1], ALIASES[i]);
@@ -941,7 +941,7 @@ class TestMaker  {
 	}
 
 	public Harness.RunResult run(AjcTest.Suite.Spec spec) {
-		ArrayList<IRunSpec> kids = spec.getChildren();
+		Iterable<IRunSpec> kids = spec.getChildren();
 		for (IRunSpec iRunSpec : kids) {
 			makeTest( (AjcTest.Spec) iRunSpec);
 		}

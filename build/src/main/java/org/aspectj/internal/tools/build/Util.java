@@ -357,7 +357,7 @@ public class Util {
         /** unmodifiable list of all valid OSGIBundle Name's */
         public static final List<Name> NAMES;
         static {
-            ArrayList<Name> names = new ArrayList<>();
+            List<Name> names = new ArrayList<>();
             names.add(BUNDLE_NAME);
             names.add(BUNDLE_SYMBOLIC_NAME);
             names.add(BUNDLE_VERSION);

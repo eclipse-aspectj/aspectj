@@ -20,6 +20,7 @@ import org.aspectj.util.FileUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -28,7 +29,7 @@ import junit.framework.TestCase;
  */
 public class Ajc11CompilerAdapterTest extends TestCase {
     public static boolean LOGGING = false;
-    ArrayList tempFiles = new ArrayList();
+    List tempFiles = new ArrayList();
     
     public Ajc11CompilerAdapterTest(String name) {
         super(name);

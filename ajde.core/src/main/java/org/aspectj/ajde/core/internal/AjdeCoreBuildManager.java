@@ -278,7 +278,7 @@ public class AjdeCoreBuildManager {
 				}
 			}
 			if (0 < toAdd.size()) {
-				ArrayList<String> both = new ArrayList<>(configClasspath.size() + toAdd.size());
+				List<String> both = new ArrayList<>(configClasspath.size() + toAdd.size());
 				both.addAll(configClasspath);
 				both.addAll(toAdd);
 				config.setClasspath(both);

@@ -161,7 +161,7 @@ public class AjcTest extends RunSpecIterator {
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
         private static List<String> parseTitlesList(String titlesList) {
-            ArrayList<String> result = new ArrayList<>();
+            List<String> result = new ArrayList<>();
             String last = null;
             StringTokenizer st = new StringTokenizer(titlesList, ",");
             while (st.hasMoreTokens()) {
@@ -206,7 +206,7 @@ public class AjcTest extends RunSpecIterator {
          * @return the unmodifiable List of titles (maybe empty, never null)
          */
         private static List<String> readTitlesFile(File titlesFile, boolean fail) {
-            ArrayList<String> result = new ArrayList<>();
+            List<String> result = new ArrayList<>();
             Reader reader = null;
             try {
                 reader = new FileReader(titlesFile);

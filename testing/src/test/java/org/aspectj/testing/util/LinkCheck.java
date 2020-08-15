@@ -171,10 +171,10 @@ public class LinkCheck {
     
     private final Messages messages;
     private final HTMLEditorKit.Parser parser; // XXX untested - stateful
-    private final ArrayList<Link> linksToCheck;
-    private final ArrayList<String> checkedUrls;  // String (URL.toString)
-    private final ArrayList<String> validRefs;  // String (URL.toString)
-    private final ArrayList<String> refsToCheck;  // String (URL.toString)
+    private final List<Link> linksToCheck;
+    private final List<String> checkedUrls;  // String (URL.toString)
+    private final List<String> validRefs;  // String (URL.toString)
+    private final List<String> refsToCheck;  // String (URL.toString)
     
     private final Link.Check checkExists;
     private final Link.Check checkContents;
@@ -221,7 +221,7 @@ public class LinkCheck {
     }
 
     public synchronized void run() {
-        ArrayList<Link> list = new ArrayList<>();
+        List<Link> list = new ArrayList<>();
         while (0 < linksToCheck.size()) {
             messages.checkingLinks(linksToCheck.size());
             list.clear();

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 import junit.framework.TestCase;
@@ -38,7 +39,7 @@ import org.aspectj.util.FileUtil;
  */
 public class AjdtCommandTestCase extends TestCase {
 
-	private ArrayList tempFiles = new ArrayList();
+	private List tempFiles = new ArrayList();
 	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
 	// private AjdtCommand command = new AjdtCommand();
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);

@@ -150,7 +150,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 			throw new AbortException("expected sources at " + reader);
 		}
 
-		ArrayList<Message> exp = new ArrayList<>();
+		List<Message> exp = new ArrayList<>();
 		// !compile || noerrors || className {runOption..}
 		String first = words[0];
 		if ("!compile".equals(first)) {
@@ -290,7 +290,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
         result.description = input;
     
         ArrayList<String> newOptions = new ArrayList<>();
-        ArrayList<String> optionsCopy = result.getOptionsList();
+        Iterable<String> optionsCopy = result.getOptionsList();
         for (String option: optionsCopy) {
 			if (option.startsWith("-")) {
                 newOptions.add("!" + option.substring(1));
@@ -325,7 +325,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	 */
 	private List<Message> makeMessages(// XXX weak - also support expected exceptions, etc.
 	Kind kind, String[] words, int start, File lastFile) {
-		ArrayList<Message> result = new ArrayList<>();
+		List<Message> result = new ArrayList<>();
 		for (int i = start; i < words.length; i++) {
 			ISourceLocation sl =
 				BridgeUtil.makeSourceLocation(words[i], lastFile);

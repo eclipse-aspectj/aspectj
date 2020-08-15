@@ -69,11 +69,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -106,7 +102,7 @@ public class ClassPath implements Serializable {
 	public ClassPath(String class_path) {
 		this.class_path = class_path;
 
-		ArrayList<PathEntry> vec = new ArrayList<>();
+		List<PathEntry> vec = new ArrayList<>();
 
 		for (StringTokenizer tok = new StringTokenizer(class_path, System.getProperty("path.separator")); tok
 				.hasMoreTokens();) {
@@ -167,7 +163,7 @@ public class ClassPath implements Serializable {
 		return false;
 	}
 
-	private static final void getPathComponents(String path, ArrayList<String> list) {
+	private static final void getPathComponents(String path, List<String> list) {
 		if (path != null) {
 			StringTokenizer tok = new StringTokenizer(path, File.pathSeparator);
 

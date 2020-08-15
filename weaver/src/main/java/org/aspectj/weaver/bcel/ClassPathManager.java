@@ -352,12 +352,12 @@ public class ClassPathManager {
 						FileSystem fs = null;
 						try {
 							if (LangUtil.is19VMOrGreater()) {
-								HashMap<String, String> env = new HashMap<>();
+								Map<String, String> env = new HashMap<>();
 								env.put("java.home",  jdkHome);
 								fs = FileSystems.newFileSystem(JRT_URI, env);
 							} else {
 								URLClassLoader loader = new URLClassLoader(new URL[] { jrtPath });
-								HashMap<String, ?> env = new HashMap<>();
+								Map<String, ?> env = new HashMap<>();
 								fs = FileSystems.newFileSystem(JRT_URI, env, loader);
 							}
 							state = new JImageState(jrtFsPath, fs);

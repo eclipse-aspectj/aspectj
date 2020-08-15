@@ -365,7 +365,7 @@ public class Option implements Comparable {
         private final Map familyNameToFamily = new TreeMap();
 
         /** enforce uniqueness of options */
-        private final ArrayList names = new ArrayList();
+        private final List names = new ArrayList();
 
         public Factory(String factoryName) {
             this.factoryName = factoryName;

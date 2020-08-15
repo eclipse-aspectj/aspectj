@@ -71,7 +71,7 @@ public class Globals {
                 && FileUtil.canReadFile(F_aspectjrt_jar)
                 && FileUtil.canReadFile(J2SE13_RTJAR)
                 && FileUtil.canReadFile(J2SE14_RTJAR));
-        HashMap map = new HashMap();
+        Map map = new HashMap();
         map.put("1.2", "java.lang.ref.Reference");
         map.put("1.3", "java.lang.reflect.Proxy");
         map.put("1.4", "java.nio.Buffer");

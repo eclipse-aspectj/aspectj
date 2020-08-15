@@ -96,7 +96,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		return fileMap.remove(canonicalFilePath) != null;
 	}
 
-	public void setFileMap(HashMap<String, IProgramElement> fileMap) {
+	public void setFileMap(Map<String, IProgramElement> fileMap) {
 		this.fileMap = fileMap;
 	}
 

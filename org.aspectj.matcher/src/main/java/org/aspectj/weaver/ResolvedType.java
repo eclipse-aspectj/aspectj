@@ -1425,13 +1425,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * ??? This method is O(N*M) where N = number of methods and M is number of inter-type declarations in my super
 	 */
 	public List<ConcreteTypeMunger> getInterTypeMungersIncludingSupers() {
-		ArrayList<ConcreteTypeMunger> ret = new ArrayList<>();
+		List<ConcreteTypeMunger> ret = new ArrayList<>();
 		collectInterTypeMungers(ret);
 		return ret;
 	}
 
 	public List<ConcreteTypeMunger> getInterTypeParentMungersIncludingSupers() {
-		ArrayList<ConcreteTypeMunger> ret = new ArrayList<>();
+		List<ConcreteTypeMunger> ret = new ArrayList<>();
 		collectInterTypeParentMungers(ret);
 		return ret;
 	}

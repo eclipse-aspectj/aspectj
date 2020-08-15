@@ -654,7 +654,7 @@ class Header {
 	 *
 	 * @return true if this line has end-of-comment
 	 */
-	private static boolean checkLine(String line, ArrayList<String> years) {
+	private static boolean checkLine(String line, List<String> years) {
 		if ((null == line) || (0 == line.length())) {
 			return false;
 		}

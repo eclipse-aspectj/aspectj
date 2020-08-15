@@ -808,7 +808,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "pr266420";
 		initialiseProject(p);
 
-		Hashtable<String,String> javaOptions = new Hashtable<>();
+		Map<String,String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -3614,7 +3614,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_1() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -3646,7 +3646,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_2() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
@@ -3676,7 +3676,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	public void testPR164384_3() {
 		initialiseProject("PR164384");
 
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");

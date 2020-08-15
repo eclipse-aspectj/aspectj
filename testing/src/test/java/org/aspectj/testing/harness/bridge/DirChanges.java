@@ -469,19 +469,19 @@ public class DirChanges {
         boolean fastFail;
         
         /** relative paths (String) of expected files added */
-        final ArrayList<String> added;
+        final List<String> added;
 
         /** relative paths (String) of expected files removed/deleted */
-        final ArrayList<String> removed;
+        final List<String> removed;
 
         /** relative paths (String) of expected files updated/changed */
-        final ArrayList<String> updated;
+        final List<String> updated;
 
         /** relative paths (String) of expected files NOT 
          * added, removed, or changed 
          * XXX unchanged unimplemented
          */
-        final ArrayList<String> unchanged;
+        final List<String> unchanged;
     
         public Spec() {
             added = new ArrayList<>();

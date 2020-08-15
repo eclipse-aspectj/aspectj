@@ -83,8 +83,8 @@ public class TestDiffs { // XXX pretty dumb implementation
             Diffs tests = Diffs.makeDiffs("tests", exp, act, TestResult.BY_NAME);
             // remove missing/unexpected (removed, added) tests from results
             // otherwise, unexpected-[pass|fail] look like [fixes|broken]
-            ArrayList expResults = trimByName(exp, tests.missing);
-            ArrayList actResults = trimByName(act, tests.unexpected);
+            List expResults = trimByName(exp, tests.missing);
+            List actResults = trimByName(act, tests.unexpected);
             
             Diffs results = Diffs.makeDiffs("results", expResults, actResults, TestResult.BY_PASSNAME);
 
@@ -159,7 +159,7 @@ public class TestDiffs { // XXX pretty dumb implementation
 
     
     /** split input List by whether the TestResult element passed or failed */
-    private static void split(List input, ArrayList pass, ArrayList fail) {
+    private static void split(List input, List pass, List fail) {
 		for (Object o : input) {
 			TestResult result = (TestResult) o;
 			if (result.pass) {

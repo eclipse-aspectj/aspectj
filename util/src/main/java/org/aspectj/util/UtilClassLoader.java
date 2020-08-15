@@ -40,7 +40,7 @@ public class UtilClassLoader extends URLClassLoader {
         super(urls);
         LangUtil.throwIaxIfNotAssignable(dirs, File.class, "dirs");
         this.urlsForDebugString = urls;
-        ArrayList<File> dcopy = new ArrayList<>();
+        List<File> dcopy = new ArrayList<>();
         
         if (!LangUtil.isEmpty(dirs)) {
             dcopy.addAll(Arrays.asList(dirs));

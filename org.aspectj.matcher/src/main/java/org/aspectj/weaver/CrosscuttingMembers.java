@@ -74,8 +74,8 @@ public class CrosscuttingMembers {
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 
-	private final Hashtable<String, Object> cflowFields = new Hashtable<>();
-	private final Hashtable<String, Object> cflowBelowFields = new Hashtable<>();
+	private final Map<String, Object> cflowFields = new Hashtable<>();
+	private final Map<String, Object> cflowBelowFields = new Hashtable<>();
 
 	// public void addConcreteShadowMungers(Collection c) {
 	// shadowMungers.addAll(c);

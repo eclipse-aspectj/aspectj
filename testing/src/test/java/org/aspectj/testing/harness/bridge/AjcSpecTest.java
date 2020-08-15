@@ -250,7 +250,7 @@ public class AjcSpecTest extends TestCase {
 		sameDirChangesList(lhs.dirChanges, rhs.dirChanges, a);
 	}
 
-	public static void sameDirChangesList(ArrayList<DirChanges.Spec> lhs, ArrayList<DirChanges.Spec> rhs, Assert a) {
+	public static void sameDirChangesList(List<DirChanges.Spec> lhs, List<DirChanges.Spec> rhs, Assert a) {
 		if ((null == lhs) && (null == rhs)) {
 			return;
 		}

@@ -14,6 +14,7 @@ package org.aspectj.testing.util.options;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.util.LangUtil;
 
@@ -59,7 +60,7 @@ public class Options {
         return sb.toString();
     }
 
-    private final ArrayList options = new ArrayList();
+    private final List options = new ArrayList();
     private final boolean stopAtFirstMatch;
     private boolean frozen = !FROZEN;
 

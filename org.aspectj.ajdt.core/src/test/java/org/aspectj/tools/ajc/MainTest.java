@@ -13,6 +13,7 @@
 package org.aspectj.tools.ajc;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.aspectj.bridge.AbortException;
@@ -23,7 +24,7 @@ import org.aspectj.bridge.AbortException;
 public class MainTest extends AjcTestCase {
 	
     public void testMainbare() {
-        ArrayList<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
 // Usage now printed by Eclipse compiler so doesn't appear here in our message list
 //        Main.bareMain(new String[] {"-help"}, false, list, null, null, null);
 //        assertTrue(1 == list.size());

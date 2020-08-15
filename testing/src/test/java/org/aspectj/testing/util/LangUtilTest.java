@@ -67,7 +67,7 @@ public class LangUtilTest extends TestCase {
 
 	void checkUnflatten(FTest test) {
         String[] exp = test.unflattened;
-        ArrayList result = LangUtil.unflatten(test.toUnflatten, test.spec);
+        List result = LangUtil.unflatten(test.toUnflatten, test.spec);
         String label = test + " -> " + result;
         assertNotNull(label, result);
         
@@ -96,7 +96,7 @@ public class LangUtilTest extends TestCase {
     
 
 	public void testArrayList() {
-        ArrayList l = new ArrayList();
+        List l = new ArrayList();
         l.add(null);
         l.add(null);
         assertTrue(null == l.get(0));
@@ -269,15 +269,15 @@ public class LangUtilTest extends TestCase {
         if (unmodifiable) {
             return Collections.unmodifiableList(Arrays.asList(ra));
         } else {
-			ArrayList list = new ArrayList(Arrays.asList(ra));
+			List list = new ArrayList(Arrays.asList(ra));
             return list;
         }
     }
     
     /** check both hard and soft - assuming list contain String */
     void checkDiff(List expected, List actual, List missing, List extra) {
-        ArrayList extraOut = new ArrayList();
-        ArrayList missingOut = new ArrayList();
+        List extraOut = new ArrayList();
+        List missingOut = new ArrayList();
         LangUtil.makeDiffs(expected, actual, missingOut, extraOut);
         checkSame(missing, missingOut);
         checkSame(extra, extraOut);
@@ -301,8 +301,8 @@ public class LangUtilTest extends TestCase {
 
     /** check only soft - assuming list contain String */
     void checkDiffSoft(List expected, List actual, List missing, List extra) {
-        ArrayList extraOut = new ArrayList();
-        ArrayList missingOut = new ArrayList();
+        List extraOut = new ArrayList();
+        List missingOut = new ArrayList();
         LangUtil.makeSoftDiffs(expected, actual, missingOut, extraOut,
                             String.CASE_INSENSITIVE_ORDER);
         checkSameSoft(missing, missingOut);
@@ -316,8 +316,8 @@ public class LangUtilTest extends TestCase {
         String label = one + "?=" + two;
         assertTrue(label, (null == one) == (null == two));
         if (null != one) {
-			ArrayList aone = new ArrayList(one);
-            ArrayList atwo = new ArrayList();
+			List aone = new ArrayList(one);
+            List atwo = new ArrayList();
             aone.addAll(two);
             Collections.sort(aone);
             Collections.sort(atwo);

@@ -12,6 +12,7 @@
 package org.aspectj.apache.bcel.classfile.tests;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -415,7 +416,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	   * @return              Array of argument types
 	   */
 	  public static final String[] methodSignatureArgumentTypes(String signature,boolean chopit) throws ClassFormatException {
-	    ArrayList<String> vec = new ArrayList<>();
+	    List<String> vec = new ArrayList<>();
 	    int       index;
 	    String[]  types;
 	

@@ -148,8 +148,8 @@ public class Diffs {
 		IMessage[] actual,
 		IMessage.Kind[] ignoreExpectedKinds,
 		IMessage.Kind[] ignoreActualKinds) {
-		ArrayList exp = getExcept(expected, ignoreExpectedKinds);
-		ArrayList act = getExcept(actual, ignoreActualKinds);
+		List exp = getExcept(expected, ignoreExpectedKinds);
+		List act = getExcept(actual, ignoreActualKinds);
 
 		ArrayList missing = new ArrayList();
 		List unexpected = new ArrayList();
@@ -161,8 +161,8 @@ public class Diffs {
 		} else {
 			ListIterator expectedIterator = exp.listIterator();
 			int lastLine = Integer.MIN_VALUE + 1;
-			ArrayList expectedFound = new ArrayList();
-			ArrayList expectedForLine = new ArrayList();
+			List expectedFound = new ArrayList();
+			List expectedForLine = new ArrayList();
 			for (ListIterator iter = act.listIterator(); iter.hasNext();) {
 				IMessage actualMessage = (IMessage) iter.next();
 				int actualLine = getLine(actualMessage);

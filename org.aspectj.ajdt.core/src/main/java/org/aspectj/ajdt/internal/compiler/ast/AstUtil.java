@@ -217,7 +217,7 @@ public class AstUtil {
 	}
 
 	public static List getAjSyntheticAttribute() {
-		ArrayList ret = new ArrayList(1);
+		List ret = new ArrayList(1);
 		ret.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
 		return ret;
 	}

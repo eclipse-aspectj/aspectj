@@ -62,7 +62,7 @@ public class FileUtilTest extends TestCase {
 	 * @throws AssertionFailedError if any names are not in dir
 	 */
 	public static String[] dirContains(File dir, final String[] filenames) {
-		final ArrayList<String> sought = new ArrayList<>(LangUtil.arrayAsList(filenames));
+		final List<String> sought = new ArrayList<>(LangUtil.arrayAsList(filenames));
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File d, String name) {
 				return !sought.remove(name);
@@ -188,7 +188,7 @@ public class FileUtilTest extends TestCase {
 	}
 
 	/** List of File files or directories to delete when exiting */
-	final ArrayList<File> tempFiles;
+	final List<File> tempFiles;
 
 	public FileUtilTest(String s) {
 		super(s);
@@ -388,7 +388,7 @@ public class FileUtilTest extends TestCase {
 	}
 
 	public void testRandomFileString() {
-		ArrayList<String> results = new ArrayList<>();
+		List<String> results = new ArrayList<>();
 		for (int i = 0; i < 1000; i++) {
 			String s = FileUtil.randomFileString();
 			if (results.contains(s)) {
@@ -462,7 +462,7 @@ public class FileUtilTest extends TestCase {
 		List<String> sourceList = new ArrayList<>();
 		sourceList.add(file.getPath());
 
-		final ArrayList<String> errors = new ArrayList<>();
+		final List<String> errors = new ArrayList<>();
 		final PrintStream errorSink = new PrintStream(System.err, true) {
 			public void println(String error) {
 				errors.add(error);
@@ -502,7 +502,7 @@ public class FileUtilTest extends TestCase {
 			tempFiles.add(file);
 		}
 		// now test
-		final ArrayList<String> errors = new ArrayList<>();
+		final List<String> errors = new ArrayList<>();
 		final PrintStream errorSink = new PrintStream(System.err, true) {
 			public void println(String error) {
 				errors.add(error);

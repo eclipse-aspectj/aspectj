@@ -903,7 +903,7 @@ public class BuildArgParser extends Main {
 			unparsedArgs.add(nextArg.getValue());
 		}
 
-		private int indexOf(LinkedList<Arg> args, String arg) {
+		private int indexOf(Iterable<Arg> args, String arg) {
 			int index = 0;
 			for (Arg argument : args) {
 				if (arg.equals(argument.getValue())) {
