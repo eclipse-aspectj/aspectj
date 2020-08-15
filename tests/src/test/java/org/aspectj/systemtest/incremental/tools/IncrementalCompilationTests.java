@@ -131,7 +131,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	public void testITIT_336147_3() throws Exception {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "pr336147_3";
 		initialiseProject(p);
 		build(p);
@@ -841,7 +840,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 	}
 
 	public void testDeletionAnonInnerType_278496_8() throws Exception {
-		AjdeInteractionTestbed.VERBOSE = true;
 		String p = "pr278496_8";
 		initialiseProject(p);
 		configureNonStandardCompileOptions(p, "-Xset:minimalModel=true");
