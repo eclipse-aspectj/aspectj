@@ -10,7 +10,6 @@
 package org.aspectj.systemtest.java14;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.util.LangUtil;
 
 import junit.framework.Test;
 

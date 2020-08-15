@@ -20,7 +20,6 @@ import java.util.List;
  */
 public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 
-	private static boolean verbose = System.getProperty("aspectj.tests.verbose","false").equalsIgnoreCase("true");
 	private static boolean debugTests = false;
 
 	public int numWovenClassMessages = 0;
@@ -34,31 +33,43 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 	private boolean isCancelRequested = false;
 
 	public void finish(boolean wasFullBuild) {
-		System.out.println("build finished. Was full build: " + wasFullBuild);
+		info("build finished. Was full build: " + wasFullBuild);
 	}
 
 	public boolean isCancelRequested() {
 		return isCancelRequested;
 	}
 
+	private void info(String message) {
+		if (AjdeCoreModuleTests.verbose) {
+			System.out.println(message);
+		}
+	}
+
 	public void setProgress(double percentDone) {
-		System.out.println("progress. Completed " + percentDone + " percent");
+		info("progress. Completed " + percentDone + " percent");
 	}
 
 	public void setProgressText(String text) {
-		if (verbose) {
-			System.out.println("progress text: " + text);
-		}
+		info("progress text: " + text);
 		String newText = text+" [Percentage="+currentVal+"%]";
 		messagesReceived.add(newText);
-		if (text.startsWith("woven aspect ")) numWovenAspectMessages++;
-		if (text.startsWith("woven class ")) numWovenClassMessages++;
-		if (text.startsWith("compiled:")) numCompiledMessages++;
+		if (text.startsWith("woven aspect ")) {
+			numWovenAspectMessages++;
+		}
+		if (text.startsWith("woven class ")) {
+			numWovenClassMessages++;
+		}
+		if (text.startsWith("compiled:")) {
+			numCompiledMessages++;
+		}
 		if (programmableString != null
 				&& text.contains(programmableString)) {
 			count--;
 			if (count==0) {
-				if (debugTests) System.out.println("Just got message '"+newText+"' - asking build to cancel");
+				if (debugTests) {
+					System.out.println("Just got message '"+newText+"' - asking build to cancel");
+				}
 				isCancelRequested = true;
 				programmableString = null;
 			}
@@ -66,9 +77,7 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 	}
 
 	public void begin() {
-		if (verbose) {
-			System.out.println("build started");
-		}
+		info("build started");
 		currentVal = 0;
 	}
 
@@ -81,15 +90,15 @@ public class TestBuildProgressMonitor implements IBuildProgressMonitor {
 	public boolean containsMessage(String prefix,String distinguishingMarks) {
 		for (String element: messagesReceived) {
 			if (element.startsWith(prefix) &&
-					element.contains(distinguishingMarks)) return true;
+					element.contains(distinguishingMarks)) {
+				return true;
+			}
 		}
 		return false;
 	}
 
 	public void dumpMessages() {
-		if (verbose) {
-			System.out.println("ProgressMonitorMessages");
-		}
+		System.out.println("ProgressMonitorMessages");
 		for (String element: messagesReceived) {
 			System.out.println(element);
 		}

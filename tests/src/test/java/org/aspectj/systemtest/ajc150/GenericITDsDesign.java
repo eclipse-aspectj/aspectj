@@ -2,7 +2,6 @@ package org.aspectj.systemtest.ajc150;
 
 import java.io.File;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.Attribute;

@@ -19,7 +19,6 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.Signature;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.util.LangUtil;
 
 import junit.framework.Test;
 

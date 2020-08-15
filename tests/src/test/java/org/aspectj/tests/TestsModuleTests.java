@@ -1,6 +1,5 @@
 package org.aspectj.tests;
 
-import org.aspectj.systemtest.AllTests17;
 import org.aspectj.systemtest.AllTests18;
 import org.aspectj.systemtest.AllTests19;
 import org.aspectj.util.LangUtil;

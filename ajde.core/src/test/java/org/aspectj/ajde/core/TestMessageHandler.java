@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.ajde.core;
@@ -50,7 +50,9 @@ public class TestMessageHandler implements IBuildMessageHandler {
 		} else if (kind.equals(IMessage.ERROR)) {
 			errors.add(t);
 		}
-		System.out.println("> " + message); //$NON-NLS-1$
+		if (AjdeCoreModuleTests.verbose) {
+			System.out.println("> " + message); //$NON-NLS-1$
+		}
 		return true;
 	}
 

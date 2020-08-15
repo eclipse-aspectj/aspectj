@@ -12,7 +12,6 @@ package org.aspectj.systemtest.ajc153;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.asm.AsmManager;

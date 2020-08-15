@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.ajde.core;
@@ -30,6 +30,8 @@ import junit.framework.TestSuite;
 
 public class AjdeCoreModuleTests extends TestCase {
 
+	static boolean verbose = System.getProperty("aspectj.tests.verbose", "false").equalsIgnoreCase("true");
+
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite(AjdeCoreModuleTests.class.getName());
 		suite.addTestSuite(ShowWeaveMessagesTest.class);
@@ -48,6 +50,7 @@ public class AjdeCoreModuleTests extends TestCase {
 		suite.addTestSuite(AjConfigTest.class);
 		return suite;
 	}
+
 
 	public AjdeCoreModuleTests(String name) {
 		super(name);

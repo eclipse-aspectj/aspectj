@@ -11,7 +11,6 @@
 package org.aspectj.systemtest.ajc164;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.LocalVariable;

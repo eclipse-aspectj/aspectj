@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc161;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import org.aspectj.asm.AsmManager;
