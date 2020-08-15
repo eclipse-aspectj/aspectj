@@ -36,13 +36,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 //import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -1426,9 +1420,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
         public AjdocWrapper(Testset testset, List args) {
             super(testset, ajdocArgs(args), true);
             String[] cmds = testset.getAjdoc().getCommandline().getCommandline();
-			for (String cmd : cmds) {
-				this.args.add(cmd);
-			}
+			Collections.addAll(this.args, cmds);
         }
         String getMainClassName() {
             return "org.aspectj.tools.ajdoc.Main";

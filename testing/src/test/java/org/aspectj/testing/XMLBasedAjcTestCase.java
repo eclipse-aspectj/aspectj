@@ -415,9 +415,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public List<LocalVariable> sortedLocalVariables(LocalVariableTable lvt) {
 		List<LocalVariable> l = new ArrayList<>();
 		LocalVariable lv[] = lvt.getLocalVariableTable();
-		for (LocalVariable lvEntry : lv) {
-			l.add(lvEntry);
-		}
+		Collections.addAll(l, lv);
 		Collections.sort(l, new MyComparator());
 		return l;
 	}

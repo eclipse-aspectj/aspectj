@@ -13,14 +13,7 @@
 package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.aspectj.ajdt.internal.compiler.CommonPrinter;
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;
@@ -254,9 +247,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 				CompilationUnitScope cus = units[i].scope;
 				SourceTypeBinding[] stbs = cus.topLevelTypes;
-				for (SourceTypeBinding stb : stbs) {
-					typesToProcess.add(stb);
-				}
+				Collections.addAll(typesToProcess, stbs);
 			}
 
 			List<SourceTypeBinding> stb2 = new ArrayList<>();

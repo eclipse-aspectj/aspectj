@@ -523,9 +523,7 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	protected List newMessageList(Message[] messages) {
 		List ret = new ArrayList();
-		for (Message message : messages) {
-			ret.add(message);
-		}
+		Collections.addAll(ret, messages);
 		return ret;
 	}
 

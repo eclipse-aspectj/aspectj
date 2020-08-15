@@ -771,12 +771,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				GenericSignature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List<FormalTypeParameter> allFormals = new ArrayList<>();
-					for (FormalTypeParameter formalTypeParameter : formalsForResolution) {
-						allFormals.add(formalTypeParameter);
-					}
-					for (FormalTypeParameter extraFormal : extraFormals) {
-						allFormals.add(extraFormal);
-					}
+					Collections.addAll(allFormals, formalsForResolution);
+					Collections.addAll(allFormals, extraFormals);
 					formalsForResolution = new GenericSignature.FormalTypeParameter[allFormals.size()];
 					allFormals.toArray(formalsForResolution);
 				}

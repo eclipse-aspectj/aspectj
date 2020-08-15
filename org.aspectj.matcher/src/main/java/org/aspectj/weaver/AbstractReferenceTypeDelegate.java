@@ -13,6 +13,7 @@
 package org.aspectj.weaver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.bridge.ISourceLocation;
@@ -135,15 +136,11 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 		AbstractReferenceTypeDelegate outerObjectType = (AbstractReferenceTypeDelegate) outerDelegate;
 		if (outerObjectType.isNested()) {
 			GenericSignature.FormalTypeParameter[] parentParams = outerObjectType.getFormalTypeParametersFromOuterClass();
-			for (GenericSignature.FormalTypeParameter parentParam : parentParams) {
-				typeParameters.add(parentParam);
-			}
+			Collections.addAll(typeParameters, parentParams);
 		}
 		GenericSignature.ClassSignature outerSig = outerObjectType.getGenericClassTypeSignature();
 		if (outerSig != null) {
-			for (FormalTypeParameter formalTypeParameter : outerSig.formalTypeParameters) {
-				typeParameters.add(formalTypeParameter);
-			}
+			Collections.addAll(typeParameters, outerSig.formalTypeParameters);
 		}
 
 		GenericSignature.FormalTypeParameter[] ret = new GenericSignature.FormalTypeParameter[typeParameters.size()];

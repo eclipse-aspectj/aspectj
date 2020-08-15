@@ -398,9 +398,7 @@ public class Values {
 				String s = value.prefix.render(output[0]);
 				if (null != s) { // this means the prefix is set
 					list.add(s);
-					for (int j = 1; j < output.length; j++) {
-						list.add(output[j]);
-					}
+					list.addAll(Arrays.asList(output).subList(1, output.length));
 				}
 			}
 		}

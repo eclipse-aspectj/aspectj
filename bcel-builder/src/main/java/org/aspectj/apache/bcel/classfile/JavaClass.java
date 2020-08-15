@@ -60,12 +60,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
@@ -791,9 +786,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 				}
 			}
 
-			for (JavaClass anInterface : interfaces) {
-				queue.add(anInterface);
-			}
+			Collections.addAll(queue, interfaces);
 		}
 
 		return interfaceList;

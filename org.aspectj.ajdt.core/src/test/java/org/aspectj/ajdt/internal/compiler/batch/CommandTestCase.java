@@ -14,10 +14,7 @@ package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import junit.framework.TestCase;
 
@@ -74,9 +71,7 @@ public abstract class CommandTestCase extends TestCase {
 
 		args.add("-g"); // XXX need this to get sourcefile and line numbers, shouldn't
 
-		for (String extraArg : extraArgs) {
-			args.add(extraArg);
-		}
+		Collections.addAll(args, extraArgs);
 
 		args.add(Constants.TESTDATA_PATH + "/" + source);
 
