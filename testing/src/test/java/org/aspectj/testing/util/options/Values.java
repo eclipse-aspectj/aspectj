@@ -698,9 +698,7 @@ public class Values {
         private void add(int i) {
             if (insert >= input.length) {
                 int[] temp = new int[insert + 256];
-                for (int j = 0; j < input.length; j++) {
-                    temp[j] = input[j];
-                }
+				System.arraycopy(input, 0, temp, 0, input.length);
                 input = temp;
             }
             input[insert++] = i;
@@ -708,9 +706,7 @@ public class Values {
 
         private int[] getList() {
             int[] result = new int[insert];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = input[i];
-            }
+			if (result.length >= 0) System.arraycopy(input, 0, result, 0, result.length);
             return result;
         }
     }

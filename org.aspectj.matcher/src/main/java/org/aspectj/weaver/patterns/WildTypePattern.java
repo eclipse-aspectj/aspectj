@@ -588,9 +588,7 @@ public class WildTypePattern extends TypePattern {
 	@Override
 	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		NamePattern[] newNamePatterns = new NamePattern[namePatterns.length];
-		for (int i = 0; i < namePatterns.length; i++) {
-			newNamePatterns[i] = namePatterns[i];
-		}
+		System.arraycopy(namePatterns, 0, newNamePatterns, 0, namePatterns.length);
 		if (newNamePatterns.length == 1) {
 			String simpleName = newNamePatterns[0].maybeGetSimpleName();
 			if (simpleName != null) {

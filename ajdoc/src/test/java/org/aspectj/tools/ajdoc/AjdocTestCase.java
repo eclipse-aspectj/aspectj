@@ -178,9 +178,7 @@ public abstract class AjdocTestCase extends TestCase {
 		args[3] = AjdocTests.ASPECTJRT_PATH.getPath();
 		args[4] = "-d";
 		args[5] = getAbsolutePathOutdir();
-		for (int i = 0; i < ajOptions.length; i++) {
-			args[6 + i] = ajOptions[i];
-		}
+		System.arraycopy(ajOptions, 0, args, 6, ajOptions.length);
 		for (int i = 0; i < inputFiles.length; i++) {
 			args[6 + i + ajOptions.length] = inputFiles[i].getAbsolutePath();
 		}
@@ -252,9 +250,7 @@ public abstract class AjdocTestCase extends TestCase {
 		args[4] = getAbsolutePathOutdir();
 		args[5] = "-sourcepath";
 		args[6] = getAbsoluteProjectDir();
-		for (int i = 0; i < directoryNames.length; i++) {
-			args[7 + i] = directoryNames[i];
-		}
+		System.arraycopy(directoryNames, 0, args, 7, directoryNames.length);
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
 
@@ -272,9 +268,7 @@ public abstract class AjdocTestCase extends TestCase {
 		args[3] = getAbsolutePathOutdir();
 		args[4] = "-sourcepath";
 		args[5] = getAbsoluteProjectDir();
-		for (int i = 0; i < directoryNames.length; i++) {
-			args[6 + i] = directoryNames[i];
-		}
+		System.arraycopy(directoryNames, 0, args, 6, directoryNames.length);
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
 

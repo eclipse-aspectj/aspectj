@@ -51,44 +51,30 @@ public class RunWeaveTests {
 			WeaveTest.main(
 				split(SMALL_PROGRAM_ARGS + "-echo -i " + ITERATIONS));
 
-			for (int i = 0; i < ITERATIONS; i++)
-				times[0][i] = WeaveTest.compileTimes[i];
+			System.arraycopy(WeaveTest.compileTimes, 0, times[0], 0, ITERATIONS);
 
-			for (int i = 0; i < ITERATIONS; i++)
-				times[1][i] = WeaveTest.executionFastTimes[i];
-			for (int i = 0; i < ITERATIONS; i++)
-				times[2][i] = WeaveTest.executionMedTimes[i];
-			for (int i = 0; i < ITERATIONS; i++)
-				times[3][i] = WeaveTest.executionSlowTimes[i];
+			System.arraycopy(WeaveTest.executionFastTimes, 0, times[1], 0, ITERATIONS);
+			System.arraycopy(WeaveTest.executionMedTimes, 0, times[2], 0, ITERATIONS);
+			System.arraycopy(WeaveTest.executionSlowTimes, 0, times[3], 0, ITERATIONS);
 
-			for (int i = 0; i < ITERATIONS; i++)
-				times[4][i] = WeaveTest.getFastTimes[i];
-			for (int i = 0; i < ITERATIONS; i++)
-				times[5][i] = WeaveTest.getMedTimes[i];
-			for (int i = 0; i < ITERATIONS; i++)
-				times[6][i] = WeaveTest.getSlowTimes[i]; 
+			System.arraycopy(WeaveTest.getFastTimes, 0, times[4], 0, ITERATIONS);
+			System.arraycopy(WeaveTest.getMedTimes, 0, times[5], 0, ITERATIONS);
+			System.arraycopy(WeaveTest.getSlowTimes, 0, times[6], 0, ITERATIONS);
 		}		
 		
 		if (RUN_MED) {
 			WeaveTest.main(
 				split(MEDIUM_PROGRAM_ARGS + "-echo -i " + ITERATIONS));
 
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[0][i] = WeaveTest.compileTimes[i - ITERATIONS];
+			System.arraycopy(WeaveTest.compileTimes, 0, times[0], ITERATIONS, 2 * ITERATIONS - 3);
 
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[1][i] = WeaveTest.executionFastTimes[i - ITERATIONS];
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[2][i] = WeaveTest.executionMedTimes[i - ITERATIONS];
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[3][i] = WeaveTest.executionSlowTimes[i - ITERATIONS];
+			System.arraycopy(WeaveTest.executionFastTimes, 0, times[1], ITERATIONS, 2 * ITERATIONS - 3);
+			System.arraycopy(WeaveTest.executionMedTimes, 0, times[2], ITERATIONS, 2 * ITERATIONS - 3);
+			System.arraycopy(WeaveTest.executionSlowTimes, 0, times[3], ITERATIONS, 2 * ITERATIONS - 3);
 
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[4][i] = WeaveTest.getFastTimes[i - ITERATIONS];
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[5][i] = WeaveTest.getMedTimes[i - ITERATIONS];
-			for (int i = ITERATIONS; i < (2 * ITERATIONS); i++)
-				times[6][i] = WeaveTest.getSlowTimes[i - ITERATIONS];
+			System.arraycopy(WeaveTest.getFastTimes, 0, times[4], ITERATIONS, 2 * ITERATIONS - 3);
+			System.arraycopy(WeaveTest.getMedTimes, 0, times[5], ITERATIONS, 2 * ITERATIONS - 3);
+			System.arraycopy(WeaveTest.getSlowTimes, 0, times[6], ITERATIONS, 2 * ITERATIONS - 3);
 			
 		}		
 		
@@ -96,25 +82,15 @@ public class RunWeaveTests {
 			WeaveTest.main(
 				split(LARGE_PROGRAM_ARGS + "-echo -i " + ITERATIONS));
 
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[0][i] = WeaveTest.compileTimes[i - (2 * ITERATIONS)];
+			System.arraycopy(WeaveTest.compileTimes, 0, times[0], 2 * ITERATIONS, 3 * ITERATIONS - 6);
 
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[1][i] =
-					WeaveTest.executionFastTimes[i - (2 * ITERATIONS)];
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[2][i] =
-					WeaveTest.executionMedTimes[i - (2 * ITERATIONS)];
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[3][i] =
-					WeaveTest.executionSlowTimes[i - (2 * ITERATIONS)];
+			System.arraycopy(WeaveTest.executionFastTimes, 0, times[1], 2 * ITERATIONS, 3 * ITERATIONS - 6);
+			System.arraycopy(WeaveTest.executionMedTimes, 0, times[2], 2 * ITERATIONS, 3 * ITERATIONS - 6);
+			System.arraycopy(WeaveTest.executionSlowTimes, 0, times[3], 2 * ITERATIONS, 3 * ITERATIONS - 6);
 
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[4][i] = WeaveTest.getFastTimes[i - (2 * ITERATIONS)];
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[5][i] = WeaveTest.getMedTimes[i - (2 * ITERATIONS)];
-			for (int i = (2 * ITERATIONS); i < (3 * ITERATIONS); i++)
-				times[6][i] = WeaveTest.getSlowTimes[i - (2 * ITERATIONS)];
+			System.arraycopy(WeaveTest.getFastTimes, 0, times[4], 2 * ITERATIONS, 3 * ITERATIONS - 6);
+			System.arraycopy(WeaveTest.getMedTimes, 0, times[5], 2 * ITERATIONS, 3 * ITERATIONS - 6);
+			System.arraycopy(WeaveTest.getSlowTimes, 0, times[6], 2 * ITERATIONS, 3 * ITERATIONS - 6);
 			
 		}		
 
