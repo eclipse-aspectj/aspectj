@@ -82,8 +82,8 @@ public class TestDiffs { // XXX pretty dumb implementation
             Diffs tests = Diffs.makeDiffs("tests", exp, act, TestResult.BY_NAME);
             // remove missing/unexpected (removed, added) tests from results
             // otherwise, unexpected-[pass|fail] look like [fixes|broken]
-            ArrayList expResults = trimByName(exp, tests.missing);
-            ArrayList actResults = trimByName(act, tests.unexpected);
+            List expResults = trimByName(exp, tests.missing);
+            List actResults = trimByName(act, tests.unexpected);
             
             Diffs results = Diffs.makeDiffs("results", expResults, actResults, TestResult.BY_PASSNAME);
 
@@ -140,8 +140,7 @@ public class TestDiffs { // XXX pretty dumb implementation
 	 * @return ArrayList with all input except those in trim (by name)
 	 */
 	private static ArrayList trimByName(List input, List trim) {
-		ArrayList result = new ArrayList();
-        result.addAll(input);
+		ArrayList result = new ArrayList(input);
         if (!LangUtil.isEmpty(input) && !LangUtil.isEmpty(trim)) {
             for (ListIterator iter = result.listIterator(); iter.hasNext();) {
 				TestResult inputItem = (TestResult) iter.next();
@@ -159,7 +158,7 @@ public class TestDiffs { // XXX pretty dumb implementation
 
     
     /** split input List by whether the TestResult element passed or failed */
-    private static void split(List input, ArrayList pass, ArrayList fail) {
+    private static void split(List input, List pass, List fail) {
 		for (Object o : input) {
 			TestResult result = (TestResult) o;
 			if (result.pass) {
@@ -280,8 +279,7 @@ public class TestDiffs { // XXX pretty dumb implementation
         actualFailed = safeList(failed);
 
         // stillPassing: expected.passed w/o broken, missingPasses
-        passed = new ArrayList();
-        passed.addAll(expectedPassed);
+		passed = new ArrayList(expectedPassed);
         passed = trimByName(passed, this.broken);
         ArrayList missingPasses = new ArrayList();
         ArrayList missingFails = new ArrayList();
@@ -290,8 +288,7 @@ public class TestDiffs { // XXX pretty dumb implementation
         stillPassing = safeList(passed);
 
         // stillFailing: expected.failed w/o fixed, missingFails
-        failed = new ArrayList();
-        failed.addAll(expectedFailed);
+		failed = new ArrayList(expectedFailed);
         failed = trimByName(failed, this.fixed);
         failed = trimByName(failed, missingFails); 
         stillFailing = safeList(failed);

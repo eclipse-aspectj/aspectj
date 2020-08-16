@@ -336,7 +336,7 @@ public final class LazyMethodGen implements Traceable {
 	public AnnotationAJ[] getAnnotations() {
 		initialize();
 		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
-			return newAnnotations.toArray(new AnnotationAJ[newAnnotations.size()]);
+			return newAnnotations.toArray(new AnnotationAJ[0]);
 		}
 		return null;
 	}
@@ -1359,7 +1359,7 @@ public final class LazyMethodGen implements Traceable {
 	}
 
 	private void addExceptionHandlers(MethodGen gen, Map<InstructionHandle, InstructionHandle> map,
-			LinkedList<ExceptionRange> exnList) {
+			Iterable<ExceptionRange> exnList) {
 		// now add exception handlers
 		for (ExceptionRange r : exnList) {
 			if (r.isEmpty()) {
@@ -1547,7 +1547,7 @@ public final class LazyMethodGen implements Traceable {
 	// but I don't trust the only implementation, TreeSet, to do the right
 	// thing.
 
-	/* private */static void insertHandler(ExceptionRange fresh, LinkedList<ExceptionRange> l) {
+	/* private */static void insertHandler(ExceptionRange fresh, List<ExceptionRange> l) {
 		// Old implementation, simply: l.add(0,fresh);
 		for (ListIterator<ExceptionRange> iter = l.listIterator(); iter.hasNext();) {
 			ExceptionRange r = iter.next();

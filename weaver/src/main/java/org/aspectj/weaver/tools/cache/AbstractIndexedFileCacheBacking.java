@@ -71,7 +71,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
         if (matches.isEmpty()) {
             return EMPTY_KEYS;
         } else {
-            return matches.toArray(new String[matches.size()]);
+            return matches.toArray(new String[0]);
         }
     }
 

@@ -154,7 +154,7 @@ public class AsmManager implements IStructureModel {
 			return null;
 		} else {
 			IProgramElement fileNode = node;
-			ArrayList<IProgramElement> peNodes = new ArrayList<>();
+			List<IProgramElement> peNodes = new ArrayList<>();
 			getAllStructureChildren(fileNode, peNodes, showSubMember, showMemberAndType);
 			for (IProgramElement peNode : peNodes) {
 				List<IProgramElement> entries = new ArrayList<>();

@@ -409,7 +409,7 @@ public class IncCompilerRun implements IAjcRun {
             addItems(classesRemoved, items);
         }
         
-        private void addItems(ArrayList list, String items) {
+        private void addItems(List list, String items) {
             if (null != items) {
                 String[] classes = XMLWriter.unflattenList(items);
                 if (!LangUtil.isEmpty(classes)) {

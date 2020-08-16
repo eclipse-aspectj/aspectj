@@ -191,13 +191,13 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testAssignable02() {
 		List list = new ArrayList();
-		ArrayList arraylist = null;
+		List arraylist = null;
 		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
-		ArrayList<?> arrayListOfSomething = null;
+		List<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
 		ArrayList<Number> arrayListOfNumber = null;
-		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
+		List<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
 		List<Integer> listOfInteger = new ArrayList<>();
@@ -274,14 +274,14 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testAssignable03_method_m2() {
 		List list = new ArrayList();
-		ArrayList arraylist = null;
+		List arraylist = null;
 		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
-		ArrayList<?> arrayListOfSomething = null;
+		List<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
-		ArrayList<Number> arrayListOfNumber = null;
-		ArrayList<Integer> arrayListOfInteger = null;
-		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
+		List<Number> arrayListOfNumber = null;
+		List<Integer> arrayListOfInteger = null;
+		List<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
 		List<Integer> listOfInteger = new ArrayList<>();
@@ -364,15 +364,15 @@ public class ReferenceTypeTestCase extends TestCase {
 		ArrayList arraylist = null;
 		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
-		ArrayList<?> arrayListOfSomething = null;
+		List<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
-		ArrayList<Number> arrayListOfNumber = null;
+		List<Number> arrayListOfNumber = null;
 		ArrayList<Integer> arrayListOfInteger = null;
-		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
+		List<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
 		List<Integer> listOfInteger = new ArrayList<>();
-		ArrayList arrayList = null;
+		List arrayList = null;
 		ArrayList<String> arrayListOfString;
 		ArrayList<Integer> arraylistOfInteger;
 		// interfaces too List<? extends A,B>
@@ -477,18 +477,18 @@ public class ReferenceTypeTestCase extends TestCase {
 
 	public void testAssignable03_method_m4() {
 		List list = new ArrayList();
-		ArrayList arraylist = null;
+		List arraylist = null;
 		List<String> listOfString = new ArrayList<>();
 		List<?> listOfSomething = new ArrayList<Integer>();
-		ArrayList<?> arrayListOfSomething = null;
+		List<?> arrayListOfSomething = null;
 		List<Number> listOfNumber = null;
-		ArrayList<Number> arrayListOfNumber = null;
-		ArrayList<? extends Number> arrayListOfSomethingNumberish = null;
+		List<Number> arrayListOfNumber = null;
+		List<? extends Number> arrayListOfSomethingNumberish = null;
 		List<? extends Number> listOfSomethingNumberish = new ArrayList<Integer>();
 		List<? super Double> listOfSomethingSuperDouble = new ArrayList<Number>();
 		List<Integer> listOfInteger = new ArrayList<>();
-		ArrayList<String> arrayListOfString;
-		ArrayList<Integer> arraylistOfInteger;
+		List<String> arrayListOfString;
+		List<Integer> arraylistOfInteger;
 		// interfaces too List<? extends A,B>
 
 		ReferenceType ajArrayListOfString = resolve("Pjava/util/ArrayList<Ljava/lang/String;>;");
@@ -599,8 +599,7 @@ public class ReferenceTypeTestCase extends TestCase {
 			// ReferenceType.r = 0;
 			long stime = System.nanoTime();
 			for (int j = 0; j < 10; j++) {
-				List objects2 = new ArrayList();
-				objects2.addAll(objects);
+				List objects2 = new ArrayList(objects);
 				PartialOrder.sort(objects2);
 			}
 			long etime = System.nanoTime();

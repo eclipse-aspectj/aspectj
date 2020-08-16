@@ -40,7 +40,7 @@ public class TestClassLoader extends URLClassLoader {
         super(urls);
         this.urlsForDebugString = urls;
         LangUtil.throwIaxIfComponentsBad(dirs, "dirs", null);
-        ArrayList dcopy = new ArrayList();
+        List dcopy = new ArrayList();
         
         if (!LangUtil.isEmpty(dirs)) {
             dcopy.addAll(Arrays.asList(dirs));

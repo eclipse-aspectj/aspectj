@@ -143,8 +143,7 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			while ((expectedLine = expect.readLine()) != null) {
 				fileContents.add(expectedLine);
 			}
-			List<String> expectedFileContents = new ArrayList<>();
-			expectedFileContents.addAll(fileContents);
+			List<String> expectedFileContents = new ArrayList<>(fileContents);
 
 			// Load the file with the output from this test run
 			BufferedReader found = new BufferedReader(new FileReader(new File(modelOutput)));

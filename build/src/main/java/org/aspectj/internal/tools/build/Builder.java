@@ -180,7 +180,7 @@ public abstract class Builder {
 
     private final File tempDir;
 
-    private final ArrayList tempFiles;
+    private final List tempFiles;
 
     private final boolean useEclipseCompiles;
 
@@ -274,7 +274,7 @@ public abstract class Builder {
             return buildProduct(buildSpec);
         }
         Result result = specifyResultFor(buildSpec);
-        ArrayList<String> errors = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
         try {
             return buildAll(result, errors);
         } finally {
@@ -339,7 +339,7 @@ public abstract class Builder {
      */
     protected final boolean buildAll(Result result, List<String> errors) {
         Result[] buildList = skipUptodate(getAntecedantResults(result));
-        ArrayList<String> doneList = new ArrayList<>();
+        List<String> doneList = new ArrayList<>();
         if ((null != buildList) && (0 < buildList.length)) {
             if (isLogging()) {
                 handler.log("modules to build: " + Arrays.asList(buildList));
@@ -524,7 +524,7 @@ public abstract class Builder {
     }
 
     protected final boolean buildProductModule(ProductModule module) {
-        ArrayList<String> errors = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
         try {
             Kind productKind = Result.kind(Result.NORMAL, Result.ASSEMBLE);
             Result result = module.module.getResult(productKind);
@@ -542,7 +542,7 @@ public abstract class Builder {
      * deliverables.
      */
     protected ProductModule[] discoverModules(File productDir, Modules modules) {
-        final ArrayList<File> found = new ArrayList<>();
+        final List<File> found = new ArrayList<>();
         FileFilter filter = new FileFilter() {// empty jar files
             public boolean accept(File file) {
                 if ((null != file) && file.canRead()

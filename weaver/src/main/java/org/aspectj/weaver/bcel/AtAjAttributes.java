@@ -1785,7 +1785,7 @@ public class AtAjAttributes {
 		}
 
 		// sort by index
-		Collections.sort(arguments, new Comparator<MethodArgument>() {
+		arguments.sort(new Comparator<MethodArgument>() {
 			public int compare(MethodArgument mo, MethodArgument mo1) {
 				if (mo.indexOnStack == mo1.indexOnStack) {
 					return 0;
@@ -1905,7 +1905,7 @@ public class AtAjAttributes {
 				ignores.add(formalBinding.getName());
 			}
 		}
-		pointcut.m_ignoreUnboundBindingForNames = ignores.toArray(new String[ignores.size()]);
+		pointcut.m_ignoreUnboundBindingForNames = ignores.toArray(new String[0]);
 	}
 
 	/**

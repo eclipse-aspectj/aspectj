@@ -13,11 +13,7 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.util.*;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -50,10 +46,10 @@ public class Validator {
 	private final Stack<IMessageHandler> handlers;
 
 	/** list of File registered for deletion on demand */
-	private final ArrayList<File> tempFiles; // deleteTempFiles requires ListIterator.remove()
+	private final List<File> tempFiles; // deleteTempFiles requires ListIterator.remove()
 
 	/** list of Sandboxes registered for cleanup on demand  */
-	private final ArrayList<Sandbox> sandboxes;
+	private final List<Sandbox> sandboxes;
 
 	/** if true, throw AbortException on failure */
 	boolean abortOnFailure;

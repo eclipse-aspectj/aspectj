@@ -31,7 +31,7 @@ public class MessageHandler implements IMessageHolder {
 	/** messages accumulated */
 	protected final ArrayList<IMessage> messages;
 	/** kinds of messages to be ignored */
-	protected final ArrayList<IMessage.Kind> ignoring;
+	protected final List<IMessage.Kind> ignoring;
 	/** result of handleMessage(..) for messages not accumulated (ignored) */
 	protected boolean handleMessageResult;
 	/** listener which can halt processing by returning true */

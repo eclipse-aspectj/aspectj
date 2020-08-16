@@ -523,9 +523,7 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	protected List newMessageList(Message[] messages) {
 		List ret = new ArrayList();
-		for (Message message : messages) {
-			ret.add(message);
-		}
+		Collections.addAll(ret, messages);
 		return ret;
 	}
 
@@ -789,7 +787,7 @@ public abstract class AjcTestCase extends TestCase {
 
 	private List<String >tokenizeCommand(String command) {
 		StringTokenizer st = new StringTokenizer(command," ", false);
-		ArrayList<String> arguments = new ArrayList<>();
+		List<String> arguments = new ArrayList<>();
 		while(st.hasMoreElements()){
 			String nextToken =st.nextToken();
 			arguments.add(nextToken);

@@ -80,12 +80,10 @@ public class AroundWeaveTestCase extends WeaveTestCase {
     private void aroundTestAndOthers(String outName, final boolean matchOnlyPrintln)
             throws IOException 
     {
-                
-        List<ShadowMunger> l = new ArrayList<>();
 
-		// the afterReturning was taken out to avoid circular advice dependency        
+		// the afterReturning was taken out to avoid circular advice dependency
 
-        l.addAll(makeAdviceAll("before", matchOnlyPrintln));
+		List<ShadowMunger> l = new ArrayList<>(makeAdviceAll("before", matchOnlyPrintln));
         //l.addAll(makeAdviceAll("afterReturning", matchOnlyPrintln));
 
         l.add(makeAroundMunger(matchOnlyPrintln));

@@ -252,9 +252,7 @@ public class PointcutRewriter {
 		}
 		// otherwise ...
 		Pointcut[] subset = new Pointcut[ps.length - 1];
-		for (int i = 1; i < ps.length; i++) {
-			subset[i - 1] = ps[i];
-		}
+		if (ps.length - 1 >= 0) System.arraycopy(ps, 1, subset, 0, ps.length - 1);
 		return new AndPointcut(ps[0], createAndsFor(subset));
 	}
 

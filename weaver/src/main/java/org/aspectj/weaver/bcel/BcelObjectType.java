@@ -398,7 +398,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (pointcuts.size() == 0) {
 			this.pointcuts = ResolvedPointcutDefinition.NO_POINTCUTS;
 		} else {
-			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[pointcuts.size()]);
+			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[0]);
 		}
 
 		resolveAnnotationDeclares(l);
@@ -770,12 +770,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 				GenericSignature.FormalTypeParameter[] extraFormals = getFormalTypeParametersFromOuterClass();
 				if (extraFormals.length > 0) {
 					List<FormalTypeParameter> allFormals = new ArrayList<>();
-					for (FormalTypeParameter formalTypeParameter : formalsForResolution) {
-						allFormals.add(formalTypeParameter);
-					}
-					for (FormalTypeParameter extraFormal : extraFormals) {
-						allFormals.add(extraFormal);
-					}
+					Collections.addAll(allFormals, formalsForResolution);
+					Collections.addAll(allFormals, extraFormals);
 					formalsForResolution = new GenericSignature.FormalTypeParameter[allFormals.size()];
 					allFormals.toArray(formalsForResolution);
 				}

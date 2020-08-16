@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
@@ -31,7 +32,7 @@ import org.aspectj.util.FileUtil;
  */
 class StubFileGenerator {
 
-	static Hashtable declIDTable = null;
+	static Map declIDTable = null;
 
 	static void doFiles(AsmManager model, Hashtable table, File[] inputFiles, File[] signatureFiles) throws DocException {
 		declIDTable = table;

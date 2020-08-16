@@ -167,8 +167,7 @@ public class JavaRun implements IAjcRun {
 					File[] files = sandbox.findFiles(spec.aspectpath);
 					aspectURLs = FileUtil.getFileURLs(files);
 				}
-				ArrayList classpath = new ArrayList();
-				classpath.addAll(Arrays.asList(aspectURLs));
+				ArrayList classpath = new ArrayList(Arrays.asList(aspectURLs));
 				final URL[] classURLs;
 				{
 					classpath.addAll(Arrays.asList(clAndLibs));

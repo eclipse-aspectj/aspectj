@@ -225,8 +225,7 @@ public class AjdeCoreBuildManager {
 			if (projectSourceFiles == null) {
 				return null;
 			}
-			List<String> l = new ArrayList<>();
-			l.addAll(projectSourceFiles);
+			List<String> l = new ArrayList<>(projectSourceFiles);
 			// If the processor options are specified build the command line options for the JDT compiler to see
 			String processor = compilerConfig.getProcessor();
 			if (processor != null && processor.length() != 0) {
@@ -256,7 +255,7 @@ public class AjdeCoreBuildManager {
 				}
 				args[p++] = "-xmlConfigured";
 			} else {
-				args = l.toArray(new String[l.size()]);
+				args = l.toArray(new String[0]);
 			}
 		}
 
@@ -279,7 +278,7 @@ public class AjdeCoreBuildManager {
 				}
 			}
 			if (0 < toAdd.size()) {
-				ArrayList<String> both = new ArrayList<>(configClasspath.size() + toAdd.size());
+				List<String> both = new ArrayList<>(configClasspath.size() + toAdd.size());
 				both.addAll(configClasspath);
 				both.addAll(toAdd);
 				config.setClasspath(both);

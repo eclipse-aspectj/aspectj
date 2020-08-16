@@ -720,7 +720,7 @@ public class Tester {
     private static String[] diffIgnoreDups(Collection<String> set, String[] expected, String msg,
         boolean ignoreDups) {
         ArrayList<String> result = new ArrayList<>();
-        ArrayList<String> actual = new ArrayList<>(set);
+        List<String> actual = new ArrayList<>(set);
         BitSet hits = new BitSet();
         for (int i = 0; i < expected.length; i++) {
             if (!actual.remove(expected[i])) {

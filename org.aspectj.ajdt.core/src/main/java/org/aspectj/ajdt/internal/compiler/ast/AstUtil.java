@@ -112,7 +112,7 @@ public class AstUtil {
 	}
 
 	public static void setStatements(MethodDeclaration ret, List statements) {
-		ret.statements = (Statement[]) statements.toArray(new Statement[statements.size()]);
+		ret.statements = (Statement[]) statements.toArray(new Statement[0]);
 	}
 
 	public static SingleNameReference makeLocalVariableReference(LocalVariableBinding binding) {
@@ -217,7 +217,7 @@ public class AstUtil {
 	}
 
 	public static List getAjSyntheticAttribute() {
-		ArrayList ret = new ArrayList(1);
+		List ret = new ArrayList(1);
 		ret.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
 		return ret;
 	}

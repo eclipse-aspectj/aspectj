@@ -909,8 +909,7 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// Time to construct the method itself:
-		LazyMethodGen advice = new LazyMethodGen(Modifier.PUBLIC, returnType, adviceName, paramTypes.toArray(new Type[paramTypes
-				.size()]), EMPTY_STRINGS, cg);
+		LazyMethodGen advice = new LazyMethodGen(Modifier.PUBLIC, returnType, adviceName, paramTypes.toArray(new Type[0]), EMPTY_STRINGS, cg);
 
 		InstructionList adviceBody = advice.getBody();
 

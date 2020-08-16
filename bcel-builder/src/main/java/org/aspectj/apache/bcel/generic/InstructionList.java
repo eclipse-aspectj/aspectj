@@ -58,10 +58,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Constant;
@@ -690,7 +687,7 @@ public class InstructionList implements Serializable {
 			return;
 		}
 
-		ArrayList<InstructionHandle> target_vec = new ArrayList<>();
+		List<InstructionHandle> target_vec = new ArrayList<>();
 
 		for (InstructionHandle ih = first; ih != null; ih = ih.next) {
 			ih.getInstruction().dispose(); // e.g. BranchInstructions release their targets
@@ -1003,7 +1000,7 @@ public class InstructionList implements Serializable {
 	 */
 	public Instruction[] getInstructions() {
 		ByteSequence bytes = new ByteSequence(getByteCode());
-		ArrayList<Instruction> instructions = new ArrayList<>();
+		List<Instruction> instructions = new ArrayList<>();
 
 		try {
 			while (bytes.available() > 0) {

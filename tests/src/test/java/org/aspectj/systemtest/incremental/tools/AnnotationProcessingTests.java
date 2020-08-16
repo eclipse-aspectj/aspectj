@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.util.FileUtil;
 
@@ -42,7 +43,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		configureProcessorOptions("ProcessorConsumer1","DemoProcessor");
 		configureNonStandardCompileOptions("ProcessorConsumer1", "-showWeaveInfo");
 
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -70,7 +71,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 		configureProcessorPath("ProcessorConsumer2", getCompilerForProjectWithName("ProcessorProject2").getCompilerConfiguration().getOutputLocationManager().getDefaultOutputLocation().toString()+File.pathSeparator+
 				new File(testdataSrcDir + File.separatorChar + "ProcessorProject2" + File.separatorChar + "base"+File.separatorChar+"src").toString());
 		
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
@@ -108,7 +109,7 @@ public class AnnotationProcessingTests extends AbstractMultiProjectIncrementalAj
 
 		configureNonStandardCompileOptions("ProcessorConsumer1", "-showWeaveInfo");
 
-		Hashtable<String, String> javaOptions = new Hashtable<>();
+		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");

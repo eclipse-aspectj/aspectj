@@ -270,7 +270,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 		if (ret.isEmpty()) {
 			return Binding.NO_METHODS;
 		}
-		return ret.toArray(new MethodBinding[ret.size()]);
+		return ret.toArray(new MethodBinding[0]);
 	}
 
 	private void addPublicITDSFrom(SourceTypeBinding anInterface, List<MethodBinding> accumulator) {
@@ -328,7 +328,7 @@ public class InterTypeMemberFinder implements IMemberFinder {
 
 		// System.err.println("got methods: " + ret + " on " + sourceTypeBinding);
 
-		return ret.toArray(new MethodBinding[ret.size()]);
+		return ret.toArray(new MethodBinding[0]);
 	}
 
 	@Override

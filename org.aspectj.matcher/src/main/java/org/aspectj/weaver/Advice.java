@@ -304,9 +304,7 @@ public abstract class Advice extends ShadowMunger {
 			return allNames;
 		}
 		String[] result = new String[getBaseParameterCount()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = allNames[i];
-		}
+		if (result.length >= 0) System.arraycopy(allNames, 0, result, 0, result.length);
 		return result;
 	}
 

@@ -54,10 +54,7 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
@@ -102,11 +99,11 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	private int highestLineNumber = 0;
 
-	private ArrayList<LocalVariableGen> localVariablesList = new ArrayList<>();
-	private ArrayList<LineNumberGen> lineNumbersList = new ArrayList<>();
+	private List<LocalVariableGen> localVariablesList = new ArrayList<>();
+	private List<LineNumberGen> lineNumbersList = new ArrayList<>();
 	private ArrayList<CodeExceptionGen> exceptionsList = new ArrayList<>();
 	private ArrayList<String> exceptionsThrown = new ArrayList<>();
-	private ArrayList<Attribute> codeAttributesList = new ArrayList<>();
+	private List<Attribute> codeAttributesList = new ArrayList<>();
 	private List<AnnotationGen>[] param_annotations; // Array of lists containing AnnotationGen objects
 	private boolean hasParameterAnnotations = false;
 	private boolean haveUnpackedParameterAnnotations = false;
@@ -933,7 +930,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	static final class BranchStack {
 		Stack<BranchTarget> branchTargets = new Stack<>();
-		Hashtable<InstructionHandle, BranchTarget> visitedTargets = new Hashtable<>();
+		Map<InstructionHandle, BranchTarget> visitedTargets = new Hashtable<>();
 
 		public void push(InstructionHandle target, int stackDepth) {
 			if (visited(target)) {

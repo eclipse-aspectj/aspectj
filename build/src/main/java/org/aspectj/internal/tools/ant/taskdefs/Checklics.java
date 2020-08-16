@@ -469,8 +469,7 @@ class HeaderInfo {
 		this.lastLine = lastLine;
 		this.file = file;
 		this.hasLicense = hasLicense;
-		List<String> newYears = new ArrayList<>();
-		newYears.addAll(years);
+		List<String> newYears = new ArrayList<>(years);
 		Collections.sort(newYears);
 		this.years = Collections.unmodifiableList(newYears);
 		if ((null == file) || !file.canWrite()) {
@@ -655,7 +654,7 @@ class Header {
 	 *
 	 * @return true if this line has end-of-comment
 	 */
-	private static boolean checkLine(String line, ArrayList<String> years) {
+	private static boolean checkLine(String line, List<String> years) {
 		if ((null == line) || (0 == line.length())) {
 			return false;
 		}

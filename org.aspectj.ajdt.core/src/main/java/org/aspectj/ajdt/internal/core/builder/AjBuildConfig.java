@@ -69,10 +69,10 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	private List<String> classpath = new ArrayList<>();
 	private List<String> modulepath = new ArrayList<>();
 	// Expensive to compute (searching modules, parsing module-info)
-	private ArrayList<Classpath> modulepathClasspathEntries = null;
+	private Collection<Classpath> modulepathClasspathEntries = null;
 	private List<String> modulesourcepath = new ArrayList<>();
 	// Expensive to compute (searching modules, parsing module-info)
-	private ArrayList<Classpath> modulesourcepathClasspathEntries = null;
+	private Collection<Classpath> modulesourcepathClasspathEntries = null;
 	private Classpath[] checkedClasspaths = null;
 	private List<String> bootclasspath = new ArrayList<>();
 	private List<String> cpElementsWithModifiedContents = new ArrayList<>();
@@ -377,8 +377,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 *         classpath), and output dir or jar
 	 */
 	public List<String> getFullClasspath() {
-		List<String> full = new ArrayList<>();
-		full.addAll(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
+		List<String> full = new ArrayList<>(getBootclasspath()); // XXX Is it OK that boot classpath overrides inpath/injars/aspectpath?
 		for (File file: inJars) {
 			full.add(file.getAbsolutePath());
 		}

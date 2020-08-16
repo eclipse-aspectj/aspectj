@@ -298,7 +298,7 @@ public class TestUtils {
 			l.add(str.substring(start, i).trim());
 			start = i + 1;
 		}
-		return (String[]) l.toArray(new String[l.size()]);
+		return (String[]) l.toArray(new String[0]);
 	}
 
 }

@@ -700,8 +700,7 @@ public class ParserTestCase extends PatternsTestCase {
 		WildAnnotationTypePattern watp = (WildAnnotationTypePattern) atp;
 		Map<String,String> m = watp.annotationValues;
 		Set<String> keys = m.keySet();
-		List<String> orderedKeys = new ArrayList<>();
-		orderedKeys.addAll(keys);
+		List<String> orderedKeys = new ArrayList<>(keys);
 		Collections.sort(orderedKeys);
 		StringBuffer sb = new StringBuffer();
 		for (Iterator<String> iterator = orderedKeys.iterator(); iterator.hasNext();) {

@@ -548,7 +548,7 @@ public class BcelWeaver {
 		// this code may need
 		// a bit of alteration...
 
-		Collections.sort(shadowMungerList, new Comparator<ShadowMunger>() {
+		shadowMungerList.sort(new Comparator<ShadowMunger>() {
 			public int compare(ShadowMunger sm1, ShadowMunger sm2) {
 				if (sm1.getSourceLocation() == null) {
 					return (sm2.getSourceLocation() == null ? 0 : 1);
@@ -946,7 +946,7 @@ public class BcelWeaver {
 
 			manifest = new Manifest();
 
-			Attributes attributes = manifest.getMainAttributes();
+			Map attributes = manifest.getMainAttributes();
 			attributes.put(Name.MANIFEST_VERSION, WEAVER_MANIFEST_VERSION);
 			attributes.put(CREATED_BY, WEAVER_CREATED_BY);
 		}

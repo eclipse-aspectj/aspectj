@@ -74,8 +74,8 @@ public class CrosscuttingMembers {
 		this.shouldConcretizeIfNeeded = shouldConcretizeIfNeeded;
 	}
 
-	private final Hashtable<String, Object> cflowFields = new Hashtable<>();
-	private final Hashtable<String, Object> cflowBelowFields = new Hashtable<>();
+	private final Map<String, Object> cflowFields = new Hashtable<>();
+	private final Map<String, Object> cflowBelowFields = new Hashtable<>();
 
 	// public void addConcreteShadowMungers(Collection c) {
 	// shadowMungers.addAll(c);
@@ -293,8 +293,7 @@ public class CrosscuttingMembers {
 					theseShadowMungers.add(munger);
 				}
 			}
-			Set<ShadowMunger> tempSet = new HashSet<>();
-			tempSet.addAll(other.shadowMungers);
+			Set<ShadowMunger> tempSet = new HashSet<>(other.shadowMungers);
 			Set<ShadowMunger> otherShadowMungers = new HashSet<>();
 			Set<ShadowMunger> otherInlinedAroundMungers = new HashSet<>();
 			for (ShadowMunger munger : tempSet) {

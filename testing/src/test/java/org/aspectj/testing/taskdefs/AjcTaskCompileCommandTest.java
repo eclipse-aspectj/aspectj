@@ -14,6 +14,7 @@ package org.aspectj.testing.taskdefs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
@@ -33,7 +34,7 @@ import junit.framework.TestCase;
 public class AjcTaskCompileCommandTest extends TestCase {
     static boolean loggedWarning = false;
     static boolean runAllTests = true;
-    static ArrayList<File> tempFiles = new ArrayList<>();
+    static List<File> tempFiles = new ArrayList<>();
     
     private static File getClassesDir() {
         File tempDir = FileUtil.getTempDir("AjcTaskCompileCommandTest-classes");
@@ -41,7 +42,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
         return tempDir;
     }
 
-    private static void addCommonArgs(ArrayList<String> list) {
+    private static void addCommonArgs(List<String> list) {
         list.add("-d");
         list.add(getClassesDir().getAbsolutePath());
         list.add("-classpath");

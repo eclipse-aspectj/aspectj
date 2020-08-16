@@ -130,7 +130,7 @@ public class CompilationAndWeavingContext {
 	 * Returns a string description of what the compiler/weaver is currently doing
 	 */
 	public static String getCurrentContext() {
-		Stack<ContextStackEntry> contextStack = getContextStack();
+		Iterable<ContextStackEntry> contextStack = getContextStack();
 		Stack<String> explanationStack = new Stack<>();
 		for (ContextStackEntry entry : contextStack) {
 			Object data = entry.getData();

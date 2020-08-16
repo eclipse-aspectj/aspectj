@@ -196,7 +196,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 		ConstantPool cp = this.cpool.getFinalConstantPool();
 
 		return new JavaClass(classnameIndex, superclassnameIndex, filename, major, minor, modifiers, cp, interfaces, fields,
-				methods, attributes.toArray(new Attribute[attributes.size()]));// OPTIMIZE avoid toArray()?
+				methods, attributes.toArray(new Attribute[0]));// OPTIMIZE avoid toArray()?
 	}
 
 	public void addInterface(String name) {
@@ -509,7 +509,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 					relevantFields.add(field);
 				}
 			}
-			Collections.sort(relevantFields, new FieldComparator());
+			relevantFields.sort(new FieldComparator());
 			int relevantFlags = Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_STATIC
 					| Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT;
 			for (Field f : relevantFields) {
@@ -534,8 +534,8 @@ public class ClassGen extends Modifiers implements Cloneable {
 						relevantMethods.add(m);
 				}
 			}
-			Collections.sort(relevantCtors, new ConstructorComparator());
-			Collections.sort(relevantMethods, new MethodComparator());
+			relevantCtors.sort(new ConstructorComparator());
+			relevantMethods.sort(new MethodComparator());
 
 			// 5. If a class initializer exists, write out the following:
 			// 1. The name of the method, <clinit>.

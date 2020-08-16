@@ -210,11 +210,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 	 */
 	public JavaClass findClass(String className) {
 		synchronized (loadedClasses) {
-			if (loadedClasses.containsKey(className)) {
-				return loadedClasses.get(className);
-			} else {
-				return null;
-			}
+			return loadedClasses.getOrDefault(className, null);
 		}
 	}
 

@@ -409,7 +409,7 @@ public class MessageUtil {
 		if (null == kind) {
 			return messages;
 		}
-		ArrayList<IMessage> result = new ArrayList<>();
+		List<IMessage> result = new ArrayList<>();
 		for (IMessage message : messages) {
 			if (kind == message.getKind()) {
 				result.add(message);

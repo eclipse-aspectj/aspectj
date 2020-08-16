@@ -17,6 +17,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -310,9 +311,7 @@ public class Ajc {
 	}
 
 	private void addMessagesTo(List<IMessage> aList, IMessage[] messages) {
-		for (IMessage message : messages) {
-			aList.add(message);
-		}
+		Collections.addAll(aList, messages);
 	}
 
 	private boolean isIncremental(String[] args) {

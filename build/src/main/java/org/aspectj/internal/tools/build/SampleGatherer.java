@@ -219,7 +219,7 @@ public class SampleGatherer {
                             source,
                             startLine,
                             endLine,
-                            flags.toArray(new String[flags.size()]));
+                            flags.toArray(new String[0]));
                     sink.addSample(sample);
 
                     // back to seeking start
@@ -417,9 +417,8 @@ class Samples {
     }
 
     List<Sample> getSortedSamples(Comparator<Sample> comparer) {
-        ArrayList<Sample> result = new ArrayList<>();
-        result.addAll(samples);
-        Collections.sort(result, comparer);
+		List<Sample> result = new ArrayList<>(samples);
+        result.sort(comparer);
         return result;
     }
 }
@@ -976,7 +975,7 @@ class SampleUtil {
         }
         next  = anchorName.substring(start);
         result.add(next);
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
     /**
      * Replace literals with literals in source string

@@ -151,8 +151,7 @@ public class BuildArgParser extends Main {
 
 			boolean incrementalMode = buildConfig.isIncrementalMode() || buildConfig.isIncrementalFileMode();
 
-			List<File> xmlfileList = new ArrayList<>();
-			xmlfileList.addAll(parser.getXmlFiles());
+			List<File> xmlfileList = new ArrayList<>(parser.getXmlFiles());
 
 			List<File> fileList = new ArrayList<>();
 			List<File> files = parser.getFiles();
@@ -176,7 +175,7 @@ public class BuildArgParser extends Main {
 //			javaArgList.add("-bootclasspath");
 //			javaArgList.add(parser.bootclasspath == null ? System.getProperty("user.dir") : parser.bootclasspath);
 			javaArgList.addAll(parser.getUnparsedArgs());
-			super.configure(javaArgList.toArray(new String[javaArgList.size()]));
+			super.configure(javaArgList.toArray(new String[0]));
 
 			if (parser.getModuleInfoArgument() != null) {
 				IModule moduleDesc = super.getModuleDesc(parser.getModuleInfoArgument());
@@ -903,7 +902,7 @@ public class BuildArgParser extends Main {
 			unparsedArgs.add(nextArg.getValue());
 		}
 
-		private int indexOf(LinkedList<Arg> args, String arg) {
+		private int indexOf(Iterable<Arg> args, String arg) {
 			int index = 0;
 			for (Arg argument : args) {
 				if (arg.equals(argument.getValue())) {

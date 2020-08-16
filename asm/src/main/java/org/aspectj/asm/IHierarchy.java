@@ -39,7 +39,11 @@ public interface IHierarchy extends Serializable {
 
 	public boolean removeFromFileMap(String canonicalFilePath);
 
-	public void setFileMap(HashMap<String, IProgramElement> fileMap);
+	public void setFileMap(Map<String, IProgramElement> fileMap);
+
+	public default void setFileMap(HashMap<String, IProgramElement> fileMap) {
+		setFileMap((Map<String, IProgramElement>) fileMap);
+	}
 
 	public Object findInFileMap(Object key);
 

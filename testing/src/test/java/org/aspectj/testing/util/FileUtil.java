@@ -25,11 +25,7 @@ import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -130,7 +126,7 @@ public class FileUtil {
         final boolean checkExpected = !LangUtil.isEmpty(expectedPaths);
         
         // normalize sources to ignore
-        final ArrayList expected = (!checkExpected ? null : new ArrayList());
+        final List expected = (!checkExpected ? null : new ArrayList());
         if (checkExpected) {
 			for (String srcPath : expectedPaths) {
 				if (!LangUtil.isEmpty(srcPath)) {
@@ -184,9 +180,8 @@ public class FileUtil {
                 // skip if not file or not right time
                 return false;
             }
-        };      
-        ArrayList unexp = new ArrayList();
-        unexp.addAll(Arrays.asList(dir.listFiles(touchedCollector)));
+        };
+		List unexp = new ArrayList(Arrays.asList(dir.listFiles(touchedCollector)));
         
         // report any unexpected changes
         return Diffs.makeDiffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);

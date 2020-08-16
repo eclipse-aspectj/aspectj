@@ -170,8 +170,7 @@ public class InstructionHandle implements java.io.Serializable {
 	}
 
 	public Set<InstructionTargeter> getTargetersCopy() {
-		Set<InstructionTargeter> copy = new HashSet<>();
-		copy.addAll(targeters);
+		Set<InstructionTargeter> copy = new HashSet<>(targeters);
 		return copy;
 	}
 

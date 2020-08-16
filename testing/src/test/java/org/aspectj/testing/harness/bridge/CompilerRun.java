@@ -728,7 +728,7 @@ public class CompilerRun implements IAjcRun {
         private static String updateBootclasspathForSourceVersion(
             String sourceVersion,
             String compilerName,
-            ArrayList toAdd) {
+            List toAdd) {
             if (null == sourceVersion) {
                 return null;
             }
@@ -1496,7 +1496,7 @@ public class CompilerRun implements IAjcRun {
             String seek;
 
             /** if setup completed, this has the combined global/local options */
-            ArrayList commandOptions;
+            List commandOptions;
 
             public Object clone() {
                 TestSetup testSetup = new TestSetup();

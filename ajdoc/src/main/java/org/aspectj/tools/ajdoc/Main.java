@@ -22,13 +22,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
@@ -163,7 +157,7 @@ public class Main implements Config {
 	 * package-summary properly.
 	 */
 	private static void packageHTML(AsmManager model, File[] inputFiles) throws IOException {
-		ArrayList<String> dirList = new ArrayList<>();
+		List<String> dirList = new ArrayList<>();
 		for (File inputFile : inputFiles) {
 			String packageName = StructureUtil.getPackageDeclarationFromFile(model, inputFile);
 			// Only copy the package.html file once.
@@ -261,9 +255,7 @@ public class Main implements Config {
 				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
 			}
 			options = new Vector<>();
-			for (String a: javadocargs) {
-				options.add(a);
-			}
+			Collections.addAll(options, javadocargs);
 		} else {
 			javadocargs = new String[options.size() + signatureFiles.length];
 			for (int k = 0; k < options.size(); k++) {

@@ -359,7 +359,7 @@ public class LangUtil {
 		if (null == input) {
 			return Collections.emptyList();
 		}
-		ArrayList<String> result = new ArrayList<>();
+		List<String> result = new ArrayList<>();
 
 		if (LangUtil.isEmpty(delim) || (!input.contains(delim))) {
 			result.add(input.trim());
@@ -741,7 +741,7 @@ public class LangUtil {
 		final int sinkLength = (null == sink ? 0 : sink.length);
 
 		final int resultSize;
-		ArrayList<Object> result = null;
+		List<Object> result = null;
 		if (0 == sourceLength) {
 			resultSize = 0;
 		} else {
@@ -1000,8 +1000,7 @@ public class LangUtil {
 		if ((null == array) || (1 > array.length)) {
 			return Collections.emptyList();
 		}
-		ArrayList<T> list = new ArrayList<>();
-		list.addAll(Arrays.asList(array));
+		List<T> list = new ArrayList<>(Arrays.asList(array));
 		return list;
 	}
 

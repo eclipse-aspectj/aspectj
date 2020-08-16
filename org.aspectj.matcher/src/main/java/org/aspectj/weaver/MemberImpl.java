@@ -211,7 +211,7 @@ public class MemberImpl implements Member {
 					l.add(UnresolvedType.forSignature(sig.substring(start, i)));
 				}
 			}
-			UnresolvedType[] paramTypes = l.toArray(new UnresolvedType[l.size()]);
+			UnresolvedType[] paramTypes = l.toArray(new UnresolvedType[0]);
 			UnresolvedType returnType = UnresolvedType.forSignature(sig.substring(i + 1, sig.length()));
 			return new Object[] { returnType, paramTypes };
 		} else {

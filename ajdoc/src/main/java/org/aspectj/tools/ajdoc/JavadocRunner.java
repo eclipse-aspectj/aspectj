@@ -28,7 +28,7 @@ import javax.tools.ToolProvider;
  */
 class JavadocRunner {
 
-	public static void callJavadocViaToolProvider(Vector<String> options, List<String> files) {
+	public static void callJavadocViaToolProvider(Iterable<String> options, List<String> files) {
 		DocumentationTool doctool = ToolProvider.getSystemDocumentationTool();
 		StandardJavaFileManager fm = doctool.getStandardFileManager(null, null, null);
 		Iterable<? extends JavaFileObject> jfos = fm.getJavaFileObjects(files.toArray(new String[0]));

@@ -84,7 +84,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		if (null == targetClasses) {
 			return false;
 		}
-		final ArrayList<File> files = new ArrayList<>();
+		final List<File> files = new ArrayList<>();
 		final FileFilter collector = new FileFilter() {
 			@Override
 			public boolean accept(File file) {
@@ -94,7 +94,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		final ICommand compiler =
 			ReflectionFactory.makeCommand(cname, handler);
 
-		ArrayList recompiled = null;
+		List recompiled = null;
 		boolean result = true;
 
 		final String toSuffix = ".java";
@@ -121,8 +121,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			List safeFiles = Collections.unmodifiableList(files);
 			log("Compiling ", safeFiles, handler);
 			if (1 == i) {
-				ArrayList<String> argList = new ArrayList<>();
-				argList.addAll(getBaseArgs(targetSrc, targetClasses));
+				ArrayList<String> argList = new ArrayList<>(getBaseArgs(targetSrc, targetClasses));
 				File[] fra = (File[]) safeFiles.toArray(new File[0]);
 				// sigh
 				argList.addAll(
@@ -258,7 +257,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 
 
     List<String> normalizeFilenames(String[] ra) { // XXX util
-        ArrayList<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         if (null != ra) {
 			for (String s : ra) {
 				result.add(normalizeFilename(s));
@@ -272,7 +271,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 
     /** @param list the List of File */
     List<String> normalizeFilenames(List<File> list) { // XXX util
-        ArrayList<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (File file: list) {
 //        for (Iterator<?> iter = list.iterator(); iter.hasNext();) {
 			result.add(normalizeFilename(file.getPath()));			

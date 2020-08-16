@@ -40,7 +40,7 @@ public class SoftMessage implements IMessage {
 	private String details;
 	private int id;
 	private int sourceStart,sourceEnd;
-	private final ArrayList extraSourceLocations = new ArrayList();
+	private final List extraSourceLocations = new ArrayList();
 
 	//private ISourceLocation pseudoSourceLocation;  // set directly
 	// collapse enclosed source location for shorter, property-based xml

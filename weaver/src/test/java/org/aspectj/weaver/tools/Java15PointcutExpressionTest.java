@@ -285,8 +285,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  tps[parameterNumber].getAnnotationPattern().toString();
 	  
 	  // parameter type annotation checking
-	  Set<String> expected = new HashSet<>();
-	  expected.addAll(mpnv.getParameterTypeAnnotations());
+		Set<String> expected = new HashSet<>(mpnv.getParameterTypeAnnotations());
 	  
 	  StringTokenizer st = new StringTokenizer(expectedParameterTypeAnnotations==null?"":expectedParameterTypeAnnotations);
 	  while (st.hasMoreTokens()) {
@@ -304,8 +303,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 	  }
 	  
 	  // parameter annotation checking
-	  expected = new HashSet<>();
-	  expected.addAll(mpnv.getParameterAnnotations());
+		expected = new HashSet<>(mpnv.getParameterAnnotations());
 	  
 	  st = new StringTokenizer(expectedParameterAnnotations==null?"":expectedParameterAnnotations);
 	  while (st.hasMoreTokens()) {

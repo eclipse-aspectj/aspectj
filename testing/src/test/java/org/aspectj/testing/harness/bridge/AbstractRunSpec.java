@@ -83,7 +83,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 	private boolean skipAll;
 
 	protected String xmlElementName; // nonfinal only for clone()
-	protected final ArrayList<String> keywords;
+	protected final List<String> keywords;
 	protected final IMessageHolder /* IMessage */messages;
 	protected final ArrayList<String> options;
 	protected final ArrayList<String> paths;
@@ -197,7 +197,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 		}
 	}
 
-	public ArrayList<String> getKeywordsList() {
+	public List<String> getKeywordsList() {
 		return makeList(keywords);
 	}
 
@@ -257,7 +257,7 @@ abstract public class AbstractRunSpec implements IRunSpec {
 
 	// --------------- (String) paths
 	/** @return ArrayList of String paths */
-	public ArrayList<String> getPathsList() {
+	public List<String> getPathsList() {
 		return makeList(paths);
 	}
 

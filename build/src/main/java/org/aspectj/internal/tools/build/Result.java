@@ -217,7 +217,7 @@ public class Result {
 
     /** @return List (File) of jar's required */
     public List<File> findJarRequirements() {
-        ArrayList<File> result = new ArrayList<>();
+        List<File> result = new ArrayList<>();
         Module.doFindJarRequirements(this, result);
         return result;
     }

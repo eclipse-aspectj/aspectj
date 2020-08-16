@@ -225,7 +225,7 @@ public class BuildModuleTests extends TestCase {
      */
     static class UnknownFileCheck implements FileFilter {
         private static final UnknownFileCheck SINGLETON = new UnknownFileCheck();
-        private static final ArrayList<String> STATIC_ERRORS = new ArrayList<>();
+        private static final List<String> STATIC_ERRORS = new ArrayList<>();
         // Builder.BINARY_SOURCE_PATTERN and Builder.RESOURCE_PATTERN
         public static final List<String> KNOWN_SUFFIXES;
 

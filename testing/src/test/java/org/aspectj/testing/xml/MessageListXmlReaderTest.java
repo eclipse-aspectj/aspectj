@@ -15,6 +15,8 @@ package org.aspectj.testing.xml;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.util.LangUtil;
@@ -26,7 +28,7 @@ import junit.framework.TestCase;
  */
 public class MessageListXmlReaderTest extends TestCase {
 
-	ArrayList tempFiles = new ArrayList();
+	List tempFiles = new ArrayList();
 	public MessageListXmlReaderTest(String name) {
 		super(name);
 	}
