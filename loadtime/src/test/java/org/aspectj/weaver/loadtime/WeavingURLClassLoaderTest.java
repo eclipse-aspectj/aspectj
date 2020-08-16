@@ -348,6 +348,8 @@ public class WeavingURLClassLoaderTest extends TestCase {
 	 * Aspects on ASPECTPATH but missing from CLASSPATH
 	 */
 	public void testIncompletePath() {
+		System.out.println("ADVICE_ASPECTS exists? " + new File(ADVICE_ASPECTS).exists());
+		System.out.println("ASPECTJRT exists? " + new File(ASPECTJRT).exists());
 		setSystemProperty(WeavingURLClassLoader.WEAVING_ASPECT_PATH, ADVICE_ASPECTS+File.pathSeparator+new File(ASPECTJRT).toString());
 		setSystemProperty(WeavingURLClassLoader.WEAVING_CLASS_PATH, CLASSES_JAR);
 		WeavingURLClassLoader loader = new WeavingURLClassLoader(getClass().getClassLoader());
