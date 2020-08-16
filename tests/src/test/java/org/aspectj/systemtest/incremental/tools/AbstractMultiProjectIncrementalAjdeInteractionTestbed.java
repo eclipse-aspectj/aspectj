@@ -34,8 +34,6 @@ import org.aspectj.testing.util.FileUtil;
 
 public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeInteractionTestbed {
 
-	public static boolean VERBOSE = false;
-
 	public static void dumptree(IProgramElement node, int indent) {
 		for (int i = 0; i < indent; i++) {
 			System.out.print(" ");
@@ -72,7 +70,6 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		AjdeInteractionTestbed.VERBOSE = VERBOSE;
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
 	}
 
@@ -104,8 +101,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	public void build(String projectName) {
 		constructUpToDateLstFile(projectName, "build.lst");
 		doBuild(projectName);
-		if (AjdeInteractionTestbed.VERBOSE)
+		if (AjdeInteractionTestbed.VERBOSE) {
 			printBuildReport(projectName);
+		}
 	}
 
 	public int getRelationshipCount(String project) {
@@ -124,8 +122,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	public void fullBuild(String projectName) {
 		constructUpToDateLstFile(projectName, "build.lst");
 		doFullBuild(projectName);
-		if (AjdeInteractionTestbed.VERBOSE)
+		if (AjdeInteractionTestbed.VERBOSE) {
 			printBuildReport(projectName);
+		}
 	}
 
 	private void constructUpToDateLstFile(String pname, String configname) {
@@ -148,8 +147,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 
 	private void collectUpFiles(File location, File base, List<String> collectionPoint) {
 		String contents[] = location.list();
-		if (contents == null)
+		if (contents == null) {
 			return;
+		}
 		for (String string : contents) {
 			File f = new File(location, string);
 			if (f.isDirectory()) {
@@ -159,8 +159,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 				try {
 					fileFound = f.getCanonicalPath();
 					String toRemove = base.getCanonicalPath();
-					if (!fileFound.startsWith(toRemove))
+					if (!fileFound.startsWith(toRemove)) {
 						throw new RuntimeException("eh? " + fileFound + "   " + toRemove);
+					}
 					collectionPoint.add(fileFound.substring(toRemove.length() + 1));// +1 captures extra separator
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -191,8 +192,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		File projectSrc = new File(testdataSrcDir + File.separatorChar + projectName + File.separatorChar + overlayDirectory);
 		File destination = new File(getWorkingDir(), projectName);
 
-		if (AjdeInteractionTestbed.VERBOSE)
+		if (AjdeInteractionTestbed.VERBOSE) {
 			System.out.println("Altering project " + projectName);
+		}
 		copy(projectSrc, destination);
 	}
 
@@ -201,8 +203,9 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 	 */
 	protected void copy(File from, File to) {
 		String contents[] = from.list();
-		if (contents == null)
+		if (contents == null) {
 			return;
+		}
 		for (String string : contents) {
 			File f = new File(from, string);
 			File t = new File(to, string);

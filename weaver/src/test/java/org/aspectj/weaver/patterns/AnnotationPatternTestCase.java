@@ -10,7 +10,6 @@
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.bridge.AbortException;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.ResolvedType;

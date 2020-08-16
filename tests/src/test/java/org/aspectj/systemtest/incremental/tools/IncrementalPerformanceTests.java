@@ -104,7 +104,6 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 	 * to check.
 	 */
 	public void testBuildingTwoProjects() {
-		AjdeInteractionTestbed.VERBOSE = true;
 
 		String projA = "Proj64";
 		String projB = "Dependee";

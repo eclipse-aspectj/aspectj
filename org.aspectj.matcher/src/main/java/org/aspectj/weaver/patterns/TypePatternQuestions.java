@@ -14,7 +14,6 @@
 package org.aspectj.weaver.patterns;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.util.FuzzyBoolean;

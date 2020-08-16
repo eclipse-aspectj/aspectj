@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import junit.framework.TestCase;
 import org.apache.commons.digester.Digester;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -81,7 +82,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * @param testCaseClass
 	 * @return
 	 */
-	public static Test loadSuite(Class<?> testCaseClass) {
+	public static Test loadSuite(Class<? extends TestCase> testCaseClass) {
 		TestSuite suite = new TestSuite(testCaseClass.getName());
 		suite.addTestSuite(testCaseClass);
 		TestSetup wrapper = new TestSetup(suite) {

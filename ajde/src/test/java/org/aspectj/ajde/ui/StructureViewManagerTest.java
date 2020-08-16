@@ -14,7 +14,6 @@
 package org.aspectj.ajde.ui;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;
@@ -37,10 +36,6 @@ public class StructureViewManagerTest extends AjdeTestCase {
 	private final NullIdeStructureViewRenderer renderer = new NullIdeStructureViewRenderer();
 	private File testFile;
 	private StructureViewProperties properties;
-
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(StructureViewManagerTest.class);
-	}
 
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();

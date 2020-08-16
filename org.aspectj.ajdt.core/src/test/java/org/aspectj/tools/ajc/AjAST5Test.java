@@ -11,7 +11,6 @@
  *******************************************************************/
 package org.aspectj.tools.ajc;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.dom.AST;

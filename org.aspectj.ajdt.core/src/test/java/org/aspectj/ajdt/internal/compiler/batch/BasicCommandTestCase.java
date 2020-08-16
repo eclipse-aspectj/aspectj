@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.ajdt.ajc.*;
-import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 //import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.util.LangUtil;
 
 /**
  * @author hugunin

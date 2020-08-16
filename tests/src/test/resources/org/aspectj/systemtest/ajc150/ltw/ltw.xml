@@ -511,6 +511,7 @@
 			<line text="Hello World!" />
 		</stdout>
 		<stderr>
+		<line text="Archived non-system classes are disabled" vm="14+"/>
 			<line text="TraceFactory.instance=" />
 		</stderr>
 	</ant>

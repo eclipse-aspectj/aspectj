@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.ajdt.ajc.Constants;
-import org.aspectj.testing.util.TestUtil;
 
 public class BcweaverJarMaker {
 

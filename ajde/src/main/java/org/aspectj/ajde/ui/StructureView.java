@@ -14,8 +14,6 @@
 
 package org.aspectj.ajde.ui;
 
-import java.util.Iterator;
-
 import org.aspectj.asm.IProgramElement;
 
 /**

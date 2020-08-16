@@ -13,7 +13,6 @@ package org.aspectj.testing;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.digester.Digester;
@@ -48,7 +47,7 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
         return testMap;
     }
 
-    public static Test loadSuite(Class<?> testCaseClass) {
+    public static Test loadSuite(Class<? extends TestCase> testCaseClass) {
         TestSuite suite = new TestSuite(testCaseClass.getName());
         //suite.addTestSuite(testCaseClass);
 

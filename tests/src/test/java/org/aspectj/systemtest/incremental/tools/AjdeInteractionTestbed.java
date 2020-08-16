@@ -41,7 +41,7 @@ import junit.framework.TestCase;
  */
 public class AjdeInteractionTestbed extends TestCase {
 
-	public static boolean VERBOSE = System.getProperty("aspectj.tests.verbose","true").equalsIgnoreCase("true");
+	public final static boolean VERBOSE = System.getProperty("aspectj.tests.verbose", "true").equalsIgnoreCase("true");
 
 	public static String testdataSrcDir = "../tests/multiIncremental";
 	protected static File sandboxDir;
