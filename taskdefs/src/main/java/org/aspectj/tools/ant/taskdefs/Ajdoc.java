@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 2000-2001 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     2006, Arno Schmidmeier, (reactivated the source and removed deprecated calls)
  * ******************************************************************/
 
@@ -120,7 +120,7 @@ public class Ajdoc extends MatchingTask {
         if (setif(b, flag)) cmd.createArgument().setValue(val);
         return b;
     }
-    
+
     public void setSource(String input) {
         source = input;
     }
@@ -162,11 +162,11 @@ public class Ajdoc extends MatchingTask {
     public void addFileset(FileSet fs) {
         fileSets.addElement(fs);
     }
-    
+
     private void addFileSets() {
     	if(sourcefiles == null)
     		sourcefiles = new ArrayList<>();
-    	
+
         Enumeration<FileSet> e = fileSets.elements();
         while (e.hasMoreElements()) {
             FileSet fs = (FileSet) e.nextElement();
@@ -183,17 +183,17 @@ public class Ajdoc extends MatchingTask {
 			}
         }
     }
-    
+
     public void setPackagenames(String list) {
         (packagenames == null ?
          packagenames = new ArrayList<>() :
          packagenames).addAll(strings(list, true));
     }
-    
+
     public void setAccess(AccessType at) {
         cmd.createArgument().setValue("-" + at.getValue());
     }
-    
+
     public void setPackageList(String packageList) {
         this.packageList = getProject().resolveFile(packageList);
     }
@@ -211,11 +211,11 @@ public class Ajdoc extends MatchingTask {
                 classpath = new Path(getProject()) :
                 classpath).createPath();
     }
-    
+
     public void setClasspathref(Reference id) {
         createClasspath().setRefid(id);
     }
-    
+
     public void setBootclasspath(Path path) { // todo: unsupported
         if (bootclasspath == null) {
             bootclasspath = path;
@@ -229,12 +229,12 @@ public class Ajdoc extends MatchingTask {
                 bootclasspath = new Path(getProject()) :
                 bootclasspath).createPath();
     }
-    
+
     public void setBootclasspathref(Reference bootclasspathref) { // todo: unsupported
         createBootclasspath().setRefid(bootclasspathref);
     }
 
-    public void setInternalclasspath(Path internalclasspath) { 
+    public void setInternalclasspath(Path internalclasspath) {
         if (this.internalclasspath == null) {
             this.internalclasspath = internalclasspath;
         } else {
@@ -248,12 +248,12 @@ public class Ajdoc extends MatchingTask {
         }
         return internalclasspath.createPath();
     }
-        
-    
+
+
     public void setInternalclasspathref(Reference internalclasspathref) {
         createInternalclasspath().setRefid(internalclasspathref);
     }
-    
+
     public void setExtdirs(Path path) {
         if (extdirs == null) {
             extdirs = path;
@@ -333,7 +333,7 @@ public class Ajdoc extends MatchingTask {
     public void addBottom(Html text) {
         bottom = text;
     }
-    
+
     public void setVerbose(boolean b) {
         setif(b, "-verbose");
     }
@@ -416,7 +416,7 @@ public class Ajdoc extends MatchingTask {
             }
         }
     }
-    
+
     public Group createGroup() {
         Group group = new Group();
         groups.add(group);
@@ -448,7 +448,7 @@ public class Ajdoc extends MatchingTask {
     }
 
     public void setSerialwarn(boolean serialwarn) {
-        setif(serialwarn, "-serialwarn"); 
+        setif(serialwarn, "-serialwarn");
     }
 
     public void setHelpfile(String helpfile) {
@@ -582,7 +582,7 @@ public class Ajdoc extends MatchingTask {
         	cmd.createArgument().setValue("-bottom");
         	cmd.createArgument().setValue(getProject().replaceProperties(bottom.getText()));
         }
-        
+
         for (Link link: links) {
             if (link.href == null) {
                 throw new BuildException("Link href cannot be null!", getLocation());
@@ -699,14 +699,14 @@ public class Ajdoc extends MatchingTask {
 
     protected int compile() throws BuildException { // todo: doc that fork is ignored
         try {
-            String[] args = cmd.getArguments(); 
+            String[] args = cmd.getArguments();
             if (fork) {
                 log("Warning: fork is ignored ", Project.MSG_WARN);
             }
-            Main.main(args); 
+            Main.main(args);
             if (Main.hasAborted())
             	return 1;
-            else 
+            else
             	return 0;
         } catch (Throwable t) {
             throw new BuildException(t);
@@ -714,7 +714,7 @@ public class Ajdoc extends MatchingTask {
     }
 
     protected interface Mapper<T> {
-        public T map(String str);
+        T map(String str);
     }
 
     protected final <T> List<T> list(String str, Mapper<T> mapper) {

@@ -65,6 +65,6 @@ package org.aspectj.apache.bcel.generic;
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface InstructionTargeter {
-  public boolean containsTarget(InstructionHandle ih);
-  public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih);
+  boolean containsTarget(InstructionHandle ih);
+  void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih);
 }

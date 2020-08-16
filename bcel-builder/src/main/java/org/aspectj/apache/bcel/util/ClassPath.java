@@ -366,28 +366,28 @@ public class ClassPath implements Serializable {
 		/**
 		 * @return input stream for class file.
 		 */
-		public abstract InputStream getInputStream() throws IOException;
+		InputStream getInputStream() throws IOException;
 
 		/**
 		 * @return canonical path to class file.
 		 */
-		public abstract String getPath();
+		String getPath();
 
 		/**
 		 * @return base path of found class, i.e. class is contained relative to
 		 *         that path, which may either denote a directory, or zip file
 		 */
-		public abstract String getBase();
+		String getBase();
 
 		/**
 		 * @return modification time of class file.
 		 */
-		public abstract long getTime();
+		long getTime();
 
 		/**
 		 * @return size of class file.
 		 */
-		public abstract long getSize();
+		long getSize();
 	}
 
 	private static class Dir extends PathEntry {

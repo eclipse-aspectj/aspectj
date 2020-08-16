@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2006 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement IBM     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Andy Clement IBM     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -18,5 +18,5 @@ package org.aspectj.weaver.patterns;
  * @see WildTypePattern.VerifyBoundsForTypePattern
  */
 public interface IVerificationRequired {
-	public void verify();
+	void verify();
 }

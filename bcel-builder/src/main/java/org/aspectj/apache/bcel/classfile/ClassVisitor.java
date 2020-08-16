@@ -64,117 +64,117 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 /**
  * Interface to make use of the Visitor pattern programming style. I.e. a class that implements this interface can traverse the
  * contents of a Java class just by calling the `accept' method which all classes have.
- * 
+ *
  * Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
- * 
+ *
  * @version $Id: ClassVisitor.java,v 1.4 2009/09/15 19:40:13 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface ClassVisitor {
-	public void visitCode(Code obj);
+	void visitCode(Code obj);
 
-	public void visitCodeException(CodeException obj);
+	void visitCodeException(CodeException obj);
 
-	public void visitConstantClass(ConstantClass obj);
+	void visitConstantClass(ConstantClass obj);
 
-	public void visitConstantDouble(ConstantDouble obj);
+	void visitConstantDouble(ConstantDouble obj);
 
-	public void visitConstantFieldref(ConstantFieldref obj);
+	void visitConstantFieldref(ConstantFieldref obj);
 
-	public void visitConstantFloat(ConstantFloat obj);
+	void visitConstantFloat(ConstantFloat obj);
 
-	public void visitConstantInteger(ConstantInteger obj);
+	void visitConstantInteger(ConstantInteger obj);
 
-	public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj);
+	void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj);
 
-	public void visitConstantLong(ConstantLong obj);
+	void visitConstantLong(ConstantLong obj);
 
-	public void visitConstantMethodref(ConstantMethodref obj);
-	
-	public void visitConstantMethodHandle(ConstantMethodHandle obj);
+	void visitConstantMethodref(ConstantMethodref obj);
 
-	public void visitConstantNameAndType(ConstantNameAndType obj);
-	
-	public void visitConstantMethodType(ConstantMethodType obj);
-	
-	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj);
-	
-	public void visitConstantDynamic(ConstantDynamic obj);
+	void visitConstantMethodHandle(ConstantMethodHandle obj);
 
-	public void visitConstantPool(ConstantPool obj);
+	void visitConstantNameAndType(ConstantNameAndType obj);
 
-	public void visitConstantString(ConstantString obj);
+	void visitConstantMethodType(ConstantMethodType obj);
 
-	public void visitConstantModule(ConstantModule obj);
+	void visitConstantInvokeDynamic(ConstantInvokeDynamic obj);
 
-	public void visitConstantPackage(ConstantPackage obj);
+	void visitConstantDynamic(ConstantDynamic obj);
 
-	public void visitConstantUtf8(ConstantUtf8 obj);
+	void visitConstantPool(ConstantPool obj);
 
-	public void visitConstantValue(ConstantValue obj);
+	void visitConstantString(ConstantString obj);
 
-	public void visitDeprecated(Deprecated obj);
+	void visitConstantModule(ConstantModule obj);
 
-	public void visitExceptionTable(ExceptionTable obj);
+	void visitConstantPackage(ConstantPackage obj);
 
-	public void visitField(Field obj);
+	void visitConstantUtf8(ConstantUtf8 obj);
 
-	public void visitInnerClass(InnerClass obj);
+	void visitConstantValue(ConstantValue obj);
 
-	public void visitInnerClasses(InnerClasses obj);
+	void visitDeprecated(Deprecated obj);
 
-	public void visitJavaClass(JavaClass obj);
+	void visitExceptionTable(ExceptionTable obj);
 
-	public void visitLineNumber(LineNumber obj);
+	void visitField(Field obj);
 
-	public void visitLineNumberTable(LineNumberTable obj);
+	void visitInnerClass(InnerClass obj);
 
-	public void visitLocalVariable(LocalVariable obj);
+	void visitInnerClasses(InnerClasses obj);
 
-	public void visitLocalVariableTable(LocalVariableTable obj);
+	void visitJavaClass(JavaClass obj);
 
-	public void visitMethod(Method obj);
+	void visitLineNumber(LineNumber obj);
 
-	public void visitSignature(Signature obj);
+	void visitLineNumberTable(LineNumberTable obj);
 
-	public void visitSourceFile(SourceFile obj);
+	void visitLocalVariable(LocalVariable obj);
 
-	public void visitSynthetic(Synthetic obj);
-	
-	public void visitBootstrapMethods(BootstrapMethods obj);
+	void visitLocalVariableTable(LocalVariableTable obj);
 
-	public void visitUnknown(Unknown obj);
+	void visitMethod(Method obj);
 
-	public void visitStackMap(StackMap obj);
+	void visitSignature(Signature obj);
 
-	public void visitStackMapEntry(StackMapEntry obj);
+	void visitSourceFile(SourceFile obj);
 
-	public void visitEnclosingMethod(EnclosingMethod obj);
+	void visitSynthetic(Synthetic obj);
 
-	public void visitRuntimeVisibleAnnotations(RuntimeVisAnnos obj);
+	void visitBootstrapMethods(BootstrapMethods obj);
 
-	public void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos obj);
+	void visitUnknown(Unknown obj);
 
-	public void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos obj);
+	void visitStackMap(StackMap obj);
 
-	public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos obj);
+	void visitStackMapEntry(StackMapEntry obj);
 
-	public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos obj);
+	void visitEnclosingMethod(EnclosingMethod obj);
 
-	public void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos obj);
+	void visitRuntimeVisibleAnnotations(RuntimeVisAnnos obj);
 
-	public void visitAnnotationDefault(AnnotationDefault obj);
+	void visitRuntimeInvisibleAnnotations(RuntimeInvisAnnos obj);
 
-	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj);
+	void visitRuntimeVisibleParameterAnnotations(RuntimeVisParamAnnos obj);
 
-	public void visitMethodParameters(MethodParameters methodParameters);
-	
+	void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos obj);
+
+	void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos obj);
+
+	void visitRuntimeInvisibleTypeAnnotations(RuntimeInvisTypeAnnos obj);
+
+	void visitAnnotationDefault(AnnotationDefault obj);
+
+	void visitLocalVariableTypeTable(LocalVariableTypeTable obj);
+
+	void visitMethodParameters(MethodParameters methodParameters);
+
 	// J9:
-	public void visitModule(Module module);
-	public void visitModulePackages(ModulePackages modulePackage);
-	public void visitModuleMainClass(ModuleMainClass moduleMainClass);
+	void visitModule(Module module);
+	void visitModulePackages(ModulePackages modulePackage);
+	void visitModuleMainClass(ModuleMainClass moduleMainClass);
 
 	// J11:
-	public void visitNestHost(NestHost nestHost);
-	public void visitNestMembers(NestMembers nestMembers);
+	void visitNestHost(NestHost nestHost);
+	void visitNestMembers(NestMembers nestMembers);
 }

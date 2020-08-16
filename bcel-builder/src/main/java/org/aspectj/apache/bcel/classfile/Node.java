@@ -61,5 +61,5 @@ package org.aspectj.apache.bcel.classfile;
  * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface Node {
-  public void accept(ClassVisitor obj);    
+  void accept(ClassVisitor obj);
 }

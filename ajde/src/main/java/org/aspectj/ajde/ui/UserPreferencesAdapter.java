@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -20,48 +20,48 @@ import java.util.List;
 /**
  * This interface needs to be implemented by an IDE extension in order for AJDE
  * to store properties in a way that matches the IDE's property storing facilities.
- * 
+ *
  * @author	Mik Kersten
  */
 public interface UserPreferencesAdapter {
 
 	/**
 	 * Retrieves a global IDE option.
-	 */ 
-	public String getGlobalPreference(String name);
-	
+	 */
+	String getGlobalPreference(String name);
+
 	/**
 	 * Retrieves a global IDE option.
-	 */ 
-	public List getGlobalMultivalPreference(String name);
-	
+	 */
+	List getGlobalMultivalPreference(String name);
+
 	/**
 	 * Sets a global IDE option with a single value.
-	 */ 
-	public void setGlobalPreference(String name, String value);
-	
+	 */
+	void setGlobalPreference(String name, String value);
+
 	/**
 	 * Sets a global IDE option with multiple values.
-	 */ 
-	public void setGlobalMultivalPreference(String name, List values);
-	
+	 */
+	void setGlobalMultivalPreference(String name, List values);
+
 	/**
 	 * Retrieves an option for the currently active project.
-	 */ 
-	public String getProjectPreference(String name);
-	
+	 */
+	String getProjectPreference(String name);
+
 	/**
 	 * Retrieves an option for the currently active project.
-	 */ 
-	public List getProjectMultivalPreference(String name);
-	
+	 */
+	List getProjectMultivalPreference(String name);
+
 	/**
 	 * Sets an option for the currently active project.
-	 */ 
-	public void setProjectPreference(String name, String value);
-	
+	 */
+	void setProjectPreference(String name, String value);
+
 	/**
 	 * Sets an option for the currently active project.
-	 */ 
-	public void setProjectMultivalPreference(String name, List values);	
+	 */
+	void setProjectMultivalPreference(String name, List values);
 }

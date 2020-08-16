@@ -1,26 +1,26 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Mik Kersten	  port to AspectJ 1.1+ code base
  * ******************************************************************/
 
 package org.aspectj.tools.ajdoc;
 
 interface Config {
-	
-    static final String DECL_ID_STRING     = "__AJDECLID:";
-    static final String DECL_ID_TERMINATOR = ":__";
-    static final String WORKING_DIR        = "ajdocworkingdir";
-    static final String DIR_SEP_CHAR       = "/";
-    static final String USAGE =
+
+    String DECL_ID_STRING     = "__AJDECLID:";
+    String DECL_ID_TERMINATOR = ":__";
+    String WORKING_DIR        = "ajdocworkingdir";
+    String DIR_SEP_CHAR       = "/";
+    String USAGE =
                                "Usage: ajdoc <options> <source files>\n" +
                                "\n" +
                                "where <options> includes:\n"+

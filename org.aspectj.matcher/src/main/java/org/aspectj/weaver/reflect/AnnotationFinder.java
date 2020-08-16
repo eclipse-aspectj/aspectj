@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005, 2017 Contributors.
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
@@ -31,9 +31,9 @@ public interface AnnotationFinder {
 
 	Object getAnnotationFromMember(ResolvedType annotationType, Member aMember);
 
-	public AnnotationAJ getAnnotationOfType(UnresolvedType ofType, Member onMember);
+	AnnotationAJ getAnnotationOfType(UnresolvedType ofType, Member onMember);
 
-	public String getAnnotationDefaultValue(Member onMember);
+	String getAnnotationDefaultValue(Member onMember);
 
 	Object getAnnotationFromClass(ResolvedType annotationType, Class<?> aClass);
 

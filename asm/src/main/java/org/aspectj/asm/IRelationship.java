@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  * ******************************************************************/
 package org.aspectj.asm;
 
@@ -17,27 +17,27 @@ import java.util.List;
 
 /**
  * A relationship has a name (e.g. 'declare warning') and some set of affected targets.
- * 
+ *
  * @author Mik Kersten
  * @author Andy Clement
  */
 public interface IRelationship extends Serializable {
 
-	public String getName();
+	String getName();
 
-	public Kind getKind();
+	Kind getKind();
 
-	public void addTarget(String handle);
+	void addTarget(String handle);
 
-	public List<String> getTargets();
+	List<String> getTargets();
 
-	public String getSourceHandle();
+	String getSourceHandle();
 
-	public boolean hasRuntimeTest();
+	boolean hasRuntimeTest();
 
-	public boolean isAffects();
+	boolean isAffects();
 
-	public static class Kind implements Serializable { // typesafe enum
+	class Kind implements Serializable { // typesafe enum
 
 		private static final long serialVersionUID = -2691351740214705220L;
 
@@ -70,7 +70,7 @@ public interface IRelationship extends Serializable {
 
 		/**
 		 * Return the Kind of the relationship that is passed in by name.
-		 * 
+		 *
 		 * @param stringFormOfRelationshipKind the relationship name, eg. 'declare warning', 'declare error', etc.
 		 * @return the Kind instance
 		 */

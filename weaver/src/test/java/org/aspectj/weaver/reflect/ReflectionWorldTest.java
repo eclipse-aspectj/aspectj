@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2005,2017 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
@@ -39,7 +39,7 @@ public class ReflectionWorldTest extends TestCase {
 		assertNotNull(rt);
 		assertEquals("Ljava/lang/Object;", rt.getSignature());
 	}
-	
+
 	// Removed for now. In Spring the reflection worlds are customized by introducing new
 	// PCD handlers. It means more thought needs to be put into reusing worlds.
 	public void xtestReflectionWorldFactory() throws Exception {
@@ -53,31 +53,31 @@ public class ReflectionWorldTest extends TestCase {
 
 		ResolvedType stringClass1 = a.resolve(String.class);
 		assertNotNull(stringClass1);
-		
+
 		ReflectionWorld b = ReflectionWorld.getReflectionWorldFor(wcl1);
-		
+
 		// They should be the same because the classloader has not gone away
 		assertTrue(a==b);
-		
+
 		cl1 = null;
 		for (int i=0;i<100;i++) {
 			System.gc(); // How robust is it that this should be causing the reference to be collected?
 		}
 		b = ReflectionWorld.getReflectionWorldFor(wcl1);
-		
+
 		assertFalse(a==b);
-		
+
 		cl1 = new URLClassLoader(new URL[] {}, parent);
 		wcl1 = new WeakClassLoaderReference(cl1);
 		a = ReflectionWorld.getReflectionWorldFor(wcl1);
 		b = ReflectionWorld.getReflectionWorldFor(wcl2);
 		assertFalse(a==b);
-		
+
 		Field declaredField = ReflectionWorld.class.getDeclaredField("rworlds");
 		declaredField.setAccessible(true);
 		Map worlds = (Map)declaredField.get(null);
 		assertEquals(2, worlds.size());
-		
+
 		cl2 = null;
 		for (int i=0;i<100;i++) {
 			System.gc(); // How robust is it that this should be causing the reference to be collected?
@@ -91,12 +91,12 @@ public class ReflectionWorldTest extends TestCase {
 		}
 		ReflectionWorld.getReflectionWorldFor(wcl1); // need to call this to trigger tidyup
 		assertEquals(0, worlds.size());
-		
+
 		cl1 = new URLClassLoader(new URL[] {}, parent);
 		wcl1 = new WeakClassLoaderReference(cl1);
 		ReflectionWorld reflectionWorldFor = ReflectionWorld.getReflectionWorldFor(wcl1);
 		assertEquals(1, worlds.size());
-		ReflectionWorld.cleanUpWorlds();		
+		ReflectionWorld.cleanUpWorlds();
 		assertEquals(0, worlds.size());
 	}
 
@@ -112,10 +112,10 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals("int", UnresolvedType.INT, world.resolve(int.class));
 		assertEquals("void", UnresolvedType.VOID, world.resolve(void.class));
 	}
-	
+
 	static class AbstractSuperClass<A,B> {}
-	static interface InterfaceOne {}
-	static interface InterfaceTwo<A> {}
+	interface InterfaceOne {}
+	interface InterfaceTwo<A> {}
 	static class ID {}
 	static abstract class AbstractTestClass<T> extends AbstractSuperClass<T,ID> implements InterfaceOne, InterfaceTwo<T> {
 
@@ -124,9 +124,9 @@ public class ReflectionWorldTest extends TestCase {
 //	static class ConcreteClass extends AbstractTestClass<TestType> {
 	static class ConcreteClass extends AbstractTestClass<List<TestType>> {
 	}
-	
+
 	static class Bar extends ConcreteClass {}
-	
+
 	public void testGenerics() {
 		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 //		world.lookupOrCreateName(UnresolvedType.forName(AbstractTestClass.class.getName()));
@@ -145,14 +145,14 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals("java.lang.String",stringType.getTypeName());
 		ResolvedType stringResolvedType = converter.fromType(stringType);
 		assertEquals("java.lang.String",stringResolvedType.getName());
-		
+
 		// public String m() { return ""; }
 		method = TestClass2.class.getDeclaredMethod("m");
 		stringType = method.getGenericReturnType();
 		assertEquals("java.lang.String",stringType.getTypeName());
 		stringResolvedType = converter.fromType(stringType);
 		assertEquals("java.lang.String",stringResolvedType.getName());
-		
+
 		// Verify that the conversion process creates the same thing as the bcel unpacking
 
 		// Here the return type is a non-static inner of a generic class
@@ -165,13 +165,13 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals(UnresolvedType.TypeKind.SIMPLE,rType_Inner.getTypekind());
 		ResolvedType rType_Outer = rType_Inner.getOuterClass();
 		assertEquals("Lorg/aspectj/weaver/reflect/ReflectionWorldTest$TestClass2;",rType_Outer.getSignature());
-		
+
 		BcelWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 		bWorld.setBehaveInJava5Way(true);
 		UnresolvedType javaUtilHashMap = UnresolvedType.forName("java.util.HashMap");
 		ReferenceType rawType = (ReferenceType) bWorld.resolve(javaUtilHashMap);
 		assertNotNull(rawType);
-		
+
 		// Now use bcel to resolve the same m2 method, and compare the signatures of the return types
 		ResolvedType bResolved_TestClass2 = bWorld.resolve(UnresolvedType.forName(TestClass2.class.getName()));
 		assertNotNull(bResolved_TestClass2);
@@ -185,17 +185,17 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals(bType_Inner.getSignature(),rType_Inner.getSignature());
 		assertEquals(bType_Outer.getSignature(),rType_Outer.getSignature());
 	}
-	
+
 
 	public void xtestTypeConversions_509327_2() throws Exception {
 		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
 		BcelWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 		bWorld.setBehaveInJava5Way(true);
-		
+
 		// Slightly more advanced, now the method is returning a parameterized form of the outer
 		// generic class
-		
+
 		// public TestClass2<String>.Inner m3() { return new TestClass2<String>.Inner("Foo"); }
 		Method method = TestClass2.class.getDeclaredMethod("m3");
 		Type type_ParameterizedInner = method.getGenericReturnType();
@@ -213,7 +213,7 @@ public class ReflectionWorldTest extends TestCase {
 
 		assertEquals(UnresolvedType.TypeKind.SIMPLE,bType_Inner.getTypekind());
 		ResolvedType bType_Outer = bType_Inner.getOuterClass();
-			
+
 		// Fields seem to lose it too, although the backinggenericmember has the info
 //		ResolvedMember bField_f = findField(bResolved_TestClass2,"f");
 //		ResolvedMember backingGenericMember = bField_f.getBackingGenericMember();
@@ -223,29 +223,29 @@ public class ReflectionWorldTest extends TestCase {
 //		System.out.println(bField_f.getSignature());
 //		System.out.println(bField_f.getGenericReturnType());
 	}
-	
+
 //	public void testbar() throws Exception {
 //		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 //		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
-//		
+//
 //		// public TestClass2<String>.Inner m3() { return new TestClass2<String>.Inner("Foo"); }
 //		Method method = TestClass2.class.getDeclaredMethod("m3");
 //		Type type_ParameterizedInner = method.getGenericReturnType();
 //		assertEquals("org.aspectj.weaver.reflect.ReflectionWorldTest.org.aspectj.weaver.reflect.ReflectionWorldTest$TestClass2<java.lang.String>.Inner",type_ParameterizedInner.getTypeName());
 //		ResolvedType rType_ParameterizedInner = converter.fromType(type_ParameterizedInner);
-//		System.out.println(rType_ParameterizedInner);	
+//		System.out.println(rType_ParameterizedInner);
 //		System.out.println(type_ParameterizedInner.getTypeName());
 //	}
-//	
+//
 //	public void testfoo() {
 //		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 //		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
 //		BcelWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 //		bWorld.setBehaveInJava5Way(true);
-//		
+//
 //
 //		ResolvedType bResolved_TestClass2 = bWorld.resolve(UnresolvedType.forName(TestClass2.class.getName()));
-//		ResolvedMember bField_f = findField(bResolved_TestClass2,"f");		
+//		ResolvedMember bField_f = findField(bResolved_TestClass2,"f");
 //		System.out.println(bField_f);
 //		System.out.println(bField_f.getGenericReturnType());
 //		System.out.println(bField_f.getReturnType());
@@ -255,7 +255,7 @@ public class ReflectionWorldTest extends TestCase {
 	static class TestClass {
 		public String m() { return ""; }
 	}
-	
+
 	static class TestClass2<T> {
 		class Inner {
 			T t;
@@ -277,7 +277,7 @@ public class ReflectionWorldTest extends TestCase {
 		}
 		return null;
 	}
-	
+
 	private ResolvedMember findField(ResolvedType resolvedType, String fieldName) {
 		for (ResolvedMember field: resolvedType.getDeclaredFields()) {
 			if (field.getName().equals(fieldName)) {
