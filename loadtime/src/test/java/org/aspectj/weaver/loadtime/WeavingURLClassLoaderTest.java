@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Matthew Webster     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Matthew Webster     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.loadtime;
@@ -28,10 +28,10 @@ import junit.framework.TestCase;
 
 /**
  * @author websterm
- * 
+ *
  */
 public class WeavingURLClassLoaderTest extends TestCase {
-	
+
 	private final static String TESTDATA_PATH = "../weaver/testdata";
 
 	private final static String ASPECTJRT = "../runtime/target/classes";
@@ -360,6 +360,7 @@ public class WeavingURLClassLoaderTest extends TestCase {
 			// Expecting: java.lang.NoClassDefFoundError: LTWAspect
 			String m = ex.getMessage();
 			if (!m.contains("java.lang.NoClassDefFoundError")) {
+				new RuntimeException("Unexpected problem in testIncompletePath", ex).printStackTrace();
 				fail("Expecting java.lang.NoClassDefFoundError but caught " + ex);
 			}
 		}
