@@ -9,7 +9,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 

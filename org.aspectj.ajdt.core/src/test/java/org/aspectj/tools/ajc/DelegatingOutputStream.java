@@ -12,7 +12,6 @@ package org.aspectj.tools.ajc;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 

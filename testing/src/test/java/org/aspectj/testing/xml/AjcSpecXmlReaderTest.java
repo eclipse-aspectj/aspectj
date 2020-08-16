@@ -20,7 +20,6 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
 import org.aspectj.testing.harness.bridge.AjcTest;

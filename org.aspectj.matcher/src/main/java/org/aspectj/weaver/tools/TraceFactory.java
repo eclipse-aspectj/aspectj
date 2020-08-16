@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.weaver.tools;
 
-import org.aspectj.util.LangUtil;
-
 public abstract class TraceFactory {
     
 	public final static String DEBUG_PROPERTY = "org.aspectj.tracing.debug";

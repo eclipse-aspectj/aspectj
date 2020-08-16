@@ -14,8 +14,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.aspectj.util.LangUtil;
-
 import junit.framework.TestCase;
 
 public class PointcutExpressionTest extends TestCase {

@@ -14,7 +14,6 @@ package org.aspectj.apache.bcel.classfile.tests;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;

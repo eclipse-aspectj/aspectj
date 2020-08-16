@@ -19,7 +19,6 @@ import org.aspectj.util.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import junit.framework.TestCase;
 

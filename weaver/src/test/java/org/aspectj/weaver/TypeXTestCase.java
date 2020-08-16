@@ -14,7 +14,6 @@
 package org.aspectj.weaver;
 
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.BcelWorld;
 
 import junit.framework.TestCase;

@@ -12,7 +12,6 @@ package org.aspectj.weaver.tools;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 

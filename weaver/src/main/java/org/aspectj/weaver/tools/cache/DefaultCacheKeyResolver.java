@@ -15,7 +15,6 @@ package org.aspectj.weaver.tools.cache;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.CRC32;

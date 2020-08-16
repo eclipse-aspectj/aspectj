@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.ajdt.ajc.*;
-import org.aspectj.ajdt.ajc.AjdtCommand;
 import org.aspectj.bridge.ICommand;
 //import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.MessageHandler;
-import org.aspectj.util.LangUtil;
 
 /**
  * @author hugunin
@@ -116,7 +114,8 @@ public class BasicCommandTestCase extends CommandTestCase {
 		args.add(getSandboxName());
 		
 		args.add("-classpath");
-		args.add(getRuntimeClasspath() + File.pathSeparator +			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
+		args.add(getRuntimeClasspath() + File.pathSeparator +
+			"../lib/junit/junit.jar;../testing-client/bin;not_found_anywhere.jar");
 		args.add(Constants.TESTDATA_PATH + "/src1/ThisAndModifiers.java");
 		
 		ICommand command = new AjdtCommand();

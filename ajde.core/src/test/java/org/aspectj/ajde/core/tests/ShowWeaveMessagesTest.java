@@ -28,7 +28,6 @@ import org.aspectj.ajde.core.JavaOptions;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
 import org.aspectj.ajde.core.TestMessageHandler;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.util.LangUtil;
 
 /**
  * Weaving messages are complicated things. There are multiple places where weaving takes place and the places vary depending on

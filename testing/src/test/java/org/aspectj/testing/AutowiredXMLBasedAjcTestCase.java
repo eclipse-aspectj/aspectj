@@ -13,7 +13,6 @@ package org.aspectj.testing;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.digester.Digester;

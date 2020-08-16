@@ -17,7 +17,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.aspectj.lang.annotation.Aspect;
