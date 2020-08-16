@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -28,6 +28,8 @@ import org.aspectj.testing.run.IRunStatus;
 import org.aspectj.testing.run.WrappedRunIterator;
 import org.aspectj.testing.util.StructureModelUtil;
 import org.aspectj.testing.util.StructureModelUtil.ModelIncorrectException;
+import org.aspectj.testing.xml.AjcSpecXmlReader;
+import org.aspectj.testing.xml.IXmlWritable;
 import org.aspectj.testing.xml.SoftMessage;
 import org.aspectj.testing.xml.XMLWriter;
 import org.aspectj.util.FileUtil;
@@ -39,11 +41,11 @@ import org.aspectj.util.LangUtil;
  * The staging directory is updated by prefix/suffix rules applied
  * to files found below Sandbox.testBaseSrcDir.
  * Files with suffix .{tag}.java are owned by this run
- * and are copied to the staging directory 
+ * and are copied to the staging directory
  * unless they are prefixed "delete.", in which case the
  * corresponding file is deleted.  Any "owned" file is passed to
  * the compiler as the list of changed files.
- * The files entry contains the expected files recompiled. XXX underinclusive 
+ * The files entry contains the expected files recompiled. XXX underinclusive
  * XXX prefer messages for expected files?
  * XXX later: also support specified paths, etc.
  */
@@ -51,7 +53,7 @@ public class IncCompilerRun implements IAjcRun {
 
 	final Spec spec; // nonfinal later to make re-runnable
     Sandbox sandbox;
-    
+
 	/**
 	 * @param handler must not be null, but may be reused in the same thread
 	 */
@@ -60,7 +62,7 @@ public class IncCompilerRun implements IAjcRun {
 		this.spec = spec;
 	}
 
-	/** 
+	/**
 	 * Initialize this from the sandbox, using compiler and changedFiles.
 	 * @param sandbox the Sandbox setup for this test, including copying
 	 *         any changed files, etc.
@@ -85,14 +87,14 @@ public class IncCompilerRun implements IAjcRun {
         this.sandbox = sandbox;
         return doStaging(validator);
 	}
-        
-    /** 
+
+    /**
      * Handle copying and deleting of files per tag.
-     * This returns false unless 
+     * This returns false unless
      * (1) tag is "same", or
      * (2) some file was copied or deleted successfully
      * and there were no failures copying or deleting files.
-     * @return true if staging completed successfully 
+     * @return true if staging completed successfully
      */
     boolean doStaging(final Validator validator) {
         if ("same".equals(spec.tag)) {
@@ -106,7 +108,7 @@ public class IncCompilerRun implements IAjcRun {
             // deleting any with ChangedFilesCollector.DELETE_SUFFIX
             // sigh - delay until after last last-mod-time
             intHolder holder = new intHolder();
-            List copied = new ArrayList();
+			List<File> copied = new ArrayList<>();
             doStaging(validator,".java",holder,copied);
             doStaging(validator,".jar",holder,copied);
             doStaging(validator,".class",holder,copied);
@@ -118,7 +120,7 @@ public class IncCompilerRun implements IAjcRun {
                 result = (0 == holder.numFails);
             }
             if (0 < copied.size()) {
-                File[] files = (File[]) copied.toArray(new File[0]);
+                File[] files = copied.toArray(new File[0]);
                 FileUtil.sleepPastFinalModifiedTime(files);
             }
         } catch (NullPointerException npe) {
@@ -129,8 +131,8 @@ public class IncCompilerRun implements IAjcRun {
         return result;
     }
 
-    
-    private void doStaging(final Validator validator, final String toSuffix,  
+
+    private void doStaging(final Validator validator, final String toSuffix,
     					   final intHolder holder,final List copied)
 	throws IOException
 	{
@@ -165,7 +167,7 @@ public class IncCompilerRun implements IAjcRun {
         File destDir = sandbox.stagingDir;
         FileUtil.copyDir(srcDir, destDir, fromSuffix, toSuffix, deleteOrCount);
     }
-    
+
     private static class intHolder {
         int numCopies;
         int numDeletes;
@@ -181,7 +183,7 @@ public class IncCompilerRun implements IAjcRun {
 		if (null == compiler) {
 			MessageUtil.abort(status, "null compiler");
 		}
-        
+
 //        // This is a list of expected classes (in File-normal form
 //        // relative to base class/src dir, without .class suffix
 //        // -- like "org/aspectj/tools/ajc/Main")
@@ -192,12 +194,12 @@ public class IncCompilerRun implements IAjcRun {
 //        }
 //
 //        // now add any (additional) expected-class entries listed in the spec
-//        // normalize to a similar file path (and do info messages for redundancies).  
+//        // normalize to a similar file path (and do info messages for redundancies).
 //
 //        List alsoChanged = spec.getPathsAsFile(sandbox.stagingDir);
 //        for (Iterator iter = alsoChanged.iterator(); iter.hasNext();) {
 //			File f = (File) iter.next();
-//            
+//
 //            if (expectedClasses.contains(f)) {
 //                // XXX remove old comment changed.contains() works b/c getPathsAsFile producing both File
 //                // normalizes the paths, and File.equals(..) compares these lexically
@@ -205,20 +207,20 @@ public class IncCompilerRun implements IAjcRun {
 //                MessageUtil.info(status, s + f);
 //            } else {
 //                expectedClasses.add(f);
-//            }			
+//            }
 //		}
-//        
+//
 //        // now can create handler, use it for reporting
 //        List errors = spec.getMessages(IMessage.ERROR);
 //        List warnings = spec.getMessages(IMessage.WARNING);
 //        AjcMessageHandler handler = new AjcMessageHandler(errors, warnings, expectedClasses);
-        
-        // same DirChanges handling for JavaRun, CompilerRun, IncCompilerRun 
+
+        // same DirChanges handling for JavaRun, CompilerRun, IncCompilerRun
         // XXX around advice or template method/class
         DirChanges dirChanges = null;
         if (!LangUtil.isEmpty(spec.dirChanges)) {
             LangUtil.throwIaxIfFalse(1 == spec.dirChanges.size(), "expecting only 1 dirChanges");
-            dirChanges = new DirChanges((DirChanges.Spec) spec.dirChanges.get(0));
+            dirChanges = new DirChanges(spec.dirChanges.get(0));
             if (!dirChanges.start(status, sandbox.classesDir)) {
                 return false; // setup failed
             }
@@ -251,9 +253,9 @@ public class IncCompilerRun implements IAjcRun {
             } else {
                 result = (commandResult == handler.expectingCommandTrue());
                 if (! result) {
-                    String m = commandResult 
+                    String m = commandResult
                         ? "incremental compile command did not return false as expected"
-                        : "incremental compile command returned false unexpectedly";                        
+                        : "incremental compile command returned false unexpectedly";
                     MessageUtil.fail(status, m);
                 } else if (null != dirChanges) {
                     result = dirChanges.end(status, sandbox.testBaseDir);
@@ -270,9 +272,9 @@ public class IncCompilerRun implements IAjcRun {
             }
             // XXX weak - actual messages not reported in real-time, no fast-fail
             if (report) {
-                handler.report(status); 
+                handler.report(status);
             }
-        }             
+        }
         return result;
 	}
 
@@ -282,45 +284,45 @@ public class IncCompilerRun implements IAjcRun {
 
 
 	public String toString() {
-      return "" + spec; 
+      return "" + spec;
       //		return "IncCompilerRun(" + spec + ")"; // XXX
 	}
 
-	/** 
+	/**
      * initializer/factory for IncCompilerRun.
      */
 	public static class Spec extends AbstractRunSpec {
         public static final String XMLNAME = "inc-compile";
 
         protected boolean fresh;
-        protected ArrayList classesAdded;
-        protected ArrayList classesRemoved;
-        protected ArrayList classesUpdated;
-        
+		protected ArrayList<String> classesAdded;
+		protected ArrayList<String> classesRemoved;
+		protected ArrayList<String> classesUpdated;
+
         protected String checkModel;
 
         /**
-         * skip description, skip sourceLocation, 
+         * skip description, skip sourceLocation,
          * do keywords, skip options, do paths as classes, do comment,
          * skip staging (always true),  skip badInput (irrelevant)
-         * do dirChanges, do messages but skip children. 
+         * do dirChanges, do messages but skip children.
          */
 //        private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
 //                "", "", null, "", "classes", null, "", "", false, false, true);
-//                
+//
 		/** identifies files this run owns, so {name}.{tag}.java maps to {name}.java */
 		String tag;
 
 		public Spec() {
             super(XMLNAME);
 			setStaging(true);
-            classesAdded = new ArrayList();
-            classesRemoved = new ArrayList();
-            classesUpdated = new ArrayList();
+			classesAdded = new ArrayList<>();
+			classesRemoved = new ArrayList<>();
+			classesUpdated = new ArrayList<>();
             checkModel="";
 		}
-        
-        protected void initClone(Spec spec) 
+
+        protected void initClone(Spec spec)
                 throws CloneNotSupportedException {
             super.initClone(spec);
             spec.fresh = fresh;
@@ -332,30 +334,30 @@ public class IncCompilerRun implements IAjcRun {
             spec.classesUpdated.clear();
             spec.classesUpdated.addAll(classesUpdated);
         }
-        
+
         public Object clone() throws CloneNotSupportedException {
             Spec result = new Spec();
             initClone(result);
-            return result;    
+            return result;
         }
 
 
         public void setFresh(boolean fresh) {
             this.fresh = fresh;
         }
-        
+
 		public void setTag(String input) {
 			tag = input;
 		}
-		
+
 		public void setCheckModel(String thingsToCheck) {
 			this.checkModel=thingsToCheck;
 		}
-		
+
         public String toString() {
             return "IncCompile.Spec(" + tag + ", " + super.toString() + ",["+checkModel+"])";
         }
-        
+
         /** override to set dirToken to Sandbox.CLASSES and default suffix to ".class" */
         public void addDirChanges(DirChanges.Spec spec) { // XXX copy/paste of CompilerRun.Spec...
             if (null == spec) {
@@ -365,7 +367,7 @@ public class IncCompilerRun implements IAjcRun {
             spec.setDefaultSuffix(".class");
             super.addDirChanges(spec);
         }
-        
+
         /** @return a IncCompilerRun with this as spec if setup completes successfully. */
         public IRunIterator makeRunIterator(Sandbox sandbox, Validator validator) {
             IncCompilerRun run = new IncCompilerRun(this);
@@ -375,12 +377,12 @@ public class IncCompilerRun implements IAjcRun {
             }
             return null;
         }
-        
-       /** 
+
+       /**
          * Write this out as a compile element as defined in
          * AjcSpecXmlReader.DOCTYPE.
-         * @see AjcSpecXmlReader#DOCTYPE 
-         * @see IXmlWritable#writeXml(XMLWriter) 
+         * @see AjcSpecXmlReader#DOCTYPE
+         * @see IXmlWritable#writeXml(XMLWriter)
          */
         public void writeXml(XMLWriter out) {
             String attr = XMLWriter.makeAttribute("tag", tag);
@@ -396,20 +398,20 @@ public class IncCompilerRun implements IAjcRun {
             SoftMessage.writeXml(out, getMessages());
             out.endElement(xmlElementName);
         }
-        
+
         public void setClassesAdded(String items) {
             addItems(classesAdded, items);
         }
-        
+
         public void setClassesUpdated(String items) {
             addItems(classesUpdated, items);
         }
-        
+
         public void setClassesRemoved(String items) {
             addItems(classesRemoved, items);
         }
-        
-        private void addItems(List list, String items) {
+
+		private void addItems(List<String> list, String items) {
             if (null != items) {
                 String[] classes = XMLWriter.unflattenList(items);
                 if (!LangUtil.isEmpty(classes)) {
@@ -419,13 +421,13 @@ public class IncCompilerRun implements IAjcRun {
 						}
 					}
                 }
-            }    
+            }
         }
 	} // class IncCompilerRun.Spec
 }
 //   // XXX replaced with method-local class - revisit if useful
-//    
-//	/** 
+//
+//	/**
 //	 * This class collects the list of all changed files and
 //	 * deletes the corresponding file for those prefixed "delete."
 //	 */
@@ -436,7 +438,7 @@ public class IncCompilerRun implements IAjcRun {
 //		final Validator validator;
 //        /** need this to generate paths by clipping */
 //        final File destDir;
-//        
+//
 //		/** @param changed the sink for all files changed (full paths) */
 //		public ChangedFilesCollector(ArrayList changed, File destDir, Validator validator) {
 //			LangUtil.throwIaxIfNull(validator, "ChangedFilesCollector - handler");
@@ -446,11 +448,11 @@ public class IncCompilerRun implements IAjcRun {
 //        }
 //
 //		/**
-//		 * This converts the input File to normal String path form 
+//		 * This converts the input File to normal String path form
 //         * (without any source suffix) and adds it to the list changed.
 //         * If the name of the file is suffixed ".delete..", then
-//		 * delete the corresponding file, and return false (no copy).  
-//         * Return true otherwise (copy file).  
+//		 * delete the corresponding file, and return false (no copy).
+//         * Return true otherwise (copy file).
 //         * @see java.io.FileFilter#accept(File)
 //		 */
 //		public boolean accept(File file) {
@@ -484,9 +486,9 @@ public class IncCompilerRun implements IAjcRun {
 //                        } else {
 //                            int loc = name.lastIndexOf(path);
 //                            if (-1 == loc) { // sigh
-//                                
+//
 //                            } else {
-//                            
+//
 //                            }
 //                        }
 //                    }

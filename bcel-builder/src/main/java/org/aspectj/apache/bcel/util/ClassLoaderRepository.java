@@ -70,7 +70,6 @@ import java.util.WeakHashMap;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
 import org.aspectj.apache.bcel.classfile.JavaClass;
-import org.aspectj.apache.bcel.util.ClassLoaderRepository.SoftHashMap.SpecialValue;
 
 /**
  * The repository maintains information about which classes have been loaded.

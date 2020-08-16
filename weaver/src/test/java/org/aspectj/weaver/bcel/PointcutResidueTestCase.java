@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -16,7 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aspectj.weaver.AdviceKind;
@@ -167,8 +167,7 @@ public class PointcutResidueTestCase extends WeaveTestCase {
 	}
 
 	public void weaveTest(String name, String outName, ShadowMunger planner) throws IOException {
-		List l = new ArrayList(1);
-		l.add(planner);
+		List<ShadowMunger> l = Collections.singletonList(planner);
 		weaveTest(name, outName, l);
 	}
 

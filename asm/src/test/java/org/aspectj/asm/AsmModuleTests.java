@@ -13,11 +13,8 @@ package org.aspectj.asm;
  * ******************************************************************/
 
 
-// default package
-
-import org.aspectj.asm.NameConvertorTest;
-
-import junit.framework.*;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class AsmModuleTests extends TestCase {
 

@@ -10,10 +10,10 @@
  *******************************************************************/
 package org.aspectj.asm;
 
-import junit.framework.TestCase;
-
 import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.asm.internal.NameConvertor;
+
+import junit.framework.TestCase;
 
 public class NameConvertorTest extends TestCase {
 

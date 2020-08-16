@@ -1,16 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Andy Clement
  *******************************************************************************/
 package org.aspectj.matcher.tools;
-
-import junit.framework.TestCase;
 
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -20,13 +18,15 @@ import org.aspectj.weaver.tools.ShadowMatch;
 import org.aspectj.weaver.tools.StandardPointcutExpression;
 import org.aspectj.weaver.tools.StandardPointcutParser;
 
+import junit.framework.TestCase;
+
 /**
  * Test the use of the pointcut parser and matching infrastructure. The org.aspectj.matcher.tools infrastructure used should not be
  * aware of what kind of World it is working with and only operate in terms of the type abstraction expressed in the
  * org.aspectj.matcher project (so Members, etc). These tests only use base java types, there is no other testdata.
- * 
+ *
  * This is based on the Reflection oriented PointcutExpressionTest in the weaver project.
- * 
+ *
  * @author Andy Clement
  */
 public abstract class CommonPointcutExpressionTests extends TestCase {
@@ -739,7 +739,6 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	private ResolvedMember getMethod(ResolvedType type, String methodName, String methodSignature) {
 		ResolvedMember[] methods = type.getDeclaredMethods();
 		for (ResolvedMember method : methods) {
-			System.out.println(method.getName() + method.getSignature());
 			if (method.getName().equals(methodName)
 					&& (methodSignature == null || methodSignature.equals(method.getSignature()))) {
 				return method;

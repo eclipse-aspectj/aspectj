@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -26,11 +26,12 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.testing.util.TestDiffs.TestResult;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
-/** 
- * Result struct for expected/actual diffs for Collection 
+/**
+ * Result struct for expected/actual diffs for Collection
  */
 public class Diffs {
 
@@ -76,8 +77,8 @@ public class Diffs {
 		 * @throws NullPointerException if anything is null
 		 */
 		public int compare(IMessage lhs, IMessage rhs) {
-			IMessage lm = (IMessage) lhs;
-			IMessage rm = (IMessage) rhs;
+			IMessage lm = lhs;
+			IMessage rm = rhs;
             ISourceLocation ls = (lm == null ? null : lm.getSourceLocation());
             ISourceLocation rs = (rm == null ? null : rm.getSourceLocation());
             int left = (ls == null ? -1 : ls.getLine());
@@ -94,8 +95,8 @@ public class Diffs {
 			return true;
 		}
 	};
-	//     // XXX List -> Collection b/c comparator orders 
-	//    public static final Diffs NONE 
+	//     // XXX List -> Collection b/c comparator orders
+	//    public static final Diffs NONE
 	//        = new Diffs("NONE", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 
 	public static Diffs makeDiffs(
@@ -118,7 +119,7 @@ public class Diffs {
 		IMessage[] actual) {
 		return makeDiffs(label, expected, actual, null, null);
 	}
-    
+
     private static int getLine(ISourceLocation loc) {
         int result = -1;
         if (null != loc) {
@@ -148,11 +149,11 @@ public class Diffs {
 		IMessage[] actual,
 		IMessage.Kind[] ignoreExpectedKinds,
 		IMessage.Kind[] ignoreActualKinds) {
-		List exp = getExcept(expected, ignoreExpectedKinds);
-		List act = getExcept(actual, ignoreActualKinds);
+		List<IMessage> exp = getExcept(expected, ignoreExpectedKinds);
+		List<IMessage> act = getExcept(actual, ignoreActualKinds);
 
-		ArrayList missing = new ArrayList();
-		List unexpected = new ArrayList();
+		List<IMessage> missing = new ArrayList<>();
+		List<IMessage> unexpected = new ArrayList<>();
 
 		if (LangUtil.isEmpty(expected)) {
 			unexpected.addAll(act);
@@ -206,7 +207,7 @@ public class Diffs {
 					unexpected.add(actualMessage);
 				}
 			}
-			// missing: all expected results not found 
+			// missing: all expected results not found
 			exp.removeAll(expectedFound);
 			missing.addAll(exp);
 		}
@@ -266,7 +267,7 @@ public class Diffs {
 	//        if (LangUtil.isEmpty(kinds)) {
 	//            return sink.length;
 	//        } else if (LangUtil.isEmpty(sink)) {
-	//            return 0; 
+	//            return 0;
 	//        }
 	//        int from = -1;
 	//        int to = -1;
@@ -337,7 +338,7 @@ public class Diffs {
 	 *     extraSourceLocation[]
 	 *                         if any are defined in expected, then there
 	 *                         must be exactly the actual elements as are
-	 *                         defined in expected (so it is an error to 
+	 *                         defined in expected (so it is an error to
 	 *                         not define all if you define any)
 	 * <pre>
 	 * @param expected
@@ -366,11 +367,11 @@ public class Diffs {
 			return false;
 		}
 		ISourceLocation[] esl =
-			(ISourceLocation[]) expected.getExtraSourceLocations().toArray(
-				new ISourceLocation[0]);
+			expected.getExtraSourceLocations().toArray(
+			new ISourceLocation[0]);
 		ISourceLocation[] asl =
-			(ISourceLocation[]) actual.getExtraSourceLocations().toArray(
-				new ISourceLocation[0]);
+			actual.getExtraSourceLocations().toArray(
+			new ISourceLocation[0]);
 
 		Arrays.sort(esl, SORT_SOURCELOC);
 		Arrays.sort(asl, SORT_SOURCELOC);
@@ -385,7 +386,7 @@ public class Diffs {
 	 * (i.e., it ignored any extra source locations if no expectations stated).
 	 * XXX need const like NO_FILE.
 	 * @param expected the sorted ISourceLocation[] expected
-	 * @param expected the actual sorted ISourceLocation[] 
+	 * @param expected the actual sorted ISourceLocation[]
 	 * @return true if any expected element is expected by the corresponding actual element.
 	 */
 	static boolean expectingSourceLocations(
@@ -442,10 +443,10 @@ public class Diffs {
 		}
 	}
 
-	private static ArrayList getExcept(
+	private static List<IMessage> getExcept(
 		IMessage[] source,
 		IMessage.Kind[] skip) {
-		ArrayList<IMessage> sink = new ArrayList<>();
+		List<IMessage> sink = new ArrayList<>();
 		if (LangUtil.isEmpty(source)) {
 			return sink;
 		}
@@ -482,10 +483,10 @@ public class Diffs {
 	public final String label;
 
 	/** immutable List */
-	public final List missing;
+	public final List<TestResult> missing;
 
 	/** immutable List */
-	public final List unexpected;
+	public final List<TestResult> unexpected;
 
 	/** true if there are any missing or unexpected */
 	public final boolean different;
@@ -505,11 +506,11 @@ public class Diffs {
 			((0 != this.missing.size()) || (0 != this.unexpected.size()));
 	}
 
-	/** 
+	/**
 	 * Report missing and extra items to handler.
-	 * For each item in missing or unexpected, this creates a {kind} IMessage with 
+	 * For each item in missing or unexpected, this creates a {kind} IMessage with
 	 * the text "{missing|unexpected} {label}: {message}"
-	 * where {message} is the result of 
+	 * where {message} is the result of
 	 * <code>MessageUtil.renderMessage(IMessage)</code>.
 	 * @param handler where the messages go - not null
 	 * @param kind the kind of message to construct - not null
@@ -540,7 +541,7 @@ public class Diffs {
 			+ missing.size()
 			+ ")";
 	}
-	public static interface Filter {
+	public interface Filter {
 		/** @return true to keep input in list of messages */
 		boolean accept(Object input);
 	}
