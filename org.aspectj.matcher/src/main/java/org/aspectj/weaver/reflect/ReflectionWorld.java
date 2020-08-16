@@ -10,13 +10,11 @@ package org.aspectj.weaver.reflect;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.IWeavingSupport;
 import org.aspectj.weaver.ReferenceType;

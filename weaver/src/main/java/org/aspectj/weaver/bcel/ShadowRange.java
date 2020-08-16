@@ -12,8 +12,6 @@
 
 package org.aspectj.weaver.bcel;
 
-import java.util.Iterator;
-
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.aspectj.apache.bcel.generic.InstructionBranch;
 import org.aspectj.apache.bcel.generic.InstructionFactory;

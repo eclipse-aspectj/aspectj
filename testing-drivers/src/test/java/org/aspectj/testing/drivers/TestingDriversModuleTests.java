@@ -13,7 +13,6 @@
 package org.aspectj.testing.drivers;
 
 import junit.framework.*;
-import junit.framework.Test;
 
 public class TestingDriversModuleTests extends TestCase {
 

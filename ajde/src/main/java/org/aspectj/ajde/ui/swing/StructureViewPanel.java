@@ -17,7 +17,6 @@ package org.aspectj.ajde.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;

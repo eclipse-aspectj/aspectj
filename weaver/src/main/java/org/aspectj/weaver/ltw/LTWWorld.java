@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Dump.IVisitor;
 import org.aspectj.weaver.ICrossReferenceHandler;
 import org.aspectj.weaver.ReferenceType;

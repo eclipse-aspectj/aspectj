@@ -11,8 +11,6 @@
  * ******************************************************************/
 package org.aspectj.weaver.tools;
 
-import org.aspectj.util.LangUtil;
-
 import junit.framework.TestCase;
 
 /**

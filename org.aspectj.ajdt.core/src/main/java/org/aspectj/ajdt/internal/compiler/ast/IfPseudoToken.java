@@ -34,7 +34,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.UnresolvedType;

@@ -10,7 +10,6 @@ package org.aspectj.ajdt.ajc;
 
 import java.io.File;
 import org.aspectj.testing.util.TestUtil;
-import junit.framework.*;
 
 /**
  * @author Andy Clement

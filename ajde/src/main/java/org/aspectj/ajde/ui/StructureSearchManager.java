@@ -15,7 +15,6 @@
 package org.aspectj.ajde.ui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.asm.AsmManager;

@@ -15,9 +15,6 @@ package org.aspectj.runtime;
 import java.io.*;
 
 import org.aspectj.lang.*;
-import org.aspectj.runtime.reflect.JoinPointImplTest;
-import org.aspectj.runtime.reflect.RuntimePerformanceTest;
-import org.aspectj.runtime.reflect.SignatureTest;
 
 import junit.framework.*;
 

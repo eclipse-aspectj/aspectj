@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;

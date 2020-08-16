@@ -14,7 +14,6 @@ package org.aspectj.ajdt.internal.compiler.lookup;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.aspectj.ajdt.internal.compiler.ast.AspectDeclaration;

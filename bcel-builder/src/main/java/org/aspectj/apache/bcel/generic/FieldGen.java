@@ -54,7 +54,6 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;

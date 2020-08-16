@@ -29,7 +29,6 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.testing.util.TestUtil;
-import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.bcel.LazyClassGen;
 

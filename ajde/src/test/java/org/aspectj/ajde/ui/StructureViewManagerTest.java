@@ -14,7 +14,6 @@
 package org.aspectj.ajde.ui;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.AjdeTestCase;

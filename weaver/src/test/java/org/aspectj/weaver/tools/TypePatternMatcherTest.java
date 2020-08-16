@@ -13,8 +13,6 @@ package org.aspectj.weaver.tools;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.aspectj.util.LangUtil;
-
 import junit.framework.TestCase;
 
 public class TypePatternMatcherTest extends TestCase {

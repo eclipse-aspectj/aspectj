@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
-import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.tools.JoinPointMatch;
 import org.aspectj.weaver.tools.PointcutExpression;
 import org.aspectj.weaver.tools.PointcutParameter;
