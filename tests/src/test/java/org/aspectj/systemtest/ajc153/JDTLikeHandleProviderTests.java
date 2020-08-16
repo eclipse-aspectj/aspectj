@@ -535,8 +535,6 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement pe = top.findElementForLabel(top.getRoot(), kind, ipeName);
 		String found = pe.getHandleIdentifier();
-		System.err.println("expected: " + expectedHandle);
-		System.err.println("actual:   " + found);
 		assertEquals("handleIdentifier - expected " + expectedHandle + ", but found " + found, expectedHandle, found);
 	}
 

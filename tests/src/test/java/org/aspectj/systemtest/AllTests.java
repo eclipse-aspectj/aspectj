@@ -4,8 +4,8 @@
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * ******************************************************************/
 package org.aspectj.systemtest;
 
@@ -36,6 +36,8 @@ import junit.framework.TestSuite;
  * @author IBM
  */
 public class AllTests {
+
+	public final static boolean VERBOSE = System.getProperty("aspectj.tests.verbose", "true").equals("true");
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - JDK 1.3");

@@ -329,13 +329,15 @@ public class AjdeInteractionTestbed extends TestCase {
 	 * Make sure no errors have been recorded
 	 */
 	private void checkForErrors(AjCompiler compiler) {
-		MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
-		if (handler.hasErrorMessages()) {
-			System.err.println("Build errors:");
-			for (IMessage message: handler.getErrorMessages()) {
-				System.err.println(message);
+		if (AjdeInteractionTestbed.VERBOSE) {
+			MultiProjTestMessageHandler handler = (MultiProjTestMessageHandler) compiler.getMessageHandler();
+			if (handler.hasErrorMessages()) {
+				System.err.println("Build errors:");
+				for (IMessage message : handler.getErrorMessages()) {
+					System.err.println(message);
+				}
+				System.err.println("---------");
 			}
-			System.err.println("---------");
 		}
 	}
 

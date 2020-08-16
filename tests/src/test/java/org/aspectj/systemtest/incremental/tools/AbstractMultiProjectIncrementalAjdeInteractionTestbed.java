@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *    Adrian Colyer      initial implementation
  *    Helen Hawkins      Converted to new interface (bug 148190)
  *******************************************************************/
@@ -97,7 +97,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 		File projDir = new File(getWorkingDir(), p);
 		return new File(projDir, "bin" + File.separator + filename);
 	}
-	
+
 	public void build(String projectName) {
 		constructUpToDateLstFile(projectName, "build.lst");
 		doBuild(projectName);
@@ -266,10 +266,12 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 
 	/** @return the number of relationship pairs */
 	protected void printModel(String projectName) throws Exception {
-		dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		getModelFor(projectName).dumprels(pw);
-		pw.flush();
+		if (AjdeInteractionTestbed.VERBOSE) {
+			dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
+			PrintWriter pw = new PrintWriter(System.out);
+			getModelFor(projectName).dumprels(pw);
+			pw.flush();
+		}
 	}
 
 	protected File getProjectRelativePath(String p, String filename) {
