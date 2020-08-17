@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Matthew Webster, Adrian Colyer, 
- *     Martin Lippert     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Matthew Webster, Adrian Colyer,
+ *     Martin Lippert     initial implementation
  *     Andy Clement
  *     Abraham Nevado
  * ******************************************************************/
@@ -55,11 +55,13 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 
 	public WeavingURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, new Object[] { urls, parent });
+		}
 		// System.out.println("WeavingURLClassLoader.WeavingURLClassLoader()");
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("<init>");
+		}
 	}
 
 	public WeavingURLClassLoader(URL[] classURLs, URL[] aspectURLs, ClassLoader parent) {
@@ -91,14 +93,15 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	}
 
 	private static URL[] getURLs(String path) {
-		List urlList = new ArrayList();
+		List<URL> urlList = new ArrayList<>();
 		for (StringTokenizer t = new StringTokenizer(path, File.pathSeparator); t.hasMoreTokens();) {
 			File f = new File(t.nextToken().trim());
 			try {
 				if (f.exists()) {
 					URL url = f.toURL();
-					if (url != null)
+					if (url != null) {
 						urlList.add(url);
+					}
 				}
 			} catch (MalformedURLException e) {
 			}
@@ -121,8 +124,9 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	 * Override to weave class using WeavingAdaptor
 	 */
 	protected Class defineClass(String name, byte[] b, CodeSource cs) throws IOException {
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.enter("defineClass", this, new Object[] { name, b, cs });
+		}
 		// System.err.println("? WeavingURLClassLoader.defineClass(" + name + ", [" + b.length + "])");
 		byte orig[] = b;
 		/* Avoid recursion during adaptor initialization */
@@ -143,16 +147,17 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 			}
 		}
 		Class clazz;
-		
+
 		// On error, define the original form of the class and log the issue
-		try { 
+		try {
 			clazz= super.defineClass(name, b, cs);
 		} catch (Throwable th) {
 			trace.error("Weaving class problem. Original class has been returned. The error was caused because of: " + th, th);
 			clazz= super.defineClass(name, orig, cs);
 		}
-		if (trace.isTraceEnabled())
+		if (trace.isTraceEnabled()) {
 			trace.exit("defineClass", clazz);
+		}
 		return clazz;
 	}
 
@@ -209,15 +214,15 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	// private interface ClassPreProcessorAdaptor extends ClassPreProcessor {
 	// public void addURL(URL url);
 	// }
-	//	
+	//
 	// private class WeavingAdaptorPreProcessor implements ClassPreProcessorAdaptor {
-	//		
+	//
 	// private WeavingAdaptor adaptor;
-	//		
+	//
 	// public WeavingAdaptorPreProcessor (WeavingClassLoader wcl) {
 	// adaptor = new WeavingAdaptor(wcl);
 	// }
-	//	    
+	//
 	// public void initialize() {
 	// }
 	//
@@ -226,7 +231,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	// }
 	//
 	// public void addURL(URL url) {
-	//			
+	//
 	// }
 	// }
 
