@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -40,7 +40,7 @@ import org.aspectj.util.LangUtil;
  * <ul>
  * <li>Set up with any expected changes and/or an expected directory</li>
  * <li>Set up with any file checker</li>
- * <li>start(..) before changes. 
+ * <li>start(..) before changes.
  *     This issues messages for any removed files not found,
  *     which represent an error in the expected changes.</li>
  * <li>Do whatever operations will change the directory</li>
@@ -52,7 +52,7 @@ import org.aspectj.util.LangUtil;
  * When comparing directories, this ignores any paths containing "CVS".
  */
 public class DirChanges {
-    
+
     public static final String DELAY_NAME = "dir-changes.delay";
     private static final long DELAY;
     static {
@@ -71,22 +71,22 @@ public class DirChanges {
 	private static final boolean EXISTS = true;
 
     final Spec spec;
-    
+
     /** start time, in milliseconds - valid only from start(..)..end(..) */
     long startTime;
-    
+
     /** base directory of actual files - valid only from start(..)..end(..) */
     File baseDir;
-    
+
     /** if set, this is run against any resulting existing files
      * specified in added/updated lists.
      * This does not affect expected-directory comparison.
      */
     IFileChecker fileChecker;
-    
+
     /** handler valid from start..end of start(..) and end(..) methods */
     IMessageHandler handler;
-    
+
 	/**
 	 * Constructor for DirChanges.
 	 */
@@ -109,23 +109,23 @@ public class DirChanges {
         this.baseDir = baseDir;
         startTime = 0l;
         final boolean doCompare = false;
-        boolean result 
-                = exists("at start, did not expect added file to exist", !EXISTS, spec.added, doCompare);            
-        result &= exists("at start, expected unchanged file to exist", EXISTS, spec.unchanged, doCompare);            
-        result &= exists("at start, expected updated file to exist", EXISTS, spec.updated, doCompare);            
-        result &= exists("at start, expected removed file to exist", EXISTS, spec.removed, doCompare);            
+        boolean result
+                = exists("at start, did not expect added file to exist", !EXISTS, spec.added, doCompare);
+        result &= exists("at start, expected unchanged file to exist", EXISTS, spec.unchanged, doCompare);
+        result &= exists("at start, expected updated file to exist", EXISTS, spec.updated, doCompare);
+        result &= exists("at start, expected removed file to exist", EXISTS, spec.removed, doCompare);
         startTime = System.currentTimeMillis();
         // ensure tests don't complete in < 1 second, otherwise can confuse fast machines.
         try {
-			Thread.sleep(1000); 
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
         this.handler = oldHandler;
-        return result;        
+        return result;
     }
 
-    
+
     /**
      * Inspect the base dir, issue any messages for
      * files not added, files not updated, and files not removed,
@@ -158,22 +158,22 @@ public class DirChanges {
             final boolean doCompare = (null != fileChecker);
             final boolean fastFail = spec.fastFail;
             boolean result
-                    = exists("at end, expected file was not added",   EXISTS, spec.added, doCompare);            
+                    = exists("at end, expected file was not added",   EXISTS, spec.added, doCompare);
             if (result || !fastFail) {
-                result &= exists("at end, expected file was not unchanged", EXISTS, spec.unchanged, doCompare, false);            
+                result &= exists("at end, expected file was not unchanged", EXISTS, spec.unchanged, doCompare, false);
             }
             if (result || !fastFail) {
-                result &= exists("at end, expected file was not updated", EXISTS, spec.updated, doCompare);            
+                result &= exists("at end, expected file was not updated", EXISTS, spec.updated, doCompare);
             }
             if (result || !fastFail) {
-                result &= exists("at end, file exists, was not removed", !EXISTS, spec.removed, doCompare); 
+                result &= exists("at end, file exists, was not removed", !EXISTS, spec.removed, doCompare);
             }
 //            if (result || !fastFail) {
 //                // XXX validate that unchanged mod-time did not change
 //            }
             // variant 1: compare expected directory
             if (result || !fastFail) {
-                result &= compareDir(srcBaseDir);          
+                result &= compareDir(srcBaseDir);
             }
             return result;
         } finally {
@@ -197,7 +197,7 @@ public class DirChanges {
         }
         File expDir = new File(srcBaseDir, spec.expDir);
         File actDir = baseDir;
-        //System.err.println("XXX comparing actDir=" + actDir + " expDir=" + expDir); 
+        //System.err.println("XXX comparing actDir=" + actDir + " expDir=" + expDir);
         return TestUtil.sameDirectoryContents(handler, expDir, actDir, spec.fastFail);
 	}
 
@@ -206,7 +206,7 @@ public class DirChanges {
     protected void setFileComparer(IFileChecker comp) {
         this.fileChecker = comp;
     }
-    
+
 
 
     /**
@@ -224,7 +224,7 @@ public class DirChanges {
         List pathList,
         boolean doCompare) {
 //        boolean expectStartEarlier = true;
-      	return exists(label, exists, pathList,doCompare, true);    
+      	return exists(label, exists, pathList,doCompare, true);
     }
     protected boolean exists(
         String label,
@@ -235,7 +235,7 @@ public class DirChanges {
         boolean result = true;
         if (!LangUtil.isEmpty(pathList)) {
 //            final File expDir = ((!doCompare || (null == spec.expDir))
-//                ? null 
+//                ? null
 //                : new File(baseDir, spec.expDir));
 			for (Object o : pathList) {
 				final String entry = (String) o;
@@ -269,21 +269,21 @@ public class DirChanges {
     /**
      * Generate fail message "{un}expected {label} file {path} in {baseDir}".
      * @param handler the IMessageHandler sink
-     * @param label String message infix 
+     * @param label String message infix
      * @param path the path to the file
      */
     protected void failMessage(
         IMessageHandler handler,
         boolean exists,
         String label,
-        String path, 
+        String path,
         File file) {
-        MessageUtil.fail(handler, label + " \"" + path + "\" in " + baseDir); 
+        MessageUtil.fail(handler, label + " \"" + path + "\" in " + baseDir);
     }
 
     /** Check actual File found at a path, usually to diff expected/actual contents */
-    public static interface IFileChecker {
-        /** 
+    public interface IFileChecker {
+        /**
          * Check file found at path.
          * Implementations should return false when adding fail (or worse)
          * message to the handler, and true otherwise.
@@ -293,10 +293,10 @@ public class DirChanges {
          * @return false if check failed and messages added to handler
          */
         boolean checkFile(IMessageHandler handler, String path, File actualFile);
-    }  
-// File-comparison code with a bit more generality -- too unweildy    
+    }
+// File-comparison code with a bit more generality -- too unweildy
 //    /**
-//     * Default FileChecker compares files literally, transforming any 
+//     * Default FileChecker compares files literally, transforming any
 //     * with registered normalizers.
 //     */
 //    public static class FileChecker implements IFileChecker {
@@ -304,7 +304,7 @@ public class DirChanges {
 //        NormalizedCompareFiles fileComparer;
 //
 //        public FileChecker(File baseExpectedDir) {
-//            this.baseExpectedDir = baseExpectedDir;    
+//            this.baseExpectedDir = baseExpectedDir;
 //            fileComparer = new NormalizedCompareFiles();
 //        }
 //        public boolean checkFile(IMessageHandler handler, String path, File actualFile) {
@@ -324,8 +324,8 @@ public class DirChanges {
 //        }
 //
 //        protected boolean doCheckFile(
-//            IMessageHandler handler, 
-//            File expectedFile, 
+//            IMessageHandler handler,
+//            File expectedFile,
 //            File actualFile,
 //            String path) {
 //            fileComparer.setHandler(handler);
@@ -333,9 +333,9 @@ public class DirChanges {
 //            return false;
 //        }
 //    }
-    
+
 //    /**
-//     * CompareFiles implementation that pre-processes input 
+//     * CompareFiles implementation that pre-processes input
 //     * to normalize it.  Currently it reads all files except
 //     * .class files, which it disassembles first.
 //     */
@@ -347,13 +347,13 @@ public class DirChanges {
 //            }
 //            return file.getAbsolutePath().replace('\\', '/');
 //        }
-//        
+//
 //        private String[] baseDirs;
 //        private IMessageHandler handler;
-//        
+//
 //        public NormalizedCompareFiles() {
 //        }
-//        
+//
 //        void init(IMessageHandler handler, File[] baseDirs) {
 //            this.handler = handler;
 //            if (null == baseDirs) {
@@ -364,16 +364,16 @@ public class DirChanges {
 //					this.baseDirs[i] = normalPath(baseDirs[i]) + "/";
 //				}
 //            }
-//        } 
-//        
+//        }
+//
 //        private String getClassName(File file) {
 //            String result = null;
 //            String path = normalPath(file);
 //            if (!path.endsWith(".class")) {
-//                    MessageUtil.error(handler, 
-//                        "NormalizedCompareFiles expected " 
+//                    MessageUtil.error(handler,
+//                        "NormalizedCompareFiles expected "
 //                        + file
-//                        + " to end with .class"); 
+//                        + " to end with .class");
 //            } else {
 //                path = path.substring(0, path.length()-6);
 //                for (int i = 0; i < baseDirs.length; i++) {
@@ -381,29 +381,29 @@ public class DirChanges {
 //                        return path.substring(baseDirs[i].length()).replace('/', '.');
 //                    }
 //                }
-//                MessageUtil.error(handler, 
-//                    "NormalizedCompareFiles expected " 
+//                MessageUtil.error(handler,
+//                    "NormalizedCompareFiles expected "
 //                    + file
-//                    + " to start with one of " 
+//                    + " to start with one of "
 //                    + LangUtil.arrayAsList(baseDirs));
 //            }
-//        
+//
 //            return result;
 //        }
-//        
-//        /** 
+//
+//        /**
 //         * Read file as normalized lines, sending handler any messages
 //         * ERROR for input failures and FAIL for processing failures.
-//         * @return NOLINES on error or normalized lines from file otherwise 
+//         * @return NOLINES on error or normalized lines from file otherwise
 //         */
 //        public FileLine[] getFileLines(File file) {
 //            FileLineator capture = new FileLineator();
 //            InputStream in = null;
-//            try { 
+//            try {
 //                if (!file.getPath().endsWith(".class")) {
 //                    in = new FileInputStream(file);
 //                    FileUtil.copyStream(
-//                        new BufferedReader(new InputStreamReader(in)), 
+//                        new BufferedReader(new InputStreamReader(in)),
 //                        new PrintWriter(capture));
 //                } else {
 //                    String name = getClassName(file);
@@ -416,7 +416,7 @@ public class DirChanges {
 //                    LazyClassGen.disassemble(path, name, capture);
 //                }
 //            } catch (IOException e) {
-//                MessageUtil.fail(handler, 
+//                MessageUtil.fail(handler,
 //                    "NormalizedCompareFiles IOException reading " + file, e);
 //                return null;
 //            } finally {
@@ -429,44 +429,44 @@ public class DirChanges {
 //            }
 //            String missed = capture.getMissed();
 //            if (!LangUtil.isEmpty(missed)) {
-//                MessageUtil.fail(handler, 
-//                    "NormalizedCompareFiles missed input: " 
+//                MessageUtil.fail(handler,
+//                    "NormalizedCompareFiles missed input: "
 //                    + missed);
 //                return null;
 //            } else {
 //                return capture.getFileLines();
-//            }                    
-//        } 
-//    
-//        
-//    }           
- 
+//            }
+//        }
+//
+//
+//    }
+
     /**
      * Specification for a set of File added, removed, or updated
-     * in a given directory, or for a directory base for a tree of expected files. 
+     * in a given directory, or for a directory base for a tree of expected files.
      * If defaultSuffix is specified, entries may be added without it.
      * Currently the directory tree
-     * only is used to verify files that are expected 
-     * and found after the process completes. 
+     * only is used to verify files that are expected
+     * and found after the process completes.
      */
     public static class Spec implements IXmlWritable {
         /** XML element name */
         public static final String XMLNAME = "dir-changes";
-        
+
          /** a symbolic name for the base directory */
         String dirToken; // XXX default to class?
-        
-        /** if set, then append to specified paths when seeking files */        
+
+        /** if set, then append to specified paths when seeking files */
         String defaultSuffix;
-        
-        /** relative path of dir with expected files for comparison */        
+
+        /** relative path of dir with expected files for comparison */
         String expDir;
-        
+
         long delayInMilliseconds = DELAY;
-        
+
         /** if true, fail on first mis-match */
         boolean fastFail;
-        
+
         /** relative paths (String) of expected files added */
         final List<String> added;
 
@@ -476,26 +476,26 @@ public class DirChanges {
         /** relative paths (String) of expected files updated/changed */
         final List<String> updated;
 
-        /** relative paths (String) of expected files NOT 
-         * added, removed, or changed 
+        /** relative paths (String) of expected files NOT
+         * added, removed, or changed
          * XXX unchanged unimplemented
          */
         final List<String> unchanged;
-    
+
         public Spec() {
             added = new ArrayList<>();
             removed = new ArrayList<>();
             updated = new ArrayList<>();
             unchanged = new ArrayList<>();
         }
-        
+
         /**
          * @param dirToken the symbol name of the base directory (classes, run)
          */
         public void setDirToken(String dirToken) {
             this.dirToken = dirToken;
         }
-        
+
         /**
          * Set the directory containing the expected files.
          * @param expectedDirRelativePath path relative to the test base
@@ -504,7 +504,7 @@ public class DirChanges {
         public void setExpDir(String expectedDirRelativePath) {
             expDir = expectedDirRelativePath;
         }
-        
+
         public void setDelay(String delay) {
             if (null != delay) {
                 // let NumberFormatException propogate up
@@ -514,43 +514,43 @@ public class DirChanges {
                 }
             }
         }
-        
+
         /**
          * @param clipSuffix the String suffix, if any, to clip automatically
          */
         public void setDefaultSuffix(String defaultSuffix) {
             this.defaultSuffix = defaultSuffix;
         }
-        
+
         public void setAdded(String items) {
             XMLWriter.addFlattenedItems(added, items);
         }
-        
+
         public void setRemoved(String items) {
             XMLWriter.addFlattenedItems(removed, items);
         }
-        
+
         public void setUpdated(String items) {
             XMLWriter.addFlattenedItems(updated, items);
         }
-        
+
         public void setUnchanged(String items) {
             XMLWriter.addFlattenedItems(unchanged, items);
         }
         public void setFastfail(boolean fastFail) {
             this.fastFail = fastFail;
         }
-        
+
         /** @return true if some list was specified */
         private boolean hasFileList() {
-            return (!LangUtil.isEmpty(added) 
+            return (!LangUtil.isEmpty(added)
             		|| !LangUtil.isEmpty(removed)
                     || !LangUtil.isEmpty(updated)
                     || !LangUtil.isEmpty(unchanged)
                     );
         }
-        
-        /** 
+
+        /**
          * Emit specification in XML form if not empty.
          * This writes nothing if there is no expected dir
          * and there are no added, removed, or changed.
@@ -588,7 +588,7 @@ public class DirChanges {
             }
             out.endElement(XMLNAME);
         }
-        
+
         /**
 		 * Write list as elements to XMLWriter.
 		 * @param out XMLWriter output sink
@@ -604,7 +604,7 @@ public class DirChanges {
 					continue;
 				}
 				spec.writeXml(out);
-			}            
+			}
 		}
 
 } // class Spec

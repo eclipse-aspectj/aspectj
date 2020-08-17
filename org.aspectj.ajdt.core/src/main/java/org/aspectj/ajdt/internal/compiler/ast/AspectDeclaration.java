@@ -403,8 +403,8 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 	}
 
-	private static interface BodyGenerator {
-		public void generate(CodeStream codeStream);
+	private interface BodyGenerator {
+		void generate(CodeStream codeStream);
 	}
 
 	private void generateMethod(ClassFile classFile, ResolvedMember member, BodyGenerator gen) {

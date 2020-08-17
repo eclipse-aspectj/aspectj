@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Andy Clement - June 2005 - separated out from ResolvedType
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -25,124 +25,124 @@ import org.aspectj.weaver.patterns.PerClause;
 
 public interface ReferenceTypeDelegate {
 
-	public boolean isAspect();
+	boolean isAspect();
 
 	/**
 	 * @return true if the type is an annotation style aspect (a type marked @Aspect)
 	 */
-	public boolean isAnnotationStyleAspect();
+	boolean isAnnotationStyleAspect();
 
-	public boolean isInterface();
+	boolean isInterface();
 
-	public boolean isEnum();
+	boolean isEnum();
 
-	public boolean isAnnotation();
+	boolean isAnnotation();
 
-	public String getRetentionPolicy();
+	String getRetentionPolicy();
 
 	/**
 	 * @return true if this annotation type can be on a regular type (ie. it doesn't specify anything or it specifies TYPE)
 	 */
-	public boolean canAnnotationTargetType();
+	boolean canAnnotationTargetType();
 
 	/**
 	 * @return all the possible targets that this annotation can be placed upon
 	 */
-	public AnnotationTargetKind[] getAnnotationTargetKinds();
+	AnnotationTargetKind[] getAnnotationTargetKinds();
 
 	/**
 	 * @return true if this annotation type has a retention policy of RUNTIME
 	 */
-	public boolean isAnnotationWithRuntimeRetention();
+	boolean isAnnotationWithRuntimeRetention();
 
-	public boolean isClass();
+	boolean isClass();
 
-	public boolean isGeneric();
+	boolean isGeneric();
 
-	public boolean isAnonymous();
+	boolean isAnonymous();
 
 	/**
 	 * @return true if this class is nested (this includes: member classes, local classes, anonymous classes)
 	 */
-	public boolean isNested();
+	boolean isNested();
 
-	public boolean hasAnnotation(UnresolvedType ofType);
+	boolean hasAnnotation(UnresolvedType ofType);
 
-	public AnnotationAJ[] getAnnotations();
+	AnnotationAJ[] getAnnotations();
 
-	public ResolvedType[] getAnnotationTypes();
+	ResolvedType[] getAnnotationTypes();
 
-	public ResolvedMember[] getDeclaredFields();
+	ResolvedMember[] getDeclaredFields();
 
-	public ResolvedType[] getDeclaredInterfaces();
+	ResolvedType[] getDeclaredInterfaces();
 
-	public ResolvedMember[] getDeclaredMethods();
+	ResolvedMember[] getDeclaredMethods();
 
-	public ResolvedMember[] getDeclaredPointcuts();
+	ResolvedMember[] getDeclaredPointcuts();
 
-	public TypeVariable[] getTypeVariables();
+	TypeVariable[] getTypeVariables();
 
-	public int getModifiers();
+	int getModifiers();
 
 	// aspect declaration related members
 	/**
 	 * @return for an aspect declaration, return the
 	 */
-	public PerClause getPerClause();
+	PerClause getPerClause();
 
-	public Collection<Declare> getDeclares();
+	Collection<Declare> getDeclares();
 
-	public Collection<ConcreteTypeMunger> getTypeMungers();
+	Collection<ConcreteTypeMunger> getTypeMungers();
 
-	public Collection<ResolvedMember> getPrivilegedAccesses();
+	Collection<ResolvedMember> getPrivilegedAccesses();
 
 	// end of aspect declaration related members
 
-	public ResolvedType getSuperclass();
+	ResolvedType getSuperclass();
 
-	public WeaverStateInfo getWeaverState();
+	WeaverStateInfo getWeaverState();
 
-	public ReferenceType getResolvedTypeX();
+	ReferenceType getResolvedTypeX();
 
 	// needs renaming isWeavable or removing from here
-	public boolean isExposedToWeaver();
+	boolean isExposedToWeaver();
 
-	public boolean doesNotExposeShadowMungers();
+	boolean doesNotExposeShadowMungers();
 
-	public ISourceContext getSourceContext();
+	ISourceContext getSourceContext();
 
-	public String getSourcefilename();
+	String getSourcefilename();
 
-	public String getDeclaredGenericSignature();
+	String getDeclaredGenericSignature();
 
-	public ResolvedType getOuterClass();
+	ResolvedType getOuterClass();
 
-	public boolean copySourceContext();
+	boolean copySourceContext();
 
 	/**
 	 * TODO Caching of methods besides getDeclaredInterfaces() may also be dependent on this flag - which?
-	 * 
+	 *
 	 * @return true if something the result of getDeclaredInterfaces() can be cached by the caller
 	 */
-	public boolean isCacheable();
+	boolean isCacheable();
 
 	/**
 	 * If known, return the compiler/weaver version used to build this delegate. Default is the most recent level as specified in
 	 * {@link WeaverVersionInfo}.
-	 * 
+	 *
 	 * @return the major version
 	 */
-	public int getCompilerVersion();
+	int getCompilerVersion();
 
 	/**
 	 * Implementations need to clear state
 	 */
-	public void ensureConsistent();
+	void ensureConsistent();
 
-	public boolean isWeavable();
+	boolean isWeavable();
 
-	public boolean hasBeenWoven();
+	boolean hasBeenWoven();
 
-	public boolean hasAnnotations();
+	boolean hasAnnotations();
 
 }

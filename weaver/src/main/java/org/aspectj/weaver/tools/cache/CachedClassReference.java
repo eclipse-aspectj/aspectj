@@ -23,7 +23,7 @@ package org.aspectj.weaver.tools.cache;
  * objects manually.
  */
 public class CachedClassReference {
-	static enum EntryType {
+	enum EntryType {
 		GENERATED,
 		WEAVED,
 		IGNORED,

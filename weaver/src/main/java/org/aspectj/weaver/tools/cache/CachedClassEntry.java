@@ -16,7 +16,7 @@ package org.aspectj.weaver.tools.cache;
  * Represents a class which has been cached
  */
 public class CachedClassEntry {
-    static enum EntryType {
+    enum EntryType {
         GENERATED,
         WEAVED,
         IGNORED,

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -29,11 +29,11 @@ import org.aspectj.util.LangUtil;
  * and EOL comments # or //.
  * This duplicates ConfigFileUtil in some sense.
   */
-public class SFileReader { 
+public class SFileReader {
     // XXX move into LineReader, but that forces util to depend on AbortException?
     // Formerly in SuiteReader
-    
-    /** 
+
+    /**
      * Read args as config files and echo to stderr.
      * @param args String[] of fully-qualified paths to config files
      */
@@ -52,19 +52,19 @@ public class SFileReader {
 			}
 		}
     }
-    
+
     /*
      * readSuite(..) reads .txt file, and for each test case specification
-     * creates a spec using readTestSpecifications 
+     * creates a spec using readTestSpecifications
      * and (if the specifications match the constraints)
      * creates a test case using creatTestCase.
      */
 
     /** pass this to protected methods requiring String[] if you have none */
     protected static final String[] NONE = new String[0];
-    
+
     final Maker maker;
-    
+
     /** @param maker the Maker factory to use - if null, use Maker.ECHO */
     public SFileReader(Maker maker) {
         this.maker = (null == maker ? Maker.ECHO : maker);
@@ -104,7 +104,7 @@ public class SFileReader {
                 throw new IOException("no reader for " + file);
             }
             final String baseDir = file.getParent();
-    
+
             String line;
             boolean skipEmpties = true;
             while (null != (line = reader.nextLine(skipEmpties))) {
@@ -126,7 +126,7 @@ public class SFileReader {
                     try {
                         Object made = maker.make(reader);
                         if ((null == selector) || (selector.isValid(made))) {
-                            if (!result.add(made)) { 
+                            if (!result.add(made)) {
                                break;  // XXX signal error?
                             }
                         }
@@ -146,7 +146,7 @@ public class SFileReader {
                         }
                         reader.readToBlankLine();
                     }
-                } 
+                }
             }
         } finally {
             try {
@@ -156,25 +156,25 @@ public class SFileReader {
             } catch (IOException e) {
             } // ignore
         }
-        
+
         return result;
     }
-    
+
     /** factory produces objects by reading LineReader */
     public interface Maker {
-        /** 
+        /**
          * Make the result using the input from the LineReader,
          * starting with lastLine().
          */
         Object make(UtilLineReader reader) throws AbortException, IOException;
-        
+
         /** @return type of the Object made */
         Class getType();
-        
+
         /** This echoes each line, prefixed by the reader.
          * @return file:line: {line}
          */
-        static final Maker ECHO = new Maker() {
+		Maker ECHO = new Maker() {
             public Object make(UtilLineReader reader) {
                 return reader + ": " + reader.lastLine();
             }

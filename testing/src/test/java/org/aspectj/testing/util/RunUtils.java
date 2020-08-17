@@ -195,7 +195,7 @@ public class RunUtils {
 	}
 
 	/** renderer for IRunStatus */
-	public static interface IRunStatusPrinter {
+	public interface IRunStatusPrinter {
 		void printRunStatus(PrintStream out, IRunStatus status);
 	}
 

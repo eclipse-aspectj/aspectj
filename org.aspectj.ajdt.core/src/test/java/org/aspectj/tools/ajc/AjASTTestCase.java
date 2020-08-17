@@ -1,10 +1,10 @@
 /********************************************************************
- * Copyright (c) 2006, 2010 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ * Copyright (c) 2006, 2010 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * Contributors: Helen Hawkins   - initial implementation
  * 				 Matthew Webster - initial implementation
  *******************************************************************/
@@ -59,7 +59,7 @@ public abstract class AjASTTestCase extends TestCase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param source
 	 *            to parse and visit
 	 * @param expectedSourceRanges
@@ -72,7 +72,7 @@ public abstract class AjASTTestCase extends TestCase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param source
 	 *            to parse and visit
 	 * @param expectedCategory
@@ -96,37 +96,37 @@ public abstract class AjASTTestCase extends TestCase {
 	}
 
 	/*
-	 * 
-	 * 
+	 *
+	 *
 	 * Testing Classes and Interfaces
 	 */
 
 	/**
 	 * Tests the results of a visitor when walking the AST
-	 * 
+	 *
 	 */
 	interface ITypePatternTester {
 
 		/**
-		 * 
+		 *
 		 * @return visitor to walk the AST. Must not be null.
 		 */
-		public AjASTVisitor createVisitor();
+		AjASTVisitor createVisitor();
 
 		/**
 		 * Tests a condition after the visitor has visited the AST. This means
 		 * the visitor should contain the results of the visitation.
-		 * 
+		 *
 		 * @return true if test condition passed. False otherwise
 		 */
-		public void testCondition(AjASTVisitor visitor);
+		void testCondition(AjASTVisitor visitor);
 	}
 
 	/**
 	 * Tests whether a particular type category type pattern (InnerType,
 	 * InterfaceType, ClassType, etc..) is encountered when visiting nodes in an
 	 * AST.
-	 * 
+	 *
 	 */
 	class TypeCategoryTester implements ITypePatternTester {
 
@@ -163,7 +163,7 @@ public abstract class AjASTTestCase extends TestCase {
 	/**
 	 * Tests the starting location and source length of each TypePattern node
 	 * encountered while walking the AST.
-	 * 
+	 *
 	 */
 	class TypePatternSourceRangeTester implements ITypePatternTester {
 
@@ -204,7 +204,7 @@ public abstract class AjASTTestCase extends TestCase {
 	/**
 	 * Tests whether a particular AST node starts at a given expected location
 	 * and has an expected length
-	 * 
+	 *
 	 */
 	class SourceRangeTester implements ITypePatternTester {
 

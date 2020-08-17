@@ -1,15 +1,15 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  *               2005 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     PARC     initial implementation
- *     AMC      extracted as interface 
+ *     AMC      extracted as interface
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -21,138 +21,138 @@ import org.aspectj.bridge.ISourceLocation;
 
 public interface ResolvedMember extends Member, AnnotatedElement, TypeVariableDeclaringElement {
 
-	public static final ResolvedMember[] NONE = new ResolvedMember[0];
+	ResolvedMember[] NONE = new ResolvedMember[0];
 
-	public int getModifiers(World world);
+	int getModifiers(World world);
 
-	public int getModifiers();
+	int getModifiers();
 
-	public UnresolvedType[] getExceptions(World world);
+	UnresolvedType[] getExceptions(World world);
 
-	public UnresolvedType[] getExceptions();
+	UnresolvedType[] getExceptions();
 
-	public ShadowMunger getAssociatedShadowMunger();
+	ShadowMunger getAssociatedShadowMunger();
 
-	public boolean isAjSynthetic();
+	boolean isAjSynthetic();
 
-	public boolean isCompatibleWith(Member am);
+	boolean isCompatibleWith(Member am);
 
-	public boolean hasAnnotation(UnresolvedType ofType);
+	boolean hasAnnotation(UnresolvedType ofType);
 
-	public AnnotationAJ[] getAnnotations();
+	AnnotationAJ[] getAnnotations();
 
-	public ResolvedType[] getAnnotationTypes();
+	ResolvedType[] getAnnotationTypes();
 
-	public void setAnnotationTypes(ResolvedType[] annotationtypes);
+	void setAnnotationTypes(ResolvedType[] annotationtypes);
 
-	public void addAnnotation(AnnotationAJ annotation);
+	void addAnnotation(AnnotationAJ annotation);
 
-	public boolean isBridgeMethod();
+	boolean isBridgeMethod();
 
-	public boolean isVarargsMethod();
+	boolean isVarargsMethod();
 
-	public boolean isSynthetic();
+	boolean isSynthetic();
 
-	public void write(CompressingDataOutputStream s) throws IOException;
+	void write(CompressingDataOutputStream s) throws IOException;
 
-	public ISourceContext getSourceContext(World world);
+	ISourceContext getSourceContext(World world);
 
-	public String[] getParameterNames();
+	String[] getParameterNames();
 
-	public void setParameterNames(String[] names);
+	void setParameterNames(String[] names);
 
-	public AnnotationAJ[][] getParameterAnnotations();
+	AnnotationAJ[][] getParameterAnnotations();
 
-	public ResolvedType[][] getParameterAnnotationTypes();
+	ResolvedType[][] getParameterAnnotationTypes();
 
-	public String getAnnotationDefaultValue();
+	String getAnnotationDefaultValue();
 
-	public String getParameterSignatureErased();
+	String getParameterSignatureErased();
 
-	public String getSignatureErased();
+	String getSignatureErased();
 
-	public String[] getParameterNames(World world);
+	String[] getParameterNames(World world);
 
-	public AjAttribute.EffectiveSignatureAttribute getEffectiveSignature();
+	AjAttribute.EffectiveSignatureAttribute getEffectiveSignature();
 
-	public ISourceLocation getSourceLocation();
+	ISourceLocation getSourceLocation();
 
-	public int getStart();
+	int getStart();
 
-	public int getEnd();
+	int getEnd();
 
-	public ISourceContext getSourceContext();
+	ISourceContext getSourceContext();
 
-	public void setPosition(int sourceStart, int sourceEnd);
+	void setPosition(int sourceStart, int sourceEnd);
 
-	public void setSourceContext(ISourceContext sourceContext);
+	void setSourceContext(ISourceContext sourceContext);
 
-	public boolean isAbstract();
+	boolean isAbstract();
 
-	public boolean isPublic();
+	boolean isPublic();
 
-	public boolean isDefault();
+	boolean isDefault();
 
-	public boolean isVisible(ResolvedType fromType);
+	boolean isVisible(ResolvedType fromType);
 
-	public void setCheckedExceptions(UnresolvedType[] checkedExceptions);
+	void setCheckedExceptions(UnresolvedType[] checkedExceptions);
 
-	public void setAnnotatedElsewhere(boolean b);
+	void setAnnotatedElsewhere(boolean b);
 
-	public boolean isAnnotatedElsewhere();
+	boolean isAnnotatedElsewhere();
 
 	// like toString but include generic signature info
-	public String toGenericString();
+	String toGenericString();
 
-	public String toDebugString();
+	String toDebugString();
 
-	public boolean hasBackingGenericMember();
+	boolean hasBackingGenericMember();
 
-	public ResolvedMember getBackingGenericMember();
+	ResolvedMember getBackingGenericMember();
 
 	/**
 	 * Get the UnresolvedType for the return type, taking generic signature into account
 	 */
-	public UnresolvedType getGenericReturnType();
+	UnresolvedType getGenericReturnType();
 
 	/**
 	 * Get the TypeXs of the parameter types, taking generic signature into account
 	 */
-	public UnresolvedType[] getGenericParameterTypes();
+	UnresolvedType[] getGenericParameterTypes();
 
-	public boolean equalsApartFromDeclaringType(Object other);
+	boolean equalsApartFromDeclaringType(Object other);
 
 	// return a resolved member in which all type variables in the signature of
 	// this member have been replaced with the given bindings. the isParameterized flag tells us whether we are creating a raw type
 	// version or not
 	// if isParameterized List<T> will turn into List<String> (for example),
 	// but if !isParameterized List<T> will turn into List.
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
-			boolean isParameterized);
+	ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+										 boolean isParameterized);
 
 	// this variant allows for aliases for type variables (i.e. allowing them to
 	// have another name)
 	// this is used for processing ITDs that share type variables with their
 	// target generic type
-	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
-			boolean isParameterized, List<String> aliases);
+	ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
+										 boolean isParameterized, List<String> aliases);
 
-	public void setTypeVariables(TypeVariable[] types);
+	void setTypeVariables(TypeVariable[] types);
 
-	public TypeVariable[] getTypeVariables();
+	TypeVariable[] getTypeVariables();
 
 	/**
 	 * Returns true if this member matches the other. The matching takes into account name and parameter types only. When comparing
 	 * parameter types, we allow any type variable to match any other type variable regardless of bounds.
 	 */
-	public boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics);
+	boolean matches(ResolvedMember aCandidateMatch, boolean ignoreGenerics);
 
-	public void evictWeavingState();
+	void evictWeavingState();
 
-	public ResolvedMember parameterizedWith(Map<String, UnresolvedType> m, World w);
+	ResolvedMember parameterizedWith(Map<String, UnresolvedType> m, World w);
 
-	public boolean isDefaultConstructor();
+	boolean isDefaultConstructor();
 
-	public void setAnnotations(AnnotationAJ[] annotations);
+	void setAnnotations(AnnotationAJ[] annotations);
 
 }

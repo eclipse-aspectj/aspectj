@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * This class implements a partial order
- * 
+ *
  * It includes routines for doing a topo-sort
  */
 
@@ -29,24 +29,24 @@ public class PartialOrder {
 	/**
 	 * All classes that want to be part of a partial order must implement PartialOrder.PartialComparable.
 	 */
-	public static interface PartialComparable {
+	public interface PartialComparable {
 		/**
 		 * @returns <ul>
 		 *          <li>+1 if this is greater than other</li>
 		 *          <li>-1 if this is less than other</li>
 		 *          <li>0 if this is not comparable to other</li>
 		 *          </ul>
-		 * 
+		 *
 		 *          <b> Note: returning 0 from this method doesn't mean the same thing as returning 0 from
 		 *          java.util.Comparable.compareTo()</b>
 		 */
-		public int compareTo(Object other);
+		int compareTo(Object other);
 
 		/**
 		 * This method can provide a deterministic ordering for elements that are strictly not comparable. If you have no need for
 		 * this, this method can just return 0 whenever called.
 		 */
-		public int fallbackCompareTo(Object other);
+		int fallbackCompareTo(Object other);
 	}
 
 	private static class SortObject<T extends PartialComparable> {
@@ -109,9 +109,9 @@ public class PartialOrder {
 
 	/**
 	 * @param objects must all implement PartialComparable
-	 * 
+	 *
 	 * @returns the same members as objects, but sorted according to their partial order. returns null if the objects are cyclical
-	 * 
+	 *
 	 */
 	public static <T extends PartialComparable> List<T> sort(List<T> objects) {
 		// lists of size 0 or 1 don't need any sorting

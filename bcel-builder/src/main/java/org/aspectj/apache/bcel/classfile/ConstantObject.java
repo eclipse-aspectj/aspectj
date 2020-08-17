@@ -56,11 +56,11 @@ package org.aspectj.apache.bcel.classfile;
 
 /**
  * This interface denotes those constants that have a "natural" value, such as ConstantLong, ConstantString, etc..
- * 
+ *
  * @version $Id: ConstantObject.java,v 1.4 2009/09/10 03:59:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
  */
 public interface ConstantObject {
-	public abstract Object getConstantValue(ConstantPool cp);
+	Object getConstantValue(ConstantPool cp);
 }

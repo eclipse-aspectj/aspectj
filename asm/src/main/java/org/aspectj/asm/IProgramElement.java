@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  * ******************************************************************/
 
 package org.aspectj.asm;
@@ -23,23 +23,23 @@ import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Represents program elements in the AspectJ containment hierarchy.
- * 
+ *
  * @author Mik Kersten
  */
 public interface IProgramElement extends Serializable {
 
-	public List<IProgramElement> getChildren();
+	List<IProgramElement> getChildren();
 
-	public void setChildren(List<IProgramElement> children);
+	void setChildren(List<IProgramElement> children);
 
-	public void addChild(IProgramElement child);
+	void addChild(IProgramElement child);
 
-	public boolean removeChild(IProgramElement child);
+	boolean removeChild(IProgramElement child);
 
 	// Extra stuff
 	// Could be just a string but may prove more useful as an object in the long
 	// run ...
-	public static class ExtraInformation implements Serializable {
+	class ExtraInformation implements Serializable {
 		private static final long serialVersionUID = -3880735494840820638L;
 		private String extraInfo;
 
@@ -60,153 +60,153 @@ public interface IProgramElement extends Serializable {
 		}
 	}
 
-	public void setExtraInfo(ExtraInformation info);
+	void setExtraInfo(ExtraInformation info);
 
-	public ExtraInformation getExtraInfo();
+	ExtraInformation getExtraInfo();
 
-	public IProgramElement getParent();
+	IProgramElement getParent();
 
-	public void setParent(IProgramElement parent);
+	void setParent(IProgramElement parent);
 
-	public void setParentTypes(List<String> parentTypes);
+	void setParentTypes(List<String> parentTypes);
 
-	public List<String> getParentTypes();
+	List<String> getParentTypes();
 
-	public String getName();
+	String getName();
 
-	public void setName(String name);
+	void setName(String name);
 
-	public String getDetails();
+	String getDetails();
 
-	public void setDetails(String details);
+	void setDetails(String details);
 
-	public IProgramElement.Kind getKind();
+	IProgramElement.Kind getKind();
 
-	public void setKind(Kind kind);
+	void setKind(Kind kind);
 
-	public List<IProgramElement.Modifiers> getModifiers();
+	List<IProgramElement.Modifiers> getModifiers();
 
-	public void setModifiers(int i);
+	void setModifiers(int i);
 
-	public Accessibility getAccessibility();
+	Accessibility getAccessibility();
 
-	public String getDeclaringType(); // TODO: remove (Emacs uses it)
+	String getDeclaringType(); // TODO: remove (Emacs uses it)
 
-	public String getPackageName();
+	String getPackageName();
 
 	/**
 	 * @param method
 	 *            return types or field types
 	 */
-	public void setCorrespondingType(String returnType);
+	void setCorrespondingType(String returnType);
 
 	/**
 	 * This correponds to both method return types and field types.
 	 */
-	public String getCorrespondingType();
+	String getCorrespondingType();
 
-	public String getCorrespondingType(boolean getFullyQualifiedType);
+	String getCorrespondingType(boolean getFullyQualifiedType);
 
-	public String toSignatureString();
+	String toSignatureString();
 
-	public String toSignatureString(boolean getFullyQualifiedArgTypes);
+	String toSignatureString(boolean getFullyQualifiedArgTypes);
 
-	public void setRunnable(boolean value);
+	void setRunnable(boolean value);
 
-	public boolean isRunnable();
+	boolean isRunnable();
 
-	public boolean isImplementor();
+	boolean isImplementor();
 
-	public void setImplementor(boolean value);
+	void setImplementor(boolean value);
 
-	public boolean isOverrider();
+	boolean isOverrider();
 
-	public void setOverrider(boolean value);
+	void setOverrider(boolean value);
 
-	public IMessage getMessage();
+	IMessage getMessage();
 
-	public void setMessage(IMessage message);
+	void setMessage(IMessage message);
 
-	public ISourceLocation getSourceLocation();
+	ISourceLocation getSourceLocation();
 
-	public void setSourceLocation(ISourceLocation sourceLocation);
+	void setSourceLocation(ISourceLocation sourceLocation);
 
-	public String toString();
+	String toString();
 
 	/**
 	 * @return the javadoc comment for this program element, null if not available
 	 */
-	public String getFormalComment();
+	String getFormalComment();
 
-	public void setFormalComment(String comment);
+	void setFormalComment(String comment);
 
 	/**
 	 * Includes information about the origin of the node.
 	 */
-	public String toLinkLabelString();
+	String toLinkLabelString();
 
-	public String toLinkLabelString(boolean getFullyQualifiedArgTypes);
+	String toLinkLabelString(boolean getFullyQualifiedArgTypes);
 
 	/**
 	 * Includes name, parameter types (if any) and details (if any).
 	 */
-	public String toLabelString();
+	String toLabelString();
 
-	public String toLabelString(boolean getFullyQualifiedArgTypes);
+	String toLabelString(boolean getFullyQualifiedArgTypes);
 
-	public List<String> getParameterNames();
+	List<String> getParameterNames();
 
-	public void setParameterNames(List<String> list);
+	void setParameterNames(List<String> list);
 
-	public List<char[]> getParameterSignatures();
+	List<char[]> getParameterSignatures();
 
-	public List<String> getParameterSignaturesSourceRefs();
+	List<String> getParameterSignaturesSourceRefs();
 
-	public void setParameterSignatures(List<char[]> list, List<String> paramSourceRefs);
+	void setParameterSignatures(List<char[]> list, List<String> paramSourceRefs);
 
-	public List<char[]> getParameterTypes();
+	List<char[]> getParameterTypes();
 
 	/**
 	 * The format of the string handle is not specified, but is stable across compilation sessions.
-	 * 
+	 *
 	 * @return a string representation of this element
 	 */
-	public String getHandleIdentifier();
+	String getHandleIdentifier();
 
-	public String getHandleIdentifier(boolean create);
+	String getHandleIdentifier(boolean create);
 
-	public void setHandleIdentifier(String handle);
+	void setHandleIdentifier(String handle);
 
 	/**
 	 * @return a string representation of this node and all of its children (recursive)
 	 */
-	public String toLongString();
+	String toLongString();
 
-	public String getBytecodeName();
+	String getBytecodeName();
 
-	public String getBytecodeSignature();
+	String getBytecodeSignature();
 
-	public void setBytecodeName(String bytecodeName);
+	void setBytecodeName(String bytecodeName);
 
-	public void setBytecodeSignature(String bytecodeSignature);
+	void setBytecodeSignature(String bytecodeSignature);
 
 	/**
 	 * @return the full signature of this element, as it appears in the source
 	 */
-	public String getSourceSignature();
+	String getSourceSignature();
 
-	public void setSourceSignature(String string);
+	void setSourceSignature(String string);
 
-	public IProgramElement walk(HierarchyWalker walker);
+	IProgramElement walk(HierarchyWalker walker);
 
-	public AsmManager getModel();
+	AsmManager getModel();
 
-	public int getRawModifiers();
+	int getRawModifiers();
 
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
-	public static class Modifiers implements Serializable {
+	class Modifiers implements Serializable {
 
 		private static final long serialVersionUID = -8279300899976607927L;
 
@@ -247,7 +247,7 @@ public interface IProgramElement extends Serializable {
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
-	public static class Accessibility implements Serializable {
+	class Accessibility implements Serializable {
 
 		private static final long serialVersionUID = 5371838588180918519L;
 
@@ -279,7 +279,7 @@ public interface IProgramElement extends Serializable {
 	/**
 	 * Uses "typesafe enum" pattern.
 	 */
-	public static class Kind implements Serializable {
+	class Kind implements Serializable {
 
 		private static final long serialVersionUID = -1963553877479266124L;
 
@@ -420,37 +420,37 @@ public interface IProgramElement extends Serializable {
 
 	}
 
-	public void setAnnotationStyleDeclaration(boolean b);
+	void setAnnotationStyleDeclaration(boolean b);
 
-	public boolean isAnnotationStyleDeclaration();
+	boolean isAnnotationStyleDeclaration();
 
 	/**
 	 * @param fullyQualifiedannotationType
 	 *            the annotation type, eg. p.q.r.Foo
 	 */
-	public void setAnnotationType(String fullyQualifiedannotationType);
+	void setAnnotationType(String fullyQualifiedannotationType);
 
 	/**
 	 * @return the fully qualified annotation type, eg. p.q.r.Foo
 	 */
-	public String getAnnotationType();
+	String getAnnotationType();
 
-	public String[] getRemovedAnnotationTypes();
+	String[] getRemovedAnnotationTypes();
 
-	public Map<String, List<String>> getDeclareParentsMap();
+	Map<String, List<String>> getDeclareParentsMap();
 
-	public void setDeclareParentsMap(Map<String, List<String>> newmap);
+	void setDeclareParentsMap(Map<String, List<String>> newmap);
 
-	public void addFullyQualifiedName(String fqname);
+	void addFullyQualifiedName(String fqname);
 
-	public String getFullyQualifiedName();
+	String getFullyQualifiedName();
 
-	public void setAnnotationRemover(boolean isRemover);
+	void setAnnotationRemover(boolean isRemover);
 
-	public boolean isAnnotationRemover();
+	boolean isAnnotationRemover();
 
 	/**
 	 * @return the return type of a method or type of a field in signature form (e.g. Ljava/lang/String;)
 	 */
-	public String getCorrespondingTypeSignature();
+	String getCorrespondingTypeSignature();
 }

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2007 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
  *     Linton Ye https://bugs.eclipse.org/bugs/show_bug.cgi?id=193065
  * ******************************************************************/
 
@@ -28,9 +28,9 @@ import java.util.Collection;
  * weaver and participate the weaving process. For example, the match method of each custom shadow munger will be called against
  * each shadow.
  * </p>
- * 
+ *
  * @author lintonye
- * 
+ *
  */
 public interface CustomMungerFactory {
 
@@ -38,15 +38,15 @@ public interface CustomMungerFactory {
 	 * @param aspectType
 	 * @return a Collection&lt;ShadowMunger&gt; of custom shadow mungers for the given aspect
 	 */
-	public Collection<ShadowMunger> createCustomShadowMungers(ResolvedType aspectType);
+	Collection<ShadowMunger> createCustomShadowMungers(ResolvedType aspectType);
 
 	/**
 	 * @param aspectType
 	 * @return a Collection&lt;ConcreteTypeMunger&gt; of custom type mungers for the given aspect
 	 */
-	public Collection<ConcreteTypeMunger> createCustomTypeMungers(ResolvedType aspectType);
+	Collection<ConcreteTypeMunger> createCustomTypeMungers(ResolvedType aspectType);
 
-	public Collection<ShadowMunger> getAllCreatedCustomShadowMungers();
+	Collection<ShadowMunger> getAllCreatedCustomShadowMungers();
 
-	public Collection<ConcreteTypeMunger> getAllCreatedCustomTypeMungers();
+	Collection<ConcreteTypeMunger> getAllCreatedCustomTypeMungers();
 }

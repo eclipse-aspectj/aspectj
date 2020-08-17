@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -12,47 +12,47 @@ package org.aspectj.weaver.tools;
 
 public interface Trace {
 
-	public void enter(String methodName, Object thiz, Object[] args);
+	void enter(String methodName, Object thiz, Object[] args);
 
-	public void enter(String methodName, Object thiz);
+	void enter(String methodName, Object thiz);
 
-	public void exit(String methodName, Object ret);
+	void exit(String methodName, Object ret);
 
-	public void exit(String methodName, Throwable th);
+	void exit(String methodName, Throwable th);
 
-	public void exit(String methodName);
+	void exit(String methodName);
 
-	public void event(String methodName);
+	void event(String methodName);
 
-	public void event(String methodName, Object thiz, Object[] args);
+	void event(String methodName, Object thiz, Object[] args);
 
-	public void debug(String message);
+	void debug(String message);
 
-	public void info(String message);
+	void info(String message);
 
-	public void warn(String message);
+	void warn(String message);
 
-	public void warn(String message, Throwable th);
+	void warn(String message, Throwable th);
 
-	public void error(String message);
+	void error(String message);
 
-	public void error(String message, Throwable th);
+	void error(String message, Throwable th);
 
-	public void fatal(String message);
+	void fatal(String message);
 
-	public void fatal(String message, Throwable th);
+	void fatal(String message, Throwable th);
 
-	public void enter(String methodName, Object thiz, Object arg);
+	void enter(String methodName, Object thiz, Object arg);
 
-	public void enter(String methodName, Object thiz, boolean z);
+	void enter(String methodName, Object thiz, boolean z);
 
-	public void exit(String methodName, boolean b);
+	void exit(String methodName, boolean b);
 
-	public void exit(String methodName, int i);
+	void exit(String methodName, int i);
 
-	public void event(String methodName, Object thiz, Object arg);
+	void event(String methodName, Object thiz, Object arg);
 
-	public boolean isTraceEnabled();
+	boolean isTraceEnabled();
 
-	public void setTraceEnabled(boolean b);
+	void setTraceEnabled(boolean b);
 }

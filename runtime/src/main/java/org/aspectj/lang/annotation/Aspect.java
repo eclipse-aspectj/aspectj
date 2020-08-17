@@ -29,5 +29,5 @@ public @interface Aspect {
      * @return the per clause expression, defaults to singleton aspect.
      * Valid values are "" (singleton), "perthis(...)", etc
      */
-    public String value() default "";
+	String value() default "";
 }

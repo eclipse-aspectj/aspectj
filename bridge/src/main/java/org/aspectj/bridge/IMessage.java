@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.bridge;
@@ -23,18 +23,18 @@ import java.util.List;
  */
 public interface IMessage {
 	/** no messages */
-	public static final IMessage[] RA_IMessage = new IMessage[0];
+	IMessage[] RA_IMessage = new IMessage[0];
 
 	// int values must sync with KINDS order below
-	public static final Kind WEAVEINFO = new Kind("weaveinfo", 5);
-	public static final Kind INFO = new Kind("info", 10);
-	public static final Kind DEBUG = new Kind("debug", 20);
-	public static final Kind TASKTAG = new Kind("task", 25); // represents a 'TODO' from eclipse - producted by the compiler and
+	Kind WEAVEINFO = new Kind("weaveinfo", 5);
+	Kind INFO = new Kind("info", 10);
+	Kind DEBUG = new Kind("debug", 20);
+	Kind TASKTAG = new Kind("task", 25); // represents a 'TODO' from eclipse - producted by the compiler and
 																// consumed by AJDT
-	public static final Kind WARNING = new Kind("warning", 30);
-	public static final Kind ERROR = new Kind("error", 40);
-	public static final Kind FAIL = new Kind("fail", 50);
-	public static final Kind ABORT = new Kind("abort", 60);
+																Kind WARNING = new Kind("warning", 30);
+	Kind ERROR = new Kind("error", 40);
+	Kind FAIL = new Kind("fail", 50);
+	Kind ABORT = new Kind("abort", 60);
 	// XXX prefer another Kind to act as selector for "any",
 	// but can't prohibit creating messages with it.
 	// public static final Kind ANY = new Kind("any-selector", 0);
@@ -42,7 +42,7 @@ public interface IMessage {
 	/**
 	 * list of Kind in precedence order. 0 is less than IMessage.Kind.COMPARATOR.compareTo(KINDS.get(i), KINDS.get(i + 1))
 	 */
-	public static final List<Kind> KINDS = Collections.unmodifiableList(Arrays.asList(new Kind[] { WEAVEINFO, INFO, DEBUG, TASKTAG,
+	List<Kind> KINDS = Collections.unmodifiableList(Arrays.asList(new Kind[] { WEAVEINFO, INFO, DEBUG, TASKTAG,
 			WARNING, ERROR, FAIL, ABORT }));
 
 	/** @return non-null String with simple message */
@@ -90,7 +90,7 @@ public interface IMessage {
 	/** @return source location associated with this message, or null if none */
 	ISourceLocation getSourceLocation();
 
-	public static final class Kind implements Comparable<IMessage.Kind> {
+	final class Kind implements Comparable<IMessage.Kind> {
 		public static final Comparator<IMessage.Kind> COMPARATOR = new Comparator<IMessage.Kind>() {
 			public int compare(IMessage.Kind one, IMessage.Kind two) {
 				if (null == one) {
@@ -134,17 +134,17 @@ public interface IMessage {
 	 * @return Detailed information about the message. For example, for declare error/warning messages this returns information
 	 *         about the corresponding join point's static part.
 	 */
-	public String getDetails();
+	String getDetails();
 
 	/**
 	 * @return List of <code>ISourceLocation</code> instances that indicate additional source locations relevent to this message as
 	 *         specified by the message creator. The list should not include the primary source location associated with the message
-	 *         which can be obtained from <code>getSourceLocation()<code>. 
-	 * <p>   
-	 * An example of using extra locations would be in a warning message that 
-	 * flags all shadow locations that will go unmatched due to a pointcut definition 
+	 *         which can be obtained from <code>getSourceLocation()<code>.
+	 * <p>
+	 * An example of using extra locations would be in a warning message that
+	 * flags all shadow locations that will go unmatched due to a pointcut definition
 	 * being based on a subtype of a defining type.
 	 * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952">AspectJ bug 41952</a>
 	 */
-	public List<ISourceLocation> getExtraSourceLocations();
+	List<ISourceLocation> getExtraSourceLocations();
 }

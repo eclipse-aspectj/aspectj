@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -21,9 +21,9 @@ import org.aspectj.testing.xml.XMLWriter;
 public interface IAjcRun extends IRun {
     boolean setupAjcRun(Sandbox sandbox, Validator validator);
     // XXX add for result eval? ArrayList getExpectedMessages();
-    
+
     /** this IAjcRun does nothing, returning true always */
-    public static final IAjcRun NULLRUN = new IAjcRun() {
+	IAjcRun NULLRUN = new IAjcRun() {
         public boolean setupAjcRun(Sandbox sandbox, Validator validator) {
             return true;
         }
@@ -40,5 +40,5 @@ public interface IAjcRun extends IRun {
         }
         public String toString() { return "IAjcRun.NULLRUN"; }
     };
-    
+
 }

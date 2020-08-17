@@ -774,12 +774,12 @@ public final class TestUtil {
 	}
 
 	/** component that reduces file to CanonicalLine[] */
-	public static interface ILineator {
+	public interface ILineator {
 		/** Lineator suitable for text files */
-		public static final ILineator TEXT = new TextLineator();
+		ILineator TEXT = new TextLineator();
 
 		/** Lineator suitable for class files (disassembles first) */
-		public static final ILineator CLASS = new ClassLineator();
+		ILineator CLASS = new ClassLineator();
 
 		/**
 		 * Reduce file to CanonicalLine[].

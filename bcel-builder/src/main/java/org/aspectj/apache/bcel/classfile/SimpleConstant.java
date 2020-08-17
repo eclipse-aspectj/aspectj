@@ -54,5 +54,5 @@
 package org.aspectj.apache.bcel.classfile;
 
 public interface SimpleConstant {
-	public String getStringValue();
+	String getStringValue();
 }
