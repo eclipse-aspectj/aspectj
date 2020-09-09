@@ -994,7 +994,7 @@
       
       </sect2>
  
-      <sect2 id="declare-parents" xreflabel="declare-parents">
+      <sect2 id="declare-parents-java5" xreflabel="declare-parents-java5">
           <title>Declare Parents</title>
           
           <para>Both generic and parameterized types can be used as the parent type in a <literal>declare parents</literal>

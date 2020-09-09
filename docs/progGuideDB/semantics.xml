@@ -2748,7 +2748,7 @@ ModifiersPattern =
 
     </sect2>
 
-    <sect2 id="advice-precedence" xreflabel="advice-precedence">
+    <sect2 id="advice-precedence-cross" xreflabel="advice-precedence-cross">
       <title>Advice Precedence</title>
 
       <para>
