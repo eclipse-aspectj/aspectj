@@ -2,7 +2,7 @@
 
   <title>Other Changes in AspectJ 5</title>
   
-  <sect1 id="pointcuts">
+  <sect1 id="pointcuts-change">
       <title>Pointcuts</title>
       
           <para>
@@ -26,7 +26,7 @@
            
   </sect1>
   
-  <sect1 id="declare-soft">
+  <sect1 id="declare-soft-change">
       <title>Declare Soft</title>
       <para>
           The semantics of the <literal>declare soft</literal> statement have been 

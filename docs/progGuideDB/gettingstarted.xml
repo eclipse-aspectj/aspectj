@@ -217,7 +217,7 @@
 
 <!-- ============================== -->
 
-    <sect2 id="pointcuts" xreflabel="pointcuts">
+    <sect2 id="pointcuts-starting" xreflabel="pointcuts-starting">
       <title>Pointcuts</title>
 
       <para>
@@ -350,7 +350,7 @@ cflow(move())
 
 <!-- ============================== -->
 
-    <sect2 id="advice" xreflabel="advice">
+    <sect2 id="advice-starting" xreflabel="advice-starting">
       <title>Advice</title>
 
       <para>
