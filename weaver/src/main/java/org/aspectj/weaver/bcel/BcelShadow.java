@@ -625,7 +625,7 @@ public class BcelShadow extends Shadow {
 
 	/**
 	 * Create an initialization join point associated with a constructor, but not with any body of code yet. If this is actually
-	 * matched, it's range will be set when we inline self constructors.
+	 * matched, its range will be set when we inline self constructors.
 	 *
 	 * @param constructor The constructor starting this initialization.
 	 */
