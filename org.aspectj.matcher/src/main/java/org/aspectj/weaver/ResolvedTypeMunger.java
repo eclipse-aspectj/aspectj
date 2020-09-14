@@ -414,7 +414,7 @@ public abstract class ResolvedTypeMunger {
 
 	/**
 	 * return true if type variables are specified with the target type for this ITD. e.g. this would return true:
-	 * "int I<A,B>.m() { return 42; }"
+	 * "int I&lt;A,B&gt;.m() { return 42; }"
 	 */
 	public boolean sharesTypeVariablesWithGenericType() {
 		return (typeVariableAliases != null && typeVariableAliases.size() > 0);

@@ -64,28 +64,28 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * Here is the compiler loop difference when pipelining.
  * 
  * the old way: Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java] Finished diet parsing
- * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] > AjLookupEnvironment.completeTypeBindings() <
+ * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] &gt; AjLookupEnvironment.completeTypeBindings() &lt;
  * AjLookupEnvironment.completeTypeBindings() compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
- * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
- * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) compiling
+ * &gt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * &lt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) compiling
  * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java
- * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
- * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) >AjCompilerAdapter.weave()
- * >BcelWeaver.prepareForWeave <BcelWeaver.prepareForWeave woven class ClassOne (from
+ * &gt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * &lt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) &gt;AjCompilerAdapter.weave()
+ * &gt;BcelWeaver.prepareForWeave &lt;BcelWeaver.prepareForWeave woven class ClassOne (from
  * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) woven class ClassTwo (from
- * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) <AjCompilerAdapter.weave()
+ * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) &lt;AjCompilerAdapter.weave()
  * 
  * the new way (see the compiling/weaving mixed up): Finished diet parsing
  * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java] Finished diet parsing
- * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] >AjLookupEnvironment.completeTypeBindings()
- * <AjLookupEnvironment.completeTypeBindings() compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
- * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
- * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) >AjCompilerAdapter.weave()
- * >BcelWeaver.prepareForWeave <BcelWeaver.prepareForWeave woven class ClassOne (from
- * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) <AjCompilerAdapter.weave() compiling
+ * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] &gt;AjLookupEnvironment.completeTypeBindings()
+ * &lt;AjLookupEnvironment.completeTypeBindings() compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
+ * &gt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java)
+ * &lt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) &gt;AjCompilerAdapter.weave()
+ * &gt;BcelWeaver.prepareForWeave &lt;BcelWeaver.prepareForWeave woven class ClassOne (from
+ * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) &lt;AjCompilerAdapter.weave() compiling
  * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java
- * >Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
- * <Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) >AjCompilerAdapter.weave() woven class ClassTwo
+ * &gt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
+ * &lt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) &gt;AjCompilerAdapter.weave() woven class ClassTwo
  * (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) <AjCompilerAdapter.weave()
  * 
  * 

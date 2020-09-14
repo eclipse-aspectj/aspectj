@@ -43,7 +43,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * 		</LI>
  *
  *  	<LI>
- *  	An &quot;update index&quot {@link AsyncCommand} is posted to the background
+ *  	An &quot;update index&quot; {@link AsyncCommand} is posted to the background
  *  	thread so that the newly mapped value will be persisted (eventually)
  *  	</LI>
  * </UL>

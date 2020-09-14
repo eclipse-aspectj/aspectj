@@ -46,7 +46,7 @@ import org.aspectj.weaver.patterns.Pointcut;
  * generates the following: public static final boolean ajc$if_N(formals*,
  * [thisJoinPoints as needed]) { return expr; }
  * 
- * Here's the complicated bit, it deals with cflow: (a): ... this(a) && cflow(if
+ * Here's the complicated bit, it deals with cflow: (a): ... this(a) &amp;&amp; cflow(if
  * (a == foo)) is an error. The way we capture this is: We generate the ajc$if
  * method with an (a) parameter, we let eclipse do the proper name binding. We
  * then, as a post pass (that we need to do anyway) look for the used

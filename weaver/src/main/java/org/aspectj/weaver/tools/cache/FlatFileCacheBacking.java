@@ -24,7 +24,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
 /**
- * Uses a &quot;flat&quot files model to store the cached instrumented classes
+ * Uses a &quot;flat&quot; files model to store the cached instrumented classes
  * and aspects - i.e., each class/aspect is stored as a <U>separate</U> (binary)
  * file. This is a good mechanism when the number of instrumented class is
  * relatively small (a few 10's). The reason for it is that scanning a folder

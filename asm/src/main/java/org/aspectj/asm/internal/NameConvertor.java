@@ -44,7 +44,7 @@ public class NameConvertor {
 
 	/**
 	 * Creates a readable name from the given char array, for example, given 'I' returns 'int'. Moreover, given
-	 * 'Ljava/lang/String;<Ljava/lang/String;>' returns 'java.lang.String<java.lang.String>'
+	 * 'Ljava/lang/String;&lt;Ljava/lang/String;&gt;' returns 'java.lang.String&lt;java.lang.String&gt;'
 	 */
 	public static char[] convertFromSignature(char[] c) {
 		int lt = CharOperation.indexOf('<', c);
@@ -138,7 +138,7 @@ public class NameConvertor {
 	// }
 
 	/**
-	 * Given 'Ppkg/MyGenericClass<Ljava/lang/String;Ljava/lang/Integer;>;' will return 'QMyGenericClass<QString;QInteger;>;'
+	 * Given 'Ppkg/MyGenericClass&lt;Ljava/lang/String;Ljava/lang/Integer;&gt;;' will return 'QMyGenericClass&lt;QString;QInteger;&gt;;'
 	 */
 	public static char[] createShortName(char[] c, boolean haveFullyQualifiedAtLeastOneThing, boolean needsFullyQualifiedFirstEntry) {
 		if (c[0] == '[') {

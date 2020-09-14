@@ -18,7 +18,7 @@ import java.io.File;
 import org.aspectj.util.LangUtil;
 
 /**
- * Immutable source location. This guarantees that the source file is not null and that the numeric values are positive and line <=
+ * Immutable source location. This guarantees that the source file is not null and that the numeric values are positive and line &le;
  * endLine.
  * 
  * @see org.aspectj.lang.reflect.SourceLocation
@@ -77,7 +77,7 @@ public class SourceLocation implements ISourceLocation {
 	/**
 	 * @param file File of the source; if null, use ISourceLocation.NO_FILE, not null
 	 * @param line int starting line of the location - positive number
-	 * @param endLine int ending line of the location - <= starting line
+	 * @param endLine int ending line of the location - &le; starting line
 	 * @param column int character position of starting location - positive number
 	 */
 	public SourceLocation(File file, int line, int endLine, int column) {

@@ -33,7 +33,7 @@ public class DeclareErrorOrWarning extends Declare {
 	}
 
 	/**
-	 * returns "declare warning: <message>" or "declare error: <message>"
+	 * returns "declare warning: &lt;message&gt;" or "declare error: &lt;message&gt;"
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();

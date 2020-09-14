@@ -183,7 +183,7 @@ public class Ajc extends DefaultCompilerAdapter {
 
     /**
      * Logs the compilation parameters, adds the files to compile and logs the 
-     * &qout;niceSourceList&quot;
+     * &quot;niceSourceList&quot;
      */
     @Override
 	protected void logAndAddFilesToCompile(Commandline cmd) {

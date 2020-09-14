@@ -20,7 +20,7 @@ import java.io.IOException;
  * 
  * There are two syntax styles for field access, the older style was in use up to AspectJ 1.6.9 and involves long named getters and
  * setters which include the requesting aspect and the target type. The short style syntax is use from AspectJ 1.6.9 onwards is
- * simply 'ajc$get$<fieldname>' and 'ajc$set$<fieldname>' - as the requesting aspect isn't included in the name they can be shared
+ * simply 'ajc$get$&lt;fieldname&gt;' and 'ajc$set$&lt;fieldname&gt;' - as the requesting aspect isn't included in the name they can be shared
  * across aspects.
  */
 public class PrivilegedAccessMunger extends ResolvedTypeMunger {

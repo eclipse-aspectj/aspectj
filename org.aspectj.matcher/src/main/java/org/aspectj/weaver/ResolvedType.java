@@ -690,7 +690,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Do the two members conflict?  Due to the change in 1.7.1, field itds on interfaces now act like 'default' fields - so types implementing
 	 * those fields get the field if they don't have it already, otherwise they keep what they have.  The conflict detection below had to be
-	 * altered.  Previously (<1.7.1) it is not a conflict if the declaring types are different.  With v2itds it may still be a conflict if the
+	 * altered.  Previously (&lt;1.7.1) it is not a conflict if the declaring types are different.  With v2itds it may still be a conflict if the
 	 * declaring types are different.
 	 */
 	public static boolean conflictingSignature(Member m1, Member m2, boolean v2itds) {
@@ -1657,8 +1657,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Called for all type mungers but only does something if they share type variables with a generic type which they target. When
 	 * this happens this routine will check for the target type in the target hierarchy and 'bind' any type parameters as
-	 * appropriate. For example, for the ITD "List<T> I<T>.x" against a type like this: "class A implements I<String>" this routine
-	 * will return a parameterized form of the ITD "List<String> I.x"
+	 * appropriate. For example, for the ITD "List&lt;T&gt; I&lt;T&gt;.x" against a type like this: "class A implements I&lt;String&gt;" this routine
+	 * will return a parameterized form of the ITD "List&lt;String&gt; I.x"
 	 */
 	public ConcreteTypeMunger fillInAnyTypeParameters(ConcreteTypeMunger munger) {
 		boolean debug = false;

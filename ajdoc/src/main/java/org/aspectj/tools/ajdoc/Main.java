@@ -794,7 +794,7 @@ public class Main implements Config {
 	}
 
 	/**
-	 * Sets the output working dir to be <fullyQualifiedOutputDir>\ajdocworkingdir Useful in testing to redirect the ajdocworkingdir
+	 * Sets the output working dir to be &lt;fullyQualifiedOutputDir&gt;\ajdocworkingdir. Useful in testing to redirect the ajdocworkingdir
 	 * to the sandbox
 	 */
 	public static void setOutputWorkingDir(String fullyQulifiedOutputDir) {
@@ -806,7 +806,7 @@ public class Main implements Config {
 	}
 
 	/**
-	 * Resets the output working dir to be the default which is <the current directory>\ajdocworkingdir
+	 * Resets the output working dir to be the default which is &lt;the current directory&gt;\ajdocworkingdir
 	 */
 	public static void resetOutputWorkingDir() {
 		outputWorkingDir = Config.WORKING_DIR;

@@ -24,7 +24,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 /**
- * left && right
+ * left &amp;&amp; right
  * 
  * <p>
  * any binding to formals is explicitly forbidden for any composite by the language

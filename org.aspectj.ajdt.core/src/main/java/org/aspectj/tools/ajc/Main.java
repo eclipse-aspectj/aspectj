@@ -218,7 +218,7 @@ public class Main {
 	 * 
 	 * @param args the String[] command line for the compiler
 	 * @param useSystemExit if true, use System.exit(int) to complete unless one of the args is -noExit. and signal result (0 no
-	 *        exceptions/error, <0 exceptions, >0 compiler errors).
+	 *        exceptions/error, &lt;0 exceptions, &gt;0 compiler errors).
 	 */
 	public void runMain(String[] args, boolean useSystemExit) {
 		// Urk - default no check for AJDT, enabled here for Ant, command-line

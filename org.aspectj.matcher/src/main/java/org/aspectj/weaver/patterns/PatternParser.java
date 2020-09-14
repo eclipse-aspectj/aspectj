@@ -1049,7 +1049,7 @@ public class PatternParser {
 	}
 
 	/**
-	 * Attempt to parse a typeIs(<category>) construct. If it cannot be parsed we just return null and that should cause the caller
+	 * Attempt to parse a typeIs(&lt;category&gt;) construct. If it cannot be parsed we just return null and that should cause the caller
 	 * to reset their position and attempt to consume it in another way. This means we won't have problems here: execution(*
 	 * typeIs(..)) because someone has decided to call a method the same as our construct.
 	 * 

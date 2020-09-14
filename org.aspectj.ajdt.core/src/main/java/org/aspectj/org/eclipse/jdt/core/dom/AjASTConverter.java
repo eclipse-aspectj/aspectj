@@ -3584,7 +3584,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the ending position for a type declaration when the dimension is right after the type name.
-	 * For example: int[] i; => return 5, but int i[] => return -1;
+	 * For example: int[] i; &rarr; return 5, but int i[] &rarr; return -1;
 	 * 
 	 * @return int the dimension found
 	 */

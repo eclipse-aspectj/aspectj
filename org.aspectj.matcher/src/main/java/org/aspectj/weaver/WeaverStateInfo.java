@@ -34,9 +34,9 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  * whether reweaving is allowed. The format in the data stream is:
  * 
  * Byte: Kind. UNTOUCHED|WOVEN|EXTENDED - If extended it can have two extra bits set 'REWEAVABLE' and 'REWEAVABLE_COMPRESSION_BIT'
- * Short: typeMungerCount - how many type mungers have affected this type <UnresolvedType & ResolvedTypeMunger>: The type mungers
+ * Short: typeMungerCount - how many type mungers have affected this type &lt;UnresolvedType &amp; ResolvedTypeMunger&gt;: The type mungers
  * themselves If we are reweavable then we also have: Short: Number of aspects that touched this type in some way when it was
- * previously woven <String> The fully qualified name of each type Int: Length of class file data (i.e. the unwovenclassfile)
+ * previously woven &lt;String&gt; The fully qualified name of each type Int: Length of class file data (i.e. the unwovenclassfile)
  * Byte[]: The class file data, compressed if REWEAVABLE_COMPRESSION_BIT set.
  * 
  * @author Andy Clement

@@ -43,7 +43,7 @@ public class Aj implements ClassPreProcessor {
 
 	/**
 	 * References are added to this queue when their associated classloader is removed, and once on here that indicates that we
-	 * should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from adaptorkey > adaptor
+	 * should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from adaptorkey &gt; adaptor
 	 * (weaver)
 	 */
 	private static ReferenceQueue adaptorQueue = new ReferenceQueue();

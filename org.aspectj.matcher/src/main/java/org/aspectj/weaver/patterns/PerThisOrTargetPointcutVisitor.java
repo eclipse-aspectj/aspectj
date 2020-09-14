@@ -17,9 +17,9 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
 
 /**
- * A visitor that turns a pointcut into a type pattern equivalent for a perthis or pertarget matching: - pertarget(target(Foo)) =>
- * Foo+ (this one is a special case..) - pertarget(execution(* Foo.do()) => Foo - perthis(call(* Foo.do()) => * - perthis(!call(*
- * Foo.do()) => * (see how the ! has been absorbed here..)
+ * A visitor that turns a pointcut into a type pattern equivalent for a perthis or pertarget matching: - pertarget(target(Foo)) &rarr;
+ * Foo+ (this one is a special case..) - pertarget(execution(* Foo.do()) &rarr; Foo - perthis(call(* Foo.do()) &rarr; * - perthis(!call(*
+ * Foo.do()) &rarr; * (see how the ! has been absorbed here..)
  * 
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */

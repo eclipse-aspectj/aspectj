@@ -18,7 +18,7 @@ package org.aspectj.ajde.ui;
  * @author Mik Kersten
  *
  * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
+ * Window&gt;Preferences&gt;Java&gt;Templates.
  */
 public class InvalidResourceException extends Exception {
 
