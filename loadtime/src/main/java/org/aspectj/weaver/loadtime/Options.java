@@ -23,7 +23,7 @@ import org.aspectj.util.LangUtil;
  * A class that hanldes LTW options. Note: AV - I choosed to not reuse AjCompilerOptions and alike since those implies too many
  * dependancies on jdt and ajdt modules.
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class Options {
 

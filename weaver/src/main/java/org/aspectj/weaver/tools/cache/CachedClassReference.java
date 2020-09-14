@@ -18,9 +18,10 @@ package org.aspectj.weaver.tools.cache;
  * cache entry is a simple string, but that string may contain
  * some specialized encoding. This class handles all of that
  * encoding.
- * <p/>
+ * <p>
  * External users of the cache should not be able to create these
  * objects manually.
+ * </p>
  */
 public class CachedClassReference {
 	enum EntryType {

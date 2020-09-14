@@ -19,11 +19,11 @@ import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ResolvedType;
 
 /**
- * pr354470. This is a special subtype of HasMemberTypePattern. In order to optimize this situation: <br>
- * <code><pre>
+ * pr354470. This is a special subtype of HasMemberTypePattern. In order to optimize this situation:
+ * <pre><code>
  * aspect X perthis(transactional()) {<br>
  * pointcut transactional: execution(@Foo * *(..));<br>
- * </pre></code>
+ * </code></pre>
  * <p>
  * When this occurs we obviously only want an aspect instance when there is a method annotated with @Foo. For a regular execution
  * pointcut we couldn't really do this due to the multiple joinpoint signatures for each joinpoint (and so lots of types get the
@@ -36,6 +36,7 @@ import org.aspectj.weaver.ResolvedType;
  * subclass is created to say 'if the supertype thinks it is a match, great, but if it doesnt then if there are ITDs on the target,
  * they might match so just say 'true''. Note that returning true is just confirming whether the 'mightHaveAspect' interface (and
  * friends) are getting added.
+ * </p>
  * 
  * @author Andy Clement
  */

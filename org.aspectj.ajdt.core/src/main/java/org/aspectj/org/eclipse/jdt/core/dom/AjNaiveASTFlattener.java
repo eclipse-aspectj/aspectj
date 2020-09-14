@@ -23,13 +23,15 @@ import java.util.List;
  * fine for generating debug print strings.
  * <p>
  * Example usage:
- * <code>
+ * </p>
  * <pre>
+ * <code>
  *    NaiveASTFlattener p = new NaiveASTFlattener();
  *    node.accept(p);
  *    String result = p.getResult();
- * </pre>
  * </code>
+ * </pre>
+ * <p>
  * Call the <code>reset</code> method to clear the previous result before reusing an
  * existing instance.
  * </p>

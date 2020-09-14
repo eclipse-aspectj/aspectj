@@ -21,7 +21,7 @@ import org.aspectj.weaver.Shadow;
  * Foo+ (this one is a special case..) - pertarget(execution(* Foo.do()) &rarr; Foo - perthis(call(* Foo.do()) &rarr; * - perthis(!call(*
  * Foo.do()) &rarr; * (see how the ! has been absorbed here..)
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class PerThisOrTargetPointcutVisitor extends AbstractPatternNodeVisitor {
 

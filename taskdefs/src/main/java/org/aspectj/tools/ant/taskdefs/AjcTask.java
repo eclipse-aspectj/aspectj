@@ -601,7 +601,7 @@ public class AjcTask extends MatchingTask {
 	}
 
 	/**
-	 * -Xlint - set default level of -Xlint messages to warning (same as </code>-Xlint:warning</code>)
+	 * -Xlint - set default level of -Xlint messages to warning (same as <code>-Xlint:warning</code>)
 	 */
 	public void setXlintwarnings(boolean xlintwarnings) {
 		cmd.addFlag("-Xlint", xlintwarnings);

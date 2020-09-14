@@ -20,10 +20,11 @@ import java.util.List;
  * a reasonable naive implementation, the management and invalidation
  * of the cache may be more usefully accomplished at the Application
  * or Container level.
- * <p/>
+ * <p>
  * The key is not a one-way hash; it must be convertible back to a
  * className and must match the regex for the type of key it is
  * (generated or weaved).
+ * </p>
  */
 public interface CacheKeyResolver {
 	/**

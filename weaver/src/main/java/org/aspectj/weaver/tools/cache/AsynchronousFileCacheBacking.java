@@ -35,7 +35,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * to signal to a background thread various actions required to &quot;synchronize&quot;
  * the in-memory cache with the persisted copy. Whenever there is a cache miss
  * from the {@link #get(CachedClassReference)} call, the weaver issues a
- * {@link #put(CachedClassEntry)} call. This call has 2 side-effects:</BR>
+ * {@link #put(CachedClassEntry)} call. This call has 2 side-effects:
  * <UL>
  * 		<LI>
  * 		The in-memory cache is updated so that subsequent calls to {@link #get(CachedClassReference)}

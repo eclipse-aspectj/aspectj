@@ -59,7 +59,7 @@ public class Ajc extends DefaultCompilerAdapter {
 
     /**
      * Checks the command line for arguments allowed only in AJC and
-     * disallowed by AJC and then calls the <code>compile()<code> method.
+     * disallowed by AJC and then calls the <code>compile()</code> method.
      *
      * @return true if a good compile, false otherwise.
      * @throws org.apache.tools.ant.BuildException

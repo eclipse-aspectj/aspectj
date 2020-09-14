@@ -34,7 +34,7 @@ import org.aspectj.weaver.tools.cache.SimpleCacheFactory;
  * Adapter between the generic class pre processor interface and the AspectJ weaver Load time weaving consistency relies on
  * Bcel.setRepository
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class Aj implements ClassPreProcessor {
 

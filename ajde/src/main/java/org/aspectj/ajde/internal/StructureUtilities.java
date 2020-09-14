@@ -20,7 +20,7 @@ package org.aspectj.ajde.internal;
 
 /**
  * Utility class for building a structure model for a given compile. Typical command-line usage: <BR>
- * &nbsp;&nbsp;&gt; <TT>java org.aspectj.tools.ajde.StructureManager @&lt;config-file&gt;.lst</TT>
+ * &nbsp;&nbsp;&gt; {@code java org.aspectj.tools.ajde.StructureManager @&lt;config-file&gt;.lst}
  */
 public class StructureUtilities {
 

@@ -27,44 +27,49 @@ import org.aspectj.weaver.tools.GeneratedClassHandler;
  * except designed to operate across multiple restarts of the JVM and with one
  * cache per classloader; allowing URLClassLoaders with the same set of URI
  * paths to share the same cache (with the default configuration).
- * <p/>
+ * <p>
  * To enable the default configuration two system properties must be set:
+ * </p>
  * <pre>
  *    "-Daj.weaving.cache.enabled=true"
  *    "-Daj.weaving.cache.dir=/some/directory"
  * </pre>
- * <p/>
+ * <p>
  * The class cache is often something that application developers or
  * containers would like to manage, so there are a few interfaces for overriding the
  * default behavior and performing other management functions.
+ * </p>
  * <p/>
- * {@link CacheBacking} <br/>
+ * {@link CacheBacking} <br>
  * Provides an interface for implementing a custom backing store
  * for the cache; The default implementation in {@link DefaultFileCacheBacking}
  * provides a naive file-backed cache. An alternate implementation may ignore
  * caching until signaled explicitly by the application, or only cache files
  * for a specific duration. This class delegates the locking and synchronization
  * requirements to the CacheBacking implementation.
- * <p/>
- * {@link CacheKeyResolver} <br/>
+ * </p>
+ * <p>
+ * {@link CacheKeyResolver} <br>
  * Provides methods for creating keys from classes to be cached and for
  * creating the "scope" of the cache itself for a given classloader and aspect
  * list. The default implementation is provided by {@link DefaultCacheKeyResolver}
  * but an alternate implementation may want to associate a cache with a particular
  * application running underneath a container.
- * <p/>
+ * </p>
+ * <p>
  * This naive cache does not normally invalidate *any* classes; the interfaces above
  * must be used to implement more intelligent behavior. Cache invalidation
  * problems may occur in at least three scenarios:
- * <pre>
- *    1. New aspects are added dynamically somewhere in the classloader hierarchy; affecting
- *       other classes elsewhere.
- *    2. Use of declare parent in aspects to change the type hierarchy; if the cache
+ * </p>
+ * <ol>
+ *    <li>New aspects are added dynamically somewhere in the classloader hierarchy; affecting
+ *       other classes elsewhere.</li>
+ *    <li>Use of declare parent in aspects to change the type hierarchy; if the cache
  *       has not invalidated the right classes in the type hierarchy aspectj may not
- *       be reconstruct the class incorrectly.
- *    3. Similarly to (2), the addition of fields or methods on classes which have
- *       already been weaved and cached could have inter-type conflicts.
- * </pre>
+ *       be reconstruct the class incorrectly.</li>
+ *    <li>Similarly to (2), the addition of fields or methods on classes which have
+ *       already been weaved and cached could have inter-type conflicts.</li>
+ * </ol>
  */
 public class WeavedClassCache {
 	public static final String WEAVED_CLASS_CACHE_ENABLED = "aj.weaving.cache.enabled";

@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * A POJO that contains raw strings from the XML (sort of XMLBean for our simple LTW DTD)
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class Definition {
 

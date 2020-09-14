@@ -40,7 +40,7 @@ public interface IWeavingContext {
 
 	/**
 	 * In an OSGi environment, determin which bundle a URL originated from.
-	 * In a non-OSGi environment, implementors should return <code>null<code>.
+	 * In a non-OSGi environment, implementors should return <code>null</code>.
 	 * @param url
 	 * @return
 	 * @deprecated use getFile() or getClassLoaderName()
