@@ -1374,7 +1374,6 @@ public class AjcTask extends MatchingTask {
 	 *
 	 * @param args String[] of the complete compiler command to execute
 	 *
-	 * @see DefaultCompilerAdapter#executeExternalCompile(String[], int)
 	 * @throws BuildException if ajc aborts (negative value) or if failonerror and there were compile errors.
 	 */
 	protected void executeInOtherVM(String[] args) {

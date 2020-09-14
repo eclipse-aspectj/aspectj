@@ -33,7 +33,7 @@ public interface IWeavingSupport {
 	/**
 	 * Register a munger for perclause {@literal @}AJ aspect so that we add aspectOf(..) to them as needed
 	 *
-	 * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
+	 * @see org.aspectj.weaver.bcel.BcelWeavingSupport#makePerClauseAspect(ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
 	 */
 	ConcreteTypeMunger makePerClauseAspect(ResolvedType aspect, PerClause.Kind kind);
 

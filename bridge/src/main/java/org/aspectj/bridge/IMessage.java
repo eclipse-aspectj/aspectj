@@ -40,7 +40,7 @@ public interface IMessage {
 	// public static final Kind ANY = new Kind("any-selector", 0);
 
 	/**
-	 * list of Kind in precedence order. 0 is less than IMessage.Kind.COMPARATOR.compareTo(KINDS.get(i), KINDS.get(i + 1))
+	 * list of Kind in precedence order. 0 is less than IMessage.Kind#COMPARATOR.compareTo(KINDS.get(i), KINDS.get(i + 1))
 	 */
 	List<Kind> KINDS = Collections.unmodifiableList(Arrays.asList(new Kind[] { WEAVEINFO, INFO, DEBUG, TASKTAG,
 			WARNING, ERROR, FAIL, ABORT }));

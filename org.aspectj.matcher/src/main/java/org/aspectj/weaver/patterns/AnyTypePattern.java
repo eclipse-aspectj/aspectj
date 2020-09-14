@@ -40,7 +40,7 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesExactly(ResolvedType type) {
@@ -53,7 +53,7 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
@@ -72,7 +72,7 @@ public class AnyTypePattern extends TypePattern {
 	// return FuzzyBoolean.YES;
 	// }
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {

@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
  * This task was developed by the <a href="http://aspectj.org">AspectJ Project</a>
  *
  * @author <a href="mailto:palm@parc.xerox.com">Jeffrey Palm</a>
- * @see    org.aspectj.tools.ant.taskdefs.compilers.AjcCompiler
+ * @see    org.aspectj.tools.ant.taskdefs.compilers.Ajc
  */
 public class Ajc2 extends Javac {
 
@@ -288,7 +288,7 @@ public class Ajc2 extends Javac {
      * to <code>true</code>.
      *
      * @return new PatternSet.NameEntry to be added to the include list.
-     * @see    org.apache.tools.taskdefs.Javac#createInclude()
+     * @see    org.apache.tools.ant.taskdefs.Javac#createInclude()
      */
     public PatternSet.NameEntry createInclude() {
         haveIncludes = true;
@@ -300,7 +300,7 @@ public class Ajc2 extends Javac {
      * to <code>true</code>.
      *
      * @return new PatternSet.NameEntry to be added to the exclude list.
-     * @see    org.apache.tools.taskdefs.Javac#createExclude()
+     * @see    org.apache.tools.ant.taskdefs.Javac#createExclude()
      */    
     public PatternSet.NameEntry createExclude() {
         haveExcludes = true;
@@ -312,7 +312,7 @@ public class Ajc2 extends Javac {
      * to <code>true</code>.
      *
      * @param includes Comma-separated list of includes.
-     * @see   org.apache.tools.taskdefs.Javac#setIncludes(java.lang.String)
+     * @see   org.apache.tools.ant.taskdefs.Javac#setIncludes(java.lang.String)
      */
     public void setIncludes(String includes) {
         haveIncludes = true;
@@ -324,7 +324,7 @@ public class Ajc2 extends Javac {
      * to <code>true</code>.
      *
      * @param excludes Comma-separated list of excludes.
-     * @see   org.apache.tools.taskdefs.Javac#setExcludes(java.lang.String)
+     * @see   org.apache.tools.ant.taskdefs.Javac#setExcludes(java.lang.String)
      */    
     public void setExcludes(String excludes) {
         haveExcludes = true;

@@ -22,9 +22,6 @@ import org.aspectj.util.LangUtil;
  * endLine.
  * 
  * @see org.aspectj.lang.reflect.SourceLocation
- * @see org.aspectj.compiler.base.parser.SourceInfo
- * @see org.aspectj.tools.ide.SourceLine
- * @see org.aspectj.testing.harness.ErrorLine
  */
 public class SourceLocation implements ISourceLocation {
 

@@ -93,9 +93,6 @@ public class StructureViewManager {
 		}
 	}
 
-	/**
-	 * History is recorded for {@link LinkNode} navigations.
-	 */
 	public void fireNavigationAction(IProgramElement pe, boolean isLink) {
 		navigationAction(pe, isLink);
 	}

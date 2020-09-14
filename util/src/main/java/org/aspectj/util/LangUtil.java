@@ -865,7 +865,7 @@ public class LangUtil {
 	 * Renders exception <code>t</code> after unwrapping and eliding any test packages.
 	 *
 	 * @param t <code>Throwable</code> to print.
-	 * @see #maxStackTrace
+	 * @see StringChecker#TEST_PACKAGES
 	 */
 	public static String renderException(Throwable t) {
 		return renderException(t, true);

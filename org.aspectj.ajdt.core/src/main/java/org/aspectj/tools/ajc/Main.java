@@ -483,7 +483,6 @@ public class Main {
 	 * 
 	 * @param pass true result of the command
 	 * @param holder IMessageHolder with messages from the command
-	 * @see reportCommandResults(IMessageHolder)
 	 * @return false if the process should abort
 	 */
 	protected boolean report(boolean pass, IMessageHolder holder) {

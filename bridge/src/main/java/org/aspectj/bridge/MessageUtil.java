@@ -251,7 +251,7 @@ public class MessageUtil {
 	 *
 	 * @param messageHolder
 	 * @param out
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder messageHolder) {
 		print(out, messageHolder, (String) null, (IMessageRenderer) null, (IMessageHandler) null);
@@ -262,7 +262,7 @@ public class MessageUtil {
 	 *
 	 * @param holder
 	 * @param out
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder holder, String prefix) {
 		print(out, holder, prefix, (IMessageRenderer) null, (IMessageHandler) null);
@@ -274,7 +274,7 @@ public class MessageUtil {
 	 * @param holder
 	 * @param out
 	 * @param renderer IMessageRender to render result - use MESSAGE_LINE if null
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder holder, String prefix, IMessageRenderer renderer) {
 		print(out, holder, prefix, renderer, (IMessageHandler) null);
@@ -401,7 +401,7 @@ public class MessageUtil {
 	 *
 	 * @param messages if null, return EMPTY_LIST
 	 * @param kind if null, return messages
-	 * @see MessageHandler#getMessages(Kind)
+	 * @see MessageHandler#getMessages(Kind, boolean)
 	 */
 	public static List<IMessage> getMessages(List<IMessage> messages, IMessage.Kind kind) {
 		if (null == messages) {

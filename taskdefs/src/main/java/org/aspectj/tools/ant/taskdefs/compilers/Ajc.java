@@ -32,7 +32,7 @@ import org.apache.tools.ant.types.Commandline;
  * This task was developed by the <a href="http://aspectj.org">AspectJ Project</a>
  *
  * @author <a href="mailto:palm@parc.xerox.com">Jeffrey Palm</a>
- * @see    org.aspectj.tools.ant.taskdefs.Ajc
+ * @see    org.aspectj.tools.ant.taskdefs.Ajc2
  */
 public class Ajc extends DefaultCompilerAdapter {
 

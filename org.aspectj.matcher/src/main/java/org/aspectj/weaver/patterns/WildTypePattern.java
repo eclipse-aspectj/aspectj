@@ -218,7 +218,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.TypePattern#matchesExactly(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesExactly(ResolvedType type) {
@@ -499,7 +499,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.TypePattern#matchesInstanceof(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
