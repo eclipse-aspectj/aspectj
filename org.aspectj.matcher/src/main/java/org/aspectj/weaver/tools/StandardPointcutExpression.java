@@ -60,7 +60,7 @@ public interface StandardPointcutExpression {
 	/**
 	 * Determine whether or not this pointcut matches the static initialization of the given class.
 	 * 
-	 * @param aClass the class being statically initialized
+	 * @param aType the class being statically initialized
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never matchs join points representing the static
 	 *         initialization of the given type
 	 */

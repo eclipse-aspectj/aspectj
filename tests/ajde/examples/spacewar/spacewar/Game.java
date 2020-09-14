@@ -44,7 +44,7 @@ public class Game extends Thread {
      * thread.  You can instantiate multiple games at once.  For the time being
      * the only way to end the game is to exit from the Java VM.
      *
-     * @param isDemo Controls whether the game runs in demo mode or not.  True
+     * @param mode Controls whether the game runs in demo mode or not.  True
      *   means it is a demo, false means it runs in normal 2 player mode.
      */
     public Game(String mode) {

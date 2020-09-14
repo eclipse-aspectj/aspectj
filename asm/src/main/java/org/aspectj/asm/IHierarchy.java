@@ -75,12 +75,12 @@ public interface IHierarchy extends Serializable {
 
 	/**
 	 * @param packageName if null default package is searched
-	 * @param className can't be null
+	 * @param typeName can't be null
 	 */
 	IProgramElement findElementForType(String packageName, String typeName);
 
 	/**
-	 * @param sourceFilePath modified to '/' delimited path for consistency
+	 * @param sourceFile modified to '/' delimited path for consistency
 	 * @return a new structure node for the file if it was not found in the model
 	 */
 	IProgramElement findElementForSourceFile(String sourceFile);

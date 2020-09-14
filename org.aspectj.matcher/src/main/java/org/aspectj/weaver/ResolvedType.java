@@ -202,14 +202,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * returns an iterator through all of the fields of this type, in order for checking from JVM spec 2ed 5.4.3.2. This means that
 	 * the order is
-	 * <p/>
 	 * <ul>
 	 * <li>fields from current class</li>
 	 * <li>recur into direct superinterfaces</li>
 	 * <li>recur into superclass</li>
 	 * </ul>
-	 * <p/>
+	 * <p>
 	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land.
+	 * </p>
 	 */
 	public Iterator<ResolvedMember> getFields() {
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
@@ -225,13 +225,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * returns an iterator through all of the methods of this type, in order for checking from JVM spec 2ed 5.4.3.3. This means that
 	 * the order is
-	 * <p/>
 	 * <ul>
 	 * <li>methods from current class</li>
 	 * <li>recur into superclass, all the way up, not touching interfaces</li>
 	 * <li>recur into all superinterfaces, in some unspecified order (but those 'closest' to this type are first)</li>
 	 * </ul>
-	 * <p/>
 	 * 
 	 * @param wantGenerics is true if the caller would like all generics information, otherwise those methods are collapsed to their
 	 *        erasure
@@ -315,15 +313,20 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
 	 * and then all interfaces (starting with those 'nearest' this type).
-	 * 
-	 * @param wantGenerics true if the caller wants full generic information
-	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
 	 * @return an iterator over all types in the hierarchy of this type
 	 */
 	public Iterator<ResolvedType> getHierarchy() {
 		return getHierarchy(false, false);
 	}
 
+	/**
+	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
+	 * and then all interfaces (starting with those 'nearest' this type).
+	 *
+	 * @param wantGenerics true if the caller wants full generic information
+	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
+	 * @return an iterator over all types in the hierarchy of this type
+	 */
 	public Iterator<ResolvedType> getHierarchy(final boolean wantGenerics, final boolean wantDeclaredParents) {
 
 		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
@@ -690,7 +693,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Do the two members conflict?  Due to the change in 1.7.1, field itds on interfaces now act like 'default' fields - so types implementing
 	 * those fields get the field if they don't have it already, otherwise they keep what they have.  The conflict detection below had to be
-	 * altered.  Previously (<1.7.1) it is not a conflict if the declaring types are different.  With v2itds it may still be a conflict if the
+	 * altered.  Previously (&lt;1.7.1) it is not a conflict if the declaring types are different.  With v2itds it may still be a conflict if the
 	 * declaring types are different.
 	 */
 	public static boolean conflictingSignature(Member m1, Member m2, boolean v2itds) {
@@ -739,14 +742,14 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * returns an iterator through all of the pointcuts of this type, in order for checking from JVM spec 2ed 5.4.3.2 (as for
 	 * fields). This means that the order is
-	 * <p/>
 	 * <ul>
 	 * <li>pointcuts from current class</li>
 	 * <li>recur into direct superinterfaces</li>
 	 * <li>recur into superclass</li>
 	 * </ul>
-	 * <p/>
+	 * <p>
 	 * We keep a hashSet of interfaces that we've visited so we don't spiral out into 2^n land.
+	 * </p>
 	 */
 	public Iterator<ResolvedMember> getPointcuts() {
 		final Iterators.Filter<ResolvedType> dupFilter = Iterators.dupFilter();
@@ -1557,10 +1560,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Returns a ResolvedType object representing the declaring type of this type, or null if this type does not represent a
 	 * non-package-level-type.
-	 * <p/>
+	 * <p>
 	 * <strong>Warning</strong>: This is guaranteed to work for all member types. For anonymous/local types, the only guarantee is
 	 * given in JLS 13.1, where it guarantees that if you call getDeclaringType() repeatedly, you will eventually get the top-level
 	 * class, but it does not say anything about classes in between.
+	 * </p>
 	 * 
 	 * @return the declaring type, or null if it is not an nested type.
 	 */
@@ -1657,8 +1661,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Called for all type mungers but only does something if they share type variables with a generic type which they target. When
 	 * this happens this routine will check for the target type in the target hierarchy and 'bind' any type parameters as
-	 * appropriate. For example, for the ITD "List<T> I<T>.x" against a type like this: "class A implements I<String>" this routine
-	 * will return a parameterized form of the ITD "List<String> I.x"
+	 * appropriate. For example, for the ITD "List&lt;T&gt; I&lt;T&gt;.x" against a type like this: "class A implements I&lt;String&gt;" this routine
+	 * will return a parameterized form of the ITD "List&lt;String&gt; I.x"
 	 */
 	public ConcreteTypeMunger fillInAnyTypeParameters(ConcreteTypeMunger munger) {
 		boolean debug = false;
@@ -2623,7 +2627,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * assignable to a variable of type X without loss of precision.
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible assignment should be checked.
 	 * @return true iff variables of this type could be assigned values of other with possible conversion
 	 */
 	public final boolean isConvertableFrom(ResolvedType other) {
@@ -2661,7 +2664,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * assignment conversion as per JLS 2ed 5.2. For object types, this means supertypeOrEqual(THIS, OTHER).
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible assignment should be checked.
 	 * @return true iff variables of this type could be assigned values of other without casting
 	 * @throws NullPointerException if other is null
 	 */
@@ -2672,10 +2674,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Determines if values of another type could possibly be cast to this type. The rules followed are from JLS 2ed 5.5,
 	 * "Casting Conversion".
-	 * <p/>
 	 * <p>
 	 * This method should be commutative, i.e., for all UnresolvedType a, b and all World w:
-	 * <p/>
+	 * </p>
 	 * <blockquote>
 	 * 
 	 * <pre>
@@ -2685,7 +2686,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * </blockquote>
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible coersion should be checked.
 	 * @return true iff values of other could possibly be cast to this type.
 	 * @throws NullPointerException if other is null.
 	 */

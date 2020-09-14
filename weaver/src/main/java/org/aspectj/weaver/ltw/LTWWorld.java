@@ -97,7 +97,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	// }
 
 	/**
-	 * @Override
+	 * Override
 	 */
 	@Override
 	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {

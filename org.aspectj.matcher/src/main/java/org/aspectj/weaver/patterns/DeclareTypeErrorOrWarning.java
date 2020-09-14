@@ -38,7 +38,7 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	}
 
 	/**
-	 * returns "declare warning: <typepattern>: <message>" or "declare error: <typepattern>: <message>"
+	 * returns "declare warning: &lt;typepattern&gt;: &lt;message&gt;" or "declare error: &lt;typepattern&gt;: &lt;message&gt;"
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();

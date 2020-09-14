@@ -28,11 +28,11 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 /**
- * Represents an attempt to bind the field of an annotation within a pointcut. For example:<br>
- * <code><pre>
+ * Represents an attempt to bind the field of an annotation within a pointcut. For example:
+ * <pre><code>
  * before(Level lev): execution(* *(..)) &amp;&amp; @annotation(TraceAnnotation(lev))
- * </pre></code><br>
- * This binding annotation type pattern will be for 'lev'.
+ * </code></pre>
+ * <p>This binding annotation type pattern will be for 'lev'.</p>
  */
 public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern {
 

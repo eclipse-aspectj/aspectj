@@ -119,7 +119,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	/**
 	 * Simply call weaving adaptor back to parse aop.xml
 	 * 
-	 * @param weaver
+	 * @param adaptor
 	 * @param loader
 	 */
 	public List<Definition> getDefinitions(final ClassLoader loader, final WeavingAdaptor adaptor) {

@@ -23,9 +23,7 @@ import org.aspectj.weaver.World;
 public class AnyTypePattern extends TypePattern {
 
 	/**
-	 * Constructor for EllipsisTypePattern.
-	 * 
-	 * @param includeSubtypes
+	 * Constructor for AnyTypePattern.
 	 */
 	public AnyTypePattern() {
 		super(false, false, new TypePatternList());
@@ -42,7 +40,7 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesExactly(ResolvedType type) {
@@ -55,7 +53,7 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
@@ -74,7 +72,7 @@ public class AnyTypePattern extends TypePattern {
 	// return FuzzyBoolean.YES;
 	// }
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesSubtypes(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesSubtypes(ResolvedType type) {

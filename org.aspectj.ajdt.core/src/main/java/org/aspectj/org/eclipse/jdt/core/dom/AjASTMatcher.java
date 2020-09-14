@@ -16,8 +16,8 @@ public class AjASTMatcher extends ASTMatcher {
 	/**
 	 * Creates a new AST matcher instance.
 	 * <p>
-	 * For backwards compatibility, the matcher ignores tag elements below doc comments by default. Use {@link #ASTMatcher(boolean)
-	 * ASTMatcher(true)} for a matcher that compares doc tags by default.
+	 * For backwards compatibility, the matcher ignores tag elements below doc comments by default. Use {@link #AjASTMatcher(boolean)
+	 * AjASTMatcher(true)} for a matcher that compares doc tags by default.
 	 * </p>
 	 */
 	public AjASTMatcher() {

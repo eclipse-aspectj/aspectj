@@ -28,7 +28,7 @@ import org.aspectj.weaver.CompressingDataOutputStream;
  * Central point for all things incremental... - keeps track of the state recorded for each different config file - allows limited
  * interaction with these states
  * 
- * - records dependency/change info for particular classpaths > this will become what JDT keeps in its 'State' object when its
+ * - records dependency/change info for particular classpaths &gt; this will become what JDT keeps in its 'State' object when it's
  * finished
  */
 public class IncrementalStateManager {

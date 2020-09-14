@@ -39,8 +39,8 @@ public interface IWeavingContext {
 	Enumeration<URL> getResources(String name) throws IOException;
 
 	/**
-	 * In an OSGi environment, determin which bundle a URL originated from.
-	 * In a non-OSGi environment, implementors should return <code>null<code>.
+	 * In an OSGi environment, determine which bundle a URL originated from.
+	 * In a non-OSGi environment, implementors should return <code>null</code>.
 	 * @param url
 	 * @return
 	 * @deprecated use getFile() or getClassLoaderName()

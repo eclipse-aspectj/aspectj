@@ -21,15 +21,16 @@ import java.util.Set;
  * the list or relationships is uniquely identified by a kind and a relationship name. For example, the advice affecting a
  * particular shadow (e.g. method call) can be retrieved by calling <CODE>get</CODE> on the handle for that method. Symmetrically
  * the method call shadows that an advice affects can be retrieved.
- * <p>
  *
  * <p>
  * The elements can be stored and looked up as IProgramElement(s), in which cases the element corresponding to the handle is looked
  * up in the containment hierarchy.
+ * </p>
  *
  * <p>
  * put/get methods taking IProgramElement as a parameter are for convenience only. They work identically to calling their
  * counterparts with IProgramElement.getIdentifierHandle()
+ * </p>
  *
  * @author Mik Kersten
  * @author Andy Clement

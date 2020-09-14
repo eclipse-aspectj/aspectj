@@ -238,7 +238,7 @@ public class AjcMemberMaker {
 	}
 
 	/**
-	 * Return a resolvedmember representing the synthetic getter for the field. The old style (<1.6.9) is a heavyweight static
+	 * Return a resolvedmember representing the synthetic getter for the field. The old style (&lt;1.6.9) is a heavyweight static
 	 * method with a long name. The new style (1.6.9 and later) is short, and reusable across aspects.
 	 * 
 	 * @param aspectType the aspect attempting the access
@@ -272,7 +272,7 @@ public class AjcMemberMaker {
 	}
 
 	/**
-	 * Return a resolvedmember representing the synthetic setter for the field. The old style (<1.6.9) is a heavyweight static
+	 * Return a resolvedmember representing the synthetic setter for the field. The old style (&lt;1.6.9) is a heavyweight static
 	 * method with a long name. The new style (1.6.9 and later) is short, not always static, and reusable across aspects.
 	 * 
 	 * @param aspectType the aspect attempting the access
@@ -566,8 +566,8 @@ public class AjcMemberMaker {
 	}
 
 	/**
-	 * Sometimes the intertyped method requires a bridge method alongside it. For example if the method 'N SomeI<N>.m()' is put onto
-	 * an interface 'interface I<N extends Number>' and then a concrete implementation is 'class C implements I<Float>' then the ITD
+	 * Sometimes the intertyped method requires a bridge method alongside it. For example if the method 'N SomeI&lt;N&gt;.m()' is put onto
+	 * an interface 'interface I&lt;N extends Number&gt;' and then a concrete implementation is 'class C implements I&lt;Float&gt;' then the ITD
 	 * on the interface will be 'Number m()', whereas the ITD on the 'topmostimplementor' will be 'Float m()'. A bridge method needs
 	 * to be created in the topmostimplementor 'Number m()' that delegates to 'Float m()'
 	 */

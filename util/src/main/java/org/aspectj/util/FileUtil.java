@@ -324,7 +324,7 @@ public class FileUtil {
 	/**
 	 * Flatten File[] to String.
 	 *
-	 * @param files the File[] of paths to flatten - null ignored
+	 * @param paths the String[] of paths to flatten - null ignored
 	 * @param infix the String infix to use - null treated as File.pathSeparator
 	 */
 	public static String flatten(String[] paths, String infix) {
@@ -1288,9 +1288,9 @@ public class FileUtil {
 	 * result.
 	 *
 	 * @param sought the String text to seek in the file
-	 * @param sources the List of String paths to the source files
+	 * @param sourcePath the String of paths to the source files
 	 * @param listAll if false, only list first match in file
-	 * @param List sink the List for String entries of the form {sourcePath}:line:column
+	 * @param sink the List of String entries of the form {sourcePath}:line:column
 	 * @return String error if any, or add String entries to sink
 	 */
 	public static String lineSeek(String sought, String sourcePath, boolean listAll, List<String> sink) {

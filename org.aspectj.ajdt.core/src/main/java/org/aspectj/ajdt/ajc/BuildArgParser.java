@@ -333,7 +333,7 @@ public class BuildArgParser extends Main {
 	 *
 	 * @param flush if true, empty errors
 	 * @return null if none, String otherwise
-	 * @see BuildArgParser()
+	 * @see #BuildArgParser(IMessageHandler)
 	 */
 	public String getOtherMessages(boolean flush) {
 		if (null == errorSink) {

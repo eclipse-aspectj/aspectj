@@ -114,8 +114,6 @@ public class AjcTask extends MatchingTask {
 	 * </pre>
 	 *
 	 * @param javac the Javac command to implement (not null)
-	 * @param ajc the AjcTask to adapt (not null)
-	 * @param destDir the File class destination directory (may be null)
 	 * @return null if no error, or String error otherwise
 	 */
 	public String setupAjc(Javac javac) {
@@ -601,7 +599,7 @@ public class AjcTask extends MatchingTask {
 	}
 
 	/**
-	 * -Xlint - set default level of -Xlint messages to warning (same as </code>-Xlint:warning</code>)
+	 * -Xlint - set default level of -Xlint messages to warning (same as <code>-Xlint:warning</code>)
 	 */
 	public void setXlintwarnings(boolean xlintwarnings) {
 		cmd.addFlag("-Xlint", xlintwarnings);
@@ -1252,7 +1250,7 @@ public class AjcTask extends MatchingTask {
 	}
 
 	/**
-	 * @throw BuildException if options conflict
+	 * @throws BuildException if options conflict
 	 */
 	protected void verifyOptions() {
 		StringBuffer sb = new StringBuffer();
@@ -1376,7 +1374,6 @@ public class AjcTask extends MatchingTask {
 	 *
 	 * @param args String[] of the complete compiler command to execute
 	 *
-	 * @see DefaultCompilerAdapter#executeExternalCompile(String[], int)
 	 * @throws BuildException if ajc aborts (negative value) or if failonerror and there were compile errors.
 	 */
 	protected void executeInOtherVM(String[] args) {
@@ -1509,7 +1506,6 @@ public class AjcTask extends MatchingTask {
 	}
 
 	// ------------------------------ setup and reporting
-	/** @return null if path null or empty, String rendition otherwise */
 	protected static void addFlaggedPath(String flag, Path path, List<String> list) {
 		if (!LangUtil.isEmpty(flag) && ((null != path) && (0 < path.size()))) {
 			list.add(flag);

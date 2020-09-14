@@ -20,9 +20,6 @@ import java.io.File;
  * why?
  *
  * @see org.aspectj.lang.reflect.SourceLocation
- * @see org.aspectj.compiler.base.parser.SourceInfo
- * @see org.aspectj.tools.ide.SourceLine
- * @see org.aspectj.testing.harness.ErrorLine
  */
 public interface ISourceLocation extends java.io.Serializable {
 	int MAX_LINE = Integer.MAX_VALUE / 2;

@@ -41,11 +41,11 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 	 * 
 	 * within
 	 * 
-	 * @within staticinitialization [make sure this has a fast match method] adviceexecution handler get, set withincode
-	 * @withincode execution, initialization, preinitialization call
-	 * @annotation this, target
-	 * @this, @target args
-	 * @args cflow, cflowbelow if
+	 * {@literal @}within staticinitialization [make sure this has a fast match method] adviceexecution handler get, set withincode
+	 * {@literal @}withincode execution, initialization, preinitialization call
+	 * {@literal @}annotation this, target
+	 * {@literal @}this, {@literal @}target args
+	 * {@literal @}args cflow, cflowbelow if
 	 */
 	public int compare(Pointcut p1, Pointcut p2) {
 		// important property for a well-defined comparator

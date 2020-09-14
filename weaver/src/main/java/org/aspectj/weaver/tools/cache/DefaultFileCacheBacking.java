@@ -28,20 +28,23 @@ import org.aspectj.util.LangUtil;
 /**
  * Naive File-Backed Class Cache with no expiry or application
  * centric invalidation.
- * <p/>
+ * <p>
  * Enabled with the system property, "aj.weaving.cache.dir"
  * If this system property is not set, no caching will be
  * performed.
- * <p/>
+ * </p>
+ * <p>
  * A CRC checksum is stored alongside the class file to verify
  * the bytes on read. If for some reason there is an error
  * reading either the class or crc file, or if the crc does not
  * match the class data the cache entry is deleted.
- * <p/>
+ * </p>
+ * <p>
  * An alternate implementation of this could store the class file
  * as a jar/zip directly, which would have the required crc; as
  * a first pass however it is somewhat useful to view these files
  * in expanded form for debugging.
+ * </p>
  */
 public class DefaultFileCacheBacking extends AbstractIndexedFileCacheBacking {
 	private final Map<String, IndexEntry> index;

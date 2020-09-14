@@ -448,8 +448,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 * <li>Collections are unioned</li>
 	 * <li>values takes local value unless default and global set</li>
 	 * <li>this only sets one of outputDir and outputJar as needed</li>
-	 * <ul>
-	 * This also configures super if javaOptions change.
+	 * </ul>
+	 * <p>This also configures super if javaOptions change.</p>
 	 *
 	 * @param global the AjBuildConfig to read globals from
 	 */

@@ -34,16 +34,16 @@ import org.aspectj.weaver.tools.TraceFactory;
  * The class maintains an in-memory cache, and uses a queue of {@link AsyncCommand}s
  * to signal to a background thread various actions required to &quot;synchronize&quot;
  * the in-memory cache with the persisted copy. Whenever there is a cache miss
- * from the {@link #get(CachedClassReference)} call, the weaver issues a
- * {@link #put(CachedClassEntry)} call. This call has 2 side-effects:</BR>
+ * from the {@link #get(CachedClassReference, byte[])} call, the weaver issues a
+ * {@link #put(CachedClassEntry, byte[])} call. This call has 2 side-effects:
  * <UL>
  * 		<LI>
- * 		The in-memory cache is updated so that subsequent calls to {@link #get(CachedClassReference)}
+ * 		The in-memory cache is updated so that subsequent calls to {@link #get(CachedClassReference, byte[])}
  * 		will not return the mapped value.
  * 		</LI>
  *
  *  	<LI>
- *  	An &quot;update index&quot {@link AsyncCommand} is posted to the background
+ *  	An &quot;update index&quot; {@link AsyncCommand} is posted to the background
  *  	thread so that the newly mapped value will be persisted (eventually)
  *  	</LI>
  * </UL>

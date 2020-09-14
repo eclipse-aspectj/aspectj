@@ -48,7 +48,7 @@ public class AsmRelationshipUtils {
 	}
 
 	/**
-	 * Generates the pointcut details for the given pointcut, for example an anonymous pointcut will return '<anonymous pointcut>'
+	 * Generates the pointcut details for the given pointcut, for example an anonymous pointcut will return '&lt;anonymous pointcut&gt;'
 	 * and a named pointcut called p() will return 'p()..'
 	 */
 	public static String genPointcutDetails(Pointcut pcd) {

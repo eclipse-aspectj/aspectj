@@ -57,7 +57,7 @@ public interface CompilationResultDestinationManager {
 	List /* File */getAllOutputLocations();
 
 	/**
-	 * Return the default output location (for example, <my_project>/bin). This is where classes which are on the inpath will be
+	 * Return the default output location (for example, &lt;my_project&gt;/bin). This is where classes which are on the inpath will be
 	 * placed.
 	 */
 	File getDefaultOutputLocation();

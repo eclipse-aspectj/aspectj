@@ -23,8 +23,6 @@ public class EllipsisTypePattern extends TypePattern {
 
 	/**
 	 * Constructor for EllipsisTypePattern.
-	 * 
-	 * @param includeSubtypes
 	 */
 	public EllipsisTypePattern() {
 		super(false, false, new TypePatternList());
@@ -41,7 +39,7 @@ public class EllipsisTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesExactly(ResolvedType type) {
@@ -54,7 +52,7 @@ public class EllipsisTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {

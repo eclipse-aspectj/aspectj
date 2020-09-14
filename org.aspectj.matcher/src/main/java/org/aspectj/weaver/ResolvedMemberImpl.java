@@ -462,8 +462,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	}
 
 	/**
-	 * Return the member generic signature that would be suitable for inclusion in a class file Signature attribute. For: <T>
-	 * List<String> getThem(T t) {} we would create: <T:Ljava/lang/Object;>(TT;)Ljava/util/List<Ljava/lang/String;>;;
+	 * Return the member generic signature that would be suitable for inclusion in a class file Signature attribute. For: &lt;T&gt;
+	 * List&lt;String&gt; getThem(T t) {} we would create: &lt;T:Ljava/lang/Object;&gt;(TT;)Ljava/util/List&lt;Ljava/lang/String;&gt;;;
 	 * 
 	 * @return the generic signature for the member that could be inserted into a class file
 	 */
@@ -744,8 +744,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 	/**
 	 * Return a resolvedmember in which all the type variables in the signature have been replaced with the given bindings. The
-	 * 'isParameterized' flag tells us whether we are creating a raw type version or not. if (isParameterized) then List<T> will
-	 * turn into List<String> (for example) - if (!isParameterized) then List<T> will turn into List.
+	 * 'isParameterized' flag tells us whether we are creating a raw type version or not. if (isParameterized) then List&lt;T&gt; will
+	 * turn into List&lt;String&gt; (for example) - if (!isParameterized) then List&lt;T&gt; will turn into List.
 	 */
 	public ResolvedMemberImpl parameterizedWith(UnresolvedType[] typeParameters, ResolvedType newDeclaringType,
 			boolean isParameterized, List<String> aliases) {
@@ -805,7 +805,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 	/**
 	 * Replace occurrences of type variables in the signature with values contained in the map. The map is of the form
-	 * A=String,B=Integer and so a signature List<A> Foo.m(B i) {} would become List<String> Foo.m(Integer i) {}
+	 * A=String,B=Integer and so a signature List&lt;A&gt; Foo.m(B i) {} would become List&lt;String&gt; Foo.m(Integer i) {}
 	 */
 	public ResolvedMember parameterizedWith(Map<String, UnresolvedType> m, World w) {
 		// if (//isParameterized && <-- might need this bit...
@@ -926,8 +926,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	}
 
 	/**
-	 * If this member is defined by a parameterized super-type, return the erasure of that member. For example: interface I<T> { T
-	 * foo(T aTea); } class C implements I<String> { String foo(String aString) { return "something"; } } The resolved member for
+	 * If this member is defined by a parameterized super-type, return the erasure of that member. For example: interface I&lt;T&gt; { T
+	 * foo(T aTea); } class C implements I&lt;String&gt; { String foo(String aString) { return "something"; } } The resolved member for
 	 * C.foo has signature String foo(String). The erasure of that member is Object foo(Object) -- use upper bound of type variable.
 	 * A type is a supertype of itself.
 	 */

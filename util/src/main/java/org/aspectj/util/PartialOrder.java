@@ -31,14 +31,14 @@ public class PartialOrder {
 	 */
 	public interface PartialComparable {
 		/**
-		 * @returns <ul>
-		 *          <li>+1 if this is greater than other</li>
-		 *          <li>-1 if this is less than other</li>
-		 *          <li>0 if this is not comparable to other</li>
-		 *          </ul>
+		 * @return <ul>
+		 *         <li>+1 if this is greater than other</li>
+		 *         <li>-1 if this is less than other</li>
+		 *         <li>0 if this is not comparable to other</li>
+		 *         </ul>
 		 *
-		 *          <b> Note: returning 0 from this method doesn't mean the same thing as returning 0 from
-		 *          java.util.Comparable.compareTo()</b>
+		 *         <b> Note: returning 0 from this method doesn't mean the same thing as returning 0 from
+		 *         java.util.Comparable.compareTo()</b>
 		 */
 		int compareTo(Object other);
 
@@ -110,7 +110,7 @@ public class PartialOrder {
 	/**
 	 * @param objects must all implement PartialComparable
 	 *
-	 * @returns the same members as objects, but sorted according to their partial order. returns null if the objects are cyclical
+	 * @return the same members as objects, but sorted according to their partial order. returns null if the objects are cyclical
 	 *
 	 */
 	public static <T extends PartialComparable> List<T> sort(List<T> objects) {

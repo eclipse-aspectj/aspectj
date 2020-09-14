@@ -2062,7 +2062,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	/**
-	 * Returns a list of type variable aliases used in this munger. For example, if the ITD is 'int I<A,B>.m(List<A> las,List<B>
+	 * Returns a list of type variable aliases used in this munger. For example, if the ITD is 'int I&lt;A,B&gt;.m(List&lt;A&gt; las,List&lt;B&gt;
 	 * lbs) {}' then this returns a list containing the strings "A" and "B".
 	 */
 	public List<String> getTypeVariableAliases() {

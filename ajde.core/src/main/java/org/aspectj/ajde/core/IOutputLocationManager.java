@@ -55,7 +55,7 @@ public interface IOutputLocationManager {
 	List<File> getAllOutputLocations();
 
 	/**
-	 * Return the default output location (for example, <my_project>/bin). This is where classes which are on the inpath will be
+	 * Return the default output location (for example, &lt;my_project&gt;/bin). This is where classes which are on the inpath will be
 	 * placed.
 	 */
 	File getDefaultOutputLocation();
@@ -70,7 +70,7 @@ public interface IOutputLocationManager {
 	void reportFileWrite(String outputfile, int fileType);
 
 	/**
-	 * @return a Map<File,String> from inpath absolute paths to handle components
+	 * @return a Map&lt;File,String&gt; from inpath absolute paths to handle components
 	 */
 	Map<File, String> getInpathMap();
 

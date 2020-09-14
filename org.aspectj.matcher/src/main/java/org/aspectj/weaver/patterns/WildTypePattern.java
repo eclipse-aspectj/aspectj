@@ -51,25 +51,25 @@ import org.aspectj.weaver.World;
  * Foo where Foo exists and is generic Parser creates WildTypePattern namePatterns={Foo} resolveBindings resolves Foo to RT(Foo -
  * raw) return ExactTypePattern(LFoo;)
  * 
- * Foo<String> where Foo exists and String meets the bounds Parser creates WildTypePattern namePatterns = {Foo},
+ * Foo&lt;String&gt; where Foo exists and String meets the bounds Parser creates WildTypePattern namePatterns = {Foo},
  * typeParameters=WTP{String} resolveBindings resolves typeParameters to ExactTypePattern(String) resolves Foo to RT(Foo) returns
- * ExactTypePattern(PFoo<String>; - parameterized)
+ * ExactTypePattern(PFoo&lt;String&gt;; - parameterized)
  * 
- * Foo<Str*> where Foo exists and takes one bound Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{Str*}
+ * Foo&lt;Str*&gt; where Foo exists and takes one bound Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{Str*}
  * resolveBindings resolves typeParameters to WTP{Str*} resolves Foo to RT(Foo) returns WildTypePattern(name = Foo, typeParameters =
  * WTP{Str*} isGeneric=false)
  * 
- * Fo*<String> Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{String} resolveBindings resolves
+ * Fo*&lt;String&gt; Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{String} resolveBindings resolves
  * typeParameters to ETP{String} returns WildTypePattern(name = Fo*, typeParameters = ETP{String} isGeneric=false)
  * 
  * 
- * Foo<?>
+ * Foo&lt;?&gt;
  * 
- * Foo<? extends Number>
+ * Foo&lt;? extends Number&gt;
  * 
- * Foo<? extends Number+>
+ * Foo&lt;? extends Number+&gt;
  * 
- * Foo<? super Number>
+ * Foo&lt;? super Number&gt;
  * 
  */
 public class WildTypePattern extends TypePattern {
@@ -218,7 +218,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.TypePattern#matchesExactly(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesExactly(ResolvedType)
 	 */
 	@Override
 	protected boolean matchesExactly(ResolvedType type) {
@@ -499,7 +499,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	/**
-	 * @see org.aspectj.weaver.TypePattern#matchesInstanceof(IType)
+	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {

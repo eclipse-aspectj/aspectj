@@ -244,7 +244,7 @@ public abstract class Pointcut extends PatternNode {
 	 * Resolves and removes ReferencePointcuts, replacing with basic ones
 	 * 
 	 * @param inAspect the aspect to resolve relative to
-	 * @param bindings a Map from formal index in the current lexical context -> formal index in the concrete advice that will run
+	 * @param bindings a Map from formal index in the current lexical context &rarr; formal index in the concrete advice that will run
 	 * 
 	 *        This must always return a new Pointcut object (even if the concretized Pointcut is identical to the resolved one).
 	 *        That behavior is assumed in many places. XXX fix implementors to handle state

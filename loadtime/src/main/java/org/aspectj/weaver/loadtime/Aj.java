@@ -34,7 +34,7 @@ import org.aspectj.weaver.tools.cache.SimpleCacheFactory;
  * Adapter between the generic class pre processor interface and the AspectJ weaver Load time weaving consistency relies on
  * Bcel.setRepository
  * 
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class Aj implements ClassPreProcessor {
 
@@ -43,7 +43,7 @@ public class Aj implements ClassPreProcessor {
 
 	/**
 	 * References are added to this queue when their associated classloader is removed, and once on here that indicates that we
-	 * should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from adaptorkey > adaptor
+	 * should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from adaptorkey &gt; adaptor
 	 * (weaver)
 	 */
 	private static ReferenceQueue adaptorQueue = new ReferenceQueue();

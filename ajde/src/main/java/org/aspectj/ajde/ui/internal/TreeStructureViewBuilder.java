@@ -43,7 +43,7 @@ public class TreeStructureViewBuilder {
 	}
 
 	/**
-	 * @todo	get rid of instanceof tests
+	 * <b>TODO</b>:	get rid of instanceof tests
 	 */
 	public void buildView(StructureView view, IHierarchy model) {
 		//		StructureViewProperties properties = view.getViewProperties();

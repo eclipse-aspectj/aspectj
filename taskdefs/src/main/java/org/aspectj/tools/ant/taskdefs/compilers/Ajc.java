@@ -32,7 +32,7 @@ import org.apache.tools.ant.types.Commandline;
  * This task was developed by the <a href="http://aspectj.org">AspectJ Project</a>
  *
  * @author <a href="mailto:palm@parc.xerox.com">Jeffrey Palm</a>
- * @see    org.aspectj.tools.ant.taskdefs.Ajc
+ * @see    org.aspectj.tools.ant.taskdefs.Ajc2
  */
 public class Ajc extends DefaultCompilerAdapter {
 
@@ -59,7 +59,7 @@ public class Ajc extends DefaultCompilerAdapter {
 
     /**
      * Checks the command line for arguments allowed only in AJC and
-     * disallowed by AJC and then calls the <code>compile()<code> method.
+     * disallowed by AJC and then calls the <code>compile()</code> method.
      *
      * @return true if a good compile, false otherwise.
      * @throws org.apache.tools.ant.BuildException
@@ -183,7 +183,7 @@ public class Ajc extends DefaultCompilerAdapter {
 
     /**
      * Logs the compilation parameters, adds the files to compile and logs the 
-     * &qout;niceSourceList&quot;
+     * &quot;niceSourceList&quot;
      */
     @Override
 	protected void logAndAddFilesToCompile(Commandline cmd) {

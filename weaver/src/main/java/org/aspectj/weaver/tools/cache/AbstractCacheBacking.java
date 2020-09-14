@@ -31,7 +31,7 @@ public abstract class AbstractCacheBacking implements CacheBacking {
      * Calculates CRC32 on the provided bytes
      * @param bytes The bytes array - ignored if <code>null</code>/empty
      * @return Calculated CRC
-     * @see {@link CRC32}
+     * @see CRC32
      */
     public static final long crc (byte[] bytes) {
         if ((bytes == null) || (bytes.length <= 0)) {

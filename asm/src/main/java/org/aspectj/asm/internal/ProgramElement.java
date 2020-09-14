@@ -497,7 +497,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	/**
-	 * Trim down fully qualified types to their short form (e.g. a.b.c.D<e.f.G> becomes D<G>)
+	 * Trim down fully qualified types to their short form (e.g., a.b.c.D&lt;e.f.G&gt; becomes D&lt;G&gt;)
 	 */
 	public static String trim(String fqname) {
 		int i = fqname.indexOf("<");
@@ -655,7 +655,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	/**
-	 * TODO: move the "parent != null"==>injar heuristic to more explicit
+	 * TODO: move the "parent != null"&rarr;injar heuristic to more explicit
 	 */
 	public String toLinkLabelString() {
 		return toLinkLabelString(true);

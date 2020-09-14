@@ -20,7 +20,7 @@ public class TypeFactory {
 	/**
 	 * Create a parameterized version of a generic type.
 	 * 
-	 * @param aGenericType
+	 * @param aBaseType
 	 * @param someTypeParameters note, in the case of an inner type of a parameterized type, this parameter may legitimately be null
 	 * @param inAWorld
 	 * @return
@@ -358,7 +358,7 @@ public class TypeFactory {
 
 	/**
 	 * Create a signature then delegate to the other factory method. Same input/output: baseTypeSignature="LSomeType;" arguments[0]=
-	 * something with sig "Pcom/Foo<Ljava/lang/String;>;" signature created = "PSomeType<Pcom/Foo<Ljava/lang/String;>;>;"
+	 * something with sig "Pcom/Foo&lt;Ljava/lang/String;&gt;;" signature created = "PSomeType&lt;Pcom/Foo&lt;Ljava/lang/String;&gt;;&gt;;"
 	 */
 	public static UnresolvedType createUnresolvedParameterizedType(String baseTypeSignature, UnresolvedType[] arguments) {
 		StringBuffer parameterizedSig = new StringBuffer();

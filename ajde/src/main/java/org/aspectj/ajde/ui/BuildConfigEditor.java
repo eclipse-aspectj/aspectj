@@ -22,7 +22,7 @@ import java.io.IOException;
 public interface BuildConfigEditor {
 
 	/**
-	 * @param	the full path to the file resource to be opened
+	 * @param filePath	the full path to the file resource to be opened
 	 */
 	void openFile(String filePath) throws IOException, InvalidResourceException;
 }

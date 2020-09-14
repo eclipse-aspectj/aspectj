@@ -86,7 +86,7 @@ import org.aspectj.weaver.patterns.TypePattern;
 /**
  * Annotation defined aspect reader. Reads the Java 5 annotations and turns them into AjAttributes
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class AtAjAttributes {
 
@@ -854,7 +854,7 @@ public class AtAjAttributes {
 	}
 
 	/**
-	 * Return a nicely formatted method string, for example: int X.foo(java.lang.String)
+	 * @return a nicely formatted method string, for example: int X.foo(java.lang.String)
 	 */
 	public static String getMethodForMessage(AjAttributeMethodStruct methodstructure) {
 		StringBuffer sb = new StringBuffer();
@@ -1851,7 +1851,7 @@ public class AtAjAttributes {
 	 * LazyResolvedPointcutDefinition lazyly resolve the pointcut so that we have time to register all pointcut referenced before
 	 * pointcut resolution happens
 	 *
-	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+	 * @author Alexandre Vasseur (alex AT gnilux DOT com)
 	 */
 	public static class LazyResolvedPointcutDefinition extends ResolvedPointcutDefinition {
 		private final Pointcut m_pointcutUnresolved; // null for abstract

@@ -114,8 +114,8 @@ public class NameMangler {
 	}
 
 	/**
-	 * Create the old style (<1.6.9) format getter name which includes the aspect requesting access and the type containing the
-	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$get$<fieldname>
+	 * Create the old style (&lt;1.6.9) format getter name which includes the aspect requesting access and the type containing the
+	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$get$&lt;fieldname&gt;
 	 */
 	public static String privilegedAccessMethodForFieldGet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		StringBuilder nameBuilder = new StringBuilder();
@@ -124,8 +124,8 @@ public class NameMangler {
 	}
 
 	/**
-	 * Create the old style (<1.6.9) format setter name which includes the aspect requesting access and the type containing the
-	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$set$<fieldname>
+	 * Create the old style (&lt;1.6.9) format setter name which includes the aspect requesting access and the type containing the
+	 * field in the name of the type. At 1.6.9 and above the name is simply ajc$set$&lt;fieldname&gt;
 	 */
 	public static String privilegedAccessMethodForFieldSet(String name, UnresolvedType objectType, UnresolvedType aspectType) {
 		return makeName("privFieldSet", aspectType.getNameAsIdentifier(), objectType.getNameAsIdentifier(), name);

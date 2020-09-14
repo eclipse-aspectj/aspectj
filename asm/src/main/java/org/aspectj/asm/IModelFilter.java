@@ -21,7 +21,7 @@ public interface IModelFilter {
 
 	/**
 	 * Called when about to dump out an absolute file location, enabling it to be altered (eg.
-	 * c:/temp/ajcsSandbox/foo/ajctemp.12323/<BLAH> could become TEST_SANDBOX/<BLAH>
+	 * c:/temp/ajcsSandbox/foo/ajctemp.12323/&lt;BLAH&gt; could become TEST_SANDBOX/&lt;BLAH&gt;
 	 */
 	String processFilelocation(String loc);
 

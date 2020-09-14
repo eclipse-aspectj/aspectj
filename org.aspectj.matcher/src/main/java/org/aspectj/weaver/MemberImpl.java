@@ -98,7 +98,7 @@ public class MemberImpl implements Member {
 	// ---- utility methods
 
 	/**
-	 * Build a signature based on the return type and parameter types. For example: "(Ljava/util/Set<Ljava/lang/String;>;)V" or
+	 * Build a signature based on the return type and parameter types. For example: "(Ljava/util/Set&lt;Ljava/lang/String;&gt;;)V" or
 	 * "(Ljava/util/Set;)V". The latter form shows what happens when the generics are erased
 	 */
 	public static String typesToSignature(UnresolvedType returnType, UnresolvedType[] paramTypes, boolean eraseGenerics) {
@@ -121,7 +121,7 @@ public class MemberImpl implements Member {
 	}
 
 	/**
-	 * Returns "(<signaturesOfParamTypes>,...)" - unlike the other typesToSignature that also includes the return type, this one
+	 * Returns "(&lt;signaturesOfParamTypes&gt;,...)" - unlike the other typesToSignature that also includes the return type, this one
 	 * just deals with the parameter types.
 	 */
 	public static String typesToSignature(UnresolvedType[] paramTypes) {

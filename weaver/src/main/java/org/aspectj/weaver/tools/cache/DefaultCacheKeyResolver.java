@@ -22,15 +22,18 @@ import java.util.zip.CRC32;
 /**
  * Naive default class and classloader hashing implementation useful
  * for some multi-classloader environments.
- * <p/>
- * This implementation creates classloader scopes of the form:<br/>
+ * <p>
+ * This implementation creates classloader scopes of the form:<br>
  * "ExampleClassLoaderName.[crc hash]"
- * <p/>
- * And weaved class keys of the form:<br/>
+ * </p>
+ * <p>
+ * And weaved class keys of the form:<br>
  * "com.foo.BarClassName.[bytes len][crc].weaved"
- * <p/>
- * And generated class keys of the form:<br/>
+ * </p>
+ * <p>
+ * And generated class keys of the form:<br>
  * "com.foo.BarClassName$AjClosure.generated
+ * </p>
  */
 public class DefaultCacheKeyResolver implements CacheKeyResolver {
 	public static final String GENERATED_SUFFIX = ".generated";

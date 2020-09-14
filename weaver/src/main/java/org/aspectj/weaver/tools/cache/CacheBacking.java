@@ -15,10 +15,11 @@ package org.aspectj.weaver.tools.cache;
 /**
  * Interface for the backing to the cache; usually a file,
  * but could be an in-memory backing for testing.
- * <p/>
+ * <p>
  * aspectj and jvmti provide no suitable guarantees
  * on locking for class redefinitions, so every implementation
  * must have a some locking mechanism to prevent invalid reads.
+ * </p>
  */
 public interface CacheBacking {
 	/**

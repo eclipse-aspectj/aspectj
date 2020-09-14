@@ -16,7 +16,7 @@ package org.aspectj.weaver.patterns;
 /**
  * A Pointcut or TypePattern visitor
  *
- * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
+ * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public interface PatternNodeVisitor {
 

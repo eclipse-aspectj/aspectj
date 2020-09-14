@@ -251,7 +251,7 @@ public class MessageUtil {
 	 *
 	 * @param messageHolder
 	 * @param out
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder messageHolder) {
 		print(out, messageHolder, (String) null, (IMessageRenderer) null, (IMessageHandler) null);
@@ -260,9 +260,9 @@ public class MessageUtil {
 	/**
 	 * Print all message to the print stream, starting each on a new line, with a prefix.
 	 *
-	 * @param messageHolder
+	 * @param holder
 	 * @param out
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder holder, String prefix) {
 		print(out, holder, prefix, (IMessageRenderer) null, (IMessageHandler) null);
@@ -271,10 +271,10 @@ public class MessageUtil {
 	/**
 	 * Print all message to the print stream, starting each on a new line, with a prefix and using a renderer.
 	 *
-	 * @param messageHolder
+	 * @param holder
 	 * @param out
 	 * @param renderer IMessageRender to render result - use MESSAGE_LINE if null
-	 * @see #print(PrintStream, String, IMessageHolder, IMessageRenderer, IMessageHandler)
+	 * @see #print(PrintStream, IMessageHolder, String, IMessageRenderer, IMessageHandler)
 	 */
 	public static void print(PrintStream out, IMessageHolder holder, String prefix, IMessageRenderer renderer) {
 		print(out, holder, prefix, renderer, (IMessageHandler) null);
@@ -292,7 +292,8 @@ public class MessageUtil {
 	 * are free to render multi-line output.
 	 *
 	 * @param out the PrintStream sink - return silently if null
-	 * @param messageHolder the IMessageHolder with the messages to print
+	 * @param holder the IMessageHolder with the messages to print
+	 * @param prefix the prefix for each line
 	 * @param renderer IMessageRender to render result - use MESSAGE_ALL if null
 	 * @param selector IMessageHandler to select messages to render - if null, do all non-null
 	 */
@@ -400,7 +401,7 @@ public class MessageUtil {
 	 *
 	 * @param messages if null, return EMPTY_LIST
 	 * @param kind if null, return messages
-	 * @see MessageHandler#getMessages(Kind)
+	 * @see MessageHandler#getMessages(Kind, boolean)
 	 */
 	public static List<IMessage> getMessages(List<IMessage> messages, IMessage.Kind kind) {
 		if (null == messages) {
@@ -1038,8 +1039,8 @@ public class MessageUtil {
 	/**
 	 * Handle all messages in the second handler using the first
 	 *
-	 * @param handler the IMessageHandler sink for all messages in source
-	 * @param holder the IMessageHolder source for all messages to handle
+	 * @param sink the IMessageHandler sink for all messages in source
+	 * @param source the IMessageHolder source for all messages to handle
 	 * @param fastFail if true, stop on first failure
 	 * @return false if any sink.handleMessage(..) failed
 	 */
@@ -1050,8 +1051,8 @@ public class MessageUtil {
 	/**
 	 * Handle messages in the second handler using the first
 	 *
-	 * @param handler the IMessageHandler sink for all messages in source
-	 * @param holder the IMessageHolder source for all messages to handle
+	 * @param sink the IMessageHandler sink for all messages in source
+	 * @param source the IMessageHolder source for all messages to handle
 	 * @param kind the IMessage.Kind to select, if not null
 	 * @param orGreater if true, also accept greater kinds
 	 * @param fastFail if true, stop on first failure
@@ -1068,8 +1069,8 @@ public class MessageUtil {
 	 * Handle messages in the second handler using the first if they are NOT of this kind (optionally, or greater). If you pass null
 	 * as the kind, then all messages are ignored and this returns true.
 	 *
-	 * @param handler the IMessageHandler sink for all messages in source
-	 * @param holder the IMessageHolder source for all messages to handle
+	 * @param sink the IMessageHandler sink for all messages in source
+	 * @param source the IMessageHolder source for all messages to handle
 	 * @param kind the IMessage.Kind to reject, if not null
 	 * @param orGreater if true, also reject greater kinds
 	 * @param fastFail if true, stop on first failure
@@ -1089,7 +1090,7 @@ public class MessageUtil {
 	/**
 	 * Handle messages in the sink.
 	 *
-	 * @param handler the IMessageHandler sink for all messages in source
+	 * @param sink the IMessageHandler sink for all messages in source
 	 * @param sources the IMessage[] messages to handle
 	 * @param fastFail if true, stop on first failure
 	 * @return false if any sink.handleMessage(..) failed

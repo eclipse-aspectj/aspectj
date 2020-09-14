@@ -33,8 +33,9 @@ import java.io.File;
  * requires all the files every time.  To work around this,
  * set the global property CLEAN ("build.compiler.clean") to delete
  * all .class files in the destination directory before compiling.
+ * </p>
  * 
- * <p><u>Warnings</u>: 
+ * <p><u>Warnings</u>:</p>
  * <ol>
  * <li>cleaning will not work if no destination directory
  *     is specified in the javac task.
@@ -46,7 +47,7 @@ import java.io.File;
  * <li>If no files are out of date, then the adapter is <b>never</b> called
  *     and thus cannot gain control to clean out the destination dir.
  *     </li>
- * <p>
+ * </ol>
  * 
  * @author Wes Isberg
  * @since AspectJ 1.1, Ant 1.5.1
