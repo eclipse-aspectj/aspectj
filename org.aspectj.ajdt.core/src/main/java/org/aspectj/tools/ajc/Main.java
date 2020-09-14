@@ -87,15 +87,15 @@ public class Main {
 	/**
 	 * Convenience method to run ajc and collect String lists of messages. This can be reflectively invoked with the List collecting
 	 * parameters supplied by a parent class loader. The String messages take the same form as command-line messages.
+	 * This method does not catch unchecked exceptions thrown by the compiler.
 	 * 
 	 * @param args the String[] args to pass to the compiler
 	 * @param useSystemExit if true and errors, return System.exit(errs)
 	 * @param fails the List sink, if any, for String failure (or worse) messages
 	 * @param errors the List sink, if any, for String error messages
 	 * @param warnings the List sink, if any, for String warning messages
-	 * @param info the List sink, if any, for String info messages
+	 * @param infos the List sink, if any, for String info messages
 	 * @return number of messages reported with level ERROR or above
-	 * @throws any unchecked exceptions the compiler does
 	 */
 	public static int bareMain(String[] args, boolean useSystemExit, List fails, List errors, List warnings, List infos) {
 		Main main = new Main();
@@ -453,7 +453,6 @@ public class Main {
 	 * Call System.exit(int) with values derived from the number of failures/aborts or errors in messages.
 	 * 
 	 * @param messages the IMessageHolder to interrogate.
-	 * @param messages
 	 */
 	protected void systemExit(IMessageHolder messages) {
 		int num = lastFails; // messages.numMessages(IMessage.FAIL, true);
@@ -725,7 +724,7 @@ public class Main {
 		}
 
 		/**
-		 * @param argList read and strip incremental args from this
+		 * @param args read and strip incremental args from this
 		 * @param sink IMessageHandler for error messages
 		 * @return String[] remainder of args
 		 */

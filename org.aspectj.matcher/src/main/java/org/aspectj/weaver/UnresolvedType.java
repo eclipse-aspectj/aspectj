@@ -422,7 +422,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Constructs a UnresolvedType for each JVM bytecode type signature in an incoming array.
 	 * 
-	 * @param names an array of JVM bytecode type signatures
+	 * @param sigs an array of JVM bytecode type signatures
 	 * @return an array of UnresolvedType objects.
 	 * @see #forSignature(String)
 	 */

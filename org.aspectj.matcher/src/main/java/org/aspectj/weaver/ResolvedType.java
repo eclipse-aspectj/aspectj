@@ -313,15 +313,20 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
 	 * and then all interfaces (starting with those 'nearest' this type).
-	 * 
-	 * @param wantGenerics true if the caller wants full generic information
-	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
 	 * @return an iterator over all types in the hierarchy of this type
 	 */
 	public Iterator<ResolvedType> getHierarchy() {
 		return getHierarchy(false, false);
 	}
 
+	/**
+	 * Return an iterator over the types in this types hierarchy - starting with this type first, then all superclasses up to Object
+	 * and then all interfaces (starting with those 'nearest' this type).
+	 *
+	 * @param wantGenerics true if the caller wants full generic information
+	 * @param wantDeclaredParents true if the caller even wants those parents introduced via declare parents
+	 * @return an iterator over all types in the hierarchy of this type
+	 */
 	public Iterator<ResolvedType> getHierarchy(final boolean wantGenerics, final boolean wantDeclaredParents) {
 
 		final Iterators.Getter<ResolvedType, ResolvedType> interfaceGetter = new Iterators.Getter<ResolvedType, ResolvedType>() {
@@ -2622,7 +2627,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * assignable to a variable of type X without loss of precision.
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible assignment should be checked.
 	 * @return true iff variables of this type could be assigned values of other with possible conversion
 	 */
 	public final boolean isConvertableFrom(ResolvedType other) {
@@ -2660,7 +2664,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * assignment conversion as per JLS 2ed 5.2. For object types, this means supertypeOrEqual(THIS, OTHER).
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible assignment should be checked.
 	 * @return true iff variables of this type could be assigned values of other without casting
 	 * @throws NullPointerException if other is null
 	 */
@@ -2683,7 +2686,6 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * </blockquote>
 	 * 
 	 * @param other the other type
-	 * @param world the {@link World} in which the possible coersion should be checked.
 	 * @return true iff values of other could possibly be cast to this type.
 	 * @throws NullPointerException if other is null.
 	 */

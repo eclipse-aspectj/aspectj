@@ -95,7 +95,7 @@ public interface IProgramElement extends Serializable {
 	String getPackageName();
 
 	/**
-	 * @param method
+	 * @param returnType
 	 *            return types or field types
 	 */
 	void setCorrespondingType(String returnType);

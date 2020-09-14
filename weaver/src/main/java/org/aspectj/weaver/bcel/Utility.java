@@ -480,7 +480,7 @@ public class Utility {
 	 * replace an instruction handle with another instruction, in this case, a branch instruction.
 	 * 
 	 * @param ih the instruction handle to replace.
-	 * @param branchInstruction the branch instruction to replace ih with
+	 * @param replacementInstructions the branch instruction to replace ih with
 	 * @param enclosingMethod where to find ih's instruction list.
 	 */
 	public static void replaceInstruction(InstructionHandle ih, InstructionList replacementInstructions,

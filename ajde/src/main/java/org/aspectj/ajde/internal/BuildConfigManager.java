@@ -39,7 +39,7 @@ public interface BuildConfigManager {
 	/**
 	 * Sets the currently active build configuration file.
 	 *
-	 * @param	full path to the file
+	 * @param currConfigFilePath	full path to the file
 	 */
 	void setActiveConfigFile(String currConfigFilePath);
 
@@ -56,7 +56,7 @@ public interface BuildConfigManager {
 	/**
 	 * Build a model for the corresponding configuration file.
 	 *
-	 * @param	full path to the file
+	 * @param configFilePath	full path to the file
 	 */
 	BuildConfigModel buildModel(String configFilePath);
 

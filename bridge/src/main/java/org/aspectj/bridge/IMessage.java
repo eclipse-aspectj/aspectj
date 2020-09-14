@@ -146,5 +146,18 @@ public interface IMessage {
 	 * being based on a subtype of a defining type.
 	 * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952">AspectJ bug 41952</a>
 	 */
+	/**
+	 * Return a List of <code>ISourceLocation</code> instances that indicate additional source locations relevent to this message as
+	 *         specified by the message creator. The list should not include the primary source location associated with the message
+	 *         which can be obtained from <code>getSourceLocation()<code>.
+	 * <p>
+	 * An example of using extra locations would be in a warning message that
+	 * flags all shadow locations that will go unmatched due to a pointcut definition
+	 * being based on a subtype of a defining type.
+	 * </p>
+	 *
+	 * @return a list of additional source locations
+	 * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952">AspectJ bug 41952</a>
+	 */
 	List<ISourceLocation> getExtraSourceLocations();
 }

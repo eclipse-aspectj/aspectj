@@ -262,7 +262,7 @@ public class AnnotationAccessVar extends BcelVar {
 	 * Return an object that can access a particular value of this annotation.
 	 * 
 	 * @param valueType The type from the annotation that is of interest
-	 * @param the formal name expressed in the pointcut, can be used to disambiguate
+	 * @param formalName the formal name expressed in the pointcut, can be used to disambiguate
 	 * @return a variable that represents access to that annotation value
 	 */
 	@Override

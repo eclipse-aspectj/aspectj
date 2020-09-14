@@ -20,7 +20,7 @@ public class TypeFactory {
 	/**
 	 * Create a parameterized version of a generic type.
 	 * 
-	 * @param aGenericType
+	 * @param aBaseType
 	 * @param someTypeParameters note, in the case of an inner type of a parameterized type, this parameter may legitimately be null
 	 * @param inAWorld
 	 * @return

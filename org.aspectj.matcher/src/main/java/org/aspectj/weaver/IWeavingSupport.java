@@ -17,7 +17,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * Encapsulates operations that a world will need to support if it is actually going to modify bytecode rather than just match
- * against it. {@see BcelWeavingSupport}
+ * against it. @see BcelWeavingSupport
  *
  * @author Andy Clement
  */
@@ -31,7 +31,7 @@ public interface IWeavingSupport {
 	ConcreteTypeMunger makeCflowCounterFieldAdder(ResolvedMember cflowField);
 
 	/**
-	 * Register a munger for perclause @AJ aspect so that we add aspectOf(..) to them as needed
+	 * Register a munger for perclause {@literal @}AJ aspect so that we add aspectOf(..) to them as needed
 	 *
 	 * @see org.aspectj.weaver.bcel.BcelWorld#makePerClauseAspect(ResolvedType, org.aspectj.weaver.patterns.PerClause.Kind)
 	 */

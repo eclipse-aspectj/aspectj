@@ -23,9 +23,7 @@ import org.aspectj.weaver.World;
 public class AnyTypePattern extends TypePattern {
 
 	/**
-	 * Constructor for EllipsisTypePattern.
-	 * 
-	 * @param includeSubtypes
+	 * Constructor for AnyTypePattern.
 	 */
 	public AnyTypePattern() {
 		super(false, false, new TypePatternList());

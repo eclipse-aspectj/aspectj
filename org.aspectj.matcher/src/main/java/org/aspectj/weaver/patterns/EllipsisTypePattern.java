@@ -23,8 +23,6 @@ public class EllipsisTypePattern extends TypePattern {
 
 	/**
 	 * Constructor for EllipsisTypePattern.
-	 * 
-	 * @param includeSubtypes
 	 */
 	public EllipsisTypePattern() {
 		super(false, false, new TypePatternList());

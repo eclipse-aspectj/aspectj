@@ -76,8 +76,8 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	 * @param weaver the weaver
 	 * @param intRequestor recipient of interim compilation results from compiler (pre-weave)
 	 * @param outputFileNameProvider implementor of a strategy providing output file names for results
-	 * @param binarySourceEntries binary source that we didn't compile, but that we need to weave
-	 * @param resultSetForFullWeave if we are doing an incremental build, and the weaver determines that we need to weave the world,
+	 * @param binarySourceProvider binary source that we didn't compile, but that we need to weave
+	 * @param incrementalCompilationState if we are doing an incremental build, and the weaver determines that we need to weave the world,
 	 *        this is the set of intermediate results that will be passed to the weaver.
 	 */
 	public AjCompilerAdapter(Compiler compiler, boolean isBatchCompile, BcelWorld world, BcelWeaver weaver,

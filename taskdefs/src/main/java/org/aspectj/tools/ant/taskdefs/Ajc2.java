@@ -175,9 +175,9 @@ public class Ajc2 extends Javac {
     }
 
     /**
-     * Returns if the <code>-preprocess</code> flag is turned on.
+     * Set the <code>-preprocess</code> flag.
      *
-     * @return <code>true</code> if the <code>-preprocess</code> flag is on.
+     * @param preprocess <code>true</code> turns on the <code>-preprocess</code> flag.
      * @see    Ajc2#preprocess
      */
     public void setPreprocess(boolean preprocess) {

@@ -109,7 +109,6 @@ public interface PointcutExpression {
 	 * static initialization of the type).
 	 * @param aMethod the method being called
 	 * @param callerType the declared type of the caller
-	 * @param receiverType the declared type of the recipient of the call
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing a call to this method during the execution of the given member.
 	 */

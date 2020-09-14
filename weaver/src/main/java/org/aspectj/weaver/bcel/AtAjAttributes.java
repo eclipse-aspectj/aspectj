@@ -854,7 +854,7 @@ public class AtAjAttributes {
 	}
 
 	/**
-	 * Return a nicely formatted method string, for example: int X.foo(java.lang.String)
+	 * @return a nicely formatted method string, for example: int X.foo(java.lang.String)
 	 */
 	public static String getMethodForMessage(AjAttributeMethodStruct methodstructure) {
 		StringBuffer sb = new StringBuffer();

@@ -1687,7 +1687,6 @@ public class PatternParser {
 	 * Parse type variable declarations for a generic method or at the start of a signature pointcut to identify type variable names
 	 * in a generic type.
 	 * 
-	 * @param includeParameterizedTypes
 	 * @return
 	 */
 	public TypeVariablePatternList maybeParseTypeVariableList() {

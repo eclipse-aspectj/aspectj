@@ -644,7 +644,6 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @param name
 	 * @param b
 	 * @param before whether we are dumping before weaving
-	 * @throws Throwable
 	 */
 	protected void dump(String name, byte[] b, boolean before) {
 		String dirName = getDumpDir();

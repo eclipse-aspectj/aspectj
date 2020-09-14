@@ -160,7 +160,6 @@ public class Ajde {
 	 * Utility to run the project main class from the project properties in the same VM using a class loader populated with the
 	 * classpath and output path or jar. Errors are logged to the ErrorHandler.
 	 * 
-	 * @param project the ProjectPropertiesAdapter specifying the main class, classpath, and executable arguments.
 	 * @return Thread running with process, or null if unable to start
 	 */
 	public Thread runInSameVM() {

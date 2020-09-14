@@ -321,7 +321,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	}
 
 	/**
-	 * @param sourceFilePath modified to '/' delimited path for consistency
+	 * @param sourceFile modified to '/' delimited path for consistency
 	 * @return a new structure node for the file if it was not found in the model
 	 */
 	public IProgramElement findElementForSourceFile(String sourceFile) {

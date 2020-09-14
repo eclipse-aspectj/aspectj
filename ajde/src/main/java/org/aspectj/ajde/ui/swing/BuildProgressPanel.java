@@ -45,10 +45,6 @@ public class BuildProgressPanel extends JPanel {
 
     private boolean buildIsCancelled = false;
 	
-	/**
-	 * @param   maxVal          the value to which value to which the progress bar will
-	 *                          count up to (in seconds)
-	 */
 	public BuildProgressPanel() {
 		try {
 			jbInit();
@@ -83,6 +79,10 @@ public class BuildProgressPanel extends JPanel {
 		compile_progressBar.setValue(newVal);
 	}
 
+	/**
+	 * @param   maxVal          the value to which value to which the progress bar will
+	 *                          count up to (in seconds)
+	 */
 	public void setProgressBarMax(int maxVal) {
 		compile_progressBar.setMaximum(maxVal);
 	}

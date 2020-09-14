@@ -32,7 +32,7 @@ import org.aspectj.tools.ajbrowser.core.BrowserErrorHandler;
 /**
  * Responsible for controlling the editor.
  * 
- * @todo remove coupling to <CODE>BasicEditor</CODE>
+ * <p><b>TODO:</b> remove coupling to <CODE>BasicEditor</CODE></p>
  * @author Mik Kersten
  */
 public class EditorManager {
@@ -117,7 +117,7 @@ public class EditorManager {
 	}
 
 	/**
-	 * @todo remove "instanceof AjdeManager" hack
+	 * <b>TODO</b>: remove "instanceof AjdeManager" hack
 	 */
 	public void showSourceLine(String filePath, int lineNumber, boolean highlight) {
 		if (editors.size() > 1) {
