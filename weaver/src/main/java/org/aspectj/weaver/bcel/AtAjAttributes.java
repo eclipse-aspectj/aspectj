@@ -708,7 +708,6 @@ public class AtAjAttributes {
 		if (decpAnno != null) {
 			NameValuePair decpPatternNameValuePair = getAnnotationElement(decpAnno, VALUE);
 			String decpPattern = decpPatternNameValuePair.getValue().stringifyValue();
-			System.out.println("decpPatterNVP = "+decpPattern);
 			if (decpPattern != null) {
 				TypePattern typePattern = parseTypePattern(decpPattern, struct);
 				ResolvedType fieldType = UnresolvedType.forSignature(struct.field.getSignature()).resolve(
