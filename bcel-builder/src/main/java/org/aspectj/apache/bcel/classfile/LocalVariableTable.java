@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * This class represents collection of local variables in a method. This attribute is contained in the <em>Code</em> attribute.
- * 
+ *
  * @version $Id: LocalVariableTable.java,v 1.8 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code
@@ -99,7 +99,7 @@ public class LocalVariableTable extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index in constant pool
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -117,7 +117,7 @@ public class LocalVariableTable extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -128,12 +128,12 @@ public class LocalVariableTable extends Attribute {
 
 	/**
 	 * Dump local variable table attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
 	@Override
-	public final void dump(DataOutputStream file) throws IOException {
+	public final synchronized void dump(DataOutputStream file) throws IOException {
 		super.dump(file);
 		if (isInPackedState) {
 			file.write(data);
@@ -165,7 +165,7 @@ public class LocalVariableTable extends Attribute {
 		return null;
 	}
 
-	public final void setLocalVariableTable(LocalVariable[] local_variable_table) {
+	public synchronized final void setLocalVariableTable(LocalVariable[] local_variable_table) {
 		data = null;
 		isInPackedState = false;
 		this.localVariableTable = local_variable_table;
@@ -210,7 +210,7 @@ public class LocalVariableTable extends Attribute {
 
 	// ---
 	// Unpacks the byte array into the table
-	private void unpack() {
+	private synchronized void unpack() {
 		if (!isInPackedState)
 			return;
 		try {
