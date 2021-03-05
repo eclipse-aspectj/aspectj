@@ -690,8 +690,10 @@ class InstallContext {
 	}
 
 	public boolean onWindowsPro() {
-		return getOS().equals("Windows NT") || getOS().equals("Windows 2000") || getOS().equals("Windows XP")
-				|| getOS().equals("Windows Vista") || getOS().equals("Windows 7") || getOS().startsWith("Windows 8");
+		// TODO: Think about a more future-proof solution also checking 'os.version' system property. See also this table:
+		//       https://github.com/openjdk/jdk/blob/9604ee82690f89320614b37bfef4178abc869777/src/java.base/windows/native/libjava/java_props_md.c#L446
+		//       Alternatively, explicitly exclude unsupported versions because those won't change in the future.
+		return getOS().matches("^Windows (NT|2000|XP|Vista|Server|7|8|10).*");
 	}
 
 	public boolean onMacintosh() {
