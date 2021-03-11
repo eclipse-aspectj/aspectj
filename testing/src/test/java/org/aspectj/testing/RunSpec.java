@@ -135,23 +135,19 @@ public class RunSpec implements ITestStep {
 	}
 
 	public String getClasspath() {
-		if (cpath == null)
-			return null;
-		return this.cpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
+		return cpath;
 	}
 
 	public String getModulepath() {
-		if (mpath == null)
-			return null;
-		return this.mpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
+		return mpath;
 	}
 
 	public void setModulepath(String mpath) {
-		this.mpath = mpath;
+		this.mpath = mpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 
 	public void setClasspath(String cpath) {
-		this.cpath = cpath;
+		this.cpath = cpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 
 	public void addStdErrSpec(OutputSpec spec) {

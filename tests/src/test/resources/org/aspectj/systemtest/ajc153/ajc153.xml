@@ -10,7 +10,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs153/pr149908" title="ensure no npe due to missing member">
-      <compile files="A.aj,C1.java,Tracing.aj" inpath="simple.jar;stringBuilder.jar">
+      <compile files="A.aj,C1.java,Tracing.aj" inpath="simple.jar,stringBuilder.jar">
 		<message kind="warning" text="can not resolve this member: append [Xlint:unresolvableMember]"/>
 	  </compile>
     </ajc-test>
@@ -31,27 +31,27 @@
     <ajc-test dir="bugs153/pr162657" title="complex pointcut">
       <compile files="TestAspect.aj" options="-1.4"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr164633" title="incompatibleclasschange">
       <compile files="Model.java"/>
       <run class="test.Model"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 2">
       <compile files="Foo2.java" options="-1.5"/>
       <run class="Foo2"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 3">
       <compile files="Foo3.java" options="-1.5"/>
       <run class="Foo3"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 4">
       <compile files="Foo4.java" options="-1.5"/>
       <run class="Foo4"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 5">
       <compile files="Foo5.java" options="-1.5"/>
       <run class="Foo5"/>
@@ -66,7 +66,7 @@
       </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr162135" title="bcexception in annotation style around advice - 7">
       <compile files="Real.java" options="-1.5"/>
       <run class="a.b.c.Real">
@@ -76,7 +76,7 @@
       </stdout>
       </run>
     </ajc-test>
-    
+
      <ajc-test dir="bugs153/pr159143" title="declare method annotations">
         <compile files="DeclareMethodAnnotation.java" options="-1.5">
             <message line="16" kind="warning" text="all"/>
@@ -96,28 +96,28 @@
             <message line="41" kind="warning" text="all"/>
         </compile>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs153/pr148908" title="ensure getSourceSignature correct with static field">
       <compile files="BadInterface.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts">
       <compile files="Main.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(java.util.List Main.getElements())' in Type 'Main' (Main.java:31) advised by around advice from 'Main$Concrete' (Main.java:18)"/>
       </compile>
       <run class="Main"/>
-    </ajc-test> 
-        
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr161502" title="generics in pointcuts - 2">
       <compile files="Main2.java" options="-1.5 -showWeaveInfo">
         <message kind="warning" text="advice defined in Main2$Base has not been applied"/>
       </compile>
       <run class="Main2"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr158624" title="generics and arrays">
       <compile files="ValueChange.java" options="-1.5"/>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs153/pr153845" title="IllegalStateException at GenericSignatureParser.java">
       <compile files="GenericType.java,Aspect.java,Aspect2.java,Interface.java" options="-1.5" outjar="blob.jar"/>
@@ -127,7 +127,7 @@
     <ajc-test dir="bugs153/pr158412" title="annotation style pointcut npe">
       <compile files="layering/Layering.aj,layering/SystemArchitektur.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr153464" title="negated annotation matching problem">
       <compile files="Bug.java" options="-1.5">
         <message kind="warning" line="99"/>
@@ -139,7 +139,7 @@
         <message kind="warning" line="3" text="Whatever"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName">
       <compile files="CaseOne.java"/>
       <run class="CaseOne">
@@ -149,7 +149,7 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - annotation style">
       <compile files="CaseFive.java" options="-1.5"/>
       <run class="CaseFive">
@@ -159,7 +159,7 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - multiple types">
       <compile files="CaseTwo.java"/>
       <run class="CaseTwo">
@@ -170,7 +170,7 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - non matching types">
       <compile files="CaseThree.java"/>
       <run class="CaseThree">
@@ -181,7 +181,7 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="features153/ptw" title="basic usage of getWithinTypeName - types in packages">
       <compile files="CaseFour.java"/>
       <run class="a.b.CaseFour">
@@ -192,13 +192,13 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr158126" title="annotations, call and constructors problem">
       <compile files="A.java,B.java,MyAnnotation.java,MyAspect.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;())' in Type 'A' (A.java:5) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
         <message kind="weave" text="Join point 'constructor-call(void B.&lt;init&gt;(int))' in Type 'A' (A.java:10) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
         <message kind="weave" text="Join point 'constructor-call(void A.&lt;init&gt;())' in Type 'A' (A.java:14) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
-        <message kind="weave" text="Join point 'constructor-call(void A.&lt;init&gt;(int))' in Type 'A' (A.java:15) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>      
+        <message kind="weave" text="Join point 'constructor-call(void A.&lt;init&gt;(int))' in Type 'A' (A.java:15) advised by before advice from 'MyAspect' (MyAspect.java:3)"/>
       </compile>
     </ajc-test>
 
@@ -207,14 +207,14 @@
         <message kind="warning" line="2" text="advice defined in MyAspect has not been applied [Xlint:adviceDidNotMatch]"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr156058" title="no IllegalStateException with generic inner aspect - 2">
       <compile files="Bug2.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(MyClass Bug2.callit())' in Type 'Bug2' (Bug2.java:15) advised by before advice from 'MyAspect' (Bug2.java:2)"/>
         <message kind="warning" line="24" text="advice defined in MyAspect2 has not been applied [Xlint:adviceDidNotMatch]"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr153490" title="no illegal state exception from AsmDelegate - 1">
       <compile files="Foo.java" options="-1.5" classpath="jarForFoo.jar" />
     </ajc-test>
@@ -229,10 +229,10 @@
 
     <ajc-test dir="bugs153/pr156962" title="Test Annot Method">
       <compile files="Sample.java, WarnDeprecatedMethod.aj" options="-1.5">
-        <message kind="warning" line="2" text="deprecated method"/>      
+        <message kind="warning" line="2" text="deprecated method"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr156962" title="Test Annot Method Has Member">
       <compile files="Sample.java, LiftDeprecation.aj" options="-1.5 -XhasMember -showWeaveInfo -Xlint:ignore">
         <message kind="weave" text="'Sample' (Sample.java:1) is annotated with @Deprecated type annotation from 'LiftDeprecation' (LiftDeprecation.aj:2)"/>
@@ -243,7 +243,7 @@
       <compile files="PairGeneric.java" options="-1.5" outjar="pair1.jar"/>
       <compile files="BaseType.java" options="-1.5" outjar="basetype.jar" classpath="pair1.jar"/>
       <compile files="PairNormal.java" outjar="pair2.jar"/>
-      <compile files="AnAspect.java" options="-1.5 -Xset:runMinimalMemory=true" inpath="basetype.jar;pair2.jar"/>
+      <compile files="AnAspect.java" options="-1.5 -Xset:runMinimalMemory=true" inpath="basetype.jar,pair2.jar"/>
     </ajc-test>
 
     <ajc-test dir="bugs153/pr152871" title="parsing bytecode less">
@@ -258,7 +258,7 @@
  	    </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr160674" title="turning off bcel caching">
       <compile files="MyClass.java" options="-1.5"/>
       <compile files="MyAspect.java" options="-1.5 -Xlint:ignore"/>
@@ -280,7 +280,7 @@
  	    </stderr>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr153380/case1" title="pipelining decps">
       <compile files="Ann.java,Base.java,BaseImpl.java,I1.java,Mixin.java,Runner.java,X.aj" options="-1.5">
         <message kind="error" line="1" text="The import java.lang.retention cannot be resolved"/>
@@ -291,7 +291,7 @@
         -->
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr154332" title="incorrect deprecated annotation processing">
       <compile files="Annot.java" options="-1.5">
         <message kind="warning" line="5" text="marker"/>
@@ -300,7 +300,7 @@
         <message kind="warning" line="31" text="deprecated"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr148381" title="argNames and javac">
       <!--compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/-->
@@ -311,45 +311,45 @@
  	    </stderr>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/PR148219" title="unwanted warning for pointcut">
       <compile files="MyMessages.java" options="-1.5 -Xlint:ignore -warn:+unusedArgument"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr148737" title="illegalstateexception for non generic type">
       <compile files="A.java" options="-source 5 -target 5">
         <message kind="warning" line="18" text="advice defined in TestAspect has not been applied"/>
       </compile>
     </ajc-test>
-         
+
     <ajc-test dir="bugs153/pr149096" title="cflow xml concrete aspect">
 		<compile files="SimpleTracing.aj" outjar="out.jar"/>
 		<compile files="TestMain.aj"/>
 		<run class="TestMain" ltw="aop-pr149096.xml"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr149305/case1" title="ataj inheritance - 1">
 		<compile files="AbstractOzonator.java,IdentityOzonator.java,User.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr149305/case2" title="ataj inheritance - 2">
 		<compile files="com/codesrc/ozonator/identity/IdentityOzonator.java,com/codesrc/ozonator/identity/User.java,com/codesrc/ozonator/AbstractOzonator.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr149305/case2" title="ataj inheritance - 3">
 		<compile files="com/codesrc/ozonator/AbstractOzonator.java,com/codesrc/ozonator/identity/IdentityOzonator.java,com/codesrc/ozonator/identity/User.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr148693" title="verification problem">
 		<compile files="MyAspect.java" options="-1.5 -XterminateAfterCompilation=true"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr148537" title="incorrect annotation value">
 		<compile files="MyClass.java" options="-1.5">
 		  <message kind="error" line="5" text="Type mismatch: cannot convert from RetentionPolicy[] to RetentionPolicy"/>
 		</compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr145693" title="verifyErrNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
       <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
@@ -361,33 +361,33 @@
           <line text="method running"/>
         </stderr>
       </run>
-    </ajc-test>    
+    </ajc-test>
 
     <ajc-test dir="bugs153/pr145693" title="verifyErrInpathNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
       <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
       <compile files="Sample.java" options="-Xlint:ignore" inpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
       <run class="Sample" classpath="run.jar,apath.jar"/>
-    </ajc-test>    
+    </ajc-test>
 
     <ajc-test dir="bugs153/pr145693" title="cpathNoTypeCflowField">
       <compile files="Event.java" outjar="cpath.jar"/>
       <compile files="Monitor.aj" outjar="apath.jar" classpath="cpath.jar" options="-1.4"/>
       <compile files="Sample.java" options="-Xlint:ignore" classpath="cpath.jar" aspectpath="apath.jar" outjar="run.jar"/>
       <run class="Sample" classpath="run.jar,apath.jar"/>
-    </ajc-test>    
-    
+    </ajc-test>
+
      <ajc-test dir="bugs153/pr148409" title="generic signature problem">
       <compile files="Blurgh.java" options="-1.5"/>
       <compile files="X.java" options="-1.5 -Xlint:ignore"/>
       <run class="Blurgh" options="-1.5" ltw="aop.xml"/>
-    </ajc-test>    
-    
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr149071" title="visibility problem">
       <compile files="AspectItd.java"/>
       <run class="AspectItd"/>
-    </ajc-test>    
-    
+    </ajc-test>
+
     <ajc-test dir="bugs153/pr147841" title="advice not woven on aspectpath">
       <compile files="A.java" options="-Xlint:ignore" outjar="apath.jar"/>
       <!--compile files="C.java" outjar="cpa.jar" classpath="cpath.jar"/-->
@@ -399,16 +399,16 @@
           <line text="foo"/>
         </stderr>
       </run>
-    </ajc-test>   
-        
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr150095" title="generics, inheritance and decp">
      <compile files="Foo.java" options="-1.5"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr121805" title="ambiguous binding">
      <compile files="Complex.java"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace before">
      <compile files="hello/HelloWorld.java hello/ThrowExceptionBefore.aj"/>
      <run class="hello.HelloWorld">
@@ -418,8 +418,8 @@
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>
      </run>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace before - binary">
      <compile inpath="helloworld.jar" files="hello/ThrowExceptionBefore.aj"/>
      <run class="hello.HelloWorld">
@@ -429,8 +429,8 @@
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>
      </run>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace after">
      <compile files="hello/HelloWorld.java hello/ThrowExceptionAfter.aj"/>
      <run class="hello.HelloWorld">
@@ -440,8 +440,8 @@
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>
      </run>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr145442" title="missing line numbers in stacktrace around">
      <compile files="hello/HelloWorld.java hello/ThrowExceptionAround.aj" options="-XnoInline"/>
      <run class="hello.HelloWorld">
@@ -451,8 +451,8 @@
 	    	<line text="hello.HelloWorld.main(HelloWorld.java:41)"/>
 		</stderr>
      </run>
-    </ajc-test> 
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 1">
 		<compile files="Interface.java"/>
         <compile
@@ -463,25 +463,25 @@
       	<compile files="Aspect1.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <message kind="weave" text="void Missing.interfaceMethod()"/>
-		</compile>	        
+		</compile>
       	<compile files="Aspect1.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <!--
 	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
 	        -->
-		</compile>	        
+		</compile>
       	<run class="TestWithMissing">
 			<stdout>
 	        	<line text="Aspect1.before() interfaceMethod"/>
 	        	<line text="Missing.interfaceMethod()"/>
-<!--	        	
+<!--
 	        	<line text="Aspect1.before() interfaceMethod"/>
 -->
 	        	<line text="Missing.interfaceMethod()"/>
 	        	<line text="Missing.missingMethod()"/>
     		</stdout>
     	</run>
-    </ajc-test>    
+    </ajc-test>
 	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 2">
 		<compile files="Interface.java"/>
         <compile
@@ -492,24 +492,24 @@
       	<compile files="Aspect2.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <message kind="weave" text="void Missing.interfaceMethod()"/>
-		</compile>	        
+		</compile>
       	<compile files="Aspect2.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <message kind="warning" text="can't determine whether missing type Missing is an instance of Interface"/>
 	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
-		</compile>	        
+		</compile>
       	<run class="TestWithMissing">
 			<stdout>
 	        	<line text="Aspect2.before() interfaceMethod"/>
 	        	<line text="Missing.interfaceMethod()"/>
-<!--	        	
+<!--
 	        	<line text="Aspect2.before() interfaceMethod"/>
 -->
 	        	<line text="Missing.interfaceMethod()"/>
 	        	<line text="Missing.missingMethod()"/>
     		</stdout>
     	</run>
-    </ajc-test>    
+    </ajc-test>
 	<ajc-test dir="bugs153/pr149322" title="can't find type on interface call 3">
 		<compile files="Interface.java"/>
         <compile
@@ -520,25 +520,25 @@
       	<compile files="Aspect3.aj" options="-showWeaveInfo -inpath ." classpath="missing.jar">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <message kind="weave" text="void Missing.interfaceMethod()"/>
-		</compile>	        
+		</compile>
       	<compile files="Aspect3.aj" options="-Xlint:warning -showWeaveInfo -inpath .">
 	        <message kind="weave" text="void Interface.interfaceMethod()"/>
 	        <message kind="warning" text="can't determine whether missing type Missing is an instance of Interface"/>
 	        <message kind="warning" text="can't determine superclass of missing type Missing"/>
-		</compile>	        
+		</compile>
       	<run class="TestWithMissing">
 			<stdout>
 	        	<line text="Aspect3.before() interfaceMethod"/>
 	        	<line text="Missing.interfaceMethod()"/>
-<!--	        	
+<!--
 	        	<line text="Aspect3.before() interfaceMethod"/>
 -->
 	        	<line text="Missing.interfaceMethod()"/>
 	        	<line text="Missing.missingMethod()"/>
     		</stdout>
     	</run>
-    </ajc-test>    
-  
+    </ajc-test>
+
     <ajc-test dir="bugs153" title="match volatile field">
       <compile files="pr150671.aj" options="-Xset:activateLightweightDelegates=false">
         <message kind="error" line="7" text="Changing state"/>
@@ -553,19 +553,19 @@
         <compile files="Aspect.aj" options="-outxml -outjar aspects.jar -1.4"/>
         <ant file="ajc-ant.xml" target="Duplicate JVMTI agents" verbose="true"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr151978" title="generics problem">
       <compile files="IMessage.java" options="-1.5">
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr152631" title="decp and cflowadder munger clash">
       <compile files="EMA.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr153572" title="LTWWorld with annotation matching">
-    	<compile 
-    		files="Configurable.java, AnnotationMatcher.aj" 
+    	<compile
+    		files="Configurable.java, AnnotationMatcher.aj"
     		options="-1.5"
     		outjar="aspectlib.jar"
     		outxmlfile="META-INF/aop.xml"/>
@@ -576,7 +576,7 @@
     		</stdout>
     	</run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr149560" title="incorrect staticinitialization weaving - codestyle">
       <compile files="CodeStyle.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void MyAspect.&lt;clinit&gt;())' in Type 'MyAspect' (CodeStyle.java:3) advised by after advice from 'MyAspect' (CodeStyle.java:4)"/>
@@ -590,7 +590,7 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr149560" title="incorrect staticinitialization weaving - annstyle">
       <compile files="AnnStyle.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void MyAspect.&lt;clinit&gt;())' in Type 'MyAspect' (AnnStyle.java:5) advised by after advice from 'MyAspect' (AnnStyle.java:7)"/>
@@ -604,7 +604,7 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="ltw" title="reweavableAspectNotRegistered error">
       <compile files="HelloWorldWithException.java, ExceptionHandler.aj" options="-showWeaveInfo">
         <message kind="weave" text="Join point 'method-execution(void HelloWorldWithException.main(java.lang.String[]))' in Type 'HelloWorldWithException' (HelloWorldWithException.java:3) advised by around advice from 'ExceptionHandler' (ExceptionHandler.aj:2)"/>
@@ -620,7 +620,7 @@
         </stderr>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr155972" title="NPE in ConstructorSignatureImpl">
       <compile files="ConstructorTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
       <run class="ConstructorTest">
@@ -629,7 +629,7 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr155972" title="NPE in FieldSignatureImpl">
       <compile files="FieldTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
       <run class="FieldTest">
@@ -638,7 +638,7 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr155972" title="NPE in InitializerSignatureImpl">
       <compile files="InitializerTest.java, SignatureImplAspect.aj" options="-Xlint:ignore"/>
       <run class="InitializerTest">
@@ -647,13 +647,13 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs153/pr155763" title="ensure LineNumberTable correct with generics, for each and continue">
       <compile files="Test.java" options="-1.5">
 		<message kind="warning" line="27" text="adviceDidNotMatch"/>
-	  </compile>	
+	  </compile>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs153/pr157474" title="TestServer with duplicate configuration" keywords="ltw,server">
         <compile files="AbstractTracing.aj" options="-outjar library.jar -outxml"/>
         <compile files="HelloWorld.java" options="-outjar application.jar"/>
@@ -675,7 +675,7 @@
     <ajc-test dir="bugs153/pr151772" title="ensure declare soft doesn't allow undeclared exception in anonymous inner class - 2">
       <compile files="Softener2.aj">
 		<message kind="error" line="18" text="Unhandled exception type SQLException"/>
-	  </compile>	
+	  </compile>
     </ajc-test>
 
     <ajc-test dir="bugs153/pr125981" title="declare soft and inner classes">
@@ -716,14 +716,14 @@
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>
         <compile files="Missing.java" options="-outjar missing.jar"/>
         <compile files="Tracing.aj, PointcutLibrary.aj" options="-Xlint:ignore -1.5 -outxml -outjar tracing.jar" classpath="hello.jar,missing.jar"/>
-<!--        
+<!--
 		<run class="HelloWorld" ltw="aop.xml">
 	        <stdout>
     	      <line text="? main"/>
     	      <line text="Hello World!"/>
         	</stdout>
         </run>
--->        
+-->
 		<ant file="ant.xml" target="NPE with LTW, pointcut library and missing aspect dependency" verbose="true">
 	        <stdout>
     	      <line text="? main"/>
@@ -739,7 +739,7 @@
         <compile
         	files="HelloWorld.java"
         >
-        </compile>	
+        </compile>
         <compile files="AbstractSuperAspect.aj" options="-1.4"/>
         <compile files="TestAdvice.aj" options="-1.4"/>
         <run class="HelloWorld" ltw="aop-advice.xml">
@@ -755,7 +755,7 @@
 	<ajc-test dir="bugs153/pr132080"
       title="Weave concrete sub-aspect with ITD"
       keywords="aop.xml">
-<!--      
+<!--
         <compile files="AbstractSuperAspectWithInterface.aj, TestInterface.java" options="-verbose"/>
         <compile files="HelloWorld.java, TestITD.aj, ConcreteAspectWithITD.aj" options="-verbose">
             <message line="3" kind="warning" text="this affected type is not exposed to the weaver: AbstractSuperAspectWithInterface"/>
@@ -767,7 +767,7 @@
                 <line text="Hello World!"/>
             </stdout>
         </run>
--->        
+-->
         <compile files="HelloWorld.java"/>
         <compile files="AbstractSuperAspectWithInterface.aj, TestInterface.java"/>
         <compile files="TestITD.aj">
@@ -783,7 +783,7 @@
 
     </ajc-test>
 
-	<ajc-test dir="bugs153/pr132080" title="Weave concrete sub-aspect with around closure" 
+	<ajc-test dir="bugs153/pr132080" title="Weave concrete sub-aspect with around closure"
 		keywords="aop.xml">
 
         <compile files="HelloWorld.java"/>
@@ -806,19 +806,19 @@
 		<compile files="TestMain.aj"/>
 		<run class="TestMain" ltw="aop-pr149096.xml"/>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs153/pr158957" title="NPE with LTW, pointcut library and missing aspect dependency" keywords="ltw">
         <compile files="HelloWorld.java" options="-outjar hello.jar"/>
         <compile files="Missing.java" options="-outjar missing.jar"/>
         <compile files="Tracing.aj, PointcutLibrary.aj" options="-Xlint:ignore -1.5 -outxml -outjar tracing.jar" classpath="hello.jar,missing.jar"/>
-<!--        
+<!--
 		<run class="HelloWorld" ltw="aop.xml">
 	        <stdout>
     	      <line text="? main"/>
     	      <line text="Hello World!"/>
         	</stdout>
         </run>
--->        
+-->
 		<ant file="ant.xml" target="NPE with LTW, pointcut library and missing aspect dependency" verbose="true">
 	        <stdout>
     	      <line text="? println"/>
@@ -836,15 +836,15 @@
      <compile files="MainClass.java, WorldAspect.aj" inpath="library.jar" options="-1.5 -showWeaveInfo">
 		<message kind="weave" text="Join point 'method-execution(void pkg.Hello.sayHello())' in Type 'pkg.Hello' (Hello.java:7) advised by afterReturning advice from 'pack.WorldAspect' (WorldAspect.aj:9)"/>
 	 </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs153/pr164356" title="javadoc comments are set if have normal comments">
       <compile files="C.java" options="-emacssym -XjavadocsInModel -Xset:minimalModel=false"/>
     </ajc-test>
-    
+
    <ajc-test dir="bugs153/pr164384" title="compliance java 6 throws usage error">
       <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
- 	  <!--        
+ 	  <!--
 		<message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
@@ -854,17 +854,17 @@
 
    <ajc-test dir="bugs153/pr164384" title="source level java 6 throws usage error">
       <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
-	  <!-- 
+	  <!--
 	    <message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
 	  -->
-	  </compile>	  
+	  </compile>
     </ajc-test>
 
    <ajc-test dir="bugs153/pr164384" title="target level java 6 throws usage error">
       <compile files="MainClass.java,Hello.java,MyAnnotation.java" options="-1.6">
-	  <!-- 
+	  <!--
 		<message kind="error" text="-1.6"/>
 		<message kind="error" text="no sources specified"/>
 		<message kind="abort" text="AspectJ Compiler"/>
@@ -874,13 +874,13 @@
 
 	<ajc-test dir="bugs153/StaticImport" title="ensure static import reference have static modifier set">
       <compile files="StaticImport.java,C.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs153/GenericMethod" title="ensure getSourceSignature correct with generic method">
       <compile files="C.java" options="-1.5 -emacssym -Xset:minimalModel=false"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs153/Annotation" title="ensure Annotations are added to import list">
       <compile files="C.java, Anno.aj, A.java" options="-1.5 -emacssym"/>
-    </ajc-test> 
+    </ajc-test>
 </suite>

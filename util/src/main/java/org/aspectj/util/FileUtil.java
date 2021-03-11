@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
@@ -96,8 +96,10 @@ public class FileUtil {
 
 	/** @return true if file exists and is a zip file */
 	public static boolean isZipFile(File file) {
-		try {
-			return (null != file) && new ZipFile(file) != null;
+		if (file == null)
+			return false;
+		try (ZipFile zipFile = new ZipFile(file)) {
+			return true;
 		} catch (IOException e) {
 			return false;
 		}
@@ -428,7 +430,7 @@ public class FileUtil {
 			}
 			try {
 				File f = new File(path);
-				
+
 				if (f.exists() && f.canRead()) {
 					if (mustBeJar && !f.isDirectory()) {
 						result = FileUtil.getBestFile(f);
@@ -890,19 +892,8 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void copyValidFiles(File fromFile, File toFile) throws IOException {
-		FileInputStream in = null;
-		FileOutputStream out = null;
-		try {
-			in = new FileInputStream(fromFile);
-			out = new FileOutputStream(toFile);
+		try (FileInputStream  in = new FileInputStream(fromFile); FileOutputStream out = new FileOutputStream(toFile)){
 			copyStream(in, out);
-		} finally {
-			if (out != null) {
-				out.close();
-			}
-			if (in != null) {
-				in.close();
-			}
 		}
 	}
 

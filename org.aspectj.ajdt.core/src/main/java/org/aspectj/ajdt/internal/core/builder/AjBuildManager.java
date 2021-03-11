@@ -476,9 +476,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	private void copyResourcesFromJarFile(File jarFile) throws IOException {
-		JarInputStream inStream = null;
-		try {
-			inStream = new JarInputStream(new FileInputStream(jarFile));
+		try (JarInputStream inStream = new JarInputStream(new FileInputStream(jarFile))) {
 			while (true) {
 				ZipEntry entry = inStream.getNextEntry();
 				if (entry == null) {
@@ -495,10 +493,6 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				}
 
 				inStream.closeEntry();
-			}
-		} finally {
-			if (inStream != null) {
-				inStream.close();
 			}
 		}
 	}

@@ -1697,9 +1697,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
 		IProgramElement binariesNode = getChild(root, "binaries");
 		assertNotNull(binariesNode);
-		IProgramElement packageNode = binariesNode.getChildren().get(0);
-		assertEquals("a.b.c", packageNode.getName());
+		IProgramElement packageNode = binariesNode.getChildren().stream()
+			.filter(programElement -> programElement.getName().equals("a.b.c"))
+			.findFirst()
+			.orElse(null);
+		assertNotNull(packageNode);
 		IProgramElement fileNode = packageNode.getChildren().get(0);
+		assertNotNull(fileNode);
 		assertEquals(IProgramElement.Kind.FILE, fileNode.getKind());
 	}
 

@@ -31,7 +31,7 @@
     </stdout>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/bbb" title="package and run a module - modulepath">
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
    	<file deletefile="module-info.java"/>
@@ -42,14 +42,14 @@
     </stdout>
     </run>
    </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/ccc" title="compile regular code using module code">
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="modules/my.module.jar"/>
     <file deletefile="module-info.java"/>
     <file deletefile="aaa"/>
     <compile files="InvokeA.java" options="-1.9" modulepath="$sandbox/modules/my.module.jar"/>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/ddd" title="compile regular code using module code that isn't visible">
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="modules/my.module.jar"/>
     <compile files="InvokeA.java" options="-1.9" modulepath="$sandbox/modules/my.module.jar">
@@ -78,31 +78,31 @@
 
   <ajc-test dir="bugs190/modules/fff" title="compile module including aspects">
     <compile files="module-info.java pkg/Demo.java otherpkg/Azpect.java" modulepath="$runtimemodule" outjar="demomodule.jar" options="-1.9"/>
-    <run modulepath="$runtimemodule:demomodule.jar" module="demo/pkg.Demo">
+    <run modulepath="$runtimemodule,demomodule.jar" module="demo/pkg.Demo">
       <stdout>
       <line text="Azpect running"/>
       <line text="Demo running"/>
       </stdout>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/eee" title="compile module and apply aspects via aspectpath">
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
     <file deletefile="module-info.java"/>
     <file deletefile="aaa"/>
     <compile files="Azpect.java" outjar="azpects.jar" options="-1.4"/>
     <compile options="-showWeaveInfo" inpath="my.module.jar" aspectpath="azpects.jar" outjar="my.module.woven.jar">
-    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>    
+    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>
     </compile>
     <file deletefile="my.module.jar"/>
-    <run classpath="my.module.woven.jar:azpects.jar" class="aaa.bbb.A">
+    <run classpath="my.module.woven.jar,azpects.jar" class="aaa.bbb.A">
       <stdout>
       <line text="Azpect running"/>
       <line text="A running"/>
       </stdout>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/ggg" title="module path vs classpath 1">
     <!-- build some simple code into a jar we can depend on *not a module* -->
     <compile files="ddd/D.java" options="-1.9" outjar="foo.jar"/>
@@ -113,23 +113,23 @@
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" classpath="foo.jar">
     <message kind="error" text="The type ddd.D is not accessible"/>
     <message kind="error" text="D cannot be resolved"/>
-    <!-- 
+    <!--
     <message kind="error" text="The import ddd cannot be resolved"/>
     <message kind="error" text="package ddd is not visible"/>
      -->
     </compile>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/hhh" title="module path vs classpath 2">
     <!-- build some simple code into a jar we can depend on *not a module* -->
     <file renamefrom="module-info-a.java" renameto="module-info.java"/>
     <compile files="module-info.java ddd/D.java" options="-1.9" outjar="my.module.a.jar"/>
-    <!-- 
+    <!--
     <file renamefrom="module-info-b.java" renameto="module-info.java"/>
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.b.jar" modulepath="my.module.a.jar"/>
      -->
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/iii" title="compile use of java.xml.bind">
     <compile files="UsesJAXB.java" options="--add-modules java.xml.bind -1.9"/>
     <run class="UsesJAXB" vmargs="--add-modules java.xml.bind">
@@ -138,7 +138,7 @@
       </stdout>
     </run>
   </ajc-test>
-    
+
   <ajc-test dir="bugs190/modules/iii" title="weave use of java.xml.bind">
     <compile files="UsesJAXB.java Azpect.java" options="--add-modules java.xml.bind -1.9"/>
     <run class="UsesJAXB" vmargs="--add-modules java.xml.bind">
@@ -148,7 +148,7 @@
       </stdout>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/iii" title="limit modules 1">
     <compile files="UsesJAXB.java Azpect.java" options="--limit-modules java.xml.bind -1.9"/>
     <run class="UsesJAXB" vmargs="--limit-modules java.xml.bind">
@@ -158,7 +158,7 @@
       </stdout>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/modules/iii" title="add reads 1">
     <compile files="UsesJAXB.java Azpect.java" options="--add-reads java.sql=java.xml.bind --add-modules java.sql -1.9"/>
     <run class="UsesJAXB" vmargs="--add-modules java.xml.bind ">
@@ -168,18 +168,18 @@
       </stdout>
     </run>
   </ajc-test>
-  
-  <!-- 
+
+  <!--
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="module.jar" aspectpath="foo.jar"/>
     <compile files="module-info.java aaa/bbb/A.java" options="-1.9" outjar="my.module.jar"/>
     <file deletefile="module-info.java"/>
     <file deletefile="aaa"/>
     <compile files="Azpect.java" outjar="azpects.jar"/>
     <compile options="-showWeaveInfo" inpath="my.module.jar" aspectpath="azpects.jar" outjar="my.module.woven.jar">
-    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>    
+    		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>
     </compile>
     <file deletefile="my.module.jar"/>
-    <run classpath="my.module.woven.jar:azpects.jar" class="aaa.bbb.A">
+    <run classpath="my.module.woven.jar,azpects.jar" class="aaa.bbb.A">
       <stdout>
       <line text="Azpect running"/>
       <line text="A running"/>
@@ -187,12 +187,12 @@
     </run>
   </ajc-test>
      -->
-  
+
   <ajc-test dir="bugs190/modules" title="weave module">
     <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
     <java classpath="runner.jar" class="a.b.c.Code"/>
   </ajc-test>
-  
+
   <ajc-test dir="bugs190/various" title="setting static final outside clinit">
 	  <compile files="Code.java" options="-1.9"/>
 	  <run class="Code">

@@ -8,7 +8,7 @@
 	        <message kind="weave" text="Join point 'method-execution(int ma.Main$Dummy.retryTranslateAndTimeLimited())' in Type 'ma.Main$Dummy' (Main.java:16) advised by around advice from 'ma.aspect2.Aspect2' (Aspect2.java:11)"/>
 	        <message kind="weave" text="Join point 'method-execution(int ma.Main$Dummy.retryTranslateAndTimeLimited())' in Type 'ma.Main$Dummy' (Main.java:16) advised by around advice from 'ma.aspect1.Aspect1' (Aspect1.java:12)"/>
         </compile>
-        <!-- 
+        <!--
         >In Aspect1
 >In Aspect2
 >In Aspect3
@@ -50,7 +50,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - reweaving">
         <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
 	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
@@ -68,7 +68,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - 1">
         <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
 	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
@@ -88,7 +88,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving decm - 2">
         <compile files="MoodIndicator.java,Code1.java" options="-showWeaveInfo -1.8" outjar="one.jar">
 	        <message kind="weave" text="Mixing interface 'MoodIndicator$Moody' (MoodIndicator.java) into type 'Code1' (Code1.java)"/>
@@ -108,7 +108,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="mood indicator 4">
         <compile files="MoodIndicator4.java" options="-1.8" outjar="one.jar">
         </compile>
@@ -146,7 +146,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/543657" vm="1.8" title="overweaving atdecp">
         <compile files="Basic3b.java" options="-showWeaveInfo -1.8" outjar="ow1.jar">
 	        <message kind="weave" text="Extending interface set for type 'Basic3b' (Basic3b.java) to include 'X$I' (Basic3b.java)"/>
@@ -161,7 +161,7 @@ Method call
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'X' (Basic3b.java:33)"/>
         </compile>
         <compile files="Y.java" inpath="ow1.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
-        
+
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'Y' (Y.java:17)"/>
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'X' (ow1.jar!X.class(from Basic3b.java))"/>
 	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'Y' (Y.java:17)"/>
@@ -246,7 +246,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving 3">
         <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
 	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
@@ -284,7 +284,7 @@ Method call
 	        </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/389678" vm="1.8" title="overweaving 4">
         <compile files="OverWeave_1/src/Application.java,OverWeave_1/src/MyAspect.aj" options="-showWeaveInfo -1.8" outjar="ow1.jar">
 	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect' (MyAspect.aj:2)"/>
@@ -303,19 +303,19 @@ Method call
 	        <message kind="weave" text="Join point 'method-execution(void Application.main(java.lang.String[]))' in Type 'Application' (Application.java:2) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
  	        <message kind="weave" text="Join point 'method-execution(void Application.sayHelloTo(java.lang.String))' in Type 'Application' (Application.java:6) advised by before advice from 'MyAspect2' (ow2.jar!MyAspect2.class:2(from MyAspect2.aj))"/>
         </compile>
-         <compile inpath="ow3.jar" aspectpath="ow4.jar:ow2.jar" options="-1.8">
+         <compile inpath="ow3.jar" aspectpath="ow4.jar,ow2.jar" options="-1.8">
 	        <message kind="error" text="the type Application was previously subject to overweaving and after that can only be woven again in overweaving mode"/>
  	        <message kind="error" text="the type MyAspect was previously subject to overweaving and after that can only be woven again in overweaving mode"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs193/542682" vm="1.5" title="wildcard enum match in itd">
         <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect04.aj" options="-1.5">
             <message kind="warning" line="8" text="enum type SimpleEnum2 matches a declare parents type pattern but is being ignored"/>
             <message kind="warning" line="8" text="enum type SimpleEnum matches a declare parents type pattern but is being ignored"/>
         </compile>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs193/542682" title="declare mixin a">
 		<compile files="CaseA.java" options="-1.8">
 	        <message kind="warning" line="1" text="enum type Color matches a declare parents type pattern but is being ignored"/>
@@ -327,7 +327,7 @@ Method call
 		  </stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs193/isAbstractType" title="is abstract">
 	<compile files="Code.java" options="-1.8"/>
 	<run class="Code">
@@ -336,7 +336,7 @@ Method call
 	  </stdout>
 	</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs193/isAbstractType" title="is abstract - 2">
 	<compile files="Code2.java" options="-1.8"/>
 	<run class="Code2">
@@ -346,7 +346,7 @@ Method call
 	</run>
 	</ajc-test>
 
-<!-- 
+<!--
   <ajc-test dir="bugs191/var" title="var 3">
     <compile files="Code3.java" options="-10">
 	</compile>

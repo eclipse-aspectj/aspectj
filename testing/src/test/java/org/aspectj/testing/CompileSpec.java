@@ -85,7 +85,7 @@ public class CompileSpec implements ITestStep {
 	 * @param aspectpath The aspectpath to set.
 	 */
 	public void setAspectpath(String aspectpath) {
-		this.aspectpath = aspectpath.replace(',',File.pathSeparatorChar);
+		this.aspectpath = aspectpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 	/**
 	 * @return Returns the classpath.
@@ -97,7 +97,7 @@ public class CompileSpec implements ITestStep {
 	 * @param classpath The classpath to set.
 	 */
 	public void setClasspath(String classpath) {
-		this.classpath = classpath.replace(',',File.pathSeparatorChar);
+		this.classpath = classpath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 
 	public String getModulepath() {
@@ -105,7 +105,7 @@ public class CompileSpec implements ITestStep {
 	}
 	
 	public void setModulepath(String modulepath) {
-		this.modulepath = modulepath.replace(',', File.pathSeparatorChar);
+		this.modulepath = modulepath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
 	/**
 	 * @return Returns the files.

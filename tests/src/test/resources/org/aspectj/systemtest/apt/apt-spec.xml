@@ -50,7 +50,7 @@
 
         <!--apt_service_description.jar contains only SPI description file - META-INF/services/javax.annotation.processing.Processor-->
         <compile options="-1.8 -s generated -showWeaveInfo" files="Some.java"
-                 classpath="annotation_processor.jar;apt_service_description.jar" outjar="code.jar">
+                 classpath="annotation_processor.jar,apt_service_description.jar" outjar="code.jar">
             <message kind="weave"
                      text="Type 'test.Some' (Some.java) has intertyped field from 'test.SomeEventsAspect' (SomeEventsAspect.aj:'test.SomeEventsAspect$SomeOnMethod1Event test.Some.OnMethod1Event')"/>
             <message kind="weave"
