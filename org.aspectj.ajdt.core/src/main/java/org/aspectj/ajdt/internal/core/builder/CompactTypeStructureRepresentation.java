@@ -19,6 +19,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryNestedType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryTypeAnnotation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IRecordComponent;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ITypeAnnotationWalker;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding.ExternalAnnotationStatus;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
@@ -48,7 +49,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	// this is the extra state that enables us to be an IBinaryType
 	char[] enclosingTypeName;
-	boolean isLocal, isAnonymous, isMember;
+	boolean isLocal, isAnonymous, isMember, isRecord;
 	char[] sourceFileName;
 	char[] fileName;
 	char[] sourceName;
@@ -59,6 +60,7 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 	IBinaryNestedType[] memberTypes;
 	IBinaryAnnotation[] annotations;
 	IBinaryTypeAnnotation[] typeAnnotations;
+	IRecordComponent[] recordComponents;
 
 
 	public CompactTypeStructureRepresentation(ClassFileReader cfr, boolean isAspect) {
@@ -97,6 +99,8 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		// }
 		this.superclassName = cfr.getSuperclassName(); // slashes...
 		interfaces = cfr.getInterfaceNames();
+		isRecord = cfr.isRecord();
+		recordComponents = cfr.getRecordComponents();
 
 	}
 
@@ -136,6 +140,11 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 		return isLocal;
 	}
 
+	@Override
+	public boolean isRecord() {
+		return isRecord;
+	}
+
 	public boolean isMember() {
 		return isMember;
 	}
@@ -162,6 +171,11 @@ public class CompactTypeStructureRepresentation implements IBinaryType {
 
 	public IBinaryField[] getFields() {
 		return binFields;
+	}
+
+	@Override
+	public IRecordComponent[] getRecordComponents() {
+		return recordComponents;
 	}
 
 	public IBinaryMethod[] getMethods() {
