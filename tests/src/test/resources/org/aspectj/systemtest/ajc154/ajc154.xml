@@ -6,7 +6,7 @@
    <ajc-test dir="bugs154/pr166647" title="ltw and cflow problem">
      <compile options="-1.5" files="ClassToAdvise.java,ClassWithMain.java" outjar="code.jar"/>
      <compile options="-1.5 -Xlint:ignore" files="Aspect.java" outjar="aspects.jar"/>
-     <run class="a.ClassWithMain" classpath="aspects.jar;code.jar" ltw="aop1.xml">
+     <run class="a.ClassWithMain" classpath="aspects.jar,code.jar" ltw="aop1.xml">
        <stdout>
          <line text="advice fired"/>
        </stdout>
@@ -14,12 +14,12 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr211052" title="declare atType problems - 1">
      <compile options="-1.5" files="MyPojo.java"/>
      <run class="MyPojo"/>
    </ajc-test>
-   
+
    <!--  DistantResource is explicitly mentioned as c.d.DistantResource -->
    <ajc-test dir="bugs154/pr211052" title="declare atType problems - 2">
      <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation.java,SimpleAspect1.java,DistantResource.java">
@@ -39,22 +39,22 @@
        <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @SimpleAnnotation(classname = &quot;oranges&quot;)"/>
      </compile>
       <run class="c.d.DistantResource">
-     <stdout>       
+     <stdout>
        <line text="Annotation is @a.b.SimpleAnnotation(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
        <line text="Annotation is @a.b.SimpleAnnotation(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
-   
+
    <!--  Annotation is in a different package to the aspect and explicitly referenced with a fully qualified name -->
    <ajc-test dir="bugs154/pr211052" title="declare atType problems - 4">
      <compile options="-1.5 -showWeaveInfo" files="SimpleAnnotation2.java,SimpleAspect3.java,DistantResource.java">
        <message kind="weave" text="'c.d.DistantResource' (DistantResource.java:5) is annotated with @e.f.SimpleAnnotation2(classname = &quot;oranges&quot;)"/>
-     </compile>     
+     </compile>
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
@@ -67,11 +67,11 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
-   
+
    <!-- target for annotation is from a jar -->
    <ajc-test dir="bugs154/pr211052" title="declare atType problems - 6">
      <compile options="-1.5" files="DistantResource.java" outjar="target.jar"/>
@@ -81,7 +81,7 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>       
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
@@ -96,11 +96,11 @@
      <run class="c.d.DistantResource">
      <stdout>
        <line text="Annotation is @e.f.SimpleAnnotation2(classname=oranges)" vm="1.2,1.3,1.4,1.5,1.6,1.7,1.8"/>
-       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>              
+       <line text="Annotation is @e.f.SimpleAnnotation2(classname=&quot;oranges&quot;)" vm="9+"/>
      </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr211674" title="after throwing annotation style problem - 1">
      <compile options="-1.5" files="Test.java"/>
      <run class="Test"/>
@@ -149,7 +149,7 @@
        <stdout/>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr148381/error3" title="argNames does not work - error3">
      <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
      <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
@@ -182,7 +182,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <!-- switch from code style sub-aspect to annotation style sub aspect -->
    <ajc-test dir="bugs154/pr209019/case2" title="various issues with ltw and around advice - 2">
      <compile options="-1.5 -XnoInline" files="A.java,AtDurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
@@ -195,7 +195,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <!-- same as case2 but without -XnoInline -->
    <ajc-test dir="bugs154/pr209019/case2" title="various issues with ltw and around advice - 3">
      <compile options="-1.5" files="A.java,AtDurationMethod.java,AbstractDurationMethod.java,Runner.java"/>
@@ -208,7 +208,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <!-- now loadtime weaving -->
    <ajc-test dir="bugs154/pr209019/case3" title="various issues with ltw and around advice - 4">
      <compile options="-1.5" files="A.java,AbstractDurationMethod.java,Runner.java"/>
@@ -221,12 +221,12 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <!-- just checking the new syntax compiles OK -->
    <ajc-test dir="bugs154/pr169432/case1" title="declare parents problem when target already implements interface - 1">
      <compile options="-1.5" files="NonMarkerInterface.java,ClassThatAlreadyIncludesRequiredMethods.java,DeclareParentsForNonMarkerInterfaceToAClassThatAlreadyIncludeRequiredMethods.java"/>
    </ajc-test>
-   
+
    <!-- now violate the rules, the types matching the pattern do not implement the interface -->
    <ajc-test dir="bugs154/pr169432/case2" title="declare parents problem when target already implements interface - 2">
     <compile options="-1.5" files="A.java">
@@ -235,7 +235,7 @@
      </compile>
    </ajc-test>
 
-   <!-- now they do, lets check they behave as expected -->   
+   <!-- now they do, lets check they behave as expected -->
    <ajc-test dir="bugs154/pr169432/case3" title="declare parents problem when target already implements interface - 3">
      <compile options="-1.5" files="A.java"/>
      <run class="A">
@@ -269,15 +269,15 @@
    <ajc-test dir="bugs154/pr162539" title="NPE with missing @aspect annotation in pointcut library - 1">
    	 <compile files="test/ataspectj/pointcutlibrary/HelloWorld.java, test/ataspectj/pointcutlibrary/AtAspect.java" classpath="lib.jar" options="-1.5"/>
    </ajc-test>
-    
+
    <ajc-test dir="bugs154/pr162539" title="NPE with missing @aspect annotation in pointcut library - 2">
    	<compile files="test/ataspectj/pointcutlibrary/PointcutLibrary.java, test/ataspectj/pointcutlibrary/HelloWorld.java, test/ataspectj/pointcutlibrary/AtAspect.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr176991" title="wrong number of type parameters">
      <compile options="-1.5" files="AspectJBugTestCase.java"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr186673" title="jars and zips with non-standard suffix">
      <compile options="-1.5" files="Apple.java" outjar="apple.jar.0"/>
      <compile options="-1.5" files="Orange.java" outjar="orange.zipfoo"/>
@@ -289,51 +289,51 @@
      </ant-->
      <compile options="-1.5" files="Main.java" classpath="orange.zipfoo,apple.jar.0"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface">
      <compile options="-1.5" files="Bang.java"/>
      <!--compile options="-1.5 -emacssym" files="Bang.java"/-->
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - emacssym">
      <compile options="-1.5 -emacssym" files="Bang.java"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleA">
      <compile options="-1.5" files="ExampleA.java"/>
      <run class="ExampleA"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleB">
      <compile options="-1.5" files="ExampleB.java">
        <message kind="error" line="20" text="The method intro(String) in the type I.J&lt;String&gt; is not applicable for the arguments (int)"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleC">
      <compile options="-1.5" files="ExampleC.java"/>
      <run class="ExampleC"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleD">
      <compile options="-1.5" files="ExampleD.java"/>
      <run class="ExampleD"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleE">
      <compile options="-1.5" files="ExampleE.java"/>
      <run class="ExampleE"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleF">
      <compile options="-1.5" files="ExampleF.java"/>
      <run class="ExampleF"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr203646" title="npe with itd on inner generic interface - exampleG">
      <compile options="-1.5" files="ExampleG.java"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr206732" title="itd clash for types from aspectpath">
      <compile outjar="foo.jar" files="Advised.aj"/>
      <compile files="Ref.aj" aspectpath="foo.jar"/>
@@ -342,7 +342,7 @@
    <ajc-test dir="bugs154/pr175806" title="coping with bad tables">
      <compile options="-1.5" files="A.java"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr174449" title="problem with generic aspect and generic pointcut">
      <compile options="-1.5" files="Foo.java"/>
      <run class="Foo">
@@ -352,7 +352,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr174449" title="problem with generic aspect and generic pointcut - noinline">
      <compile options="-1.5 -XnoInline" files="Foo.java"/>
      <run class="Foo">
@@ -362,12 +362,12 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr171953_2" title="problem with generic methods and ordering - ok">
 	 <compile options="-1.5" files="test/ListFactoryAspect.aj, test/AbstractProcessor.java,test/ListFactory.java,test/ListFactoryConsumer.java,test/Processor.java,test/SimpleListFactoryConsumer.java">
 	 </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs154/pr171953_2" title="problem with generic methods and ordering - bad">
 	 <compile options="-1.5" files="test/ListFactory.java,test/ListFactoryConsumer.java,test/SimpleListFactoryConsumer.java,test/Processor.java,test/ListFactoryAspect.aj,test/AbstractProcessor.java">
 	 </compile>
@@ -379,7 +379,7 @@
        <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
        <message kind="weave" text="Join point 'method-execution(void test.SubTestExecutable.execute())' in Type 'test.SubTestExecutable' (SubTestExecutable.java:6) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
        <message kind="weave" text="Join point 'method-execution(void test.TestExecutable.execute())' in Type 'test.TestExecutable' (TestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
-     </compile>       
+     </compile>
      <run class="test.SecondTestExecutable"/>
    </ajc-test>
 
@@ -389,42 +389,42 @@
        <message kind="weave" text="Extending interface set for type 'test.AbstractExecutable' (AbstractExecutable.java) to include 'java.io.Serializable' (ExecutionAspect.aj)"/>
        <message kind="weave" text="Join point 'method-execution(void test.SubTestExecutable.execute())' in Type 'test.SubTestExecutable' (SubTestExecutable.java:6) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
        <message kind="weave" text="Join point 'method-execution(void test.TestExecutable.execute())' in Type 'test.TestExecutable' (TestExecutable.java:5) advised by around advice from 'test.ExecutionAspect' (ExecutionAspect.aj:9)"/>
-     </compile>       
+     </compile>
      <run class="test.SecondTestExecutable"/>
    </ajc-test>
 
     <ajc-test dir="bugs154/pr171952" title="generic methods and ITDs">
       <compile files="Foo.java,FooAspect.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr169428" title="using decp annotation without aspect annotation">
       <compile files="AnAspect.java" options="-1.5">
         <message kind="error" text="Found @AspectJ annotations in a non @Aspect type 'AnAspect'"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr170467" title="itds and parameterized parameters">
       <compile files="Bug.aj" options="-1.5"/>
       <compile files="Bug2.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr169706" title="inherited annotations">
       <compile files="A.java,B.java,C.java,MyAspect.java,MyAnnotation.java,Test.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'method-call(void C.foo())' in Type 'Test' (Test.java:5) advised by before advice from 'MyAspect' (MyAspect.java:4)"/>
 	  </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr165885" title="generic field npe">
       <compile files="Concrete.java,Abstract.java,Aspect.java" options="-1.5">
         <message kind="warning" line="8" text="foo"/>
 	  </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr168044" title="complex generics - 1">
       <compile files="AbstractNode.java" options="-1.5">
 	  </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr168063" title="incorrectly marking field transient">
       <compile files="A.java"/>
       <run class="A">
@@ -433,12 +433,12 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr166084" title="incorrect optimization of istore">
       <compile files="X.java" inpath="simple.jar"/>
 	  <run class="Simple"/>
     </ajc-test>
-       
+
     <ajc-test dir="bugs154/pr165631" title="dual parameterizations not allowed">
       <!-- two variations of the same situation, should fail in the same way -->
       <compile files="Bug.java" options="-1.5">
@@ -455,10 +455,10 @@
         <compile
             files="Main.java"
         >
-        </compile>    
+        </compile>
         <run class="Main" ltw="aop-noxlintfile-nowarn.xml">
             <stderr/> <!-- no warnings from missing xlint file: they are suppressed -->
-        </run>        
+        </run>
     </ajc-test>
 
     <ajc-test dir="ltw"
@@ -467,23 +467,23 @@
         <compile
             files="Main.java"
         >
-        </compile>    
+        </compile>
         <run class="Main" ltw="aop-noxlintfile-warnnone.xml">
             <stderr/> <!-- no warnings from missing xlint file: they are suppressed -->
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr172107" title="null returned from getField()"
 		keywords="pr172107">
         <compile files="ReadWriteAJBug172107.java,Instrumentation.aj"/>
 		<run class="ReadWriteAJBug172107"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr197719" title="annotation style syntax and cross package extension">
       <compile files="test/aspects/C1.java,test/aspects/C3.java,test/aspects/MyAnn.java,test/aspects/MyAnnAspect.java,test/aspects2/C2.java" options="-1.5"/>
       <run class="test.aspects2.C2"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs154/pr205907" title="new pointcut designators in a reference pointcut">
       <compile files="Test.aj"/>
     </ajc-test>

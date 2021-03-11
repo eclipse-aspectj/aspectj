@@ -78,7 +78,7 @@
 
   <ajc-test dir="bugs190/modules/fff" title="compile module including aspects">
     <compile files="module-info.java pkg/Demo.java otherpkg/Azpect.java" modulepath="$runtimemodule" outjar="demomodule.jar" options="-1.9"/>
-    <run modulepath="$runtimemodule;demomodule.jar" module="demo/pkg.Demo">
+    <run modulepath="$runtimemodule,demomodule.jar" module="demo/pkg.Demo">
       <stdout>
       <line text="Azpect running"/>
       <line text="Demo running"/>
@@ -95,7 +95,7 @@
     		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>
     </compile>
     <file deletefile="my.module.jar"/>
-    <run classpath="my.module.woven.jar;azpects.jar" class="aaa.bbb.A">
+    <run classpath="my.module.woven.jar,azpects.jar" class="aaa.bbb.A">
       <stdout>
       <line text="Azpect running"/>
       <line text="A running"/>
@@ -179,7 +179,7 @@
     		<message kind="weave" text="Join point 'method-execution(void aaa.bbb.A.main(java.lang.String[]))' in Type 'aaa.bbb.A' (A.java:4) advised by before advice from 'aspects.Azpect' (azpects.jar!Azpect.class:4(from Azpect.java))"/>
     </compile>
     <file deletefile="my.module.jar"/>
-    <run classpath="my.module.woven.jar;azpects.jar" class="aaa.bbb.A">
+    <run classpath="my.module.woven.jar,azpects.jar" class="aaa.bbb.A">
       <stdout>
       <line text="Azpect running"/>
       <line text="A running"/>

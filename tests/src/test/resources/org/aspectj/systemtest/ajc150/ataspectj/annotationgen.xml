@@ -141,47 +141,47 @@
         <compile files="Deow.aj" options="-1.5">
         </compile>
         <run class="Deow"/>
-    </ajc-test>          
+    </ajc-test>
 
    <ajc-test dir="java5/ataspectj/annotationGen" title="runtime pointcut resolution referencing compiled pointcuts">
         <compile files="PCLib.aj,RuntimePointcuts.java" options="-1.5">
         </compile>
-        <run class="RuntimePointcuts" classpath=".;../lib/bcel/bcel.jar" ltw=""/>
-    </ajc-test>          
+        <run class="RuntimePointcuts" classpath=".,../lib/bcel/bcel.jar" ltw=""/>
+    </ajc-test>
 
    <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp">
         <compile files="DeclareParentsTest.aj" options="-1.5, -outxml">
         </compile>
         <run class="DeclareParentsTest" ltw=""/>
-    </ajc-test>          
-    
+    </ajc-test>
+
       <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decp 2">
         <compile files="DeclareParentsTestAdvanced.aj" options="-1.5, -outxml">
         </compile>
         <run class="a.b.c.DeclareParentsTestAdvanced" ltw=""/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for decs">
         <compile files="DeclareSoftTest.aj" options="-1.5">
         </compile>
         <run class="DeclareSoftTest"/>
-    </ajc-test>     
-    
+    </ajc-test>
+
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec precedence">
         <compile files="DeclarePrecedenceTest.aj" options="-1.5">
         </compile>
         <run class="DeclarePrecedenceTest"/>
-    </ajc-test>     
-    
+    </ajc-test>
+
      <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for dec annotation">
         <compile files="DeclareAnnotationTest.aj" options="-1.5">
         </compile>
         <run class="DeclareAnnotationTest"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/ataspectj/annotationGen" title="ann gen for itds">
         <compile files="ITDTest.aj" options="-1.5, -outxml -Xlint:ignore -makeAjReflectable">
         </compile>
         <run class="a.b.c.ITDTest" ltw=""/>
-    </ajc-test>    
+    </ajc-test>
 </suite>

@@ -6,30 +6,30 @@
     <ajc-test dir="bugs150" title="abstract perthis in @AspectJ">
         <compile files="pr121197.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="different numbers of type vars">
         <compile files="pr121575.aj" options="-1.5"/>
         <run class="pr121575"/>
     </ajc-test>
 
-    
+
     <ajc-test dir="bugs150/pr121385" title="mixing aspect styles">
         <compile files="A.java" options="-1.5"/>
         <run class="A"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 2">
         <compile files="Case1.aj" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void MyClass.read(java.lang.String))' in Type 'MyClass' (Case1.aj:13) advised by before advice from 'MyAspect' (Case1.aj:5)"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 3">
         <compile files="Case2.aj" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void MyClass.read(java.lang.Number))' in Type 'MyClass' (Case2.aj:13) advised by before advice from 'MyAspect' (Case2.aj:5)"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/tvars" title="different numbers of type vars - 4">
         <compile files="Case3.aj" options="-1.5 -showWeaveInfo">
           <message kind="error" line="9" text="The type MyClass&lt;T,E&gt; must implement the inherited abstract method MyInterface&lt;T&gt;.read(T)"/>
@@ -41,7 +41,7 @@
         <compile files="pr118698.aj"/>
         <run class="pr118698"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="modifier overrides">
        <compile files="pr119749.aj" options="-1.5">
         	<message kind="warning" line="26" text="C E.*()"/>
@@ -59,17 +59,17 @@
             </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr120826" pr="120826" title="varargs NPE">
      <compile files="TestVarargs.java" options="-1.5"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
 
     <ajc-test dir="bugs150/pr112476/case1" title="binary weaving decp broken">
         <compile files="lib/A.java,lib/B.java,lib/C.java" outjar="library.jar" options="-1.5"/>
         <!-- library.jar on the aspectpath here just for resolution when compiling SuperC -->
         <compile aspectpath="library.jar" files="weaved/SuperC.java" outjar="newsuper.jar" options="-1.5"/>
-        <compile inpath="library.jar;newsuper.jar" files="weaved/DeclareAspect.aj" options="-1.5 -showWeaveInfo">
+        <compile inpath="library.jar,newsuper.jar" files="weaved/DeclareAspect.aj" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Setting superclass of type 'lib.C' (C.java) to 'weaved.SuperC' (DeclareAspect.aj)"/>
         </compile>
         <run class="weaved.SuperC">
@@ -78,7 +78,7 @@
           </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 1">
       <compile files="Declaration1.java" options="-1.5"/>
       <run class="Declaration1">
@@ -88,7 +88,7 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="114495" title="parameterized pointcut and advice">
     		<compile files="Pr114495.aj" options="-1.5">
     			<message kind="warning" line="3" text="going()"/>
@@ -100,7 +100,7 @@
     			</stdout>
     		</run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="112880" title="double parameter generic abstract type">
     	  <compile files="Pr112880.aj" options="-1.5">
     	  </compile>
@@ -111,7 +111,7 @@
     	  	</stdout>
     	  </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr114005" title="Annotated ITDFs - 2">
       <compile files="Declaration2.java" options="-1.5"/>
       <run class="Declaration2">
@@ -121,26 +121,26 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="114054" title="pertarget and negated pointcut">
      <compile files="Pr114054.aj" options=""/>
      <run class="Pr114054"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="121385" title="mixing styles">
      <compile files="pr121385.aj" options="-1.5"/>
-    </ajc-test> 
-        
+    </ajc-test>
+
     <ajc-test dir="java5/decps" title="decps - 1">
      <compile files="Basic1.java" options="-1.5"/>
      <run class="Basic1"/>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="java5/decps" title="decps - 1b">
      <compile files="Basic1b.java" options="-1.5"/>
      <run class="Basic1b"/>
-    </ajc-test>   
-    
+    </ajc-test>
+
     <ajc-test dir="java5/decps" title="decps - 2">
      <compile files="Basic2.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Join point 'method-execution(void X$I.m2())' in Type 'X' (Basic2.java:15) advised by before advice from 'X' (Basic2.java:23)"/>
@@ -150,7 +150,7 @@
        <message kind="weave" text="Join point 'method-execution(void Basic2.main(java.lang.String[]))' in Type 'Basic2' (Basic2.java:2) advised by before advice from 'X' (Basic2.java:23)"/>
      </compile>
      <run class="Basic2"/>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="java5/decps" title="decps - 2b">
      <compile files="Basic2b.java" options="-1.5 -showWeaveInfo">
@@ -159,8 +159,8 @@
        <message kind="weave" text="Join point 'method-execution(void Basic2b.main(java.lang.String[]))' in Type 'Basic2b' (Basic2b.java:4) advised by before advice from 'X' (Basic2b.java:27)"/>
      </compile>
      <run class="Basic2b"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="java5/decps" title="decps - 3">
      <compile files="Basic3.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Extending interface set for type 'Basic3' (Basic3.java) to include 'X$I' (Basic3.java)"/>
@@ -176,7 +176,7 @@
 	   <message kind="weave" text="Type 'X$I' (Basic3.java) has intertyped method from 'X' (Basic3.java:'void X$I.m4()')"/>
 	 </compile>
      <run class="Basic3"/>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="java5/decps" title="decps - 3b">
      <compile files="Basic3b.java" options="-1.5 -showWeaveInfo">
@@ -190,24 +190,24 @@
 	   <message kind="weave" text="Join point 'method-call(void X$I.m4())' in Type 'Basic3b' (Basic3b.java:10) advised by before advice from 'X' (Basic3b.java:35)"/>
 	 </compile>
      <run class="Basic3b"/>
-    </ajc-test>   
-    
+    </ajc-test>
+
     <ajc-test dir="java5/decps" title="decps - 3c">
      <compile files="Basic3c.java" options="-1.5">
        <message kind="error" text="@DeclareParents: defaultImpl=&quot;X$IImpl&quot; has a no argument constructor, but it is of incorrect visibility"/>
 	 </compile>
-    </ajc-test>  
-        
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning">
      <compile files="NodeImpl.java,INode.java,ParameterizedDP.java" options="-1.5"/>
      <run class="bugs.ParameterizedDP"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning - 2">
      <compile files="ParameterizedDP.java,NodeImpl.java,INode.java" options="-1.5"/>
      <run class="bugs.ParameterizedDP"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119570" pr="119570" title="spurious override method warning - 3">
      <compile files="SimpleTest.java" options="-1.5"/>
      <run class="SimpleTest"/>
@@ -215,7 +215,7 @@
 
     <ajc-test dir="bugs150/pr120521" pr="120521" title="named pointcut not resolved in pertarget pointcut">
      <compile files="PerTargetSubaspectError.java" options="-1.4"/>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 1">
      <compile files="TestLib.java,ThreadAspectLib.java" options="-1.5"/>
@@ -224,8 +224,8 @@
           <line text="obtaining five, got 3"/>
        </stderr>
      </run>
-    </ajc-test> 
- 
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 2">
      <compile files="TestLib2.java,ThreadAspectLib2.java" options="-1.5"/>
      <run class="TestLib2">
@@ -233,55 +233,55 @@
           <line text="obtaining five, got 3"/>
        </stderr>
      </run>
-    </ajc-test> 
-   
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119210" pr="119210" title="autoboxing around advice - 3">
      <compile files="TestLib2.java,ThreadAspectLib2.java" options="-1.4">
        <message kind="error" line="16" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
        <message kind="error" line="4" text="incompatible return type applying to method-call(java.lang.Integer TestLib2.getFive())"/>
      </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 1">
      <compile files="GenericPerTypeWithin.java" options="-1.5 -showWeaveInfo">
      	<message kind="weave" text="Join point 'constructor-execution(void bugs.C.&lt;init&gt;())' in Type 'bugs.C' (GenericPerTypeWithin.java:10) advised by before advice from 'bugs.A' (GenericPerTypeWithin.java:21)"/>
 	    <message kind="weave" text="Join point 'constructor-execution(void bugs.C.&lt;init&gt;())' in Type 'bugs.C' (GenericPerTypeWithin.java:10) advised by before advice from 'bugs.A' (GenericPerTypeWithin.java:20)"/>
 	 </compile>
      <run class="bugs.GenericPerTypeWithin"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 2">
      <compile files="GenericPerTypeWithin2.java" options="-1.5 -showWeaveInfo">
        <message kind="error" line="24" text="a generic super-aspect must be fully parameterized in an extends clause"/>
 	 </compile>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119539" pr="119539" title="generic pertypewithin aspect - 3">
      <compile files="GenericPerTypeWithin3.java" options="-1.5 -showWeaveInfo">
      	<message kind="weave" text="Join point 'constructor-execution(void bugs.GenericPerTypeWithin3$C.&lt;init&gt;())' in Type 'bugs.GenericPerTypeWithin3$C' (GenericPerTypeWithin3.java:15) advised by before advice from 'bugs.GenericPerTypeWithin3$A' (GenericPerTypeWithin3.java:10)"/>
 		<message kind="warning" line="15" text="Singleton.creation()"/>
 	 </compile>
      <run class="bugs.GenericPerTypeWithin3"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr117854" pr="117854" title="broken switch transform">
      <compile files="BrokenSwitch.java" options=""/>
      <run class="BrokenSwitch"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr119749" pr="119749" title="incorrect exception signature matching">
-     <compile files="InheritedThrows.java" options="-showWeaveInfo">  
+     <compile files="InheritedThrows.java" options="-showWeaveInfo">
      	<message kind="weave" text="Join point 'method-execution(void InheritedThrows$NestedClassBoth.m())' in Type 'InheritedThrows$NestedClassBoth' (InheritedThrows.java:24) advised by afterThrowing advice from 'InheritedThrows$A' (InheritedThrows.java:4)"/>
      	<message kind="weave" text="Join point 'method-execution(void InheritedThrows$NestedClass1.m())' in Type 'InheritedThrows$NestedClass1' (InheritedThrows.java:16) advised by afterThrowing advice from 'InheritedThrows$A' (InheritedThrows.java:4)"/>
      </compile>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 1">
      <!-- separate compilation was failing  -->
      <compile files="Attributable.java" outjar="foo.jar" options="-1.5"/>
      <compile files="AnAttributedClass.java" aspectpath="foo.jar" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr118599" pr="118599" title="ambiguous method when binary weaving - 2">
      <!-- complete compilation works -->
      <compile files="Attributable.java,AnAttributedClass.java" options="-1.5"/>
@@ -298,21 +298,21 @@
         </stdout>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="112756" title="pointcut expression containing 'assert'">
      <compile files="Pr112756.aj" options="-warn:assertIdentifier -Xdev:Pinpoint"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr118781" pr="118781" title="verify error with around advice array sigs">
      <compile files="MyMain.java,MyAspect.java,MyClass.java" options="-XnoInline"/>
      <run class="blah.MyMain"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr117681" pr="117681" title="at declare parents">
      <compile files="Test.java,TestAspect.java,Audit.java,AuditImpl.java" options="-1.5"/>
      <run class="Test"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr120474" pr="120474" title="Dollar classes">
      <compile files="$ProxyPr120474.java"/>
      <compile files="X.aj" options="-outxml -1.4"/>
@@ -321,7 +321,7 @@
         </stdout>
      </run>
     </ajc-test>
-        
+
     <ajc-test dir="bugs150/pr111667" pr="111667" title="lint for advice sorting">
      <compile files="A.java,X.java,Y.java" options="-1.5 -Xlint:warning">
        <message kind="warning" line="9" text="at this shadow method-execution(void A.m1()) no precedence is specified between advice applying from aspect X and aspect Y [Xlint:unorderedAdviceAtShadow]"/>
@@ -335,25 +335,25 @@
        <message kind="error" line="8" text="Type mismatch: cannot convert from String to int"/>
      </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr118326" pr="118326" title="illegal initialization - 2">
      <compile files="Foo.java,Bar.java" options="-1.5">
        <message kind="error" line="2" text="Type mismatch: cannot convert from null to int"/>
        <message kind="error" line="8" text="Type mismatch: cannot convert from String to int"/>
      </compile>
     </ajc-test>
-        
+
     <ajc-test dir="bugs150/pr117296" pr="117296" title="self bounding generic types">
      <compile files="PropertySupport.java" options="-1.5"/>
      <run class="PropertySupport"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="113368" title="thisJoinPointStaticPart in if test">
     		<compile files="Pr113368.aj"/>
     		<run class="Pr113368">
     		</run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr87525" pr="87525" title="privilege problem with switch">
    		<compile files="A.java,B.java">
    		  <message kind="error" line="5" text="Fields accessible due to an aspect being privileged can not be used in switch statements"/>
@@ -364,7 +364,7 @@
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"></compile>
 		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
 	</ajc-test>
-	
+
 	<ajc-test dir="java5/reflection" title="reflection on itds">
 		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5 -Xlint:ignore -makeAjReflectable"></compile>
 		<run class="ReflectOnCodeStyleITDs" classpath="../lib/bcel/bcel.jar">
@@ -372,7 +372,7 @@
 		  	<line text="public C.new(int, int, int)"/>
 		  	<line text="C.new(int, int)"/>
 		  	<line text="private C.new(int)"/>
-		  	<line text="private C.new(int)"/>	
+		  	<line text="private C.new(int)"/>
 		  	<line text="public C.new(int, int, int)"/>
 		  	<line text="public C.new(int, int, int)"/>
 		  	<line text="int C.getY()"/>
@@ -413,23 +413,23 @@
 		  </stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="compatibility/case1" title="generating code for a 1.2.1 runtime - 1">
 		<compile files="Simple.java" options="-Xajruntimetarget:1.2"/>
 		<run class="Simple" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
-	
+
 	<ajc-test dir="compatibility/case2" title="generating code for a 1.2.1 runtime - 2">
 		<compile files="TrackingErrors.aj,A.java" options="-Xajruntimetarget:1.2 -Xlint:ignore"/>
 		<run class="A" classpath="../lib/aspectj/lib/aspectjrt121.jar"/>
 	</ajc-test>
-		
+
 	<ajc-test dir="java5/reflection" title="arg names in advice annotations">
 		<compile files="AdviceWithArgs.aj" options="-1.5"></compile>
 		<run class="AdviceWithArgs"/>
 	</ajc-test>
-	
-	
+
+
 	<ajc-test dir="java5/reflection" pr="114322" title="reflection on abstract ITDs (Billing example)">
 		<compile files="ReflectBilling.java,Billing.aj" options="-1.5 -makeAjReflectable"/>
 		<run class="ReflectBilling">
@@ -443,7 +443,7 @@
 			</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs150" pr="103157" title="returning(Object) binding">
 		<compile files="Pr103157.aj" options="-1.4"/>
 		<run class="Pr103157">
@@ -456,7 +456,7 @@
 			</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs150" title="declare soft and adviceexecution" pr="103051">
 		<compile files="Pr103051.aj" options="-Xdev:Pinpoint"/>
 	</ajc-test>
@@ -465,23 +465,23 @@
 		<compile files="Pr103097.aj" options="-Xlint:ignore"/>
 		<run class="Pr103097"/>
 	</ajc-test>
-		    
+
 
 	<ajc-test dir="bugs150" title="Range problem">
 		<compile files="pr109614.java"/>
 		<run class="pr109614"/>
 	</ajc-test>
-	    
+
     <ajc-test dir="bugs150/pr114436" title="ClassFormatError binary weaving perthis">
      <compile files="SimpleTrace.aj,ConcreteSimpleTracing.aj" outjar="aspects.jar" options="-1.4"/>
      <compile files="TestClass.java" aspectpath="aspects.jar" options="-1.4"/>
      <run class="TestClass"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 1">
         <compile files="Consts.java,TestNPE.java" options="-1.5"/>
     </ajc-test>
-  
+
     <ajc-test dir="bugs150" title="parameterized type and around advice">
         <compile files="pr115250.aj" options="-1.5 -Xlint:ignore">
           <!-- this first error happens twice, once for each piece of around advice -->
@@ -490,7 +490,7 @@
           <message kind="error" line="27" text="incompatible return type applying to constructor-execution(void pr115250$C.&lt;init&gt;())"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="parameterized type and around advice - 2">
         <compile files="pr115250_2.aj" options="-1.5 -Xlint:ignore -showWeaveInfo">
           	<message kind="weave" text="Join point 'method-execution(pr115250_2$C pr115250_2$C.foo())' in Type 'pr115250_2$C' (pr115250_2.aj:7) advised by around advice from 'pr115250_2$A' (pr115250_2.aj:22)"/>
@@ -502,13 +502,13 @@
           </stderr>
         </run>
     </ajc-test>
-      
+
     <ajc-test dir="bugs150/pr115788" title="parser exception">
         <compile files="AAA.java">
           <message kind="warning" line="3" text="no match for this type name: Screen"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
         <compile files="Consts2.java,TestNPE2.java" options="-1.5">
           <message kind="error" line="2" text="The field Consts2.a.Consts2.A_CONST is not visible"/>
@@ -516,11 +516,11 @@
           <!-- message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/-->
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 3">
         <compile files="Consts3.java,TestNPE3.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/staticImports" title="import static java.lang.System.out">
         <compile files="StaticImport.aj" options="-1.5"/>
     </ajc-test>
@@ -534,37 +534,37 @@
           <message kind="error" line="2" text="Cannot make inter-type declarations on type variables"/>
         </compile>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150" title="ITDC with no explicit cons call">
       <compile files="Pr62606.aj" options="-1.5">
         <message kind="warning" line="6" text="[Xlint:noExplicitConstructorCall]"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/bugs" title="using same type variable in ITD">
       <compile files="SameTypeVariable.aj" options="-1.5">
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="capturebinding wildcard problem">
       <compile files="pr114744.aj" options="-1.5">
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="Anonymous types and nome matching">
       <compile files="Pr73050.aj" outjar="jar1.jar">
         <message kind="warning" line="16" text="anonymous types should be matched by a * wild card"/>
       </compile>
       <compile inpath="jar1.jar">
-        <message kind="warning" line="0" text="anonymous types should be matched by a * wild card"/>     
+        <message kind="warning" line="0" text="anonymous types should be matched by a * wild card"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr86903" title="bcelrenderer bad">
       <compile files="GenericService.java,Service.java,Main.java,BadWormhole.java"/>
       <run class="Main"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr114343" title="field-get, generics and around advice">
       <compile files="Test.java,Test1.java,Test2.java,TestAspect.aj" options="-1.5">
           <message kind="warning" line="7" text="unchecked conversion when advice applied at shadow field-get(java.util.Set Test1.intsSet), expected java.util.Set&lt;java.lang.Integer&gt; but advice uses java.util.Set"/>
@@ -572,7 +572,7 @@
       </compile>
       <run class="TestAspect"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr113947/case1" title="maws generic aspect - 1">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5">
           <message kind="error" line="6" text="Cannot make inter-type declarations on type variables"/>
@@ -580,7 +580,7 @@
           <message kind="error" line="12" text="Cannot make inter-type declarations on type variables"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="aspectOf and generic aspects">
         <compile files="pr115237.aj" options="-1.5"/>
         <run class="pr115237"/>
@@ -600,7 +600,7 @@
         </stderr>
       </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr114343/case3" title="field-get, generics and around advice - 3">
       <compile files="Test.java,TTT.java,TestAspect.java" options="-1.5"/>
       <run class="TestAspect">
@@ -624,43 +624,43 @@
     <ajc-test dir="bugs150/pr113947/case2" title="maws generic aspect - 2">
         <compile files="AbstractListSupport.java,AnotherItem.java,Item.java,LinkedList.java,LinkedListItem.java,ListItem.java,StringList.java" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr113861" title="field-get problems with generic field">
         <compile files="Test.java,TestAspect.java" options="-1.5"/>
         <run class="com.Test"/>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 1">
         <compile files="pr99191_1.java" options="-1.5">
         	<message kind="error" line="4" text="The field 'int C.noSuchField' does not exist"/>
 			<message kind="error" line="5" text="The field 'int B.noSuchField' does not exist"/>
         </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="java5/generics/bugs/lists/case1" title="generics and ITD overrides - 1">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="java5/generics/bugs/lists/case2" title="generics and ITD overrides - 2">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/bugs/lists/case3" title="generics and ITD overrides - 3">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="java5/generics/bugs/lists/case4" title="generics and ITD overrides - 4">
         <compile files="Identifiable.java,Bean.java,LongIdentifiable.java,IdentifiableAspect.java" options="-1.5">
         </compile>
         <run class="IdentifiableAspect"/>
-    </ajc-test> 
+    </ajc-test>
 
     <!-- Currently a warning doesn't occur if the annotation is already on the field
          (see bug 113029). If this is fixed, need to add check for this warning to this
@@ -668,56 +668,56 @@
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 2">
         <compile files="pr99191_2.java" options="-1.5">
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 3">
         <compile files="pr99191_3.java" options="-1.5">
         	<message kind="error" line="4" text="The method 'public * C.noSuchMethod(..)' does not exist"/>
 			<message kind="error" line="5" text="The method '* B.noSuchMethod(..)' does not exist"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 4">
         <compile files="pr99191_4.java" options="-1.5">
         	<message kind="warning" text="void C.amethod() - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 5">
         <compile files="pr99191_5.java" options="-1.5">
         	<message kind="error" line="4" text="The method 'C.new(java.lang.String)' does not exist"/>
 			<message kind="error" line="5" text="The method 'B.new(int)' does not exist"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr99191" title="declare annotation on non existent type - 6">
         <compile files="pr99191_6.java" options="-1.5">
         	<message kind="warning" text="void C.&lt;init&gt;(int) - already has an annotation of type Annotation, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
         </compile>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150/pr113630/case1" title="IncompatibleClassChangeError - errorscenario">
         <compile files="Bean.java,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5">
           <message kind="warning" line="9" text="Failing match because annotation 'javaBean' on type 'Bean' has SOURCE retention.  Matching allowed when RetentionPolicy is CLASS or RUNTIME"/>
           <message kind="error" line="18" text="The method addPropertyChangeListener(String, BeanTestCase) is undefined for the type Bean"/>
         </compile>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr113630/case2" title="IncompatibleClassChangeError - workingscenario">
         <compile files="Bean.java,BeanTestCase.java,javaBean.java,propertyChanger.java,PropertySupportAspect5.aj" options="-1.5"/>
         <run class="BeanTestCase"/>
-    </ajc-test>  
- 
+    </ajc-test>
+
     <ajc-test dir="bugs150" title="Generics ClassCastException">
         <compile files="pr113445.aj" options="-1.5,-emacssym"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="test illegal change to pointcut declaration">
         <compile files="pr111915.java" options="-1.5 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void SomeClass.doSomething())' in Type 'SomeClass' (pr111915.java:4) advised by around advice from 'DoesntCompile' (pr111915.java:15)"/>
           <message kind="weave" text="Extending interface set for type 'SomeClass' (pr111915.java) to include 'java.io.Serializable' (pr111915.java)"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="java5/bridgeMethods" pr="72766" title="Ignore bridge methods">
         <compile files="AspectX.aj" inpath="testcode.jar" options="-showWeaveInfo">
@@ -754,19 +754,19 @@
 	   <run class="C"/>
     </ajc-test>
 
-	<ajc-test dir="java5/pseudoKeywords" 
+	<ajc-test dir="java5/pseudoKeywords"
 	   title="method called around in class">
 	   <compile files="MethodCalledAround.java">
 	   </compile>
     </ajc-test>
 
-	<ajc-test dir="java5/pseudoKeywords" 
+	<ajc-test dir="java5/pseudoKeywords"
 	   title="method called around in aspect">
 	   <compile files="MethodCalledAroundAspect.java">
 	       <message kind="error" line="2"/>
 	   </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="64568" title="clear error message on itd with type pattern">
         <compile files="pr64568.aj">
             <message line="4" kind="error" text="Syntax error on token &quot;*&quot;, delete this token"/>
@@ -783,7 +783,7 @@
         <compile files="pr107486.aj">
         </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" pr="102210" title="NullPointerException trying to compile">
         <compile files="PR102210.java"/>
         <run class="PR102210">
@@ -808,7 +808,7 @@
             </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels">
       <compile files="AJ5FeaturesAtJ14.aj" options="-1.4">
         <message kind="error" line="3" text="the @annotation pointcut expression is only supported at Java 5 compliance level or above"/>
@@ -819,21 +819,21 @@
         <message kind="error" line="9" text="the @args pointcut expression is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="15" text="declare @type is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="15" text="annotations are only available if source level is 1.5 or greater"/>
-        <message kind="error" line="15" text="cannot convert from Foo to Annotation"/>     
+        <message kind="error" line="15" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="17" text="declare @method is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="17" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="17" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="19" text="declare @field is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="19" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="19" text="cannot convert from Foo to Annotation"/>
-        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
+        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="21" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="21" text="cannot convert from Foo to Annotation"/>
         <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
         <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
       </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/compliance" title="java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7">
       <compile files="AJ5FeaturesAtJ14.aj" options="-1.4">
         <message kind="error" line="3" text="the @annotation pointcut expression is only supported at Java 5 compliance level or above"/>
@@ -844,22 +844,22 @@
         <message kind="error" line="9" text="the @args pointcut expression is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="15" text="declare @type is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="15" text="annotations are only available if source level is 1.5 or greater"/>
-        <message kind="error" line="15" text="Foo is not an annotation type"/>     
+        <message kind="error" line="15" text="Foo is not an annotation type"/>
         <message kind="error" line="17" text="declare @method is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="17" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="17" text="Foo is not an annotation type"/>
         <message kind="error" line="19" text="declare @field is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="19" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="19" text="Foo is not an annotation type"/>
-        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>       
+        <message kind="error" line="21" text="declare @constructor is only supported at Java 5 compliance level or above"/>
         <message kind="error" line="21" text="annotations are only available if source level is 1.5 or greater"/>
         <message kind="error" line="21" text="Foo is not an annotation type"/>
         <message kind="error" line="25" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
         <message kind="error" line="27" text="annotation type patterns are only supported at Java 5 compliance level or above"/>
       </compile>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="bugs150" pr="91114" title="before and after are valid identifiers in classes, part 2">
         <compile files="pr91114.aj">
         </compile>
@@ -876,20 +876,20 @@
             <message line="9" kind="error" text="can't override final pointcut Base.foo()"/>
         </compile>
     </ajc-test>
-                                
+
    <ajc-test dir="bugs150" pr="78707" title="before returning advice not allowed!">
         <compile files="pr78707.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;returning&quot;, delete this token"/>
             <message line="3" kind="error" text="Syntax error on token &quot;throwing&quot;, delete this token"/>
          </compile>
-    </ajc-test>        
-            
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="104529" title="@SuppressWarnings should suppress">
         <compile files="pr104529.aj" options = "-1.5 -warn:+unchecked">
             <message line="11" kind="warning" text="needs unchecked conversion"/>
         </compile>
     </ajc-test>
-            
+
     <ajc-test dir="bugs150" pr="79523" title="declare warning : foo(str) : ...;">
         <compile files="pr79523.aj">
             <message line="4" kind="warning" text="no match for this type name: str"/>
@@ -897,25 +897,25 @@
             <message line="4" kind="error" text="args() pointcut designator cannot be used in declare statement"/>
         </compile>
     </ajc-test>
-                        
+
     <ajc-test dir="bugs150" pr="107059" title="parser crashes on call(void (@a *)(..)">
         <compile files="pr107059.aj">
             <message line="3" kind="error" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="107059" title="target(@Foo *)">
         <compile files="pr107059_2.aj" options="-1.5">
             <message kind="error" line="4" text="wildcard type pattern not allowed"></message>
         </compile>
     </ajc-test>
- 
+
      <ajc-test dir="bugs150"  title="varargs with type variable">
         <compile files="ParameterizedVarArgMatch.aj" options="-1.5">
         </compile>
     </ajc-test>
- 
- 
+
+
     <ajc-test dir="bugs150" pr="108104" title="multiple anonymous inner classes 2">
         <compile files="pr108104.aj" options="-1.5">
         </compile>
@@ -933,7 +933,7 @@
         <compile files="package1/Bean.java,package2/Bean.java,package2/propertyChanger.java,package3/pr108425.aj" options="-1.5 -Xlint:ignore">
         </compile>
     </ajc-test>
-           
+
     <ajc-test dir="bugs150/" pr="108104" title="inner types and type variables">
         <compile files="ShapeCommandMap.java" options="-1.5">
         </compile>
@@ -944,7 +944,7 @@
             <message kind="error" line="8" text="throwing formal 'RuntimeException' must be declared as a parameter in the advice signature"></message>
         </compile>
     </ajc-test>
-               
+
     <ajc-test dir="bugs150/pr106130" pr="106130" title="test weaving with > 256 locals">
         <compile files="AroundLotsOfVars.java LotsOfVars.java" options="-preserveAllLocals"/>
         <run class="LotsOfVars">
@@ -954,18 +954,18 @@
             </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr87376" title="structure model npe on type not found">
         <compile files="I.java,NPE.aj" options="-emacssym">
             <message kind="error" line="8" text="I cannot be resolved to a type"/>
             <message kind="error" line="10" text="I cannot be resolved to a type"/>
         </compile>
     </ajc-test>
-    
+
    <ajc-test dir="bugs150" pr="83311" title="overriding/polymorphism error on interface method introduction">
      <compile files="pr83311.aj"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" pr="103266" title="NPE on syntax error">
      <compile files="pr103266.aj">
           <message kind="error" line="41" text="ConnectionRequestContext cannot be resolved to a type"/>
@@ -973,11 +973,11 @@
           <message kind="error" line="41" text="Type mismatch: cannot convert from new ConnectionRequestContext(){} to WorkerExample.RequestContext"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test title="itd override with no exception clause" dir="bugs150">
        <compile files="pr83377.aj"></compile>
    </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr84260" vm="1.5" title="static import failures">
         <compile files="A.java,I1.java,I2.java" options="-1.5"/>
         <run class="I1">
@@ -991,7 +991,7 @@
           </stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test title="anonymous inner class with method returning type parameter"  pr="107898" dir="bugs150">
         <compile files="pr107898.aj" options="-1.5"></compile>
     </ajc-test>
@@ -1002,22 +1002,22 @@
             <message kind="error" line="10" text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"></message>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="decp" pr="80249" title="Order of types passed to compiler determines weaving behavior">
         <compile files="A.java,B.java,AspectX.java"/>
         <run class="B"/>
         <compile files="B.java,A.java,AspectX.java"/>
         <run class="B"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="99228" vm="1.5" title="ITD of a field into a generic class">
         <compile files="PR99228.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="98320" vm="1.5" title="intertype with nested generic type">
         <compile files="PR98320.aj" options="-1.5"/>
     </ajc-test>
-    
+
     <ajc-test dir="decs" pr="42743" title="declare soft of runtime exception">
         <compile files="DeclareSoftRuntimeException.aj">
             <message kind="warning" line="3" text="MyRuntimeException will not be softened as it is already a RuntimeException"/>
@@ -1036,7 +1036,7 @@
         </compile>
         <run class="VerifyError"/>
     </ajc-test>
-        
+
     <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
         <compile files="AmbiguousBindings.aj" options="-1.4">
             <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
@@ -1046,18 +1046,18 @@
             <message line="25" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="61658" title="ambiguous args">
         <compile files="PR61658.java">
             <message line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"></message>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="78021" title="Injecting exception into while loop with break statement causes catch block to be ignored">
         <compile files="PR78021.java"/>
         <run class="PR78021"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr99089" vm="1.5" pr="99089" title="ArrayIndexOutOfBoundsException - Generics in privileged aspects">
         <compile files="DataClass.java,TracingAspect.java" options="-1.5"/>
         <run class="DataClass">
@@ -1067,16 +1067,16 @@
           </stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="79554" title="Return in try-block disables catch-block if final-block is present">
         <compile files="PR79554.java"/>
         <run class="PR79554"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="82570" title="Weaved code does not include debug lines">
         <compile files="PR82570_1.java"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="83303" title="compiler error when mixing inheritance, overriding and polymorphism">
         <compile files="PR83303.java"/>
     </ajc-test>
@@ -1095,11 +1095,11 @@
         <compile files="PR83645.java" options="-Xlint:ignore"/>
         <run class="PR83645"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="bad asm for enums" vm="1.5">
         <compile files="Rainbow.java" options="-emacssym,-1.5,-Xset:minimalModel=false"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="10461" title="missing name pattern">
         <compile files="PR106461.aj">
             <message kind="error" line="3" text="Syntax error on token &quot;(&quot;, &quot;name pattern&quot; expected"/>
@@ -1107,11 +1107,11 @@
             <message kind="error" line="7" text="Syntax error on token &quot;.&quot;, &quot;name pattern&quot; expected"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="106634" title="IllegalStateException unpacking signature of nested parameterized type">
         <compile files="pr106634.aj" options="-1.5"/>
     </ajc-test>
-        
+
     <ajc-test dir="bugs150" title="(@Foo *)+ type pattern parse error">
             <compile files="AnnotationPlusPatternParseError.aj" options="-1.5"/>
     <!-- next line needs the change for inherited anno matching... -->
@@ -1131,7 +1131,7 @@
             </stdout>
         </run>
     </ajc-test>
- 
+
      <ajc-test dir="bugs150" pr="78314" title="good error message for unmatched member syntax">
         <compile files="pr78314.aj" options="-1.5">
           <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
@@ -1140,7 +1140,7 @@
           <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="108377" title="itd field access inside itd method">
         <compile files="pr108377.aj"/>
         <run class="pr108377"/>
@@ -1160,7 +1160,7 @@
             </stdout>
         </run>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150" pr="95992" title="inner type of generic interface reference from parameterized type">
         <compile files="pr95992.aj" options="-1.5"/>
     </ajc-test>
@@ -1168,55 +1168,55 @@
 
     <ajc-test dir="bugs150" pr="104024" title="inner class passed as argument to varargs method">
         <compile files="pr104024.aj" options="-1.5"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="107858" title="inlined field access in proceed call">
         <compile files="pr107858.aj" options="-1.5">
             <message kind="error" line="9" text="too many arguments to proceed, expected 0"></message>
             <message kind="error" line="10" text="too many arguments to proceed, expected 0"></message>
         </compile>
-    </ajc-test>  
- 
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 1">
         <compile files="pr71159.aj">
             <message kind="warning" line="26" text="should match"/>
         </compile>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 2">
         <compile files="PrivateITD.aj">
             <message kind="warning" line="28" text="should match"/>
         </compile>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr71159" pr="71159" title="visibility in signature matching with overrides - 3">
         <compile files="pkg1/A.java,pkg1/B.java,pkg1/C.java,pkg2/ITDInDiffPackage.aj">
             <message kind="warning" line="10" text="should match"/>
         </compile>
-    </ajc-test>  
- 
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="59196" title="args generated correctly for advice execution join point">
         <compile files="pr59196.aj" options="-XnoInline -1.5"/>
-    </ajc-test>  
-  
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="74048" title="no unused warnings on aspect types">
         <compile files="pr74048.aj" options="-warn:unusedPrivate"/>
-    </ajc-test>  
-  
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="59397" title="synthetic arguments on itd cons are not used in matching">
         <compile files="pr59397.aj">
             <message line="6" kind="warning" text="should match"/>
         </compile>
-    </ajc-test>  
- 
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="108602" title="parse generic type signature with parameterized type in interface">
         <compile files="pr108602.java" options="-1.5"/>
     </ajc-test>
 
     <ajc-test dir="bugs150" pr="105479" title="declare parents introducing override with covariance">
         <compile files="pr105479.aj" options="-1.5"/>
-    </ajc-test>                   
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="105479" title="override and covariance with decp - runtime">
         <compile files="pr105479part2.aj" options="-1.5"/>
         <run class="pr105479part2">
@@ -1240,14 +1240,14 @@
             </stdout>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr105479/case2" pr="105479" title="override and covariance with decp - binary weaving">
         <compile files="ReturnTypeTest.java" outjar="jar1.jar" options="-1.5 -Xlint:ignore"/>
         <compile files="ReturnTypeTester.java" outjar="jar2.jar" options="-1.5"/>
-        <compile inpath="jar1.jar;jar2.jar" options="-1.5"/>
+        <compile inpath="jar1.jar,jar2.jar" options="-1.5"/>
         <run class="ReturnTypeTester"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" pr="102212" title="abstract synchronized itdms not detected">
         <compile files="pr102212.aj">
             <message line="7" kind="error" text="The abstract method _abstract in type Parent can only set a visibility modifier, one of public or protected"/>
@@ -1264,7 +1264,7 @@
         <compile files="pr101606.aj" options="-warn:unusedPrivate">
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr99125" pr="99125" title="itd interface method already existing on interface">
         <compile files="p/pr99125.aj,p/I.java,p/J.java" options="-1.5">
         </compile>
@@ -1277,7 +1277,7 @@
             <message kind="error" line="10" text="inter-type declaration from X conflicts with existing member"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr87530" pr="87530" title="final itd methods on interfaces">
         <compile files="FinalITDMOnInterface.aj">
             <message kind="error" line="12" text="Cannot override the final method from A.TestInterface"></message>
@@ -1294,66 +1294,66 @@
             <message kind="warning" line="21" text="matched join point from sub advice"/>
         </compile>
     </ajc-test>
- 
+
     <ajc-test dir="bugs150" pr="108816" title="advising cflow advice execution">
         <compile files="pr108816.aj" >
         </compile>
-    </ajc-test>   
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr108902" pr="108902" title="no type mismatch on generic types in itds">
         <compile files="Subject.java,Observer.java,ObserverProtocol.aj" >
         </compile>
-    </ajc-test>   
+    </ajc-test>
 
     <ajc-test dir="bugs150" pr="108903" title="super call in ITD">
         <compile files="pr108903.aj" >
             <message kind="error" line="14" text="The method print() is undefined for the type Object"/>
         </compile>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="bugs150" pr="109042" title="no unused parameter warnings for synthetic advice args">
         <compile files="pr109042.aj" options="-warn:+unusedArgument -warn:+unusedPrivate -warn:+unusedImport -1.5">
         </compile>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="109486" title="Internal compiler error (ClassParser.java:242)">
         <compile files="PR109486.java" >
           <message kind="error" line="1" text="The class PR109486 can be either abstract or final, not both"/>
         </compile>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="109124" title="no verify error with set on inner type">
         <compile files="VerifyErrorOnSet.aj" options="-1.5" >
         </compile>
         <run class="test.VerifyErrorOnSet"/>
         <compile files="pr106874.aj" options="-1.5" >
         </compile>
-        <run class="pr106874"/>    
-    </ajc-test>  
-        
+        <run class="pr106874"/>
+    </ajc-test>
+
     <ajc-test dir="bugs150" pr="108826" title="cant find type error with generic return type or parameter">
         <compile files="pr108826.aj" options="-1.5 -emacssym" >
         </compile>
-    </ajc-test> 
- 
+    </ajc-test>
+
      <ajc-test dir="bugs150" pr="105181" title="no verify error on generic collection member access">
         <compile files="pr105181.aj" options="-1.5">
         </compile>
         <run class="pr105181"/>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr108903" pr="108903" title="super call in ITD - part 2">
         <compile files="com/designpattern/decorator/HeaderDecorator.aj,com/designpattern/decorator/Main.java,com/designpattern/decorator/Order.java,com/designpattern/decorator/OrderDecorator.aj,com/designpattern/decorator/SalesOrder.java" options="-1.5" >
         </compile>
-    </ajc-test> 
-        
+    </ajc-test>
+
     <ajc-test dir="bugs150/pr103740" pr="103740" title="Compiler failure on at_annotation">
      <compile files="AroundAdvice.aj" options="-1.5,-showWeaveInfo">
        <message kind="weave" text="Join point 'method-execution(void C.m1())' in Type 'C' (AroundAdvice.aj:12) advised by before advice from 'ErrorHandling' (AroundAdvice.aj:8)"/>
 	   <message kind="weave" text="Join point 'method-execution(void C.m3())' in Type 'C' (AroundAdvice.aj:14) advised by before advice from 'ErrorHandling' (AroundAdvice.aj:8)"/>
 	 </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150/pr106554" pr="106554" title="Problem in staticinitialization with pertypewithin aspect">
         <compile files="A.aj" options="-showWeaveInfo -1.4">
           <message kind="weave" text="Join point 'staticinitialization(void A.&lt;clinit&gt;())' in Type 'A' (A.aj:1) advised by before advice from 'StopsInit' (A.aj:21)"/>
@@ -1363,29 +1363,29 @@
             <line text="test = 1"/>
           </stdout>
         </run>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/SimpleInsuranceFailure" title="raw and generic type conversion with itd cons">
         <compile files="" options=" -emacssym, -sourceroots ." >
         </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" title="@annotation binding with around advice">
         <compile files="AnnotationBinding.aj" options="-1.5"/>
         <run class="AnnotationBinding"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="declare parents on a missing type">
         <compile files="Pr76374.aj" options="-1.5">
             <message kind="warning" line="3" text="no match for this type name"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs150" title="parameterized generic methods">
         <compile files="Pr109283.aj" options="-1.5 -warn:indirectStatic">
         </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs150" title="call join points in anonymous inner classes">
         <compile files="pr104229.aj" options="-1.5">
             <message kind="warning" line="54" text="bingo"/>
@@ -1403,25 +1403,25 @@
     <ajc-test dir="bugs150" title="default impl of Runnable">
         <compile files="pr88900.aj" options="-Xdev:Pinpoint">
         </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
      <ajc-test dir="bugs150" title="array clone call join points in 1.4 vs 1.3">
         <compile files="pr102933.aj" options="-1.3">
             <message kind="warning" line="7" text="a call within pr102933"/>
         </compile>
         <compile files="pr102933.aj" options="-1.4">
             <message kind="warning" line="7" text="a call within pr102933"/>
-        </compile>     
+        </compile>
         <compile files="pr102933.aj" options="-1.5">
             <message kind="warning" line="7" text="a call within pr102933"/>
-        </compile>   
-     </ajc-test> 
-     
+        </compile>
+     </ajc-test>
+
     <ajc-test dir="bugs150" pr="100195" title="debug info in around advice inlining">
         <compile files="pr100195.aj">
         </compile>
         <run class="pr100195"/>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150" title="weaveinfo message for declare at method on an ITDd method">
         <compile files="pr113073.java" options="-1.5 -showWeaveInfo">
@@ -1432,13 +1432,13 @@
 			<message kind="weave" text="Type 'C' (pr113073.java) has intertyped constructor from 'D' (pr113073.java:'void C."/>
 			<message kind="weave" text="'public void C.new(String)' (pr113073.java) is annotated with @Annotation constructor annotation from 'B' (pr113073.java:4)"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150/pr113447" title="no verify error with two this pcds">
         <compile files="PR113447.java">
         </compile>
         <run class="PR113447"/>
-    </ajc-test> 
+    </ajc-test>
 
 	<ajc-test dir="bugs150/pr113447" title="no verify error with two at this pcds">
         <compile files="PR113447a.java" options="-1.5">
@@ -1476,7 +1476,7 @@
         	<message kind="error" text="circular pointcut declaration involving: pc()"/>
         	<message kind="error" line="20" text="circular pointcut declaration involving: pc2()"/>
 	    </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="bugs150" title="no StackOverflowError with circular pcd in generic aspect - 2">
         <compile files="pr115235b.aj" options="-1.5">
@@ -1573,9 +1573,9 @@
 
     <!-- ============================================================================ -->
     <!-- ============================================================================ -->
-    
+
     <!-- atOverride tests with ITDs -->
-    
+
     <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs">
       <compile files="AtOverride.aj" options="-1.5"/>
     </ajc-test>
@@ -1604,7 +1604,7 @@
     <ajc-test dir="java5/generics/itds" pr="106630" title="atOverride used with ITDs - 7">
       <compile files="AtOverride7.aj" options="-1.5"/>
     </ajc-test>
-               
+
     <!-- end of atOverride tests with ITDs -->
 
     <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
@@ -1614,37 +1614,37 @@
     <ajc-test dir="java5/varargs" title="varargs in constructor sig" vm="1.5">
         <compile files="Pr88652.aj" options="-1.5">
             <message kind="warning" line="8" text="should match"/>
-            <message kind="warning" line="9" text="should match"/>        
+            <message kind="warning" line="9" text="should match"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/varargs" title="Varargs with .. in pointcut" vm="1.5">
-        <compile files="pr93356.aj" options="-1.5">  
+        <compile files="pr93356.aj" options="-1.5">
         	<message kind="warning" line="5" text="a"/>
-        	<message kind="warning" line="5" text="b"/>    
-        	<message kind="warning" line="5" text="c"/>    
-        	<message kind="warning" line="5" text="d"/>    
-        	<message kind="warning" line="5" text="e"/>  
-        	<message kind="warning" line="5" text="k"/> 
+        	<message kind="warning" line="5" text="b"/>
+        	<message kind="warning" line="5" text="c"/>
+        	<message kind="warning" line="5" text="d"/>
+        	<message kind="warning" line="5" text="e"/>
+        	<message kind="warning" line="5" text="k"/>
         	<message kind="warning" line="5" text="l"/>
-        	
+
         	<message kind="warning" line="4" text="f"/>
-        	<message kind="warning" line="4" text="g"/>    
-        	<message kind="warning" line="4" text="h"/>    
-        	<message kind="warning" line="4" text="i"/>    
-        	<message kind="warning" line="4" text="j"/>  
-        	
-        	<message kind="warning" line="7" text="f"/>      
+        	<message kind="warning" line="4" text="g"/>
+        	<message kind="warning" line="4" text="h"/>
+        	<message kind="warning" line="4" text="i"/>
+        	<message kind="warning" line="4" text="j"/>
+
+        	<message kind="warning" line="7" text="f"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="java5/varargs" title="star varargs pattern" vm="1.5">
         <compile files="StarVarargsPattern.aj" options="-1.5">
             <message kind="warning" line="5" text="you used a varargs signature"/>
-            <message kind="warning" line="7" text="you used a varargs signature"/>        
+            <message kind="warning" line="7" text="you used a varargs signature"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations" title="invalid cons syntax" vm="1.5">
         <compile files="SyntaxError.aj" options="-1.5">
             <message kind="error" line="3" text="Syntax error on token &quot;new&quot;, &quot;method name (not constructor)&quot; expected"/>
@@ -1682,7 +1682,7 @@
             <message kind="warning" line="15" text="hasmethod matched on ITD ok"/>
         </compile>
     </ajc-test>
-         
+
     <ajc-test title="declare parents : hasfield(..) - 1" dir="hasmember">
         <compile files="HasField.aj" options="-XhasMember">
         </compile>
@@ -1700,204 +1700,204 @@
         </compile>
         <run class="HasPrivateFieldInherited"></run>
     </ajc-test>
-                              
+
     <!-- Annotation binding tests -->
-    
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 1">
         <compile files="CallAnnBinding.aj" options="-1.5"/>
-        <run class="CallAnnBinding"/>    
+        <run class="CallAnnBinding"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 2">
         <compile files="CallAnnBinding2.aj" options="-1.5"/>
-        <run class="CallAnnBinding2"/>    
+        <run class="CallAnnBinding2"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 3">
         <compile files="CallAnnBinding3.aj" options="-1.5"/>
-        <run class="CallAnnBinding3"/>    
+        <run class="CallAnnBinding3"/>
     </ajc-test>
- 
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 4">
         <compile files="CallAnnBinding4.aj" options="-1.5"/>
-        <run class="CallAnnBinding4"/>    
+        <run class="CallAnnBinding4"/>
     </ajc-test>
 
    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 5">
         <compile files="CallAnnBinding5.aj" options="-1.5"/>
-        <run class="CallAnnBinding5"/>    
+        <run class="CallAnnBinding5"/>
     </ajc-test>
-    
+
            <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 6">
         <compile files="CallAnnBinding6.aj" options="-1.5"/>
-        <run class="CallAnnBinding6"/>    
+        <run class="CallAnnBinding6"/>
     </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/binding" vm="1.5" title="call annotation binding 7">
         <compile files="CallAnnBinding7.aj" options="-1.5"/>
-        <run class="CallAnnBinding7"/>    
+        <run class="CallAnnBinding7"/>
     </ajc-test>
-        
+
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 1">
         <compile files="AtTarget1.aj" options="-1.5"/>
-        <run class="AtTarget1"/>    
+        <run class="AtTarget1"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 2">
         <compile files="AtTarget2.aj" options="-1.5"/>
-        <run class="AtTarget2"/>    
+        <run class="AtTarget2"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 3">
         <compile files="AtTarget3.aj" options="-1.5"/>
-        <run class="AtTarget3"/>    
+        <run class="AtTarget3"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@target annotation binding 4">
         <compile files="AtTarget4.aj" options="-1.5"/>
-        <run class="AtTarget4"/>    
+        <run class="AtTarget4"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding/usingPackageNames" vm="1.5" title="@target annotation binding 5">
         <compile files="MyAspect.aj,MyAnnotation.java,MyClass.java" options="-1.5"/>
-        <run class="test.MyClass"/>    
+        <run class="test.MyClass"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 1">
         <compile files="AtThis1.aj" options="-1.5"/>
-        <run class="AtThis1"/>    
+        <run class="AtThis1"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 2">
         <compile files="AtThis2.aj" options="-1.5"/>
-        <run class="AtThis2"/>    
+        <run class="AtThis2"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 3">
         <compile files="AtThis3.aj" options="-1.5"/>
-        <run class="AtThis3"/>    
+        <run class="AtThis3"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 4">
         <compile files="AtThis4.aj" options="-1.5"/>
-        <run class="AtThis4"/>    
+        <run class="AtThis4"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@this annotation binding 5">
         <compile files="AtThis5.aj" options="-1.5"/>
-        <run class="AtThis5"/>    
+        <run class="AtThis5"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 1">
         <compile files="AtArgs1.aj" options="-1.5"/>
-        <run class="AtArgs1"/>    
+        <run class="AtArgs1"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 2">
         <compile files="AtArgs2.aj" options="-1.5"/>
-        <run class="AtArgs2"/>    
+        <run class="AtArgs2"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 3">
         <compile files="AtArgs3.aj" options="-1.5"/>
-        <run class="AtArgs3"/>    
+        <run class="AtArgs3"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 4">
         <compile files="AtArgs4.aj" options="-1.5"/>
-        <run class="AtArgs4"/>    
+        <run class="AtArgs4"/>
     </ajc-test>
 
      <ajc-test dir="java5/annotations/binding" vm="1.5" title="@args annotation binding 5">
         <compile files="AtArgs5.aj" options="-1.5"/>
-        <run class="AtArgs5"/>    
+        <run class="AtArgs5"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="execution and @annotation">
         <compile files="ExecutionAnnBinding1.aj" options="-1.5"/>
-        <run class="ExecutionAnnBinding1"/>    
+        <run class="ExecutionAnnBinding1"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="set and @annotation">
         <compile files="FieldAnnBinding1.aj" options="-1.5"/>
-        <run class="FieldAnnBinding1"/>    
+        <run class="FieldAnnBinding1"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="get and @annotation">
         <compile files="FieldAnnBinding2.aj" options="-1.5"/>
-        <run class="FieldAnnBinding2"/>    
+        <run class="FieldAnnBinding2"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="get and @annotation with arrays">
         <compile files="FieldAnnBinding3.aj" options="-1.5"/>
-        <run class="FieldAnnBinding3"/>    
+        <run class="FieldAnnBinding3"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="cons call and @annotation">
         <compile files="CtorAnnBinding1.aj" options="-1.5"/>
-        <run class="CtorAnnBinding1"/>    
+        <run class="CtorAnnBinding1"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="cons exe and @annotation">
         <compile files="CtorAnnBinding2.aj" options="-1.5"/>
-        <run class="CtorAnnBinding2"/>    
+        <run class="CtorAnnBinding2"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="staticinit and @annotation">
         <compile files="StaticInitBinding.aj" options="-1.5"/>
-        <run class="StaticInitBinding"/>    
+        <run class="StaticInitBinding"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="preinit and @annotation">
         <compile files="PreInitBinding.aj" options="-1.5"/>
-        <run class="PreInitBinding"/>    
+        <run class="PreInitBinding"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="init and @annotation">
         <compile files="InitBinding.aj" options="-1.5"/>
-        <run class="InitBinding"/>    
+        <run class="InitBinding"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="adviceexecution and @annotation">
         <compile files="AdviceExecBinding.aj" options="-1.5"/>
-        <run class="AdviceExecBinding"/>    
+        <run class="AdviceExecBinding"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="handler and @annotation">
         <compile files="HandlerBinding.aj" options="-1.5"/>
-        <run class="HandlerBinding"/>    
+        <run class="HandlerBinding"/>
     </ajc-test>
-        
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@withincode() and call(* println(..))">
        <compile files="WithinCodeBinding1.aj" options="-1.5"/>
        <run class="WithinCodeBinding1"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@within">
        <compile files="WithinBinding1.aj" options="-1.5"/>
        <run class="WithinBinding1"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="@within - multiple types">
        <compile files="WithinBinding2.aj" options="-1.5"/>
        <run class="WithinBinding2"/>
     </ajc-test>
- 
+
     <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="packages and no binding">
         <compile files="A.java,B.java,Color.java,X.java" options="-1.5"/>
-        <run class="a.b.c.A"/>    
+        <run class="a.b.c.A"/>
     </ajc-test>
 
     <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="packages and binding">
         <compile files="A.java,B.java,Color.java,X2.java" options="-1.5"/>
-        <run class="a.b.c.A"/>    
+        <run class="a.b.c.A"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/binding" vm="1.5" title="binding with static methods">
         <compile files="StaticMethods.java" options="-1.5"/>
-        <run class="StaticMethods"/>    
+        <run class="StaticMethods"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations" vm="1.5" title="annotation matching on call">
         <weave classesFiles="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java"
                aspectsFiles="AnnotationAspect02.aj"
@@ -1907,7 +1907,7 @@
                <message kind="weave" text="Type 'AnnotatedType' (AnnotatedType.java:4) advised by before advice from 'AnnotationAspect02' (aspects.jar!AnnotationAspect02.class:4(from AnnotationAspect02.aj))"/>
         </weave>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations" vm="1.5" title="at annotation matching">
         <weave classesFiles="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java"
                aspectsFiles="AnnotationAspect03.aj"
@@ -1915,7 +1915,7 @@
                <message kind="warning" line="8" text="@annotation matched here"/>
         </weave>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/within_code" vm="1.5" title="annotations and within(code)">
         <weave classesFiles="TestingAnnotations.java"
                aspectsFiles="WithinAndWithinCodeTests.java"
@@ -1926,8 +1926,8 @@
                <message kind="warning" line="43" text="@within match on inheritable annotation"/>
                <message kind="warning" line="32" text="@withincode match"/>
         </weave>
-    </ajc-test>    
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations/within" vm="1.5" title="annotations and within">
         <weave classesFiles="PlainWithin.java"
                aspectsFiles="PlainWithinTests.java"
@@ -1935,8 +1935,8 @@
                <message kind="warning" line="21" text="positive within match on annotation"/>
                <message kind="warning" line="25" text="negative within match on annotation"/>
         </weave>
-    </ajc-test>   
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="must have runtime retention">
         <compile options="-1.5" files="NotRuntimeRetention.aj">
          <message kind="error" line="20" text="Annotation type MySourceAnnotation does not have runtime retention"/>
@@ -1944,32 +1944,32 @@
             <message kind="error" line="22" text="Annotation type MyAnnotation does not have runtime retention"/>
         </compile>
     </ajc-test>
-     
+
     <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="inheritable or not">
         <compile options="-1.5" files="TestingAnnotations.java,ThisOrTargetTests.aj">
         </compile>
         <run class="TestingAnnotations"/>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="java5/annotations/thisOrtarget" vm="1.5" title="use of @this/target in deow">
         <compile options="-1.5" files="TestingAnnotations.java,DeclareEoW.java">
                <message kind="error" line="3" text="this() pointcut designator cannot be used in declare statement"/>
                <message kind="error" line="5" text="target() pointcut designator cannot be used in declare statement"/>
         </compile>
-    </ajc-test> 
+    </ajc-test>
 
     <ajc-test dir="java5/annotations/args" vm="1.5" title="@args tests">
         <compile options="-1.5" files="TestingArgsAnnotations.java,AtArgsAspect.java">
         </compile>
         <run class="TestingArgsAnnotations"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations/args" vm="1.5" title="use of @args in deow">
         <compile options="-1.5" files="TestingArgsAnnotations.java,DeclareEoW.java">
                <message kind="error" line="3" text="args() pointcut designator cannot be used in declare statement"/>
         </compile>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations" vm="1.5" title="compiling an annotation">
         <compile options="-1.5" files="SimpleAnnotation.java">
         </compile>
@@ -1987,7 +1987,7 @@
                <message kind="warning" line="21" text="positive within match on annotation"/>
                <message kind="warning" line="25" text="negative within match on annotation"/>
         </compile>
-    </ajc-test>   
+    </ajc-test>
 
     <ajc-test dir="java5/annotations/attarget" vm="1.5" title="losing annotations...">
         <compile options="-1.5" files="Program.java,AtTargetAspect.java">
@@ -2001,7 +2001,7 @@
                <message kind="error" line="8" text="can't make inter-type method declarations"/>
                <message kind="error" line="13" text="can't make inter-type field declarations"/>
         </compile>
-    </ajc-test>   
+    </ajc-test>
 
    <ajc-test dir="java5/annotations" vm="1.5" title="no declare parents on annotation types">
         <compile files="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java,AnnotationAspect04.aj"
@@ -2010,7 +2010,7 @@
                <message kind="error" line="10" text="can't use declare parents to make 'java.lang.annotation.Annotation' the parent of type"/>
                <message kind="error" line="4" text="can't use declare parents to make annotation type SimpleAnnotation implement an interface"/>
         </compile>
-    </ajc-test>   
+    </ajc-test>
 
    <ajc-test dir="java5/annotations" vm="1.5" title="declare parents wildcards matching annotation types">
         <compile files="AnnotatedType.java,SimpleAnnotation.java,SimpleAnnotation2.java,AnnotationAspect05.aj"
@@ -2018,67 +2018,67 @@
                <message kind="warning" line="4" text="annotation type SimpleAnnotation2 matches a declare parents type pattern but is being ignored"/>
                <message kind="warning" line="4" text="annotation type SimpleAnnotation matches a declare parents type pattern but is being ignored"/>
         </compile>
-    </ajc-test>   
-    
+    </ajc-test>
+
    <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="annotated any pattern">
         <compile files="A.java,B.java,C.java,Color.java,X3.java"
                options="-1.5">
         </compile>
         <run class="g.h.i.C"/>
         <run class="a.b.c.A"/>
-    </ajc-test>   
-    
+    </ajc-test>
+
    <ajc-test dir="java5/annotations/binding/complexExample" vm="1.5" title="annotation not imported">
         <compile files="A.java,B.java,C.java,Color.java,X4.java"
                options="-1.5">
                <message kind="warning" line="6" text="no match for this type name: Color"/>
         </compile>
         <run class="a.b.c.A"/>
-    </ajc-test>   
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds">
       <compile files="AtItd2.aj" options="-1.5"/>
       <run class="AtItd2"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds - values">
       <compile files="AtItd3.aj" options="-1.5"/>
       <run class="AtItd3"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="annotated public itds - multiple complex annotations">
       <compile files="AtItd4.aj" options="-1.5"/>
       <run class="AtItd4"/>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="java5/annotations/itds" vm="1.5" title="nasty annotation and itds test">
         <compile files="AnnotationsAndITDs.aj" options="-1.5">
             <!-- first two are ITCs, second two are ITCs annotated via declare @ctor, third is default ctor -->
-            <message kind="warning" line="17" text="execution(@SomeAnnotation ...new(..)"/>    
-            <message kind="warning" line="20" text="execution(@SomeAnnotation ...new(..)"/>    
-            <message kind="warning" line="45" text="execution(@SomeAnnotation ...new(..)"/>    
+            <message kind="warning" line="17" text="execution(@SomeAnnotation ...new(..)"/>
+            <message kind="warning" line="20" text="execution(@SomeAnnotation ...new(..)"/>
+            <message kind="warning" line="45" text="execution(@SomeAnnotation ...new(..)"/>
             <message kind="warning" line="46" text="execution(@SomeAnnotation ...new(..)"/>
             <message kind="warning" line="180" text="execution(@SomeAnnotation ...new(..)"/>
 
 			<!-- first four are fields annotated via declare, last two are directly annotated ITDs -->
-            <message kind="warning" line="59" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="60" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="70" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="76" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="77" text="set(@SomeAnnotation...)"/>  
+            <message kind="warning" line="59" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="60" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="70" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="76" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="77" text="set(@SomeAnnotation...)"/>
 
 			<!-- annotations added via declare -->
-            <message kind="warning" line="175" text="si(@SomeAnnotation...)"/>  
-            <message kind="warning" line="180" text="si(@SomeAnnotation...)"/>  
-            
-            <message kind="warning" line="25" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="28" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="52" text="execution(@SomeAnnotation ...)"/>        
-            <message kind="warning" line="53" text="execution(@SomeAnnotation ...)"/>    
-            <!--message kind="warning" line="70" text="set(@SomeAnnotation...)"/>    
-            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/-->    
+            <message kind="warning" line="175" text="si(@SomeAnnotation...)"/>
+            <message kind="warning" line="180" text="si(@SomeAnnotation...)"/>
+
+            <message kind="warning" line="25" text="execution(@SomeAnnotation ...)"/>
+            <message kind="warning" line="28" text="execution(@SomeAnnotation ...)"/>
+            <message kind="warning" line="52" text="execution(@SomeAnnotation ...)"/>
+            <message kind="warning" line="53" text="execution(@SomeAnnotation ...)"/>
+            <!--message kind="warning" line="70" text="set(@SomeAnnotation...)"/>
+            <message kind="warning" line="71" text="set(@SomeAnnotation...)"/-->
         </compile>
         <run class="AnnotationsAndITDs">
             <stderr>
@@ -2100,7 +2100,7 @@
                 <line text="@method ITDMe2 (AnnotationsAndITDs.aj:53)"/>
                 <line text="@field ITDMe2 (AnnotationsAndITDs.aj:76)"/>
                 <line text="@field ITDMe2 (AnnotationsAndITDs.aj:77)"/>
-                
+
                 <!--
                 <line text="method bar has 1 params, first param annotation is @ParamAnnotation"/>
                 -->
@@ -2113,7 +2113,7 @@
             <message kind="error" line="6" text="Syntax error on token &quot;:&quot;, &quot;one of type, method, field, constructor&quot; expected"/>
         </compile>
     </ajc-test>
-    
+
    <!-- ======================================================================================= -->
    <!--               Autoboxing tests                                                          -->
    <!-- ======================================================================================= -->
@@ -2131,7 +2131,7 @@
               <line text="method_takes_Integer=20000"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="integer boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectInteger.aj"
@@ -2161,8 +2161,8 @@
               <line text="method_takes_int=40000"/>
           </stderr>
         </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
      <ajc-test dir="java5/autoboxing" vm="1.5" title="char boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectChar.aj"
                options="-1.5,-showWeaveInfo">
@@ -2191,8 +2191,8 @@
               <line text="method_takes_char=4"/>
           </stderr>
         </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
        <ajc-test dir="java5/autoboxing" vm="1.5" title="double boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectDouble.aj"
                options="-1.5,-showWeaveInfo">
@@ -2221,7 +2221,7 @@
               <line text="method_takes_double=400.0"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="float boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectFloat.aj"
@@ -2251,7 +2251,7 @@
               <line text="method_takes_float=400.0"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="short boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectShort.aj"
@@ -2281,7 +2281,7 @@
               <line text="method_takes_short=400"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="long boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectLong.aj"
@@ -2311,7 +2311,7 @@
               <line text="method_takes_long=4000000"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="boolean boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectBoolean.aj"
@@ -2341,7 +2341,7 @@
               <line text="method_takes_boolean=false"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="byte boxing">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectByte.aj"
@@ -2371,7 +2371,7 @@
               <line text="method_takes_byte=52"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/autoboxing" vm="1.5" title="boxing in after returning">
         <compile files="AutoboxingB.java,AutoboxingC.java,AutoboxingD.java,AutoboxingF.java,AutoboxingI.java,AutoboxingJ.java,AutoboxingS.java,AutoboxingZ.java,SimpleAutoboxing.java,AspectAfterReturning.aj"
@@ -2393,7 +2393,7 @@
               <line text="Returning Object=10"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <!-- ======================================================================================= -->
    <!--               Covariance tests                                                          -->
@@ -2481,12 +2481,12 @@
             <message kind="error" line="6" text="can't make inter-type field declarations on enum types"/>
         </compile>
     </ajc-test>
-    
+
    <ajc-test dir="java5/enums" vm="1.5" title="declare parents and enums">
         <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect03.aj" options="-1.5">
             <message kind="error" line="5" text="can't use declare parents to make enum type SimpleEnum implement an interface"/>
             <message kind="error" line="8" text="can't use declare parents to alter supertype of enum type SimpleEnum"/>
-            <message kind="error" line="11" text="can't use declare parents to make 'java.lang.Enum' the parent of type EnumAspect03$D"/>          
+            <message kind="error" line="11" text="can't use declare parents to make 'java.lang.Enum' the parent of type EnumAspect03$D"/>
         </compile>
     </ajc-test>
 
@@ -2500,7 +2500,7 @@
    <!-- ======================================================================================= -->
    <!--               pertypewithin tests                                                       -->
    <!-- ======================================================================================= -->
-    
+
    <ajc-test dir="java5/pertypewithin" title="basic ptw test">
        <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
        <run class="p.A">
@@ -2513,7 +2513,7 @@
                <line text="callcount = 2"/>
            </stderr>
        </run>
-   </ajc-test> 
+   </ajc-test>
 
    <ajc-test dir="java5/pertypewithin" title="ptw hasAspect">
        <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
@@ -2528,12 +2528,12 @@
                <line text="callcount = 3"/>
            </stderr>
        </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
     <ajc-test dir="java5/pertypewithin" title="ptw aspectOf">
        <compile files="A.java,B.java,C.java,D.java,Main.java,X.java" options="-Xlint:ignore"/>
        <run class="p.C"/>
-   </ajc-test> 
+   </ajc-test>
 
     <ajc-test dir="java5/pertypewithin" title="ptw multi-aspects">
        <compile files="P.java,Q.java,R.java"/>
@@ -2543,7 +2543,7 @@
                <line text="R reporting 3"/>
            </stderr>
        </run>
-   </ajc-test> 
+   </ajc-test>
 
     <ajc-test dir="java5/pertypewithin" title="ptw binary">
        <weave classesFiles="G.java" aspectsFiles="H.java" options="-1.4"/>
@@ -2552,8 +2552,8 @@
                <line text="advice running"/>
            </stderr>
        </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/pertypewithin" title="ptw binary aspect">
        <compile files="H.java" outjar="aspects.jar" options="-1.4">
            <message kind="warning" line="1" text="no match for this type name: G"/>
@@ -2605,14 +2605,14 @@
            <message kind="weave" text="Type 'SimpleVarargs' (SimpleVarargs.java:27) advised by before advice from 'VarargsAspect06' (VarargsAspect06.aj:3)"/>
        </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/suppressedWarnings" vm="1.5" title="suppressing non-matching advice warnings">
        <compile files="Suppression1.aj" options="-1.5,-showWeaveInfo">
        	 <message kind="warning" line="13"/>
          <message kind="warning" line="21"/>
        </compile>
    </ajc-test>
-   
+
     <ajc-test dir="java5/suppressedWarnings" vm="1.5" title="suppressing non-matching advice warnings when multiple source files involved">
        <compile files="A.java,A1.aj,A2.aj,A3.aj" options="-1.5,-showWeaveInfo">
          <message kind="warning" line="4" file="A1.aj"/>
@@ -2622,13 +2622,13 @@
          <message kind="warning" line="11" file="A3.aj"/>
        </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="XLint warning for advice not applied with cflow(execution)" pr="93345">
      <compile options="-Xlint,-1.5" files="PR93345.aj" >
        <message kind="warning" line="9" text="advice defined in AnAspect has not been applied [Xlint:adviceDidNotMatch]"/>
      </compile>
   </ajc-test>
-   
+
   <ajc-test dir="bugs150" title="NPE in reflect implementation" pr="94167">
      <compile files="PR94167.java"/>
      <run class="reflect.PR94167"/>
@@ -2714,12 +2714,12 @@
         <compile files="AnnotatingAspects.aj" options="-1.5">
         </compile>
     </ajc-test>
-   
+
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotating aspects chapter, ex 2">
         <compile files="SuppressAj.aj" options="-1.5">
         </compile>
     </ajc-test>
-   
+
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: annotation pattern matching">
         <compile files="AnnotationPatternMatching.aj,org/xyz/OrgXYZAnnotation.java" options="-1.5">
             <message kind="warning" line="25" text="@Immutable"/>
@@ -2730,7 +2730,7 @@
             <message kind="warning" line="29" text="@Foo @Goo"/>
             <message kind="warning" line="29" text="@(Foo || Goo)"/>
             <message kind="warning" line="31" text="@(Foo || Goo)"/>
-            <message kind="warning" line="33" text="@(org.xyz..*)"/>            
+            <message kind="warning" line="33" text="@(org.xyz..*)"/>
         </compile>
     </ajc-test>
 
@@ -2759,7 +2759,7 @@
             <message kind="warning" line="8" text="@(Immutable || NonPersistent) org.xyz..*"/>
             <message kind="warning" line="8" text="@Immutable @NonPersistent org.xyz..*"/>
             <message kind="warning" line="6" text="@(@Inherited *) org.xyz..*"/>
-            <message kind="warning" line="8" text="@(@Inherited *) org.xyz..*"/>            
+            <message kind="warning" line="8" text="@(@Inherited *) org.xyz..*"/>
         </compile>
     </ajc-test>
 
@@ -2773,13 +2773,13 @@
             <message kind="warning" line="13" text="(@SensitiveData *) org.xyz..*.*"/>
             <message kind="warning" line="50" text="@Foo (@Goo *) (@Hoo *).*"/>
             <message kind="warning" line="38" text="@Persisted @Classified * *"/>
-            
+
             <message kind="warning" line="44" text="@Oneway * *(..)"/>
             <message kind="warning" line="18" text="@Transaction * (@Persisted org.xyz..*).*(..)"/>
             <message kind="warning" line="52" text="* *.*(@Immutable *,..)"/>
             <message kind="warning" line="53" text="* *.*(@Immutable *,..)"/>
             <message kind="warning" line="54" text="* *.*(@Immutable *,..)"/>
-            
+
             <message kind="warning" line="62" text="within(@Secure *)"/>
             <message kind="warning" line="63" text="within(@Secure *)"/>
             <message kind="warning" line="66" text="staticinitialization(@Persisted *)"/>
@@ -2788,7 +2788,7 @@
             <message kind="warning" line="28" text="execution(public (@Immutable *) org.xyz..*.*(..))"/>
             <message kind="warning" line="26" text="set(@Cachable * *)"/>
             <message kind="warning" line="80" text="handler(!@Catastrophic *)"/>
-            
+
         </compile>
     </ajc-test>
 
@@ -2831,21 +2831,21 @@
             <message kind="error" line="18" text="Annotation type Goo does not have runtime retention"/>
         </compile>
     </ajc-test>
-    
+
      <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: @inherited">
         <compile files="AnnotationInheritance.aj" options="-1.5">
             <message kind="warning" line="16" text="annotatedMethodCall()"/>
             <!-- <message kind="warning" line="17" text="annotatedMethodCall()"/> -->
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: deow-ann">
         <compile files="DeclaresWithAnnotations.aj,org/xyz/model/Model.java" options="-1.5">
             <message kind="warning" line="27" text="Expensive operation called from within performance critical section"/>
             <message kind="error" line="26" text="Untrusted code should not call the model classes directly"/>
         </compile>
-    </ajc-test>    
-    
+    </ajc-test>
+
       <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: decp-ann">
         <compile files="DecpAnnotations.aj" options="-1.5">
         </compile>
@@ -2859,7 +2859,7 @@
                 <line text="Test BusinessBankAccount is secured: PASS"/>
             </stdout>
         </run>
-    </ajc-test>    
+    </ajc-test>
 
     <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: dec precedence">
         <compile files="PrecedenceAnnotations.aj" options="-1.5">
@@ -2872,7 +2872,7 @@
                 <line text="P1"/>
             </stdout>
         </run>
-    </ajc-test>  
+    </ajc-test>
 
    <ajc-test dir="java5/annotations/ajdkExamples" title="ajdk: dec annotation">
         <compile files="DeclareAnnotation.aj,org/xyz/model/Model.java" options="-1.5">
@@ -2886,8 +2886,8 @@
             <message kind="warning" line="51" text="@Secured"/>
         </compile>
         <run class="DeclareAnnotation"/>
-    </ajc-test>  
-    
+    </ajc-test>
+
     <ajc-test dir="java5/covariance/ajdk" title="ajdk: covariance">
         <compile files="AJDKExamples.aj" options="-1.5">
             <message kind="warning" line="43" text="call(* whoAreYou())"/>
@@ -2901,7 +2901,7 @@
             <message kind="warning" line="44" text="call(B B.whoAreYou())"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/varargs/ajdk" title="ajdk: varargs">
         <compile files="AJDKExamples.aj,org/xyz/Foo.java,org/xyz/Goo.java,org/xyz/Hoo.java" options="-1.5">
             <message kind="warning" line="8" text="call vararg match"/>
@@ -2957,7 +2957,7 @@
           </stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type 2">
         <compile files="DecaType2.java" options="-1.5,-Xlint:ignore" >
         </compile>
@@ -2969,7 +2969,7 @@
         </stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - with matching pointcut">
         <compile files="DecaType3.java" options="-1.5"/>
         <run class="DecaType3">
@@ -2979,7 +2979,7 @@
             </stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - binary weaving">
         <weave classesFiles="BaseTypes.java"
                aspectsFiles="DecaTypeBin1.aj,Colored.java"
@@ -3006,7 +3006,7 @@
         	</stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - complex annotation - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin2.aj" options="-1.5"/>
         <run class="BaseTypes">
@@ -3031,7 +3031,7 @@
         	</stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - two annotations hit one type - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin3.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="BaseTypes">
@@ -3042,9 +3042,9 @@
         		<line text="A.m() running"/>
         		<line text="A.m() running"/>
         	</stderr>
-        </run> 	 	
+        </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 1) - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="BaseTypes">
@@ -3073,8 +3073,8 @@
         	</stderr>
         </run>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - declare parents interactions (order 2) - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaDecpInteractions2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="BaseTypes">
@@ -3169,7 +3169,7 @@
         	</stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - annotating an already annotated type - binary weaving">
         <weave classesFiles="AnnotatedType.java" aspectsFiles="DecaTypeBin4.aj" options="-1.5,-Xlint:ignore"/>
         <run class="AnnotatedType">
@@ -3190,8 +3190,8 @@
         	</stderr>
         </run>
     </ajc-test>
-    
-    
+
+
     <!--ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin5.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
             <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
@@ -3210,7 +3210,7 @@
         	</stderr>
         </run>
     </ajc-test-->
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin5.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
             <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
@@ -3222,11 +3222,11 @@
             <message kind="error" line="21" text="The annotation @ColorPkg is disallowed for this location"/>
         </compile>
     </ajc-test>
-    
+
     <!--ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets (using type patterns) - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin6.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" line="15" text="A is not a valid target for annotation ColorM"/>
-          <message kind="warning" line="16" text="A is not a valid target for annotation ColorC"/>        
+          <message kind="warning" line="16" text="A is not a valid target for annotation ColorC"/>
           <message kind="warning" line="17" text="A is not a valid target for annotation ColorL"/>
           <message kind="warning" line="17" text="B is not a valid target for annotation ColorL"/>
           <message kind="warning" line="17" text="C is not a valid target for annotation ColorL"/>
@@ -3242,17 +3242,17 @@
         	</stderr>
         </run>
     </ajc-test-->
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - annotations with different targets (using type patterns) - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin6.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
-          <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>        
+          <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>
           <message kind="error" line="17" text="The annotation @ColorL is disallowed for this location"/>
           <message kind="error" line="18" text="The annotation @ColorF is disallowed for this location"/>
         </compile>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - complex decp decAtType interactions - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin7.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
         </weave>
@@ -3280,7 +3280,7 @@
         	</stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - complex decp decAtType interactions - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin7.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="BaseTypes">
@@ -3307,31 +3307,31 @@
         	</stderr>
         </run>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin8.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
-          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>        
+          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin8.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
-          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>        
+          <message kind="error" line="8" text="A is not a valid target for annotation ColorA"/>
         </weave>
-    </ajc-test>   
+    </ajc-test>
 
     <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types (uses pattern) - source weaving">
         <compile files="BaseTypes.java,DecaTypeBin9.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" line="8" text="A is not a valid target for annotation ColorA"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - trying to put annotation targetting annos on normal types (uses pattern) - binary weaving">
         <weave classesFiles="BaseTypes.java" aspectsFiles="DecaTypeBin9.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" line="8" text="A is not a valid target for annotation ColorA"/>
         </weave>
-    </ajc-test>   
-    
+    </ajc-test>
+
     <ajc-test dir="java5/annotations/declare" title="declare @type - covering enum and class element values - source weaving">
         <compile files="EnumAndClassValues.aj,FunkyAnnotations.java" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="FunkyAnnotations">
@@ -3340,7 +3340,7 @@
             </stderr>
         </run>
     </ajc-test>
-    
+
      <ajc-test dir="java5/annotations/declare" title="declare @type - covering enum and class element values - binary weaving">
         <weave aspectsFiles="EnumAndClassValues.aj" classesFiles="FunkyAnnotations.java" options="-1.5 -Xdev:Pinpoint" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="FunkyAnnotations">
@@ -3351,8 +3351,8 @@
             </stderr>
         </run>
     </ajc-test>
-    
-    
+
+
    <!-- ======================================================================================= -->
    <!--               declare annotation (@field)                                               -->
    <!-- ======================================================================================= -->
@@ -3365,7 +3365,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - simple binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtField1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3373,8 +3373,8 @@
           <line text="Colored field access at set(int Base.publicIntField)"/>
           </stderr>
         </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two the same on one - source weaving">
         <compile files="Base.java,Colored.java,TwoOnOneField.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" text="int Base.publicIntField - already has an annotation of type Colored"/>
@@ -3385,7 +3385,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two the same on one - binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="TwoOnOneField.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" text="int Base.publicIntField - already has an annotation of type Colored"/>
@@ -3395,8 +3395,8 @@
           <line text="Colored field access at set(int Base.publicIntField)"/>
           </stderr>
         </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two different on one - source weaving">
         <compile files="Base.java,Colored.java,Fruit.java,TwoOnOneField2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
         </compile>
@@ -3407,7 +3407,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - two different on one - binary weaving">
         <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="TwoOnOneField2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
         </weave>
@@ -3417,8 +3417,8 @@
           <line text="Fruit field access at set(int Base.publicIntField)"/>
           </stderr>
         </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - wrong target - source weaving">
         <compile files="Base.java,Colored.java,WrongTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
            <message kind="error" line="8" text="The annotation @MethodColoring is disallowed for this location"/>
@@ -3428,7 +3428,7 @@
            <message kind="warning" line="16" text="does not match because annotation @TypeColoring has @Target{ElementType.TYPE} [Xlint:unmatchedTargetKind]"/>
   </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - right target - source weaving">
         <compile files="Base.java,Colored.java,RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3437,7 +3437,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - right target - binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3445,8 +3445,8 @@
           <line text="Colored field access at set(int Base.publicIntField)"/>
           </stderr>
         </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application - source weaving">
         <compile files="Base.java,Colored.java,Fruit.java,RecursiveFields.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3455,7 +3455,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application - binary weaving">
         <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="RecursiveFields.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3464,7 +3464,7 @@
           </stderr>
         </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application (other order) - source weaving">
         <compile files="Base.java,Colored.java,Fruit.java,RecursiveFields2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3473,7 +3473,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atfield" title="declare @field - recursive application (other order) - binary weaving">
         <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="RecursiveFields2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3481,20 +3481,20 @@
           <line text="Fruit field access at set(int Base.publicIntField)"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
    <!-- incorrect target type for annotation on field -->
-   
+
    <!-- incorrect target type for annotation on method -->
    <!-- two annotations on one method -->
    <!-- two of the same annotation on one method - error -->
    <!-- two of the same on one using pattern spec  - lint -->
-   
+
 <!-- need some incorrect signatures in the declare @statements - e.g. declare @constructor: public Base(int): XXX; will blow things up as it uses Base rather than new -->
    <!-- incorrect target type for annotation on ctor -->
    <!-- two annotations on one ctor -->
    <!-- two of the same annotation on one ctor - error -->
    <!-- two of the same on one using pattern spec  - lint -->
-   
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method - simple source weaving">
         <compile files="Base.java,Colored.java,AtMethod1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3506,7 +3506,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method - simple binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtMethod1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3517,7 +3517,7 @@
           <line text="m3() running"/>
           </stderr>
         </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @constructor - simple source weaving">
         <compile files="Base.java,Colored.java,AtCtor1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
@@ -3530,7 +3530,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @constructor - simple binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="AtCtor1.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3541,11 +3541,11 @@
           <line text="m3() running"/>
           </stderr>
         </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
 
   <!-- These tests verify both @method and @ctor behavior - they are so similar it is OK to have them together... -->
-  
+
   <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - wrong target - source weaving">
         <compile files="Base.java,Colored.java,WrongTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
            <message kind="error" line="8"  text="The annotation @MethodColoring is disallowed for this location"/>
@@ -3554,7 +3554,7 @@
            <message kind="error" line="11" text="The annotation @TypeColoring is disallowed for this location"/>
         </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - right target - source weaving">
         <compile files="Base.java,Colored.java,RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3567,7 +3567,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - right target - binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="RightTarget.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties"/>
         <run class="Base">
@@ -3579,25 +3579,25 @@
           <line text="m3() running"/>
           </stderr>
         </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
 <!-- check @method/@ctor/@field recursively applying, can only happen if a pattern for one of them includes an annotation -->
-   
-   
+
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two the same on one - source weaving">
         <compile files="Base.java,Colored.java,TwoOnOneMember.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" text="void Base.m1() - already has an annotation of type Colored"/>
           <message kind="warning" text="void Base.&lt;init&gt;(int) - already has an annotation of type Colored"/>
         </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two the same on one - binary weaving">
         <weave classesFiles="Base.java,Colored.java" aspectsFiles="TwoOnOneMember.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
           <message kind="warning" text="void Base.m1() - already has an annotation of type Colored"/>
           <message kind="warning" text="void Base.&lt;init&gt;(int) - already has an annotation of type Colored"/>
         </weave>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two different on one - source weaving">
         <compile files="Base.java,Colored.java,Fruit.java,TwoOnOneMember2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
         </compile>
@@ -3613,7 +3613,7 @@
           </stderr>
         </run>
    </ajc-test>
-    
+
    <ajc-test dir="java5/annotations/declare/atmethodctor" title="declare @method @ctor - two different on one - binary weaving">
         <weave classesFiles="Base.java,Colored.java,Fruit.java" aspectsFiles="TwoOnOneMember2.aj" options="-1.5" xlintfile="ignoreTypeNotExposed.properties">
         </weave>
@@ -3628,13 +3628,13 @@
           <line text="m3() running"/>
           </stderr>
         </run>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/annotations/declare" title="declare all annotations on one class - source weaving">
       <compile files="DeathByAnnotations.aj" options="-1.5,-emacssym" xlintfile="ignoreTypeNotExposed.properties"/>
       <run class="p.q.DeathByAnnotations"/>
    </ajc-test>
-   
+
    <!-- ======================================================================================= -->
    <!--               annotation binding with ITDs                                              -->
    <!-- ======================================================================================= -->
@@ -3647,7 +3647,7 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated">
       <compile files="BindingWithAnnotatedItds2.aj" options="-1.5"/>
       <run class="BindingWithAnnotatedItds2">
@@ -3669,12 +3669,12 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
    <!-- ======================================================================================= -->
-   <!--              declare annotation targetting ITDs                                         --> 
+   <!--              declare annotation targetting ITDs                                         -->
    <!-- ======================================================================================= -->
-   
-   
+
+
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd method is annotated via declare">
       <compile files="BindingWithDeclaredAnnotationItds1.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds1">
@@ -3688,7 +3688,7 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated via declare">
       <compile files="BindingWithDeclaredAnnotationItds2.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds2">
@@ -3699,7 +3699,7 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
     <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd field is annotated multiple times via declare">
       <compile files="BindingWithDeclaredAnnotationItds3.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds3">
@@ -3709,7 +3709,7 @@
         </stderr>
       </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/annotations/binding" title="simple binding annotation values where itd ctor is annotated via declare">
       <compile files="BindingWithDeclaredAnnotationItds4.aj" options="-1.5,-emacssym"/>
       <run class="BindingWithDeclaredAnnotationItds4">
@@ -3727,7 +3727,7 @@
    </ajc-test>
 
    <!-- ============================================================== -->
-    
+
     <ajc-test dir="options/aspectpath" title="dirs on aspectpath">
         <compile files="MyAspect.aj" options="-d out"/>
         <compile files="MyClass.java" options="-aspectpath out">
@@ -3743,49 +3743,49 @@
         <compile files="ITDReturningParameterizedType.aj" options="-1.5"/>
         <run class="ITDReturningParameterizedType"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/annotations/binding/bugs" title="AtArgs causes a VerifyError: Unable to pop operand off an empty stack" vm="1.5">
         <compile files="Test3.java" options="-1.5"/>
         <run class="Test3"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/bugs/pr91267" title="NPE using generic methods in aspects 1" vm="1.5">
         <compile files="TestBug1.aj" options="-1.5"/>
         <run class="TestBug1"/>
     </ajc-test>
-    
+
      <ajc-test dir="java5/generics/bugs/pr91267" title="NPE using generic methods in aspects 2" vm="1.5">
         <compile files="TestBug2.aj" options="-1.5"/>
         <run class="TestBug2"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/generics/bugs" title="Generics problem with Set" vm="1.5">
       <compile files="PR91053.aj" options="-1.5"/>
       <run class="PR91053"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/bugs" title="Compilation error on generic member introduction" vm="1.5">
       <compile files="PR87282.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/bugs" title="Parameterized types on introduced fields not correctly recognized" vm="1.5">
       <compile files="PR88606.aj" options="-1.5"/>
    </ajc-test>
- 
+
    <ajc-test dir="bugs150" title="enum called Enum, annotation called Annotation, etc">
      <compile files="PR90827.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="Internal compiler error">
      <compile files="PR86832.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="Exploding compile time with if() statements in pointcut">
      <compile files="PR94086.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <!-- generic abstract aspects... -->
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="static pointcut parameterization suite">
      <compile files="GenericAspectPointcuts.aj" options="-1.5">
      	<message kind="warning" line="62" text="kinded-returning-ok"/>
@@ -3805,7 +3805,7 @@
      	<message kind="warning" line="53" text="handler-ok"/>
      </compile>
    </ajc-test>
- 
+
     <ajc-test dir="java5/generics/genericaspects" title="dynamic pointcut parameterization suite">
      <compile files="GenericAspectRuntimePointcuts.aj" options="-1.5">
      </compile>
@@ -3859,9 +3859,9 @@
          <line text="@annotation-ok @MyAnnotation(value=&quot;my-value&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
          <line text="@annotation-ok @MyAnnotation(&quot;my-value&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="this-ok a Y execution(X Y.bar())"/>
-         <line text="@this-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/> 
-         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/> 
-         <line text="@this-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/> 
+         <line text="@this-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
+         <line text="@this-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
+         <line text="@this-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/>
          <line text="@target-ok @MyAnnotation(value=on Y) execution(X Y.bar())" vm="1.5,1.6,1.7,1.8"/>
          <line text="@target-ok @MyAnnotation(value=&quot;on Y&quot;) execution(X Y.bar())" vm="9,10,11,12,13"/>
          <line text="@target-ok @MyAnnotation(&quot;on Y&quot;) execution(X Y.bar())" vm="14+"/>
@@ -3874,7 +3874,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
     <ajc-test dir="java5/generics/genericaspects" title="reference to pointcut in generic class">
      <compile files="PointcutsInGenericClasses.aj" options="-1.5">
          <message kind="warning" line="16" text="a match"/>
@@ -3891,8 +3891,8 @@
      <compile files="DecPGenericTest.aj" options="-1.5">
          <message kind="warning" line="16" text="success"/>
      </compile>
-     </ajc-test>     
-     
+     </ajc-test>
+
     <ajc-test dir="java5/generics/genericaspects" title="declare precedence parameterized">
      <compile files="DecPrecedenceGenericTest.aj" options="-1.5 -Xdev:Pinpoint">
      </compile>
@@ -3902,7 +3902,7 @@
              <line text="A2"/>
          </stdout>
      </run>
-     </ajc-test>     
+     </ajc-test>
 
     <ajc-test dir="java5/generics/genericaspects" title="declare annotation parameterized">
      <compile files="DecAnnGenericTest.aj" options="-1.5">
@@ -3911,7 +3911,7 @@
          <message kind="warning" line="22" text="@constructor ok"/>
          <message kind="warning" line="24" text="@method ok"/>
      </compile>
-     </ajc-test>  
+     </ajc-test>
 
     <ajc-test dir="java5/generics/genericaspects" title="multi-level generic abstract aspects">
      <compile files="MultiLevelGenericTest.aj" options="-1.5">
@@ -3919,9 +3919,9 @@
          <message kind="warning" line="23" text="middle match"/>
          <message kind="warning" line="23" text="top match"/>
      </compile>
-     </ajc-test> 
+     </ajc-test>
    <!-- generic bugs -->
-   
+
    <ajc-test dir="java5/generics/bugs" title="ITD method with generic arg">
      <compile files="PR97763.aj" options="-1.5"/>
      <run class="PR97763">
@@ -3934,11 +3934,11 @@
    <ajc-test dir="bugs150" title="NPE at ClassScope.java:660 when compiling generic class">
      <compile files="PR95993.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/bugs" title="Problems resolving type name inside generic class">
      <compile files="PR95992.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" pr="100227" title="inner class with generic enclosing class">
      <compile files="pr100227.aj" options="-1.5"/>
      <run class="pr100227">
@@ -3950,28 +3950,28 @@
 	     </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" pr="100260" title="methods inherited from a generic parent">
      <compile files="pr100260.aj" options="-1.5"/>
      <run class="pr100260"/>
    </ajc-test>
-   
+
    <!-- end of generic bugs -->
 
    <!-- generic aspects -->
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 1">
      <compile files="GenericAspect1.aj" options="-1.5">
          <message kind="error" line="2" text="only abstract aspects can have type parameters"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 2">
      <compile files="GenericAspect2.aj" options="-1.5">
        <message kind="error" line="9" text="a generic super-aspect must be fully parameterized in an extends clause"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 3">
      <compile files="GenericAspect3.aj" options="-1.5"/>
      <run class="GenericAspect3">
@@ -3981,11 +3981,11 @@
       </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 4">
      <compile files="ParentChildRelationship.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/genericaspects" title="generic aspect with declare warning using type vars">
      <compile files="DeclareWarningInGenericAspect.aj" options="-1.5">
          <message kind="warning" line="16" text="this method takes a T!"/>
@@ -4011,7 +4011,7 @@
          </stdout>
      </run>
    </ajc-test>
-            
+
   <ajc-test dir="java5/generics/genericaspects" title="generic aspect declare parents">
      <compile files="DeclareParentsWithTypeVars.aj" options="-1.5">
      </compile>
@@ -4029,23 +4029,23 @@
          </stderr>
      </run>
    </ajc-test>
-                  
+
    <!-- ajdk example -->
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 5 (ajdk)">
      <compile files="Blob.java,BlobContainment.aj,ParentChildRelationship.aj" options="-1.5"/>
      <run class="BlobContainment"/>
    </ajc-test>
-   
+
    <!-- same as above but all types in one file -->
    <ajc-test dir="java5/generics/genericaspects" title="generic aspects - 6 (ajdk)">
      <compile files="TheBigOne.java" options="-1.5"/>
      <run class="TheBigOne"/>
    </ajc-test>
-   
+
    <!-- end of generic aspects -->
-   
+
    <!-- generic ITDs -->
-  
+
    <ajc-test dir="java5/generics/itds" title="ITDs on generic type">
      <compile files="Parse5.java" options="-1.5">
         <message kind="error" line="9"/>
@@ -4054,7 +4054,7 @@
         <message kind="error" line="15"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="itd of non static member">
        <compile files="A.java" options="-1.5"/>
        <run class="A">
@@ -4064,7 +4064,7 @@
          </stderr>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="itd of static member">
        <compile files="B.java" options="-1.5"/>
        <run class="B">
@@ -4074,7 +4074,7 @@
          </stderr>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="itd using type parameter">
        <compile files="C.java" options="-1.5"/>
        <run class="C">
@@ -4092,7 +4092,7 @@
          </stderr>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="static generic method itd">
      <compile files="StaticGenericMethodITD.aj" options="-1.5"/>
      <run class="StaticGenericMethodITD">
@@ -4101,12 +4101,12 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic ctor itd - 1">
      <compile files="GenericCtorITD1.aj" options="-1.5"/>
      <run class="GenericCtorITD1"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic ctor itd - 2">
      <compile files="GenericCtorITD2.aj" options="-1.5"/>
      <run class="GenericCtorITD2"/>
@@ -4116,12 +4116,12 @@
      <compile files="GenericCtorITD3.aj" options="-1.5"/>
      <run class="GenericCtorITD3"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="parameterized method itd - 1">
      <compile files="ParameterizedMethodITD1.aj" options="-1.5"/>
      <run class="ParameterizedMethodITD1"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="parameterized method itd - 2">
      <compile files="ParameterizedMethodITD2.aj" options="-1.5">
        <message kind="error" line="9" text="The method simple(List&lt;? extends Number&gt;) in the type Base is not applicable for the arguments (List&lt;A&gt;)"/>
@@ -4144,18 +4144,18 @@
      <compile files="GenericMethodITD1.aj" options="-1.5"/>
      <run class="GenericMethodITD1"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 2">
      <compile files="GenericMethodITD2.aj" options="-1.5">
      <message kind="error" line="9" text="Bound mismatch: The generic method simple(List&lt;? extends E&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;E extends Number&gt;"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 3">
      <compile files="GenericMethodITD3.aj" options="-1.5"/>
      <run class="GenericMethodITD3"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 4">
      <compile files="GenericMethodITD4.aj" options="-1.5"/>
      <run class="GenericMethodITD4"/>
@@ -4166,45 +4166,45 @@
      <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;E&gt;) in the type Base is not applicable for the arguments (List&lt;A&gt;, List&lt;B&gt;)"/>
      </compile>
    </ajc-test>
- 
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 6">
      <compile files="GenericMethodITD6.aj" options="-1.5"/>
      <run class="GenericMethodITD6"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 7">
      <compile files="GenericMethodITD7.aj" options="-1.5"/>
      <run class="GenericMethodITD7"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 8">
      <compile files="GenericMethodITD8.aj" options="-1.5">
      <message kind="error" line="10" text="The method simple(List&lt;E&gt;, List&lt;? extends E&gt;) in the type Base is not applicable for the arguments (List&lt;Number&gt;, List&lt;String&gt;)"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 9">
      <compile files="GenericMethodITD9.aj" options="-1.5"/>
      <run class="GenericMethodITD9"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 10">
      <compile files="GenericMethodITD10.aj" options="-1.5">
        <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Comparable&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 11">
      <compile files="GenericMethodITD11.aj" options="-1.5"/>
      <run class="GenericMethodITD11"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 12">
      <compile files="GenericMethodITD12.aj" options="-1.5">
        <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Foo&lt;? extends R&gt;&gt;"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 13">
      <compile files="GenericMethodITD13.aj" options="-1.5"/>
      <run class="GenericMethodITD13"/>
@@ -4215,94 +4215,94 @@
        <message kind="error" line="10" text="Bound mismatch: The generic method crazy(List&lt;R&gt;) of type Base is not applicable for the arguments (List&lt;A&gt;). The inferred type A is not a valid substitute for the bounded parameter &lt;R extends Foo&lt;? super R&gt;&gt;"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic method itd - 15">
      <compile files="GenericMethodITD15.aj" options="-1.5"/>
      <run class="GenericMethodITD15"/>
    </ajc-test>
-   
+
    <!-- visibility -->
-   
+
    <ajc-test dir="java5/generics/itds/visibility" title="public itds">
      <compile files="PublicITDs.aj" options="-1.5"/>
      <run class="PublicITDs"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/visibility" title="private itds">
      <compile files="PrivateITDs.aj" options="-1.5"/>
      <run class="PrivateITDs"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/visibility" title="package itds">
      <compile files="PackageITDs.aj" options="-1.5"/>
      <run class="PackageITDs"/>
    </ajc-test>
-      
+
    <ajc-test dir="java5/generics/itds/visibility" title="public itds with errors">
      <compile files="PublicITDsErrors.aj" options="-1.5">
        <message kind="error" line="13" text="The method publicMethod2(List&lt;R&gt;, List&lt;R&gt;) in the type Base is not applicable for the arguments (List&lt;Double&gt;, List&lt;Float&gt;)"/>
        <message kind="error" line="15" text="The constructor Base(List&lt;Double&gt;, Map&lt;Integer,String&gt;) is undefined"/>
      </compile>
    </ajc-test>
-   
+
    <!-- targetting different types -->
-   
+
    <ajc-test dir="java5/generics/itds/differingTargets" title="targetting interface">
      <compile files="TargettingInterface.aj" options="-1.5"/>
      <run class="TargettingInterface"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/differingTargets" title="targetting aspect">
      <compile files="TargettingAspect.aj" options="-1.5"/>
      <run class="TargettingAspect"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/differingTargets" title="targetting class">
      <compile files="TargettingClass.aj" options="-1.5"/>
      <run class="TargettingClass"/>
    </ajc-test>
-   
+
    <!-- sharing type variables between the ITD and the generic type -->
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 1">
      <compile files="FieldA.aj" options="-1.5"/>
-     <run class="FieldA"/>   
+     <run class="FieldA"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 2">
      <compile files="FieldB.aj" options="-1.5">
        <message kind="error" line="16" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
      </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 3">
      <compile files="FieldC.aj" options="-1.5"/>
-     <run class="FieldC"/>   
+     <run class="FieldC"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 4">
      <compile files="FieldD.aj" options="-1.5"/>
-     <run class="FieldD"/>   
+     <run class="FieldD"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 5">
      <compile files="FieldE.aj" options="-1.5"/>
-     <run class="FieldE"/>   
+     <run class="FieldE"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 6">
      <compile files="FieldF.aj" options="-1.5"/>
-     <run class="FieldF"/>   
+     <run class="FieldF"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 7">
      <compile files="FieldG.aj" options="-1.5"/>
-     <run class="FieldG"/>   
+     <run class="FieldG"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 8">
      <compile files="FieldH.aj" options="-1.5"/>
-     <run class="FieldH"/>   
+     <run class="FieldH"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type - 9">
@@ -4310,22 +4310,22 @@
      	<message kind="error" line="7" text="Type mismatch: cannot convert from List&lt;String&gt; to List&lt;Integer&gt;"/>
      </compile>
    </ajc-test>
-  
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -10">
      <compile files="FieldJ.aj" options="-1.5"/>
      <run class="FieldJ"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -11">
      <compile files="FieldK.aj" options="-1.5"/>
      <run class="FieldK"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -12">
      <compile files="FieldL.aj" options="-1.5"/>
      <run class="FieldL"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -13">
      <compile files="FieldM.aj" options="-1.5"/>
      <run class="FieldM"/>
@@ -4342,186 +4342,186 @@
        <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -16">
      <compile files="FieldP.aj" options="-1.5">
        <message kind="error" line="10" text="static intertype field declarations cannot refer to type variables from the target generic type"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="field itd using type variable from target type -17">
      <compile files="FieldQ.aj" options="-1.5"/>
      <run class="FieldQ"/>
    </ajc-test>
-   
+
    <!-- Now intertype declared methods on generic types that use the target types type vars -->
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A1">
      <compile files="MethodA.aj" options="-1.5"/>
-     <run class="MethodA"/>   
+     <run class="MethodA"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A2">
      <compile files="MethodA2.aj" options="-1.5"/>
-     <run class="MethodA2"/>   
+     <run class="MethodA2"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A3">
      <compile files="MethodA3.aj" options="-1.5"/>
-     <run class="MethodA3"/>   
+     <run class="MethodA3"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - A4">
      <compile files="MethodA4.aj" options="-1.5"/>
-     <run class="MethodA4"/>   
+     <run class="MethodA4"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - B1">
      <compile files="MethodB.aj" options="-1.5">
        <message kind="error" line="16" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
      </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - C1">
      <compile files="MethodC.aj" options="-1.5"/>
-     <run class="MethodC"/>   
+     <run class="MethodC"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - D1">
      <compile files="MethodD.aj" options="-1.5"/>
-     <run class="MethodD"/>   
+     <run class="MethodD"/>
    </ajc-test>
 
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - E1">
      <compile files="MethodE.aj" options="-1.5"/>
-     <run class="MethodE"/>   
+     <run class="MethodE"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - F1">
      <compile files="MethodF.aj" options="-1.5"/>
-     <run class="MethodF"/>   
+     <run class="MethodF"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - G1">
      <compile files="MethodG.aj" options="-1.5"/>
-     <run class="MethodG"/>   
+     <run class="MethodG"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - H1">
      <compile files="MethodH.aj" options="-1.5"/>
-     <run class="MethodH"/>   
+     <run class="MethodH"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - I1">
      <compile files="MethodI.aj" options="-1.5">
        <message kind="error" line="6" text="Type mismatch: cannot convert from List&lt;Integer&gt; to List&lt;String&gt;"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - I2">
      <compile files="MethodI2.aj" options="-1.5">
        <message kind="error" line="7" text="The method m(List&lt;Integer&gt;) in the type Base&lt;Integer&gt; is not applicable for the arguments (List&lt;String&gt;)"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - J1">
      <compile files="MethodJ.aj" options="-1.5"/>
-     <run class="MethodJ"/>   
+     <run class="MethodJ"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - K1">
      <compile files="MethodK.aj" options="-1.5"/>
-     <run class="MethodK"/>   
+     <run class="MethodK"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - L1">
      <compile files="MethodL.aj" options="-1.5"/>
-     <run class="MethodL"/>   
+     <run class="MethodL"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - M1">
      <compile files="MethodM.aj" options="-1.5"/>
-     <run class="MethodM"/>   
+     <run class="MethodM"/>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - M2">
      <compile files="MethodM2.aj" options="-1.5"/>
-     <run class="MethodM2"/>   
+     <run class="MethodM2"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - N1">
      <compile files="MethodN.aj" options="-1.5">
             <message kind="error" line="11" text="Type parameters can not be specified in the ITD target type - the target type I is not generic."/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - O1">
      <compile files="MethodO.aj" options="-1.5">
        <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
-     </compile>   
+     </compile>
    </ajc-test>
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - O2">
      <compile files="MethodO2.aj" options="-1.5">
        <message kind="error" line="11" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
-     </compile>   
-   </ajc-test>  
-   
+     </compile>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - P1">
      <compile files="MethodP.aj" options="-1.5"/>
-     <run class="MethodP"/>   
+     <run class="MethodP"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd using type variable from target type - Q1">
      <compile files="MethodQ.aj" options="-1.5"/>
-     <run class="MethodQ"/>   
-   </ajc-test> 
-   
+     <run class="MethodQ"/>
+   </ajc-test>
+
    <!-- Now intertype declared constructors on generic types that use the target types type vars -->
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - A1">
      <compile files="CtorA.aj" options="-1.5"/>
-     <run class="CtorA"/>   
-   </ajc-test> 
-   
+     <run class="CtorA"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - B1">
      <compile files="CtorB.aj" options="-1.5">
         <message kind="error" line="15" text="Incorrect number of type parameters supplied.  The generic type Base&lt;N,M&gt; has 2 type parameters, not 1."/>
      </compile>
-   </ajc-test> 
-   
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - C1">
      <compile files="CtorC.aj" options="-1.5"/>
-     <run class="CtorC"/>   
-   </ajc-test> 
-     
+     <run class="CtorC"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - D1">
      <compile files="CtorD.aj" options="-1.5"/>
-     <run class="CtorD"/>   
-   </ajc-test> 
-     
+     <run class="CtorD"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - E1">
      <compile files="CtorE.aj" options="-1.5"/>
-     <run class="CtorE"/>   
-   </ajc-test> 
-     
+     <run class="CtorE"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - F1">
      <compile files="CtorF.aj" options="-1.5"/>
-     <run class="CtorF"/>   
-   </ajc-test> 
-     
+     <run class="CtorF"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - G1">
      <compile files="CtorG.aj" options="-1.5"/>
-     <run class="CtorG"/>   
-   </ajc-test> 
-     
+     <run class="CtorG"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - H1">
      <compile files="CtorH.aj" options="-1.5"/>
-     <run class="CtorH"/>   
-   </ajc-test> 
-     
+     <run class="CtorH"/>
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/sharing" title="ctor itd using type variable from target type - I1">
      <compile files="CtorI.aj" options="-1.5"/>
-     <run class="CtorI"/>   
-   </ajc-test> 
- 
-   <!-- putting it all together, fields/methods/ctors and decps -->    
-  
+     <run class="CtorI"/>
+   </ajc-test>
+
+   <!-- putting it all together, fields/methods/ctors and decps -->
+
    <ajc-test dir="java5/generics/genericaspects/" title="uberaspects - A">
      <compile files="GenericAspectA.aj" options="-1.5"/>
      <run class="GenericAspectA"/>
@@ -4693,17 +4693,17 @@
 		<message kind="weave" text="Extending interface set for type 'Bottom' (GenericAspectZ.aj) to include 'ParentChildRelationship$ChildHasParent&lt;Top&gt;' (GenericAspectZ.aj)"/>
 		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped field from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.parent')"/>
 		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'ParentChildRelationship$ParentHasChildren ParentChildRelationship$ChildHasParent.getParent()')"/>
-		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/-->       
+		<message kind="weave" text="Type 'Bottom' (GenericAspectZ.aj) has intertyped method from 'ParentChildRelationship' (GenericAspectZ.aj:'void ParentChildRelationship$ChildHasParent.setParent(P)')"/-->
      </compile>
      <run class="GenericAspectZ"/>
    </ajc-test>
-      
+
    <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - two">
      <compile files="TwoA.java" outjar="twoa.jar" options="-1.5"/>
      <compile files="TwoB.java" outjar="twob.jar" options="-1.5"/>
-     <compile files="TwoX.java" inpath="twoa.jar;twob.jar" options="-1.5"/>
+     <compile files="TwoX.java" inpath="twoa.jar,twob.jar" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/sharing" title="method itd sharing type variable with generic type">
      <compile files="Simple.aj" options="-1.5"/>
      <run class="Simple"/>
@@ -4713,23 +4713,23 @@
      <compile files="Simple2.aj" options="-1.5"/>
      <run class="Simple2"/>
    </ajc-test>
-   
-   
+
+
    <ajc-test dir="java5/generics/itds" title="non static generic method itd - 2">
      <compile files="NonstaticGenericCtorITD2.aj" options="-1.5"/>
      <run class="NonstaticGenericCtorITD2"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="reusing type variable letters">
      <compile files="ReusingLetters.aj" options="-1.5"/>
      <run class="ReusingLetters"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="multiple generic itds in one file">
      <compile files="BizarroSignatures.aj" options="-1.5"/>
      <run class="BizarroSignatures"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="generic intertype field declaration, sharing type variable">
      <compile files="FieldITDOnGenericType.aj" options="-1.5"/>
      <run class="FieldITDOnGenericType">
@@ -4738,7 +4738,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 1">
      <compile files="Parse1.java" options="-1.5"/>
    </ajc-test>
@@ -4754,7 +4754,7 @@
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 4">
      <compile files="Parse4.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 5">
      <compile files="Parse5.java" options="-1.5">
        <message kind="error" line="11" text="Incorrect number of type parameters supplied.  The generic type Parse5&lt;T,S&gt; has 2 type parameters, not 3."/>
@@ -4762,20 +4762,20 @@
        <message kind="error" line="15" text="Intertype declarations can only be made on the generic type, not on a parameterized type. The name 'String' cannot be used as a type parameter, since it refers to a real type."/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds" title="Parsing generic ITDs - 6">
      <compile files="Parse6.java" options="-1.5"/>
    </ajc-test>
-   
+
    <!-- end of generic ITDs -->
-   
+
    <!-- generic decps -->
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - simple">
      <compile files="Basic.aj" options="-1.5"/>
      <run class="Basic"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #1">
      <compile files="Basic2.aj" options="-1.5">
         <message kind="error" line="11" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2 since it already has I&lt;java.lang.String&gt; in its hierarchy"/>
@@ -4787,13 +4787,13 @@
         <message kind="error" line="10" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Basic2b since it already has I in its hierarchy"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #3">
      <compile files="Basic2c.aj" options="-1.5">
         <message kind="error" line="10" text="Cannot declare parent I onto type Basic2c since it already has I&lt;java.lang.Double&gt; in its hierarchy"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - implementing two variants #4">
      <compile files="Basic2d.aj" options="-1.5"/>
    </ajc-test>
@@ -4803,40 +4803,40 @@
         <message kind="error" line="2" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Base1 since it already has I&lt;java.lang.String&gt; in its hierarchy"/>
      </weave>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #2">
      <weave classesFiles="Base2.java" aspectsFiles="Asp2.aj" options="-1.5,-showWeaveInfo">
         <message kind="error" line="2" text="Cannot declare parent I&lt;java.lang.Integer&gt; onto type Base2 since it already has I in its hierarchy"/>
      </weave>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #3">
      <weave classesFiles="Base3.java" aspectsFiles="Asp3.aj" options="-1.5,-showWeaveInfo">
         <message kind="error" line="2" text="Cannot declare parent I onto type Base3 since it already has I&lt;java.lang.Double&gt; in its hierarchy"/>
      </weave>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp/binary" title="generic decp binary - implementing two variants #4">
      <weave classesFiles="Base4.java" aspectsFiles="Asp4.aj" options="-1.5,-showWeaveInfo"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - incorrect number of type parameters">
      <compile files="Basic3.aj" options="-1.5">
        <message kind="error" line="10" text="Type pattern does not match because the wrong number of type parameters are specified: Type I requires 1 parameter(s)"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds">
      <compile files="Basic4.aj" options="-1.5"/>
      <run class="Basic4"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/decp" title="generic decp - specifying bounds but breaking them">
      <compile files="Basic5.aj" options="-1.5">
        <message kind="error" line="7" text="Type java.lang.String does not meet the specification for type parameter 1 (T extends java.lang.Number) in generic type I"/>
      </compile>
    </ajc-test>
-     
+
    <ajc-test dir="java5/generics/decp" title="generic decp - with parameterized on the target">
      <compile files="Basic6.aj" options="-1.5,-showWeaveInfo">
        <message kind="weave" text="Extending interface set for type 'Basic6' (Basic6.aj) to include 'K&lt;java.lang.Integer&gt;' (Basic6.aj)"/>
@@ -4845,9 +4845,9 @@
    </ajc-test>
 
    <!-- end of generic decps -->
-   
+
    <!-- generics/itds and binary weaving -->
-   
+
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - A">
    	   <compile files="TestA_generictype.java" outjar="code.jar" options="-1.5"/>
        <compile files="TestA_aspect.aj,TestA_class.java" inpath="code.jar" options="-1.5"/>
@@ -4859,7 +4859,7 @@
        <compile files="TestB_aspect1.aj,TestB_aspect2.aj,TestB_class.java" inpath="code.jar" options="-1.5"/>
        <run class="TestB_class"/>
    </ajc-test>
-    
+
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 1">
    	   <compile files="BaseClass.java" outjar="code.jar" options="-1.5"/>
        <compile files="A1.aj" inpath="code.jar" options="-1.5"/>
@@ -4869,7 +4869,7 @@
         </stderr>
         </run>
     </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/binaryweaving" vm="1.5" title="binary weaving ITDs - 2">
    	   <compile files="BaseClass.java,A1.aj" outjar="code.jar" options="-1.5,-showWeaveInfo">
    	     <message kind="weave" text="Type 'BaseClass' (BaseClass.java) has intertyped field from 'A1' (A1.aj:'java.util.List&lt;java.lang.String&gt; BaseClass.list1')"/>
@@ -4899,9 +4899,9 @@
     </ajc-test>
 
    <!-- end of generics/itds and binary weaving -->
-   
+
    <!-- generics/itds and bridge methods -->
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 1">
    	   <compile files="Sub1.java,Super1.java,X1.aj" options="-1.5"/>
        <run class="X1"/>
@@ -4920,7 +4920,7 @@
    	 <compile files="X2.aj,Util.java" inpath="code.jar" options ="-1.5"/>
      <run class="X2"/>
    </ajc-test>
-      
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 3">
    	 <compile files="Sub3.java,Super3.java,X3.aj" options="-1.5"/>
      <run class="X3"/>
@@ -4930,7 +4930,7 @@
    	 <compile files="X3.aj" inpath="code.jar" options ="-1.5"/>
      <run class="X3"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridge methods - 4">
    	 <compile files="Sub4.java,Super4.java,X4.aj" options="-1.5"/>
      <run class="X4"/>
@@ -4940,36 +4940,36 @@
    	 <compile files="X4.aj" inpath="code.jar" options ="-1.5"/>
      <run class="X4"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - one">
      <compile files="OneA.java" outjar="onea.jar" options="-1.5"/>
      <compile files="OneB.java" outjar="oneb.jar" options="-1.5"/>
-     <compile files="OneX.java" inpath="onea.jar;oneb.jar" options="-1.5"/>
+     <compile files="OneX.java" inpath="onea.jar,oneb.jar" options="-1.5"/>
    </ajc-test>
-      
+
    <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - two">
      <compile files="TwoA.java" outjar="twoa.jar" options="-1.5"/>
      <compile files="TwoB.java" outjar="twob.jar" options="-1.5"/>
-     <compile files="TwoX.java" inpath="twoa.jar;twob.jar" options="-1.5"/>
+     <compile files="TwoX.java" inpath="twoa.jar,twob.jar" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/binaryBridging" title="binary bridge methods - three">
      <compile files="ThreeA.java" outjar="threea.jar" options="-1.5"/>
      <compile files="ThreeB.java" outjar="threeb.jar" options="-1.5"/>
-     <compile files="ThreeX.java" inpath="threea.jar;threeb.jar" options="-1.5"/>
+     <compile files="ThreeX.java" inpath="threea.jar,threeb.jar" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="abstract intertype methods and covariant returns">
    	   <compile files="pr91381.aj" options="-1.5"/>
        <run class="pr91381"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" title="abstract intertype methods and covariant returns - error">
    	   <compile files="pr91381_2.aj">
    	     <message kind="error" line="15" text="The return type is incompatible with A.foo()"/>
    	   </compile>
    </ajc-test>
-   
+
 
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 - normal">
      <compile files="Bridging1.aj,Util.java" options="-1.5"/>
@@ -4980,8 +4980,8 @@
          <line text="D D.method1()"/>
        </stderr>
      </run>
-   </ajc-test>  
-    
+   </ajc-test>
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="bridging with covariance 1 - itd">
      <compile files="BridgingITD1.aj,Util.java" options="-1.5"/>
      <run class="BridgingITD1">
@@ -4995,7 +4995,7 @@
 
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 1 - normal">
      <compile files="Bridging2.aj,Util.java" options="-1.5"/>
-     <run class="Bridging2"> 
+     <run class="Bridging2">
 	     <stderr>
 	       <line text="Number of methods defined for D is 2"/>
 	       <line text="java.lang.Object D.next() [BridgeMethod]"/>
@@ -5005,7 +5005,7 @@
    </ajc-test>
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 1 - itd">
      <compile files="BridgingITD2.aj,Util.java" options="-1.5"/>
-     <run class="BridgingITD2"> 
+     <run class="BridgingITD2">
 	     <stderr>
 	       <line text="Number of methods defined for D is 2"/>
 	       <line text="java.lang.Object D.next() [BridgeMethod]"/>
@@ -5013,10 +5013,10 @@
 	     </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 2 - normal">
      <compile files="Bridging3.aj,Util.java" options="-1.5"/>
-     <run class="Bridging3"> 
+     <run class="Bridging3">
 	     <stderr>
 	       <line text="Number of methods defined for D is 2"/>
 	       <line text="java.lang.Object D.id(java.lang.Object) [BridgeMethod]"/>
@@ -5024,10 +5024,10 @@
 	     </stderr>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/bridgeMethods" vm="1.5" title="basic bridging with type vars - 2 - itd">
      <compile files="BridgingITD3.aj,Util.java" options="-1.5"/>
-     <run class="BridgingITD3"> 
+     <run class="BridgingITD3">
 	     <stderr>
 	       <line text="Number of methods defined for D is 2"/>
 	       <line text="java.lang.Object D.id(java.lang.Object) [BridgeMethod]"/>
@@ -5043,8 +5043,8 @@
      <run class="pr91381"/>
    </ajc-test>
    <!-- end of generics/itds and bridge methods -->
-   
-   
+
+
    <!-- generics and  pointcuts -->
 
    <ajc-test dir="java5/generics/pointcuts" title="handler pcd and generics / type vars">
@@ -5073,7 +5073,7 @@
          <message kind="error" line="27" text="Syntax error on token"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="annotation pcds with parameterized types">
      <compile files="ParameterizedTypesInAtPCDs.aj" options="-1.5">
          <message kind="error" line="3" text="Syntax error on token"/>
@@ -5084,13 +5084,13 @@
          <message kind="error" line="13" text="Syntax error on token"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="annotation patterns with parameterized types">
      <compile files="ParameterizedTypesInAnnotationPatterns.aj" options="-1.5">
          <message kind="error" line="5" text="is not an annotation type"/>
      </compile>
    </ajc-test>
-   
+
     <ajc-test dir="java5/generics/pointcuts" title="staticinitialization and parameterized types">
      <compile files="GenericInterface.java,GenericImplementingClass.java,StaticInitializationWithParameterizedTypes.aj" options="-1.5">
          <message kind="error" line="4" text="no static initialization join points for parameterized types, use raw type instead"/>
@@ -5100,7 +5100,7 @@
          <message kind="error" line="14" text="no static initialization join points for parameterized types, use raw type instead"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="staticinitialization and parameterized type matching">
      <compile files="GenericInterface.java,GenericImplementingClass.java,ConcreteImplementingClass.java,ConcreteExtendingClass.java,StaticInitializationWithParameterizedTypesMatching.aj" options="-1.5">
          <message kind="warning" line="1" text="clinit(GenericInterface&lt;Double&gt;+)"/>
@@ -5110,7 +5110,7 @@
          <message kind="warning" line="19" text="Type pattern does not match because the wrong number of type parameters are specified: Type GenericInterface requires 1 parameter(s)"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="staticinitialization with generic types">
      <compile files="GenericInterface.java,GenericImplementingClass.java,StaticInitializationWithGenericTypes.aj" options="-1.5">
          <message kind="warning" line="1" text="one generic param, correct bounds"/>
@@ -5121,7 +5121,7 @@
          <message kind="warning" line="24" text="Type N extends java.lang.Number &amp; java.lang.Comparable does not meet the specification for type parameter 1 (N extends java.lang.Number) in generic type GenericImplementingClass"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="staticinitialization with generic types - advanced">
      <compile files="StaticInitializationWithGenericTypesAdvanced.aj" options="-1.5">
          <message kind="warning" line="76" text="simple match"/>
@@ -5140,7 +5140,7 @@
          <message kind="warning" line="27" text="Type Z extends java.lang.Number &amp; java.lang.Comparable does not meet the specification for type parameter 1 (T extends java.lang.Number &amp; java.lang.Comparable &amp; java.io.Serializable) in generic type ClassWithInterfaceBounds"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="within pcd with various parameterizations and generic types - errors">
      <compile files="WithinPointcutMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="no match for this type name: T"/>
@@ -5246,13 +5246,13 @@
          <message kind="error" line="9" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
       </compile>
    </ajc-test>
-                     
+
     <ajc-test dir="java5/generics/pointcuts" title="init and preinit with raw declaring type pattern">
      <compile files="InitializationPointcutMatchingDeclaringType.aj" options="-1.5">
          <message kind="warning" line="10" text="generic/param init matching ok"/>
          <message kind="warning" line="10" text="generic/param preinit matching ok"/>
       </compile>
-   </ajc-test>                     
+   </ajc-test>
 
    <ajc-test dir="java5/generics/pointcuts" title="init and preinit with parameterized parameter types">
      <compile files="InitializationPointcutMatchingParamTypes.aj" options="-1.5">
@@ -5277,7 +5277,7 @@
          <message kind="warning" line="51" text="the really wild show"/>
          <message kind="warning" line="52" text="the really wild show"/>
       </compile>
-   </ajc-test>      
+   </ajc-test>
 
  <ajc-test dir="java5/generics/pointcuts" title="withincode with various parameterizations and generic types - errors">
      <compile files="WithincodePointcutMatching.aj" options="-1.5">
@@ -5320,14 +5320,14 @@
         <message kind="warning" line="80" text="parameterized match"/>
      </compile>
     </ajc-test>
-                                                                           
+
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw type matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawTypeMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.*(..))"/>
          <message kind="warning" line="5" text="execution(* GenericInterface.*(..))"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/pointcuts" title="execution pcd with raw signature matching">
      <compile files="GenericInterface.java,ConcreteImplementingClass.java,GenericImplementingClass.java,RawSignatureMatching.aj" options="-1.5">
          <message kind="warning" line="4" text="execution(* GenericInterface.asInt(Number))"/>
@@ -5385,7 +5385,7 @@
          <message kind="warning" line="5" text="execution&lt;T&gt;(* GenericInterface&lt;T extends Number&gt;.asInt(T))"/>
      </compile>
    </ajc-test>
- 
+
   <ajc-test dir="java5/generics/pointcuts" title="call with various parameterizations and generic types - errors">
      <compile files="CallPointcutMatchingErrorCases.aj" options="-1.5">
          <message kind="warning" line="4" text="no match for this type name: T"/>
@@ -5394,7 +5394,7 @@
          <message kind="error" line="6" text="invalid throws pattern: a generic class may not be a direct or indirect subclass of Throwable"/>
       </compile>
    </ajc-test>
- 
+
     <ajc-test dir="java5/generics/pointcuts" title="call with various parameterizations and generic types - matching">
      <compile files="CallPointcutMatchingParamAndReturnTypes.aj" options="-1.5">
         <message kind="warning" line="7" text="raw param type matching in call ok"/>
@@ -5424,7 +5424,7 @@
         <message kind="warning" line="87" text="parameterized match"/>
      </compile>
     </ajc-test>
-    
+
    <ajc-test dir="java5/generics/pointcuts" title="call with bridge methods">
      <compile files="CallWithBridgeMethods.aj" options="-1.5">
      <!-- see testcode
@@ -5432,8 +5432,8 @@
          -->
      </compile>
    </ajc-test>
-    
-    
+
+
    <ajc-test dir="java5/generics/pointcuts" title="args with raw type and generic / parameterized sigs">
      <compile files="RawArgs.aj" options="-1.5">
      </compile>
@@ -5514,7 +5514,7 @@
          </stdout>
      </run>
    </ajc-test>
-   
+
   <ajc-test dir="java5/generics/pointcuts" title="args with generic wildcard super">
      <compile files="ArgsListOfSomethingSuper.aj" options="-1.5">
          <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List"/>
@@ -5532,16 +5532,16 @@
           </stdout>
      </run>
    </ajc-test>
-      
+
    <ajc-test dir="java5/generics/pointcuts" title="generic method matching">
      <compile files="GenericMethods.aj" options="-1.5">
          <message kind="warning" line="19" text="static generic method match"/>
          <message kind="warning" line="34" text="static generic method match"/>
-         <message kind="warning" line="24" text="instance generic method match"/>         
-         <message kind="warning" line="39" text="instance generic method match"/>         
+         <message kind="warning" line="24" text="instance generic method match"/>
+         <message kind="warning" line="39" text="instance generic method match"/>
      </compile>
    </ajc-test>
-    
+
    <ajc-test dir="java5/generics/pointcuts" title="generic wildcards in signature matching">
      <compile files="GenericWildcardsInSignatureMatching.aj" options="-1.5">
          <message kind="warning" line="5" text="set of a list"/>
@@ -5551,7 +5551,7 @@
          <message kind="warning" line="15" text="super wild match"/>
      </compile>
    </ajc-test>
-    
+
    <!-- end of generics and pointcuts tests -->
 
     <ajc-test dir="java5/generics/afterAdvice" title="after throwing with parameterized throw type">
@@ -5588,8 +5588,8 @@
             <line text="returning(List&lt;String&gt; matched at call(List MustBeString.listit(List))"/>
          </stdout>
      </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
    <ajc-test dir="java5/generics/afterAdvice" title="after returning with parameterized type and wildcards">
      <compile files="AfterReturningParameterizedWithWildcards.aj" options="-1.5">
         <message kind="warning" line="10" text="unchecked match of List&lt;Double&gt; with List when argument is an instance of List"/>
@@ -5607,7 +5607,7 @@
          </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard">
      <compile files="AfterReturningListOfSomething.aj" options="-1.5">
        <!-- warning is unchecked match of List<?> from line 28 onto line 15. -->
@@ -5629,7 +5629,7 @@
             <line text="super wild type matches execution(HashSet AfterReturningListOfSomething.setOf(HashSet))"/>
          </stdout>
      </run>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard extends">
      <compile files="AfterReturningListOfSomethingExtends.aj" options="-1.5">
@@ -5646,7 +5646,7 @@
          </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/afterAdvice" title="after returning with generic wildcard super">
      <compile files="AfterReturningListOfSomethingSuper.aj" options="-1.5">
          <message kind="warning" line="32" text="unchecked match of List&lt;? super Number&gt; with List"/>
@@ -5664,7 +5664,7 @@
           </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test title="ajdk notebook: erasure matching examples" dir="java5/generics/ajdk">
        <compile files="ErasureMatching.aj" options="-1.5">
            <message kind="warning" line="18" text="static generic method match"/>
@@ -5673,27 +5673,27 @@
            <message kind="warning" line="28" text="field in generic type match"/>
        </compile>
    </ajc-test>
-   
+
    <ajc-test title="ajdk notebook: simple parameterized type matching examples" dir="java5/generics/ajdk">
        <compile files="SimpleParameterizedTypeExamples.aj" options="-1.5">
-           <message kind="warning" line="34" text="get myStrings 1"/>           
-           <message kind="warning" line="34" text="get myStrings 2"/>           
-           <message kind="warning" line="38" text="get myStrings 1"/>           
-           <message kind="warning" line="38" text="get myStrings 2"/>           
-           <message kind="warning" line="35" text="get myFloats 1"/>           
-           <message kind="warning" line="35" text="get myFloats 2"/>           
-           <message kind="warning" line="35" text="get myFloats 3"/>           
-           <message kind="warning" line="34" text="getter 1"/>           
-           <message kind="warning" line="35" text="getter 1"/>           
-           <message kind="warning" line="34" text="getter 2"/>           
-           <message kind="warning" line="35" text="getter 2"/>           
-           <message kind="warning" line="34" text="getter 3"/>           
-           <message kind="warning" line="35" text="getter 4"/>           
-           <message kind="warning" line="25" text="call 1"/>           
-           <message kind="warning" line="25" text="call 2"/>           
+           <message kind="warning" line="34" text="get myStrings 1"/>
+           <message kind="warning" line="34" text="get myStrings 2"/>
+           <message kind="warning" line="38" text="get myStrings 1"/>
+           <message kind="warning" line="38" text="get myStrings 2"/>
+           <message kind="warning" line="35" text="get myFloats 1"/>
+           <message kind="warning" line="35" text="get myFloats 2"/>
+           <message kind="warning" line="35" text="get myFloats 3"/>
+           <message kind="warning" line="34" text="getter 1"/>
+           <message kind="warning" line="35" text="getter 1"/>
+           <message kind="warning" line="34" text="getter 2"/>
+           <message kind="warning" line="35" text="getter 2"/>
+           <message kind="warning" line="34" text="getter 3"/>
+           <message kind="warning" line="35" text="getter 4"/>
+           <message kind="warning" line="25" text="call 1"/>
+           <message kind="warning" line="25" text="call 2"/>
         </compile>
    </ajc-test>
-   
+
    <ajc-test title="ajdk notebook: mixed parameterized types and generic methods" dir="java5/generics/ajdk">
        <compile files="MixedParameterizedAndTypeVariables.aj" options="-1.5">
            <message kind="warning" line="13" text="erasure match"/>
@@ -5722,7 +5722,7 @@
            <message kind="warning" line="11" text="match"/>
        </compile>
    </ajc-test>
-   
+
    <ajc-test title="ajdk notebook: args examples" dir="java5/generics/ajdk">
        <compile files="ArgsExamples.aj" options="-1.5">
            <message kind="warning" line="15" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt; when argument is an instance of List at join point method-execution(void C.goo(List&lt;? extends Number&gt;)) [Xlint:uncheckedArgument]"/>
@@ -5738,8 +5738,8 @@
                <line text="args List of Double"/>
            </stdout>
        </run>
-   </ajc-test>   
-   
+   </ajc-test>
+
    <ajc-test title="ajdk notebook: after returning examples" dir="java5/generics/ajdk">
        <compile files="AfterReturningExamples.aj" options="-1.5">
            <message kind="warning" line="20" text="unchecked match of List&lt;Double&gt; with List&lt;? extends Number&gt;"/>
@@ -5764,11 +5764,11 @@
                <line text="a1 5.0"/>
                <line text="a1 10.0"/>
                <line text="a3 5.0"/>
-               <line text="a3 10.0"/>          
+               <line text="a3 10.0"/>
             </stdout>
        </run>
-   </ajc-test>   
- 
+   </ajc-test>
+
    <ajc-test title="ajdk notebook: args and wildcards examples" dir="java5/generics/ajdk">
        <compile files="WildcardArgsExamples.aj" options="-1.5">
            <message kind="warning" line="6" text="unchecked match of List&lt;? extends Number&gt; with List"/>
@@ -5782,19 +5782,19 @@
                <line text="advice match 2 at call(void C.goo4(List))"/>
            </stdout>
        </run>
-   </ajc-test>  
+   </ajc-test>
 
    <ajc-test title="ajdk notebook: pointcut in generic class example" dir="java5/generics/ajdk">
        <compile files="PointcutInGenericClassExample.aj" options="-1.5">
            <message kind="warning" line="23" text="parameterized with C"/>
            <message kind="warning" line="29" text="parameterized with D"/>
        </compile>
-   </ajc-test>  
+   </ajc-test>
 
    <!-- ============================================================== -->
    <!--     End of generics tests                                      -->
    <!-- ============================================================== -->
-   
+
    <ajc-test dir="bugs150/pr98901" title="public method with declare @method">
      <compile files="Case01.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B01">
@@ -5803,11 +5803,11 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="Compiler error due to a wrong exception check in try blocks">
      <compile files="pr82989.aj" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr98901" title="public method on the aspect that declares @method on it">
      <compile files="Case02.aj" options="-1.5 -Xlint:error"/>
      <run class="B02">
@@ -5816,7 +5816,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr98901" title="public annotated method">
      <compile files="Case03.aj" options="-1.5 -Xlint:error"/>
      <run class="B03">
@@ -5825,7 +5825,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public ITD method with declare @method">
      <compile files="Case04.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B04">
@@ -5843,7 +5843,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public ITD-on-itself method with declare @method">
      <compile files="Case06.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B06">
@@ -5852,7 +5852,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself method">
      <compile files="Case07.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B07">
@@ -5861,7 +5861,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public method on an Interface with declare @method">
      <compile files="Case08.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B08">
@@ -5879,7 +5879,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public ITD method onto an Interface with declare @method">
      <compile files="Case10.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B10">
@@ -5888,7 +5888,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public annotated ITD method onto an Interface">
      <compile files="Case11.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B11">
@@ -5897,7 +5897,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract method with declare @method">
      <compile files="Case12.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B12">
@@ -5915,7 +5915,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated method">
      <compile files="Case14.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B14">
@@ -5924,7 +5924,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD method with declare @method">
      <compile files="Case15.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B15">
@@ -5942,7 +5942,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD-on-itself method with declare @method">
      <compile files="Case17.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B17">
@@ -5951,7 +5951,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated ITD-on-itself method">
      <compile files="Case18.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B18">
@@ -5960,7 +5960,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract method on an Interface with declare @method">
      <compile files="Case19.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B19">
@@ -5978,7 +5978,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract ITD method onto an Interface with declare @method">
      <compile files="Case21.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B21">
@@ -5987,7 +5987,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public abstract annotated ITD method onto an Interface">
      <compile files="Case22.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B22">
@@ -5996,7 +5996,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public field with declare @field">
      <compile files="Case23.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B23">
@@ -6005,7 +6005,7 @@
          </stdout>
        </run>
    </ajc-test>
-  
+
 
 <ajc-test dir="bugs150/pr98901" title="public field on the aspect that declares @field on it">
      <compile files="Case24.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
@@ -6015,7 +6015,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
 <ajc-test dir="bugs150/pr98901" title="public annotated field">
      <compile files="Case25.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B25">
@@ -6024,7 +6024,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
     <ajc-test dir="bugs150/pr98901" title="public ITD field with declare @field">
      <compile files="Case26.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B26">
@@ -6042,7 +6042,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
     <ajc-test dir="bugs150/pr98901" title="public ITD-on-itself field with declare @field">
      <compile files="Case28.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B28">
@@ -6051,7 +6051,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
     <ajc-test dir="bugs150/pr98901" title="public annotated ITD-on-itself field">
      <compile files="Case29.aj" options="-1.5 -Xlint:error -Xdev:NoAtAspectJProcessing"/>
      <run class="B29">
@@ -6060,7 +6060,7 @@
          </stdout>
        </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="Unable to build shadows">
      <compile files="pr109728.java" options="-1.5"/>
    </ajc-test>
@@ -6070,13 +6070,13 @@
        <message kind="error" line="10" text="Cannot declare parent B&lt;java.lang.Number&gt; onto type C since it already has A&lt;java.lang.String&gt; in its hierarchy"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110788" title="bad generic decp - 2">
      <compile files="Case2.java" options="-1.5">
        <message kind="error" line="8" text="Cannot declare parent A&lt;java.lang.Number&gt; onto type C since it already has A&lt;java.lang.String&gt; in its hierarchy"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110788" title="bad generic decp - 3">
      <compile files="Case3.java" options="-1.5"/>
    </ajc-test>
@@ -6084,10 +6084,10 @@
    <ajc-test dir="bugs150/pr110788" title="bad generic decp - 4">
      <compile files="Case4.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110927" title="cant create signature attribute">
      <compile files="Case1.java" options="-1.5"/>
-   </ajc-test>   
+   </ajc-test>
 
    <ajc-test dir="bugs150/pr72834" title="broken dispatch">
      <compile files="Trouble.java">
@@ -6095,20 +6095,20 @@
        <message kind="error" line="9" text="The method getName() is undefined for the type A"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr73856" title="missing accessor">
      <compile files="MissingAccessor.java"/>
      <run class="MissingAccessor"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr90143" title="cant call super methods">
      <compile files="A.aj"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="cunning declare parents">
      <compile files="pr92311.aj"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="ITD varargs problem">
      <compile files="pr110906.aj" options="-1.5"/>
      <run class="pr110906">
@@ -6119,12 +6119,12 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="generic itds and abstract method error">
      <compile files="pr102357.aj"/>
      <run class="pr102357"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150" title="unexpected error unboundFormalInPC">
      <compile files="pr112027.aj"/>
    </ajc-test>
@@ -6138,11 +6138,11 @@
        </stdout>
       </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr112602" title="ClassCastException with generic wildcard">
      <compile files="GenericInterface.java,Implementation.java" options="-1.5,-emacssym"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 1">
      <compile files="Case1.java" options="-1.5">
        <message kind="warning" line="27" text="no match for this type name: Branch [Xlint:invalidAbsoluteTypeName]"/>
@@ -6153,15 +6153,15 @@
        <message kind="error" line="39" text="List cannot be resolved to a type"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 2">
      <compile files="Case2.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 3">
      <compile files="Case3.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 4">
      <compile files="Case4.java" options="-1.5"/>
    </ajc-test>
@@ -6173,7 +6173,7 @@
        <message kind="error" line="15" text="can't override java.util.List&lt;java.lang.String&gt; I.foo() with java.util.List&lt;java.lang.Integer&gt; A.foo() return types don't match"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 6">
      <compile files="Case6.java" options="-1.5">
        <message kind="error" line="8" text="N cannot be resolved to a type"/>
@@ -6184,28 +6184,28 @@
    <ajc-test dir="bugs150/pr110307" title="Cant provide default implementation via ITD - 7">
      <compile files="Case7.java" options="-1.5"/>
      <run class="Case7">
-       <stderr> 
+       <stderr>
          <line text="in=hello out=hello"/>
          <line text="in=35 out=35"/>
          <line text="in=[] out=[]"/>
        </stderr>
      </run>
-   </ajc-test>  
-   
+   </ajc-test>
+
    <!-- generic ITDs -->
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design A">
      <compile files="DesignA.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design B">
      <compile files="DesignB.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design C">
      <compile files="DesignC.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design D">
      <compile files="DesignD.java" options="-1.5"/>
    </ajc-test>
@@ -6213,22 +6213,22 @@
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design E">
      <compile files="DesignE.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design F">
      <compile files="DesignF.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="java5/generics/itds/design" title="generic itds - design G">
      <compile files="DesignG.java" options="-1.5"/>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr116626" title="NPE in WeavingAdaptor">
      <compile files="com/foo/bar/Test.java, TestAspect.aj" options="-1.5"/>
      <run class="com.foo.bar.Test" ltw="aop.xml"
      >
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java, accounts/recovery/Recovery.aj"/>
      <run class="services.account.StockQuoteServiceTest">
@@ -6242,7 +6242,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call not self">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java, accounts/recovery/RecoveryNotSelf.aj"/>
      <run class="services.account.StockQuoteServiceTest">
@@ -6256,7 +6256,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using -XterminateAfterCompilation and LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
      <compile files="accounts/recovery/Recovery.aj" options="-XterminateAfterCompilation"/>
@@ -6266,7 +6266,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
      <compile files="accounts/recovery/Recovery.aj"/>
@@ -6276,7 +6276,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call not self using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
      <compile files="accounts/recovery/RecoveryNotSelf.aj" options="-1.4"/>
@@ -6286,7 +6286,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call self and not self using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
      <compile files="accounts/recovery/Recovery.aj, accounts/recovery/RecoveryNotSelf.aj"/>
@@ -6297,7 +6297,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using LTW and -XnoInline">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java"/>
      <compile files="accounts/recovery/Recovery.aj"/>
@@ -6307,7 +6307,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="bugs150/pr121385" title="override protected pointcut in aop.xml concrete aspect">
      <compile files="Hello.java"/>
      <compile files="World.aj, ConcreteWorld.aj" options="-1.4"/>

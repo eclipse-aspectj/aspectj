@@ -10,7 +10,7 @@
      <line text="@AspectWithConstant$Loggable()"/>
      </stdout></run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice">
      <compile files="Hello.java JavaHelper.java"/>
      <run class="Hello" ltw="aop.xml">
@@ -21,7 +21,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 2">
      <compile files="Hello.java JavaHelper.java"/>
      <run class="Hello" ltw="aop2.xml">
@@ -39,7 +39,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 3">
      <compile files="Hello.java JavaHelper.java"/>
      <run class="Hello" ltw="aop3.xml">
@@ -57,7 +57,7 @@
        </stderr>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 4">
      <compile files="Hello.java JavaHelper.java"/>
      <run class="Hello" ltw="aop4.xml">
@@ -75,8 +75,8 @@
        </stderr>
      </run>
    </ajc-test>
-   
-   
+
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 5">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop5.xml">
@@ -87,8 +87,8 @@
        </stdout>
      </run>
    </ajc-test>
-   
-   
+
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 6">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop6.xml">
@@ -100,7 +100,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 7">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop7.xml">
@@ -124,7 +124,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 9">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop9.xml">
@@ -133,7 +133,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 10">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop10.xml">
@@ -143,7 +143,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 11">
      <compile files="Hello2.java JavaHelper.java"/>
      <run class="Hello2" ltw="aop11.xml">
@@ -153,7 +153,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 12">
      <compile files="Hello3.java JavaHelper.java"/>
      <run class="Hello3" ltw="aop12.xml">
@@ -165,7 +165,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 13">
      <compile files="Hello2.java JavaHelper2.java"/>
      <run class="Hello2" ltw="aop13.xml">
@@ -455,7 +455,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/verify" title="verify perthis">
-<compile files="Runner.aj" inpath="code.jar" classpath="groovy-1.8.0.jar;asm-3.2.jar" options="-1.6 -Xset:generateStackMaps=true"/>
+<compile files="Runner.aj" inpath="code.jar" classpath="groovy-1.8.0.jar,asm-3.2.jar" options="-1.6 -Xset:generateStackMaps=true"/>
 <run class="Runner">
   <stdout>
   <line text="AA"/>
@@ -599,7 +599,7 @@
 <ajc-test dir="bugs1612/pr345172" title="incorrect annos">
 <compile files="InterType.java" options="-1.5 -showWeaveInfo">
 <message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int))' in Type 'InterType' (InterType.java:21) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
-<!-- 
+<!--
 <message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int, int))' in Type 'InterType' (InterType.java:24) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
 <message kind="weave" text="Join point 'method-execution(void InterType.m1(int))' in Type 'InterType' (InterType.java:28) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
 -->
@@ -722,7 +722,7 @@
   	</stdout>
   	</run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs1612/pr292239" title="throws clause - 2">
   	<compile files="Code2.java" options="-1.5 -showWeaveInfo">
   	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code2.n2())' in Type 'mypackage.Code2' (Code2.java:17) advised by afterThrowing advice from 'mypackage.Azpect' (Code2.java:7)"/>
@@ -734,9 +734,9 @@
   	</stdout>
   	</run>
   </ajc-test>
-<!--  
+<!--
 
-  
+
   <ajc-test dir="bugs1611/pr336136" title="itit">
     <compile files="Country_Roo_Op4j.java">
     <message kind="error" text="The import com.foo cannot be resolved" line="1"/>
@@ -748,8 +748,8 @@
     <message kind="error" text="can't determine modifiers of missing type Country_Roo_Op4j$Keys"/>
     </compile>"
   </ajc-test>
-  
+
   -->
-  
-  
+
+
 </suite>

@@ -21,17 +21,17 @@
        </stdout>
      </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr296484" title="optimizing annotation binding">
      <compile files="AnnoBinding.java" options="-1.5"/>
      <run class="AnnoBinding"/>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr296484" title="optimizing annotation binding - 2">
      <compile files="Perf.java" options="-1.5"/>
      <run class="Perf"/>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr295092" title="perthis ltw">
      <compile files="AbstractAspect.aj" options="-1.5" outjar="aspects.jar"/>
      <compile files="Wibble.java"/>
@@ -44,12 +44,12 @@
        <message kind="error" text="cannot convert"/>
      </compile>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr296040" title="broken generated code">
      <compile files="ErrorClass.java" options="-1.5" classpath="gc10rc4.jar"/>
      <run class="ErrorClass"/>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr293457" title="hierarchy builder npe">
      <compile files="com/citi/gdos/smart/applib/service/cache/CachingIntroduction.aj org/springmodules/cache/annotations/Cacheable.java" options="-1.5 -emacssym">
      <message kind="warning" text="no match for this type name: Setter"/>
@@ -57,11 +57,11 @@
      <message kind="error" text="The attribute modelId is undefined for the"/>
      </compile>
   </ajc-test>
-  
+
   <ajc-test dir="features167/timers/one" title="timers - 1">
     <compile files="Code.java Code2.java" outjar="code.jar" options="-1.5 -Xlint:ignore"/>
     <compile files="Asp.java" options="-1.5 -Xlint:ignore" outjar="asp.jar"/>
-    <run class="Code2" ltw="aop.xml" classpath="code.jar;asp.jar">
+    <run class="Code2" ltw="aop.xml" classpath="code.jar,asp.jar">
       <stderr>
         <line text="info AspectJ"/>
         <line text="info register"/>
@@ -77,7 +77,7 @@
       </stderr>
     </run>
   </ajc-test>
-  
+
   <ajc-test dir="features167/timers/one" title="timers - 2">
     <compile files="Code.java Code2.java Asp.java" options="-1.5 -timers -Xset:timersPerJoinpoint=8,timersPerFastMatchCall=3">
 <!--        <line text="info AspectJ"/>
@@ -101,13 +101,13 @@
        <message kind="weave" text="Join point 'method-execution(void pkg.C.m())' in Type 'pkg.C' (CaseOne.java:10) advised by before advice from 'pkg.X' (CaseOne.java:14)"/>
      </compile>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr293510" title="execution fastmatch - 2">
      <compile files="CaseTwo.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Join point 'method-execution(void pkg.C.m())' in Type 'pkg.C' (CaseTwo.java:9) advised by before advice from 'pkg.X' (CaseTwo.java:13)"/>
      </compile>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr293203" title="anno matching">
      <compile files="Foo.java" options="-1.5"/>
      <run class="Foo">
@@ -118,7 +118,7 @@
        </stdout>
      </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr288064" title="outer class names - scala">
      <compile files="Main.java Outer.java Aspect.java" options="-1.5"/>
      <run class="test.Main">
@@ -128,16 +128,16 @@
        </stdout>
      </run>
   </ajc-test>
-  
+
   <ajc-test dir="bugs167/pr288064" title="outer class names - scala - ltw">
      <compile files="Main.java Outer.java" outjar="app.jar" options="-1.5"/>
      <compile files="Aspect.java" outjar="asp.jar" options="-Xlint:ignore -1.5"/>
-     <run class="test.Main" classpath="app.jar;asp.jar" ltw="aop.xml">
+     <run class="test.Main" classpath="app.jar,asp.jar" ltw="aop.xml">
        <stdout>
          <line text="advice"/>
          <line text="method"/>
        </stdout>
      </run>
   </ajc-test>
-   
+
 </suite>
