@@ -476,7 +476,7 @@ public abstract class AjcTestCase extends TestCase {
 			addExtra(failureReport, "error", extraErrors);
 			addExtra(failureReport, "fail", extraFails);
 			addExtra(failureReport, "weaveInfo", extraWeaves);
-			failureReport.append("\ncommand was: ajc");
+			failureReport.append("\ncommand was: 'ajc");
 			String[] args = result.getArgs();
 			for (String arg : args) {
 				failureReport.append(" ");
@@ -484,7 +484,7 @@ public abstract class AjcTestCase extends TestCase {
 			}
 			String report = failureReport.toString();
 			System.err.println(failureReport);
-			fail(message + "\n" + report);
+			fail(message + "'\n" + report);
 		}
 	}
 
