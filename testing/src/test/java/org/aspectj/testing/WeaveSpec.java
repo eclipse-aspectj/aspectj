@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -52,21 +52,21 @@ public class WeaveSpec extends CompileSpec {
 			inTestCase.assertNoMessages(result,failMessage);
 			File sandbox = inTestCase.getSandboxDirectory();
 			createJar(sandbox,"classes.jar",true);
-			
-			inTestCase.setShouldEmptySandbox(false); 
+
+			inTestCase.setShouldEmptySandbox(false);
 			setFiles(aspectsFiles);
 			String options = getOptions();
 			if (options == null) {
-				setOptions(""); 
+				setOptions("");
 			}
 			setClasspath("classes.jar");
 			args = buildArgs();
 			result = inTestCase.ajc(base,args);
 			inTestCase.assertNoMessages(result,failMessage);
 			createJar(sandbox,"aspects.jar",false);
-			
+
 			args = buildWeaveArgs();
-			inTestCase.setShouldEmptySandbox(false); 
+			inTestCase.setShouldEmptySandbox(false);
 			result = inTestCase.ajc(base,args);
 			AjcTestCase.MessageSpec messageSpec = buildMessageSpec();
 			inTestCase.assertMessages(result,failMessage,messageSpec);
@@ -79,7 +79,7 @@ public class WeaveSpec extends CompileSpec {
 	public void setClassesFiles(String files) {
 		this.classesFiles = files;
 	}
-	
+
 	public void setAspectsFiles(String files) {
 		this.aspectsFiles = files;
 	}
@@ -112,7 +112,7 @@ public class WeaveSpec extends CompileSpec {
 		jarOut.flush();
 		jarOut.close();
 	}
-	
+
 	private void collectClassFiles(File inDir, List<File> inList, List<File> toExclude) {
 		File[] contents = inDir.listFiles();
 		for (File content : contents) {
@@ -125,7 +125,7 @@ public class WeaveSpec extends CompileSpec {
 			}
 		}
 	}
-	
+
 	private void copyFile(File f, OutputStream dest) throws IOException {
 		FileInputStream fis = new FileInputStream(f);
 		byte[] buf = new byte[4096];
@@ -135,7 +135,7 @@ public class WeaveSpec extends CompileSpec {
 		}
 		fis.close();
 	}
-	
+
 	private String[] buildWeaveArgs() {
 		StringBuffer args = new StringBuffer();
 		if (getOptions() != null) {
@@ -152,6 +152,11 @@ public class WeaveSpec extends CompileSpec {
 		args.append(" ");
 		args.append("-aspectpath ");
 		args.append("aspects.jar");
+		if (getXlintfile() != null) {
+			args.append(" -Xlintfile ");
+			args.append(getXlintfile());
+			args.append(" ");
+		}
 		String argumentString = args.toString();
 		StringTokenizer strTok = new StringTokenizer(argumentString," ");
 		String[] ret = new String[strTok.countTokens()];
@@ -160,5 +165,5 @@ public class WeaveSpec extends CompileSpec {
 		}
 		return ret;
 	}
-	
+
 }
