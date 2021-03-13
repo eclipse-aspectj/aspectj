@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.taskdefs;
@@ -35,7 +35,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
     static boolean loggedWarning = false;
     static boolean runAllTests = true;
     static List<File> tempFiles = new ArrayList<>();
-    
+
     private static File getClassesDir() {
         File tempDir = FileUtil.getTempDir("AjcTaskCompileCommandTest-classes");
         tempFiles.add(tempDir);
@@ -48,7 +48,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
         list.add("-classpath");
         StringBuilder classpath = new StringBuilder();
         classpath.append(Globals.F_aspectjrt_jar.getAbsolutePath());
-        if (LangUtil.is19VMOrGreater()) {
+        if (LangUtil.is9VMOrGreater()) {
         	classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
         }
         list.add(classpath.toString());
@@ -56,7 +56,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
 
     static boolean doWait(IMessageHolder holder, int seconds, int timeout) {
         return AjcTaskCompileCommand
-            .waitUntilMessagesQuiet(holder, seconds, timeout);        
+            .waitUntilMessagesQuiet(holder, seconds, timeout);
     }
 
     public AjcTaskCompileCommandTest(String name) {
@@ -85,30 +85,30 @@ public class AjcTaskCompileCommandTest extends TestCase {
     public void testDefaultList() {
         runSimpleTest("../taskdefs/testdata/default.lst", 0);
     }
-    
+
     public void testCompileErrorList() {
         runSimpleTest("../taskdefs/testdata/compileError.lst", 1);
     }
 
-    
+
     public void testWaitUntilMessagesQuiet_1_2() {
         if (runAllTests) checkWait(1, 2, 0, 0);
     }
-    
+
     public void testWaitUntilMessagesQuiet_1_10() {
         if (runAllTests) checkWait(1, 10, 0, 0);
     }
-    
+
     public void testWaitUntilMessagesQuiet_8_10() {
         checkWait(8, 10, 0, 0);
     }
-    
+
     // XXX two async tests might fail if adder thread starved
-    
+
     public void testWaitUntilMessagesQuiet_1_10_4_1() {
         if (runAllTests) checkWait(1, 10, 4, 1);
     }
-    
+
     public void testWaitUntilMessagesQuiet_8_10_2_1() {
         if (runAllTests) checkWait(8, 20, 2, 1);
     }
@@ -129,7 +129,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
         }
         runTest(list, expectedErrors);
     }
-    
+
     void runTest(ArrayList<String> args, int expectedErrors) {
         AjcTaskCompileCommand command =
             new AjcTaskCompileCommand();
@@ -140,14 +140,14 @@ public class AjcTaskCompileCommandTest extends TestCase {
         final boolean pass = (result == expectPass);
         if (!pass) {
             String m = expectPass ? "pass" : "fail";
-        
+
             assertTrue("expected " + m + ": " + args+"\n Messages:"+handler.getUnmodifiableListView(), false);
         }
     }
 
     void checkWait(final int seconds, final int timeout, int toAdd, int addInterval) {
-        final String testCase = "checkWait(seconds=" 
-                            + seconds + ", timeout=" + timeout; 
+        final String testCase = "checkWait(seconds="
+                            + seconds + ", timeout=" + timeout;
         final MessageHandler mhandler = new MessageHandler();
         final long startTime = System.currentTimeMillis();
         final long testTimeout = startTime + (timeout * 2000l);
@@ -160,7 +160,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
                 System.out.println("warning - test will fail if adder thread starved");
                 loggedWarning = true;
             }
-            final MessageAdder adder 
+            final MessageAdder adder
                 = new MessageAdder(mhandler, toAdd, addInterval);
             final String label = testCase + " wait(" + toAdd + ", " + addInterval + ")";
             class Result {
@@ -173,15 +173,15 @@ public class AjcTaskCompileCommandTest extends TestCase {
                     waitResult.addedThread
                         = new Thread(adder, label + "-child");
                     waitResult.addedThread.start();
-                    waitResult.result = 
+                    waitResult.result =
                         AjcTaskCompileCommandTest.doWait(mhandler, seconds, timeout);
                 }
             }, label);
-            
+
             testThread.start();
-            
+
             try {
-                testThread.join(testTimeout - startTime);            
+                testThread.join(testTimeout - startTime);
             } catch (InterruptedException e) {
                 // ignore
             }
@@ -190,13 +190,13 @@ public class AjcTaskCompileCommandTest extends TestCase {
                     long wait = testTimeout - System.currentTimeMillis();
                     if (0 < wait) {
                         waitResult.addedThread.join(wait);
-                    }            
+                    }
                 }
             } catch (InterruptedException e) {
                 // ignore
             }
             result = waitResult.result;
-            int added = adder.getNumAdded(); 
+            int added = adder.getNumAdded();
             assertEquals(testCase + " added", added, toAdd);
             if (!result) {
                 assertTrue(testCase + " result " + adder, false);
@@ -215,12 +215,12 @@ class MessageAdder implements Runnable {
     public static long MAX_MILLIS = 1000 * 30;
     public boolean stop;
     public boolean wait;
-    
+
     private final IMessageHolder messages;
     private final int numToAdd;
     private final int interval;
     private int numAdded;
-    
+
     /**
      * @param holder the IMessageHolder to add to
      * @param num the int number of messages to add
@@ -242,7 +242,7 @@ class MessageAdder implements Runnable {
         final long timeout = curTime + MAX_MILLIS;
 //        final Thread thread = Thread.currentThread();
         int numAdded = 0;
-        while (!stop && (timeout > curTime) 
+        while (!stop && (timeout > curTime)
             && (numAdded < numToAdd)) {
             long targetTime = curTime + waitBetweenAdds;
             while (!stop && (curTime < timeout)
@@ -264,7 +264,7 @@ class MessageAdder implements Runnable {
     int getNumAdded() {
         return numAdded;
     }
-    
+
     public String toString() {
         return "MessageAdder("
             + "numAdded=" + numAdded
@@ -273,9 +273,9 @@ class MessageAdder implements Runnable {
             + ", stop=" + stop
             + ", wait=" + wait
             + ", numMessages="
-            + (null == messages 
-                ? 0 
+            + (null == messages
+                ? 0
                 : messages.numMessages(null, true))
             + ")";
-    }  
+    }
 }

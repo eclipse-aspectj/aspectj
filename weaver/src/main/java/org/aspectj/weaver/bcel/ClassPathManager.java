@@ -351,7 +351,7 @@ public class ClassPathManager {
 						String jdkHome = new File(jrtFsPath).getParentFile().getParent();
 						FileSystem fs = null;
 						try {
-							if (LangUtil.is19VMOrGreater()) {
+							if (LangUtil.is9VMOrGreater()) {
 								Map<String, String> env = new HashMap<>();
 								env.put("java.home",  jdkHome);
 								fs = FileSystems.newFileSystem(JRT_URI, env);

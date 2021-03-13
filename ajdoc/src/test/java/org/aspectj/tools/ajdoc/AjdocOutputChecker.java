@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2005 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2005 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.tools.ajdoc;
@@ -25,8 +25,8 @@ import org.aspectj.util.LangUtil;
 public class AjdocOutputChecker {
 
 	/**
-	 * Checks whether the given html file contains the required String. 
-	 * 
+	 * Checks whether the given html file contains the required String.
+	 *
 	 * @param htmlFile
 	 * @param requiredString
 	 * @return true if the file contains the given string or
@@ -53,12 +53,12 @@ public class AjdocOutputChecker {
 
 	/**
 	 * Returns those strings from the given array which aren't in the html file.
-	 * 
+	 *
 	 * @param htmlFile
 	 * @param an array of requiredStrings
 	 * @return a List of those strings not found
 	 * @throws Exception
-	 */	
+	 */
 	public static List<String> getMissingStringsInFile(File htmlFile, String[] requiredStrings) throws Exception {
 		List<String> missingStrings = new ArrayList<>();
 		for (String string : requiredStrings) {
@@ -68,16 +68,16 @@ public class AjdocOutputChecker {
 		}
 		return missingStrings;
 	}
-	
+
 	/**
 	 * Checks whether the section of the html file contains the
 	 * required String
-	 * 
+	 *
 	 * @param htmlFile
 	 * @param requiredString
 	 * @param sectionHeader
-	 * @return true if the file contains the given string within the 
-	 * required section or false otherwise (or if the file is null or 
+	 * @return true if the file contains the given string within the
+	 * required section or false otherwise (or if the file is null or
 	 * not an html file)
 	 * @throws Exception
 	 */
@@ -91,7 +91,7 @@ public class AjdocOutputChecker {
 		while (line != null) {
 			if (line.contains(sectionHeader)) {
 				String nextLine = reader.readLine();
-				while (nextLine != null && 
+				while (nextLine != null &&
 						(!nextLine.contains("========"))) {
 					if (nextLine.contains(requiredString)) {
 						reader.close();
@@ -107,11 +107,11 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
-	
+
 	/**
 	 * Returns those strings from the given array which aren't in the
-	 * ajdoc html file	 
-	 *  
+	 * ajdoc html file
+	 *
 	 * @param htmlFile
 	 * @param an array of requiredStrings
 	 * @param sectionHeader
@@ -130,10 +130,10 @@ public class AjdocOutputChecker {
 	}
 
 	/**
-	 * Returns whether the class data section has the expected 
-	 * relationship and target i.e. have the relationships been 
+	 * Returns whether the class data section has the expected
+	 * relationship and target i.e. have the relationships been
 	 * applied to the type.
-	 * 
+	 *
 	 * @param the ajdoc html file
 	 * @param the detail sectionHeader, for example "DECLARE DETAIL SUMMARY"
 	 * @param the source of the relationship, for example "Point()"
@@ -143,7 +143,7 @@ public class AjdocOutputChecker {
 	 * false otherwise
 	 */
 	public static boolean classDataSectionContainsRel(File htmlFile,
-			HtmlDecorator.HtmlRelationshipKind relationship, 
+			HtmlDecorator.HtmlRelationshipKind relationship,
 			String target) throws Exception {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
@@ -154,7 +154,7 @@ public class AjdocOutputChecker {
 			if (line.contains("START OF CLASS DATA")) {
 				// found the required class data section
 				String subLine = reader.readLine();
-				while(subLine != null 
+				while(subLine != null
 						&& (!subLine.contains("========"))){
 					int relIndex = subLine.indexOf(relationship.toString());
 					int targetIndex = subLine.indexOf(target);
@@ -175,11 +175,11 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
-	
+
 	/**
-	 * Returns whether the supplied source has the expected 
+	 * Returns whether the supplied source has the expected
 	 * relationship and target within the given detail section
-	 * 
+	 *
 	 * @param the ajdoc html file
 	 * @param the detail sectionHeader, for example "DECLARE DETAIL SUMMARY"
 	 * @param the source of the relationship, for example "Point()"
@@ -188,9 +188,9 @@ public class AjdocOutputChecker {
 	 * @return true if the section contains the expected source/relationship/target,
 	 * false otherwise
 	 */
-	public static boolean detailSectionContainsRel(File htmlFile, 
-			String sectionHeader, String source, 
-			HtmlDecorator.HtmlRelationshipKind relationship, 
+	public static boolean detailSectionContainsRel(File htmlFile,
+			String sectionHeader, String source,
+			HtmlDecorator.HtmlRelationshipKind relationship,
 			String target) throws Exception {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
@@ -210,9 +210,9 @@ public class AjdocOutputChecker {
 							nextLine.contains("NAME=\"" + source + "\"") || nextLine.contains("name=\"" + source + "\"")) {
 						// found the required subsection
 						String subLine = reader.readLine();
-						while(subLine != null 
+						while(subLine != null
 								&& (!subLine.contains("========"))
-								&& (!subLine.contains("NAME") && !subLine.contains("name"))) {
+								&& (!subLine.contains("NAME=") && !subLine.contains("name="))) {
 							int relIndex = subLine.indexOf(relationship.toString());
 							int targetIndex = subLine.indexOf(target);
 							if ((relIndex != -1) && (targetIndex != -1)) {
@@ -239,9 +239,9 @@ public class AjdocOutputChecker {
 	}
 
 	/**
-	 * Returns whether the supplied source has the expected 
+	 * Returns whether the supplied source has the expected
 	 * relationship and target within the given summary section
-	 * 
+	 *
 	 * @param the ajdoc html file
 	 * @param the detail sectionHeader, for example "DECLARE SUMMARY"
 	 * @param the source of the relationship, for example "Point()"
@@ -251,10 +251,10 @@ public class AjdocOutputChecker {
 	 * false otherwise
 	 */
 	public static boolean summarySectionContainsRel(
-			File htmlFile, 
-			String sectionHeader, 
-			String source, 
-			HtmlDecorator.HtmlRelationshipKind relationship, 
+			File htmlFile,
+			String sectionHeader,
+			String source,
+			HtmlDecorator.HtmlRelationshipKind relationship,
 			String target) throws Exception {
 		if (((htmlFile == null) || !htmlFile.getAbsolutePath().endsWith("html"))) {
 			return false;
@@ -272,7 +272,7 @@ public class AjdocOutputChecker {
 					if (nextLine.contains(source)) {
 						// found the required subsection
 						String subLine = nextLine;
-						while(subLine != null 
+						while(subLine != null
 								&& (!subLine.contains("========"))
 								&& (!subLine.contains("<TR BGCOLOR=\"white\" CLASS=\"TableRowColor\">"))) {
 							int relIndex = subLine.indexOf(relationship.toString());
@@ -299,5 +299,5 @@ public class AjdocOutputChecker {
 		reader.close();
 		return false;
 	}
-	
+
 }

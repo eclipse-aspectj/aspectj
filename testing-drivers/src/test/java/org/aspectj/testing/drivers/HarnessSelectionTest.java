@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.drivers;
@@ -41,23 +41,23 @@ import junit.framework.TestCase;
  */
 public class HarnessSelectionTest extends TestCase {
     private static final String TESTDATA = "../testing-drivers/testdata";
-    private static final String INC_HARNESS_DIR 
+    private static final String INC_HARNESS_DIR
         = TESTDATA + "/incremental/harness";
-    private static final String SELECT 
+    private static final String SELECT
         = INC_HARNESS_DIR + "/selectionTest.xml";
-        
+
     /** @see testIncrementalSuite() */
-    private static final String INCREMENTAL 
+    private static final String INCREMENTAL
         = INC_HARNESS_DIR + "/suite.xml";
 
-    private static final String TITLE_LIST_ONE 
+    private static final String TITLE_LIST_ONE
         = INC_HARNESS_DIR + "/titleListOne.txt";
 
-    private static final String TITLE_LIST_PLURAL 
+    private static final String TITLE_LIST_PLURAL
         = INC_HARNESS_DIR + "/titleListPlural.txt";
-    
-    private static Hashtable SPECS = new Hashtable();    
-    
+
+    private static Hashtable SPECS = new Hashtable();
+
     private static AjcTest.Suite.Spec getSpec(String suiteFile) {
         AjcTest.Suite.Spec result = (AjcTest.Suite.Spec) SPECS.get(suiteFile);
         if (null == result) {
@@ -67,7 +67,7 @@ public class HarnessSelectionTest extends TestCase {
             } catch (IOException e) {
                 e.printStackTrace(System.err);
             }
-        }        
+        }
         try {
             return (AjcTest.Suite.Spec) result.clone();
         } catch (CloneNotSupportedException e) {
@@ -76,13 +76,13 @@ public class HarnessSelectionTest extends TestCase {
             return null; // keep compiler happy
         }
     }
-    
+
     private boolean verbose;
 
 	public HarnessSelectionTest(String name) {
 		super(name);
 	}
-    
+
     public void testFilesAvailable() {
         String[] files = new String[] {
             SELECT, INCREMENTAL, TITLE_LIST_ONE, TITLE_LIST_PLURAL
@@ -99,20 +99,20 @@ public class HarnessSelectionTest extends TestCase {
             System.err.println("skipping test - eclipse classes not available");
             return;
         }
-        String[] options = new String[] 
+        String[] options = new String[]
             { "!verbose", "!eclipse",
             };
         Exp exp = new Exp(6, 6, 0, 6, 0, 0, 0);
         checkSelection(INCREMENTAL, options, "INFIX IGNORED", exp);
     }
-    
+
     public void testKeywordSelectionBoth() {
         if (!eclipseAvailable()) {
             System.err.println("skipping test - eclipse classes not available");
             return;
         }
-        String[] options = new String[] 
-            { "-ajctestRequireKeywords=requireKeyword", 
+        String[] options = new String[]
+            { "-ajctestRequireKeywords=requireKeyword",
             "-ajctestSkipKeywords=skipKeyword,skipUnenforcedAjcLimit",
             "!verbose",
             "-eclipse",
@@ -120,14 +120,14 @@ public class HarnessSelectionTest extends TestCase {
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 1);
         checkSelection(SELECT, options, "keyword skipKeyword was found", exp);
     }
-    
+
     public void testKeywordSelectionRequire() {
         if (!eclipseAvailable()) {
             System.err.println("skipping test - eclipse classes not available");
             return;
         }
-        String[] options = new String[] 
-            { "-ajctestRequireKeywords=skipKeyword", 
+        String[] options = new String[]
+            { "-ajctestRequireKeywords=skipKeyword",
             "!verbose",
             "-eclipse",
             };
@@ -140,21 +140,21 @@ public class HarnessSelectionTest extends TestCase {
             System.err.println("skipping test - eclipse classes not available");
             return;
         }
-        String[] options = new String[] 
-            { "-ajctestSkipKeywords=requireKeyword", 
+        String[] options = new String[]
+            { "-ajctestSkipKeywords=requireKeyword",
             "!verbose",
             "-eclipse",
             };
         Exp exp = new Exp(17, 0, 17, 0, 0, 0, 17);
         checkSelection(SELECT, options, "keyword requireKeyword was found", exp);
     }
-    
+
     public void testNoOptions() {
         if (!ajcAvailable()) {
             System.err.println("skipping test - ajc classes not available");
             return;
         }
-        String[] options = new String[] 
+        String[] options = new String[]
             { "!ajc"
             };
         Exp exp = new Exp(17, 3, 14, 3, 0, 0, 4);
@@ -162,107 +162,107 @@ public class HarnessSelectionTest extends TestCase {
     }
 
     public void testEclipseOptionsSkip() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-eclipse",
                 "-ajctestRequireKeywords=eclipseOptionSkip"
             };
         Exp exp = new Exp(17, 0, 17, 0, 0, 0, 6);
         checkSelection(SELECT, options, "old ajc 1.0 option", exp);
     }
-    
+
     public void testAjcEclipseConflict() {
         if (!ajcAvailable()) {
             System.err.println("skipping test - ajc classes not available");
             return;
         }
-        String[] options = new String[] 
+        String[] options = new String[]
             { "!ajc"
             };
         Exp exp = new Exp(17, 3, 14, 3, 0, 0, 6);
         checkSelection(SELECT, options, "conflict between !eclipse and !ajc", exp);
     }
-    
+
     public void testEclipseConflict() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "^eclipse",
               "-ajctestSkipKeywords=skipUnenforcedAjcLimit"
-            };            
+            };
         Exp exp = new Exp(17, 3, 14, 3, 0, 0, 6);
         checkSelection(SELECT, options, "force conflict between eclipse", exp);
     }
-    
+
     public void testSinglePR() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-eclipse", "-ajctestPR=100"
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "bugId required", exp);
     }
-    
+
     public void testTwoPR() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-eclipse", "-ajctestPR=100,101"
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "bugId required", exp);
     }
-    
+
     public void testTitleContainsSubstringSelection() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleContains=run and ",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and", exp);
     }
-    
+
     public void testTitleContainsSubstringSelectionPlural() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleContains= run and , if skipKeyword ",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
     }
 
     public void testTitleContainsExactSelection() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleContains=run and pass",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and pass", exp);
     }
-    
+
     public void testTitleContainsExactSelectionPlural() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleContains= run and pass , omit if skipKeyword ",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
     }
 
     public void testTitleListSelection() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleList=run and pass",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 1, 16, 1, 0, 0, 16);
         checkSelection(SELECT, options, "run and pass", exp);
     }
-    
+
     public void testTitleListSelectionPlural() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleList= run and pass , omit if skipKeyword ",
-                "-eclipse" 
+                "-eclipse"
             };
         Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
         checkSelection(SELECT, options, "title", exp);
     }
 
     public void testTitleListFileSelection() {
-        String[] options = new String[] 
+        String[] options = new String[]
             { "-ajctestTitleList=" + TITLE_LIST_ONE,
                 "-eclipse"
             };
@@ -271,15 +271,15 @@ public class HarnessSelectionTest extends TestCase {
     }
 
    public void testTitleListFileSelectionPlural() {
-       String[] options = new String[] 
+       String[] options = new String[]
            { "-ajctestTitleList=" + TITLE_LIST_PLURAL,
                "-eclipse"
            };
        Exp exp = new Exp(17, 2, 15, 2, 0, 0, 15);
        checkSelection(SELECT, options, TITLE_LIST_PLURAL, exp);
-       
-       // Now check the "fail only" path 
-       options = new String[] 
+
+       // Now check the "fail only" path
+       options = new String[]
            { "-ajctestTitleFailList=" + TITLE_LIST_PLURAL,
                "-eclipse"
            };
@@ -289,7 +289,7 @@ public class HarnessSelectionTest extends TestCase {
        checkSelection(SELECT, options, "skip", exp);
    }
 
-    /** 
+    /**
      * Run the static test suite with the given options.
      * @param setupHolder the IMessageHolder for any setup messages
      * @return null if setup failed or Harness.RunResult if suite completed.
@@ -305,15 +305,15 @@ public class HarnessSelectionTest extends TestCase {
             assertTrue("expected 17 kids, got " + kids.size(), false);
         }
         if (!spec.adoptParentValues(runtime, setupHolder)) {
-            return null; 
+            return null;
         } else {
             class TestHarness extends Harness {
                 public RunResult run(AjcTest.Suite.Spec spec) {
                     return super.run(spec);
-                } 
+                }
             }
             TestHarness h = new TestHarness();
-            return h.run(spec);            
+            return h.run(spec);
         }
     }
 
@@ -334,8 +334,8 @@ public class HarnessSelectionTest extends TestCase {
             this.incomplete = incomplete;
             this.infix = infix;
         }
-    }   
-         
+    }
+
     public void checkSelection(String suiteFile, String[] options, String infoInfix, Exp exp) {
         MessageHandler holder = new MessageHandler();
         Harness.RunResult result = runSuite(suiteFile, options, holder);
@@ -345,7 +345,7 @@ public class HarnessSelectionTest extends TestCase {
         assertNotNull("Harness.RunResult", result);
         // XXX sync hack snooping of message text with skip messages, harness
         final List skipList = MessageUtil.getMessages(holder, IMessage.INFO, false, "skip");
-        final int numSkipped = skipList.size();        
+        final int numSkipped = skipList.size();
         IRunStatus status = result.status;
         assertNotNull(status);
         if (verbose) {
@@ -355,7 +355,7 @@ public class HarnessSelectionTest extends TestCase {
         assertEquals("skips", exp.skipped, numSkipped);
         IRunStatus[] children = status.getChildren();
         assertNotNull(children);
-        assertTrue(children.length + "!= expRun=" + exp.testsRun, 
+        assertTrue(children.length + "!= expRun=" + exp.testsRun,
             exp.testsRun == children.length);
         int actPass = 0;
 		for (IRunStatus child : children) {
@@ -369,25 +369,27 @@ public class HarnessSelectionTest extends TestCase {
         if (!LangUtil.isEmpty(infoInfix)) {
             int actInfix = MessageUtil.getMessages(holder, IMessage.INFO, false, infoInfix).size();
             if (actInfix != exp.infix) {
-                String s = "for infix \"" + infoInfix 
+                String s = "for infix \"" + infoInfix
                     + "\" actInfix=" + actInfix + " != expInfix=" + exp.infix;
                 assertTrue(s, false);
             }
         }
     }
-    
+
     private boolean ajcAvailable() { // XXX util
         try {
-            return (null != Class.forName("org.aspectj.compiler.base.JavaCompiler"));
+            Class.forName("org.aspectj.compiler.base.JavaCompiler");
+            return true;
         } catch (ClassNotFoundException e) {
             return false;
         }
     }
 
-    
+
     private boolean eclipseAvailable() { // XXX util
         try {
-            return (null != Class.forName("org.aspectj.ajdt.ajc.AjdtCommand"));
+            Class.forName("org.aspectj.ajdt.ajc.AjdtCommand");
+            return true;
         } catch (ClassNotFoundException e) {
             return false;
         }

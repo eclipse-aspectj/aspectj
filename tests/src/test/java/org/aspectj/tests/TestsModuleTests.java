@@ -26,7 +26,7 @@ public class TestsModuleTests extends TestCase {
 		String name = TestsModuleTests.class.getName();
 		TestSuite suite = new TestSuite(name);
 		// compiler tests, wrapped for JUnit
-		if (LangUtil.is19VMOrGreater()) {
+		if (LangUtil.is9VMOrGreater()) {
 			suite.addTest(AllTests19.suite());
 		} else {
 			suite.addTest(AllTests18.suite());

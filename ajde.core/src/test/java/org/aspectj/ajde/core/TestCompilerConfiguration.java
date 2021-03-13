@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.ajde.core;
@@ -61,7 +61,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public String getClasspath() {
 		StringBuilder classpath = new StringBuilder();
 		classpath.append(projectPath);
-        if (LangUtil.is19VMOrGreater()) {
+        if (LangUtil.is9VMOrGreater()) {
         		classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
         } else {
         		classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));

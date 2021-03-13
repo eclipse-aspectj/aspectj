@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.ajc;
@@ -364,7 +364,7 @@ public class BuildArgParser extends Main {
 		List<String> ret = new ArrayList<>();
 
 		if (parser.bootclasspath == null) {
-			if (LangUtil.is19VMOrGreater()) {
+			if (LangUtil.is9VMOrGreater()) {
 				addClasspath(LangUtil.getJrtFsFilePath(),ret);
 			} else {
 				addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
@@ -374,7 +374,7 @@ public class BuildArgParser extends Main {
 		}
 		return ret;
 	}
-	
+
 	public List<String> getModulepath(AjcConfigParser parser) {
 		List<String> ret = new ArrayList<>();
 		addClasspath(parser.modulepath, ret);
@@ -391,7 +391,7 @@ public class BuildArgParser extends Main {
 	public ArrayList<FileSystem.Classpath> handleClasspath(ArrayList<String> classpaths, String customEncoding) {
 		return super.handleClasspath(classpaths, customEncoding);
 	}
-	
+
 	/**
 	 * If the classpath is not set, we use the environment's java.class.path, but remove the aspectjtools.jar entry from that list
 	 * in order to prevent wierd bootstrap issues (refer to bug#39959).
@@ -474,7 +474,7 @@ public class BuildArgParser extends Main {
 		public List getUnparsedArgs() {
 			return unparsedArgs;
 		}
-		
+
 		public String getModuleInfoArgument() {
 			return this.moduleInfoArgument;
 		}
@@ -914,12 +914,12 @@ public class BuildArgParser extends Main {
 		}
 
 	}
-	
+
 	@Override
 	public boolean checkVMVersion(long minimalSupportedVersion) {
 		return super.checkVMVersion(minimalSupportedVersion);
 	}
-	
+
 	@Override
 	public void initRootModules(LookupEnvironment environment, FileSystem fileSystem) {
 		super.initRootModules(environment, fileSystem);

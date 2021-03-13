@@ -22,7 +22,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 	/*==========================================
 	 * Generics test plan for pointcuts.
-	 * 
+	 *
 	 * handler  PASS
 	 *   - does not permit type var spec
 	 *   - does not permit generic type (fail with type not found)
@@ -54,7 +54,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * staticinitialization PASS
 	 *   - error on parameterized type PASS N/A
 	 *   - permit parameterized type + PASS N/A
-	 *   - matching with parameterized type + N/A 
+	 *   - matching with parameterized type + N/A
 	 *   - wrong number of parameters in parameterized type  PASS N/A
 	 *   - generic type with one type parameter N/A
 	 *   - generic type with n type parameters N/A
@@ -64,7 +64,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * within  PASS
 	 *   - as above, but allows parameterized type  (disallowed in simplified plan)
 	 *   - wildcards in type parameters  N/A
-	 * this  PASS 
+	 * this  PASS
 	 *   - no type vars
 	 *   - parameterized types  - disallowed in simplification plan
 	 *        - implements
@@ -115,20 +115,20 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 *    - parameter as parameterized type  PASS
 	 *    - no join points for bridge methods  PASS
 	 * call PASS
-	 *    - no generic or parameterized declaring type patterns PASS 
+	 *    - no generic or parameterized declaring type patterns PASS
 	 *    - no parameterized throws patterns PASS
 	 *    - return type as type variable  PASS
-	 *    - return type as parameterized type PASS 
+	 *    - return type as parameterized type PASS
 	 *    - parameter as type variable   PASS
 	 *    - parameter as parameterized type  PASS
 	 *    - calls to a bridge methods PASS
 	 * after throwing - can't use parameterized type pattern
 	 * after returning - same as for args
 	 */
-	
+
 	/* ==========================================
 	 * Generics test plan for ITDs.
-	 * 
+	 *
 	 * think about:
 	 * - 'visibility' default/private/public
 	 * - static/nonstatic
@@ -148,7 +148,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * - super/extends with parameterized types <? extends List<String>>
 	 * - multiple ITDs defined in one type that reuse type variable letters, specifying different bounds
 	 * - generic aspects
-	 * 
+	 *
 	 * PASS parsing generic ITDs
 	 * PASS generic methods
 	 * PASS generic constructors
@@ -170,15 +170,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 * PASS parameterizing ITDs with type variables
      * PASS using type variables from the target type in your *STATIC* ITD (field/method/ctor) (error scenario)
      * PASS basic binary weaving of generic itds
-     * 
+     *
 	 * TODO generic aspect binary weaving (or at least multi source file weaving)
 	 * TODO binary weaving with changing types (moving between generic and simple)
 	 * TODO bridge method creation (also relates to covariance overrides..)
 	 * TODO exotic class/interface bounds ('? extends List<String>','? super anything')
 	 * TODO signature attributes for generic ITDs (public only?)
-	 * 
+	 *
 	 */
-	
+
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(GenericsTests.class);
 	}
@@ -186,15 +186,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc150.xml");
 	}
-	
+
 	public void testITDReturningParameterizedType() {
 		runTest("ITD with parameterized type");
 	}
-	
+
 	public void testPR91267_1() {
 		runTest("NPE using generic methods in aspects 1");
 	}
-	
+
 	public void testParameterizedTypeAndAroundAdvice_PR115250() {
 		runTest("parameterized type and around advice");
 	}
@@ -202,29 +202,29 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testParameterizedTypeAndAroundAdvice_PR115250_2() {
 		runTest("parameterized type and around advice - 2");
 	}
-	
+
 	public void testPR91267_2() {
 		runTest("NPE using generic methods in aspects 2");
 	}
-	
+
 	public void testPR91053() {
 		runTest("Generics problem with Set");
 	}
-	
+
 	public void testPR87282() {
 		runTest("Compilation error on generic member introduction");
 	}
-	
+
 	public void testGenericsOverrides_1() { runTest("generics and ITD overrides - 1"); }
 	public void testGenericsOverrides_2() { runTest("generics and ITD overrides - 2"); }
 	public void testGenericsOverrides_3() { runTest("generics and ITD overrides - 3"); }
 	public void testGenericsOverrides_4() { runTest("generics and ITD overrides - 4"); }
-	
 
-    public void testSelfBoundGenerics_pr117296() { 
+
+    public void testSelfBoundGenerics_pr117296() {
 	    runTest("self bounding generic types");
     }
-	
+
 	public void testPR88606() {
 		runTest("Parameterized types on introduced fields not correctly recognized");
 	}
@@ -235,14 +235,14 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
     public void testGenericsBang_pr95993() {
 	    runTest("NPE at ClassScope.java:660 when compiling generic class");
-    }    
-    
-	
+    }
+
+
 	// generic aspects
 	public void testPR96220_GenericAspects1() {runTest("generic aspects - 1");}
 	public void testPR96220_GenericAspects2() {runTest("generic aspects - 2");}
 	public void testPR96220_GenericAspects3() {runTest("generic aspects - 3");}
-	public void testGenericAspects4()         {runTest("generic aspects - 4");} 
+	public void testGenericAspects4()         {runTest("generic aspects - 4");}
 	public void testGenericAspects5()         {runTest("generic aspects - 5 (ajdk)");}  // in separate files
 	public void testGenericAspects6()         {runTest("generic aspects - 6 (ajdk)");}  // all in one file
 	public void testTypeVariablesInDeclareWarning() { runTest("generic aspect with declare warning using type vars");}
@@ -254,12 +254,12 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testDeclareSoftInGenericAspect() {
 		runTest("generic aspect declare soft");
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////////
     // Generic/Parameterized ITDs - includes scenarios from developers notebook //
     //////////////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	// parsing of generic ITD members
 	public void testParseItdNonStaticMethod() {runTest("Parsing generic ITDs - 1");}
 	public void testParseItdStaticMethod()    {runTest("Parsing generic ITDs - 2");}
@@ -267,8 +267,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testParseItdComplexMethod()   {runTest("Parsing generic ITDs - 4");}
 	public void testParseItdSharingVars1()    {runTest("Parsing generic ITDs - 5");}
 	public void testParseItdSharingVars2()    {runTest("Parsing generic ITDs - 6");}
-	
-	
+
+
 	// non static
 	public void testGenericMethodITD1()  {runTest("generic method itd - 1");}   // <E> ... (List<? extends E>)
 	public void testGenericMethodITD2()  {runTest("generic method itd - 2");}   // <E extends Number> ... (List<? extends E>) called incorrectly
@@ -285,7 +285,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericMethodITD13() {runTest("generic method itd - 13");}  // <R extends Comparable<? extends R>> ... (List<R>) called correctly in a clever way ;)
 	public void testGenericMethodITD14() {runTest("generic method itd - 14");}  // <R extends Comparable<? super R>> ... (List<R>) called incorrectly in a clever way
 	public void testGenericMethodITD15() {runTest("generic method itd - 15");}  // <R extends Comparable<? super R>> ... (List<R>) called correctly in a clever way
-	
+
 
 
 	// generic ctors
@@ -293,29 +293,29 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericCtorITD2() {runTest("generic ctor itd - 2");} // <T> new(List<T>,List<? extends T>)
 	public void testGenericCtorITD3() {runTest("generic ctor itd - 3");} // <T> new(List<T>,Comparator<? super T>)
 
-	
+
 	// parameterized ITDs
 	public void testParameterizedMethodITD1() {runTest("parameterized method itd - 1");} // (List<? extends Super>)
 	public void testParameterizedMethodITD2() {runTest("parameterized method itd - 2");} // (List<? extends Number>) called incorrectly
 	public void testParameterizedMethodITD3() {runTest("parameterized method itd - 3");} // (List<? super A>) called incorrectly
 	public void testParameterizedMethodITD4() {runTest("parameterized method itd - 4");} // (List<? super B>)
-	
-	
+
+
 	// differing visibilities
 	public void testPublicITDs()       {runTest("public itds");}
 	public void testPublicITDsErrors() {runTest("public itds with errors");}
 	public void testPrivateITDs()      {runTest("private itds");}
 	public void testPackageITDs()      {runTest("package itds");}
-	
-	
+
+
 	// targetting different types (interface/class/aspect)
 	public void testTargettingInterface() {runTest("targetting interface");}
 	public void testTargettingAspect()    {runTest("targetting aspect");}
 	public void testTargettingClass()     {runTest("targetting class");}
-	
-	
-	
-	// using a type variable from the target generic type in your ITD	
+
+
+
+	// using a type variable from the target generic type in your ITD
 	public void testFieldITDsUsingTargetTypeVars1() {runTest("field itd using type variable from target type - 1");}
 	public void testFieldITDsUsingTargetTypeVars2() {runTest("field itd using type variable from target type - 2");}
 	public void testFieldITDsUsingTargetTypeVars3() {runTest("field itd using type variable from target type - 3");}
@@ -333,7 +333,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testFieldITDsUsingTargetTypeVars15(){runTest("field itd using type variable from target type -15");}
 	public void testFieldITDsUsingTargetTypeVars16(){runTest("field itd using type variable from target type -16");}
 	public void testFieldITDsUsingTargetTypeVars17(){runTest("field itd using type variable from target type -17");}
-	
+
 
 	public void testMethodITDsUsingTargetTypeVarsA1() {runTest("method itd using type variable from target type - A1");}
 	public void testMethodITDsUsingTargetTypeVarsA2() {runTest("method itd using type variable from target type - A2");}
@@ -358,7 +358,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testMethodITDsUsingTargetTypeVarsO2() {runTest("method itd using type variable from target type - O2");}
 	public void testMethodITDsUsingTargetTypeVarsP1() {runTest("method itd using type variable from target type - P1");}
 	public void testMethodITDsUsingTargetTypeVarsQ1() {runTest("method itd using type variable from target type - Q1");}
-	
+
 	public void testCtorITDsUsingTargetTypeVarsA1() {runTest("ctor itd using type variable from target type - A1");}
 	public void testCtorITDsUsingTargetTypeVarsB1() {runTest("ctor itd using type variable from target type - B1");}
 	public void testCtorITDsUsingTargetTypeVarsC1() {runTest("ctor itd using type variable from target type - C1");}
@@ -368,7 +368,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testCtorITDsUsingTargetTypeVarsG1() {runTest("ctor itd using type variable from target type - G1");}
 	public void testCtorITDsUsingTargetTypeVarsH1() {runTest("ctor itd using type variable from target type - H1");}
 	public void testCtorITDsUsingTargetTypeVarsI1() {runTest("ctor itd using type variable from target type - I1");}
-	
+
 	public void testSophisticatedAspectsA() {runTest("uberaspects - A");}
 	public void testSophisticatedAspectsB() {runTest("uberaspects - B");}
 	public void testSophisticatedAspectsC() {runTest("uberaspects - C");}
@@ -395,13 +395,13 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testSophisticatedAspectsW() {runTest("uberaspects - W");}
 	public void testSophisticatedAspectsX() {runTest("uberaspects - X");} // from the AJDK
 	public void testSophisticatedAspectsY() {runTest("uberaspects - Y");} // pointcut matching
-	public void testSophisticatedAspectsZ() {runTest("uberaspects - Z");} 
-	
+	public void testSophisticatedAspectsZ() {runTest("uberaspects - Z");}
+
 	// FIXME asc these two tests have peculiar error messages - generic aspect related
 //	public void testItdUsingTypeParameter() {runTest("itd using type parameter");}
 //	public void testItdIncorrectlyUsingTypeParameter() {runTest("itd incorrectly using type parameter");}
-	
-	
+
+
 	public void testUsingSameTypeVariable() {runTest("using same type variable in ITD");}
 
 	public void testBinaryWeavingITDsA() {runTest("binary weaving ITDs - A");}
@@ -409,17 +409,17 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testBinaryWeavingITDs1() {runTest("binary weaving ITDs - 1");}
 	public void testBinaryWeavingITDs2() {runTest("binary weaving ITDs - 2");}
 	public void testBinaryWeavingITDs3() {runTest("binary weaving ITDs - 3");}
-	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}	
-	
-	
+	public void testGenericITFSharingTypeVariable() {runTest("generic intertype field declaration, sharing type variable");}
+
+
 	// general tests ... usually just more complex scenarios
 	public void testReusingTypeVariableLetters()   {runTest("reusing type variable letters");}
     public void testMultipleGenericITDsInOneFile() {runTest("multiple generic itds in one file");}
 	public void testItdNonStaticMember()           {runTest("itd of non static member");}
 	public void testItdStaticMember()              {runTest("itd of static member");}
 	public void testStaticGenericMethodITD()       {runTest("static generic method itd");}
-	
-	
+
+
 	public void testAtOverride0()  {runTest("atOverride used with ITDs");}
 	public void testAtOverride1()  {runTest("atOverride used with ITDs - 1");}
 	public void testAtOverride2()  {runTest("atOverride used with ITDs - 2");}
@@ -428,8 +428,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAtOverride5()  {runTest("atOverride used with ITDs - 5");}
 	public void testAtOverride6()  {runTest("atOverride used with ITDs - 6");}
 	public void testAtOverride7()  {runTest("atOverride used with ITDs - 7");}
-	
-	
+
+
 	// bridge methods
 	public void testITDBridgeMethodsCovariance1() {runTest("bridging with covariance 1 - normal");}
 	public void testITDBridgeMethodsCovariance2() {runTest("bridging with covariance 1 - itd");}
@@ -438,8 +438,8 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testITDBridgeMethods2Normal()     {runTest("basic bridging with type vars - 2 - normal");}
 	public void testITDBridgeMethods2Itd()        {runTest("basic bridging with type vars - 2 - itd");}
 	public void testITDBridgeMethodsPr91381() {runTest("Abstract intertype method and covariant returns");}
-	
-	
+
+
 	// Just normal source compile of two types with a method override between them
     public void testGenericITDsBridgeMethods1() {
     	runTest("bridge methods - 1");
@@ -450,7 +450,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     // Now the same thing but the aspect (which doesn't do much!) is binary woven in.
 	public void testGenericITDsBridgeMethods1binary()  {
 		runTest("bridge methods - 1 - binary");
-		checkMethodsExist("Sub1",new String[]{ 
+		checkMethodsExist("Sub1",new String[]{
 				"java.lang.Integer Sub1.m()",
 				"java.lang.Object Sub1.m() [BridgeMethod]"});
 	}
@@ -482,7 +482,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     			"java.lang.Integer Sub3.m()",
     			"java.lang.Object Sub3.m() [BridgeMethod]"});
 	}
-	// Now the two types are disconnected until the aspect supplies a declare parents relationship - 
+	// Now the two types are disconnected until the aspect supplies a declare parents relationship -
 	// the bridge method should still be created in the subtype
 	public void testGenericITDSBridgeMethods4() {
 		runTest("bridge methods - 4");
@@ -497,7 +497,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     			"java.lang.Integer Sub4.m()",
 				"java.lang.Object Sub4.m() [BridgeMethod]"});
 	}
-	
+
 	public void testBinaryBridgeMethodsOne() {
 		runTest("binary bridge methods - one");
 		checkMethodsExist("OneB",new String[]{
@@ -526,21 +526,21 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				"java.lang.Double ThreeB.m()"
 		});
 	}
-	
-	
+
+
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
 	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}
 
 	// ----------------------------------------------------------------------------------------
 	// generic declare parents tests
 	// ----------------------------------------------------------------------------------------
-	
+
 	public void testPR96220_GenericDecp() {
 		runTest("generic decp - simple");
 		checkOneSignatureAttribute(ajc,"Basic");
 		verifyClassSignature(ajc,"Basic","Ljava/lang/Object;LJ<Ljava/lang/Double;>;LI<Ljava/lang/Double;>;");
 	}
-	
+
 	// Both the existing type decl and the one adding via decp are parameterized
 	public void testGenericDecpMultipleVariantsOfAParameterizedType1() {
 		runTest("generic decp - implementing two variants #1");
@@ -560,12 +560,12 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGenericDecpMultipleVariantsOfAParameterizedType4() {
 		runTest("generic decp - implementing two variants #4");
 	}
-	
+
 	// same as above four tests for binary weaving
 	public void testGenericDecpMultipleVariantsOfAParameterizedType1_binaryWeaving() {
 		runTest("generic decp binary - implementing two variants #1");
 	}
-	
+
 	public void testGenericDecpMultipleVariantsOfAParameterizedType2_binaryWeaving() {
 		runTest("generic decp binary - implementing two variants #2");
 	}
@@ -585,19 +585,19 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		checkOneSignatureAttribute(ajc,"Basic6");
 		verifyClassSignature(ajc,"Basic6","<J:Ljava/lang/Object;>Ljava/lang/Object;LI<TJ;>;LK<Ljava/lang/Integer;>;");
 	}
-	
+
 	public void testGenericDecpIncorrectNumberOfTypeParams() {
 		runTest("generic decp - incorrect number of type parameters");
 	}
-	
+
 	public void testGenericDecpSpecifyingBounds() {
 		runTest("generic decp - specifying bounds");
 	}
-	
+
 	public void testGenericDecpViolatingBounds() {
 		runTest("generic decp - specifying bounds but breaking them");
 	}
-	
+
 	// need separate compilation test to verify signatures are ok
 //
 //	public void testIllegalGenericDecp() {
@@ -607,18 +607,18 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 //	public void testPR95992_TypeResolvingProblemWithGenerics() {
 //		runTest("Problems resolving type name inside generic class");
 //	}
-	
+
 
 	// -- Pointcut tests...
 
 	public void testHandlerWithGenerics() {
 		runTest("handler pcd and generics / type vars");
 	}
-	
+
 	public void testPointcutsThatDontAllowTypeVars() {
 		runTest("pointcuts that dont allow type vars");
 	}
-	
+
 	public void testParameterizedTypesInAtPCDs() {
 		runTest("annotation pcds with parameterized types");
 	}
@@ -626,7 +626,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAnnotationPatternsWithParameterizedTypes() {
 		runTest("annotation patterns with parameterized types");
 	}
-	
+
 	public void testStaticInitializationWithParameterizedTypes() {
 		runTest("staticinitialization and parameterized types");
 	}
@@ -643,9 +643,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 // no longer a valid test in simplified design
 //	public void testStaticInitializationWithGenericTypesAdvanced() {
-//		runTest("staticinitialization with generic types - advanced");		
+//		runTest("staticinitialization with generic types - advanced");
 //	}
-	
+
 	public void testWithinPointcutErrors() {
 		runTest("within pcd with various parameterizations and generic types - errors");
 	}
@@ -653,7 +653,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testWithinPointcutWarnings() {
 		runTest("within pcd with various parameterizations and generic types - warnings");
 	}
-	
+
 	public void testThisTargetPointcutErrors() {
 		runTest("this and target with various parameterizations and generic types - errors");
 	}
@@ -661,47 +661,47 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testThisTargetPointcutRuntime() {
 		runTest("this and target with various parameterizations and generic types - runtime");
 	}
-	
+
 	public void testInitAndPreInitPointcutErrors() {
 		runTest("init and preinit with parameterized declaring types");
 	}
-	
+
 	public void testInitAndPreInitPointcutMatchingWithGenericDeclaringTypes() {
 		runTest("init and preinit with raw declaring type pattern");
 	}
-	
+
 	public void testInitAndPreInitPointcutMatchingWithParameterizedParameterTypes() {
 		runTest("init and preinit with parameterized parameter types");
 	}
-	
+
 	public void testWithinCodePointcutErrors() {
 		runTest("withincode with various parameterizations and generic types - errors");
 	}
-	
+
 	public void testWithinCodeMatching() {
 		runTest("withincode with various parameterizations and generic types - matching");
 	}
-	
+
 	public void testWithinCodeOverrideMatchingWithGenericMembers() {
 		runTest("withincode with overriding of inherited generic members");
 	}
-	
+
 	public void testExecutionWithRawType() {
 		runTest("execution pcd with raw type matching");
 	}
-	
+
 	public void testExecutionWithRawSignature() {
 		runTest("execution pcd with raw signature matching");
 	}
-	
+
 	public void testExecutionPointcutErrors() {
 		runTest("execution with various parameterizations and generic types - errors");
 	}
-	
+
 	public void testExecutionMatching() {
 		runTest("execution with various parameterizations and generic types - matching");
 	}
-	
+
 	public void testExecutionOverrideMatchingWithGenericMembers() {
 		runTest("execution with overriding of inherited generic members");
 	}
@@ -709,15 +709,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testCallPointcutErrors() {
 		runTest("call with various parameterizations and generic types - errors");
 	}
-	
+
 	public void testCallMatching() {
 		runTest("call with various parameterizations and generic types - matching");
 	}
-	
+
 	public void testCallOverrideMatchingWithGenericMembers() {
 		runTest("call with overriding of inherited generic members");
 	}
-	
+
 	public void testCallWithBridgeMethods() {
 		runTest("call with bridge methods");
 	}
@@ -725,47 +725,47 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testGetAndSetPointcutErrors() {
 		runTest("get and set with various parameterizations and generic types - errors");
 	}
-	
+
 	public void testGetAndSetPointcutMatchingWithGenericAndParameterizedTypes() {
 		runTest("get and set with various parameterizations and generic declaring types");
 	}
-	
+
 	public void testGetAndSetPointcutMatchingWithGenericAndParameterizedFieldTypes() {
 		runTest("get and set with various parameterizations and generic field types");
 	}
-	
+
 	public void testArgsWithRawType() {
 		runTest("args with raw type and generic / parameterized sigs");
 	}
-	
+
 	public void testArgsParameterizedType() {
 		runTest("args with parameterized type and generic / parameterized sigs");
 	}
-	
+
 	public void testArgsParameterizedAndWildcards() {
 		runTest("args with parameterized type and wildcards");
 	}
-	
+
 	public void testArgsWithWildcardVar() {
 		runTest("args with generic wildcard");
 	}
-	
+
 	public void testArgsWithWildcardExtendsVar() {
 		runTest("args with generic wildcard extends");
 	}
-	
+
 	public void testArgsWithWildcardSuperVar() {
 		runTest("args with generic wildcard super");
 	}
-	
+
 	public void testGenericMethodMatching() {
 		runTest("generic method matching");
 	}
-	
+
 	public void testGenericWildcardsInSignatureMatching() {
 		runTest("generic wildcards in signature matching");
 	}
-	
+
 	public void testAfterThrowing() {
 		runTest("after throwing with parameterized throw type");
 	}
@@ -773,108 +773,108 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	public void testAfterReturningWithRawType() {
 		runTest("after returning with raw type and generic / parameterized sigs");
 	}
-	
+
 	public void testAfterReturningParameterizedType() {
 		runTest("after returning with parameterized type and generic / parameterized sigs");
 	}
-	
+
 	public void testAfterReturningParameterizedAndWildcards() {
 		runTest("after returning with parameterized type and wildcards");
 	}
 
 	public void testAfterReturningWithWildcardVar() {
-		if (LangUtil.is19VMOrGreater()) {
+		if (LangUtil.is9VMOrGreater()) {
 			// See ReferenceType.isCoerceableFrom comments
 			return;
 		}
 		// Something to investigate here. The implementation of isCoerceable
 		runTest("after returning with generic wildcard");
 	}
-	
+
 	public void testAfterReturningWithWildcardExtendsVar() {
 		runTest("after returning with generic wildcard extends");
 	}
-	
+
 	public void testAfterReturningWithWildcardSuperVar() {
 		runTest("after returning with generic wildcard super");
 	}
-	
+
 	public void testAJDKErasureMatchingExamples() {
 		runTest("ajdk notebook: erasure matching examples");
 	}
-	
+
 	public void testAJDKParameterizedMatchingSimpleExamples() {
 		runTest("ajdk notebook: simple parameterized type matching examples");
 	}
-	
+
 	public void testAJDKMixedTypeVarsAndParametersExample() {
 		runTest("ajdk notebook: mixed parameterized types and generic methods");
 	}
-	
+
 	public void testAJDKSignatureAndWildcardExamples() {
 		runTest("ajdk notebook: signature matching with generic wildcards");
 	}
-	
+
 	// had to remove at e37 level - although pointcuts are likely to work, we can't compile the code
 	// that invokes the bridge methods - seems the compiler is too smart and won't let them through.
 //	public void testAJDKBridgeMethodExamples() {
 //		runTest("ajdk notebook: bridge method examples");
 //	}
-	
+
 	public void testAJDKArgsExamples() {
 		runTest("ajdk notebook: args examples");
 	}
-	
+
 	public void testAJDKArgsAndWildcardsExamples() {
 		runTest("ajdk notebook: args and wildcards examples");
 	}
-	
+
 	public void testAJDKAfterReturningExamples() {
 		runTest("ajdk notebook: after returning examples");
 	}
-	
+
 	public void testAJDKPointcutInGenericClassExample() {
 		runTest("ajdk notebook: pointcut in generic class example");
 	}
-	
+
 	// TESTS for generic abstract aspects that get extended and parameterized...
-	
+
 	public void testStaticPointcutParameterization() {
 		runTest("static pointcut parameterization suite");
 	}
-	
+
 	public void testDynamicPointcutParameterization() {
 		runTest("dynamic pointcut parameterization suite");
 	}
-	
+
 	public void testReferenceToPointcutInGenericClass() {
 		runTest("reference to pointcut in generic class");
 	}
-	
+
 	public void testReferenceToPointcutInGenericClass2() {
 		runTest("reference to non-parameterized pointcut in generic class");
 	}
-	
+
 	public void testDeclareParentsParameterized() {
 		runTest("declare parents parameterized");
 	}
-	
-	public void testDeclarePrecedenceParameterized() { 
+
+	public void testDeclarePrecedenceParameterized() {
 		runTest("declare precedence parameterized");
 	}
-	
+
 	public void testDeclareAnnotationParameterized() {
 		runTest("declare annotation parameterized");
 	}
-	
+
 	public void testMultiLevelGenericAspects() {
 		runTest("multi-level generic abstract aspects");
 	}
-	
+
 	// --- helpers
-		
+
 		/**
-	 * When a class has been written to the sandbox directory, you can ask this method to 
+	 * When a class has been written to the sandbox directory, you can ask this method to
 	 * verify it contains a particular set of methods.  Typically this is used to verify that
 	 * bridge methods have been created.
 	 */
@@ -899,7 +899,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		
+
 		// check the methods specified do exist
 		for (String string : methods) {
 			if (!methodsFound.remove(string)) {
@@ -913,9 +913,9 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 			}
 			fail("These methods weren't expected: "+unexpectedMethods);
 		}
-		
+
 	}
-    
+
     /**
      * Use 1.5 API isBridge if available.
      * See JLS3 15.12.4.5 Create Frame, Synchronize, Transfer Control
@@ -924,7 +924,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
         // why not importing java.lang.reflect.Method? No BCEL clash?
 		try {
             final Class<?>[] noparms = new Class[0];
-            java.lang.reflect.Method isBridge 
+            java.lang.reflect.Method isBridge
                 = java.lang.reflect.Method.class.getMethod("isBridge", noparms);
             Boolean result = (Boolean) isBridge.invoke(m, new Object[0]);
             return result;
@@ -934,7 +934,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
     }
 	public static JavaClass getClass(Ajc ajc, String classname) {
 		try {
-			ClassPath cp = 
+			ClassPath cp =
 				new ClassPath(ajc.getSandboxDirectory() + File.pathSeparator + System.getProperty("java.class.path"));
 		    SyntheticRepository sRepos =  SyntheticRepository.getInstance(cp);
 			JavaClass clazz = sRepos.loadClass(classname);
@@ -944,7 +944,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		return null;
 	}
-	
+
 	public static Signature getClassSignature(Ajc ajc,String classname) {
 	    JavaClass clazz = getClass(ajc,classname);
 		Signature sigAttr = null;
@@ -954,7 +954,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		return sigAttr;
 	}
-	
+
 	public static void checkOneSignatureAttribute(Ajc ajc,String classname) {
 		JavaClass clazz = getClass(ajc,classname);
 		Attribute[] attrs = clazz.getAttributes();
@@ -968,15 +968,15 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		}
 		if (signatureCount>1) fail("Should be only one signature attribute but found "+signatureCount+sb.toString());
 	}
-	
+
 	// Check the signature attribute on a class is correct
 	public static void verifyClassSignature(Ajc ajc,String classname,String sig) {
 		Signature sigAttr = getClassSignature(ajc,classname);
 		assertTrue("Failed to find signature attribute for class "+classname,sigAttr!=null);
 		assertTrue("Expected signature to be '"+sig+"' but was '"+sigAttr.getSignature()+"'",
-				sigAttr.getSignature().equals(sig));		
+				sigAttr.getSignature().equals(sig));
 	}
-		
+
 	private static String stringify(Class<?>[] clazzes) {
 		if (clazzes==null) return "";
 		StringBuffer sb = new StringBuffer();

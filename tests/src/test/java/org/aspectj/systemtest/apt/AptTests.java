@@ -23,7 +23,7 @@ import junit.framework.Test;
 public class AptTests extends XMLBasedAjcTestCase {
 
   public void testAptWithSpecifiedProcessor() {
-	  if (LangUtil.is19VMOrGreater()) {
+	  if (LangUtil.is9VMOrGreater()) {
 		  return;
 	  }
     runTest("annotation processing with specified processor");
@@ -33,7 +33,7 @@ public class AptTests extends XMLBasedAjcTestCase {
    * SPI - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
    */
   public void testAptUsingSPI() {
-	  if (LangUtil.is19VMOrGreater()) {
+	  if (LangUtil.is9VMOrGreater()) {
 		  return;
 	  }
     runTest("annotation processing in action using SPI");

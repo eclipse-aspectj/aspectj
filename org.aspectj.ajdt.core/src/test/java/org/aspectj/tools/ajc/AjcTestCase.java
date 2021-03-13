@@ -947,7 +947,7 @@ public abstract class AjcTestCase extends TestCase {
 				args = newargs;
 			}
 		}
-		boolean needsJRTFS = LangUtil.is19VMOrGreater();
+		boolean needsJRTFS = LangUtil.is9VMOrGreater();
 		if (needsJRTFS) {
 			if (!args[cpIndex].contains(LangUtil.JRT_FS)) {
 				String jrtfsPath = LangUtil.getJrtFsFilePath();
