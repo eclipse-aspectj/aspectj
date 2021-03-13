@@ -93,7 +93,7 @@ public abstract class AjcTestCase extends TestCase {
 			+ File.separator
 			+ "bcel-verifier.jar"
 
-			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-8.0.1.renamed.jar"
+			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-9.1.renamed.jar"
 
 			// When the build machine executes the tests, it is using code built into jars rather than code build into
 			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:

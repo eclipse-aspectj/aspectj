@@ -78,7 +78,7 @@
       <artifactId>asm</artifactId>
       <version>1.0</version>
       <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
+      <systemPath>${project.basedir}/../lib/asm/asm-9.1.renamed.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
