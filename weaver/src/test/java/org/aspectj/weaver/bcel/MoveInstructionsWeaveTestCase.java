@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -55,6 +55,11 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 	static int counter = 0;
 
 	public void testFancyHello() throws IOException {
+		// Reset counter, just in case this test runs multiple times in one JVM. This can happen e.g. due to "run all tests"
+		// in IntelliJ IDEA, which directly runs this test class and als WeaverModuleTests, both of which implement
+		// junit.framework.TestCase. In that case, during the second run the counter would start at a higher base count,
+		// making the 2nd test run fail.
+		counter = 0;
 		BcelAdvice p = new BcelAdvice(null, makePointcutAll(), null, 0, -1, -1, null, null) {
 			public void specializeOn(Shadow s) {
 				super.specializeOn(s);
@@ -63,7 +68,7 @@ public class MoveInstructionsWeaveTestCase extends WeaveTestCase {
 
 			public boolean implementOn(Shadow s) {
 				BcelShadow shadow = (BcelShadow) s;
-				LazyMethodGen newMethod = 
+				LazyMethodGen newMethod =
 						shadow.extractShadowInstructionsIntoNewMethod(NameMangler.getExtractableName(shadow
 						.getSignature())
 						+ "_extracted" + counter++, 0, this.getSourceLocation(), new ArrayList(),shadow.getEnclosingClass().isInterface());
