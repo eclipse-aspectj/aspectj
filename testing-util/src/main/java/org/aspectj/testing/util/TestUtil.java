@@ -412,8 +412,8 @@ public final class TestUtil {
 	}
 
 	/**
-	 * Checks that two multi-line strings have the same value. Each line is trimmed before comparision Produces an error on the
-	 * particular line of conflict
+	 * Checks that two multi-line strings have the same value. Each line is trimmed before comparison.
+	 * Produces an error on the particular line of conflict.
 	 */
 	public static void assertMultiLineStringEquals(String message, String s1, String s2) {
 		try {
