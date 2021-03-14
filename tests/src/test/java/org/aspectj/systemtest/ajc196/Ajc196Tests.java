@@ -18,58 +18,39 @@ import junit.framework.Test;
  */
 public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
 
-	public void testNPE_558995() {
-		runTest("early resolution of supporting interfaces");
-	}
+  public void testNPE_558995() {
+    runTest("early resolution of supporting interfaces");
+  }
 
-	public void testRecords() {
-		runTest("simple record");
-		checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);
-	}
+  public void testRecords() {
+    runTest("simple record");
+    checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);
+  }
 
-	public void testRecords2() {
-		runTest("using a record");
-	}
+  public void testSwitch1() {
+    runTest("switch 1");
+    checkVersion("Switch1", Constants.MAJOR_14, 0);
+  }
 
-	public void testInstanceofPatterns() {
-		runTest("instanceof patterns");
-	}
+  public void testSwitch2() {
+    runTest("switch 2");
+    checkVersion("Switch2", Constants.MAJOR_14, 0);
+  }
 
-	public void testAdvisingRecords() {
-		runTest("advising records");
-	}
+  public void testSwitch3() {
+    runTest("switch 3");
+    checkVersion("Switch3", Constants.MAJOR_14, 0);
+  }
 
-	public void testSwitch1() {
-		runTest("switch 1");
-		checkVersion("Switch1", Constants.MAJOR_14, 0);
-	}
+  // ---
 
-	public void testSwitch2() {
-		runTest("switch 2");
-		checkVersion("Switch2", Constants.MAJOR_14, 0);
-	}
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(Ajc196Tests.class);
+  }
 
-	public void testSwitch3() {
-		runTest("switch 3");
-		checkVersion("Switch3", Constants.MAJOR_14, 0);
-	}
-
-	public void testTextBlock1() {
-		runTest("textblock 1");
-	}
-
-	public void testTextBlock2() {
-		runTest("textblock 2");
-	}
-	// ---
-
-	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(Ajc196Tests.class);
-	}
-
-	@Override
-	protected java.net.URL getSpecFile() {
-		return getClassResource("ajc196.xml");
-	}
+  @Override
+  protected java.net.URL getSpecFile() {
+    return getClassResource("ajc196.xml");
+  }
 
 }

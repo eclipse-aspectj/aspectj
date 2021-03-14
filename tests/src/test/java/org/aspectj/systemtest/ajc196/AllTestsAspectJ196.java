@@ -23,6 +23,9 @@ public class AllTestsAspectJ196 {
 			suite.addTest(Ajc196Tests.suite());
 			suite.addTest(SanityTestsJava14.suite());
 		}
+		if (LangUtil.is14VMOrGreater() && !LangUtil.is15VMOrGreater()) {
+			suite.addTest(Ajc196PreviewFeaturesTests.suite());
+		}
 		return suite;
 	}
 }

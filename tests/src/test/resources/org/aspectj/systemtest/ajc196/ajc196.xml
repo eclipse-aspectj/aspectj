@@ -10,7 +10,7 @@
 	<ajc-test dir="features193" vm="14" title="switch 1">
 		<compile files="Switch1.java" options="-14">
 		</compile>
-		<run class="Switch1" vmargs="--enable-preview">
+		<run class="Switch1">
 			<stdout>
 				<line text="0" />
 				<line text="1" />
@@ -98,8 +98,6 @@
 		<run class="Code" vmargs="--enable-preview">
 			<stdout>
 				<line text="this is a text" />
-				<!-- the incidental space is removed with a trim in output matching but 
-					the test app doesn't remove it when printing it, why? -->
 				<line text="block" />
 			</stdout>
 		</run>
@@ -112,7 +110,6 @@
 		</compile>
 		<run class="Code2" vmargs="--enable-preview">
 			<stdout>
-				<!-- why is the incidental space not removed here?? -->
 				<line text="this is a text" />
 				<line text="block in advice" />
 			</stdout>
