@@ -11,8 +11,8 @@
  * ******************************************************************/
 package org.aspectj.testing;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.LangUtil;
@@ -63,43 +63,43 @@ public class OutputSpec {
 		}
 		boolean matches = false;
 		int lineNo = 0;
-		StringTokenizer strTok = new StringTokenizer(output,"\n");
-		if (strTok.countTokens() == expectedOutputLines.size()) {
+		String[] actualOutputLines = getTrimmedLines(output);
+
+		if (actualOutputLines.length == expectedOutputLines.size()) {
 			matches = true;
-			for (String line: expectedOutputLines) {
-				lineNo++;
-				String outputLine = strTok.nextToken().trim();
+			for (String lineExpected : expectedOutputLines) {
+				String lineFound = actualOutputLines[lineNo++];
 				/* Avoid trying to match on ajSandbox source names that appear in messages */
-				if (!outputLine.contains(line)) {
+				if (!lineFound.contains(lineExpected.trim())) {
 					matches = false;
 					break;
 				}
 			}
 		} else { lineNo = -1; }
 		if (!matches) {
-			createFailureMessage(output, lineNo, strTok.countTokens());
+			createFailureMessage(output, lineNo, actualOutputLines.length);
 		}
 	}
 
-	public void unorderedMatchAgainst(String output) {
-		List<String> outputFound = getOutputFound(output);
-		if(outputFound.size() != expectedOutputLines.size()) {
-			createFailureMessage(output, -1, outputFound.size());
+	private void unorderedMatchAgainst(String output) {
+		List<String> actualOutputLines = Arrays.asList(getTrimmedLines(output));
+		int numberOfOutputLines = actualOutputLines.size();
+		if(numberOfOutputLines != expectedOutputLines.size()) {
+			createFailureMessage(output, -1, numberOfOutputLines);
 			return;
 		}
 		List<String> expected = new ArrayList<>(expectedOutputLines);
-		List<String> found = new ArrayList<>(outputFound);
-		for (String lineFound : outputFound) {
+		List<String> found = new ArrayList<>(actualOutputLines);
+		for (String lineFound : actualOutputLines) {
 			for (String lineExpected : expectedOutputLines) {
-				if (lineFound.contains(lineExpected)) {
+				if (lineFound.contains(lineExpected.trim())) {
 					found.remove(lineFound);
 					expected.remove(lineExpected);
-					continue;
 				}
 			}
 		}
 		if (!found.isEmpty() || !expected.isEmpty()) {
-			createFailureMessage(output,-2,outputFound.size());
+			createFailureMessage(output, -2, numberOfOutputLines);
 		}
 	}
 
@@ -121,13 +121,8 @@ public class OutputSpec {
 		AjcTestCase.fail(failMessage.toString());
 	}
 
-	private List<String> getOutputFound(String output) {
-		List<String> found = new ArrayList<>();
-		StringTokenizer strTok = new StringTokenizer(output,"\n");
-		while(strTok.hasMoreTokens()) {
-			String outputLine = strTok.nextToken().trim();
-			found.add(outputLine);
-		}
-		return found;
+	private String[] getTrimmedLines(String text) {
+		// Remove leading/trailing empty lines and leading/trailing whitespace from each line
+		return text.trim().split("\\s*\n\\s*");
 	}
 }
