@@ -123,6 +123,7 @@ public class OutputSpec {
 
 	private String[] getTrimmedLines(String text) {
 		// Remove leading/trailing empty lines and leading/trailing whitespace from each line
-		return text.trim().split("\\s*\n\\s*");
+		String[] trimmedLines = text.trim().split("\\s*\n\\s*");
+		return trimmedLines.length == 1 && trimmedLines[0].equals("") ? new String[0] : trimmedLines;
 	}
 }
