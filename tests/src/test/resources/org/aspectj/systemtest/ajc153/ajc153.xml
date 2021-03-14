@@ -580,7 +580,7 @@
     <ajc-test dir="bugs153/pr149560" title="incorrect staticinitialization weaving - codestyle">
       <compile files="CodeStyle.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void MyAspect.&lt;clinit&gt;())' in Type 'MyAspect' (CodeStyle.java:3) advised by after advice from 'MyAspect' (CodeStyle.java:4)"/>
-        <message kind="weave" test="Join point 'staticinitialization(void CodeStyle.&lt;clini&gt;())' in Type 'CodeStyle' (CodeStyle.java:9) advised by after advice from 'MyAspect' (CodeStyle.java:4)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void CodeStyle.&lt;clinit&gt;())' in Type 'CodeStyle' (CodeStyle.java:9) advised by after advice from 'MyAspect' (CodeStyle.java:4)"/>
       </compile>
       <run class="CodeStyle">
         <stdout>
@@ -594,7 +594,7 @@
     <ajc-test dir="bugs153/pr149560" title="incorrect staticinitialization weaving - annstyle">
       <compile files="AnnStyle.java" options="-1.5 -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void MyAspect.&lt;clinit&gt;())' in Type 'MyAspect' (AnnStyle.java:5) advised by after advice from 'MyAspect' (AnnStyle.java:7)"/>
-        <message kind="weave" test="Join point 'staticinitialization(void AnnStyle.&lt;clini&gt;())' in Type 'AnnStyle' (AnnStyle.java:12) advised by after advice from 'MyAspect' (AnnStyle.java:7)"/>
+        <message kind="weave" text="Join point 'staticinitialization(void AnnStyle.&lt;clinit&gt;())' in Type 'AnnStyle' (AnnStyle.java:12) advised by after advice from 'MyAspect' (AnnStyle.java:7)"/>
       </compile>
       <run class="AnnStyle">
         <stdout>
@@ -791,10 +791,10 @@
         <compile files="TestAroundClosure.aj" options="-1.4"/>
         <run class="HelloWorld" ltw="aop-aroundclosure.xml">
         	<stdout>
-                <line text="&rt; ConcreteAspectWithAroundClosure()"/>
+                <line text="&gt; ConcreteAspectWithAroundClosure()"/>
                 <line text="&lt; ConcreteAspectWithAroundClosure()"/>
                 <line text="? void HelloWorld.main(String[])"/>
-                <line text="&rt; HelloWorld()"/>
+                <line text="&gt; HelloWorld()"/>
                 <line text="&lt; HelloWorld()"/>
                 <line text="Hello World!"/>
             </stdout>

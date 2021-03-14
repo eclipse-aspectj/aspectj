@@ -585,7 +585,7 @@
 
 <ajc-test dir="bugs1612/pr345515" title="anno copying">
 <compile files="Code.java" options="-1.5"/>
-<run class="Code"></run>
+  <run class="Code"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr327867" title="synthetic methods">
@@ -653,7 +653,7 @@
 <ajc-test dir="bugs1612/pr315398" title="verifyerror - 2">
 <compile files="Code2.java" options="-1.5">
 </compile>
-<run class="Code2"></run>
+  <run class="Code2"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr335810" title="rawtype warning">

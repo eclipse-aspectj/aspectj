@@ -190,7 +190,7 @@
 
   <ajc-test dir="bugs190/modules" title="weave module">
     <compile files="aspect1/Azpect1.java" inpath="module1/module-one.jar" outjar="runner.jar" options="-1.8"/>
-    <java classpath="runner.jar" class="a.b.c.Code"/>
+    <run classpath="runner.jar" class="a.b.c.Code"/>
   </ajc-test>
 
   <ajc-test dir="bugs190/various" title="setting static final outside clinit">

@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC),
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     resolver
  * ******************************************************************/
 
@@ -42,8 +42,8 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-/** 
- * Read an ajc test specification in xml form. 
+/**
+ * Read an ajc test specification in xml form.
  * Input files should comply with DOCTYPE
  */
 public class AjcSpecXmlReader {
@@ -51,7 +51,7 @@ public class AjcSpecXmlReader {
      * To add new elements or attributes:
      * - update the DOCTYPE
      * - update setupDigester(..)
-     *   - new sub-elements should be created 
+     *   - new sub-elements should be created
      *   - new attributes should have values set as bean properties
      *     (possibly by mapping names)
      *   - new sub-elements should be added to parents
@@ -64,7 +64,7 @@ public class AjcSpecXmlReader {
      * - update any client writers referring to the DOCTYPE, as necessary.
      *   - the parent IXmlWriter should delegate to the child component
      *     as IXmlWriter (or write the subelement itself)
-     * 
+     *
      * Debugging
      * - use logLevel = 2 for tracing
      * - common mistakes
@@ -72,29 +72,29 @@ public class AjcSpecXmlReader {
      *   - no rule defined (or misdefined) so element ignored
      *   - property read-only (?)
      */
-    
+
 //    private static final String EOL = "\n";
-    
+
     /** presumed relative-path to dtd file for any XML files written by writeSuiteToXmlFile */
     public static final String DTD_PATH = "../tests/ajcTestSuite.dtd";
-    
+
     /** expected doc type of AjcSpec XML files */
-    public static final String DOCTYPE = "<!DOCTYPE " 
+    public static final String DOCTYPE = "<!DOCTYPE "
         + AjcTest.Suite.Spec.XMLNAME + " SYSTEM \"" + DTD_PATH + "\">";
 
-    private static final AjcSpecXmlReader ME 
+    private static final AjcSpecXmlReader ME
         = new AjcSpecXmlReader();
-    
+
     /** @return shared instance */
     public static final AjcSpecXmlReader getReader() {
         return ME;
     }
-    
+
     public static void main(String[] a) throws IOException {
         writeDTD(new File("../tests/ajcTestSuite2.dtd"));
     }
-    
-    /** 
+
+    /**
      * Write a DTD to dtdFile.
      * @deprecated
      * @param dtdFile the File to write to
@@ -103,19 +103,19 @@ public class AjcSpecXmlReader {
         LangUtil.throwIaxIfNull(dtdFile, "dtdFile");
         PrintWriter out = new PrintWriter(new FileWriter(dtdFile));
         try {
-            out.println("<!-- document type for ajc test suite - see " 
+            out.println("<!-- document type for ajc test suite - see "
                         + AjcSpecXmlReader.class.getName() + " -->");
             //out.println(getDocType());
         } finally {
             out.close();
-        }        
+        }
     }
 
     private static final String[] LOG = new String[] {"info", "debug", "trace" };
-    
+
     // XXX logLevel n>0 causes JUnit tests to fail!
-    private int logLevel = 0; // use 2 for tracing 
-    
+    private int logLevel = 0; // use 2 for tracing
+
     private AjcSpecXmlReader() {}
 
     /** @param level 0..2, info..trace */
@@ -126,14 +126,13 @@ public class AjcSpecXmlReader {
         if (level > 2) {
             level = 2;
         }
-        logLevel = level;        
+        logLevel = level;
     }
 
     /**
      * Print an IXmlWritable to the output file
      * with our leader and DOCTYPE.
      * @param output the File to write to - overwritten
-     * @param tests the List of IXmlWritable to write
      * @return null if no warnings detected, warnings otherwise
      */
     public String writeSuiteToXmlFile(File output, IXmlWritable topNode) throws IOException {
@@ -147,7 +146,7 @@ public class AjcSpecXmlReader {
         String parent = output.getParent();
         if (null == parent) {
             parent = ".";
-        }        
+        }
         String dtdPath = parent + "/" + DTD_PATH;
         File dtdFile = new File(dtdPath);
         if (!dtdFile.canRead()) {
@@ -155,13 +154,13 @@ public class AjcSpecXmlReader {
         }
         return null;
     }
-        
-    /** 
+
+    /**
      * Read the specifications for a suite of AjcTest from an XML file.
      * This also sets the suite dir in the specification.
      * @param file the File must be readable, comply with DOCTYPE.
      * @return AjcTest.Suite.Spec read from file
-     * @see setLogLevel(int)
+     * @see #setLogLevel(int)
      */
     public AjcTest.Suite.Spec readAjcSuite(File file) throws IOException, AbortException {
         // setup loggers for digester and beanutils...
@@ -180,7 +179,7 @@ public class AjcSpecXmlReader {
             if (null != input) {
                 input.close();
                 input = null;
-            }            
+            }
         }
         AjcTest.Suite.Spec result = holder.spec;
         if (null != result) {
@@ -198,13 +197,13 @@ public class AjcSpecXmlReader {
         }
         return result;
     }
-   
+
    private Digester makeDigester(final File suiteFile) {
        // implement EntityResolver directly; set is failing
        Digester result = new Digester() {
            final SuiteResolver resolver = new SuiteResolver(suiteFile);
            public InputSource resolveEntity(
-                   String publicId, 
+                   String publicId,
                    String systemId)
                    throws SAXException {
                return resolver.resolveEntity(publicId, systemId);
@@ -213,7 +212,7 @@ public class AjcSpecXmlReader {
       setupDigester(result);
       return result;
    }
-   
+
     /** set up the mapping between the xml and Java. */
     private void setupDigester(Digester digester) {
         // XXX supply sax parser to ignore white space?
@@ -245,24 +244,24 @@ public class AjcSpecXmlReader {
         digester.addObjectCreate(compileX,             CompilerRun.Spec.class.getName());
         //digester.addObjectCreate(compileX + "/file",   AbstractRunSpec.WrapFile.class.getName());
         digester.addObjectCreate(inccompileX,          IncCompilerRun.Spec.class.getName());
-        digester.addObjectCreate(runX,                 JavaRun.Spec.class.getName()); 
+        digester.addObjectCreate(runX,                 JavaRun.Spec.class.getName());
         digester.addObjectCreate(messageX,             SoftMessage.class.getName());
         digester.addObjectCreate(messageSrcLocX,       SoftSourceLocation.class.getName());
         digester.addObjectCreate(dirchangesX,          DirChanges.Spec.class.getName());
-        
+
         // ---- set bean properties for sub-elements created automatically
         // -- some remapped - warnings
         //   - if property exists, map will not be used
         digester.addSetProperties(suiteX); // ok to have suite messages and global suite options, etc.
-        digester.addSetProperties(ajctestX, 
+        digester.addSetProperties(ajctestX,
             new String[] { "title", "dir", "pr"},
             new String[] { "description", "testDirOffset", "bugId"});
-        digester.addSetProperties(compileX, 
+        digester.addSetProperties(compileX,
             new String[] { "files", "argfiles"},
             new String[] { "paths", "argfiles"});
         digester.addSetProperties(compileX + "/file");
         digester.addSetProperties(inccompileX, "classes", "paths");
-        digester.addSetProperties(runX, 
+        digester.addSetProperties(runX,
             new String[] { "class", "vm", "skipTester", "fork", "vmargs", "aspectpath", "module"},
             new String[] { "className", "javaVersion", "skipTester", "fork", "vmArgs", "aspectpath", "module"});
         digester.addSetProperties(dirchangesX);
@@ -274,7 +273,7 @@ public class AjcSpecXmlReader {
         // only file subelement of compile uses text as path... XXX vestigial
         digester.addCallMethod(compileX + "/file", "setFile", 0);
 
-        // ---- when subelements are created, add to parent 
+        // ---- when subelements are created, add to parent
         // add ajctest to suite, runs to ajctest, files to compile, messages to any parent...
         // the method name (e.g., "addSuite") is in the parent (SuiteHolder)
         // the class (e.g., AjcTest.Suite.Spec) refers to the type of the object created
@@ -289,53 +288,53 @@ public class AjcSpecXmlReader {
         // addSourceLocation is for the extra
         digester.addSetNext(messageSrcLocX,       "addSourceLocation", ISourceLocation.class.getName());
         digester.addSetNext(dirchangesX,          "addDirChanges", DirChanges.Spec.class.getName());
-        
+
         // can set parent, but prefer to have "knows-about" flow down only...
     }
 
     // ------------------------------------------------------------ testing code
-    /** 
-     * Get expected bean properties for introspection tests. 
+    /**
+     * Get expected bean properties for introspection tests.
      * This should return an expected property for every attribute in DOCTYPE,
      * using any mapped-to names from setupDigester.
      */
     static BProps[] expectedProperties() {
-        return new BProps[] 
+        return new BProps[]
             {
-                new BProps(AjcTest.Suite.Spec.class, 
+                new BProps(AjcTest.Suite.Spec.class,
                     new String[] { "suiteDir"}), // verbose removed
-                new BProps(AjcTest.Spec.class, 
+                new BProps(AjcTest.Spec.class,
                     new String[] { "description", "testDirOffset", "bugId"}),
                     // mapped from { "title", "dir", "pr"}
-                new BProps(CompilerRun.Spec.class, 
-                    new String[] { "files", "options", 
+                new BProps(CompilerRun.Spec.class,
+                    new String[] { "files", "options",
                     "staging", "badInput", "reuseCompiler", "includeClassesDir",
-                    "argfiles", "aspectpath", "classpath", "extdirs", 
+                    "argfiles", "aspectpath", "classpath", "extdirs",
                     "sourceroots", "xlintfile", "outjar"}),
-                new BProps(IncCompilerRun.Spec.class, 
+                new BProps(IncCompilerRun.Spec.class,
                     new String[] { "tag" }),
-                new BProps(JavaRun.Spec.class, 
-                    new String[] { "className", "skipTester", "options", 
+                new BProps(JavaRun.Spec.class,
+                    new String[] { "className", "skipTester", "options",
                     "javaVersion", "errStreamIsError", "outStreamIsError",
                     "fork", "vmArgs", "aspectpath"}),
                     // mapped from { "class", ...}
-                new BProps(DirChanges.Spec.class, 
+                new BProps(DirChanges.Spec.class,
                     new String[] { "added", "removed", "updated", "unchanged", "dirToken", "defaultSuffix"}),
-//                new BProps(AbstractRunSpec.WrapFile.class, 
+//                new BProps(AbstractRunSpec.WrapFile.class,
 //                    new String[] { "path"}),
-                new BProps(SoftMessage.class, 
+                new BProps(SoftMessage.class,
                     new String[] { "kindAsString", "lineAsString", "text", "details", "file"})
                     // mapped from { "kind", "line", ...}
             };
     }
-        
-    /** 
+
+    /**
      * This is only to do compile-time checking for the APIs impliedly
      * used in setupDigester(..).
      * The property setter checks are redundant with tests based on
      * expectedProperties().
      */
-    private static void setupDigesterCompileTimeCheck() { 
+    private static void setupDigesterCompileTimeCheck() {
         if (true) { throw new Error("never invoked"); }
         AjcTest.Suite.Spec suite = new AjcTest.Suite.Spec();
         AjcTest.Spec test = new AjcTest.Spec();
@@ -349,7 +348,7 @@ public class AjcSpecXmlReader {
 //        ajctest.setTestBaseDirOffset((String) null);
 //        ajctest.setBugId((String) null);
 //        ajctest.setTestSourceLocation((ISourceLocation) null);
-            
+
         CompilerRun.Spec crunSpec = new CompilerRun.Spec();
         crunSpec.addMessage((IMessage) null);
         // XXX crunSpec.addSourceLocation((ISourceLocation) null);
@@ -360,7 +359,7 @@ public class AjcSpecXmlReader {
         crunSpec.setReuseCompiler(false);
         crunSpec.setXlintfile((String) null);
         crunSpec.setOutjar((String)null);
-        
+
         IncCompilerRun.Spec icrunSpec = new IncCompilerRun.Spec();
         icrunSpec.addMessage((IMessage) null);
         icrunSpec.setTag((String) null);
@@ -371,7 +370,7 @@ public class AjcSpecXmlReader {
         jrunspec.setClassName((String) null);
         jrunspec.addMessage((IMessage) null);
         // input s.b. interpretable by Boolean.valueOf(String)
-        jrunspec.setSkipTester(true); 
+        jrunspec.setSkipTester(true);
         jrunspec.setErrStreamIsError("false");
         jrunspec.setOutStreamIsError("false");
         jrunspec.setAspectpath("");
@@ -379,8 +378,8 @@ public class AjcSpecXmlReader {
         jrunspec.setFork(false);
         jrunspec.setLTW("false");
         jrunspec.setException("Error");
-        
-        
+
+
         DirChanges.Spec dcspec = new DirChanges.Spec();
         dcspec.setAdded((String) null);
         dcspec.setRemoved((String) null);
@@ -393,16 +392,16 @@ public class AjcSpecXmlReader {
         m.setText((String) null);
         m.setKindAsString((String) null);
         m.setDetails((String) null);
-        
+
         SoftSourceLocation sl = new SoftSourceLocation();
-        sl.setFile((String) null); 
-        sl.setLine((String) null); 
-        sl.setColumn((String) null); 
-        sl.setEndLine((String) null); 
-        
+        sl.setFile((String) null);
+        sl.setLine((String) null);
+        sl.setColumn((String) null);
+        sl.setEndLine((String) null);
+
         // add attribute setters to validate?
     }
-    
+
     /** top element on Digester stack holds the test suite */
     public static class SuiteHolder {
         AjcTest.Suite.Spec spec;
@@ -410,7 +409,7 @@ public class AjcSpecXmlReader {
             this.spec = spec;
         }
     }
-    
+
     /** hold class/properties association for testing */
     static class BProps {
         final Class cl;
@@ -420,13 +419,13 @@ public class AjcSpecXmlReader {
             this.props = props;
         }
     }
-        
+
     /**
      * Find file NAME=="ajcTestSuite.dtd" from some reasonably-local
      * relative directories.
      * XXX bug: commons parser doesn't accept second registration,
      * so we override Digester's implementation instead.
-     * XXX cannot JUnit test SuiteResolver since they run from 
+     * XXX cannot JUnit test SuiteResolver since they run from
      * local directory with valid reference
      * XXX does not fix JDK 1.4 parser message "unable to resolve without base URI"
      * XXX should be able to just set BaseURI instead...
@@ -440,7 +439,7 @@ public class AjcSpecXmlReader {
         public SuiteResolver(File suiteFile) {
             this.suiteFile = suiteFile;
         }
-        
+
 
         private String getPath(String id) {
             // first, try id relative to suite file
@@ -453,12 +452,12 @@ public class AjcSpecXmlReader {
                     return result.getPath();
                 }
             }
-            // then try misc paths relative to suite file or current dir            
+            // then try misc paths relative to suite file or current dir
             final File[] baseDirs = new File[]
             { suiteFileDir, new File(".")
             };
             final String[] locations = new String[]
-            {  ".", "..", "../tests", "../../tests", 
+            {  ".", "..", "../tests", "../../tests",
                 "../../../tests", "tests", "modules/tests"
             };
             File baseDir;
@@ -480,11 +479,11 @@ public class AjcSpecXmlReader {
             return null;
         }
         public InputSource resolveEntity(
-                String publicId, 
+                String publicId,
                 String systemId)
                 throws SAXException {
             InputSource result = null;
-            if ((null != systemId) && 
+            if ((null != systemId) &&
                 systemId.endsWith(NAME)) {
                 String path = getPath(systemId);
                 if (null != path) {
@@ -514,8 +513,8 @@ public class AjcSpecXmlReader {
 //                      int start = line.indexOf("\"");
 //                      int end = line.lastIndexOf(NAME + "\"");
 //                      if ((0 < start) && (start < end)) {
-//                          return upper.substring(start+1, 
-//                              end + NAME.length());                                    
+//                          return upper.substring(start+1,
+//                              end + NAME.length());
 //                      }
 //                  } else if (!line.startsWith("<?xml")) {
 //                      break; // something else...

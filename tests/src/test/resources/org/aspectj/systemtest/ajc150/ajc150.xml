@@ -892,7 +892,7 @@
 
     <ajc-test dir="bugs150" pr="107059" title="target(@Foo *)">
         <compile files="pr107059_2.aj" options="-1.5">
-            <message kind="error" line="4" text="wildcard type pattern not allowed"></message>
+          <message kind="error" line="4" text="wildcard type pattern not allowed"/>
         </compile>
     </ajc-test>
 
@@ -907,9 +907,9 @@
 
     <ajc-test dir="bugs150" pr="108050" title="signature matching in override scenario">
         <compile files="pr108050.aj" options="-1.5">
-            <message kind="warning" line = "2" text="servlet request"></message>
-            <message kind="warning" line = "7" text="servlet request"></message>
-            <message kind="warning" line = "21" text="servlet request"></message>
+          <message kind="warning" line="2" text="servlet request"/>
+          <message kind="warning" line="7" text="servlet request"/>
+          <message kind="warning" line="21" text="servlet request"/>
         </compile>
     </ajc-test>
 
@@ -923,7 +923,8 @@
 
     <ajc-test dir="bugs150/" pr="107953" title="@AfterThrowing with no formal specified">
         <compile files="pr107953.java" options="-1.5">
-            <message kind="error" line="8" text="throwing formal 'RuntimeException' must be declared as a parameter in the advice signature"></message>
+          <message kind="error" line="8"
+            text="throwing formal 'RuntimeException' must be declared as a parameter in the advice signature"/>
         </compile>
     </ajc-test>
 
@@ -980,8 +981,10 @@
 
     <ajc-test title="matching against Object[]"  pr="72668" dir="bugs150">
         <compile files="pr72668.aj" options="-1.5">
-            <message kind="error" line="3" text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"></message>
-            <message kind="error" line="10" text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"></message>
+          <message kind="error" line="3"
+            text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"/>
+          <message kind="error" line="10"
+            text="incompatible return type applying to method-execution(java.lang.Number[] pr72668.getThoseInts())"/>
         </compile>
     </ajc-test>
 
@@ -1020,17 +1023,17 @@
 
     <ajc-test dir="bugs" pr="61568" title="Various kinds of ambiguous bindings">
         <compile files="AmbiguousBindings.aj" options="-1.4">
-            <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
-            <message line="19" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
-            <message line="21" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
-            <message line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"></message>
-            <message line="25" text="ambiguous binding of parameter(s) foo across '||' in pointcut"></message>
+          <message line="17" text="ambiguous binding of parameter(s) foo across '||' in pointcut"/>
+          <message line="19" text="ambiguous binding of parameter(s) foo across '||' in pointcut"/>
+          <message line="21" text="ambiguous binding of parameter(s) foo across '||' in pointcut"/>
+          <message line="23" text="ambiguous binding of parameter(s) x across '||' in pointcut"/>
+          <message line="25" text="ambiguous binding of parameter(s) foo across '||' in pointcut"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs" pr="61658" title="ambiguous args">
         <compile files="PR61658.java" options="-1.5">
-            <message line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"></message>
+          <message line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
         </compile>
     </ajc-test>
 
@@ -1153,8 +1156,8 @@
 
     <ajc-test dir="bugs150" pr="107858" title="inlined field access in proceed call">
         <compile files="pr107858.aj" options="-1.5">
-            <message kind="error" line="9" text="too many arguments to proceed, expected 0"></message>
-            <message kind="error" line="10" text="too many arguments to proceed, expected 0"></message>
+          <message kind="error" line="9" text="too many arguments to proceed, expected 0"/>
+          <message kind="error" line="10" text="too many arguments to proceed, expected 0"/>
         </compile>
     </ajc-test>
 
@@ -1258,11 +1261,11 @@
 
     <ajc-test dir="bugs150/pr87530" pr="87530" title="final itd methods on interfaces">
         <compile files="FinalITDMOnInterface.aj" options="-1.5">
-            <message kind="error" line="12" text="Cannot override the final method from A.TestInterface"></message>
+          <message kind="error" line="12" text="Cannot override the final method from A.TestInterface"/>
         </compile>
         <compile files="FinalITDMOnInterface2.aj" options="-1.5">
             <!--message kind="error" line="8" text="Cannot override the final method from A.TestInterface"></message-->
-            <message kind="error" line="8" text="can't override final void A$TestInterface.m()"></message>
+          <message kind="error" line="8" text="can't override final void A$TestInterface.m()"/>
         </compile>
     </ajc-test>
 
@@ -1620,17 +1623,17 @@
 
     <ajc-test title="declare parents : hasmethod(..) - 1" dir="hasmember">
         <compile files="HasMethod.aj" options="-1.5 -XhasMember"/>
-        <run class="HasMethod"></run>
+      <run class="HasMethod"/>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 2" dir="hasmember">
         <compile files="HasMethodInherited.aj" options="-1.5 -XhasMember"/>
-        <run class="HasMethodInherited"></run>
+      <run class="HasMethodInherited"/>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 3" dir="hasmember">
         <compile files="HasPrivateMethodInherited.aj" options="-1.5 -XhasMember"/>
-        <run class="HasPrivateMethodInherited"></run>
+      <run class="HasPrivateMethodInherited"/>
     </ajc-test>
 
     <ajc-test title="declare parents : hasmethod(..) - 4" dir="hasmember">
@@ -1641,17 +1644,17 @@
 
     <ajc-test title="declare parents : hasfield(..) - 1" dir="hasmember">
         <compile files="HasField.aj" options="-1.5 -XhasMember"/>
-        <run class="HasField"></run>
+      <run class="HasField"/>
     </ajc-test>
 
     <ajc-test title="declare parents : hasfield(..) - 2" dir="hasmember">
         <compile files="HasFieldInherited.aj"  options="-1.5 -XhasMember"/>
-        <run class="HasFieldInherited"></run>
+      <run class="HasFieldInherited"/>
     </ajc-test>
 
     <ajc-test title="declare parents : hasfield(..) - 3" dir="hasmember">
         <compile files="HasPrivateFieldInherited.aj" options="-1.5 -XhasMember"/>
-        <run class="HasPrivateFieldInherited"></run>
+      <run class="HasPrivateFieldInherited"/>
     </ajc-test>
 
     <!-- Annotation binding tests -->
@@ -3150,7 +3153,7 @@
         <compile files="BaseTypes.java,DecaTypeBin5.aj" options="-1.5"  xlintfile="ignoreTypeNotExposed.properties">
             <message kind="error" line="15" text="The annotation @ColorM is disallowed for this location"/>
             <message kind="error" line="16" text="The annotation @ColorC is disallowed for this location"/>
-            <message king="error" line="17" text="A is not a valid target for annotation ColorA"/>
+            <message kind="error" line="17" text="A is not a valid target for annotation ColorA"/>
             <message kind="error" line="18" text="The annotation @ColorF is disallowed for this location"/>
             <message kind="error" line="19" text="The annotation @ColorP is disallowed for this location"/>
             <message kind="error" line="20" text="The annotation @ColorL is disallowed for this location"/>

@@ -107,7 +107,7 @@
     </ajc-test>
 
 	<ajc-test dir="bugs172/pr398246" title="if pointcut names 4">
-      <compile files="Code4.java" options="-1.5"></compile>
+    <compile files="Code4.java" options="-1.5"/>
       <compile files="Code4.java" options="-1.5" outjar="aspects.jar"/>
       <run class="Code4" options="-1.5">
       	<stdout>
@@ -115,7 +115,7 @@
       	<line text="advice"/>
       	</stdout>
       </run>
-      <compile files="CodeExtra4.java" aspectpath="aspects.jar" options="-1.5"></compile>
+    <compile files="CodeExtra4.java" aspectpath="aspects.jar" options="-1.5"/>
       <run class="CodeExtra4" options="-1.5">
       	<stdout>
       	<line text="advice"/>
