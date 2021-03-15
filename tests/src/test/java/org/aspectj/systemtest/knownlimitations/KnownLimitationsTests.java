@@ -4,8 +4,8 @@
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * ******************************************************************/
 package org.aspectj.systemtest.knownlimitations;
 
@@ -20,7 +20,7 @@ public class KnownLimitationsTests extends org.aspectj.testing.XMLBasedAjcTestCa
   }
 
   protected java.net.URL getSpecFile() {
-	  return getClassResource("knownlimitations.xml");
+	  return getClassResource("knownLimitations.xml");
 //    return new File("../tests/src/org/aspectj/systemtest/knownlimitations/knownlimitations.xml");
   }
 

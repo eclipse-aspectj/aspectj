@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
@@ -75,7 +75,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 				+ "c:/batik/batik-1.6/lib/batik-svggen.jar;" + File.pathSeparator + ".." + File.separator + "lib" + File.separator
 				+ "test" + File.separator + "aspectjrt.jar";
 		verifyClasspath(cp);
-		if (LangUtil.is19VMOrGreater()) {
+		if (LangUtil.is9VMOrGreater()) {
 			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
 		}
 
@@ -178,7 +178,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		this.outjar = outjar;
 		this.changed |= ICompilerConfiguration.OUTJAR_CHANGED;
 	}
-	
+
 	public void setProcessor(String processor) {
 		this.processor = processor;
 		this.changed |= ICompilerConfiguration.PROCESSOR_CHANGED;

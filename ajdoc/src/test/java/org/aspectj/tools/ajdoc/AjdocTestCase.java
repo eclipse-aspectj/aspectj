@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2005 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2005 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.tools.ajdoc;
@@ -160,12 +160,12 @@ public abstract class AjdocTestCase extends TestCase {
 		if (inputFiles.length == 0) {
 			fail("need to pass some files into ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && 
-			!sourceLevel.equals("1.4") && 
-			!sourceLevel.equals("1.5") && 
-			!sourceLevel.equals("1.6") && 
-			!sourceLevel.equals("1.7") && 
-			!sourceLevel.equals("1.8") && 
+		if (!sourceLevel.equals("1.3") &&
+			!sourceLevel.equals("1.4") &&
+			!sourceLevel.equals("1.5") &&
+			!sourceLevel.equals("1.6") &&
+			!sourceLevel.equals("1.7") &&
+			!sourceLevel.equals("1.8") &&
 			!sourceLevel.equals("1.9") &&
 			!sourceLevel.equals("10")) {
 			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
@@ -191,12 +191,12 @@ public abstract class AjdocTestCase extends TestCase {
 		if (!visibility.equals("public") && !visibility.equals("protected") && !visibility.equals("private")) {
 			fail("need to pass 'public','protected' or 'private' visibility to ajdoc");
 		}
-		if (!sourceLevel.equals("1.3") && 
-			!sourceLevel.equals("1.4") && 
-			!sourceLevel.equals("1.5") && 
-			!sourceLevel.equals("1.6") && 
-			!sourceLevel.equals("1.7") && 
-			!sourceLevel.equals("1.8") && 
+		if (!sourceLevel.equals("1.3") &&
+			!sourceLevel.equals("1.4") &&
+			!sourceLevel.equals("1.5") &&
+			!sourceLevel.equals("1.6") &&
+			!sourceLevel.equals("1.7") &&
+			!sourceLevel.equals("1.8") &&
 			!sourceLevel.equals("1.9") &&
 			!sourceLevel.startsWith("9") &&
 			!sourceLevel.startsWith("10")) {
@@ -217,7 +217,7 @@ public abstract class AjdocTestCase extends TestCase {
 		args[2] = sourceLevel;
 		args[3] = "-classpath";
 		StringBuilder classpath = new StringBuilder();
-		if (LangUtil.is19VMOrGreater()) {
+		if (LangUtil.is9VMOrGreater()) {
 			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
 		}
 		classpath.append(AjdocTests.ASPECTJRT_PATH.getPath());

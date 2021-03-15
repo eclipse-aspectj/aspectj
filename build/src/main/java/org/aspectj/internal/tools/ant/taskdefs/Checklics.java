@@ -12,25 +12,14 @@
 
 package org.aspectj.internal.tools.ant.taskdefs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Check that included .java files contain license and copyright strings for MPL 1.0 (default), Apache, or CPL. Use list="true" to
@@ -343,9 +332,10 @@ public class Checklics extends MatchingTask {
 	public static class License {
 		/** acceptable years for copyright prefix to company - append " " */
 		static final String[] YEARS = // remove older after license xfer?
-				new String[] { "2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008",
-						"2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2001 ", "2000 ",
-		"1999 " };
+				new String[] {
+					"2002 ", "2003 ", "2004 ", "2005", "2006", "2007", "2008", "2009", "2010", "2011",
+					"2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021",
+					"2001 ", "2000 ", "1999 " };
 		public final String tag;
 		public final String license;
 		private final String[] copyright;

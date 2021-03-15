@@ -26,7 +26,7 @@
 		</stdout>
 		</run>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs183/436653/abstract" title="suppress type not found - abstract 1">
 		<compile options="-1.8 -Xlint:ignore" files="A.java" outjar="codeA.jar"/>
 		<compile options="-1.8" files="AA.java X.java" classpath="codeA.jar" outjar="aspects.jar"/>
@@ -44,7 +44,7 @@
 		</stdout>
 		</run>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs183/436653" title="suppress type not found 4">
 		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
 		<compile options="-1.8" files="Runner.java"/>
@@ -54,10 +54,10 @@
 	        </stdout>
 	    </run>
     </ajc-test>
-    
+
     <ajc-test dir="bugs183/436653" title="suppress type not found 5">
 		<compile options="-1.8 -Xlint:ignore" files="X.java" outjar="aspects.jar"/>
-		<compile class="-1.8" files="A.java"/>
+		<compile options="-1.8" files="A.java"/>
 		<compile options="-1.8" files="Runner.java"/>
 		<run class="Runner" ltw="aop.xml">
 	        <stdout>
@@ -66,7 +66,7 @@
 	        </stdout>
 	    </run>
     </ajc-test>
-    
+
     <!-- annotation style aspect, missing type so deactivated -->
    	<ajc-test dir="bugs183/436653" title="suppress type not found 6">
 		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java" outjar="aspects.jar"/>
@@ -77,7 +77,7 @@
 	        </stdout>
 	    </run>
     </ajc-test>
-    
+
     <!-- annotation style aspect, type not missing so not deactivated -->
     <ajc-test dir="bugs183/436653" title="suppress type not found 7">
 		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
@@ -89,7 +89,7 @@
 	        </stdout>
 	    </run>
     </ajc-test>
-    
+
     <!-- annotation style aspect, type not missing so not deactivated -->
     <ajc-test dir="bugs183/436653" title="suppress type not found 8">
 		<compile options="-1.8 -Xlint:ignore" files="AnnoX.java A.java" outjar="aspects.jar"/>
@@ -114,7 +114,7 @@
 			<message kind="info" text="*deactivating aspect 'XA2' as it requires type 'B' which cannot be found on the classpath"/>
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs183/436653" title="suppress type not found 2">
 		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
 		<!-- adviceDidNotMatch messages are suppressed here -->
@@ -122,7 +122,7 @@
 		<compile options="-1.8" files="Code.java" aspectpath="aspects.jar">
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs183/436653" title="suppress type not found">
 		<compile options="-1.8" files="A.java" outjar="typeA.jar"/>
 		<!-- adviceDidNotMatch messages are suppressed here -->
@@ -148,12 +148,12 @@
 		<compile options="-1.8" files="ControlFlow.java ForReplacer.java ControlFlowCommand.java ControlFlowDriver.java">
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs183/444398" title="abstract aspect npe">
 		<compile options="-1.8" files="Bottom.java Middle.java Top.java">
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs183/442425" title="anno style decp">
 		<compile options="-1.8" files="EntityController.java IEntityController.java MyAnnotatedController.java EntityControllerAspect.java EntityMongoController.java">
 			<message kind="error" line="23" text="Type mismatch: cannot convert from MyAnnotatedController&lt;String&gt; to IEntityController&lt;String&gt;"/>
@@ -173,10 +173,10 @@
 		</run>
 		-->
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs183/443477" title="verifyerror">
 	  <compile options="-1.7" files="Coo.java"/>
 	  <run class="Coo"/>
 	</ajc-test>
-	
+
 </suite>

@@ -101,9 +101,9 @@ public class LangUtilTest extends TestCase {
 	// }
 
 	public void testVersion() {
-		assertTrue(LangUtil.is18VMOrGreater()); // min vm now - floor may change
+		assertTrue(LangUtil.is1dot8VMOrGreater()); // min vm now - floor may change
 		if (LangUtil.is11VMOrGreater()) {
-			assertTrue(LangUtil.is19VMOrGreater());
+			assertTrue(LangUtil.is9VMOrGreater());
 			assertTrue(LangUtil.is10VMOrGreater());
 		}
 	}

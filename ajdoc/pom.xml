@@ -35,13 +35,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-    
-  <!-- enables easy dependency on tools.jar -->
-  <groupId>com.github.olivergondza</groupId>
-  <artifactId>maven-jdk-tools-wrapper</artifactId>
-  <version>0.1</version>
-</dependency>
-
+      <!-- enables easy dependency on tools.jar -->
+      <groupId>com.github.olivergondza</groupId>
+      <artifactId>maven-jdk-tools-wrapper</artifactId>
+      <version>0.1</version>
+    </dependency>
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
@@ -49,5 +47,45 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
     </dependency>
+
+    <!-- Dependencies needed for running tests in this module independently of complete reactor build -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>org.eclipse.jdt.core</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>org.aspectj.matcher</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>weaver</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>bcel-builder</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>runtime</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>testing-util</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>

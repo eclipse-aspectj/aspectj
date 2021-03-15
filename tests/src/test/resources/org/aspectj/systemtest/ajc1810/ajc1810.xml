@@ -27,7 +27,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs1810/500035" title="ataspectj binding 2">
 		<compile options="-1.8" files="Code2.java"/>
 		<run class="Code2">
@@ -39,7 +39,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs1810/500035" title="ataspectj binding 3 -XnoInline">
 		<compile options="-1.8 -XnoInline" files="Code3.java"/>
 		<run class="Code3">
@@ -59,7 +59,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs1810/500035" title="ataspectj binding 4">
 		<compile options="-1.8" files="Code3.java"/>
 		<run class="Code3">
@@ -79,7 +79,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs1810/501656" title="generics exception">
 		<compile options="-1.8 -parameters" files="ApplicationException.java ApplicationExceptionHandler.java"/>
 	</ajc-test>
@@ -90,7 +90,7 @@
 
 	<ajc-test dir="bugs1810/493554" title="pertarget">
 		<compile options="-1.8" files="Dep.java FooAspect.aj Cmd.java"/>
-		<run class="example.kusedep.Cmd"></run>
+    <run class="example.kusedep.Cmd"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs1810/ambig" title="ambiguous message - 18">
@@ -106,5 +106,5 @@
 		  <message kind="error" text="The method toList() in the type Collectors is not applicable for the arguments (Inner::getId)"/>
 		</compile>
 	</ajc-test>
-	
+
 </suite>

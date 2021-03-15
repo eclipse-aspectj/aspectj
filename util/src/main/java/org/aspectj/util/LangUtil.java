@@ -126,7 +126,7 @@ public class LangUtil {
 	}
 
 	@Deprecated
-	public static boolean isOnePointThreeVMOrGreater() {
+	public static boolean is1dot3VMOrGreater() {
 		return 1.3 <= vmVersion;
 	}
 
@@ -136,25 +136,25 @@ public class LangUtil {
 	}
 
 	@Deprecated
-	public static boolean is15VMOrGreater() {
+	public static boolean is1dot5VMOrGreater() {
 		return 1.5 <= vmVersion;
 	}
 
 	@Deprecated
-	public static boolean is16VMOrGreater() {
+	public static boolean is1dot6VMOrGreater() {
 		return 1.6 <= vmVersion;
 	}
 
 	@Deprecated
-	public static boolean is17VMOrGreater() {
+	public static boolean is1dot7VMOrGreater() {
 		return 1.7 <= vmVersion;
 	}
 
-	public static boolean is18VMOrGreater() {
+	public static boolean is1dot8VMOrGreater() {
 		return 1.8 <= vmVersion;
 	}
 
-	public static boolean is19VMOrGreater() {
+	public static boolean is9VMOrGreater() {
 		return 9 <= vmVersion;
 	}
 
@@ -176,6 +176,10 @@ public class LangUtil {
 
 	public static boolean is14VMOrGreater() {
 		return 14 <= vmVersion;
+	}
+
+	public static boolean is15VMOrGreater() {
+		return 15 <= vmVersion;
 	}
 
 	/**

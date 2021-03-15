@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2017 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
@@ -35,7 +35,7 @@ import junit.framework.TestCase;
 
 /**
  * Exercise the JImage handling in @link {@link org.aspectj.weaver.bcel.ClassPathManager}.
- * 
+ *
  * @author Andy Clement
  */
 public class JImageTestCase extends TestCase {
@@ -47,15 +47,15 @@ public class JImageTestCase extends TestCase {
 		paths.add(LangUtil.getJrtFsFilePath());
 		cpm = new ClassPathManager(paths,new TestMessageHandler());
 	}
-	
+
 	public void testOnJava9() {
-		if (!LangUtil.is19VMOrGreater()) {
+		if (!LangUtil.is9VMOrGreater()) {
 			System.out.println("SKIPPING JIMAGE TESTS AS NOT ON 1.9 OR LATER");
 		}
 	}
-	
-	public void testBasicStructureAndCapabilities() {	
-		if (!LangUtil.is19VMOrGreater()) return;
+
+	public void testBasicStructureAndCapabilities() {
+		if (!LangUtil.is9VMOrGreater()) return;
 		// Should be one entry for finding JRT contents
 		List<Entry> entries = cpm.getEntries();
 		assertEquals(1,entries.size());
@@ -65,11 +65,11 @@ public class JImageTestCase extends TestCase {
 		assertNotNull(stringClassFile);
 		assertEquals("java/lang/String.class",stringClassFile.getPath());
 	}
-	
+
 	public void testBehaviour() throws Exception {
-		if (!LangUtil.is19VMOrGreater()) return;
+		if (!LangUtil.is9VMOrGreater()) return;
 		JImageEntry jie = getJImageEntry();
-		
+
 		Map<String, Path> packageCache = jie.getPackageCache();
 		assertTrue(packageCache.size()>0);
 		// Note: seems to be about 1625 entries in it for Java9
@@ -77,12 +77,12 @@ public class JImageTestCase extends TestCase {
 		assertEquals("modules/java.base/java/lang", path.toString());
 		path = packageCache.get("java/io");
 		assertEquals("modules/java.base/java/io", path.toString());
-		
+
 		assertNotNull(jie.find("java/lang/String"));
 		assertNotNull(jie.find("java/io/File"));
 		// TODO test the filecache, hard because difficult to simulate collection of SoftReferences
 	}
-	
+
 
 	static class TestMessageHandler implements IMessageHandler {
 
@@ -103,11 +103,11 @@ public class JImageTestCase extends TestCase {
 		@Override
 		public void ignore(Kind kind) {
 		}
-		
+
 	}
 
 	// ---
-	
+
 	private JImageEntry getJImageEntry() {
 		return (JImageEntry) cpm.getEntries().get(0);
 	}

@@ -31,12 +31,17 @@ import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.HierarchyWalker;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
+import org.aspectj.util.LangUtil;
 import org.aspectj.util.TypeSafeEnum;
 
 /**
  * @author Mik Kersten
  */
 class HtmlDecorator {
+
+	public static final String TYPE_NAME_LABEL = LangUtil.is15VMOrGreater()
+		? "type-name-label"
+		: (LangUtil.is1dot8VMOrGreater() ? "typeNameLabel" : "strong");
 
 	private static final String POINTCUT_DETAIL = "Pointcut Detail";
 	private static final String ADVICE_DETAIL = "Advice Detail";
@@ -267,19 +272,14 @@ class HtmlDecorator {
 					}
 				}
 				else {
-					// Java8:
-					// <pre>static class <span class="typeNameLabel">ClassA.InnerAspect</span>
-					classStartIndex = fileContents.toString().indexOf("class <span class=\"typeNameLabel\">");
-					if (classStartIndex == -1) {
-						// Java7: 464604
-						// <pre>public class <span class="strong">Azpect</span>
-						classStartIndex = fileContents.toString().indexOf("class <span class=\"strong\">");
-					}
+					// Java15: <pre>static class <span class="type-name-label">ClassA.InnerAspect</span>
+					// Java8: <pre>static class <span class="typeNameLabel">ClassA.InnerAspect</span>
+					// Java7 (464604): <pre>public class <span class="strong">Azpect</span>
+					classStartIndex = fileContents.toString().indexOf("class <span class=\"" + HtmlDecorator.TYPE_NAME_LABEL + "\">");
 					int classEndIndex = fileContents.toString().indexOf("</span>", classStartIndex);
 					if (classEndIndex != -1) {
-						// Convert it to "aspect <span class="typeNameLabel">ClassA.InnerAspect</span>"
-						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
-						String aspectLine = "aspect"+fileContents.substring(classStartIndex+5,classEndIndex);
+						// Convert it to "aspect <span class="TYPE_NAME_LABEL">ClassA.InnerAspect</span>"
+						String aspectLine = "aspect" + fileContents.substring(classStartIndex + 5, classEndIndex);
 						fileContents.delete(classStartIndex, classEndIndex);
 						fileContents.insert(classStartIndex, aspectLine);
 					}

@@ -4,11 +4,11 @@
 <suite>
 
  <ajc-test title="empty class" dir="bringup">
-  <compile files="EmptyClass.java"></compile>
+   <compile files="EmptyClass.java"/>
  </ajc-test>
 
  <ajc-test title="empty aspect" dir="bringup">
-  <compile files="EmptyAspect.aj"></compile>
+   <compile files="EmptyAspect.aj"/>
  </ajc-test>
- 
+
 </suite>

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -110,7 +110,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(FieldSetTestCase.class);
 		suite.addTestSuite(HierarchyDependsTestCase.class);
 		suite.addTestSuite(IdWeaveTestCase.class);
-        if (LangUtil.is19VMOrGreater()) {
+        if (LangUtil.is9VMOrGreater()) {
         	suite.addTestSuite(JImageTestCase.class);
         }
 		suite.addTestSuite(MegaZipTestCase.class);
@@ -125,7 +125,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(WorldTestCase.class);
 		suite.addTestSuite(ZipTestCase.class);
 		suite.addTestSuite(TypeXTestCase.class);
-		
+
 		suite.addTestSuite(AnnotationPatternMatchingTestCase.class);
 		suite.addTestSuite(AnnotationPatternTestCase.class);
 		suite.addTestSuite(ConcretizationTestCase.class);

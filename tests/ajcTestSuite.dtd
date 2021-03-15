@@ -2,17 +2,20 @@
 <!-- element-component mappings are in org.aspectj.testing.xml.AjcSpecXmlReader -->
 <!-- element names are determined by the component XMLNAME static variable -->
 
-   <!ELEMENT suite (ajc-test*)>
+   <!ELEMENT suite (ajc-test | comment)*>
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
-	<!-- permits leading inc-compile, will fail -->
-   <!ELEMENT ajc-test ((compile | inc-compile | run)*)>
+
+   <!-- permits leading inc-compile, will fail -->
+   <!ELEMENT ajc-test ((compile | inc-compile | run | weave | file | ant | comment)*)>
    <!ATTLIST ajc-test title CDATA #REQUIRED >
    <!ATTLIST ajc-test dir CDATA #REQUIRED >
    <!ATTLIST ajc-test pr CDATA #IMPLIED >
    <!ATTLIST ajc-test keywords CDATA #IMPLIED >
    <!ATTLIST ajc-test comment CDATA #IMPLIED >
+   <!ATTLIST ajc-test vm CDATA #IMPLIED >
 
    <!ELEMENT compile (dir-changes*,message*)>
+   <!ATTLIST compile comment CDATA #IMPLIED >
    <!ATTLIST compile staging CDATA #IMPLIED >
    <!ATTLIST compile badInput CDATA #IMPLIED >
    <!ATTLIST compile files CDATA #IMPLIED >
@@ -20,20 +23,27 @@
    <!ATTLIST compile includeClassesDir CDATA #IMPLIED >
    <!ATTLIST compile argfiles CDATA #IMPLIED >
    <!ATTLIST compile aspectpath CDATA #IMPLIED >
+   <!ATTLIST compile aspectsFiles CDATA #IMPLIED >
    <!ATTLIST compile classpath CDATA #IMPLIED >
+   <!ATTLIST compile modulepath CDATA #IMPLIED >
+   <!ATTLIST compile inpath CDATA #IMPLIED >
    <!ATTLIST compile extdirs CDATA #IMPLIED >
    <!ATTLIST compile options CDATA #IMPLIED >
    <!ATTLIST compile sourceroots CDATA #IMPLIED >
    <!ATTLIST compile xlintfile CDATA #IMPLIED >
    <!ATTLIST compile outjar CDATA #IMPLIED >
+   <!ATTLIST compile outxmlfile CDATA #IMPLIED >
 
    <!ELEMENT inc-compile (dir-changes*,message*)>
    <!ATTLIST inc-compile tag CDATA #REQUIRED >
    <!ATTLIST inc-compile fresh CDATA #IMPLIED >
    <!ATTLIST inc-compile checkModel CDATA #IMPLIED >
 
-   <!ELEMENT run (dir-changes*,message*)>
-   <!ATTLIST run class CDATA #REQUIRED >
+   <!ELEMENT run (dir-changes*,message*,stdout*,stderr*)>
+   <!-- Either class or modulepath is required -->
+   <!ATTLIST run class CDATA #IMPLIED >
+   <!ATTLIST run modulepath CDATA #IMPLIED >
+   <!ATTLIST run module CDATA #IMPLIED >
    <!ATTLIST run skipTester CDATA #IMPLIED >
    <!ATTLIST run vm CDATA #IMPLIED >
    <!ATTLIST run options CDATA #IMPLIED >
@@ -43,12 +53,13 @@
    <!ATTLIST run vmargs CDATA #IMPLIED >
    <!ATTLIST run aspectpath CDATA #IMPLIED >
    <!ATTLIST run classpath CDATA #IMPLIED >
-   <!ATTLIST run LTW CDATA #IMPLIED >
+   <!ATTLIST run ltw CDATA #IMPLIED >
    <!ATTLIST run usefullltw CDATA #IMPLIED >
    <!ATTLIST run exception CDATA #IMPLIED >
+   <!ATTLIST run xlintfile CDATA #IMPLIED >
 
    <!ELEMENT message (source*)>
-   <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST message kind (abort | fail | error | warning | info | Xlint | weave) #IMPLIED >
    <!ATTLIST message line CDATA #IMPLIED >
    <!ATTLIST message text CDATA #IMPLIED >
    <!ATTLIST message file CDATA #IMPLIED >
@@ -69,3 +80,40 @@
    <!ATTLIST dir-changes fastFail CDATA #IMPLIED >
    <!ATTLIST dir-changes delay CDATA #IMPLIED >
 
+   <!ATTLIST dir-changes dirToken (classes | run) #IMPLIED >
+   <!ATTLIST dir-changes defaultSuffix (.class) #IMPLIED >
+   <!ATTLIST dir-changes added CDATA #IMPLIED >
+   <!ATTLIST dir-changes removed CDATA #IMPLIED >
+   <!ATTLIST dir-changes updated CDATA #IMPLIED >
+   <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
+   <!ATTLIST dir-changes expDir CDATA #IMPLIED >
+   <!ATTLIST dir-changes fastFail CDATA #IMPLIED >
+   <!ATTLIST dir-changes delay CDATA #IMPLIED >
+
+   <!ELEMENT stdout (line*)>
+   <!ATTLIST stdout ordered CDATA #IMPLIED >
+
+   <!ELEMENT stderr (line*)>
+   <!ATTLIST stderr ordered CDATA #IMPLIED >
+
+   <!ELEMENT line (line*)>
+   <!ATTLIST line text CDATA #REQUIRED >
+   <!ATTLIST line vm CDATA #IMPLIED >
+
+   <!ELEMENT weave (message*)>
+   <!ATTLIST weave classesFiles CDATA #REQUIRED >
+   <!ATTLIST weave aspectsFiles CDATA #REQUIRED >
+   <!ATTLIST weave options CDATA #REQUIRED >
+   <!ATTLIST weave xlintfile CDATA #IMPLIED >
+
+   <!ELEMENT file EMPTY>
+   <!ATTLIST file deletefile CDATA #IMPLIED >
+   <!ATTLIST file renamefrom CDATA #IMPLIED >
+   <!ATTLIST file renameto CDATA #IMPLIED >
+
+   <!ELEMENT ant (stdout*,stderr*)>
+   <!ATTLIST ant file CDATA #IMPLIED >
+   <!ATTLIST ant target CDATA #IMPLIED >
+   <!ATTLIST ant verbose CDATA #IMPLIED >
+
+   <!ELEMENT comment (#PCDATA)>

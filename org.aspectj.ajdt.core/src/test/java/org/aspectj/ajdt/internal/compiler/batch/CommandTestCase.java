@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.batch;
@@ -33,7 +33,7 @@ public abstract class CommandTestCase extends TestCase {
 
 	/**
 	 * Constructor for CommandTestCase.
-	 * 
+	 *
 	 * @param name
 	 */
 	public CommandTestCase(String name) {
@@ -52,7 +52,7 @@ public abstract class CommandTestCase extends TestCase {
 	protected void runMain(String className) {
 		TestUtil.runMain(getSandboxName(), className);
 	}
-	
+
 	public void checkCompile(String source, String[] extraArgs, int[] expectedErrors) {
 		checkCompile(source,extraArgs,expectedErrors,getSandboxName());
 	}
@@ -169,7 +169,7 @@ public abstract class CommandTestCase extends TestCase {
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
 		StringBuilder classpath = new StringBuilder();
-		if (LangUtil.is19VMOrGreater()) {
+		if (LangUtil.is9VMOrGreater()) {
 			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
 		}
 		classpath.append(Constants.aspectjrtClasspath());

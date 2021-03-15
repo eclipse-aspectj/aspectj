@@ -41,7 +41,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs187/469889" title="broken java">
-<!-- 
+<!--
 <compile files="A.java B.java AbstractA.java BImpl.java Main.java" options="-1.8"/>
 -->
 <compile files="Code.java" options="-1.8"/>
@@ -61,7 +61,7 @@
 <compile files="B.java" options="-XhasMember -1.8 -showWeaveInfo">
 <message kind="weave" text="Extending interface set for type 'B' (B.java) to include 'java.io.Serializable' (B.java)"/>
 </compile>
-<run class="B"></run>
+  <run class="B"/>
 </ajc-test>
 
 </suite>

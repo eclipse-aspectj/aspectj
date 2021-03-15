@@ -1,136 +1,175 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.aspectj</groupId>
-		<artifactId>aspectj-parent</artifactId>
-		<version>1.9.7.BUILD-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectj-parent</artifactId>
+    <version>1.9.7.BUILD-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>docs</artifactId>
-	<packaging>jar</packaging>
-	<name>docs</name>
+  <artifactId>docs</artifactId>
+  <packaging>jar</packaging>
+  <name>docs</name>
 
+  <profiles>
+    <profile>
+      <id>create-docs</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
 
+      <dependencies>
+        <!--
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>util</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>runtime</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>util</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>testing-util</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>bridge</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>asm</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>org.aspectj.matcher</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>runtime</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>org.aspectj.matcher</artifactId>
+              <version>${project.version}</version>
+              <type>test-jar</type>
+              <scope>test</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>bcel-builder</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>commons</groupId>
+              <artifactId>commons</artifactId>
+              <version>1.0</version>
+              <scope>system</scope>
+              <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+            </dependency>
+            <dependency>
+              <groupId>asm</groupId>
+              <artifactId>asm</artifactId>
+              <version>1.0</version>
+              <scope>system</scope>
+              <systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
+            </dependency>
+        -->
+      </dependencies>
 
-	<dependencies>
-		<!-- <dependency> <groupId>org.aspectj</groupId> <artifactId>util</artifactId> 
-			<version>${project.version}</version> </dependency> <dependency> <groupId>org.aspectj</groupId> 
-			<artifactId>runtime</artifactId> <version>${project.version}</version> </dependency> 
-			<dependency> <groupId>org.aspectj</groupId> <artifactId>util</artifactId> 
-			<version>${project.version}</version> </dependency> <dependency> <groupId>org.aspectj</groupId> 
-			<artifactId>testing-util</artifactId> <version>${project.version}</version> 
-			</dependency> <dependency> <groupId>org.aspectj</groupId> <artifactId>bridge</artifactId> 
-			<version>${project.version}</version> </dependency> <dependency> <groupId>org.aspectj</groupId> 
-			<artifactId>asm</artifactId> <version>${project.version}</version> </dependency> 
-			<dependency> <groupId>org.aspectj</groupId> <artifactId>org.aspectj.matcher</artifactId> 
-			<version>${project.version}</version> </dependency> <dependency> <groupId>org.aspectj</groupId> 
-			<artifactId>runtime</artifactId> <version>${project.version}</version> </dependency> 
-			<dependency> <groupId>org.aspectj</groupId> <artifactId>org.aspectj.matcher</artifactId> 
-			<version>${project.version}</version> <type>test-jar</type> <scope>test</scope> 
-			</dependency> <dependency> <groupId>org.aspectj</groupId> <artifactId>bcel-builder</artifactId> 
-			<version>${project.version}</version> </dependency> <dependency> <groupId>commons</groupId> 
-			<artifactId>commons</artifactId> <version>1.0</version> <scope>system</scope> 
-			<systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath> </dependency> 
-			<dependency> <groupId>asm</groupId> <artifactId>asm</artifactId> <version>1.0</version> 
-			<scope>system</scope> <systemPath>${project.basedir}/../lib/asm/asm-7.0-beta.renamed.jar</systemPath> 
-			</dependency> -->
-	</dependencies>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/local.properties</include>
+            </includes>
+          </resource>
+          <!--
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>false</filtering>
+                  <excludes>
+                    <exclude>**/local.properties</exclude>
+                  </excludes>
+                </resource>
+          -->
+        </resources>
 
-<build>
-  <resources>
-    <resource>
-      <directory>src/main/resources</directory>
-      <filtering>true</filtering>
-      <includes>
-        <include>**/local.properties</include>
-      </includes>
-    </resource>
-<!--
-    <resource>
-      <directory>src/main/resources</directory>
-      <filtering>false</filtering>
-      <excludes>
-        <exclude>**/local.properties</exclude>
-      </excludes>
-    </resource>
--->
-  </resources>
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <versionRange>[1.7,)</versionRange>
+                        <goals>
+                          <goal>run</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
 
-<plugins>
-<plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-         <version>1.7</version>
-         <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <configuration>
-               <tasks>
-                 <copy file="${project.build.outputDirectory}/local.properties"
-                   toFile="../build/local.properties" overwrite="true" />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-antrun-plugin</artifactId>
-		<version>1.7</version>
-		<executions>
-			<execution>
-				<id>ant</id>
-				<phase>process-resources</phase>
-				<configuration>
-					<target>
-						<ant antfile="build.xml">
-							<target name="dist" />
-						</ant>
-					</target>
-				</configuration>
-				<goals>
-					<goal>run</goal>
-				</goals>
-			</execution>
-		</executions>
-	</plugin></plugins>
-	<pluginManagement>
-		<plugins>
-			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
-				<version>1.0.0</version>
-				<configuration>
-					<lifecycleMappingMetadata>
-						<pluginExecutions>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>
-										org.apache.maven.plugins
-									</groupId>
-									<artifactId>
-										maven-antrun-plugin
-									</artifactId>
-									<versionRange>[1.7,)</versionRange>
-									<goals>
-										<goal>run</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore></ignore>
-								</action>
-							</pluginExecution>
-						</pluginExecutions>
-					</lifecycleMappingMetadata>
-				</configuration>
-			</plugin>
-		</plugins>
-	</pluginManagement>
-</build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>make-docs</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <copy
+                      file="${project.build.outputDirectory}/local.properties"
+                      toFile="../build/local.properties"
+                      overwrite="true"
+                    />
+                    <ant antfile="build.xml">
+                      <target name="dist"/>
+                    </ant>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+
+      </build>
+    </profile>
+  </profiles>
+
 </project>
