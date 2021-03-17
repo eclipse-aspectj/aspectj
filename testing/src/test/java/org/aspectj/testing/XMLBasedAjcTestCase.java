@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -68,17 +68,17 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	public XMLBasedAjcTestCase() {
 	}
-	
+
 	/**
 	 * You must define a suite() method in subclasses, and return the result of calling this method. (Don't you hate static methods
 	 * in programming models). For example:
-	 * 
+	 *
 	 * <pre>
 	 * public static Test suite() {
 	 * 	 return XMLBasedAjcTestCase.loadSuite(MyTestCaseClass.class);
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param testCaseClass
 	 * @return
 	 */
@@ -224,10 +224,15 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		}
 	}
 
-	/*
+	/**
 	 * The rules for parsing a suite spec file. The Digester using bean properties to match attributes in the XML document to
 	 * properties in the associated classes, so this simple implementation should be very easy to maintain and extend should you
 	 * ever need to.
+	 *
+	 * See also <a href="http://commons.apache.org/proper/commons-digester/commons-digester-2.1/core.html">
+	 * this introduction (archived for version 2.1)</a>. AspectJ uses version 1.3, though.
+	 *
+	 * @return a newly created XML digester
 	 */
 	protected Digester getDigester() {
 		Digester digester = new Digester();
@@ -279,7 +284,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.tools.ajc.AjcTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -358,7 +363,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		ClassPath cp = new ClassPath(cpentry + File.pathSeparator + System.getProperty("java.class.path"));
 		return SyntheticRepository.getInstance(cp);
 	}
-	
+
 	protected byte[] loadFileAsByteArray(File f) {
 		try {
 			byte[] bs = new byte[100000];
@@ -383,7 +388,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	protected Method getMethodStartsWith(JavaClass jc, String prefix) {
 		return getMethodStartsWith(jc,prefix,1);
 	}
-	
+
 	protected Attribute getAttributeStartsWith(Attribute[] attributes, String prefix) {
 		StringBuilder buf = new StringBuilder();
 		for (Attribute a: attributes) {
@@ -395,7 +400,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		fail("Failed to find '"+prefix+"' in attributes:\n"+buf.toString());
 		return null;
 	}
-	
+
 	protected Method getMethodStartsWith(JavaClass jc, String prefix, int whichone) {
 		Method[] meths = jc.getMethods();
 		for (Method method : meths) {
@@ -519,5 +524,5 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		return null;
 	}
 
-	
+
 }

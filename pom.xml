@@ -39,6 +39,7 @@
 		<module>build</module>
 		<module>run-all-junit-tests</module>
 		<module>docs</module>
+		<module>libx</module>
 
 		<!-- create the important artifacts we care about -->
 		<module>aspectjrt</module>

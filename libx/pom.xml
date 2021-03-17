@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectj-parent</artifactId>
+    <version>1.9.7.BUILD-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>libx</artifactId>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <!--
+                    Binary 1.6.3 is identical to committed version, but 1.6.5 only contains bugfixes and comes with
+                    sources on Maven Central.
+
+                    TODO: Find all optionals (optional.jar in older Ant versions, now under lib/ant/lib in this
+                          repository) as separate Maven dependencies.
+                  -->
+                  <groupId>ant</groupId>
+                  <artifactId>ant</artifactId>
+                  <version>1.6.5</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>ant</outputDirectory>
+                  <destFileName>ant.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!--
+                    Binary 1.6.3 is identical to committed version, but 1.6.5 only contains bugfixes and comes with
+                    sources on Maven Central.
+                  -->
+                  <groupId>ant</groupId>
+                  <artifactId>ant</artifactId>
+                  <version>1.6.5</version>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>ant</outputDirectory>
+                  <destFileName>ant-src.zip</destFileName>
+                </artifactItem>
+
+                <!--
+                  How relevant is JRockit in 2021?
+                  https://en.wikipedia.org/wiki/JRockit
+                  https://www.oracle.com/java/jrockit.html
+
+                  There are only org.aspectj.weaver.loadtime.JRockitAgent + tests. If we would get rid of that class,
+                  all the rest and jrockit.jar could also go away.
+                -->
+
+                <artifactItem>
+                  <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
+                  <groupId>com.googlecode.jarjar</groupId>
+                  <artifactId>jarjar</artifactId>
+                  <version>1.3</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>jarjar</outputDirectory>
+                  <destFileName>jarjar-1.3.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!--
+                    Binary jdiff:jdiff:1.0.9 is available on Maven Central, but different from committed version.
+                    There are API changes, some classes referenced in org.aspectj.testing.util.TestUtil are unavailable.
+                    Therefore, we would have to try and port the existing functionality, making sure the tests still
+                    run.
+
+                    Downloading snapshot from
+                    https://sourceforge.net/p/jedit/svn/24818/tree/plugins/JDiffPlugin/tags/jdiffplugin-1_2_2/jdiff/
+                    produces exactly identical source files as in the committed JAR. But there is no corresponding Maven
+                    artifact or even binary download package. We would have to compile the code within AspectJ and
+                    deploy it locally or Sonatype (Maven Central) or maven.springframework.org.
+
+                    Downloading source or binary packages from
+                    https://sourceforge.net/projects/jedit-plugins/files/JDiffPlugin/1.3/
+                    also has identical source files (except for tiny copyright changes), but contains more classes
+                    (a superset of the committed ones). Again, there is no Maven artifact for it.
+
+                    Another option would be to include the only 4 Java classes into the 'testing-util' source tree. They
+                    are only used from there and could easily be compiled together with the module, package names
+                    relocated or not.
+                  -->
+                  <!-- TODO: In commit c89830fe jdiff.jar was accidentally unpacked + committed -> delete -->
+                  <groupId>jdiff</groupId>
+                  <artifactId>jdiff</artifactId>
+                  <version>1.0.9</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>jdiff</outputDirectory>
+                  <destFileName>jdiff.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <groupId>junit</groupId>
+                  <artifactId>junit</artifactId>
+                  <version>3.8.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>junit</outputDirectory>
+                  <destFileName>junit.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <groupId>junit</groupId>
+                  <artifactId>junit</artifactId>
+                  <version>3.8.1</version>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>junit</outputDirectory>
+                  <destFileName>junit-src.zip</destFileName>
+                </artifactItem>
+
+                <!-- Jython does not seem to be used anywhere in AspectJ -->
+
+                <artifactItem>
+                  <!-- Binary is a bit newer than committed version, but produces identical results in 'docs' -->
+                  <groupId>saxon</groupId>
+                  <artifactId>saxon</artifactId>
+                  <version>6.5.3</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>saxon</outputDirectory>
+                  <destFileName>saxon.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <groupId>regexp</groupId>
+                  <artifactId>regexp</artifactId>
+                  <version>1.2</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>regexp</outputDirectory>
+                  <destFileName>jakarta-regexp-1.2.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
