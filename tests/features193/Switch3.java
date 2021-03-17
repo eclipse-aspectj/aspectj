@@ -7,15 +7,18 @@ public class Switch3 {
 	}
 
 	public static int one(Color color) {
-		int result = switch(color) {
-		case R -> foo(0);
-		case G -> foo(1);
-		case B -> foo(2);
-		default -> foo(3);
+		int result = switch (color) {
+			case R -> foo(0);
+			case G -> {
+				int number4 = foo(1) - 2;
+				yield number4 +2;
+			}
+			case B -> foo(2);
+			default -> foo(3);
 		};
 		return result;
 	}
-	
+
 	public static final int foo(int i) {
 		return i+1;
 	}
