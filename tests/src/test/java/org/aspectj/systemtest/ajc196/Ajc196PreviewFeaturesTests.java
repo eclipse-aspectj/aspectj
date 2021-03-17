@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc196;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCaseForJava14Only;
 
@@ -16,6 +17,11 @@ import junit.framework.Test;
  * @author Alexander Kriegisch
  */
 public class Ajc196PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only {
+
+  public void testRecords() {
+    runTest("simple record");
+    checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);
+  }
 
   public void testRecords2() {
     runTest("using a record");

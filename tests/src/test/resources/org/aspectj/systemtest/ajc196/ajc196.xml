@@ -46,11 +46,11 @@
 		</run>
 	</ajc-test>
 
-	<ajc-test dir="bugs196/java14" vm="14" title="simple record">
+	<ajc-test dir="features196/java14" vm="14" title="simple record">
 		<compile files="Person.java" options="--enable-preview  -14" />
 	</ajc-test>
 
-	<ajc-test dir="bugs196/java14" vm="14" title="using a record">
+	<ajc-test dir="features196/java14" vm="14" title="using a record">
 		<compile files="Person.java UsingPersonRecord.java"
 			options="--enable-preview -14" />
 		<run class="UsingPersonRecord" vmargs="--enable-preview">
@@ -61,7 +61,7 @@
 		</run>
 	</ajc-test>
 
-	<ajc-test dir="bugs196/java14" vm="14"
+	<ajc-test dir="features196/java14" vm="14"
 		title="instanceof patterns">
 		<compile files="Jep305.java" options="--enable-preview -14" />
 		<run class="Jep305" vmargs="--enable-preview">
@@ -73,7 +73,7 @@
 	</ajc-test>
 
 
-	<ajc-test dir="bugs196/java14" vm="14"
+	<ajc-test dir="features196/java14" vm="14"
 		title="advising records">
 		<compile
 			files="TraceRecordComponents.aj Person.java UsingPersonRecord.java"
