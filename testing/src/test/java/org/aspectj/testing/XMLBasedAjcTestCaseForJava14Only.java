@@ -19,6 +19,12 @@ public abstract class XMLBasedAjcTestCaseForJava14Only extends XMLBasedAjcTestCa
 
 	@Override
 	public void runTest(String title) {
+		throw new IllegalStateException(
+			"These tests need a Java 14 level AspectJ compiler " +
+				"(e.g. because they use version-specific preview features). " +
+				"This compiler does not support preview features of a previous version anymore."
+		);
+		/*
 		if (!LangUtil.is14VMOrGreater() || LangUtil.is15VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 14 only " +
@@ -26,6 +32,7 @@ public abstract class XMLBasedAjcTestCaseForJava14Only extends XMLBasedAjcTestCa
 			);
 		}
 		super.runTest(title);
+		*/
 	}
 
 }
