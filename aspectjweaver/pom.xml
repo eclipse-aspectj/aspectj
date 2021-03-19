@@ -102,9 +102,20 @@
 
 											<Bundle-Name>AspectJ Weaver</Bundle-Name>
 											<Bundle-Version>${project.version}</Bundle-Version>
-											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation,
-												2002 Palo Alto Research Center, Incorporated (PARC),
-												2003-2019 Contributors. All Rights Reserved</Bundle-Copyright>
+											<!--
+												WARNING: Please avoid line breaks in manifest values! They are passed on like this:
+												Assembly Plugin -> Plexus Archiver -> JRE java.util.jar.Manifest.write(OutputStream).
+
+												The JRE Manifest class inserts hard line breaks always after 72 characters, no matter if those
+												72 characters contain line feeds, tabs or spaces. Hence, it can happen that unwanted blank lines
+												end up in the middle of a manifest section, making the manifest invalid. Calls like e.g.
+												'java -cp aspectjtools.jar org.aspectj.tools.ajc.Main' can then fail with the absolutely
+												unexpected error 'Could not find or load main class org.aspectj.tools.ajc.Main'.
+
+												In IntelliJ IDEA you can deactivate wrapping text inside XML tags like this:
+												File | Settings | Editor | Code Style | XML | Wrap text -> deactivate
+											-->
+											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated (PARC), 2003-2020 Contributors. All Rights Reserved</Bundle-Copyright>
 										</manifestEntries>
 									</manifestSection>
 								</manifestSections>
