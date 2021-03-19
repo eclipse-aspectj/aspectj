@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
@@ -276,11 +275,15 @@ public class BuildArgParser extends Main {
 
 	@Override
 	public void printVersion() {
-		final String version = bind("misc.version", //$NON-NLS-1$
-				new String[] { bind("compiler.name"), //$NON-NLS-1$
-						Version.getText() + " - Built: " + Version.getTimeText(), bind("compiler.version"), //$NON-NLS-1$
+		final String version = bind(
+			"misc.version", //$NON-NLS-1$
+				new String[] {
+					bind("compiler.name"), //$NON-NLS-1$
+					Version.getText() + " - Built: " + Version.getTimeText(),
+					bind("compiler.version"), //$NON-NLS-1$
 						bind("compiler.copyright") //$NON-NLS-1$
-				});
+				}
+		);
 		System.out.println(version);
 	}
 
