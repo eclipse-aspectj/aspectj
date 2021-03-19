@@ -51,17 +51,6 @@ import org.aspectj.weaver.WeaverMessages;
 @SuppressWarnings("unchecked")
 public class BuildArgParser extends Main {
 
-	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
-	private static boolean LOADED_BUNDLE = false;
-
-	static {
-		Main.bundleName = BUNDLE_NAME;
-		ResourceBundleFactory.getBundle(Locale.getDefault());
-		if (!LOADED_BUNDLE) {
-			LOADED_BUNDLE = true;
-		}
-	}
-
 	/** to initialize super's PrintWriter but refer to underlying StringWriter */
 	private static class StringPrintWriter extends PrintWriter {
 		public final StringWriter stringWriter;
