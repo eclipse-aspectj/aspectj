@@ -15,15 +15,15 @@
 		  <message line="12" kind="error" />
 		  <message line="13" kind="error" />
 		-->
-		  <message line="12" kind="error" />		
+		  <message line="12" kind="error" />
 		  <message line="13" kind="error" />
 		</compile>
 	</ajc-test>
 
-	<ajc-test dir="bugs/privilege/packageProtected" pr="42711" 
-            title="priviledged aspects calling methods from advice"> 
-        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" /> 
-    </ajc-test> 
+	<ajc-test dir="bugs/privilege/packageProtected" pr="42711"
+            title="priviledged aspects calling methods from advice">
+        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" />
+    </ajc-test>
 
     <ajc-test dir="bugs" pr="49457"
    	 title="No error on overloaded pointcuts in class">
@@ -34,7 +34,7 @@
         	<message kind="error" line="7" text="duplicate pointcut name: pc2"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="49457"
    	 title="No error on overloaded pointcuts unless binding variables">
         <compile files="OverloadedPointcutsInAspect.java">
@@ -51,7 +51,7 @@
  	        <message kind="error" line="6" text="Unhandled exception"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="47754"
       title="static method introduction on interfaces, should not be allowed">
         <compile files="StaticInterfaceMethods.java">
@@ -70,7 +70,7 @@
 		title="Appropriate message for 'after() thowing(Throwable th)' syntax error"
 		pr="49638"
 		>
-		<compile 
+		<compile
 			files="AfterThrowingAdviceSyntaxError.java" >
 			<message kind="error" line="21" />
 			<message kind="error" line="23" />
@@ -82,29 +82,29 @@
         <compile files="SimpleTracing.java" classpath="." options="-verbose -1.4">
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
-    </ajc-test>   
-    
+    </ajc-test>
+
    	<ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
        <compile files="TestSoftening.java">
        </compile>
     </ajc-test>
-    
+
      <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in advice">
         <compile files="ParserRecoveryTest.java">
 		  <message kind="error" line="7"/>
         </compile>
-    </ajc-test>   
-    
+    </ajc-test>
+
 	<ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in java source">
         <compile files="ParserRecoveryTestPureJava.java">
 		  <message kind="error" line="6"/>
 		  <message kind="error" line="8"/>
         </compile>
-    </ajc-test>     
-    
-    <ajc-test dir="bugs" 
+    </ajc-test>
+
+    <ajc-test dir="bugs"
 		pr="46280"
 		title="compiler issues error on inner aspects when privilieged">
         <compile files="PrivilegedParsing.java"/>
@@ -117,7 +117,7 @@
         </compile>
   		<run class="AfterThrowingCtor"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/abstractMethods" pr="49784"
    	 title="Introduced abstract method on abstract class not implemented by subtype (single source file)">
         <compile files="singlesource/C.java">
@@ -137,15 +137,15 @@
         <run class="C2"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/interAbstract" 
+    <ajc-test dir="bugs/interAbstract"
 		pr="49784"
 		title="aspect declares interface method (no modifiers)">
         <compile files="InterfaceMethodDeclarationNone.java" >
         	<message kind="error" line="32" text="requires a body" />
         </compile>
     </ajc-test>
-	
-	<ajc-test dir="bugs/interAbstract" 
+
+	<ajc-test dir="bugs/interAbstract"
 		pr="49784"
 		title="aspect declares interface method (abstract)">
         <compile files="InterfaceMethodDeclarationAbstract.java">
@@ -153,7 +153,7 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="bugs/interAbstract" 
+    <ajc-test dir="bugs/interAbstract"
 		pr="49784"
 		comment="working in 1.1.1 - keep with others?"
 		title="aspect declares interface method (public abstract)">
@@ -161,25 +161,25 @@
         <run class="InterfaceMethodDeclarationFull"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/interfaceDefinition" 
+    <ajc-test dir="bugs/interfaceDefinition"
     	pr="43972"
     	title="Use class implementing interface via aspect (not woven together)">
-        <compile 
+        <compile
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
         		   pack/MyInterface.java" options="-XnotReweavable"/>
         <run class="pack.InterfaceDefinition"/>
-        <compile 
+        <compile
         	includeClassesDir="true"
         	files="Main.java">
         	<message kind="error" line="3"/>
        </compile>
     </ajc-test>
-    
-    <ajc-test dir="bugs/interfaceDefinition" 
+
+    <ajc-test dir="bugs/interfaceDefinition"
     	pr="43972"
     	title="Use class implementing interface via aspect (weave all together)">
-        <compile 
+        <compile
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
         		   pack/MyInterface.java,
@@ -187,16 +187,16 @@
         <run class="pack.InterfaceDefinition"/>
         <run class="Main"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs/interfaceDefinition" 
+
+    <ajc-test dir="bugs/interfaceDefinition"
     	pr="43972"
     	title="Use class implementing interface via aspect (only one implementer)">
-        <compile 
+        <compile
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
         		   pack/MyInterface.java"/>
         <run class="pack.InterfaceDefinition"/>
-        <compile 
+        <compile
         	includeClassesDir="true"
         	files="Main1.java"/>
         <run class="Main1"/>
@@ -208,7 +208,7 @@
         </compile>
         <run class="ErroneousExceptionConversion"/>
     </ajc-test>
-    
+
   <ajc-test dir="bugs" pr="34206"
       title="before():execution(new(..)) does not throw NoAspectBoundException">
         <compile files="ErroneousExceptionConversion1.java" options="-Xlint:ignore">
@@ -227,9 +227,9 @@
         <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
 		  <message kind="error" line="4"/>
         </compile>
-  </ajc-test>   
-        
-    <ajc-test dir="bugs" 
+  </ajc-test>
+
+    <ajc-test dir="bugs"
 		pr="49295"
 		title="declare warning on subtype constructor">
         <compile files="SubtypeConstructorCW.java" >
@@ -238,20 +238,20 @@
         </compile>
         <run class="SubtypeConstructorCW"/>
     </ajc-test>
-        
+
     <ajc-test dir="bugs" pr="50570"
       title="CatchClauseSignature has broken operation">
         <compile files="HandlerSig.java"/>
         <run class="HandlerSig"/>
     </ajc-test>
-    
+
 
     <ajc-test dir="new" pr="42668"
    	 title="after returning with parameter: matching rules">
         <compile files="AfterReturningParamMatching.java" options="-1.4"/>
         <run class="AfterReturningParamMatching"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">
         <compile files="Main.java,TraceV1.aj" options="-1.4"/>
@@ -259,7 +259,7 @@
         <compile files="TraceV2.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
-   
+
     <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect error">
         <compile files="Main.java,TraceV1.aj" options="-1.4"/>
@@ -267,7 +267,7 @@
         <compile files="TraceRE.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
-    
+
      <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">
         <compile files="Main.java,TraceWithInnerV1.aj" options="-1.4"/>
@@ -275,67 +275,67 @@
         <compile files="TraceWithInnerV2.aj" options="-1.4"/>
         <run class="Main"/>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs/protectedvf"
 		title="mail list VerifyError with protected access">
 		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"/>
 		<run class="main.Driver"/>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs" pr="51919"
    	 title="Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)">
         <compile files="OverloadedITDNPE.java" />
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="51320"
    	 title="ClasscastException on concretization of if(false)">
         <compile files="DecwClassCastException.java">
-        
+
          <!-- These are the illegal PCDs against a deow -->
          <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
          <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
          <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
          <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="39" text="this() pointcut designator cannot be used"/>
          <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="43" text="target() pointcut designator cannot be used"/>
          <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="47" text="args() pointcut designator cannot be used"/>
          <message kind="error" line="49" text="args() pointcut designator cannot be used"/>
-         
+
         </compile>
     </ajc-test>
-	
+
 	 <ajc-test dir="bugs" pr="51320"
    	 	title="ClasscastException on concretization of if(false)">
         <compile files="DeclareSoftDynamicPCDs.java">
-        
+
          <!-- These are the illegal PCDs against a deow -->
          <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
          <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
          <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
          <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="39" text="this() pointcut designator cannot be used"/>
          <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="43" text="target() pointcut designator cannot be used"/>
          <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
-         
+
          <message kind="error" line="47" text="args() pointcut designator cannot be used"/>
          <message kind="error" line="49" text="args() pointcut designator cannot be used"/>
-         
+
         </compile>
     </ajc-test>
 
@@ -344,15 +344,15 @@
         <compile files="interface/C.java,interface/A.java,interface/B.java" />
         <run class="C"/>
     </ajc-test>
- 
-    
+
+
    	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
 		title="declare String field on interface">
 		<compile files="StringFieldOnInterface.java">
 			<message kind="warning" line="16" text="this affected type is not exposed"/>
          	<message kind="warning" line="17" text="this affected type is not exposed"/>
-		</compile>	   
+		</compile>
 	</ajc-test>
 
 	<ajc-test dir="bugs/fieldsOnInterfaces"
@@ -363,7 +363,7 @@
          	<message kind="warning" line="28" text="this affected type is not exposed"/>
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
 		title="declare Object field on interface">
@@ -372,13 +372,13 @@
          	<message kind="warning" line="21" text="this affected type is not exposed"/>
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs" pr="50776"
    	 title="fail in compiling aspect with overriding method introduction with different throws clause ">
         <compile files="IntertypeDifferentThrows.java" />
     </ajc-test>
-    
-	<ajc-test dir="new" 
+
+	<ajc-test dir="new"
 		comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call"
 		title="super call in anonymous class created in around advice">
         <compile files="SuperClosure.java" />
@@ -388,19 +388,19 @@
       <ajc-test dir="bugs" pr="44272"
     		title="retitle warning to circular {advice} dependency at ...">
         <compile files="CircularAdvicePrecedence.java" options="-1.4">
-            <message kind="error" line="4"/> 
-            <message kind="error" line="5"/> 
-            <message kind="error" line="6"/> 
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs"  pr="51322"
     	title="Introduce Unknown Type to class causes Null pointer exception"  >
-        <compile files="Pr51322.java"> 
+        <compile files="Pr51322.java">
         	<message kind="error" line="5"/>
         </compile>
     </ajc-test>
-	
+
     <ajc-test dir="bugs"
 		title="Private members introduced via an interface are visible to the class"
 		pr="52928">
@@ -409,19 +409,19 @@
             <message kind="error" line="13"/>
 		</compile>
 	</ajc-test>
-	
+
     <ajc-test dir="bugs/declarePrecedenceWithClasses" pr="53012"
    	 title="declare precedence on a class should be a compile-time error">
         <compile files="DeclarePrecedenceTestClass.java" >
           <message kind="error" line="10" text="Non-aspect types can only be specified"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/declarePrecedenceWithClasses" pr="53012"
    	 title="declare precedence on a class should be a compile-time error">
         <compile files="Priority.aj" />
     </ajc-test>
-	
+
     <ajc-test dir="bugs"
     	pr="59440"
 		title="NPE when binary weaving a ctor ITD">
@@ -436,8 +436,8 @@
         <compile files="DecwInitializationITD.java">
         </compile>
     </ajc-test>
-	
-   <ajc-test dir="bugs/compileOrdering" 
+
+   <ajc-test dir="bugs/compileOrdering"
 		pr="59778"
 		title="InterTypeMethodDeclaration.java:104">
         <compile files="B.java,D.java" >
@@ -447,21 +447,21 @@
           <message kind="error" line="2" file="B.java"/>
         </compile>
     </ajc-test>
-    
-    <ajc-test dir="bugs" 
+
+    <ajc-test dir="bugs"
 		pr="61538" title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts">
         <compile files="ConstructorMain.java"/>
         <run class="ConstructorMain"/>
-    </ajc-test> 
-    
+    </ajc-test>
+
     <ajc-test dir="bugs"
 		pr="61568" title="wrong variable binding in || pointcuts">
         <compile files="DisjunctVarBinding.java">
           <message kind="error" line="17" text="ambiguous binding of parameter(s) a, b across '||' in pointcut"/>
         </compile>
     </ajc-test>
- 
- 	<ajc-test dir="bugs" 
+
+ 	<ajc-test dir="bugs"
 		pr="60936" title="error message for constructor-execution pcd">
         <compile files="InterfaceConstructor.java" options="-1.4">
           <message kind="warning" line="10" text="no interface constructor-execution join point"/>
@@ -470,16 +470,15 @@
 
     <ajc-test dir="bugs"  pr="43714"
     	title="weaving using an empty jar in -injars"  >
-        <compile files="notAJar.jar" outjar="outJar.jar"> 
+        <compile files="notAJar.jar" outjar="outJar.jar">
         	<message kind="warning" text="build config error: skipping missing, empty or corrupt inpath entry"/>
         	<message kind="error" text="no sources specified"/>
-        	<message kind="fail"/>
         </compile>
     </ajc-test>
-	
+
 	 <ajc-test dir="bugs"  pr="43714"
     	title="weaving using an empty jar in -aspectpath"  >
-        <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="outJar.jar" >         	
+        <compile files="WeaveLocal.java" aspectpath="notAJar.jar" outjar="outJar.jar" >
         	<message kind="warning" text="build config error: skipping missing, empty or corrupt aspectpath entry"/>
         </compile>
     </ajc-test>

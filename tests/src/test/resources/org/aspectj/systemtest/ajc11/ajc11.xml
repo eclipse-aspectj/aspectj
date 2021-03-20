@@ -29,7 +29,7 @@
         </compile>
     </ajc-test>
 
- 
+
     <ajc-test dir="new" pr="883"
       title="signature of handler join point">
         <compile files="HandlerSignature.java"/>
@@ -41,9 +41,9 @@
         <compile files="SourceLocationWithinExpr.java"/>
         <run class="SourceLocationWithinExpr"/>
     </ajc-test>
-    
-    
- 
+
+
+
     <ajc-test dir="new" pr="888"
       title="crashes given method in declared method">
         <compile files="DeclareMethodCE.java">
@@ -56,7 +56,7 @@
         <compile files="AfterReturningInterfaceConstructor.java"/>
         <run class="AfterReturningInterfaceConstructor"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="889"
       title="after returning advice on interface constructor - error">
         <compile files="AfterReturningInterfaceConstructorCE.java">
@@ -95,19 +95,19 @@
         <compile files="AnonymousSelfReference.java"/>
         <run class="AnonymousSelfReference"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="776"
       title="self-reference from (aspect-declared) method-local class">
         <compile files="MethodSelfReference.java"/>
         <run class="MethodSelfReference"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" title="expect CE for unterminated declare error">
         <compile files="UnterminatedDeclareErrorCE.java">
             <message kind="error" line="4"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new"
       title="expect CE for declaration collision between subaspects instead of domination order">
         <compile files="DeclarationCollisionCE.java">
@@ -116,20 +116,20 @@
             <message kind="error" line="27"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new"
       title="subtype pattern in dominates should pick out aspect subtypes">
         <compile files="DominatesTypePattern.java"/>
         <run class="DominatesTypePattern"/>
     </ajc-test>
-    
+
     <ajc-test dir="new"
       title="subtype pattern in dominates will conflict with type pattern">
         <compile files="DominatesTypePatternCE.java">
         	<message kind="error" line="15"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="827"
       title="after returning advice on interface and implementation constructor"
       keywords="tofix">
@@ -143,14 +143,14 @@
             <message kind="error" line="41"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="829" title="declare array field using postfix"
       keywords="tofix">
         <compile files="ArrayFieldDeclaration.java">
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="851"
       title="prohibit declaring new aspect constructor with arguments">
         <compile files="DeclareAspectConstructorCE.java">
@@ -164,7 +164,7 @@
           <message kind="error" line="10"/>
         </compile>
     </ajc-test>
-    
+
 	<!-- The follwing three idioms are allowed.  Within a declare parents,
 	     implements and extends can be used interchangably.  We could
 	     provide -Xlint style warnings for misuse.
@@ -187,7 +187,7 @@
         <compile files="DeclareInterfaceImplementsInterface.java">
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new"
       title="if and cflow arg binding">
         <compile files="CflowBinding.java">
@@ -201,7 +201,7 @@
 		  <message kind="error" line="18"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
         <compile files="CloseConnectionsCflow.java" options="-1.4">
         </compile>
@@ -212,12 +212,12 @@
         <compile files="ConstructorArgTracing.java"/>
         <run class="ConstructorArgTracing"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29106" title="declared exceptions in inter-type decls">
         <compile files="ExceptionsOnInters.java"/>
         <run class="ExceptionsOnInters"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="28921"
       title="Verify error on non-Throwable in declare soft">
         <compile files="DeclareSoftCf.java" options="-Xlint:warning">
@@ -226,13 +226,13 @@
 		  <!--message kind="warning"/-->
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29113" title="inter-type fields with array types">
         <compile files="InterFieldArrays.java"/>
         <run class="InterFieldArrays"/>
     </ajc-test>
 
-    
+
     <ajc-test dir="new" pr="838"
       title="checking around join point for advice return type - numeric">
         <compile files="AroundNumericCastCE.java">
@@ -247,7 +247,7 @@
             <message kind="error" line="29"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new/PR852" pr="852"
       title="declaring method on superclass and subclass">
         <compile files="aspectPack/Aspect.java,target/SubClass.java,target/SuperClass.java">
@@ -255,7 +255,7 @@
         </compile>
         <run class="aspectPack.Aspect"/>
     </ajc-test>
-    
+
     <ajc-test dir="new/finalfield" pr="28974"
       title="introducing final fields (simple)">
         <compile files="Introducer.java,Receiver.java,User1.java"/>
@@ -271,113 +271,113 @@
     <ajc-test dir="new/finalfield" pr="28974"
       title="introducing final fields and checking errors">
         <compile files="Introducer.java,Receiver.java,UserCf.java">
-            <message kind="error" line="6"/>        
+            <message kind="error" line="6"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29691"
     		title="Static inner aspects cannot reference user defined pointcuts">
         <compile files="PcdLookup.java" />
         <run class="PcdLookup"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29691"
     		title="Static inner aspects cannot reference user defined pointcuts">
         <compile files="SoftWithin.java" />
         <run class="SoftWithin"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29689"
     		title="Declare precedence should not allow multiple * patterns">
         <compile files="CircularPrecedence.java">
-            <message kind="error" line="14"/> 
+            <message kind="error" line="14"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29662"
     		title="VerifyError on accessing objects not accessible to the weaver">
         <compile files="AroundAccess.java">
         </compile>
         <run class="AroundAccess"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="804"
       title="aspect static initializers should run before instance constructed"
       keywords="tofix">
         <compile files="AspectStaticInit.java"/>
         <run class="AspectStaticInit"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29959"
             title="super call in intertype method declaration body causes VerifyError">
         <compile files="SuperToIntro.java"/>
         <run class="SuperToIntro"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs/crashes" pr="30168" 
+
+    <ajc-test dir="bugs/crashes" pr="30168"
     		title="Error with certain combination of advice">
         <compile files="test/Test3.java"/>
         <run class="test.Test3"/>
     </ajc-test>
 
-    <ajc-test dir="bugs" pr="31423" 
+    <ajc-test dir="bugs" pr="31423"
     		title="Pointcut adviceexecution() does not work">
         <compile files="AdviceExec.java"/>
         <run class="AdviceExec"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs" pr="30026" 
+
+    <ajc-test dir="bugs" pr="30026"
     		title="problems with finalize call">
         <compile files="Finalizer.java">
             <message kind="error" line="22"/>
         </compile>
     </ajc-test>
-    
-    <ajc-test dir="bugs" pr="33635" 
+
+    <ajc-test dir="bugs" pr="33635"
     		title="Negation of if pointcut does not work">
         <compile files="NotIf.java"/>
         <run class="NotIf"/>
     </ajc-test>
-    
-    
-    <ajc-test dir="bugs" pr="32463" 
+
+
+    <ajc-test dir="bugs" pr="32463"
     		title="ajc reports error when encountering static declaration of nested classes">
         <compile files="WeaveLocal.java"/>
         <run class="WeaveLocal"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs" pr="32428" 
+
+    <ajc-test dir="bugs" pr="32428"
     		title="can't use pointcuts defined in inner aspects ">
         <compile files="InnerPointcut.java"/>
         <run class="InnerPointcut"/>
     </ajc-test>
 
-    <ajc-test dir="bugs/interfaceNames" pr="32421" 
+    <ajc-test dir="bugs/interfaceNames" pr="32421"
     		title="can't resolve nested public interfaces (also PR#32399)">
         <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"/>
         <run class="TransactionTest"/>
     </ajc-test>
-    
-    <ajc-test dir="bugs" pr="34210" 
+
+    <ajc-test dir="bugs" pr="34210"
     		title="thisJoinPoint.getArgs() causes IncompatibleClassChangeError">
         <compile files="ThisJoinPointAndVerifier.java"/>
         <run class="ThisJoinPointAndVerifier"/>
     </ajc-test>
-    
+
     <ajc-test dir="errors"  keywords="error"
     		title="inter-type declaration of void field">
         <compile files="VoidFieldDeclarationCE.java">
 			<message kind="error" line="7"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="binding"
       title="no such constructor for proceed argument (error)">
         <compile files="UnfoundConstructor.java">
         	<message kind="error" line="25"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context with no initializer/constructor">
         <compile files="DeclareWarningEmpty.java">
@@ -385,7 +385,7 @@
             <message kind="warning" line="3" text="1 - staticinitialization(DeclareWarningEmpty)"/>
         </compile>
     </ajc-test>
-    
+
 
     <ajc-test dir="new/declare" pr="31724"
             title="omnibus declare warning context">
@@ -408,8 +408,8 @@
             <message kind="warning" line="72" text="adviceExecution() &amp;&amp; within(A)"/>
         </compile>
     </ajc-test>
-    
-    
+
+
     <ajc-test dir="bugs" pr="34858"
       title="cflow binding issues with ignoring state">
         <compile files="CflowBinding.java"/>
@@ -421,21 +421,21 @@
         <compile files="CflowBindingOrig.java"/>
         <run class="CflowBindingOrig"/>
     </ajc-test>
-    
-    <ajc-test dir="errors"  
+
+    <ajc-test dir="errors"
     		title="type not imported in around advice">
         <compile files="TypeNotImportedInAroundCE.java">
         	<message kind="error" line="10"/>
         </compile>
 	</ajc-test>
 
-    <ajc-test dir="errors"  
+    <ajc-test dir="errors"
     		title="type not imported in aspect">
         <compile files="TypeInAspectNotImportedCE.java">
         	<message kind="error" line="6"/>
         </compile>
 	</ajc-test>
-	
+
     <ajc-test dir="errors"  keywords="error"
     		title="class extending abstract aspect">
         <compile files="ClassExtendingAbstractAspectCE.java">
@@ -448,14 +448,14 @@
         <compile files="ConvertToUnchecked.java" options="-Xlint:ignore"/>
         <run class="ConvertToUnchecked"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/interAbstract"
       title="inter-type declaration bug with abstract classes"
       pr="36046">
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/interInherit" pr="35725"
       title="Inter type declaration to base class not seen by derived class">
         <compile files="a_impl/AImpl.java,a_impl/Af.java,a_intf/A.java,b_impl/BImpl.java,b_intf/B.java"/>
@@ -468,8 +468,8 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-    
-    <ajc-test dir="new/declareParents" 
+
+    <ajc-test dir="new/declareParents"
       title="Declare parents removing ancestor"
       keywords="from-new">
         <compile files="IllegalAdoption.java">
@@ -482,32 +482,32 @@
         <compile files="p1/C.java,p2/A1.java"/>
         <run class="p2.A1"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="36736"
       title="implemented abstract pointcut">
         <compile files="AbstractImplementedPointcut.java">
             <message kind="error" line="14"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="new/verifyError" pr="36673"
       title="privileged aspect main verify error">
         <compile files="Privilege.java"/>
         <run class="Privilege"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="36564"
       title="Internal compiler error with thisJoinPoint.getStaticPart()">
         <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java" options="-Xlint:ignore"/>
         <run class="tjpStaticPart.Test"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="29665"
       title="Inconsistant stack height with around">
         <compile files="StackError.java" options="-Xlint:ignore"/>
         <run class="StackError"/>
     </ajc-test>
-    
+
 
 	<ajc-test dir="bugs/messyAround" pr="36056"
       title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds">
@@ -517,20 +517,20 @@
         	<message kind="warning" line="138"/>
         </compile>
         <run class="cap.OptionList"/>
-    </ajc-test>  
+    </ajc-test>
 
     <ajc-test dir="new"
       title="try/finally in around advice (same as ...messy arounds?)">
         <compile files="TryFinallyInAround.java"/>
         <run class="TryFinallyInAround"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="36778"
       title="advise join points in subclass of empty interface">
         <compile files="EmptyInterface.java"/>
         <run class="EmptyInterface"/>
     </ajc-test>
-    
+
     <ajc-test dir="new" pr="36778"
       title="can't put around advice on interface static initializer"
       comment="this tests for a nice message given a compiler limitation">
@@ -539,7 +539,7 @@
         	<message kind="error" line="23"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="36803"
       title="cflow concretization causing assertion failure">
         <compile files="CflowConcrete.java" options="-1.4"/>
@@ -552,13 +552,13 @@
             <message kind="error" line="7"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/interSpecials" pr="36936"
       title="Error when introducing members of type Class">
         <compile files="Trg.java,Asp.java"/>
         <run class="Trg"/>
     </ajc-test>
-    
+
     <ajc-test dir="new"
       comment="this is a pureJava test, but we always want to run it"
       title="arrays via Class.forName()">
@@ -572,39 +572,36 @@
         </compile>
         <run class="p1.Main"/>
     </ajc-test>
-    
-   <ajc-test dir="bugs" pr="37325"  
+
+   <ajc-test dir="bugs" pr="37325"
       title="Weaver fails with NPE for very large source files ">
         <compile files="LongFile.java"/>
         <run class="LongFile"/>
-    </ajc-test>   
+    </ajc-test>
 
      <ajc-test dir="harness" keywords="command-line-error"
       title="CLE: no sources">
         <compile badInput="true">
             <message kind="error" text="no sources"/>
-            <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
- 
-    <ajc-test dir="harness" 
+
+    <ajc-test dir="harness"
     	keywords="command-line-error,knownLimitation-ajctaskCompiler,knownLimitation-ajdeCompiler"
     	comment="ajde omits usage"
       title="CLE: bad filename">
         <compile  badInput="true" files="NoSuchFile.java">
             <message kind="error" text="NoSuchFile.java"/>
-            <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
-    
+
      <ajc-test dir="harness" keywords="command-line-error"
     	comment="XXX test skipped - harness ignores -sourceroot option"
       title="CLE: no dir specified for sourceroots">
-        <compile badInput="true" files="ErrorTest.java" 
+        <compile badInput="true" files="ErrorTest.java"
         	options="-sourceroots">
             <message kind="error" text="no sources specified"/>
             <message kind="error" text="bad sourceroot"/>
-            <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
 
@@ -614,7 +611,6 @@
         <compile badInput="true" options="-incremental">
             <message kind="error" text="no sources specified"/>
             <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
 
@@ -626,18 +622,17 @@
             <message kind="error" text="incremental mode only handles source files using -sourceroots"/>
             <message kind="error" text="no sources specified"/>
             <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
-    
-  
+
+
     <ajc-test dir="bugs" pr="37304"
    	 title="public static fields being ignored">
         <compile files="FinalFields.java"/>
         <run class="FinalFields"/>
     </ajc-test>
- 
-      
+
+
     <!-- This doesn't actually reproduce the bug, but no test case has been submitted
          that does so this is here as a place-holder and to verify that we're mostly
          working.
@@ -647,47 +642,47 @@
         <compile files="p1/Base.java,p2/Derived.java"/>
         <run class="p2.Derived"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="38345"
    	 title="try switch VerifyError, InconsistentStackHeight">
         <compile files="TrySwitch.java"/>
         <run class="TrySwitch"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="39458"
    	 title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor">
         <compile files="NewVoid.java">
-            <message kind="error" line="17"/>        
-            <message kind="error" line="20"/>        
+            <message kind="error" line="17"/>
+            <message kind="error" line="20"/>
             <message kind="error" line="21"/>
-                  
-            <message kind="error" line="28"/>        
-            <message kind="warning" line="29"/>        
-            <message kind="warning" line="30"/>            
+
+            <message kind="error" line="28"/>
+            <message kind="warning" line="29"/>
+            <message kind="warning" line="30"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="39458"
    	 title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor - 1.7">
         <compile files="NewVoid.java">
-            <message kind="error" line="17"/>        
-            <message kind="error" line="20"/>        
+            <message kind="error" line="17"/>
+            <message kind="error" line="20"/>
             <message kind="error" line="21"/>
-                  
-            <message kind="error" line="28"/>        
-            <message kind="warning" line="29"/>        
-            <message kind="error" line="30"/>            
+
+            <message kind="error" line="28"/>
+            <message kind="warning" line="29"/>
+            <message kind="error" line="30"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="39460"
    	 title="Missing import crashes compiler">
-        <compile files="MissingImport.java">      
-            <message kind="error" line="13" text="InvocationTargetException cannot be resolved to a type"/> 
+        <compile files="MissingImport.java">
+            <message kind="error" line="13" text="InvocationTargetException cannot be resolved to a type"/>
 <!-- this error has 'gone' in e37 upgrade            <message kind="error" line="14" text="e cannot be resolved"/> -->
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="39479"
    	 title="NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch">
         <compile files="NewSwitch.java"/>
@@ -699,7 +694,7 @@
         <compile files="SwitchInAround.java"/>
         <run class="SwitchInAround"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="39993"
    	 title="ajc stack trace on declaring hashcode() method in aspect">
         <compile files="OverridingInterfaceObjectMethod.java"/>
@@ -712,7 +707,7 @@
         	<message kind="error" line="14"/>
         </compile>
     </ajc-test>
-    
+
     <ajc-test dir="bugs/cflowAndJar" pr="39462"
    	 title="Compiler crashes in jar and cflow (with no .jar)">
         <compile files="TestAspect.aj,Test.java,AbstractAspect.aj">
@@ -729,13 +724,13 @@
         </compile>
         <run class="Test"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="40589"
    	 title="Default method impl for interface causes internal exception.">
         <compile files="CloneMethod.java"/>
         <run class="CloneMethod"/>
     </ajc-test>
-    
+
 	<ajc-test dir="errors"
 		title="compile error expected for abstract pointcut outside abstract aspect">
 		<compile files="AbstractPointcutCE.java">
@@ -744,14 +739,14 @@
 			<message kind="error" line="10"/>
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs"
 		pr="40876"
 		title="subtype-qualified pointcut reference">
 		<compile files="PointcutLibraryTest.java"/>
 		<run class="PointcutLibraryTest"/>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs"
 		pr="40858"
 		comment="super is not permitted in pointcuts in 1.1"
@@ -768,13 +763,13 @@
 		<compile files="AbstractPointcutCE.java">
 			<message kind="error" line="14" text="The type Concrete must be an abstract class to define abstract methods"/>
 			<message kind="error" line="7"/>
-			<message kind="error" line="11"/>		
+			<message kind="error" line="11"/>
 			<message kind="error" line="15"/>
 		</compile>
 	</ajc-test>
 
 	<ajc-test dir="bugs"
-		pr="40805" 
+		pr="40805"
 		title="interface call signatures when declaring method in aspect">
 		<compile files="DeclareWarningAndInterfaceMethodCW.java">
 			<message kind="warning" line="27" text="call getSomething"/>
@@ -789,7 +784,7 @@
 			<message kind="warning" line="38" text="call ICanGetSomething.getSomething"/>
 		</compile>
 	</ajc-test>
- 
+
  	<ajc-test dir="bugs"
 		pr="41175"
 		title="reflective check of declared exceptions from aspect-declared methods">
@@ -806,13 +801,13 @@
 		    <message line="7" kind="warning" text="throws both"/>
 		</compile>
 	</ajc-test>
-	
+
     <ajc-test dir="bugs" pr="42652"
    	 title="perthis and signature bad interaction">
         <compile files="InterPerCall.java" options="-1.4"/>
         <run class="InterPerCall"/>
     </ajc-test>
-    
+
 	<ajc-test dir="bugs/declareBinding"
 		pr="42740"
 		title="declare error fails on pointcuts composed from multiple classes">
@@ -827,25 +822,25 @@
 		<compile files="aspects/Softener.aj,test/NoSoftener.java"/>
 		<run class="test.NoSoftener"/>
 	</ajc-test>
-	
+
     <ajc-test dir="bugs" pr="42993"
    	    title="Interaction between pointcut binding and declare parents">
         <compile files="ParentsAndPointcuts.java"/>
         <run class="ParentsAndPointcuts"/>
     </ajc-test>
-    
+
     <ajc-test dir="bugs" pr="43194"
    	 title="Non-functional concretezation of ReferencePointcut">
         <compile files="AdviceInteraction.java"/>
         <run class="AdviceInteraction"/>
     </ajc-test>
 
-	<ajc-test dir="bugs/extdirs" 
+	<ajc-test dir="bugs/extdirs"
 		pr="42574"
 		title="zip and jar suffixes for extdirs entries">
 		<compile files="extdirs-src/main/Main.java"
 			extdirs="lib/lowercase"/>
 	</ajc-test>
- 
+
 
 </suite>
