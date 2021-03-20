@@ -16,7 +16,7 @@ import junit.framework.Test;
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc196PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only {
+public class Java14PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only {
 
   public void testRecords() {
     runTest("simple record");
@@ -43,10 +43,8 @@ public class Ajc196PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only
     runTest("textblock 2");
   }
 
-  // ---
-
   public static Test suite() {
-    return XMLBasedAjcTestCase.loadSuite(Ajc196PreviewFeaturesTests.class);
+    return XMLBasedAjcTestCase.loadSuite(Java14PreviewFeaturesTests.class);
   }
 
   @Override

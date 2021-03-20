@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2020 Contributors
+ * Copyright (c) 2021 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0
@@ -13,16 +13,15 @@ import org.aspectj.util.LangUtil;
 /**
  * Makes sure tests are running on the right level of JDK.
  *
- * @author Andy Clement
+ * @author Alexander Kriegisch
  */
 public abstract class XMLBasedAjcTestCaseForJava15OrLater extends XMLBasedAjcTestCase {
 
 	@Override
-	public void runTest(String title) {
-		if (!LangUtil.is15VMOrGreater()) {
+	public void setUp() throws Exception {
+		if (!LangUtil.is15VMOrGreater())
 			throw new IllegalStateException("These tests should be run on Java 15 or later");
-		}
-		super.runTest(title);
+		super.setUp();
 	}
 
 }

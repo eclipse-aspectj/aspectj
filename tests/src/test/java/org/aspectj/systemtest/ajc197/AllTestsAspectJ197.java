@@ -19,11 +19,14 @@ public class AllTestsAspectJ197 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.7 tests");
 		if (LangUtil.is15VMOrGreater()) {
-			suite.addTest(Ajc197Tests.suite());
 			suite.addTest(SanityTestsJava15.suite());
 		}
-		if (LangUtil.is15VMOrGreater() && !LangUtil.is16VMOrGreater()) {
-			suite.addTest(Ajc197PreviewFeaturesTests.suite());
+		if (LangUtil.is16VMOrGreater()) {
+			suite.addTest(SanityTestsJava16.suite());
+			suite.addTest(Ajc197TestsJava.suite());
+		}
+		if (LangUtil.is16VMOrGreater() && !LangUtil.is17VMOrGreater()) {
+			suite.addTest(Java16PreviewFeaturesTests.suite());
 		}
 		return suite;
 	}

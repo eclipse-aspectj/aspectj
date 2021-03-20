@@ -37,8 +37,6 @@ public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
     checkVersion("Switch3", Constants.MAJOR_14, 0);
   }
 
-  // ---
-
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc196Tests.class);
   }
