@@ -640,6 +640,8 @@ public class Main {
 				return System.err;
 			} else if (verbose && IMessage.INFO.equals(kind)) {
 				return System.out;
+			} else if (IMessage.USAGE.equals(kind)) {
+				return System.out;
 			} else if (IMessage.WEAVEINFO.equals(kind)) {
 				return System.out;
 			} else {

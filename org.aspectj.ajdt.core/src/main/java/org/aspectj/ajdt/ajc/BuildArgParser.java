@@ -314,12 +314,6 @@ public class BuildArgParser extends Main {
 		super.initializeAnnotationProcessorManager();
 	}
 
-	@Override
-	public void printUsage() {
-		System.out.println(getUsage());
-		System.out.flush();
-	}
-
 	/**
 	 * Get messages not dumped to handler or any PrintWriter.
 	 *

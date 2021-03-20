@@ -91,6 +91,7 @@ public class PinpointingMessageHandler implements IMessageHandler {
 		public boolean isError() { return delegate.isError(); }
 		public boolean isWarning() { return delegate.isWarning();}
 		public boolean isDebug() { return delegate.isDebug();}
+		public boolean isUsage() { return delegate.isUsage();}
 		public boolean isInfo() { return delegate.isInfo();}
 		public boolean isAbort() { return delegate.isAbort();}
 		public boolean isTaskTag() { return delegate.isTaskTag();}

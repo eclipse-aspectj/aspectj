@@ -28,8 +28,9 @@ public interface IMessage {
 	// int values must sync with KINDS order below
 	Kind WEAVEINFO = new Kind("weaveinfo", 5);
 	Kind INFO = new Kind("info", 10);
+	Kind USAGE = new Kind("usage", 15);
 	Kind DEBUG = new Kind("debug", 20);
-	Kind TASKTAG = new Kind("task", 25); // represents a 'TODO' from eclipse - producted by the compiler and
+	Kind TASKTAG = new Kind("task", 25); // represents a 'TODO' from eclipse - produced by the compiler and
 																// consumed by AJDT
 																Kind WARNING = new Kind("warning", 30);
 	Kind ERROR = new Kind("error", 40);
@@ -42,7 +43,7 @@ public interface IMessage {
 	/**
 	 * list of Kind in precedence order. 0 is less than IMessage.Kind#COMPARATOR.compareTo(KINDS.get(i), KINDS.get(i + 1))
 	 */
-	List<Kind> KINDS = Collections.unmodifiableList(Arrays.asList(new Kind[] { WEAVEINFO, INFO, DEBUG, TASKTAG,
+	List<Kind> KINDS = Collections.unmodifiableList(Arrays.asList(new Kind[] { WEAVEINFO, INFO, USAGE, DEBUG, TASKTAG,
 			WARNING, ERROR, FAIL, ABORT }));
 
 	/** @return non-null String with simple message */
@@ -59,6 +60,9 @@ public interface IMessage {
 
 	/** @return true if this is an internal debug message */
 	boolean isDebug();
+
+	/** @return true if this is a compiler usage message */
+	boolean isUsage();
 
 	/** @return true if this is information for the user */
 	boolean isInfo();
