@@ -225,11 +225,9 @@ public class AntSpec implements ITestStep {
 				stderr2 = stderr2.replaceAll("WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\n","");
 				stderr2 = stderr2.replaceAll("WARNING: All illegal access operations will be denied in a future release\n","");
 			}
-			// J12
-			String msg = "Java HotSpot(TM) 64-Bit Server VM warning: Archived non-system classes are disabled because the java.system.class.loader property is specified (value = \"org.aspectj.weaver.loadtime.WeavingURLClassLoader\"). To use archived non-system classes, this property must not be set";
-			if (stderr2.contains(msg)) {
-				stderr2 = stderr2.replace(msg+"\n","");
-			}
+			// J12: Line can start with e.g."OpenJDK 64-Bit Server VM" or "Java HotSpot(TM) 64-Bit Server VM". Therefore,
+			// we have to match a substring instead of a whole line
+			stderr2 = stderr2.replaceAll("[^\n]+ warning: Archived non-system classes are disabled because the java.system.class.loader property is specified .*org.aspectj.weaver.loadtime.WeavingURLClassLoader[^\n]+\n?","");
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}

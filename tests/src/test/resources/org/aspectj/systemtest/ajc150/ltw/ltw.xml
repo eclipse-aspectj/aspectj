@@ -511,7 +511,6 @@
 			<line text="Hello World!" />
 		</stdout>
 		<stderr>
-		<line text="Archived non-system classes are disabled" vm="14+"/>
 			<line text="TraceFactory.instance=" />
 		</stderr>
 	</ant>
@@ -550,11 +549,11 @@
 		</stdout>
 	</ant>
 </ajc-test>
-<!-- <ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server"> 
-	<compile files="Parent.java" options="-outjar parent.jar"/> <compile files="Child.java" 
-	options="-classpath parent.jar -outjar child.jar"/> <ant file="ant-server.xml" 
-	target="TestServer with Parent and Child" verbose="true"> <stdout> <line 
-	text="Starting ..."/> <line text="Running Child"/> <line text="Parent"/> 
+<!-- <ajc-test dir="ltw" title="TestServer with Parent and Child" keywords="ltw,server">
+	<compile files="Parent.java" options="-outjar parent.jar"/> <compile files="Child.java"
+	options="-classpath parent.jar -outjar child.jar"/> <ant file="ant-server.xml"
+	target="TestServer with Parent and Child" verbose="true"> <stdout> <line
+	text="Starting ..."/> <line text="Running Child"/> <line text="Parent"/>
 	<line text="Child"/> <line text="Stopping ..."/> </stdout> </ant> </ajc-test> -->
 <ajc-test dir="ltw" title="TestServer with Parent and Child"
 	keywords="ltw,server">
@@ -657,8 +656,8 @@
 		files="MultipleDumpTest.java, Class1.java, Class2.java, Class3.java"
 		options="-1.5" />
 	<compile files="Aspect.aj" options="-1.5 -outxml -Xlint:ignore" />
-	<!-- <run class="MultipleDumpTest" ltw="aop-multipledumponerror.xml"> <stdout> 
-		<line text="? AbortingMessageHandler.AbortingMessageHandler()"/> </stdout> 
+	<!-- <run class="MultipleDumpTest" ltw="aop-multipledumponerror.xml"> <stdout>
+		<line text="? AbortingMessageHandler.AbortingMessageHandler()"/> </stdout>
 		</run> -->
 	<ant file="ant.xml" target="multiple dump on error" verbose="true">
 		<stdout>
@@ -672,7 +671,7 @@
 		</stdout>
 	</ant>
 </ajc-test>
-    
-    
+
+
 
 </suite>
