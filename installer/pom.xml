@@ -14,14 +14,6 @@
 	<packaging>pom</packaging>
 	<name>AspectJ Installer</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>run-all-junit-tests</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<plugins>
 			<!-- skip creation of test-jar in here -->

@@ -30,8 +30,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * TODO: Remove this class along with the whole module. Run 'mvn test' at the project root instead.
+ *
  * @author Andy Clement
  */
+@Deprecated
 public class RunTheseBeforeYouCommitTests {
 
 	public static Test suite() {

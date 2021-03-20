@@ -9,6 +9,11 @@
 		<version>1.9.7.BUILD-SNAPSHOT</version>
 	</parent>
 
+	<!--
+    These are redundant, making almost all tests run 2x. You can still open and run the module manually for now.
+    But why not just run 'mvn test' on top level?
+    TODO: After feedback from Andy Clement, probably just remove the whole module.
+    -->
 	<artifactId>run-all-junit-tests</artifactId>
 	<packaging>jar</packaging>
 	<name>run-all-junit-tests</name>
@@ -270,11 +275,11 @@
 	</dependencies>
 
 
-	<!-- <build> <pluginManagement> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-compiler-plugin</artifactId> <configuration> <source>1.8</source> 
-		<target>1.8</target> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-surefire-plugin</artifactId> <configuration> <testFailureIgnore>true</testFailureIgnore> 
-		<includes> <include>**/RunTheseBeforeYouCommitTests*</include> </includes> 
+	<!-- <build> <pluginManagement> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId> <configuration> <source>1.8</source>
+		<target>1.8</target> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId> <configuration> <testFailureIgnore>true</testFailureIgnore>
+		<includes> <include>**/RunTheseBeforeYouCommitTests*</include> </includes>
 		</configuration> </plugin> </plugins> </pluginManagement> </build> -->
 </project>
 

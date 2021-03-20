@@ -37,8 +37,14 @@
 		<module>testing-drivers</module>
 		<module>tests</module>
 		<module>build</module>
-		<module>run-all-junit-tests</module>
 		<module>docs</module>
+
+		<!--
+			These are redundant, making almost all tests run 2x. You can still open and run the module manually for now.
+			But why not just run 'mvn test' on top level?
+			TODO: After feedback from Andy Clement, probably just remove the whole module.
+			-->
+		<!--<module>run-all-junit-tests</module>-->
 
 		<!-- create the important artifacts we care about -->
 		<module>aspectjrt</module>
