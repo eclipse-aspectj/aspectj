@@ -29,6 +29,8 @@ import java.util.StringTokenizer;
 public class TestServer implements Runnable {
 
 	private static final boolean debug = Boolean.getBoolean("org.aspectj.testing.server.debug");
+	// AspectJ project root folder nameing pattern, case-insensitive (i.e. org.aspectj, AspectJ)
+	protected static final String REGEX_PROJECT_ROOT_FOLDER = "(?i)(org[.])?aspectj";
 
 	private boolean exitOnError = true;
 	private File workingDirectory;
@@ -98,26 +100,33 @@ public class TestServer implements Runnable {
 		List<URL> urlList = new ArrayList<>();
 
 		// Sandbox
-		URL url = workingDirectory.getCanonicalFile().toURI().toURL();
-		urlList.add(url);
-
-		// Find the AspectJ root folder (i.e. org.aspectj)
-		File aspectjBase = new File(".").getCanonicalFile();
-		while (aspectjBase!= null && !aspectjBase.getName().equals("org.aspectj")) {
-			aspectjBase = aspectjBase.getParentFile();
-		}
-		if (aspectjBase == null) {
-			error("Unable to locate 'org.aspectj' in "+new File(".").getCanonicalPath());
-		}
-		urlList.add(new File(aspectjBase,"runtime/target/classes").toURI().toURL());
-//		urlList.add(new File(aspectjBase,"aspectjrt/target/classes").toURI().toURL());
-//		urlList.add(new File(aspectjBase,"aspectj5rt/target/classes").toURI().toURL());
+		urlList.add(workingDirectory.getCanonicalFile().toURI().toURL());
+		File projectRootFolder = findProjectRootFolder();
+		urlList.add(new File(projectRootFolder,"runtime/target/classes").toURI().toURL());
+//		urlList.add(new File(projectRootFolder,"aspectjrt/target/classes").toURI().toURL());
+//		urlList.add(new File(projectRootFolder,"aspectj5rt/target/classes").toURI().toURL());
 
 		URL[] urls = new URL[urlList.size()];
 		urlList.toArray(urls);
 		ClassLoader parent = getClass().getClassLoader().getParent();
 		rootLoader = new URLClassLoader(urls,parent);
 		if (debug) System.err.println("? TestServer.createRootLoader() loader=" + rootLoader + ", urlList=" + urlList + ", parent=" + parent);
+	}
+
+	// Make protected in order to at least make this part of the code testable -> TestServerTest
+	protected File findProjectRootFolder() throws IOException {
+		// Find the AspectJ project root folder
+		File currentFolder = new File(".").getCanonicalFile();
+		while (currentFolder != null && !currentFolder.getName().matches(REGEX_PROJECT_ROOT_FOLDER)) {
+			currentFolder = currentFolder.getParentFile();
+		}
+		if (currentFolder == null) {
+			error(
+				"Unable to locate project root folder matching regex '" + REGEX_PROJECT_ROOT_FOLDER +
+					"' in " + new File(".").getCanonicalPath()
+			);
+		}
+		return currentFolder;
 	}
 
 	public void setExitOntError (boolean b) {
@@ -183,6 +192,9 @@ public class TestServer implements Runnable {
 
 	private void error (String message) {
 		System.out.println(message);
+		// FIXME:
+		//   This is horrible: Why not just throw an exception? And if we exit, why with exit code 0?
+		//   It basically makes the tests useless because they might log errors without checking any conditions.
 		if (exitOnError) System.exit(0);
 	}
 }
