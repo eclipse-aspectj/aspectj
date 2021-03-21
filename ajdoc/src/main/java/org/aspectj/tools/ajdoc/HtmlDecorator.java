@@ -277,6 +277,18 @@ class HtmlDecorator {
 					// Java7 (464604): <pre>public class <span class="strong">Azpect</span>
 					classStartIndex = fileContents.toString().indexOf("class <span class=\"" + TYPE_NAME_LABEL + "\">");
 					int classEndIndex = fileContents.toString().indexOf("</span>", classStartIndex);
+
+					// This is where after Java version upgrades usually tests fail or the first time.
+					// Logging context information helps fixing the issue quickly.
+					if (classStartIndex == -1 || classEndIndex == -1) {
+						System.out.println(
+							"Something unexpected went wrong in HtmlDecorator. Here is the full file causing the problem:\n\n" +
+								"------------------------------------------------------------------------\n\n" +
+								contents + "\n" +
+								"------------------------------------------------------------------------\n"
+						);
+					}
+
 					if (classEndIndex != -1) {
 						// Convert it to "aspect <span class="TYPE_NAME_LABEL">ClassA.InnerAspect</span>"
 						String aspectLine = "aspect" + fileContents.substring(classStartIndex + 5, classEndIndex);
