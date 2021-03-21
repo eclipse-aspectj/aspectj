@@ -399,7 +399,7 @@ public final class TestUtil {
 				// use the non-canonicalized filename
 			}
 			try {
-				urls[count++] = ParseUtil.fileToEncodedURL(f);
+				urls[count++] = f.toURI().toURL();
 			} catch (IOException x) { }
 		}
 
