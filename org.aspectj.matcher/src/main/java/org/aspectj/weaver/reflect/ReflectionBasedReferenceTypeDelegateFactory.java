@@ -69,7 +69,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			ClassLoader usingClassLoader, World inWorld) {
 		try {
 			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");
-			ReflectionBasedReferenceTypeDelegate ret = (ReflectionBasedReferenceTypeDelegate) delegateClass.newInstance();
+			ReflectionBasedReferenceTypeDelegate ret = (ReflectionBasedReferenceTypeDelegate) delegateClass.getDeclaredConstructor().newInstance();
 			ret.initialize(forReferenceType, forClass, usingClassLoader, inWorld);
 			return ret;
 		} catch (ClassNotFoundException cnfEx) {
@@ -81,6 +81,12 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		} catch (IllegalAccessException illAccEx) {
 			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but IllegalAccessException: "
 					+ illAccEx + " occured");
+		} catch (NoSuchMethodException nsMethEx) {
+			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but NoSuchMethodException: "
+					+ nsMethEx + " occured");
+		} catch (InvocationTargetException invTargEx) {
+			throw new IllegalStateException("Attempted to create Java 1.5 reflection based delegate but InvocationTargetException: "
+					+ invTargEx + " occured");
 		}
 	}
 

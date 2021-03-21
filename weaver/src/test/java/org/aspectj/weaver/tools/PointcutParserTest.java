@@ -21,7 +21,7 @@ import org.aspectj.weaver.patterns.PatternParser;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 /**

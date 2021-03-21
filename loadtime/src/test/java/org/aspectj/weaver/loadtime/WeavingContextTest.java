@@ -84,7 +84,7 @@ public class WeavingContextTest extends TestCase {
 
 	public void testGetFile() throws IOException {
 		File file = new File("../loadtime/testdata");
-		URL fileURL = file.getCanonicalFile().toURL();
+		URL fileURL = file.getCanonicalFile().toURI().toURL();
 		URLClassLoader loader = new URLClassLoader(new URL[] { fileURL },null);
 		IWeavingContext context = new TestWeavingContext(loader) {
 
@@ -102,7 +102,7 @@ public class WeavingContextTest extends TestCase {
 
 	public void testGetId() throws IOException {
 		File file = new File("../loadtime/testdata");
-		URL fileURL = file.getCanonicalFile().toURL();
+		URL fileURL = file.getCanonicalFile().toURI().toURL();
 		URLClassLoader loader = new URLClassLoader(new URL[] { fileURL },null);
 		IWeavingContext context = new TestWeavingContext(loader) {
 
@@ -120,7 +120,7 @@ public class WeavingContextTest extends TestCase {
 
 	public void testGetDefinitions () throws Exception {
 		File file = new File("../loadtime/testdata");
-		URL fileURL = file.getCanonicalFile().toURL();
+		URL fileURL = file.getCanonicalFile().toURI().toURL();
 		URLClassLoader loader = new URLClassLoader(new URL[] { fileURL },null);
 		IWeavingContext context = new TestWeavingContext(loader) {
 

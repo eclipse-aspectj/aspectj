@@ -882,7 +882,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		Set<String> methodsFound = new HashSet<>();
 		StringBuffer debugString = new StringBuffer();
 		try {
-			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURL()});
+			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURI().toURL()});
 			Class<?> clz = Class.forName(classname,false,cl);
 			java.lang.reflect.Method[] ms = clz.getDeclaredMethods();
 			if (ms!=null) {

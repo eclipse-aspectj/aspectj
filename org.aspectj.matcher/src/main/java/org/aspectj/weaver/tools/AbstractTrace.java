@@ -68,7 +68,7 @@ public abstract class AbstractTrace implements Trace {
 
 	@Override
 	public void exit (String methodName, int i) {
-		exit(methodName,new Integer(i));
+		exit(methodName, Integer.valueOf(i));
 	}
 
 	@Override

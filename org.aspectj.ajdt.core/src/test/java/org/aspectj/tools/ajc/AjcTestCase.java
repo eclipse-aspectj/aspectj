@@ -898,7 +898,7 @@ public abstract class AjcTestCase extends TestCase {
 		URL[] urls = new URL[strTok.countTokens()];
 		try {
 			for (int i = 0; i < urls.length; i++) {
-				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURL();
+				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURI().toURL();
 			}
 		} catch (Exception malEx) {
 			fail("Bad classpath specification: " + classpath);

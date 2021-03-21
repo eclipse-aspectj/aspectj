@@ -105,7 +105,7 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		URLClassLoader ucl = new URLClassLoader(new URL[] {ajc.getSandboxDirectory().toURI().toURL()},this.getClass().getClassLoader());
 		Class<?> applicationClass = Class.forName("Application",false,ucl);
 		assertNotNull(applicationClass);
-		Object instance = applicationClass.newInstance();
+		Object instance = applicationClass.getDeclaredConstructor().newInstance();
 		Method works = applicationClass.getDeclaredMethod("fromInnerClass");
 		works.setAccessible(true);
 		Runnable r = (Runnable) works.invoke(instance);		

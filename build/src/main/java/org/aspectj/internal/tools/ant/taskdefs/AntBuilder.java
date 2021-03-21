@@ -599,7 +599,7 @@ public class AntBuilder extends Builder {
 				ClassLoader parent = Task.class.getClassLoader();
 				ClassLoader loader = new URLClassLoader(cp, parent);
 				Class c = loader.loadClass(AJCTASK);
-				task = c.newInstance();
+				task = c.getDeclaredConstructor().newInstance();
 				// Westodo Project project = javac.getProject();
 				Method m = c.getMethod("setupAjc", new Class[] { Javac.class });
 				m.invoke(task, new Object[] { javac });

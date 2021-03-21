@@ -53,7 +53,7 @@ public abstract class AutowiredXMLBasedAjcTestCase extends XMLBasedAjcTestCase {
 
         // wire the spec file
         try {
-            final AutowiredXMLBasedAjcTestCase wired = (AutowiredXMLBasedAjcTestCase) testCaseClass.newInstance();
+            final AutowiredXMLBasedAjcTestCase wired = (AutowiredXMLBasedAjcTestCase) testCaseClass.getDeclaredConstructor().newInstance();
             System.out.println("LOADING SUITE: " + wired.getSpecFile().getPath());
             Digester d = wired.getDigester();
             try {

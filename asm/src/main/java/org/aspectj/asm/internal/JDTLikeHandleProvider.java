@@ -171,7 +171,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 						String existingHandle = object.getHandleIdentifier();
 						int suffixPosition = existingHandle.indexOf('!');
 						if (suffixPosition != -1) {
-							count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+							count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 						} else {
 							if (count == 1) {
 								count = 2;
@@ -181,13 +181,13 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				}
 			}
 			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+				return CharOperation.concat(countDelim, Integer.toString(count).toCharArray());
 			}
 		} else if (ipe.getKind().isDeclare()) {
 			// // look at peer declares
 			int count = computeCountBasedOnPeers(ipe);
 			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+				return CharOperation.concat(countDelim, Integer.toString(count).toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.ADVICE)) {
 			// Look at any peer advice
@@ -227,7 +227,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
 							if (suffixPosition != -1) {
-								count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -238,7 +238,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				}
 			}
 			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+				return CharOperation.concat(countDelim, Integer.toString(count).toCharArray());
 			}
 		} else if (ipe.getKind().equals(IProgramElement.Kind.INITIALIZER)) {
 			// return String.valueOf(++initializerCounter).toCharArray();
@@ -279,7 +279,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
 							if (suffixPosition != -1) {
-								count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -290,7 +290,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				}
 			}
 			// if (count > 1) {
-			return new Integer(count).toString().toCharArray();
+			return Integer.toString(count).toCharArray();
 			// return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
 			// }
 		} else if (ipe.getKind().equals(IProgramElement.Kind.CODE)) {
@@ -314,7 +314,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
 							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
-								count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -334,7 +334,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
 							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
-								count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -345,7 +345,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 				}
 			}
 			if (count > 1) {
-				return CharOperation.concat(countDelim, new Integer(count).toString().toCharArray());
+				return CharOperation.concat(countDelim, Integer.toString(count).toCharArray());
 			}
 		}
 		return empty;
@@ -383,7 +383,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					String existingHandle = object.getHandleIdentifier();
 					int suffixPosition = existingHandle.indexOf('!');
 					if (suffixPosition != -1) {
-						count = new Integer(existingHandle.substring(suffixPosition + 1)) + 1;
+						count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
 					} else {
 						if (count == 1) {
 							count = 2;

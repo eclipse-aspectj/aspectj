@@ -1173,8 +1173,8 @@ public class AsmManager implements IStructureModel {
 		private ModelInfo(IHierarchy hierarchy, IRelationshipMap relationshipMap) {
 			IProgramElement ipe = hierarchy.getRoot();
 			walkModel(ipe);
-			recordStat("FileMapSize", new Integer(hierarchy.getFileMapEntrySet().size()).toString());
-			recordStat("RelationshipMapSize", new Integer(relationshipMap.getEntries().size()).toString());
+			recordStat("FileMapSize", Integer.toString(hierarchy.getFileMapEntrySet().size()));
+			recordStat("RelationshipMapSize", Integer.toString(relationshipMap.getEntries().size()));
 		}
 
 		private void walkModel(IProgramElement ipe) {

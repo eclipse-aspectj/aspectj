@@ -40,13 +40,12 @@ import org.aspectj.util.Reflection;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 import jdiff.util.DiffNormalOutput;
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import sun.net.www.ParseUtil;
 
 /**
  * Things that junit should perhaps have, but doesn't. Note the file-comparison methods require JDiff to run, but JDiff types are
@@ -163,7 +162,7 @@ public final class TestUtil {
 
 	public static URL fileToURL(File file) {
 		try {
-			return file.toURL();
+			return file.toURI().toURL();
 		} catch (MalformedURLException e) {
 			return null;
 		}
@@ -303,7 +302,7 @@ public final class TestUtil {
 	public static URL libURL(String rpath) {
 		File file = libFile(rpath);
 		try {
-			return file.toURL();
+			return file.toURI().toURL();
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException("bad URL from: " + file);
 		}

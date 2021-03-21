@@ -145,7 +145,7 @@ public class Main {
 		try {
 			String className = (String) properties.get("installer.main.class");
 			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			Installer installer = (Installer) Class.forName(className).newInstance();
+			Installer installer = (Installer) Class.forName(className).getDeclaredConstructor().newInstance();
 			InstallContext installerContext = new InstallContext(properties);
 			installerContext.setHasGui(hasGui);
 			installer.setContext(installerContext);

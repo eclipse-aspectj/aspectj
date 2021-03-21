@@ -287,7 +287,7 @@ public class AjcTask extends MatchingTask {
 			if (null != editorClassName) {
 				ClassLoader cl = AjcTask.class.getClassLoader();
 				Class editorClass = cl.loadClass(editorClassName);
-				editor = (ICommandEditor) editorClass.newInstance();
+				editor = (ICommandEditor) editorClass.getDeclaredConstructor().newInstance();
 			}
 		} catch (Throwable t) {
 			System.err.println("Warning: unable to load command editor");
@@ -865,7 +865,7 @@ public class AjcTask extends MatchingTask {
 	public void setMessageHolderClass(String className) {
 		try {
 			Class mclass = Class.forName(className);
-			IMessageHolder holder = (IMessageHolder) mclass.newInstance();
+			IMessageHolder holder = (IMessageHolder) mclass.getDeclaredConstructor().newInstance();
 			setMessageHolder(holder);
 		} catch (Throwable t) {
 			String m = "unable to instantiate message holder: " + className;
@@ -889,7 +889,7 @@ public class AjcTask extends MatchingTask {
 	public void setCommandEditorClass(String className) { // skip Ant interface?
 		try {
 			Class mclass = Class.forName(className);
-			setCommandEditor((ICommandEditor) mclass.newInstance());
+			setCommandEditor((ICommandEditor) mclass.getDeclaredConstructor().newInstance());
 		} catch (Throwable t) {
 			String m = "unable to instantiate command editor: " + className;
 			throw new BuildException(m, t);

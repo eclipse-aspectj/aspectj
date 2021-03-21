@@ -112,7 +112,7 @@ public class JRockitAgentTest extends TestCase {
 			}
 
 			Class agentClazz = Class.forName("org.aspectj.weaver.loadtime.JRockitAgent", false, this);
-			Object obj = agentClazz.newInstance();
+			Object obj = agentClazz.getDeclaredConstructor().newInstance();
 			if (debug)
 				System.out.println("JRockitClassLoader.JRockitClassLoader() obj=" + obj);
 			this.agent = obj;
@@ -130,7 +130,7 @@ public class JRockitAgentTest extends TestCase {
 				String escaped = s.substring(i + 1, i + 3);
 				s = s.substring(i + 3);
 				Integer value = Integer.valueOf(escaped, 16);
-				result.append(new Character((char) value.intValue()));
+				result.append(Character.valueOf((char) value.intValue()));
 				i = s.indexOf("%");
 			}
 			result.append(s);
