@@ -39,9 +39,24 @@ import org.aspectj.util.TypeSafeEnum;
  */
 class HtmlDecorator {
 
-	public static final String TYPE_NAME_LABEL = LangUtil.is15VMOrGreater()
-		? "type-name-label"
-		: (LangUtil.is1dot8VMOrGreater() ? "typeNameLabel" : "strong");
+	public static final String TYPE_NAME_LABEL;
+	public static final String CLOSING_SPAN;
+
+	static {
+		if (LangUtil.is16VMOrGreater())
+			TYPE_NAME_LABEL = "element-name type-name-label";
+		else if (LangUtil.is15VMOrGreater())
+			TYPE_NAME_LABEL = "type-name-label";
+		else if (LangUtil.is1dot8VMOrGreater())
+			TYPE_NAME_LABEL = "typeNameLabel";
+		else
+			TYPE_NAME_LABEL = "strong";
+
+		if (LangUtil.is16VMOrGreater())
+			CLOSING_SPAN = "</span>";
+				else
+			CLOSING_SPAN = "";
+	}
 
 	private static final String POINTCUT_DETAIL = "Pointcut Detail";
 	private static final String ADVICE_DETAIL = "Advice Detail";
@@ -223,33 +238,35 @@ class HtmlDecorator {
 				}
 
 				boolean br = true;
-				int classStartIndex = fileContents.toString().indexOf("<BR>\nClass ");
+				contents = fileContents.toString();
+				int classStartIndex = contents.indexOf("<BR>\nClass ");
 				if (classStartIndex == -1) {
-					classStartIndex = fileContents.toString().indexOf("<H2>\nClass ");
+					classStartIndex = contents.indexOf("<H2>\nClass ");
 					br = false;
 				}
 				if (classStartIndex == -1) {
 					// Java8 looks more like this:
 					// <h2 title="Class A" class="title">Class A</h2>
-					classStartIndex = fileContents.toString().indexOf("<h2 title=\"Class ");
-					int classEndIndex = fileContents.toString().indexOf("</h2>", classStartIndex);
+					classStartIndex = contents.indexOf("<h2 title=\"Class ");
+					int classEndIndex = contents.indexOf("</h2>", classStartIndex);
 					if (classStartIndex == -1) {
 						// Java 13 - replaced h2 with h1 here
-						classStartIndex = fileContents.toString().indexOf("<h1 title=\"Class ");
-						classEndIndex = fileContents.toString().indexOf("</h1>", classStartIndex);
+						classStartIndex = contents.indexOf("<h1 title=\"Class ");
+						classEndIndex = contents.indexOf("</h1>", classStartIndex);
 					}
 					if (classEndIndex != -1) {
 						// Convert it to "<h2 title="Aspect A" class="title">Aspect A</h2>"
-						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
+						String classLine = contents.substring(classStartIndex, classEndIndex);
 						String aspectLine = classLine.replaceAll("Class ","Aspect ");
 						fileContents.delete(classStartIndex, classEndIndex);
 						fileContents.insert(classStartIndex, aspectLine);
 					}
 				}
 				else if (classStartIndex != -1) {
-					int classEndIndex = fileContents.toString().indexOf("</H2>", classStartIndex);
-					if (classStartIndex != -1 && classEndIndex != -1) {
-						String classLine = fileContents.toString().substring(classStartIndex, classEndIndex);
+					contents = fileContents.toString();
+					int classEndIndex = contents.indexOf("</H2>", classStartIndex);
+					if (classEndIndex != -1) {
+						String classLine = contents.substring(classStartIndex, classEndIndex);
 						String aspectLine = "";
 						if (br) {
 							aspectLine += "<BR>\n" + "Aspect " + classLine.substring(11, classLine.length());
@@ -260,23 +277,27 @@ class HtmlDecorator {
 						fileContents.insert(classStartIndex, aspectLine);
 					}
 				}
-				int secondClassStartIndex = fileContents.toString().indexOf("class <B>");
+				contents = fileContents.toString();
+				int secondClassStartIndex = contents.indexOf("class <B>");
 				if (secondClassStartIndex != -1) {
 					String name = decl.toSignatureString();
-					int classEndIndex = fileContents.toString().indexOf(name + "</B><DT>");
-					if (secondClassStartIndex != -1 && classEndIndex != -1) {
-						StringBuffer sb = new StringBuffer(fileContents.toString().substring(secondClassStartIndex, classEndIndex));
+					int classEndIndex = contents.indexOf(name + "</B><DT>");
+					if (classEndIndex != -1) {
+						StringBuffer sb = new StringBuffer(contents.substring(secondClassStartIndex, classEndIndex));
 						sb.replace(0, 5, "aspect");
 						fileContents.delete(secondClassStartIndex, classEndIndex);
 						fileContents.insert(secondClassStartIndex, sb.toString());
 					}
 				}
 				else {
+					contents = fileContents.toString();
+					// Java16: <span class="modifiers">static class </span><span class="type-name-label">ClassA.InnerAspect</span>
 					// Java15: <pre>static class <span class="type-name-label">ClassA.InnerAspect</span>
 					// Java8: <pre>static class <span class="typeNameLabel">ClassA.InnerAspect</span>
 					// Java7 (464604): <pre>public class <span class="strong">Azpect</span>
-					classStartIndex = fileContents.toString().indexOf("class <span class=\"" + TYPE_NAME_LABEL + "\">");
-					int classEndIndex = fileContents.toString().indexOf("</span>", classStartIndex);
+					String startString = "class " + CLOSING_SPAN + "<span class=\"";
+					classStartIndex = contents.indexOf(startString + TYPE_NAME_LABEL + "\">");
+					int classEndIndex = contents.indexOf("</span>", classStartIndex + startString.length());
 
 					// This is where after Java version upgrades usually tests fail or the first time.
 					// Logging context information helps fixing the issue quickly.
@@ -291,7 +312,7 @@ class HtmlDecorator {
 
 					if (classEndIndex != -1) {
 						// Convert it to "aspect <span class="TYPE_NAME_LABEL">ClassA.InnerAspect</span>"
-						String aspectLine = "aspect" + fileContents.substring(classStartIndex + 5, classEndIndex);
+						String aspectLine = "aspect" + contents.substring(classStartIndex + 5, classEndIndex);
 						fileContents.delete(classStartIndex, classEndIndex);
 						fileContents.insert(classStartIndex, aspectLine);
 					}

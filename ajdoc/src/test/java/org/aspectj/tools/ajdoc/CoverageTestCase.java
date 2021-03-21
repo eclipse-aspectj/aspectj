@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.aspectj.util.LangUtil;
 
+import static org.aspectj.tools.ajdoc.HtmlDecorator.CLOSING_SPAN;
 import static org.aspectj.tools.ajdoc.HtmlDecorator.TYPE_NAME_LABEL;
 
 /**
@@ -117,67 +118,76 @@ public class CoverageTestCase extends AjdocTestCase {
      * Test that the ajdoc for an inner aspect is entitled "Aspect" rather
      * than "Class", but that the enclosing class is still "Class"
      */
-    public void testInnerAspect() throws Exception {
-    	File[] files = {file1, file2};
-        runAjdoc("private",AJDocConstants.VERSION,files);
+		public void testInnerAspect() throws Exception {
+			File[] files = { file1, file2 };
+			runAjdoc("private", AJDocConstants.VERSION, files);
 
-        File htmlFile = new File(getAbsolutePathOutdir() + "/foo/ClassA.InnerAspect.html");
-		if (!htmlFile.exists()) {
-			fail("couldn't find " + htmlFile.getAbsolutePath()
-					+ " - were there compilation errors?");
-		}
+			// Get the HTML file for the inner aspect
+			File htmlFile = new File(getAbsolutePathOutdir() + "/foo/ClassA.InnerAspect.html");
+			if (!htmlFile.exists()) {
+				fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+			}
 
-		// ensure that the file is entitled "Aspect ClassA.InnerAspect" rather
-		// than "Class ClassA.InnerAspect"
+			// Ensure that the file is entitled "Aspect ClassA.InnerAspect" rather than "Class ClassA.InnerAspect"
 
-		String[] strings = null;
-		strings = new String[] {
-			"Aspect ClassA.InnerAspect",
-			"<pre>static aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassA.InnerAspect</span>",
-			"Class ClassA.InnerAspect",
-			"<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">ClassA.InnerAspect</span>"};
-		List<String> missingStrings = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
-		StringBuilder buf = new StringBuilder();
-		for (String str:missingStrings) {
-			buf.append(str).append("\n");
-		}
-		buf.append("HTMLFILE=\n").append(htmlFile).append("\n");
-		assertEquals("There should be 2 missing strings:\n"+buf.toString(), 2, missingStrings.size());
-		assertTrue(htmlFile.getName() + " should not have Class as it's title",
-				missingStrings.contains("Class ClassA.InnerAspect"));
-		assertTrue(htmlFile.getName() + " should not have class in its subtitle",
-				missingStrings.contains("<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">ClassA.InnerAspect</span>"));
+			String[] strings = new String[] {
+				// These 2 should be missing because they reference "class", not "aspect"
+				"Class ClassA.InnerAspect",
+				"static class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassA.InnerAspect</span>",
+				// These 2 should be present  (i.e. 0 missing) after AJ doc creation
+				"Aspect ClassA.InnerAspect",
+				"static aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassA.InnerAspect</span>"
+			};
+			List<String> missingStrings = AjdocOutputChecker.getMissingStringsInFile(htmlFile, strings);
 
-		// get the html file for the enclosing class
-        File htmlFileClass = new File(getAbsolutePathOutdir() + "/foo/ClassA.html");
-		if (!htmlFileClass.exists()) {
-			fail("couldn't find " + htmlFileClass.getAbsolutePath()
-					+ " - were there compilation errors?");
-		}
+			StringBuilder buf = new StringBuilder();
+			buf.append("HTML file = ").append(htmlFile).append("\nMissing strings:\n");
+			for (String str : missingStrings)
+				buf.append(str).append("\n");
 
-		// ensure that the file is entitled "Class ClassA" and
-		// has not been changed to "Aspect ClassA"
-		String[] classStrings = null;
+			assertEquals(
+				"In " + htmlFile.getName() + " there should be 2 missing strings:\n" + buf,
+				2, missingStrings.size()
+			);
+			assertEquals(
+				"In " + htmlFile.getName() + " no missing string should be aspect-related:\n" + buf,
+				0, missingStrings.stream().filter(s -> s.contains("static aspect")).count()
+			);
 
-		if (LangUtil.is13VMOrGreater()) {
-			classStrings = new String[] {
+			// Get the HTML file for the enclosing class
+			htmlFile = new File(getAbsolutePathOutdir() + "/foo/ClassA.html");
+			if (!htmlFile.exists()) {
+				fail("couldn't find " + htmlFile.getAbsolutePath() + " - were there compilation errors?");
+			}
+
+			// Ensure that the file is entitled "Class ClassA" and has not been changed to "Aspect ClassA"
+
+			strings = new String[] {
+				// These 3 should be missing because they reference "aspect", not "class"
+				"Aspect ClassA</H2>",
+				"Aspect ClassA</h2>",
+				"public abstract aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>",
+				// Of these 3, 2 should be present  (i.e. 1 missing) after AJ doc creation
 				"Class ClassA</h1>",
-				"public abstract class <span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>",
-				"Aspect ClassA</H2>",
-				"public abstract aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>"};
-		} else {
-			classStrings = new String[] {
 				"Class ClassA</h2>",
-				"public abstract class <span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>",
-				"Aspect ClassA</H2>",
-				"public abstract aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>"};
+				"public abstract class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>"
+			};
+			missingStrings = AjdocOutputChecker.getMissingStringsInFile(htmlFile, strings);
+
+			buf = new StringBuilder();
+			buf.append("HTML file = ").append(htmlFile).append("\nMissing strings:\n");
+			for (String str : missingStrings)
+				buf.append(str).append("\n");
+
+			assertEquals(
+				"In " + htmlFile.getName() + " there should be 4 missing strings:\n" + buf,
+				4, missingStrings.size()
+			);
+			assertEquals(
+				"In " + htmlFile.getName() + " 3 missing string should be aspect-related:\n" + buf,
+				3, missingStrings.stream().filter(s -> s.contains("abstract aspect") || s.contains("Aspect ClassA")).count()
+			);
 		}
-		List<String> classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
-		assertEquals("There should be 2 missing strings:\n"+classMissing,2,classMissing.size());
-		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",classMissing.contains("Aspect ClassA</H2>"));
-		assertTrue(htmlFileClass.getName() + " should not have aspect in its subtitle",
-				classMissing.contains("public abstract aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassA</span>"));
-	}
 
     /**
      * Test that all the different types of advice appear
@@ -659,9 +669,9 @@ public class CoverageTestCase extends AjdocTestCase {
 		String[] strings = null;
 		strings = new String[] {
 				"Aspect PkgVisibleClass.NestedAspect",
-				"<pre>static aspect <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>",
+				"static aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>",
 				"Class PkgVisibleClass.NestedAspect",
-				"<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>"};
+				"static class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>"};
 		List<String> missingStrings = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
 		StringBuilder buf = new StringBuilder();
 		for (String str:missingStrings) {
@@ -671,7 +681,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		assertEquals("There should be 2 missing strings",2,missingStrings.size());
 		assertTrue(htmlFile.getName() + " should not have Class as it's title",missingStrings.contains("Class PkgVisibleClass.NestedAspect"));
 		assertTrue(htmlFile.getName() + " should not have class in its subtitle",
-				missingStrings.contains("<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>"));
+				missingStrings.contains("static class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass.NestedAspect</span>"));
 		// get the html file for the enclosing class
         File htmlFileClass = new File(getAbsolutePathOutdir() + "/PkgVisibleClass.html");
 		if (!htmlFileClass.exists()) {
@@ -685,22 +695,22 @@ public class CoverageTestCase extends AjdocTestCase {
 		if (LangUtil.is13VMOrGreater()) {
 			classStrings = new String[] {
 				"Class PkgVisibleClass</h1>",
-				"<pre>class <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>",
+				"class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>",
 				"Aspect PkgVisibleClass</h2>",
-				"<pre>aspect <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"};
+				"aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"};
 		} else {
 			classStrings = new String[] {
 				"Class PkgVisibleClass</h2>",
-				"<pre>class <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>",
+				"class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>",
 				"Aspect PkgVisibleClass</h2>",
-				"<pre>aspect <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"};
+				"aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"};
 		}
 		List<String> classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
 		assertEquals("There should be 2 missing strings",2,classMissing.size());
 		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",
 				classMissing.contains("Aspect PkgVisibleClass</h2>"));
 		assertTrue(htmlFileClass.getName() + " should not have aspect in its subtitle",
-				classMissing.contains("<pre>aspect <span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"));
+				classMissing.contains("aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>"));
 	}
 
 	/**
@@ -723,9 +733,9 @@ public class CoverageTestCase extends AjdocTestCase {
 		String[] strings = null;
 		strings = new String [] {
 			"Aspect ClassWithNestedAspect.NestedAspect",
-			"<pre>static aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>",
+			"static aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>",
 			"Class ClassWithNestedAspect.NestedAspect",
-			"<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>"};
+			"static class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>"};
 		List<String> missingStrings = AjdocOutputChecker.getMissingStringsInFile(htmlFile,strings);
 		StringBuilder buf = new StringBuilder();
 		for (String str:missingStrings) {
@@ -735,7 +745,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		assertEquals("There should be 2 missing strings",2,missingStrings.size());
 		assertTrue(htmlFile.getName() + " should not have Class as it's title",missingStrings.contains("Class ClassWithNestedAspect.NestedAspect"));
 		assertTrue(htmlFile.getName() + " should not have class in its subtitle",
-				missingStrings.contains("<pre>static class <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>"));
+				missingStrings.contains("static class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect.NestedAspect</span>"));
 
 		// get the html file for the enclosing class
         File htmlFileClass = new File(getAbsolutePathOutdir() + "/pkg/ClassWithNestedAspect.html");
@@ -750,22 +760,22 @@ public class CoverageTestCase extends AjdocTestCase {
 		if (LangUtil.is13VMOrGreater()) {
 			classStrings = new String[] {
 				"Class ClassWithNestedAspect</h1>",
-				"public class <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>",
+				"public class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>",
 				"Aspect ClassWithNestedAspect</h2>",
-				"public aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"};
+				"public aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"};
 		} else {
 			classStrings = new String[] {
 				"Class ClassWithNestedAspect</h2>",
-				"public class <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>",
+				"public class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>",
 				"Aspect ClassWithNestedAspect</h2>",
-				"public aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"};
+				"public aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"};
 		}
 		List<String> classMissing = AjdocOutputChecker.getMissingStringsInFile(htmlFileClass,classStrings);
 		assertEquals("There should be 2 missing strings",2,classMissing.size());
 		assertTrue(htmlFileClass.getName() + " should not have Aspect as it's title",
 				classMissing.contains("Aspect ClassWithNestedAspect</h2>"));
 		assertTrue(htmlFileClass.getName() + " should not have aspect in its subtitle",
-				classMissing.contains("public aspect <span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"));
+				classMissing.contains("public aspect " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>"));
 	}
 
 	/**
