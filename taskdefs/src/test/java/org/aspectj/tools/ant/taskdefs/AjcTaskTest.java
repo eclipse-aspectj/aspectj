@@ -651,7 +651,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoSuchFileList() {
 		AjcTask task = getTask("NoSuchFile.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
 	public void testVersions() {
@@ -734,7 +734,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoFile() {
 		AjcTask task = getTask(NOFILE);
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
 	public void testCompileErrorFile() {
@@ -753,7 +753,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoSuchFile() {
 		AjcTask task = getTask("NoSuchFile.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
     public void testDefaultFileComplete() {
