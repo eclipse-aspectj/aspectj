@@ -51,7 +51,7 @@ public class OutjarTest extends AjcTestCase {
 		String[] args = new String[] {"-aspectpath", aspectjarName, "-injars", injarName, "-outjar", injarName};
 		Message error = new Message(WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH));
 		Message fail = new Message("Usage:");
-		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null);
+		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null, null);
 		CompilationResult result = ajc(baseDir,args);
 //		System.out.println(result);
 		assertMessages(result,spec);
@@ -72,7 +72,7 @@ public class OutjarTest extends AjcTestCase {
 		String[] args = new String[] {"-aspectpath", aspectjarName, "-inpath", injarName, "-outjar", injarName};
 		Message error = new Message(WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH));
 		Message fail = new Message("Usage:");
-		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null);
+		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null, null);
 		CompilationResult result = ajc(baseDir,args);
 //		System.out.println(result);
 		assertMessages(result,spec);
@@ -93,7 +93,7 @@ public class OutjarTest extends AjcTestCase {
 		String[] args = new String[] {"-aspectpath", aspectjarName, "-inpath", injarName, "-outjar", aspectjarName};
 		Message error = new Message(WeaverMessages.format(WeaverMessages.OUTJAR_IN_INPUT_PATH));
 		Message fail = new Message("Usage:");
-		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null);
+		MessageSpec spec = new MessageSpec(null,null,newMessageList(error),newMessageList(fail),null, null);
 		CompilationResult result = ajc(baseDir,args);
 //		System.out.println(result);
 		assertMessages(result,spec);

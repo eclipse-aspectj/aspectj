@@ -297,8 +297,10 @@ public abstract class AjcTestCase extends TestCase {
 		/**
 		 * Convenience constant that matches a CompilationResult with any number of information messages, but no others.
 		 */
-		public static final MessageSpec EMPTY_MESSAGE_SET = new MessageSpec(null, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-				Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+		public static final MessageSpec EMPTY_MESSAGE_SET = new MessageSpec(
+			null, Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+			Collections.EMPTY_LIST, Collections.EMPTY_LIST
+		);
 
 		boolean ignoreInfos = true;
 		public List<AjcTestCase.Message> fails;
@@ -306,6 +308,7 @@ public abstract class AjcTestCase extends TestCase {
 		public List<AjcTestCase.Message> warnings;
 		public List<AjcTestCase.Message> errors;
 		public List<AjcTestCase.Message> weaves;
+		public List<AjcTestCase.Message> usages;
 
 		/**
 		 * Set to true to enable or disable comparison of information messages.
@@ -330,8 +333,14 @@ public abstract class AjcTestCase extends TestCase {
 		 * @param errors The set of error messages to test for - can pass null to indicate empty set.
 		 * @param fails The set of fail or abort messages to test for - can pass null to indicate empty set.
 		 */
-		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings,
-				List<AjcTestCase.Message> errors, List<AjcTestCase.Message> fails, List<AjcTestCase.Message> weaves) {
+		public MessageSpec(
+			List<AjcTestCase.Message> infos,
+			List<AjcTestCase.Message> warnings,
+			List<AjcTestCase.Message> errors,
+			List<AjcTestCase.Message> fails,
+			List<AjcTestCase.Message> weaves,
+			List<AjcTestCase.Message> usages
+		) {
 			if (infos != null) {
 				this.infos = infos;
 				ignoreInfos = false;
@@ -342,6 +351,7 @@ public abstract class AjcTestCase extends TestCase {
 			this.errors = ((errors == null) ? Collections.<AjcTestCase.Message>emptyList() : errors);
 			this.fails = ((fails == null) ? Collections.<AjcTestCase.Message>emptyList() : fails);
 			this.weaves = ((weaves == null) ? Collections.<AjcTestCase.Message>emptyList() : weaves);
+			this.usages = ((weaves == null) ? Collections.<AjcTestCase.Message>emptyList() : usages);
 		}
 
 		/**
@@ -349,7 +359,7 @@ public abstract class AjcTestCase extends TestCase {
 		 * presence of any fail or abort messages in a CompilationResult will be a test failure.
 		 */
 		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings, List<AjcTestCase.Message> errors) {
-			this(infos, warnings, errors, null, null);
+			this(infos, warnings, errors, null, null, null);
 		}
 
 		/**
@@ -357,7 +367,7 @@ public abstract class AjcTestCase extends TestCase {
 		 * of any fail or abort messages in a CompilationResult will be a test failure. Informational messages will be ignored.
 		 */
 		public MessageSpec(List<AjcTestCase.Message> warnings, List<AjcTestCase.Message> errors) {
-			this(null, warnings, errors, null, null);
+			this(null, warnings, errors, null, null, null);
 		}
 	}
 
@@ -422,8 +432,8 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Assert that no (non-informational) messages where produced during a compiler run.
 	 */
-	public void assertNoMessages(CompilationResult result, String message) {
-		assertMessages(result, message, MessageSpec.EMPTY_MESSAGE_SET);
+	public void assertNoMessages(CompilationResult result, String assertionFailedMessage) {
+		assertMessages(result, assertionFailedMessage, MessageSpec.EMPTY_MESSAGE_SET);
 	}
 
 	/**
@@ -436,7 +446,7 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Assert that messages in accordance with the <code>expected</code> message specification where produced during a compiler run.
 	 */
-	public void assertMessages(CompilationResult result, String message, MessageSpec expected) {
+	public void assertMessages(CompilationResult result, String assertionFailedMessage, MessageSpec expected) {
 		if (result == null)
 			fail("Attempt to compare null compilation results against expected.");
 		List<AjcTestCase.Message> missingFails = copyAll(expected.fails);
@@ -457,10 +467,10 @@ public abstract class AjcTestCase extends TestCase {
 		}
 		compare(expected.weaves, result.getWeaveMessages(), missingWeaves, extraWeaves);
 
-		boolean infosEmpty = expected.isIgnoringInfoMessages() ? true : (missingInfos.isEmpty() && extraInfos.isEmpty());
+		boolean infosEmpty = expected.isIgnoringInfoMessages() || missingInfos.isEmpty() && extraInfos.isEmpty();
 		if (!(missingFails.isEmpty() && missingWarnings.isEmpty() && missingErrors.isEmpty() && missingWeaves.isEmpty()
 				&& extraFails.isEmpty() && extraWarnings.isEmpty() && extraErrors.isEmpty() && extraWeaves.isEmpty() && infosEmpty)) {
-			StringBuffer failureReport = new StringBuffer(message);
+			StringBuffer failureReport = new StringBuffer(assertionFailedMessage);
 			failureReport.append("\n");
 			if (!expected.isIgnoringInfoMessages()) {
 				addMissing(failureReport, "info", missingInfos);
@@ -484,7 +494,7 @@ public abstract class AjcTestCase extends TestCase {
 			}
 			String report = failureReport.toString();
 			System.err.println(failureReport);
-			fail(message + "'\n" + report);
+			fail(assertionFailedMessage + "'\n" + report);
 		}
 	}
 
