@@ -37,6 +37,7 @@
 							<name>version.time_text</name>
 							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
 							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
 						</configuration>
 					</execution>

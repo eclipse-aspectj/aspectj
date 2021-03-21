@@ -44,9 +44,9 @@
 						<configuration>
 							<name>build.date</name>
 							<pattern>E MMM d, YYYY</pattern>
-							<timeZone>Europe/Zurich</timeZone>
-							<!-- build.date: Monday Feb 4, 2019 -->
 							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
+							<!-- build.date: Monday Feb 4, 2019 -->
 						</configuration>
 					</execution>
 					<execution>
@@ -56,11 +56,12 @@
 						</goals>
 						<configuration>
 							<name>build.time</name>
-							<!-- 
+							<!--
 							<pattern>E MMM d, YYYY 'at' HH:MM:SS z</pattern>
 							 -->
 							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
 							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
 						</configuration>
 					</execution>
@@ -73,6 +74,7 @@
 							<name>build.year</name>
 							<pattern>YYYY</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
 							<!-- year: 2019 -->
 						</configuration>
 					</execution>
