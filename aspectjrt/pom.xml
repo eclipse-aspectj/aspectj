@@ -84,6 +84,9 @@
 												'java -cp aspectjtools.jar org.aspectj.tools.ajc.Main' can then fail with the absolutely
 												unexpected error 'Could not find or load main class org.aspectj.tools.ajc.Main'.
 
+												Alexander Kriegisch created this bug ticket:
+												https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8263924
+
 												In IntelliJ IDEA you can deactivate wrapping text inside XML tags like this:
 												File | Settings | Editor | Code Style | XML | Wrap text -> deactivate
 											-->
