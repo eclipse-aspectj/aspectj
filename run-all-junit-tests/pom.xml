@@ -269,12 +269,62 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<!--
+				ATTENTION: This profile is inactive by default, because when active and running a full reactor build, it makes
+				almost all tests run 2x, doubling the build time without any added value. This Maven module only exists for
+				convenience: As a developer, your IDE can detect and run 'RunTheseBeforeYouCommitTests'. That way, you do not
+				have to use Maven and get the test results reported within the IDE's JUnit user interface.
+			-->
+			<id>repeat-all-unit-tests</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<testFailureIgnore>true</testFailureIgnore>
+						</configuration>
+						<executions>
+							<execution>
+								<id>extra-test-run</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
-	<!-- <build> <pluginManagement> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-compiler-plugin</artifactId> <configuration> <source>1.8</source> 
-		<target>1.8</target> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-surefire-plugin</artifactId> <configuration> <testFailureIgnore>true</testFailureIgnore> 
-		<includes> <include>**/RunTheseBeforeYouCommitTests*</include> </includes> 
-		</configuration> </plugin> </plugins> </pluginManagement> </build> -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-test</id>
+						<!-- By default, do not run any tests -->
+						<phase>none</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
 
