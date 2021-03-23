@@ -20,6 +20,8 @@
             <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>

@@ -50,7 +50,35 @@
 		<module>installer</module>
 	</modules>
 
+	<!--
+    Caveat: Automatic, JDK-based profile activation can *not* be inherited by child POMs defining
+    the same profiles. Thus, we have to repeat activation conditions there.
+
+    Note: We can check if automatic profile activation works via mvn help:active-profiles.
+  -->
+	<profiles>
+		<profile>
+			<id>jdk-8-to-15</id>
+			<activation>
+				<jdk>[1.8,16)</jdk>
+			</activation>
+			<properties>
+				<jvm.arg.addOpens/>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk-16-to-xx</id>
+			<activation>
+				<jdk>[16,)</jdk>
+			</activation>
+			<properties>
+				<jvm.arg.addOpens>--add-opens java.base/java.lang=ALL-UNNAMED</jvm.arg.addOpens>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -66,16 +94,21 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.2</version>
 					<configuration>
-<!--
-						<testFailureIgnore>true</testFailureIgnore>
--->
+						<!--<testFailureIgnore>true</testFailureIgnore>-->
+						<argLine>${jvm.arg.addOpens}</argLine>
 						<excludes>
 							<exclude>**/*ModuleTests.java</exclude>
 						</excludes>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-help-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -88,7 +121,7 @@
 				</configuration>
 				<executions>
 					<execution>
-<id>test-jar</id>
+						<id>test-jar</id>
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
@@ -104,23 +137,42 @@
 						<fileset>
 							<directory>.</directory>
 							<includes>
-<include>**/ajcore.*.txt</include>
-
-								</includes>
+								<include>**/ajcore.*.txt</include>
+							</includes>
 <!--
-<excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude>
-								</excludes> -->
+							<excludes>
+								<exclude>**/important.log</exclude>
+								<exclude>**/another-important.log</exclude>
+							</excludes>
+-->
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 						<fileset>
 							<directory>aj-build</directory>
-							<!-- <includes> <include>**/*.tmp</include> <include>**/*.log</include>
-								</includes> <excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude>
-								</excludes> -->
+<!--
+							<includes>
+								<include>**/*.tmp</include>
+								<include>**/*.log</include>
+							</includes>
+							<excludes>
+								<exclude>**/important.log</exclude>
+								<exclude>**/another-important.log</exclude>
+							</excludes>
+-->
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>
 				</configuration>
+			</plugin>
+
+			<!--
+				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'effective-pom',
+				'active-profiles', 'effective-settings' or 'evaluate' from a modern IDE in order to get quick information about
+				the current build configuration for any given module.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
 			</plugin>
 
 		</plugins>

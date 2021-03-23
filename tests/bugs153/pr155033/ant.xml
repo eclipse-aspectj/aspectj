@@ -15,12 +15,14 @@
             <jvmarg value="-Dorg.aspectj.weaver.Dump.condition=error"/>
         	<sysproperty key="org.aspectj.dump.directory" path="${aj.sandbox}"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
-<!--        	
+<!--
             <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
--->            
+-->
         </java>
     </target>
 

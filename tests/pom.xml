@@ -131,20 +131,19 @@
 
 
 	<build>
-		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration combine.self="override">
 						<testFailureIgnore>false</testFailureIgnore>
+						<argLine>${jvm.arg.addOpens}</argLine>
 						<includes>
 							<include>**/TestsModuleTests*</include>
 						</includes>
 					</configuration>
 				</plugin>
 			</plugins>
-		</pluginManagement>
 	</build>
 
 </project>

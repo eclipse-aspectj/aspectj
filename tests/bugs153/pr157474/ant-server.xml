@@ -9,16 +9,18 @@
     <target name="TestServer with duplicate configuration">
         <copy file="${aj.root}/tests/bugs153/pr157474/server-applicationandlibrary.properties"
               tofile="${aj.sandbox}/server.properties"/>
-    	
+
         <mkdir dir="${aj.sandbox}/Application"/>
         <copy file="${aj.root}/tests/bugs153/pr157474/aop-application.xml"
               tofile="${aj.sandbox}/Application/META-INF/aop.xml"/>
-    	
+
         <java fork="yes" classname="org.aspectj.testing.server.TestServer" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg value="-Dorg.aspectj.testing.server.debug=true"/>-->
         	<arg path="${aj.sandbox}"/>
         </java>

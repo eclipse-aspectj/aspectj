@@ -288,6 +288,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 							<testFailureIgnore>true</testFailureIgnore>
+							<argLine>${jvm.arg.addOpens}</argLine>
 						</configuration>
 						<executions>
 							<execution>
@@ -311,6 +312,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
+					<argLine>${jvm.arg.addOpens}</argLine>
 				</configuration>
 				<executions>
 					<execution>

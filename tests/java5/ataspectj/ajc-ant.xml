@@ -24,6 +24,8 @@
             <!-- use META-INF/aop.xml style -->
             <classpath path="ataspectj/pathentry"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -34,6 +36,8 @@
         <java fork="yes" classname="ataspectj.PerClauseTest" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>            -->
         </java>
     </target>
@@ -44,6 +48,8 @@
         <java fork="yes" classname="ataspectj.AroundInlineMungerTest" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
             <!--<jvmarg line="${jdwp}"/>--><!-- uncomment to debug with JDWP -->
         </java>
     </target>
@@ -54,6 +60,8 @@
         <java fork="yes" classname="ataspectj.AroundInlineMungerTest2" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -61,6 +69,8 @@
         <java fork="yes" classname="ataspectj.DumpTest" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -70,6 +80,8 @@
         <java fork="yes" classname="ataspectj.TestProxyGenerator" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -89,6 +101,8 @@
                 <pathelement path="${aj.sandbox}/main1.jar"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -100,27 +114,33 @@
         </javac>
         <copy file="ataspectj/ltwlog/aop-silent.xml"
               tofile="${aj.sandbox}/META-INF/aop.xml"
-        	  overwrite="yes"	
+        	  overwrite="yes"
         />
         <java fork="yes" classname="ataspectj.ltwlog.MainSilent" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
         <copy file="ataspectj/ltwlog/aop-verbsoe.xml"
               tofile="${aj.sandbox}/META-INF/aop.xml"
-        	  overwrite="yes"	
+        	  overwrite="yes"
         />
         <java fork="yes" classname="ataspectj.ltwlog.MainVerbose" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
         <copy file="ataspectj/ltwlog/aop-verboseandshow.xml"
               tofile="${aj.sandbox}/META-INF/aop.xml"
-		  	  overwrite="yes"	
+		  	  overwrite="yes"
 		/>
         <java fork="yes" classname="ataspectj.ltwlog.MainVerboseAndShow" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -142,30 +162,36 @@
                 <pathelement path="${aj.root}/lib/asm/asm-2.0.jar"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
     <target name="ltw.Decp">
         <copy file="ataspectj/aop-decptest.xml"
               tofile="${aj.sandbox}/META-INF/aop.xml"
-        	  overwrite="yes"	
+        	  overwrite="yes"
         />
         <java fork="yes" classname="ataspectj.DeclareParentsInterfaceTest" failonerror="yes">
             <classpath>
                 <path refid="aj.path"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
 
         <copy file="ataspectj/aop-decptest.xml"
               tofile="${aj.sandbox}/META-INF/aop.xml"
-        	  overwrite="yes"	
+        	  overwrite="yes"
         />
     	<java fork="yes" classname="ataspectj.DeclareParentsImplementsTest" failonerror="yes">
             <classpath>
                 <path refid="aj.path"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+          <jvmarg value="${aj.addOpensKey}"/>
+          <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -187,6 +213,8 @@
                 <path refid="aj.path"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -204,6 +232,8 @@
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-DaspectDeclared=true"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
         <!--Now ensure that the error is not produced when the declaration is made.-->
         <copy file="ataspectj/ltwreweavable/aop-ltwreweavable-omitted.xml"
@@ -216,6 +246,8 @@
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-DaspectDeclared=false"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -243,6 +275,8 @@
             <classpath refid="aj.path"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
         </java>
     </target>
 
@@ -256,11 +290,11 @@
                 <pathelement path="${aj.sandbox}/aspects.jar"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-<!--        	
--->            
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Djava.util.logging.config.file=${aj.root}/weaver5/testdata/logging.properties"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>

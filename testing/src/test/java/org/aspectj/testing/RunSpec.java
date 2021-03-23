@@ -22,6 +22,8 @@ import java.util.StringTokenizer;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
 
+import static org.aspectj.util.LangUtil.is16VMOrGreater;
+
 /**
  * @author Adrian Colyer
  */
@@ -62,6 +64,13 @@ public class RunSpec implements ITestStep {
 		copyXlintFile(inTestCase.getSandboxDirectory());
 		try {
 			setSystemProperty("test.base.dir", inTestCase.getSandboxDirectory().getAbsolutePath());
+
+			if (vmargs == null)
+				vmargs = "";
+			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
+			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
+			// during runtime. See also docs/dist/doc/README-187.html.
+			vmargs += is16VMOrGreater() ? " --add-opens java.base/java.lang=ALL-UNNAMED" : "";
 
 			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), getModuleToRun(), args, vmargs, getClasspath(), getModulepath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 

@@ -26,21 +26,33 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.aspectj.tools.ajc.AjcTestCase;
 
+import static org.aspectj.util.LangUtil.is16VMOrGreater;
+
 /**
  * Element that allow to run an abritrary Ant target in a sandbox.
  * <p/>
- * Such a spec is used in a "<ajc-test><ant file="myAnt.xml" [target="..."] [verbose="true"]/> XML element. The "target" is
- * optional. If not set, default myAnt.xml target is used. The "file" file is looked up from the <ajc-test dir="..."/> attribute. If
- * "verbose" is set to "true", the ant -v output is piped, else nothing is reported except errors.
+ * Such a spec is used in a {@code <ajc-test><ant file="myAnt.xml" [target="..."] [verbose="true"]/>} XML element. The
+ * {@code target} is optional. If not set, default <i>myAnt.xml</i> target is used. The {@code file} is looked up from
+ * the {@code <ajc-test dir="..."/>} attribute. If @{code verbose} is set to {@code true}, the {@code ant -v} output is
+ * piped, else nothing is reported except errors.
  * <p/>
- * The called Ant target benefits from 2 implicit variables: "${aj.sandbox}" points to the test current sandbox folder. "aj.path" is
- * an Ant refid on the classpath formed with the sandbox folder + ltw + the AjcTestCase classpath (ie usually aspectjrt, junit, and
- * testing infra)
+ * The called Ant target benefits from some implicit variables:
+ * <ul>
+ *   <li>{@code ${aj.sandbox}} points to the test current sandbox folder.</li>
+ *   <li>
+ *     {@code ${aj.path}} is an Ant refid on the classpath formed with the sandbox folder + ltw + the AjcTestCase
+ *     classpath (i.e. usually aspectjrt, junit, and testing infra).
+ *   </li>
+ *   <li>
+ *     For Java 16+, {@code ${aj.addOpensKey}} and {@code ${aj.addOpensValue}} together add {@code --add-opens} and
+ *     {@code java.base/java.lang=ALL-UNNAMED} as JVM parameters. They have to be used together and consecutively in
+ *     this order as {@code jvmarg} parameter tags inside the {@code java} Ant task.
+ *   </li>
+ * </ul>
  * <p/>
- * Element "<stdout><line text="..">" and "<stderr><line text="..">" can be used. For now a full match is performed on the output of
- * the runned target only (not the whole Ant invocation). This is experimental and advised to use a "<junit>" task instead or a
- * "<java>" whose main that throws some exception upon failure.
- * 
+ * Element {@code <stdout><line text="..">} and {@code <stderr><line text="..">} can be used. For now, a full match is
+ * performed on the output of the runned target only (not the whole Ant invocation). This is experimental and you are
+ * advised to use a {@code <junit>} task instead or a {@code <java>} whose main throws some exception upon failure.
  * 
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -91,6 +103,15 @@ public class AntSpec implements ITestStep {
 			p.setUserProperty("aj.sandbox", inTestCase.getSandboxDirectory().getAbsolutePath());
 			// setup aj.dir "modules" folder
 			p.setUserProperty("aj.root", new File("..").getAbsolutePath());
+
+			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
+			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
+			// during runtime. See also docs/dist/doc/README-187.html.
+			// 
+			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
+			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line. 
+			p.setUserProperty("aj.addOpensKey", is16VMOrGreater() ? "--add-opens" : "-D_dummy");
+			p.setUserProperty("aj.addOpensValue", is16VMOrGreater() ? "java.base/java.lang=ALL-UNNAMED" : "-D_dummy");
 
 			// create the test implicit path aj.path that contains the sandbox + regular test infra path
 			Path path = new Path(p, inTestCase.getSandboxDirectory().getAbsolutePath());
