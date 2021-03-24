@@ -34,4 +34,8 @@ jobs:
         run: ./mvnw -B -DskipTests package --file pom.xml
 
       - name: Run Tests
-        run: ./mvnw -B -Daspectj.tests.verbose=false verify --file pom.xml
+        # Tests in module ajde call Swing/AWT classes. Without frame buffer they throw
+        # HeadlessException: No X11 DISPLAY variable was set, but this program performed an operation which requires it.
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: ./mvnw -B -Daspectj.tests.verbose=false verify --file pom.xml
