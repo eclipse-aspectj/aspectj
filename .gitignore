@@ -30,3 +30,7 @@ log.txt
 
 # No idea where these come from
 bin/
+
+# When using a RAM disk to speed up development, see how-to in docs/developer/ram-disk/settings-ramdisk.xml
+/.mvn/maven.config
+/.mvn/settings-ramdisk.xml
