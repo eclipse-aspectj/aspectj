@@ -54,29 +54,16 @@ public class JRockitAgentTest extends TestCase {
 	}
 
 	public void testJrockitRecursionProtection() {
-		if (LangUtil.is9VMOrGreater()) {
-			// Skip test, not castable to URLClassLoader
-			return;
-		}
-		URLClassLoader thisLoader = (URLClassLoader) getClass().getClassLoader();
 		URL jrockit = FileUtil.getFileURL(new File("../lib/ext/jrockit/jrockit.jar"));
 		URL[] urls = new URL[] {jrockit};
-		 thisLoader = new URLClassLoader(urls, thisLoader);
-		ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
-
+		URLClassLoader thisLoader = new URLClassLoader(urls, getClass().getClassLoader());
 		try {
-			/* Needed by Commons Logging */
-			Thread.currentThread().setContextClassLoader(thisLoader.getParent());
-
 			ClassLoader loader = new JRockitClassLoader(thisLoader);
-
 			Class.forName("java.lang.Object", false, loader);
 			Class.forName("junit.framework.TestCase", false, loader);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail(ex.toString());
-		} finally {
-			Thread.currentThread().setContextClassLoader(contextLoader);
 		}
 	}
 
