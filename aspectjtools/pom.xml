@@ -45,7 +45,7 @@
 				<executions>
 					<execution>
 						<id>unzipasm</id>
-						<phase>validate</phase>
+						<phase>prepare-package</phase>
 						<configuration>
 							<tasks>
 								<echo message="unzip jarjar'd asm" />
@@ -61,7 +61,7 @@
 
 					<execution>
 						<id>unzipjdt</id>
-						<phase>validate</phase>
+						<phase>prepare-package</phase>
 						<configuration>
 							<tasks>
 								<echo message="unzip patched jdtcore" />
@@ -77,7 +77,7 @@
 
 					<execution>
 						<id>unzipjdtsrc</id>
-						<phase>validate</phase>
+						<phase>prepare-package</phase>
 						<configuration>
 							<tasks>
 								<echo message="unzip patched jdtcore sources" />
