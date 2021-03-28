@@ -24,7 +24,7 @@
           </execution>
           <execution>
             <id>org.aspectj:org.eclipse.jdt.core</id>
-            <phase>verify</phase>
+            <phase>install</phase>
             <goals>
               <goal>install-file</goal>
             </goals>
@@ -40,7 +40,7 @@
           </execution>
           <execution>
             <id>org.aspectj:org.eclipse.jdt.core:sources</id>
-            <phase>verify</phase>
+            <phase>install</phase>
             <goals>
               <goal>install-file</goal>
             </goals>
