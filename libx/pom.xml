@@ -158,7 +158,6 @@
                     are only used from there and could easily be compiled together with the module, package names
                     relocated or not.
                   -->
-                  <!-- TODO: In commit c89830fe jdiff.jar was accidentally unpacked + committed -> delete -->
                   <groupId>jdiff</groupId>
                   <artifactId>jdiff</artifactId>
                   <version>1.0.9</version>
