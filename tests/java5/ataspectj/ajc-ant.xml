@@ -151,7 +151,6 @@
             debug="true">
             <classpath>
                 <path refid="aj.path"/>
-                <pathelement path="${aj.root}/lib/asm/asm-2.0.jar"/>
             </classpath>
         </javac>
         <copy file="ataspectj/aop-unweavabletest.xml"
@@ -159,7 +158,6 @@
         <java fork="yes" classname="ataspectj.UnweavableTest" failonerror="yes">
             <classpath>
                 <path refid="aj.path"/>
-                <pathelement path="${aj.root}/lib/asm/asm-2.0.jar"/>
             </classpath>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="${aj.addOpensKey}"/>
