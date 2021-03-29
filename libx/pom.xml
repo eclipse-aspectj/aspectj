@@ -12,9 +12,8 @@
   <artifactId>libx</artifactId>
 
   <properties>
-    <ant.name>apache-ant</ant.name>
-    <ant.version>1.6.3</ant.version>
-    <ant.artifact>${ant.name}-${ant.version}</ant.artifact>
+    <lib.ant.name>apache-ant</lib.ant.name>
+    <lib.ant.artifact>${lib.ant.name}-${lib.ant.version}</lib.ant.artifact>
   </properties>
 
   <build>
@@ -32,7 +31,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://archive.apache.org/dist/ant/binaries/${ant.artifact}-bin.zip</url>
+              <url>https://archive.apache.org/dist/ant/binaries/${lib.ant.artifact}-bin.zip</url>
               <outputDirectory>ant</outputDirectory>
               <sha1>3fa9f816a0c4c63249efad8e6225f2e83794f0c0</sha1>
             </configuration>
@@ -44,7 +43,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://archive.apache.org/dist/ant/source/${ant.artifact}-src.zip</url>
+              <url>https://archive.apache.org/dist/ant/source/${lib.ant.artifact}-src.zip</url>
               <outputDirectory>ant</outputDirectory>
               <sha1>b9f3c8c31bb6c9069ad5b655059a17769af12f20</sha1>
             </configuration>
@@ -165,7 +164,7 @@
                   <!-- Binary is identical to committed version -->
                   <groupId>regexp</groupId>
                   <artifactId>regexp</artifactId>
-                  <version>1.2</version>
+                  <version>${lib.regexp.version}</version>
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>regexp</outputDirectory>
@@ -210,7 +209,7 @@
                       This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
                       were normal file system paths. No additional moves and deletes with Antrun are necessary.
                     -->
-                    <directory>ant/${ant.artifact}-bin.zip/${ant.artifact}</directory>
+                    <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
                     <outputDirectory>ant</outputDirectory>
                   </fileset>
                 </configuration>
@@ -249,7 +248,7 @@
                       This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
                       were normal file system paths. No additional moves and deletes with Antrun are necessary.
                     -->
-                    <directory>ant/${ant.artifact}-src.zip/${ant.artifact}/src/main</directory>
+                    <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
                     <outputDirectory>ant/ant-src.zip</outputDirectory>
                   </fileset>
                 </configuration>

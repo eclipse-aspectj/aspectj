@@ -4,16 +4,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<revision>1.9.7.BUILD-SNAPSHOT</revision>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.9.7.BUILD-SNAPSHOT</version>
 	<name>AspectJ Parent Project</name>
+
+	<properties>
+		<revision>1.9.7.BUILD-SNAPSHOT</revision>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lib.ant.version>1.6.3</lib.ant.version>
+		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
+		<lib.regexp.version>1.2</lib.regexp.version>
+	</properties>
 
 	<modules>
 		<module>util</module>

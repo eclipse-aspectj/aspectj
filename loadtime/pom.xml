@@ -55,18 +55,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>xml-apis</groupId>
-			<artifactId>xml-apis</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/xml-apis.jar</systemPath>
+			<!-- Identical to lib/ant/lib/xml-apis.jar, a former system-scoped dependency -->
+			<groupId>xerces</groupId>
+			<artifactId>xmlParserAPIs</artifactId>
+			<version>${lib.ant.xerces.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>xercesImpl</groupId>
+			<!-- Identical to lib/ant/lib/xercesImpl.jar, a former system-scoped dependency -->
+			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/xercesImpl.jar</systemPath>
+			<version>${lib.ant.xerces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jrockit</groupId>
@@ -75,17 +73,16 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/../lib/ext/jrockit/jrockit.jar</systemPath>
 		</dependency>
-		
+
     <dependency>
-      <groupId>ant</groupId>
+			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
+			<groupId>ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+			<version>${lib.ant.version}</version>
     </dependency>
 	</dependencies>
 
-<!-- 
+<!--
 	<build>
 		<plugins>
 			<plugin>

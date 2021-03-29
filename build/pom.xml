@@ -21,11 +21,10 @@
 		</dependency>
 
 		<dependency>
+			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+			<version>${lib.ant.version}</version>
 		</dependency>
 	</dependencies>
 

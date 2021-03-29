@@ -92,18 +92,16 @@
       <systemPath>${project.basedir}/../lib/jdiff/jdiff.jar</systemPath>
     </dependency>
     <dependency>
+      <!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
       <groupId>ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+      <version>${lib.ant.version}</version>
     </dependency>
     <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/regexp/jakarta-regexp-1.2.jar</systemPath>
+      <!-- Identical to lib/regexp/jakarta-regexp-1.2.jar, a former system-scoped dependency -->
+      <groupId>regexp</groupId>
+      <artifactId>regexp</artifactId>
+      <version>${lib.regexp.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -118,18 +116,16 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>xercesImpl</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xercesImpl.jar</systemPath>
+      <!-- Identical to lib/ant/lib/xml-apis.jar, a former system-scoped dependency -->
+      <groupId>xerces</groupId>
+      <artifactId>xmlParserAPIs</artifactId>
+      <version>${lib.ant.xerces.version}</version>
     </dependency>
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xml-apis.jar</systemPath>
+      <!-- Identical to lib/ant/lib/xercesImpl.jar, a former system-scoped dependency -->
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>${lib.ant.xerces.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
