@@ -11,8 +11,47 @@
 
   <artifactId>libx</artifactId>
 
+  <properties>
+    <ant.name>apache-ant</ant.name>
+    <ant.version>1.6.3</ant.version>
+    <ant.artifact>${ant.name}-${ant.version}</ant.artifact>
+  </properties>
+
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.6.1</version>
+        <executions>
+          <execution>
+            <id>download-ant-binaries</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://archive.apache.org/dist/ant/binaries/${ant.artifact}-bin.zip</url>
+              <outputDirectory>ant</outputDirectory>
+              <sha1>3fa9f816a0c4c63249efad8e6225f2e83794f0c0</sha1>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-ant-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://archive.apache.org/dist/ant/source/${ant.artifact}-src.zip</url>
+              <outputDirectory>ant</outputDirectory>
+              <sha1>b9f3c8c31bb6c9069ad5b655059a17769af12f20</sha1>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -20,42 +59,12 @@
         <executions>
           <execution>
             <id>copy</id>
-            <phase>validate</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>copy</goal>
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>
-                  <!--
-                    Binary 1.6.3 is identical to committed version, but 1.6.5 only contains bugfixes and comes with
-                    sources on Maven Central.
-
-                    TODO: Find all optionals (optional.jar in older Ant versions, now under lib/ant/lib in this
-                          repository) as separate Maven dependencies.
-                  -->
-                  <groupId>ant</groupId>
-                  <artifactId>ant</artifactId>
-                  <version>1.6.5</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>ant</outputDirectory>
-                  <destFileName>ant.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!--
-                    Binary 1.6.3 is identical to committed version, but 1.6.5 only contains bugfixes and comes with
-                    sources on Maven Central.
-                  -->
-                  <groupId>ant</groupId>
-                  <artifactId>ant</artifactId>
-                  <version>1.6.5</version>
-                  <type>jar</type>
-                  <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>ant</outputDirectory>
-                  <destFileName>ant-src.zip</destFileName>
-                </artifactItem>
 
                 <!--
                   How relevant is JRockit in 2021?
@@ -119,6 +128,17 @@
                 </artifactItem>
                 <artifactItem>
                   <!-- Binary is identical to committed version -->
+                  <!-- TODO: Is this redundant JUnit JAR in ant/lib really necessary? If so, why? -->
+                  <groupId>junit</groupId>
+                  <artifactId>junit</artifactId>
+                  <version>3.8.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>ant/lib</outputDirectory>
+                  <destFileName>junit.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
                   <groupId>junit</groupId>
                   <artifactId>junit</artifactId>
                   <version>3.8.1</version>
@@ -156,7 +176,96 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <id>unzip-ant-binaries</id>
+      <activation>
+        <file>
+          <!-- Only unzip if this file is missing in order to avoid doing it for each build -->
+          <missing>ant/bin/ant.bat</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
+            <executions>
+              <execution>
+                <id>unzip-ant-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>ant/${ant.artifact}-bin.zip/${ant.artifact}</directory>
+                    <outputDirectory>ant</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>unzip-ant-sources</id>
+      <activation>
+        <file>
+          <!-- Only unzip if this file is missing in order to avoid doing it for each build -->
+          <missing>ant/ant-src.zip</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
+            <executions>
+              <execution>
+                <id>unzip-ant-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>ant/${ant.artifact}-src.zip/${ant.artifact}/src/main</directory>
+                    <outputDirectory>ant/ant-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+      TODO:
+        - Add profile 'clean-libs' to make Maven Clean delete downloads & unpacks (should be off by default in order
+          not to waste time for re-downloading things like Ant after a simple 'mvn clean').
+        - Add libx (for now, then finally lib) to .gitignore
+    -->
+  </profiles>
 
 </project>
