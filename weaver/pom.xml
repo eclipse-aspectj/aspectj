@@ -66,6 +66,7 @@
       <artifactId>bcel-builder</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>commons</groupId>
       <artifactId>commons</artifactId>
@@ -73,6 +74,7 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
     </dependency>
+-->
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>

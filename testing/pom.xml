@@ -133,11 +133,9 @@
       <version>4.13</version>
     </dependency>
     <dependency>
-      <groupId>commons</groupId>
-      <artifactId>commons</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>${lib.commons.digester.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
