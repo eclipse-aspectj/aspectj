@@ -48,6 +48,58 @@
               <sha1>b9f3c8c31bb6c9069ad5b655059a17769af12f20</sha1>
             </configuration>
           </execution>
+          <execution>
+            <id>download-beanutils-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/apache/commons-beanutils/archive/refs/tags/BEANUTILS_1_4.zip</url>
+              <outputDirectory>commons</outputDirectory>
+              <outputFileName>commons-beanutils-1.4-sources.jar</outputFileName>
+              <sha1>b2c02afe7e6475cd7c811932b8415d171a8afa00</sha1>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-collections-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/apache/commons-collections/archive/refs/tags/collections-2.0.zip</url>
+              <outputDirectory>commons</outputDirectory>
+              <outputFileName>commons-collections-2.0-sources.jar</outputFileName>
+              <sha1>824cacd0aafe21a94fb142388fd62f28a12df5ef</sha1>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-digester-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/apache/commons-digester/archive/refs/tags/DIGESTER_1_3.zip</url>
+              <outputDirectory>commons</outputDirectory>
+              <outputFileName>commons-digester-1.3-sources.jar</outputFileName>
+              <sha1>49f653c7ea726301c564f9662b72c051fee9390a</sha1>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-logging-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/apache/commons-logging/archive/refs/tags/LOGGING_1_0_1.zip</url>
+              <outputDirectory>commons</outputDirectory>
+              <outputFileName>commons-logging-1.0.1-sources.jar</outputFileName>
+              <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
@@ -170,6 +222,63 @@
                   <outputDirectory>regexp</outputDirectory>
                   <destFileName>jakarta-regexp-1.2.jar</destFileName>
                 </artifactItem>
+
+                <!--
+                  About commons.jar + commons-src.zip:
+                    - Beanutils Binaries are commons-beanutils:commons-beanutils:1.4 (no sources on Maven Central, but
+                      https://github.com/apache/commons-beanutils/archive/refs/tags/BEANUTILS_1_4.zip)
+                    - Collections: Binaries are commons-collections:commons-collections:2.0 (no sources on Maven Central, but
+                      https://github.com/apache/commons-collections/archive/refs/tags/collections-2.0.zip)
+                    - Digester: Binaries are commons-digester:commons-digester:1.3 (no sources on Maven Central, but
+                      https://github.com/apache/commons-digester/archive/refs/tags/DIGESTER_1_3.zip)
+                    - Logging: Binaries are commons-logging:commons-logging:1.0.1 (no sources on Maven Central, but
+                      https://github.com/apache/commons-logging/archive/refs/tags/LOGGING_1_0_1.zip)
+                -->
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <!-- TODO: not used anywhere -> remove -->
+                  <groupId>commons-beanutils</groupId>
+                  <artifactId>commons-beanutils</artifactId>
+                  <version>1.4</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>commons</outputDirectory>
+                  <destFileName>commons-beanutils-1.4.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <!-- TODO: not used anywhere -> remove -->
+                  <groupId>commons-collections</groupId>
+                  <artifactId>commons-collections</artifactId>
+                  <version>2.0</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>commons</outputDirectory>
+                  <destFileName>commons-collections-2.0.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <!-- TODO: used in module 'testing' -->
+                  <groupId>commons-digester</groupId>
+                  <artifactId>commons-digester</artifactId>
+                  <version>1.3</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>commons</outputDirectory>
+                  <destFileName>commons-digester-1.3.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <!-- TODO: used in modules 'org.aspectj.matcher', 'testing'   -->
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+                  <version>1.0.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>commons</outputDirectory>
+                  <destFileName>commons-logging-1.0.1.jar</destFileName>
+                </artifactItem>
+
               </artifactItems>
             </configuration>
           </execution>
@@ -221,10 +330,10 @@
     </profile>
 
     <profile>
-      <id>unzip-ant-sources</id>
+      <id>zip-ant-sources</id>
       <activation>
         <file>
-          <!-- Only unzip if this file is missing in order to avoid doing it for each build -->
+          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
           <missing>ant/ant-src.zip</missing>
         </file>
       </activation>
@@ -236,7 +345,7 @@
             <version>1.2</version>
             <executions>
               <execution>
-                <id>unzip-ant-sources</id>
+                <id>zip-ant-sources</id>
                 <phase>process-resources</phase>
                 <goals>
                   <goal>copy</goal>
@@ -250,6 +359,192 @@
                     -->
                     <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
                     <outputDirectory>ant/ant-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>zip-commons-binaries</id>
+      <activation>
+        <file>
+          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
+          <missing>commons/commons.jar</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
+            <executions>
+              <execution>
+                <id>zip-beanutils-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-beanutils-1.4.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-collections-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-collections-2.0.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-digester-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-digester-1.3.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-logging-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-logging-1.0.1.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>zip-commons-sources</id>
+      <activation>
+        <file>
+          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
+          <missing>commons/commons-src.zip</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
+            <executions>
+              <execution>
+                <id>zip-beanutils-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-beanutils-1.4-sources.jar/commons-beanutils-BEANUTILS_1_4/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-collections-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-collections-2.0-sources.jar/commons-collections-collections-2.0/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-digester-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-digester-1.3-sources.jar/commons-digester-DIGESTER_1_3/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-logging-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <!--
+                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                    -->
+                    <directory>commons/commons-logging-1.0.1-sources.jar/commons-logging-LOGGING_1_0_1/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
                   </fileset>
                 </configuration>
               </execution>
