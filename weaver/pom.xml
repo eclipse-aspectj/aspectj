@@ -26,11 +26,6 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -47,11 +42,6 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.aspectj.matcher</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
