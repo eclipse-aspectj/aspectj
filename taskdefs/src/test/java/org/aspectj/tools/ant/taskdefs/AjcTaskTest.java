@@ -394,18 +394,19 @@ public class AjcTaskTest extends TestCase {
 
         checkRun(task, null);
 
-        JarFile jarFile = new JarFile(destJar);
-        String[] expected = {"copyMe.htm", "pack/includeme",
-                "pack/Pack.class", "Default.class"};
-        String[] unexpected = {"doNotCopy", "skipTxtFiles.txt", "pack/something.txt"};
-		for (String value : expected) {
-			JarEntry entry = jarFile.getJarEntry(value);
-			assertTrue(value + " not found", null != entry);
-		}
-		for (String s : unexpected) {
-			JarEntry entry = jarFile.getJarEntry(s);
-			assertTrue(s + " found", null == entry);
-		}
+        try (JarFile jarFile = new JarFile(destJar)) {
+            String[] expected = { "copyMe.htm", "pack/includeme",
+                    "pack/Pack.class", "Default.class" };
+            String[] unexpected = { "doNotCopy", "skipTxtFiles.txt", "pack/something.txt" };
+            for (String value : expected) {
+                    JarEntry entry = jarFile.getJarEntry(value);
+                    assertTrue(value + " not found", null != entry);
+            }
+            for (String s : unexpected) {
+                    JarEntry entry = jarFile.getJarEntry(s);
+                    assertTrue(s + " found", null == entry);
+            }
+        }
     }
 
     public void testInpathDirCopyFilterError() {

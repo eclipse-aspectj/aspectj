@@ -30,7 +30,7 @@ public class Util {
 		Object obj;
 		File file = new File(name);
 		file.deleteOnExit();
-		ObjectInputStream in = null; 
+		ObjectInputStream in = null;
 
 		try {
 			in = new ObjectInputStream(new FileInputStream(file));
@@ -38,14 +38,15 @@ public class Util {
 			System.out.println("? Util.read() obj=" + obj);
 		}
 		finally {
-			in.close();
+			if (in != null)
+				in.close();
 		}
-		
+
 		return obj;
 	}
 
 	public static void write (String name, Object obj) throws IOException {
-		
+
 		File file = new File(name);
 //		File file = File.createTempFile(name,null);
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
@@ -54,18 +55,22 @@ public class Util {
 
 		System.out.println("? Util.write() suid=" + ObjectStreamClass.lookup(obj.getClass()));
 	}
-	
+
 	public static void main (String[] args) throws Exception {
 		String command = (args.length > 0)? args[0] : DEFAULT_COMMAND;
 		String name = (args.length > 1)? args[1] : DEFAULT_NAME;
 
 		if (command.equals("-read")) {
-			Object obj = read(name);
-			new File(name).delete();
+			try {
+				read(name);
+			}
+			finally {
+				new File(name).delete();
+			}
 		}
 		else if (command.equals("-fail")) {
 			fail(name);
-		}			
+		}
 //		if (args.length > 0) {
 //		}
 //		else {
