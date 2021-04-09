@@ -233,24 +233,6 @@
 					</filesets>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>.</directory>
-							<includes>
-								<include>**/ajcore.*.txt</include>
-							</includes>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-						<fileset>
-							<directory>aj-build</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
 
 			<!--
 				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'effective-pom',
