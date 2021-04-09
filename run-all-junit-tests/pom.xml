@@ -183,13 +183,10 @@
 			<version>${project.version}</version>
 			<type>test-jar</type>
 		</dependency>
-<!--
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
--->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>ajdoc</artifactId>
@@ -243,13 +240,6 @@
 			<version>${lib.ant.version}</version>
 		</dependency>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
-    </dependency>
-		<dependency>
 			<groupId>jrockit</groupId>
 			<artifactId>jrockit</artifactId>
 			<version>1.0</version>

@@ -22,7 +22,7 @@ ajdir=`echo "$ajdir" | sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|'`
 allfiles="$ajdir/allfiles.lst"
 onefile="$ajdir/onefile.lst"
 srcdirs="ajbrowser ajde asm bridge org.aspectj.ajdt.core runtime taskdefs util weaver"
-libs="lib/ant/lib/ant.jar lib/bcel/bcel.jar org.eclipse.jdt.core/jdtcore-for-aspectj.jar"
+libs="lib/ant/lib/ant.jar lib/bcel/bcel.jar libx/jdtcore-aj/jdtcore-for-aspectj.jar"
 
 classesDir="$ajdir/classes"
 ajc110=$aj110/bin/ajc
@@ -63,9 +63,9 @@ for compiler in "$jdk14"/bin/javac "$jdk13"/bin/javac "$ajc110" "$ajc111" "$jike
     cp="$aj110/lib/aspectjrt.jar$classpath"
   fi
   echo "##################################### $compiler $cp"
-  start=`date +%s`  
+  start=`date +%s`
   $compiler \
-    -d "$classesDir" -classpath "$cp" @"$argfile" 
+    -d "$classesDir" -classpath "$cp" @"$argfile"
   end=`date +%s`
   duration=`expr $end - $start`
   echo "$duration ($start - $end) # $compiler"

@@ -153,6 +153,28 @@
             <configuration>
               <artifactItems>
 
+                <artifactItem>
+                  <!-- Available from GitHub Packages (needs special repository declaration) -->
+                  <groupId>org.aspectj</groupId>
+                  <artifactId>org.eclipse.jdt.core</artifactId>
+                  <version>${jdt.core.version}</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>jdtcore-aj</outputDirectory>
+                  <destFileName>jdtcore-for-aspectj.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Available from GitHub Packages (needs special repository declaration) -->
+                  <groupId>org.aspectj</groupId>
+                  <artifactId>org.eclipse.jdt.core</artifactId>
+                  <version>${jdt.core.version}</version>
+                  <type>java-source</type>
+                  <classifier>sources</classifier>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>jdtcore-aj</outputDirectory>
+                  <destFileName>jdtcore-for-aspectj-src.zip</destFileName>
+                </artifactItem>
+
                 <!--
                   How relevant is JRockit in 2021?
                   https://en.wikipedia.org/wiki/JRockit
@@ -519,6 +541,7 @@
                 <include>commons/**</include>
                 <include>jarjar/**</include>
                 <include>jdiff/**</include>
+                <include>jdtcore-aj/**</include>
                 <include>junit/**</include>
                 <include>regexp/**</include>
                 <include>saxon/**</include>
@@ -531,5 +554,12 @@
 
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>org.eclipse.jdt.core</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

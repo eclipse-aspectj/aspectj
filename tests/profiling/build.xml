@@ -73,7 +73,7 @@
 			<include name="*/bin" unless="ajtools.jar"/>
 		</dirset>
 		<fileset dir="${aspectj.workspace.root}">
-			<include name="org.eclipse.jdt.core/jdtcore-for-aspectj.jar" unless="ajtools.jar"/>
+			<include name="libx/jdtcore-aj/jdtcore-for-aspectj.jar" unless="ajtools.jar"/>
 			<include name="lib/bcel/bcel.jar" unless="ajtools.jar"/>
 		</fileset>
 	</path>

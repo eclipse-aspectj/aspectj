@@ -27,21 +27,21 @@
 
   Setup:
 
-  Variables ASPECTJ_HOME and ASPECTJ_MODULES refer to the 
-  base of an AspectJ install and the modules directory 
+  Variables ASPECTJ_HOME and ASPECTJ_MODULES refer to the
+  base of an AspectJ install and the modules directory
   of the AspectJ source tree.  By default they are
-  
+
     ASPECTJ_MODULES:  $${basedir}/../..
     ASPECTJ_HOME: $${basedir}/../../aj-build/dist/tools
-  
+
   which assumes the tools dist is built and this
   runs from modules/tests/product/build-aspectj.
-  
+
   To disable verbose mode, set iajc.verbose to false.
-       
+
   You can also define the properties to run on any
   distribution from anywhere:
-       
+
     ant -DASPECTJ_HOME=dev/tools/aj -DASPECTJ_MODULES=ec
 
       </echo>
@@ -59,9 +59,9 @@
 
     <target name="init"  depends="init.variables,init.taskdefs"/>
 
-    <target name="init.variables" 
+    <target name="init.variables"
      description="init variables">
-     
+
 	  <property name="iajc.verbose" value="true"/>
 
       <!-- build.compiler value to pick up our CompilerAdapter for javac -->
@@ -70,23 +70,23 @@
 
       <!-- required directories - run from examples or predefine -->
       <property name="ASPECTJ_MODULES"
-            location="${basedir}/../../.."/> 
+            location="${basedir}/../../.."/>
 
       <property name="ASPECTJ_HOME"
-            location="${basedir}/../../../aj-build/dist/tools"/> 
+            location="${basedir}/../../../aj-build/dist/tools"/>
 
       <property name="aspectj.lib.dir"
-            location="${ASPECTJ_HOME}/lib"/> 
+            location="${ASPECTJ_HOME}/lib"/>
 
       <!-- required libraries - install or predefine -->
       <property name="aspectjrt.jar"
-            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+            location="${aspectj.lib.dir}/aspectjrt.jar"/>
       <property name="aspectjtools.jar"
-            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+            location="${aspectj.lib.dir}/aspectjtools.jar"/>
 
       <!-- created directories -->
       <property name="output.dir"
-            location="${basedir}/output"/> 
+            location="${basedir}/output"/>
       <mkdir dir="${output.dir}"/>
 
       <!-- checking required libraries -->
@@ -100,17 +100,17 @@
 
 	  <property name="output.aspectjtools"
 	  	location="${output.dir}/aspectjtools.jar"/>
-	  	
+
 	  <property name="output.aspectjrt"
 	  	location="${output.dir}/aspectjrt.jar"/>
 
       <available file="${aspectj.src}"
                property="aspectj.src.available"/>
-	  	
+
 	 	<path id="runtime.roots">
 	 		<pathelement path="${aspectj.src}/runtime/src"/>
 	 	</path>
-	 	
+
 	 	<path id="tools.roots">
 	 		<pathelement path="${aspectj.src}/ajbrowser/src"/>
 	 		<pathelement path="${aspectj.src}/ajde/src"/>
@@ -121,22 +121,22 @@
 	 		<pathelement path="${aspectj.src}/util/src"/>
 	 		<pathelement path="${aspectj.src}/weaver/src"/>
 	 	</path>
-	 	
+
 	 	<path id="tools.libs">
 	 		<pathelement path="${aspectj.src}/lib/ant/lib/ant.jar"/>
 	 		<pathelement path="${aspectj.src}/lib/bcel/bcel.jar"/>
-	 		<pathelement path="${aspectj.src}/org.eclipse.jdt.core/jdtcore-for-aspectj.jar"/>
+	 		<pathelement path="${aspectj.src}/libx/jdtcore-aj/jdtcore-for-aspectj.jar"/>
 	 	</path>
     </target>
 
-    <target name="init.taskdefs" depends="init.variables, 
+    <target name="init.taskdefs" depends="init.variables,
          aspectjtools.jar.available,
          aspectjrt.jar.available,
          aspectj.src.available"
          unless="taskdefs.init">
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
-          <classpath> 
-            <pathelement path="${aspectjtools.jar}"/> 
+          <classpath>
+            <pathelement path="${aspectjtools.jar}"/>
           </classpath>
       </taskdef>
 	  <property name="taskdefs.init" value="true"/>
@@ -144,32 +144,32 @@
 
     <!-- targets to fail unless required libraries available -->
 
-    <target name="aspectjrt.jar.available" depends="init.variables" 
+    <target name="aspectjrt.jar.available" depends="init.variables"
           unless="aspectjrt.jar.available" >
       <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
     </target>
 
-    <target name="aspectjtools.jar.available" depends="init.variables" 
+    <target name="aspectjtools.jar.available" depends="init.variables"
           unless="aspectjtools.jar.available" >
       <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
     </target>
 
-    <target name="aspectj.src.available" depends="init.variables" 
+    <target name="aspectj.src.available" depends="init.variables"
           unless="aspectj.src.available" >
       <fail message="expecting aspectj sources at ${aspectj.src}"/>
     </target>
-	
+
     <target name="all">
 		<antcall target="clean" />
 		<antcall target="runtime"/>
 		<antcall target="tools"/>
     </target>
-    
+
     <target name="runtime">
 		<antcall target="build-runtime"/>
 		<antcall target="test-runtime"/>
     </target>
-    
+
     <target name="tools">
 		<antcall target="build-tools"/>
 		<antcall target="test-tools"/>
@@ -181,11 +181,11 @@
           verbose="${iajc.verbose}"
           sourcerootsref="runtime.roots"/>
     </target>
-    
+
     <target name="test-runtime" depends="init">
 		<echo message="test-runtime not implemented"/>
     </target>
-    
+
     <target name="build-tools" depends="init">
        <iajc outjar="${output.aspectjtools}"
        		verbose="${iajc.verbose}"
@@ -194,7 +194,7 @@
 			<classpath>
 				<pathelement path="${aspectjrt.jar}"/> <!-- bootstrap problem... -->
 				<path refid="tools.libs"/>
-			</classpath>       
+			</classpath>
        </iajc>
     </target>
 
@@ -203,7 +203,7 @@
        	failonerror="true">
          <classpath>
           	<path refid="tools.libs"/>
-            <pathelement path="${output.aspectjtools}"/> 
+            <pathelement path="${output.aspectjtools}"/>
          </classpath>
          <arg value="-help"/>
          <arg value="-noExit"/>
@@ -217,9 +217,9 @@
        		<path refid="tools.roots"/>
        	</src>
 		<classpath>
-			<pathelement path="${aspectjrt.jar}"/> 
+			<pathelement path="${aspectjrt.jar}"/>
 			<path refid="tools.libs"/>
-		</classpath>       
+		</classpath>
        </javac>
     </target>
 </project>

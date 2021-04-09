@@ -54,22 +54,10 @@
       <artifactId>testing-client</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>loadtime</artifactId>
