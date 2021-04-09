@@ -1,0 +1,25 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+<!--
+  GitHub Actions currently requires authentication even for read-only access to Maven artifacts stored in GitHub
+  Packages. There is no such thing as public package repositories without authentication. See here:
+  https://github.community/t/how-to-allow-unauthorised-read-access-to-github-packages-maven-repository/115517/4
+
+  How to use it:
+  https://github.com/jcansdale-test/maven-consume
+
+  How to XML-encode an access token online (no problem to use the website, it is meant for public access anyway):
+  https://coderstoolbox.net/string/#!encoding=xml&action=encode&charset=none
+-->
+
+  <servers>
+    <server>
+      <id>github</id>
+      <username>kriegaex</username>
+      <!-- Public access token with 'read:packages' scope -->
+      <password>&#103;&#104;&#112;&#95;&#68;&#74;&#97;&#71;&#119;&#108;&#80;&#75;&#55;&#116;&#68;&#55;&#102;&#73;&#51;&#107;&#103;&#111;&#109;&#71;&#100;&#78;&#115;&#86;&#105;&#88;&#67;&#100;&#50;&#98;&#50;&#55;&#74;&#104;&#66;&#77;</password>
+    </server>
+  </servers>
+
+</settings>
