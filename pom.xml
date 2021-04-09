@@ -72,6 +72,7 @@
 
 		<!-- FYI: These are NOT meant to be sub-modules but a stand-alone projects built and deployed independently. -->
 		<!--
+		<module>asm-renamed</module>
 		<module>libx</module>
 		-->
 
@@ -233,6 +234,7 @@
 									<files>
 										<file>${lib.directory}/ant/bin/ant</file>
 										<file>${lib.directory}/ant/lib/junit.jar</file>
+										<file>${lib.directory}/asm/asm-${asm.version}.renamed.jar</file>
 										<file>${lib.directory}/commons/commons.jar</file>
 										<file>${lib.directory}/jarjar/jarjar-1.3.jar</file>
 										<file>${lib.directory}/jdtcore-aj/jdtcore-for-aspectj.jar</file>
@@ -271,6 +273,11 @@
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
 				<version>${lib.commons.beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>asm-renamed</artifactId>
+				<version>${asm.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

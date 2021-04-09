@@ -50,11 +50,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/asm/asm-9.1.renamed.jar</systemPath>
+			<groupId>org.aspectj</groupId>
+			<artifactId>asm-renamed</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
