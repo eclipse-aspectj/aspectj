@@ -177,7 +177,7 @@
               <goal>flatten</goal>
             </goals>
             <configuration>
-              <flattenMode>oss</flattenMode>
+              <flattenMode>defaults</flattenMode>
               <pomElements>
                 <dependencies>remove</dependencies>
               </pomElements>
