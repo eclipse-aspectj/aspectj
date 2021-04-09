@@ -307,6 +307,11 @@
 				<version>${lib.commons.beanutils.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>asm-renamed</artifactId>
 				<version>${asm.version}</version>
