@@ -3,6 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- The AspectJ root POM is the parent, but this module is not a submodule -->
   <parent>
     <groupId>org.aspectj</groupId>
     <artifactId>aspectj-parent</artifactId>
@@ -11,6 +12,26 @@
 
   <artifactId>libx</artifactId>
 
+  <name>AspectJ Test Libraries</name>
+  <description>
+    This module downloads + installs libraries used by many tests, especially those running as Ant jobs. You should not
+    build this module during every build because it is somewhat slow, downloading stuff from 3rd-party websites,
+    unzipping some libraries (e.g. a full Ant distribution) and creating new ZIP files (e.g. source JARs, compound JARs
+    containing multiple libraries).
+
+    So just run 'mvn compile' once after cloning the AspectJ repository and you should be all set to subsequently build
+    AspectJ itself. If you forget this step, a Maven Enforcer rule in the AspectJ root POM will fail the build and
+    remind you to build this module.
+
+    Normally you never have to call 'mvn clean' here, but if for some reason the installed libraries are in an
+    inconsistent state (e.g. after an incomplete download), you can do so and then run 'mvn compile' again.
+
+    BTW, running 'mvn compile' multiple times will not repeat any download via Maven Dependency or Download Maven
+    plugins, but repeat all zip/unzip steps in TrueZIP Maven plugin. So try not to call it unnecessarily.
+  </description>
+
+  <!-- TODO: Add libx (for now, then finally lib) to .gitignore -->
+
   <properties>
     <lib.ant.name>apache-ant</lib.ant.name>
     <lib.ant.artifact>${lib.ant.name}-${lib.ant.version}</lib.ant.artifact>
@@ -18,6 +39,21 @@
 
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <!--
+              Deactivate this execution from the parent, because here it would be counter-productive, given the fact
+              that this module must be built before the enforcer rule can even pass elsewhere.
+            -->
+            <id>enforce-libraries-exist</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>com.googlecode.maven-download-plugin</groupId>
@@ -68,9 +104,9 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://github.com/apache/commons-collections/archive/refs/tags/collections-2.0.zip</url>
+              <url>https://github.com/apache/commons-collections/archive/refs/tags/${lib.commons.collections.tag}.zip</url>
               <outputDirectory>commons</outputDirectory>
-              <outputFileName>commons-collections-2.0-sources.jar</outputFileName>
+              <outputFileName>commons-collections-${lib.commons.collections.version}-sources.jar</outputFileName>
               <sha1>824cacd0aafe21a94fb142388fd62f28a12df5ef</sha1>
             </configuration>
           </execution>
@@ -284,281 +320,216 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>truezip-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>unzip-ant-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
+                <outputDirectory>ant</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-ant-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
+                <outputDirectory>ant/ant-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-beanutils-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-beanutils-${lib.commons.beanutils.version}.jar</directory>
+                <outputDirectory>commons/commons.jar</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-collections-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-collections-${lib.commons.collections.version}.jar</directory>
+                <outputDirectory>commons/commons.jar</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-digester-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-digester-${lib.commons.digester.version}.jar</directory>
+                <outputDirectory>commons/commons.jar</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-logging-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-logging-${lib.commons.logging.version}.jar</directory>
+                <outputDirectory>commons/commons.jar</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-beanutils-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-beanutils-${lib.commons.beanutils.version}-sources.jar/commons-beanutils-${lib.commons.beanutils.tag}/src/java</directory>
+                <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-collections-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-collections-${lib.commons.collections.version}-sources.jar/commons-collections-${lib.commons.collections.tag}/src/java</directory>
+                <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-digester-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-digester-${lib.commons.digester.version}-sources.jar/commons-digester-${lib.commons.digester.tag}/src/java</directory>
+                <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-logging-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
+                <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>.</directory>
+              <includes>
+                <include>ant/**</include>
+                <include>commons/**</include>
+                <include>jarjar/**</include>
+                <include>jdiff/**</include>
+                <include>junit/**</include>
+                <include>regexp/**</include>
+                <include>saxon/**</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
-
-  <profiles>
-
-    <profile>
-      <id>unzip-ant-binaries</id>
-      <activation>
-        <file>
-          <!-- Only unzip if this file is missing in order to avoid doing it for each build -->
-          <missing>ant/bin/ant.bat</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>truezip-maven-plugin</artifactId>
-            <version>1.2</version>
-            <executions>
-              <execution>
-                <id>unzip-ant-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
-                    <outputDirectory>ant</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>zip-ant-sources</id>
-      <activation>
-        <file>
-          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
-          <missing>ant/ant-src.zip</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>truezip-maven-plugin</artifactId>
-            <version>1.2</version>
-            <executions>
-              <execution>
-                <id>zip-ant-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
-                    <outputDirectory>ant/ant-src.zip</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>zip-commons-binaries</id>
-      <activation>
-        <file>
-          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
-          <missing>commons/commons.jar</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>truezip-maven-plugin</artifactId>
-            <version>1.2</version>
-            <executions>
-              <execution>
-                <id>zip-beanutils-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-beanutils-${lib.commons.beanutils.version}.jar</directory>
-                    <outputDirectory>commons/commons.jar</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-collections-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-collections-2.0.jar</directory>
-                    <outputDirectory>commons/commons.jar</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-digester-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-digester-${lib.commons.digester.version}.jar</directory>
-                    <outputDirectory>commons/commons.jar</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-logging-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-logging-${lib.commons.logging.version}.jar</directory>
-                    <outputDirectory>commons/commons.jar</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>zip-commons-sources</id>
-      <activation>
-        <file>
-          <!-- Only create archive if this file is missing in order to avoid doing it for each build -->
-          <missing>commons/commons-src.zip</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>truezip-maven-plugin</artifactId>
-            <version>1.2</version>
-            <executions>
-              <execution>
-                <id>zip-beanutils-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-beanutils-${lib.commons.beanutils.version}-sources.jar/commons-beanutils-${lib.commons.beanutils.tag}/src/java</directory>
-                    <outputDirectory>commons/commons-src.zip</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-collections-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-collections-2.0-sources.jar/commons-collections-collections-2.0/src/java</directory>
-                    <outputDirectory>commons/commons-src.zip</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-digester-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-digester-${lib.commons.digester.version}-sources.jar/commons-digester-${lib.commons.digester.tag}/src/java</directory>
-                    <outputDirectory>commons/commons-src.zip</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-logging-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <!--
-                      This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                      were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                    -->
-                    <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
-                    <outputDirectory>commons/commons-src.zip</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!--
-      TODO:
-        - Add profile 'clean-libs' to make Maven Clean delete downloads & unpacks (should be off by default in order
-          not to waste time for re-downloading things like Ant after a simple 'mvn clean').
-        - Add libx (for now, then finally lib) to .gitignore
-    -->
-  </profiles>
 
 </project>
