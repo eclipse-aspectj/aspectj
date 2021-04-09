@@ -13,6 +13,7 @@
 	<properties>
 		<revision>1.9.7.BUILD-SNAPSHOT</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jdt.core.version>3.25.0-SNAPSHOT</jdt.core.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
@@ -57,7 +58,6 @@
 		<module>bcel-builder</module>
 		<module>weaver</module>
 		<module>loadtime</module>
-		<module>org.eclipse.jdt.core</module>
 		<module>org.aspectj.ajdt.core</module>
 		<module>ajde.core</module>
 		<module>ajde</module>
@@ -143,6 +143,69 @@
 					<artifactId>maven-help-plugin</artifactId>
 					<version>3.2.0</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.0</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>package</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>test-jar</id>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<!-- TODO: upgrade after https://issues.apache.org/jira/browse/MSHADE-366 is fixed -->
+					<version>3.2.4</version>
+					<configuration>
+						<createSourcesJar>true</createSourcesJar>
+						<createDependencyReducedPom>false</createDependencyReducedPom>
+						<shadedArtifactAttached>false</shadedArtifactAttached>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.0.0-M3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -150,25 +213,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>test-jar</id>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
 				<configuration>
 					<filesets>
 						<fileset>
@@ -176,26 +224,28 @@
 							<includes>
 								<include>**/ajcore.*.txt</include>
 							</includes>
-<!--
-							<excludes>
-								<exclude>**/important.log</exclude>
-								<exclude>**/another-important.log</exclude>
-							</excludes>
--->
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 						<fileset>
 							<directory>aj-build</directory>
-<!--
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>.</directory>
 							<includes>
-								<include>**/*.tmp</include>
-								<include>**/*.log</include>
+								<include>**/ajcore.*.txt</include>
 							</includes>
-							<excludes>
-								<exclude>**/important.log</exclude>
-								<exclude>**/another-important.log</exclude>
-							</excludes>
--->
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>aj-build</directory>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>

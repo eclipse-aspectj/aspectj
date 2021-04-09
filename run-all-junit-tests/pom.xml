@@ -239,7 +239,7 @@
 			<artifactId>ant</artifactId>
 			<version>${lib.ant.version}</version>
 		</dependency>
-    <dependency>
+		<dependency>
 			<groupId>jrockit</groupId>
 			<artifactId>jrockit</artifactId>
 			<version>1.0</version>

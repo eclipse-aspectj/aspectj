@@ -121,6 +121,13 @@
 			<systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
 		</dependency>
 -->
+<!--
+		<dependency>
+			<groupId>commons-digester</groupId>
+			<artifactId>commons-digester</artifactId>
+			<version>${lib.commons.digester.version}</version>
+		</dependency>
+-->
 	</dependencies>
 
 
