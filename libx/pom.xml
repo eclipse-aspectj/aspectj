@@ -553,26 +553,36 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>.</directory>
-              <includes>
-                <include>ant/**</include>
-                <include>asm/**</include>
-                <include>commons/**</include>
-                <include>jarjar/**</include>
-                <include>jdiff/**</include>
-                <include>jdtcore-aj/**</include>
-                <include>junit/**</include>
-                <include>regexp/**</include>
-                <include>saxon/**</include>
-              </includes>
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-          </filesets>
-        </configuration>
+        <executions>
+          <execution>
+            <id>clean-up-libs</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>.</directory>
+                  <includes>
+                    <include>ant/**</include>
+                    <include>asm/**</include>
+                    <include>commons/**</include>
+                    <include>jarjar/**</include>
+                    <include>jdiff/**</include>
+                    <include>jdtcore-aj/**</include>
+                    <include>junit/**</include>
+                    <include>regexp/**</include>
+                    <include>saxon/**</include>
+                  </includes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
