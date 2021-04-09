@@ -32,9 +32,9 @@ jobs:
           ant -version
 
       - name: Download + install test libraries
-        run: ./mvnw -B --file libx/pom.xml compile
+        run: ./mvnw -B -U --file libx/pom.xml compile
 
-      - name: Compile code
+      - name: Compile + package code
         run: ./mvnw -B -DskipTests package --file pom.xml
 
       - name: Run Tests
