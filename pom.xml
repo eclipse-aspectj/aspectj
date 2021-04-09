@@ -222,7 +222,10 @@
 						<fileset>
 							<directory>.</directory>
 							<includes>
+								<!-- AspectJ core dumps -->
 								<include>**/ajcore.*.txt</include>
+								<!-- Test temp-dirs in 'weaver' module, see AsynchronousFileCacheBackingTestSupport.getCacheDir -->
+								<include>**/dir-0.*/**</include>
 							</includes>
 							<followSymlinks>false</followSymlinks>
 						</fileset>

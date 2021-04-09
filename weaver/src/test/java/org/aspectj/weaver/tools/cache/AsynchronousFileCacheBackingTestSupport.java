@@ -59,14 +59,17 @@ public abstract class AsynchronousFileCacheBackingTestSupport
     protected void cleanupCache() {
     	if (indexFile != null) {
     		if (FileUtil.deleteContents(indexFile) > 0) {
-    			System.out.println("Deleted " + indexFile);
+    			System.out.println("Deleted index file: " + indexFile);
     		}
     		indexFile = null;
     	}
 
     	if (cacheDir != null) {
     		if (FileUtil.deleteContents(cacheDir) > 0) {
-    			System.out.println("Deleted " + cacheDir);
+    			System.out.println("Deleted cache directory content: " + cacheDir);
+    		}
+        if (cacheDir.delete()) {
+    			System.out.println("Deleted cache directory: " + cacheDir);
     		}
     		cacheDir = null;
     	}
