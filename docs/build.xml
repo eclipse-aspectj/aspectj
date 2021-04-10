@@ -382,10 +382,10 @@
         </antcall>
         <!-- pdf TODO pdf rendering completes, result is awful
 		<antcall target="xml-pdf">
-			<param name="xml-source-dir" 
+			<param name="xml-source-dir"
                   value="${docs.src.dir}/${guide.dir}"/>
 			<param name="xml-source-root" value="${guide.name}.xml"/>
-			<param name="pdf-target-file" 
+			<param name="pdf-target-file"
                   value="${docs.dist.dir}/doc/${guide.name}.pdf"/>
 		</antcall>
 		-->
@@ -466,12 +466,12 @@
                 <fileset dir="${aspectj.modules.lib.dir}/docbook/fop">
                     <include name="fop.jar" />
                     <include name="batik.jar" />
-                    <include name="avalon.jar" />
+                    <include name="avalon.jar" /> <!-- lib/docbook/fop/avalon-framework-cvs-20020806.jar: wrong path, but build works anyway -->
                 </fileset>
                 <fileset dir="${aspectj.modules.lib.dir}/ant">
-                    <include name="xalan.jar" />
-                    <include name="xercesImpl.jar" />
-                    <include name="xml-apis.jar" />
+                    <include name="xalan.jar" /> <!-- lib/docbook/fop/xalan.jar: wrong path, but build works anyway -->
+                    <include name="xercesImpl.jar" /> <!-- lib/ant/lib/xercesImpl.jar: wrong path, but build works anyway -->
+                    <include name="xml-apis.jar" /> <!-- lib/ant/lib/xml-apis.jar: wrong path, but build works anyway -->
                 </fileset>
             </classpath>
         </taskdef>
@@ -488,10 +488,10 @@
 
     <target name="xml-html"
             description="antcall(xml-source-dir, xml-source-root, xml-target-dir, xml-target-file)
-     convert xml to html using docbook. parameters: 
-     xml-source-dir  # base directory of source 
+     convert xml to html using docbook. parameters:
+     xml-source-dir  # base directory of source
      xml-source-root # base file of source (relative to xml-source-dir)
-     xsl-source-file # xsl transform to apply (use chunk.xsl.source by default) 
+     xsl-source-file # xsl transform to apply (use chunk.xsl.source by default)
      xml-target-dir  # target directory for output (used as xsl param base.dir)
      xml-target-file # full path to output file in xml-source-dir, ignored when chunking
      xml-html-copy   # copy files to target (defaults to *.gif,*.png)
