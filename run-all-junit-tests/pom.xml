@@ -247,13 +247,6 @@
 			<systemPath>${project.basedir}/../lib/ext/jrockit/jrockit.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>jdiff</groupId>
-			<artifactId>jdiff</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/jdiff/jdiff.jar</systemPath>
-		</dependency>
-		<dependency>
 			<!-- Identical to lib/ant/lib/ant-launcher.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant-launcher</artifactId>
