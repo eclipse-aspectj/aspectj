@@ -463,15 +463,9 @@
                  classname="org.apache.fop.tools.anttasks.Fop"
         >
             <classpath>
-                <fileset dir="${aspectj.modules.lib.dir}/docbook/fop">
+                <fileset dir="${aspectj.modules.lib.dir}/docbook">
                     <include name="fop.jar" />
                     <include name="batik.jar" />
-                    <include name="avalon.jar" /> <!-- lib/docbook/fop/avalon-framework-cvs-20020806.jar: wrong path, but build works anyway -->
-                </fileset>
-                <fileset dir="${aspectj.modules.lib.dir}/ant">
-                    <include name="xalan.jar" /> <!-- lib/docbook/fop/xalan.jar: wrong path, but build works anyway -->
-                    <include name="xercesImpl.jar" /> <!-- lib/ant/lib/xercesImpl.jar: wrong path, but build works anyway -->
-                    <include name="xml-apis.jar" /> <!-- lib/ant/lib/xml-apis.jar: wrong path, but build works anyway -->
                 </fileset>
             </classpath>
         </taskdef>

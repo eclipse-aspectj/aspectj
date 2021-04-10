@@ -363,6 +363,28 @@
                   <destFileName>commons-logging-${lib.commons.logging.version}.jar</destFileName>
                 </artifactItem>
 
+                <!-- Libraries used to create HTML docs from XML DocBook files -->
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <groupId>fop</groupId>
+                  <artifactId>fop</artifactId>
+                  <version>0.20.5</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>docbook</outputDirectory>
+                  <destFileName>fop.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <!-- Binary is identical to committed version -->
+                  <groupId>batik</groupId>
+                  <artifactId>batik-1.5-fop</artifactId>
+                  <version>0.20-5</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>docbook</outputDirectory>
+                  <destFileName>batik.jar</destFileName>
+                </artifactItem>
+
               </artifactItems>
             </configuration>
           </execution>

@@ -273,6 +273,8 @@
 										<file>${lib.directory}/commons/commons.jar</file>
 										<file>${lib.directory}/docbook/docbook-dtd/docbookx.dtd</file>
 										<file>${lib.directory}/docbook/docbook-xsl/html/chunk.xsl</file>
+										<file>${lib.directory}/docbook/fop.jar</file>
+										<file>${lib.directory}/docbook/batik.jar</file>
 										<file>${lib.directory}/jarjar/jarjar-1.3.jar</file>
 										<file>${lib.directory}/jdtcore-aj/jdtcore-for-aspectj.jar</file>
 										<file>${lib.directory}/junit/junit.jar</file>
