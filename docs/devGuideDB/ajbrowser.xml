@@ -109,11 +109,13 @@ java -jar aspectj1.1/lib/aspectjtools.jar aspectj1.1/doc/examples/spacewar/debug
         (see label 1 in the graphic below).
         (If you get classpath or other errors, set up the
         global build options as described above.)
-		<inlinemediaobject>
-      <imageobject>
-        <imagedata fileref="ajbrowser-building.gif"/>
-      </imageobject>
-		</inlinemediaobject>
+    </para>
+    <para>
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="ajbrowser-building.gif"/>
+        </imageobject>
+      </inlinemediaobject>
     </para>
   </sect2>
   </sect1>
@@ -128,11 +130,13 @@ java -jar aspectj1.1/lib/aspectjtools.jar aspectj1.1/doc/examples/spacewar/debug
         displayed in italics.  Links to other structure nodes appear in blue
         below the association.  If there is no corresponding source for the
         link it will appear light-blue.
-		<inlinemediaobject>
-      <imageobject>
-        <imagedata fileref="ajbrowser-building.gif"/>
-      </imageobject>
-		</inlinemediaobject>
+    </para>
+    <para>
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="ajbrowser-building.gif"/>
+        </imageobject>
+      </inlinemediaobject>
     </para>
 
   	<sect2 id="example" xreflabel="example">
@@ -182,15 +186,15 @@ java -jar aspectj1.1/lib/aspectjtools.jar aspectj1.1/doc/examples/spacewar/debug
            <literal>lib/aspectjrt.jar</literal> that came with the browser.
               </para>
 
-              <para>
-          <inlinemediaobject>
-		  <imageobject>
-            <imagedata fileref="ajbrowser-options.gif"/>
-          </imageobject>
-		  </inlinemediaobject>>
-              </para>
+            <para>
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="ajbrowser-options.gif"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
 
-            </listitem>
+          </listitem>
 
           <listitem> <para>Different structure views: The structure tree at the
           left can display different orderings and granularity for structure:
