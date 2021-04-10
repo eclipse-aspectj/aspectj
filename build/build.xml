@@ -566,7 +566,7 @@ To use testing client jar in tests,
 		</jar>
 
         <!-- missing from this are the jdtDepends.jar src files -->
-		<unzip dest="${aj.src.dir}/jdtsrc" src="${aspectj.modules.dir}/libx/jdtcore-aj/jdtcore-for-aspectj-src.zip"/>
+		<unzip dest="${aj.src.dir}/jdtsrc" src="${aspectj.modules.dir}/lib/jdtcore-aj/jdtcore-for-aspectj-src.zip"/>
         <!-- ajde/ajde.core/ajdoc/asm/bridge/loadtime/org.aspectj.ajdt.core/taskdefs/util/weaver5 -->
 		<jar destfile="${aj.src.dir}/aspectjtools${build.version}-src.jar">
 			<fileset dir="${aj.src.dir}/jdtsrc">

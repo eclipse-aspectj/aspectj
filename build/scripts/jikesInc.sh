@@ -14,7 +14,7 @@ ajdir=`cd "$ajdir"; pwd`
 ajdir=`echo "$ajdir" | sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|'`
 allfiles="$ajdir/allfiles.lst"
 srcdirs="ajbrowser ajde asm bridge org.aspectj.ajdt.core runtime taskdefs util weaver"
-libs="lib/ant/lib/ant.jar lib/bcel/bcel.jar libx/jdtcore-aj/jdtcore-for-aspectj.jar"
+libs="lib/ant/lib/ant.jar lib/bcel/bcel.jar lib/jdtcore-aj/jdtcore-for-aspectj.jar"
 
 classesDir="$ajdir/classes"
 

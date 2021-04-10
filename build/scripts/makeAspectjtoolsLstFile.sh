@@ -96,7 +96,7 @@ getInjars() {
 	cp=""
 	sep=""
 	for i in "$1" ../lib/bcel/bcel.jar \
-	         ../libx/jdtcore-aj/jdtcore-for-aspectj.jar \
+	         ../lib/jdtcore-aj/jdtcore-for-aspectj.jar \
 	         ; do
 		cp="${cp}${sep}`canonicalPath "$i"`"
 		[ -z "${sep}" ] && sep=";"

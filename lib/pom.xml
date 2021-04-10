@@ -10,7 +10,7 @@
     <version>1.9.7.BUILD-SNAPSHOT</version>
   </parent>
 
-  <artifactId>libx</artifactId>
+  <artifactId>lib</artifactId>
 
   <name>AspectJ Test Libraries</name>
   <description>
@@ -30,7 +30,7 @@
     plugins, but repeat all zip/unzip steps in TrueZIP Maven plugin. So try not to call it unnecessarily.
   </description>
 
-  <!-- TODO: Add libx (for now, then finally lib) to .gitignore -->
+  <!-- TODO: Add lib (for now, then finally lib) to .gitignore -->
 
   <properties>
     <lib.ant.name>apache-ant</lib.ant.name>
@@ -531,7 +531,7 @@
           <!--
             Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a normal
             dependency. Keep this for reference, so we can remember how we built it. After download + zip the deployment
-            was made right from the libx/jdiff directory, using the following commands (without the line breaks):
+            was made right from the lib/jdiff directory, using the following commands (without the line breaks):
 
             mvn -Dfile=jdiff.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
               -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3

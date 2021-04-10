@@ -125,7 +125,7 @@
 	 	<path id="tools.libs">
 	 		<pathelement path="${aspectj.src}/lib/ant/lib/ant.jar"/>
 	 		<pathelement path="${aspectj.src}/lib/bcel/bcel.jar"/>
-	 		<pathelement path="${aspectj.src}/libx/jdtcore-aj/jdtcore-for-aspectj.jar"/>
+	 		<pathelement path="${aspectj.src}/lib/jdtcore-aj/jdtcore-for-aspectj.jar"/>
 	 	</path>
     </target>
 

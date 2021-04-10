@@ -66,7 +66,7 @@
 							<target>
 								<echo message="unzip patched jdtcore" />
 								<unzip
-									src="${project.basedir}/../libx/jdtcore-aj/jdtcore-for-aspectj.jar"
+									src="${project.basedir}/../lib/jdtcore-aj/jdtcore-for-aspectj.jar"
 									dest="target/jdtcore-unzipped" />
 							</target>
 						</configuration>
@@ -82,7 +82,7 @@
 							<target>
 								<echo message="unzip patched jdtcore sources" />
 								<unzip
-									src="${project.basedir}/../libx/jdtcore-aj/jdtcore-for-aspectj-src.zip"
+									src="${project.basedir}/../lib/jdtcore-aj/jdtcore-for-aspectj-src.zip"
 									dest="target/jdtcore-unzipped-src" />
 							</target>
 						</configuration>

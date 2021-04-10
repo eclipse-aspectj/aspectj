@@ -27,7 +27,7 @@
 		<lib.commons.logging.version>1.0.1</lib.commons.logging.version>
 		<lib.commons.logging.tag>LOGGING_1_0_1</lib.commons.logging.tag>
 		<asm.version>9.1</asm.version>
-		<lib.directory>${maven.multiModuleProjectDirectory}/libx</lib.directory>
+		<lib.directory>${maven.multiModuleProjectDirectory}/lib</lib.directory>
 	</properties>
 
 	<repositories>
@@ -73,7 +73,7 @@
 		<!-- FYI: These are NOT meant to be sub-modules but a stand-alone projects built and deployed independently. -->
 		<!--
 		<module>asm-renamed</module>
-		<module>libx</module>
+		<module>lib</module>
 		-->
 
 		<!-- create the important artifacts we care about -->
@@ -264,7 +264,7 @@
 										Maven Enforcer does not strip any whitespace or unindent, which looks quite ugly on the console.
 									-->
 									<message>
-										Please go to module subdirectory 'libx' and run 'mvn compile' there. This should take care of downloading all necessary libraries to that directory, where some tests expect them to be.
+										Please go to module subdirectory 'lib' and run 'mvn compile' there. This should take care of downloading all necessary libraries to that directory, where some tests expect them to be.
 									</message>
 									<files>
 										<file>${lib.directory}/ant/bin/ant</file>
