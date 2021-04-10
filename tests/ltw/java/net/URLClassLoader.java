@@ -17,9 +17,9 @@ import java.util.zip.ZipEntry;
 import org.aspectj.weaver.loadtime.Aj;
 
 public class URLClassLoader extends SecureClassLoader {
-	
+
 	public final static boolean debug = false;
-	
+
 	private List path = new LinkedList();
 	private Aj agent;
 
@@ -34,7 +34,7 @@ public class URLClassLoader extends SecureClassLoader {
 	public URLClassLoader(URL[] urls) throws IOException {
 		this(urls,null,null);
 	}
-	
+
 	public URLClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) throws IOException {
 		super(parent);
 		if (debug) System.err.println("> URLClassLoader.URLClassLoader() parent=" + parent);
@@ -52,43 +52,10 @@ public class URLClassLoader extends SecureClassLoader {
 		}
 
 		agent = new Aj();
-		
+
 		if (debug) System.err.println("< URLClassLoader.URLClassLoader() path=" + path);
 	}
-	
-//	public final static boolean debug = false;
-//	
-//	private List path = new LinkedList();
-////	private com.bea.jvm.ClassPreProcessor agent;
-//	private Object agent;
-//	private Method preProcess;
-	
-//	public JRockitClassLoader (URLClassLoader clone) throws Exception {
-//		/* Use extensions loader */
-//		super(clone.getParent());
-//
-//		URL[] urls = clone.getURLs();
-//		for (int i = 0; i < urls.length; i++) {
-//			Object pathElement;
-//			URL url = urls[i];
-//			if (debug) System.err.println("JRockitClassLoader.JRockitClassLoader() url=" + url.getPath());
-//			File file = new File(encode(url.getFile()));
-//			if (debug) System.err.println("JRockitClassLoader.JRockitClassLoader() file" + file);
-//			if (file.isDirectory()) pathElement = file;
-//			else if (file.exists() && file.getName().endsWith(".jar")) pathElement = new JarFile(file);
-//			else throw new RuntimeException(file.getAbsolutePath().toString());
-//			path.add(pathElement);
-//		}
-//		
-//		Class agentClazz = Class.forName("org.aspectj.weaver.loadtime.JRockitAgent",false,this);
-//		Object obj = agentClazz.newInstance();
-//		if (debug) System.err.println("JRockitClassLoader.JRockitClassLoader() obj=" + obj);
-//		this.agent = obj;
-//		byte[] bytes = new byte[] {};
-//		Class[] parameterTypes = new Class[] { java.lang.ClassLoader.class, java.lang.String.class, bytes.getClass() }; 
-//		preProcess = agentClazz.getMethod("preProcess",parameterTypes);
-//	}
-	
+
 	/* Get rid of escaped characters */
 	private String encode (String s) {
 		StringBuffer result = new StringBuffer();
@@ -104,7 +71,7 @@ public class URLClassLoader extends SecureClassLoader {
 		result.append(s);
 		return result.toString();
 	}
-	
+
 	protected Class findClass(String name) throws ClassNotFoundException {
 		if (debug) System.err.println("> URLClassLoader.findClass() name=" + name);
 		Class clazz = null;
@@ -129,7 +96,7 @@ public class URLClassLoader extends SecureClassLoader {
 						ZipEntry entry = jar.getEntry(className);
 						if (entry != null) classBytes = loadBytesFromZipEntry(jar,entry);
 					}
-					
+
 					if (classBytes != null) {
 						clazz = defineClass(name,classBytes);
 					}
@@ -139,7 +106,7 @@ public class URLClassLoader extends SecureClassLoader {
 				}
 			}
 		}
-		
+
 		if (debug) System.err.println("< URLClassLoader.findClass() clazz=" + clazz);
 		if (clazz == null) throw new ClassNotFoundException(name);
 		return clazz;
@@ -160,12 +127,12 @@ public class URLClassLoader extends SecureClassLoader {
 		if (debug) System.err.println("< URLClassLoader.findResource() url=" + url);
 		return url;
 	}
-	
-	
+
+
 	protected Enumeration findResources (String name) throws IOException {
 		if (debug) System.err.println("> URLClassLoader.findResources() name=" + name);
 		Vector urls = new Vector();
-		
+
 		for (Iterator i = path.iterator(); i.hasNext();) {
 			Object pathElement = i.next();
 			if (pathElement instanceof File) {
@@ -182,34 +149,34 @@ public class URLClassLoader extends SecureClassLoader {
 
 					final byte[] bytes = loadBytesFromZipEntry(jar,entry);
 					URLStreamHandler streamHandler = new URLStreamHandler() {
-					
+
 						protected URLConnection openConnection(URL u) throws IOException {
 							URLConnection connection = new URLConnection(u) {
-								
+
 								public void connect() throws IOException {
 								}
 
 								public InputStream getInputStream() throws IOException {
 									return new ByteArrayInputStream(bytes);
 								}
-								
+
 							};
 							return connection;
 					    }
-					
+
 					};
 					URL url = new URL("file",null,0,jar.getName(),streamHandler);
 					urls.add(url);
 				}
 			}
 		}
-		
+
 		Enumeration enu = urls.elements();
-		
+
 		if (debug) System.err.println("< URLClassLoader.findResources() enu=" + enu);
 		return enu;
 	}
-	
+
 	private Class defineClass (String name, byte[] bytes) {
 		if (debug) System.err.println("> URLClassLoader.defineClass() name=" + name);
 //		try {
@@ -226,7 +193,7 @@ public class URLClassLoader extends SecureClassLoader {
 		if (debug) System.err.println("< URLClassLoader.defineClass() name=" + name);
 		return super.defineClass(name,bytes,0,bytes.length);
 	}
-	
+
 	private byte[] loadClassFromFile (String name, File file) throws IOException {
 		if (debug) System.err.println("> URLClassLoader.loadClassFromFile() file=" + file);
 
@@ -240,11 +207,11 @@ public class URLClassLoader extends SecureClassLoader {
 		finally {
 			if (fis != null) fis.close();
 		}
-		
+
 		if (debug) System.err.println("< URLClassLoader.loadClassFromFile() bytes=b[" + bytes.length + "]");
 		return bytes;
 	}
-	
+
 	private byte[] loadBytesFromZipEntry (JarFile jar, ZipEntry entry) throws IOException {
 		if (debug) System.err.println("> URLClassLoader.loadBytesFromZipEntry() entry=" + entry);
 
@@ -258,11 +225,11 @@ public class URLClassLoader extends SecureClassLoader {
 		finally {
 			if (is != null) is.close();
 		}
-		
+
 		if (debug) System.err.println("< URLClassLoader.loadBytesFromZipEntry() bytes=b[" + bytes.length + "]");
 		return bytes;
 	}
-	
+
 	private byte[] readBytes (InputStream is, byte[] bytes) throws IOException {
 		for (int offset = 0; offset < bytes.length;) {
 			int read = is.read(bytes,offset,bytes.length - offset);

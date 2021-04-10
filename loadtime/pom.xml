@@ -66,14 +66,6 @@
 			<artifactId>xercesImpl</artifactId>
 			<version>${lib.ant.xerces.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>jrockit</groupId>
-			<artifactId>jrockit</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/jrockit/jrockit.jar</systemPath>
-		</dependency>
-
     <dependency>
 			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>

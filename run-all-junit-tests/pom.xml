@@ -240,13 +240,6 @@
 			<version>${lib.ant.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>jrockit</groupId>
-			<artifactId>jrockit</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/jrockit/jrockit.jar</systemPath>
-		</dependency>
-		<dependency>
 			<!-- Identical to lib/ant/lib/ant-launcher.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant-launcher</artifactId>

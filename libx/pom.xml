@@ -215,16 +215,6 @@
                   <outputDirectory>asm</outputDirectory>
                   <destFileName>asm-${asm.version}.renamed-src.zip</destFileName>
                 </artifactItem>
-
-                <!--
-                  How relevant is JRockit in 2021?
-                  https://en.wikipedia.org/wiki/JRockit
-                  https://www.oracle.com/java/jrockit.html
-
-                  There are only org.aspectj.weaver.loadtime.JRockitAgent + tests. If we would get rid of that class,
-                  all the rest and jrockit.jar could also go away.
-                -->
-
                 <artifactItem>
                   <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
                   <groupId>com.googlecode.jarjar</groupId>
