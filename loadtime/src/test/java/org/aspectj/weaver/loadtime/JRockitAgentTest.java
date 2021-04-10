@@ -54,7 +54,7 @@ public class JRockitAgentTest extends TestCase {
 	}
 
 	public void testJrockitRecursionProtection() {
-		URL jrockit = FileUtil.getFileURL(new File("../lib/ext/jrockit/jrockit.jar"));
+		URL jrockit = FileUtil.getFileURL(new File("../lib/jrockit/jrockit.jar"));
 		URL[] urls = new URL[] {jrockit};
 		URLClassLoader thisLoader = new URLClassLoader(urls, getClass().getClassLoader());
 		try {

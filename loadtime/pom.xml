@@ -71,7 +71,7 @@
 			<artifactId>jrockit</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ext/jrockit/jrockit.jar</systemPath>
+			<systemPath>${project.basedir}/../lib/jrockit/jrockit.jar</systemPath>
 		</dependency>
 
     <dependency>
