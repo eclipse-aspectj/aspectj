@@ -112,24 +112,7 @@
 			<artifactId>ant-launcher</artifactId>
 			<version>${lib.ant.version}</version>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>commons</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
-		</dependency>
--->
-<!--
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>${lib.commons.digester.version}</version>
-		</dependency>
--->
 	</dependencies>
-
 
 	<build>
 			<plugins>

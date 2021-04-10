@@ -224,15 +224,6 @@
 			<version>${project.version}</version>
 			<type>test-jar</type>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>commons</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
-		</dependency>
--->
 		<dependency>
 			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
