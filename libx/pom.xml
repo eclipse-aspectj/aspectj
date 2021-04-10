@@ -136,6 +136,40 @@
               <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
             </configuration>
           </execution>
+          <execution>
+            <!--
+              Binary jdiff:jdiff:1.0.9 is available on Maven Central, but different from committed version.
+              There are API changes, some classes referenced in org.aspectj.testing.util.TestUtil are unavailable.
+              Therefore, we would have to try and port the existing functionality, making sure the tests still
+              run.
+
+              Downloading snapshot from
+              https://sourceforge.net/p/jedit/svn/24818/tree/plugins/JDiffPlugin/tags/jdiffplugin-1_2_2/jdiff/
+              produces exactly identical source files as in the committed JAR. But there is no corresponding Maven
+              artifact or even binary download package. We would have to compile the code within AspectJ and
+              deploy it locally or Sonatype (Maven Central) or maven.springframework.org.
+
+              Downloading source or binary packages from
+              https://sourceforge.net/projects/jedit-plugins/files/JDiffPlugin/1.3/
+              also has identical source files (except for tiny copyright changes), but contains more classes
+              (a superset of the committed ones). Again, there is no Maven artifact for it.
+
+              Another option would be to include the only 4 Java classes into the 'testing-util' source tree. They
+              are only used from there and could easily be compiled together with the module, package names
+              relocated or not.
+            -->
+            <id>download-jdiff</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://downloads.sourceforge.net/project/jedit-plugins/JDiffPlugin/1.3/JDiffPlugin-1.3.zip</url>
+              <outputDirectory>jdiff</outputDirectory>
+              <outputFileName>JDiffPlugin-1.3.zip</outputFileName>
+              <sha1>eba63fd845203c6b245fbcb81c0de8e2c83d16c7</sha1>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
@@ -215,36 +249,6 @@
                   <overWrite>false</overWrite>
                   <outputDirectory>jarjar</outputDirectory>
                   <destFileName>jarjar-1.3.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!--
-                    Binary jdiff:jdiff:1.0.9 is available on Maven Central, but different from committed version.
-                    There are API changes, some classes referenced in org.aspectj.testing.util.TestUtil are unavailable.
-                    Therefore, we would have to try and port the existing functionality, making sure the tests still
-                    run.
-
-                    Downloading snapshot from
-                    https://sourceforge.net/p/jedit/svn/24818/tree/plugins/JDiffPlugin/tags/jdiffplugin-1_2_2/jdiff/
-                    produces exactly identical source files as in the committed JAR. But there is no corresponding Maven
-                    artifact or even binary download package. We would have to compile the code within AspectJ and
-                    deploy it locally or Sonatype (Maven Central) or maven.springframework.org.
-
-                    Downloading source or binary packages from
-                    https://sourceforge.net/projects/jedit-plugins/files/JDiffPlugin/1.3/
-                    also has identical source files (except for tiny copyright changes), but contains more classes
-                    (a superset of the committed ones). Again, there is no Maven artifact for it.
-
-                    Another option would be to include the only 4 Java classes into the 'testing-util' source tree. They
-                    are only used from there and could easily be compiled together with the module, package names
-                    relocated or not.
-                  -->
-                  <groupId>jdiff</groupId>
-                  <artifactId>jdiff</artifactId>
-                  <version>1.0.9</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>jdiff</outputDirectory>
-                  <destFileName>jdiff.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <!-- Binary is identical to committed version -->
@@ -546,6 +550,56 @@
                 -->
                 <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
                 <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-jdiff-binaries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin.jar</directory>
+                <outputDirectory>jdiff/jdiff.jar</outputDirectory>
+                <includes>
+                  <include>**/*.class</include>
+                </includes>
+                <excludes>
+                  <exclude>jdiff/options/**</exclude>
+                  <exclude>jdiff/*.class</exclude>
+                </excludes>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>zip-jdiff-sources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <!--
+                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
+                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
+                -->
+                <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin</directory>
+                <outputDirectory>jdiff/jdiff-src.zip</outputDirectory>
+                <includes>
+                  <include>**/*.java</include>
+                </includes>
+                <excludes>
+                  <exclude>jdiff/options/**</exclude>
+                  <exclude>jdiff/*.java</exclude>
+                </excludes>
               </fileset>
             </configuration>
           </execution>
