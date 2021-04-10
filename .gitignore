@@ -35,6 +35,9 @@ bin/
 /lib/ant/
 /lib/asm/
 /lib/commons/
+/lib/docbook/docbook-dtd/
+/lib/docbook/docbook-xsl/
+/lib/docbook/doc*.zip
 /lib/jarjar/
 /lib/jdtcore-aj/
 /lib/junit/

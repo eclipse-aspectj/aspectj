@@ -136,6 +136,32 @@
               <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
             </configuration>
           </execution>
+          <execution>
+            <id>download-docbook-dtd</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://www.oasis-open.org/docbook/xml/4.1.2/docbkx412.zip</url>
+              <outputDirectory>docbook</outputDirectory>
+              <outputFileName>docbkx412.zip</outputFileName>
+              <sha1>b9ae7a41056bfaf885581812d60651b7b5531519</sha1>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-docbook-xsl</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://sourceforge.net/projects/docbook/files/OldFiles/docbook-xsl-1.44.zip/download</url>
+              <outputDirectory>docbook</outputDirectory>
+              <outputFileName>docbook-xsl-1.44.zip</outputFileName>
+              <sha1>626e7bee806ea14812f6f95cc2d187ab6ba9114a</sha1>
+            </configuration>
+          </execution>
           <!--
             Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a
             normal dependency. Keep this for reference, so we can remember where we found it.
@@ -347,6 +373,10 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>truezip-maven-plugin</artifactId>
         <version>1.2</version>
+        <!--
+          The TrueZIP plugin can seamlessly copy out of or into (nested) ZIP files as if they were normal file system
+          paths. No additional moves and deletes with Antrun are necessary.
+        -->
         <executions>
           <execution>
             <id>unzip-ant-binaries</id>
@@ -357,10 +387,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
                 <outputDirectory>ant</outputDirectory>
               </fileset>
@@ -375,10 +401,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
                 <outputDirectory>ant/ant-src.zip</outputDirectory>
               </fileset>
@@ -393,10 +415,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-beanutils-${lib.commons.beanutils.version}.jar</directory>
                 <outputDirectory>commons/commons.jar</outputDirectory>
               </fileset>
@@ -411,10 +429,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-collections-${lib.commons.collections.version}.jar</directory>
                 <outputDirectory>commons/commons.jar</outputDirectory>
               </fileset>
@@ -429,10 +443,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-digester-${lib.commons.digester.version}.jar</directory>
                 <outputDirectory>commons/commons.jar</outputDirectory>
               </fileset>
@@ -447,10 +457,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-logging-${lib.commons.logging.version}.jar</directory>
                 <outputDirectory>commons/commons.jar</outputDirectory>
               </fileset>
@@ -465,10 +471,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-beanutils-${lib.commons.beanutils.version}-sources.jar/commons-beanutils-${lib.commons.beanutils.tag}/src/java</directory>
                 <outputDirectory>commons/commons-src.zip</outputDirectory>
               </fileset>
@@ -483,10 +485,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-collections-${lib.commons.collections.version}-sources.jar/commons-collections-${lib.commons.collections.tag}/src/java</directory>
                 <outputDirectory>commons/commons-src.zip</outputDirectory>
               </fileset>
@@ -501,10 +499,6 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-digester-${lib.commons.digester.version}-sources.jar/commons-digester-${lib.commons.digester.tag}/src/java</directory>
                 <outputDirectory>commons/commons-src.zip</outputDirectory>
               </fileset>
@@ -519,12 +513,36 @@
             <configuration>
               <verbose>true</verbose>
               <fileset>
-                <!--
-                  This is why we use the TrueZIP plugin: It can seamlessly copy out of or into ZIP files as if they
-                  were normal file system paths. No additional moves and deletes with Antrun are necessary.
-                -->
                 <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
                 <outputDirectory>commons/commons-src.zip</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unzip-docbook-dtd</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <directory>docbook/docbkx412.zip</directory>
+                <outputDirectory>docbook/docbook-dtd</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unzip-docbook-xsl</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <fileset>
+                <directory>docbook/docbook-xsl-1.44.zip/docbook-xsl-1.44</directory>
+                <outputDirectory>docbook/docbook-xsl</outputDirectory>
               </fileset>
             </configuration>
           </execution>
