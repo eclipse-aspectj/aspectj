@@ -623,10 +623,10 @@ interface MyInterface { ... }
       </para>
 
 <programlisting>
-  P ---------------------
+P ---------------------
+  \
+   \  cflow of P
     \
-     \  cflow of P
-      \
 </programlisting>
 
 
@@ -639,16 +639,16 @@ interface MyInterface { ... }
       </para>
 
 <programlisting>
-          P ---------------------
+        P ---------------------
+          \
+           \  cflow of P
             \
-             \  cflow of P
+             \
               \
-               \
-                \
-  Q -------------\-------
+Q -------------\-------
+  \             \
+   \  cflow of Q \ cflow(P) &amp;&amp; cflow(Q)
     \             \
-     \  cflow of Q \ cflow(P) &amp;&amp; cflow(Q)
-      \             \
 </programlisting>
 
       <para>
@@ -666,10 +666,10 @@ interface MyInterface { ... }
       </para>
 
 <programlisting>
-   P &amp;&amp; Q -------------------
-          \
-           \ cflow of (P &amp;&amp; Q)
-            \
+P &amp;&amp; Q -------------------
+       \
+        \ cflow of (P &amp;&amp; Q)
+         \
 </programlisting>
 
       <para>
@@ -715,7 +715,7 @@ aspect A  {
 
       <para>
           The <literal>!within(<replaceable>A</replaceable>)</literal>
-          pointcut above is required to avoid the <literal>printPC</literal> 
+          pointcut above is required to avoid the <literal>printPC</literal>
           pointcut applying to the <literal>System.out.println</literal>
           call in the advice body. If this was not present a recursive call
           would result as the pointcut would apply to its own advice.
@@ -734,9 +734,9 @@ aspect A  {
       </para>
 
 <programlisting><![CDATA[
-  pointcut setter(): target(Point) &&
-                     (call(void setX(int)) ||
-                      call(void setY(int)));
+pointcut setter(): target(Point) &&
+                   (call(void setX(int)) ||
+                    call(void setY(int)));
 ]]></programlisting>
 
       <para>
@@ -751,9 +751,9 @@ aspect A  {
       </para>
 
 <programlisting><![CDATA[
-  pointcut setter(Point p): target(p) &&
-                            (call(void setX(int)) ||
-                             call(void setY(int)));
+pointcut setter(Point p): target(p) &&
+                          (call(void setX(int)) ||
+                           call(void setY(int)));
 ]]></programlisting>
 
       <para>
@@ -774,9 +774,9 @@ aspect A  {
       </para>
 
 <programlisting><![CDATA[
-  pointcut testEquality(Point p): target(Point) &&
-                                  args(p) &&
-                                  call(boolean equals(Object));
+pointcut testEquality(Point p): target(Point) &&
+                                args(p) &&
+                                call(boolean equals(Object));
 ]]></programlisting>
 
       <para>
@@ -796,9 +796,9 @@ aspect A  {
       </para>
 
 <programlisting><![CDATA[
-  pointcut testEquality(Point p1, Point p2): target(p1) &&
-                                             args(p2) &&
-                                             call(boolean equals(Object));
+pointcut testEquality(Point p1, Point p2): target(p1) &&
+                                           args(p2) &&
+                                           call(boolean equals(Object));
 ]]></programlisting>
 
       <para>
@@ -828,9 +828,9 @@ pointcut setter(Point p, int newval): target(p) &&
         following pointcut definition will result in a compilation error:
 
 <programlisting><![CDATA[
-  pointcut badPointcut(Point p1, Point p2):
-      (target(p1) && call(void setX(int))) ||
-      (target(p2) && call(void setY(int)));
+pointcut badPointcut(Point p1, Point p2):
+    (target(p1) && call(void setX(int))) ||
+    (target(p2) && call(void setY(int)));
 ]]></programlisting>
 
         because <literal>p1</literal> is only bound when calling
@@ -856,38 +856,38 @@ pointcut setter(Point p, int newval): target(p) &&
       </para>
 
 <programlisting><![CDATA[
-  class Handle {
-    Partner partner = new Partner();
+class Handle {
+  Partner partner = new Partner();
 
-    public void foo() { partner.foo(); }
-    public void bar(int x) { partner.bar(x); }
+  public void foo() { partner.foo(); }
+  public void bar(int x) { partner.bar(x); }
 
-    public static void main(String[] args) {
-      Handle h1 = new Handle();
-      h1.foo();
-      h1.bar(2);
+  public static void main(String[] args) {
+    Handle h1 = new Handle();
+    h1.foo();
+    h1.bar(2);
+  }
+}
+
+class Partner {
+  boolean isAlive() { return true; }
+  void foo() { System.out.println("foo"); }
+  void bar(int x) { System.out.println("bar " + x); }
+}
+
+aspect HandleLiveness {
+  before(Handle handle): target(handle) && call(public * *(..)) {
+    if ( handle.partner == null  || !handle.partner.isAlive() ) {
+      throw new DeadPartnerException();
     }
   }
+}
 
-  class Partner {
-    boolean isAlive() { return true; }
-    void foo() { System.out.println("foo"); }
-    void bar(int x) { System.out.println("bar " + x); }
-  }
-
-  aspect HandleLiveness {
-    before(Handle handle): target(handle) && call(public * *(..)) {
-      if ( handle.partner == null  || !handle.partner.isAlive() ) {
-        throw new DeadPartnerException();
-      }
-    }
-  }
-
-  class DeadPartnerException extends RuntimeException {}
+class DeadPartnerException extends RuntimeException {}
 ]]></programlisting>
 
     </sect2>
-    
+
     <sect2 id="pointcut-best-practice" xreflabel="pointcut-best-practice">
       <title>Writing good pointcuts</title>
 
@@ -919,15 +919,15 @@ pointcut setter(Point p, int newval): target(p) &&
     	</listitem>
       </itemizedlist>
       <para>
-      A well written pointcut should 
+      A well written pointcut should
       try and include at least the first two types (kinded and scoping), whilst the contextual designators may be included if wishing to
-      match based on join point context, or bind that context for use in the advice.  Supplying either just a kinded designator or 
-      just a contextual designator will work but could affect weaving performance (time and memory used) 
-      due to all the extra processing and analysis. 
-      Scoping designators are very fast to match, they can very quickly dismiss groups of join points that should not be further 
+      match based on join point context, or bind that context for use in the advice.  Supplying either just a kinded designator or
+      just a contextual designator will work but could affect weaving performance (time and memory used)
+      due to all the extra processing and analysis.
+      Scoping designators are very fast to match, they can very quickly dismiss groups of join points that should not be further
       processed - that is why a good pointcut should always include one if possible.
       </para>
-      
+
     </sect2>
   </sect1>
 
@@ -945,14 +945,14 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  pointcut setter(Point p1, int newval): target(p1) && args(newval)
-                                         (call(void setX(int) ||
-                                          call(void setY(int)));
+pointcut setter(Point p1, int newval): target(p1) && args(newval)
+                                       (call(void setX(int) ||
+                                        call(void setY(int)));
 
-  before(Point p1, int newval): setter(p1, newval) {
-      System.out.println("About to set something in " + p1 +
-                         " to the new value " + newval);
-  }
+before(Point p1, int newval): setter(p1, newval) {
+    System.out.println("About to set something in " + p1 +
+                       " to the new value " + newval);
+}
 ]]></programlisting>
 
     <para>
@@ -961,12 +961,12 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  before(Point p1, int newval): target(p1) && args(newval)
-                                (call(void setX(int)) ||
-                                 call(void setY(int))) {
-      System.out.println("About to set something in " + p1 +
-                         " to the new value " + newval);
-  }
+before(Point p1, int newval): target(p1) && args(newval)
+                              (call(void setX(int)) ||
+                               call(void setY(int))) {
+    System.out.println("About to set something in " + p1 +
+                       " to the new value " + newval);
+}
 ]]></programlisting>
 
     <para>
@@ -979,9 +979,9 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
-      if (!p.assertX(x)) return;
-  }
+before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+    if (!p.assertX(x)) return;
+}
 ]]></programlisting>
 
     <para>
@@ -991,9 +991,9 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  after(Point p, int x): target(p) && args(x) && call(void setX(int)) {
-      if (!p.assertX(x)) throw new PostConditionViolation();
-  }
+after(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+    if (!p.assertX(x)) throw new PostConditionViolation();
+}
 ]]></programlisting>
 
     <para>
@@ -1004,9 +1004,9 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  after(Point p) returning(int x): target(p) && call(int getX()) {
-      System.out.println("Returning int value " + x + " for p = " + p);
-  }
+after(Point p) returning(int x): target(p) && call(int getX()) {
+    System.out.println("Returning int value " + x + " for p = " + p);
+}
 ]]></programlisting>
 
     <para>
@@ -1018,9 +1018,9 @@ pointcut setter(Point p, int newval): target(p) &&
     </para>
 
 <programlisting><![CDATA[
-  after() throwing(Exception e): target(Point) && call(void setX(int)) {
-      System.out.println(e);
-  }
+after() throwing(Exception e): target(Point) && call(void setX(int)) {
+    System.out.println(e);
+}
 ]]></programlisting>
 
     <para>
@@ -1059,7 +1059,7 @@ void around(Point p, int x): target(p)
       initialized to <literal>false</literal>:
 
 <programlisting><![CDATA[
-  private boolean Server.disabled = false;
+private boolean Server.disabled = false;
 ]]></programlisting>
 
       It is declared <literal>private</literal>, which means that it is
@@ -1077,7 +1077,7 @@ void around(Point p, int x): target(p)
       arguments that returns whatever <literal>this.x</literal> is:
 
 <programlisting><![CDATA[
-  public int Point.getX() { return this.x; }
+public int Point.getX() { return this.x; }
 ]]></programlisting>
 
       Inside the body, <literal>this</literal> is the
@@ -1092,7 +1092,7 @@ void around(Point p, int x): target(p)
       <literal>Point</literal>:
 
 <programlisting><![CDATA[
-  public Point.new(int x, int y) { this.x = x; this.y = y; }
+public Point.new(int x, int y) { this.x = x; this.y = y; }
 ]]></programlisting>
 
     </para>
@@ -1103,7 +1103,7 @@ void around(Point p, int x): target(p)
       to zero:
 
 <programlisting><![CDATA[
-  public int Point.x = 0;
+public int Point.x = 0;
 ]]></programlisting>
 
       Because this is publically declared, it is an error if
@@ -1117,7 +1117,7 @@ void around(Point p, int x): target(p)
       <literal>Comparable</literal> interface:
 
 <programlisting><![CDATA[
-  declare parents: Point implements Comparable;
+declare parents: Point implements Comparable;
 ]]></programlisting>
 
       Of course, this will be an error unless <literal>Point</literal>
@@ -1129,7 +1129,7 @@ void around(Point p, int x): target(p)
       <literal>GeometricObject</literal> class.
 
 <programlisting><![CDATA[
-  declare parents: Point extends GeometricObject;
+declare parents: Point extends GeometricObject;
 ]]></programlisting>
     </para>
 
@@ -1138,8 +1138,8 @@ void around(Point p, int x): target(p)
       following declarations
 
 <programlisting><![CDATA[
-  public String Point.name;
-  public void Point.setName(String name) { this.name = name; }
+public String Point.name;
+public void Point.setName(String name) { this.name = name; }
 ]]></programlisting>
 
       publicly declare that Point has both a String field
@@ -1155,13 +1155,13 @@ void around(Point p, int x): target(p)
       interface:
 
 <programlisting><![CDATA[
-  aspect A {
-    private interface HasName {}
-    declare parents: (Point || Line || Square) implements HasName;
+aspect A {
+  private interface HasName {}
+  declare parents: (Point || Line || Square) implements HasName;
 
-    private String HasName.name;
-    public  String HasName.getName()  { return name; }
-  }
+  private String HasName.name;
+  public  String HasName.getName()  { return name; }
+}
 ]]></programlisting>
 
       This declares a marker interface <literal>HasName</literal>, and also declares that any
@@ -1193,7 +1193,7 @@ void around(Point p, int x): target(p)
         aspect makes a private inter-type declaration of a field
 
 <programlisting><![CDATA[
-  private int Foo.x;
+private int Foo.x;
 ]]></programlisting>
 
         Then code in the aspect can refer to <literal>Foo</literal>'s
@@ -1230,38 +1230,38 @@ void around(Point p, int x): target(p)
       </para>
 
 <programlisting><![CDATA[
-  class Point  {
-      int x, y;
+class Point  {
+    int x, y;
 
-      public void setX(int x) { this.x = x; }
-      public void setY(int y) { this.y = y; }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
 
-      public static void main(String[] args) {
-          Point p = new Point();
-          p.setX(3); p.setY(333);
-      }
-  }
+    public static void main(String[] args) {
+        Point p = new Point();
+        p.setX(3); p.setY(333);
+    }
+}
 
-  aspect PointAssertions {
+aspect PointAssertions {
 
-      private boolean Point.assertX(int x) {
-          return (x <= 100 && x >= 0);
-      }
-      private boolean Point.assertY(int y) {
-          return (y <= 100 && y >= 0);
-      }
+    private boolean Point.assertX(int x) {
+        return (x <= 100 && x >= 0);
+    }
+    private boolean Point.assertY(int y) {
+        return (y <= 100 && y >= 0);
+    }
 
-      before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
-          if (!p.assertX(x)) {
-              System.out.println("Illegal value for x"); return;
-          }
-      }
-      before(Point p, int y): target(p) && args(y) && call(void setY(int)) {
-          if (!p.assertY(y)) {
-              System.out.println("Illegal value for y"); return;
-          }
-      }
-  }
+    before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
+        if (!p.assertX(x)) {
+            System.out.println("Illegal value for x"); return;
+        }
+    }
+    before(Point p, int y): target(p) && args(y) && call(void setY(int)) {
+        if (!p.assertY(y)) {
+            System.out.println("Illegal value for y"); return;
+        }
+    }
+}
 ]]></programlisting>
 
     </sect2>
@@ -1290,11 +1290,11 @@ void around(Point p, int x): target(p)
     </para>
 
 <programlisting><![CDATA[
-  aspect TraceNonStaticMethods {
-      before(Point p): target(p) && call(* *(..)) {
-          System.out.println("Entering " + thisJoinPoint + " in " + p);
-      }
-  }
+aspect TraceNonStaticMethods {
+    before(Point p): target(p) && call(* *(..)) {
+        System.out.println("Entering " + thisJoinPoint + " in " + p);
+    }
+}
 ]]></programlisting>
 
     <para>
@@ -1304,7 +1304,7 @@ void around(Point p, int x): target(p)
       arguments of the join point:
 
 <programlisting><![CDATA[
-  thisJoinPoint.getArgs()
+thisJoinPoint.getArgs()
 ]]></programlisting>
 
       In addition, it holds an object consisting of all the static
@@ -1312,7 +1312,7 @@ void around(Point p, int x): target(p)
       and static signature:
 
 <programlisting><![CDATA[
-  thisJoinPoint.getStaticPart()
+thisJoinPoint.getStaticPart()
 ]]></programlisting>
 
       If you only need the static information about the join point, you may
@@ -1327,11 +1327,11 @@ void around(Point p, int x): target(p)
     </para>
 
 <programlisting><![CDATA[
-   thisJoinPointStaticPart == thisJoinPoint.getStaticPart()
+thisJoinPointStaticPart == thisJoinPoint.getStaticPart()
 
-   thisJoinPoint.getKind() == thisJoinPointStaticPart.getKind()
-   thisJoinPoint.getSignature() == thisJoinPointStaticPart.getSignature()
-   thisJoinPoint.getSourceLocation() == thisJoinPointStaticPart.getSourceLocation()
+thisJoinPoint.getKind() == thisJoinPointStaticPart.getKind()
+thisJoinPoint.getSignature() == thisJoinPointStaticPart.getSignature()
+thisJoinPoint.getSourceLocation() == thisJoinPointStaticPart.getSourceLocation()
 ]]></programlisting>
 
     <para>

@@ -17,7 +17,7 @@
 -->
 <article class="faq">
   <title>Frequently Asked Questions about AspectJ</title>
-  <para>Copyright (c) 1997-2001 Xerox Corporation, 
+  <para>Copyright (c) 1997-2001 Xerox Corporation,
        2002 Palo Alto Research Center, Incorporated,
        2003-2006 Contributors. All rights reserved.
   </para>
@@ -36,27 +36,27 @@
         </question>
         <answer>
           <para>
-            AspectJ(tm) is a simple and practical extension to the 
+            AspectJ(tm) is a simple and practical extension to the
             Java(tm) programming
             language that adds to Java aspect-oriented programming (AOP)
             capabilities. AOP allows developers to reap the benefits of
             modularity for concerns that cut across the natural units of
             modularity. In object-oriented programs like Java, the natural unit
             of modularity is the class. In AspectJ, aspects modularize concerns that
-            affect more than one class.  
+            affect more than one class.
 	  </para>
-          <para>You compile your program using the AspectJ compiler 
-          (perhaps using the supported development environments) 
-          and then run it, 
+          <para>You compile your program using the AspectJ compiler
+          (perhaps using the supported development environments)
+          and then run it,
           supplying a small (&lt; 100K) runtime library.
           </para>
-          <para>The AspectJ technologies include 
-           a compiler (<literal>ajc</literal>), 
-           a debugger (<literal>ajdb</literal>), 
-           a documentation generator (<literal>ajdoc</literal>), 
-           a program structure browser (<literal>ajbrowser</literal>), 
+          <para>The AspectJ technologies include
+           a compiler (<literal>ajc</literal>),
+           a debugger (<literal>ajdb</literal>),
+           a documentation generator (<literal>ajdoc</literal>),
+           a program structure browser (<literal>ajbrowser</literal>),
            and integration with
-            Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs, 
+            Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs,
             JBuilder, and Ant.
           </para>
         </answer>
@@ -174,12 +174,12 @@
             <ulink url="http://www.opensource.org/licenses/mozilla1.1">Mozilla Public License 1.1</ulink>.
             That documentation is available under a separate license
             that precludes for-profit or commercial
-              redistribution.  
+              redistribution.
           </para>
-          <para>The runtime jar aspectjrt.jar and its distribution are also covered by the 
+          <para>The runtime jar aspectjrt.jar and its distribution are also covered by the
           <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License</ulink>.
           </para>
-          <para>For answers to common licensing questions, see the 
+          <para>For answers to common licensing questions, see the
           <ulink url="http://www.eclipse.org/legal/eplfaq.php">Eclipse Public License FAQ</ulink>.
           </para>
           <para>
@@ -194,27 +194,27 @@
           <para>AspectJ is based on over ten years of research at
             <ulink url="http://www.parc.xerox.com">
               Xerox Palo Alto Research Center
-            </ulink> 
+            </ulink>
 	as funded by Xerox, a U.S. Government grant (NISTATP), and a
             DARPA contract.
           </para>
-          <para>It has evolved through open-source releases 
+          <para>It has evolved through open-source releases
           to a strong user community and now operates as an
-          open source project at 
+          open source project at
            <ulink url="http://eclipse.org/aspectj">
                        http://eclipse.org/aspectj</ulink>
             The AspectJ team works closely with the community
-            to ensure AspectJ continues to evolve as an effective 
+            to ensure AspectJ continues to evolve as an effective
             aspect-oriented programming language and tool set.
           </para>
           <para>
-            The latest release is 1.2 <!-- XXX todo Update me! --> 
-	        which can be downloaded from the 
+            The latest release is 1.2 <!-- XXX todo Update me! -->
+	        which can be downloaded from the
              <ulink url="http://eclipse.org/aspectj">AspectJ project page</ulink>,
              including sources as described
              <xref linkend="q:buildingsource"/>.
-             Development is focused on supporting applications, 
-	         improving quality and performance, 
+             Development is focused on supporting applications,
+	         improving quality and performance,
              enhancing integration with IDE's,
              and building the next generations of the language.
           </para>
@@ -232,7 +232,7 @@
         </question>
         <answer>
           <para>
-          The AspectJ compiler produces programs for any released version of the 
+          The AspectJ compiler produces programs for any released version of the
           Java platform (jdk1.1 and later).  When running, your program classes must
 	      be able to reach classes in the
           small (&lt; 100K) runtime library (aspectjrt.jar) from the distribution.
@@ -254,7 +254,7 @@
             The <literal>jar</literal> file is installed by executing
           </para>
           <programlisting>
-            java -jar <emphasis>jar file name</emphasis>
+java -jar <emphasis>jar file name</emphasis>
           </programlisting>
           <para>Do <emphasis role="bold">not</emphasis> try to extract the
             <literal>jar</literal> file contents and then attempt to execute
@@ -263,12 +263,12 @@
             thrown.) The AspectJ distribution is not designed to be installed
             this way. Use the <literal>java -jar</literal> form shown above.
           </para>
-          <para>To uninstall, remove the files the installer wrote in your 
+          <para>To uninstall, remove the files the installer wrote in your
             file system.  In most cases, you can delete the top-level install
 	        directory (and all contained files), after you remove any
 	        new or updated files you want to keep. On Windows, no
             registry settings were added or changed, so nothing needs to be
-            undone.  Do not install over prior versions, which might have 
+            undone.  Do not install over prior versions, which might have
             different files.  Delete the prior version first.
           </para>
         </answer>
@@ -294,8 +294,8 @@
                 <emphasis role="bold"> In the development
                     process
                 </emphasis> Use AspectJ to trace or log
-                  interesting information. You can do this by adding 
-                  simple AspectJ code that performs logging or tracing. 
+                  interesting information. You can do this by adding
+                  simple AspectJ code that performs logging or tracing.
                   This kind of addition may be removed ("unplugged") for
                   the final build since it does not implement a design
                   requirement; the functionality of the system is unaffected by
@@ -309,10 +309,10 @@
                 </emphasis> Use AspectJ to more completely and
                     accurately test the system.
                   Add sophisticated code that can check contracts,
-                  provide debugging support, or implement test strategies. 
-                  Like pure development aspects, this code may also be 
+                  provide debugging support, or implement test strategies.
+                  Like pure development aspects, this code may also be
                   unplugged from production builds. However, the same code
-                  can often be helpful in diagnosing failures in deployed 
+                  can often be helpful in diagnosing failures in deployed
                   production systems, so you may design the functionality
                   to be deployed but disabled, and enable it when debugging.
               </para>
@@ -322,7 +322,7 @@
                 <emphasis role="bold">As an essential part of your
                     system
                 </emphasis> Use AspectJ to modularize
-                  crosscutting concerns in your system by design. 
+                  crosscutting concerns in your system by design.
                   This uses AspectJ to implement logic integral to a system
                   and is delivered in production builds.
               </para>
@@ -342,8 +342,8 @@
         </question>
         <answer>
           <para>AspectJ products are designed to make it easy to integrate
-          AspectJ into an existing development process.  
-          Each release includes 
+          AspectJ into an existing development process.
+          Each release includes
           Ant tasks for building programs,
           the AspectJ Development Environment (AJDE) for writing
           aspects inside popular IDE's,  and
@@ -369,7 +369,7 @@
               <!-- restore ajdb, ajdoc -->
             </itemizedlist>
           </para>
-          <para>For debugging, AspectJ supports JSR-45, which provides a mechanism for 
+          <para>For debugging, AspectJ supports JSR-45, which provides a mechanism for
           debugging .class files that have multiple source files.
           Debugger clients and VM's are beginning to support this;
           see Sun's J2SE 1.4.1 VM and jdb debugger
@@ -377,11 +377,11 @@
           </para>
           <para>The AspectJ Development Environment (AJDE)
            enables programmers to view and navigate the crosscutting structures
-           in their programs, integrated with existing support in 
+           in their programs, integrated with existing support in
            popular Java IDE's for viewing and navigating object-oriented
            structures. For many programmers this provides a deeper understanding
            of how aspects work to modularize their concerns and permits them
-           to extend some of their development practices without 
+           to extend some of their development practices without
            having to abandon their existing tools.
           </para>
           <para>
@@ -398,8 +398,8 @@
               </para>
             </listitem>
             <listitem>
-              <para>Emacs (GNU version 20.3) 
-                    and XEmacs (version 21.1 on Unix and 21.4 on Windows), 
+              <para>Emacs (GNU version 20.3)
+                    and XEmacs (version 21.1 on Unix and 21.4 on Windows),
                    in the SourceForge AspectJ for Emacs project
                     <ulink url="http://aspectj4emacs.sourceforge.net">
                                 http://aspectj4emacs.sourceforge.net
@@ -528,8 +528,8 @@
         </question>
         <answer>
           <para>
-            Aspects for performance monitoring and diagnostic systems, 
-	    display updating or notifications generally, security, 
+            Aspects for performance monitoring and diagnostic systems,
+	    display updating or notifications generally, security,
 	    context passing, and error handling.
           </para>
         </answer>
@@ -544,8 +544,8 @@
         </question>
         <answer>
           <para>
-	      "Scattering" is when similar code is distributed throughout many 
-          program modules.  This differs from a component being used by 
+	      "Scattering" is when similar code is distributed throughout many
+          program modules.  This differs from a component being used by
           many other components since
 	      it involves the risk of misuse at each point and of inconsistencies
 	      across all points.  Changes to the implementation may require
@@ -558,7 +558,7 @@
           </para>
           <para>"Crosscutting" is how to characterize a concern than spans
 	      multiple units of OO modularity - classes and objects.  Crosscutting
-	      concerns resist modularization using normal OO constructs, but 
+	      concerns resist modularization using normal OO constructs, but
           aspect-oriented programs can modularize crosscutting concerns.
           </para>
         </answer>
@@ -630,7 +630,7 @@
         <answer>
           <para>AspectJ enables you to declare members and supertypes of another class
 	in an aspect, subject to Java's type-safety and access rules.  These are
-	visible to other classes only if you declare them as accessible.  
+	visible to other classes only if you declare them as accessible.
         You can also declare compile-time errors and warnings based on pointcuts.
           </para>
         </answer>
@@ -782,9 +782,9 @@
           <para>There are many mechanisms people use now to implement
           some crosscutting concerns.  But they don't have a way to express
           the actual structure of the program so you (and your tools)
-	  can reason about it.  Using a language enables you to express the 
-          crosscutting in first-class constructs.  You can not only avoid the 
-          maintenance problems and structural requirements of some other 
+	  can reason about it.  Using a language enables you to express the
+          crosscutting in first-class constructs.  You can not only avoid the
+          maintenance problems and structural requirements of some other
           mechanisms, but also combine forms of crosscutting so that all
 	  the mechanisms for a particular concern are one piece of code.
           </para>
@@ -808,7 +808,7 @@
             distinguished by the fact that it was designed from the ground up
             to be compatible with Java.
           </para>
-          <para>For more alternatives for aspect-oriented programming, see 
+          <para>For more alternatives for aspect-oriented programming, see
             <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
         </answer>
@@ -823,7 +823,7 @@
         <answer>
           <para>Reflective and aspect-oriented languages have an important
             similarity: both provide programming support for dealing with
-            crosscutting concerns. In this sense reflective systems proved 
+            crosscutting concerns. In this sense reflective systems proved
             that independent programming of crosscutting concerns is
             possible.
           </para>
@@ -876,22 +876,22 @@ aspect.
         </question>
         <answer>
           <para>
-          Some AOP techniques are presented as "dynamic" because the weaving 
-          occurs when classes are loaded, because aspects can be configured 
+          Some AOP techniques are presented as "dynamic" because the weaving
+          occurs when classes are loaded, because aspects can be configured
           in a separate XML file before launch, or because some advice
           depends on runtime reflection.  They are said to be more flexible
           than AspectJ.
           </para>
           <para>
-          This is a misconception.  First, the AspectJ 1.1 weaver has always 
+          This is a misconception.  First, the AspectJ 1.1 weaver has always
           supported weaving at compile-time or class-load-time.  Weaving at
           compile-time reduces application launch and running time, and it helps
           IDE's offer support for tracking down weaving errors and understanding
           the impact of aspects on a system.
           On the other hand, weaving at load-time simplifies build and deployment.
-          Before AspectJ 1.2, the user had to write a class loader that used the 
-          weaver API to weave at load time; since 1.2, AspectJ comes with a 
-          command-line launcher to support weaving at class-load-time without 
+          Before AspectJ 1.2, the user had to write a class loader that used the
+          weaver API to weave at load time; since 1.2, AspectJ comes with a
+          command-line launcher to support weaving at class-load-time without
           any other changes to a build configuration.  In AspectJ 5, we expect
 		  to get a similar level of support as AspectWerkz, and to exploit
 		  the class bytecode weaving hook available in Java 5 VM's.
@@ -900,10 +900,10 @@ aspect.
           Second, AspectJ programs, like Java programs generally, can be
           written to support any level of XML configuration or to depend on
           runtime reflection.  There are some benefits to using AspectJ;
-          e.g., the proceed() form within around advice simplifies a lot of 
-          the work that otherwise would go into writing a generalized 
-          interceptor, without introducing many of the runtime errors that can 
-          result from interceptors.  
+          e.g., the proceed() form within around advice simplifies a lot of
+          the work that otherwise would go into writing a generalized
+          interceptor, without introducing many of the runtime errors that can
+          result from interceptors.
           For AspectJ examples of configurable or reflection-dependent programs,
           see the sample code linked off the AspectJ documentation page
           or the examples discussed on the mailing list, e.g.,
@@ -914,9 +914,9 @@ aspect.
       </qandaentry>
       <qandaentry>
         <question id="q:aopandxp"
-            xreflabel="Q:What is the relationship between AOP and 
+            xreflabel="Q:What is the relationship between AOP and
         XP (extreme programming AKA agile methods)?">
-          <para>What is the relationship between AOP and 
+          <para>What is the relationship between AOP and
         XP (extreme programming AKA agile methods)?
           </para>
         </question>
@@ -1003,27 +1003,27 @@ aspect.
             <itemizedlist>
               <listitem>
                 <para>AspectJ is an <emphasis>addition</emphasis> to
-                  Java, and can be introduced into a project 
-                  in a way that limits risk. 
+                  Java, and can be introduced into a project
+                  in a way that limits risk.
                   See <xref linkend="q:startUsingAJ"/> for
                   some suggestions on how to do this.
                 </para>
               </listitem>
               <listitem>
                 <para>The AspectJ compiler accepts standard Java as
-                  input and produces standard Java bytecode as output. 
-                  In 1.0, an optional mode produces standard Java source code 
+                  input and produces standard Java bytecode as output.
+                  In 1.0, an optional mode produces standard Java source code
                   which may then be compiled with any compliant Java compiler
-                  (e.g. Sun's <literal>javac</literal> compiler 
+                  (e.g. Sun's <literal>javac</literal> compiler
                   or IBM's <literal>jikes</literal> compiler).
-                  In 1.1, an optional mode accepts standard Java bytecode 
-                  from any compliant Java compiler 
+                  In 1.1, an optional mode accepts standard Java bytecode
+                  from any compliant Java compiler
                   and weaves in the aspects to produce new bytecode.
                 </para>
               </listitem>
               <listitem>
                 <para>AspectJ is available under a non-proprietary, open source license,
-                 either the 
+                 either the
                   <ulink url="http://www.opensource.org/licenses/mozilla1.1">
                             Mozilla Public License 1.1</ulink>
                   for 1.0 or the
@@ -1041,7 +1041,7 @@ aspect.
                 </para>
               </listitem>
               <listitem>
-                <para>A number of significant open-source projects and industry 
+                <para>A number of significant open-source projects and industry
                     products use AspectJ successfully.  One list is kept on
                     <ulink url="http://www.aosd.net/wiki/index.php?title=FAQ">
                         the AOSD FAQ</ulink>, and more appear on the mailing
@@ -1083,7 +1083,7 @@ aspect.
             important as knowing how to measure it, and neither is always
             apparent.
           </para>
-          <para>We aim for the performance of our implementation of AspectJ to 
+          <para>We aim for the performance of our implementation of AspectJ to
           be on par with the same functionality hand-coded in Java.  Anything
           significantly less should be considered a bug.
           </para>
@@ -1097,14 +1097,14 @@ aspect.
           <para>Though we cannot show it without a benchmark suite, we believe
           	that code generated by AspectJ has negligible performance overhead.
             Inter-type member and parent introductions should have very little
-            overhead, and advice should only have some indirection which 
+            overhead, and advice should only have some indirection which
             could be optimized away by modern VM's.
           </para>
-          <para>The <literal>ajc</literal> compiler will use static typing information 
-            to only insert the advice and dynamic pointcut tests that are absolutely necessary.  
-            Unless you use 'thisJoinPoint' or 'if', the main dynamic checks will be 
-            'instanceof' checks which are generally quite fast.  
-            These checks will only be inserted when they can not be inferred from 
+          <para>The <literal>ajc</literal> compiler will use static typing information
+            to only insert the advice and dynamic pointcut tests that are absolutely necessary.
+            Unless you use 'thisJoinPoint' or 'if', the main dynamic checks will be
+            'instanceof' checks which are generally quite fast.
+            These checks will only be inserted when they can not be inferred from
             the static type information.
           </para>
           <para>When measuring performance, write AspectJ code
@@ -1130,18 +1130,18 @@ aspect.
             Well I haven't yet seen a language in which you can't write bad code!
           </para>
           <para>
-        But seriously, most AspectJ users find that just like when they learned 
-        OO, it takes a while to really get the hang of it.  They tend to start 
-        in the usual way, by copying canonical examples and experimenting with 
+        But seriously, most AspectJ users find that just like when they learned
+        OO, it takes a while to really get the hang of it.  They tend to start
+        in the usual way, by copying canonical examples and experimenting with
         variations on them.
           </para>
           <para>
-        But users also find that rather than being dangerous, AspectJ helps them 
-        write code that is more clear and has better encapsulation -- once they 
-        understand the kind of modularity AspectJ supports.  There are several 
-        good papers that talk about this (see below), but here's a basic point 
-        to keep in mind: when properly used, AspectJ makes it possible program 
-        in a modular way, something that would otherwise be spread throughout 
+        But users also find that rather than being dangerous, AspectJ helps them
+        write code that is more clear and has better encapsulation -- once they
+        understand the kind of modularity AspectJ supports.  There are several
+        good papers that talk about this (see below), but here's a basic point
+        to keep in mind: when properly used, AspectJ makes it possible program
+        in a modular way, something that would otherwise be spread throughout
         the code. Consider the following code, adapted from the AspectJ tutorial:
           </para>
           <programlisting>
@@ -1157,30 +1157,30 @@ aspect PublicErrorLogging {
 }
           </programlisting>
           <para>
-        The effect of this code is to ensure that whenever any public method of 
-        an interface or class in the <literal>com.xerox</literal> package 
+        The effect of this code is to ensure that whenever any public method of
+        an interface or class in the <literal>com.xerox</literal> package
         throws an error, that error is logged before being thrown to its caller.
           </para>
           <para>
-        Of course in the alternative implementation a large number of methods 
+        Of course in the alternative implementation a large number of methods
         have a try/catch around their body.
           </para>
           <para>
-        The AspectJ implementation of this crosscutting concern is clearly 
-        modular, whereas the other implementation is not.  As a result, if you 
-        want to change it, its easier in the AspectJ implementation.  For 
-        example, if you also want to pass the name of the method, or its 
-        arguments to <literal>log.write</literal>, you only have to edit 
+        The AspectJ implementation of this crosscutting concern is clearly
+        modular, whereas the other implementation is not.  As a result, if you
+        want to change it, its easier in the AspectJ implementation.  For
+        example, if you also want to pass the name of the method, or its
+        arguments to <literal>log.write</literal>, you only have to edit
         one place in the AspectJ code.
           </para>
           <para>
-        This is just a short example, but I hope it shows how what happens 
-        with AOP and AspectJ is that the usual benefits of modularity are 
-        achieved for crosscutting concerns, and that leads to better code, 
+        This is just a short example, but I hope it shows how what happens
+        with AOP and AspectJ is that the usual benefits of modularity are
+        achieved for crosscutting concerns, and that leads to better code,
         not more dangerous code.
           </para>
           <para>
-        One paper someone else just reminded me of that talks some more 
+        One paper someone else just reminded me of that talks some more
         about this is:
             <ulink url="http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf">
               http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf
@@ -1192,7 +1192,7 @@ aspect PublicErrorLogging {
         <question id="q:encapsulation"
             xreflabel="Q:Why does AspectJ permit aspects to access and add members of another type?">
           <para>
-            Why does AspectJ permit aspects to access and add members of another type?  
+            Why does AspectJ permit aspects to access and add members of another type?
             Isn't that violating OO encapsulation?
           </para>
         </question>
@@ -1220,25 +1220,25 @@ aspect PublicErrorLogging {
           known as open classes.
           </para>
           <para>
-          Open classes have been used in many languages prior to AspectJ, 
-          including CLOS, Python, Smalltalk, Objective-C, and others.  
-          Building from Java, introduction in AspectJ provides better 
-          name hygiene and access control than prior languages.  
-          Introduced code obeys all of Java's normal accessibility rules 
-          for its lexical location in the aspect that it is introduced from.  
-          Such code can not even see, much less access, private members of 
+          Open classes have been used in many languages prior to AspectJ,
+          including CLOS, Python, Smalltalk, Objective-C, and others.
+          Building from Java, introduction in AspectJ provides better
+          name hygiene and access control than prior languages.
+          Introduced code obeys all of Java's normal accessibility rules
+          for its lexical location in the aspect that it is introduced from.
+          Such code can not even see, much less access, private members of
           the class it is introduced into. Further, introductions can be
           declared private to the aspect, so they are not visible to
           other clients of the class.
           </para>
           <para>
           Privileged aspects do permit access to private members of another
-          class.  They are a response to the very few cases where developers 
+          class.  They are a response to the very few cases where developers
           genuinely need such access (typically for testing purposes where it
           access is necessary), but it would be more risky to open access by
           putting the aspect in the same package, adding test code, or changing
-          access in the target class.  We recommend using privileged aspects 
-          only as necessary, and believe that marking them "privileged" makes 
+          access in the target class.  We recommend using privileged aspects
+          only as necessary, and believe that marking them "privileged" makes
           any potential misuse apparent.
           </para>
         </answer>
@@ -1261,7 +1261,7 @@ aspect PublicErrorLogging {
             <listitem>
               <para>
 	JSP: It is possible to use AspectJ to affect code in JSPs by precompiling
-	them into Java sources and compiling these with ajc. This can be used, e.g., to 
+	them into Java sources and compiling these with ajc. This can be used, e.g., to
 	customize displays by turning on and off custom JSP taglibs. The mapping from a
 	given jsp source to java package and class name is not standardized, which means
 	doing this imposes dependencies on specific container versions.
@@ -1269,21 +1269,21 @@ aspect PublicErrorLogging {
             </listitem>
             <listitem>
               <para>
-	EJB: AspectJ supports a wide variety of aspects for EJBs. It can be used for 
+	EJB: AspectJ supports a wide variety of aspects for EJBs. It can be used for
 	logging, tracing, debugging, error handling by layers, correlated method-level
 	interception (e.g., chargebacks), metering, fine-grained transactions, etc.
 	Indeed, it can be used to enforce adherence to coding restrictions within an
-	EJB (e.g., not using java.io, creating a class loader, or listening on 
+	EJB (e.g., not using java.io, creating a class loader, or listening on
 	sockets) using <literal>declare error</literal>.
               </para>
             </listitem>
           </itemizedlist>
           <para>
 	The basic limitations are that there is no built-in support for writing J2EE
-	analogs for AspectJ extensions to Java, like distributed aspects, distributed 
+	analogs for AspectJ extensions to Java, like distributed aspects, distributed
 	cflow, or managing state between invocations. These don't prevent one from using
-	AspectJ to do useful intra-container implementation, nor need they prevent one 
-	from building distributed support, state management, and inter-component 
+	AspectJ to do useful intra-container implementation, nor need they prevent one
+	from building distributed support, state management, and inter-component
 	implementations that leverage AspectJ. It just takes some work. In more detail:
           </para>
           <para>
@@ -1296,21 +1296,21 @@ aspect PublicErrorLogging {
 	To avoid this problem, you can use the -XaddSafePrefix flag when compiling with ajc.
           </para>
           <para>
-	EJB components may be invoked remotely, and containers may passivate and 
+	EJB components may be invoked remotely, and containers may passivate and
 	pool EJB's.  Servlets have similar limitations, and in both cases the
-	lifespan of the defining class loader is implementation-dependent 
+	lifespan of the defining class loader is implementation-dependent
 	(though it must span the operation of a particular request).
           </para>
           <para>
-	Being limited by lifecycle and namespace, the AspectJ 1.0 implementation 
-        supports aspects that operate through non-remote invocations during the lifetime 
-        of the namespace for a particular 
+	Being limited by lifecycle and namespace, the AspectJ 1.0 implementation
+        supports aspects that operate through non-remote invocations during the lifetime
+        of the namespace for a particular
 	deployment unit compiled in its entirety by the ajc compiler.
 	This means AspectJ supports common aspects only within a single local runtime
 	namespace (usually implemented as a class loader hierarchy).
           </para>
           <para>
-	Further, AspectJ recognizes language-level join points (object initialization, 
+	Further, AspectJ recognizes language-level join points (object initialization,
 	method calls, etc.), not their EJB analogs (ejb find or create methods...).
 	These lead to the following consequences:
           </para>
@@ -1327,7 +1327,7 @@ aspect PublicErrorLogging {
 	EJB lifecycles are different from object lifecycles, so perthis
 	and pertarget aspects will make little sense.  They do not work
         in the current implementation, which uses synchronized methods
-        to ensure a correct association in threaded environments 
+        to ensure a correct association in threaded environments
         (EJB's may not have synchronized methods).
               </para>
             </listitem>
@@ -1336,7 +1336,7 @@ aspect PublicErrorLogging {
 	Percflow or percflowbelow aspects are restricted to a chain of
 	non-remote invocations.  While EJB 2.0 permits declaring an interface
 	local, this information is not available to the AspectJ compiler today.
-        For same reasons as stated above fore perthis, these will not work even 
+        For same reasons as stated above fore perthis, these will not work even
         in the EJB container.
               </para>
             </listitem>
@@ -1369,9 +1369,9 @@ aspect PublicErrorLogging {
               <para>
 	The EJB container is permitted to change class loaders, even
 	between invocations of a particular EJB component (by passivating and
-	activating with a new class loader).  In this case, instances of singleton 
-	aspects will not operate over multiple invocations of the component, or that 
-	static initialization join point recur for a given class as it is re-loaded. 
+	activating with a new class loader).  In this case, instances of singleton
+	aspects will not operate over multiple invocations of the component, or that
+	static initialization join point recur for a given class as it is re-loaded.
 	This behavior depends on the container implementation.
               </para>
             </listitem>
@@ -1426,22 +1426,22 @@ aspect PublicErrorLogging {
   |      CDC       |  |      CLDC      |
 ------------------------------------------
 |                 Java                   |
-------------------------------------------  
+------------------------------------------
                 </programlisting>
             Which configuration you have dictates the restrictions when
-            running AspectJ compiled programs.    
+            running AspectJ compiled programs.
         	</para>
         	<para>
         	If you're running with a profile which sits on top of CDC then
-        	there are not, as far as we are aware, any restrictions when 
-        	running AspectJ compiled code on this flavour of J2ME. 
+        	there are not, as far as we are aware, any restrictions when
+        	running AspectJ compiled code on this flavour of J2ME.
         	</para>
         	<para>
         	If you're running with a profile sitting on top of CLDC 1.1
         	you are currently unable to use the <literal>thisJoinPoint,
         	thisJoinPointStaticPart</literal> and <literal>
-        	thisEnclosingJoinPointStaticPart</literal> variables, the 
-        	<literal>cflow</literal> and <literal>cflowbelow</literal> 
+        	thisEnclosingJoinPointStaticPart</literal> variables, the
+        	<literal>cflow</literal> and <literal>cflowbelow</literal>
         	pointcuts and the <literal>percflow</literal> and <literal>
         	percflowbelow</literal> perClauses.
         	</para>
@@ -1463,65 +1463,65 @@ aspect PublicErrorLogging {
         For more discussion and to raise any issues you have with
         AspectJ and J2ME, refer to
         	<ulink url="https://bugs.eclipse.org/bugs/show_bug.cgi?id=92933">
-               bugzilla entry 92933</ulink>.        	
+               bugzilla entry 92933</ulink>.
         	</para>
         </answer>
       </qandaentry>
       <qandaentry>
         <question id="q:aopinjava"
             xreflabel="Q: Are you working to put AOP into Java?">
-          <para> Are you working to put AOP into Java?  
-	   It seems that every AOP toolset currently uses proprietary mechanisms 
+          <para> Are you working to put AOP into Java?
+	   It seems that every AOP toolset currently uses proprietary mechanisms
 	   to describe point-cuts, etc.
           </para>
         </question>
         <answer>
           <para>
-	We are working on standardization, but it's 
-	a question of timing/ripeness (imagine going from thousands of users 
-	to millions).  (See <xref linkend="q:standardization"/>.) We believe 
+	We are working on standardization, but it's
+	a question of timing/ripeness (imagine going from thousands of users
+	to millions).  (See <xref linkend="q:standardization"/>.) We believe
 	AspectJ addresses this question in the best way possible now:
             <itemizedlist>
               <listitem>
                 <para>
-	It's open-source.  Rather than being proprietary or controlled by a 
+	It's open-source.  Rather than being proprietary or controlled by a
 	vendor, it's available for anybody to use and build upon, forever.
                 </para>
               </listitem>
               <listitem>
                 <para>
-	AspectJ is not a set of mechanisms, it's a language.  It is currently 
-	implemented using certain techniques, but there's nothing that prevents 
-	it from being implemented with other techniques.  That means users can 
+	AspectJ is not a set of mechanisms, it's a language.  It is currently
+	implemented using certain techniques, but there's nothing that prevents
+	it from being implemented with other techniques.  That means users can
 	adopt the language with confidence that implementations will get better.
                 </para>
               </listitem>
               <listitem>
                 <para>
-	There is no engineering need to change Java.  The AspectJ language uses 
-	the join point model already in Java, so there is no need to extend the 
-	programming model.  Our implementation produces valid Java bytecode, which 
-	runs in any compliant J2SE VM and supports standard debuggers for those VM's 
-	that support JSR-45 (debugging support for multi-language/multi-file sources).  
-	This is a huge benefit to Sun since Sun must be extremely cautious 
-	about extensions to the language or VM; before adopting AOP, Sun should 
+	There is no engineering need to change Java.  The AspectJ language uses
+	the join point model already in Java, so there is no need to extend the
+	programming model.  Our implementation produces valid Java bytecode, which
+	runs in any compliant J2SE VM and supports standard debuggers for those VM's
+	that support JSR-45 (debugging support for multi-language/multi-file sources).
+	This is a huge benefit to Sun since Sun must be extremely cautious
+	about extensions to the language or VM; before adopting AOP, Sun should
 	demand the kind of actual-proof that AspectJ implementations offer.
                 </para>
               </listitem>
               <listitem>
                 <para>
-	On the issue of "proprietary mechanisms to describe pointcuts, etc.":   Any AOP 
-	has to have some language to describe pointcuts and the like ("pointcuts" 
-	of course being the AspectJ term).  Users would like to have one language 
-	(to avoid having to learn or transform between many languages) and the 
-	choice of multiple implementations (tailored for a configuration, subject 
+	On the issue of "proprietary mechanisms to describe pointcuts, etc.":   Any AOP
+	has to have some language to describe pointcuts and the like ("pointcuts"
+	of course being the AspectJ term).  Users would like to have one language
+	(to avoid having to learn or transform between many languages) and the
+	choice of multiple implementations (tailored for a configuration, subject
 	to competitive pressure, etc.).  That's what AspectJ offers.
                 </para>
               </listitem>
               <listitem>
                 <para>
-	That said, we believe the AspectJ extensions to Java could form the basis 
-	for bringing AOP to Java; when that happens, there will be engineering 
+	That said, we believe the AspectJ extensions to Java could form the basis
+	for bringing AOP to Java; when that happens, there will be engineering
 	opportunities to make the implementation and tool support better.
                 </para>
               </listitem>
@@ -1559,7 +1559,7 @@ aspect PublicErrorLogging {
           </para>
         </answer>
       </qandaentry>
-      
+
       <qandaentry>
         <question id="q:mailingLists"
             xreflabel="Q: What mailing lists are there?">
@@ -1567,7 +1567,7 @@ aspect PublicErrorLogging {
         </question>
         <answer>
           <para>
-            The AspectJ users mailing list 
+            The AspectJ users mailing list
             (<literal>aspectj-users@eclipse.org</literal>)
             provides an informal network of AspectJ language users who
             can answer usage questions about AspectJ programs
@@ -1576,7 +1576,7 @@ aspect PublicErrorLogging {
             or how to write Ant or shell scripts to invoke the tools.
           </para>
           <para>
-            The AspectJ developers mailing list 
+            The AspectJ developers mailing list
             (<literal>aspectj-dev@eclipse.org</literal>)
             provides an informal network of AspectJ technology experts who
             aim to understand the technology behind AspectJ.
@@ -1587,15 +1587,15 @@ aspect PublicErrorLogging {
           </para>
           <para>
             For both mailing lists, only subscribed members may post messages.
-            To subscribe, visit the 
+            To subscribe, visit the
             <ulink url="http://eclipse.org/aspectj">AspectJ web site</ulink>.
           </para>
           <para>
-            There you can also subscribe to 
+            There you can also subscribe to
             <literal>aspectj-announce@eclipse.org</literal>,
             a low-traffic list containing only announcements
             about significant AspectJ events and product releases.
-            To get on a similar list for aspect-oriented software 
+            To get on a similar list for aspect-oriented software
             development generally, see
             <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
@@ -1635,19 +1635,19 @@ aspect PublicErrorLogging {
         </question>
         <answer>
           <para>You need to specify to the compiler the files that
-            contain your aspects and the files that contain the 
+            contain your aspects and the files that contain the
             types affected by your aspects.
 	    See <xref linkend="q:knowWhenAspectsAffectClasses"/>.
 	    The AspectJ compiler will not search the source path for types
 	    that may be affected (unlike Javac and Jikes).
 	    In AspectJ 1.0, ajc requires all code to be in source form;
 	    in AspectJ 1.1, Java and AspectJ code may be in either source
-	    or binary form.  
+	    or binary form.
           </para>
           <para>In some cases you should compile your entire system all at once.
            If this is too slow, then you can try to make reasonable divisions
-           between sets of source files whose aspects do not interact to 
-           achieve a shorter compile cycle (particularly for development 
+           between sets of source files whose aspects do not interact to
+           achieve a shorter compile cycle (particularly for development
 	       aspects).  If you have aspects that apply to different modules,
 	       you can try compiling them into a binary form and using them
 	       to weave each module.  However, if you get any problems
@@ -1655,7 +1655,7 @@ aspect PublicErrorLogging {
            the entire system.
           </para>
           <para>
-          For more information, see the 
+          For more information, see the
             <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
             <ulink url="devguide/ajc-ref.html">
@@ -1673,21 +1673,21 @@ aspect PublicErrorLogging {
         </question>
         <answer>
           <para>
-          Yes, use the argfile option to ajc. List source 
-          files in a line-delimited text file and direct ajc to that 
+          Yes, use the argfile option to ajc. List source
+          files in a line-delimited text file and direct ajc to that
           file using <literal>-argfile</literal> or <literal>@</literal>:
           </para>
           <programlisting>ajc @sources.lst
 ajc -argfile sources.lst
           </programlisting>
-          <para>Another way in AspectJ 1.1 is to use the 
+          <para>Another way in AspectJ 1.1 is to use the
           	<literal>-sourceroots</literal> options, which reads all
           	source files in a given set of directories:
           </para>
           <programlisting>ajc -sourceroots "src;testsrc"
           </programlisting>
           <para>
-          For more information, see the 
+          For more information, see the
             <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
             <ulink url="devguide/ajc-ref.html">
@@ -1710,7 +1710,7 @@ ajc -argfile sources.lst
             can find to run it on, the shorter your compile times will be. At a
             minimum you need to use a Java 2 or later JVM to run the compiler
             (J2SE 1.3 for AspectJ 1.1).
-            We realize that this constraint can be a problem for users who 
+            We realize that this constraint can be a problem for users who
             don't currently have a Java 2 JVM available. We're sorry for the
             inconvenience, but we had to make the hard decision that the
             advantages of being able to rely on Java 2 were worth the cost of
@@ -1797,7 +1797,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
       <qandaentry>
         <question id="q:assert"
             xreflabel="Q:Does the ajc compiler support the assert keyword in Java 1.4?">
-          <para>Does the <literal>ajc</literal> compiler support 
+          <para>Does the <literal>ajc</literal> compiler support
         the <literal>assert</literal> keyword in Java 1.4?
           </para>
         </question>
@@ -1815,7 +1815,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
       <qandaentry>
         <question id="q:generics"
             xreflabel="Q:Does the ajc compiler support generics and the other new language features of Java 5?">
-          <para>Does the <literal>ajc</literal> compiler support 
+          <para>Does the <literal>ajc</literal> compiler support
         generics and the other new language features of Java 5?
           </para>
         </question>
@@ -1837,19 +1837,19 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           </para>
         </question>
         <answer>
-          <para>Yes.  Both <literal>ajc</literal> and 
+          <para>Yes.  Both <literal>ajc</literal> and
 			  <literal>aspectjrt.jar</literal> should work with versions
-			  of aspect code and libraries back to AspectJ 1.2.1. 
+			  of aspect code and libraries back to AspectJ 1.2.1.
 			  Any aspects should be deployed
-			  with the same version of <literal>aspectjrt.jar</literal> 
+			  with the same version of <literal>aspectjrt.jar</literal>
 			  they were compiled with.  For more information, see the
 			 <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
             <ulink url="devguide/ajc-ref.html">
               Reference for ajc</ulink>
-			  and 
+			  and
             <ulink url="devguide/deployment.html">
-              Deployment notes</ulink> section on 
+              Deployment notes</ulink> section on
             <ulink url="devguide/versionCompatibility.html">
 				Version compatibility</ulink>.
 			</para>
@@ -1897,12 +1897,12 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>In AspectJ 1.0,
-          the PARSER for ajc is written by hand.  This choice was made with full 
-          awareness of the generator tools out there.  (Jim had for example used 
-          the excellent javacc tool for building the parser for JPython (now Jython)).  
-          One of the reasons that AspectJ uses a hand-written parser is that using 
-          javacc taught Jim about the LL-k design for parsers (pioneered by antlr).  
-          As opposed to the state-machine parsers produced by yacc, these parsers are 
+          the PARSER for ajc is written by hand.  This choice was made with full
+          awareness of the generator tools out there.  (Jim had for example used
+          the excellent javacc tool for building the parser for JPython (now Jython)).
+          One of the reasons that AspectJ uses a hand-written parser is that using
+          javacc taught Jim about the LL-k design for parsers (pioneered by antlr).
+          As opposed to the state-machine parsers produced by yacc, these parsers are
           very readable and writable by humans.
           </para>
           <para>
@@ -1911,55 +1911,55 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
           <itemizedlist>
             <listitem>
               <para>
-            Antlr's support for unicode in the lexer is still immature and this makes 
-            using it with Java challenging.  This was an even bigger issue 3 years ago 
+            Antlr's support for unicode in the lexer is still immature and this makes
+            using it with Java challenging.  This was an even bigger issue 3 years ago
             when we started on the Java implementation of ajc.
               </para>
             </listitem>
             <listitem>
               <para>
-            While javacc is freely available, it is not Open Source.  Depending on a 
-            closed-source tool to build an Open Source compiler would reduce some 
+            While javacc is freely available, it is not Open Source.  Depending on a
+            closed-source tool to build an Open Source compiler would reduce some
             of the transparency and control of open-source.
               </para>
             </listitem>
           </itemizedlist>
           <para>
-          There were also several things that were easier to implement with 
+          There were also several things that were easier to implement with
           a hand-written parser than with any of the exiting tools.
           </para>
           <itemizedlist>
             <listitem>
               <para>
-            Semi-keywords -- it's important to us that 
-            "every legal Java program is also a legal AspectJ program."  
-            This wouldn't be true if we made 'before' and 'call' full keywords in 
-            AspectJ.  It is easier to support these sorts of semi-keywords with a 
-            hand-written parser.  (Note: ajc-1.0.x handles 'aspect' and 'pointcut' 
-            slightly specially which can break a few unusual pure Java programs.  
+            Semi-keywords -- it's important to us that
+            "every legal Java program is also a legal AspectJ program."
+            This wouldn't be true if we made 'before' and 'call' full keywords in
+            AspectJ.  It is easier to support these sorts of semi-keywords with a
+            hand-written parser.  (Note: ajc-1.0.x handles 'aspect' and 'pointcut'
+            slightly specially which can break a few unusual pure Java programs.
             This is a compiler limitation that will be fixed in a future release.)
               </para>
             </listitem>
             <listitem>
               <para>
-            Deprecated syntax warnings -- the syntax of AspectJ 
-            changed many times from version 0.2 to the 1.0 release.  It was easier 
-            to provide helpful warning messages for these changes with our 
+            Deprecated syntax warnings -- the syntax of AspectJ
+            changed many times from version 0.2 to the 1.0 release.  It was easier
+            to provide helpful warning messages for these changes with our
             hand-written parser.
               </para>
             </listitem>
             <listitem>
               <para>
-            Grammar modularity -- We like being able to have 
+            Grammar modularity -- We like being able to have
             AspectJParser extend JavaParser.
               </para>
             </listitem>
             <listitem>
-              <para> 
-            Part of the grammar for AspectJ is extremely hard for existing tools to 
-            capture. This is the type pattern syntax, i.e. "com.xerox..*.*(..)".  
-            The sort of case that gives standard parser generators fits is something 
-            like "*1.f(..)" which no one would ever write, but which must be 
+              <para>
+            Part of the grammar for AspectJ is extremely hard for existing tools to
+            capture. This is the type pattern syntax, i.e. "com.xerox..*.*(..)".
+            The sort of case that gives standard parser generators fits is something
+            like "*1.f(..)" which no one would ever write, but which must be
             supported for a consistent language.
               </para>
               <para>
@@ -2056,19 +2056,19 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
              <literal>set</literal>,
              <literal>initialiation</literal>, and
              <literal>staticinitialiation</literal>.)
-             The compiler will list the static code points which will be 
+             The compiler will list the static code points which will be
              affected by any advice specifying the same pointcut.
              For example, the following will print a warning
              whereever some code in class Bar gets a field value from Foo:
              <programlisting>
-  declare warning: get(* Foo.*) &amp;&amp; within(Bar) 
-     : "reading Foo state from Bar";
+declare warning: get(* Foo.*) &amp;&amp; within(Bar)
+   : "reading Foo state from Bar";
              </programlisting>
           </para>
           <para>
             When you are running your program,
             you can trace advice as it executes.  This
-            enables you to identify advice on join points picked out 
+            enables you to identify advice on join points picked out
             dynamically, which cannot be reflected precisely by IDE support.
             For a related tracing question,
                see <xref linkend="q:seeingjoinpoints"/>
@@ -2096,7 +2096,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             The AspectJ team directly provided components for JBuilder, Forte,
             and Emacs and supported the open-source AspectJ plugin project
             at <ulink url="http://eclipse.org/ajdt">http://eclipse.org/ajdt</ulink>
-            which uses the AJDE API support for IDE's.  
+            which uses the AJDE API support for IDE's.
             Supporting new IDE's is a matter of building on the AJDE API's,
             mostly likely adopting one of the existing open-source IDE
             extensions as a design template.
@@ -2106,7 +2106,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             <itemizedlist>
               <title></title>
               <listitem>
-                <para>IDEA/IntelliJ has an enthusiastic community and 
+                <para>IDEA/IntelliJ has an enthusiastic community and
                 the developers are working on an extensibility API
                 - <ulink url="http://intellij.com">http://intellij.com</ulink>
                 </para>
@@ -2151,7 +2151,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
       <qandaentry>
         <question id="q:hybridbuilds"
             xreflabel="Q:Setting up hybrid builds">
-          <para>I want the aspects for development builds but 
+          <para>I want the aspects for development builds but
         remove them for production builds.  How can I set up the build
         system so they are unpluggable?  And so I use <literal>javac</literal>
         in my production build?
@@ -2159,39 +2159,39 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>
-          If you are using development-time-only aspects - aspects that only 
-          exist when you are developing the code, not when you ship it - 
+          If you are using development-time-only aspects - aspects that only
+          exist when you are developing the code, not when you ship it -
           you can use implement a hybrid build process by listing
           the production source files into a javac-compliant argfile,
           and the development source files in another ajc argfiles:
           </para>
           <programlisting>
-     -- file "production.lst":
-     One.java
-     two/Three.java
-     ...
+-- file "production.lst":
+One.java
+two/Three.java
+...
 
-     -- file "tracing.lst":
-     trace/Library.java
-     Trace.java
+-- file "tracing.lst":
+trace/Library.java
+Trace.java
 
-     -- file "development.lst":
-     @production.lst
-     @tracing.lst
+-- file "development.lst":
+@production.lst
+@tracing.lst
           </programlisting>
           <para>
             Then your development build can use <literal>ajc</literal>:
           </para>
           <programlisting>
-            ajc @development.lst
+ajc @development.lst
           </programlisting>
           <para>
-          And your development build can use 
+          And your development build can use
           <literal>ajc</literal> or <literal>javac</literal>
            or <literal>jikes</literal>:
           </para>
           <programlisting>
-            jikes @production.lst
+jikes @production.lst
           </programlisting>
         </answer>
       </qandaentry>
@@ -2204,12 +2204,12 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         </question>
         <answer>
           <para>
-		Aspects apply to everything in a namespace, as if everything is 
+		Aspects apply to everything in a namespace, as if everything is
 		compiled together.
-		Sometimes you can break the build down into separate steps without breaking 
+		Sometimes you can break the build down into separate steps without breaking
 		this model, but we haven't stated exactly where it could break
 		because it depends on the interactions between all types.
-		You can try the approaches below, but remember to rebuild 
+		You can try the approaches below, but remember to rebuild
 		everything in one go if there are problems.
 		</para>
 		<para>
@@ -2222,45 +2222,41 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
 		Next is the case where the aspects make changes to a common
 		library that are visible to other clients, which themselves
 		are otherwise unaffected by the aspects.  In this case, the
-		common library can be built using ajc, and used on the 
+		common library can be built using ajc, and used on the
 		classpath for the module builds:
-		<programlisting>
-<![CDATA[
-   ajc -outjar common.jar -sourceroots "aspectj-src:src" ...
-   cd ../otherProject
-   javac -classpath "../common/common.jar:${aspectjrt.jar}" {src}
-]]>
-		</programlisting>
+		<programlisting><![CDATA[
+ajc -outjar common.jar -sourceroots "aspectj-src:src" ...
+cd ../otherProject
+javac -classpath "../common/common.jar:${aspectjrt.jar}" {src}
+]]></programlisting>
 		</para>
 		<para>
-		Combining these last two, 
+		Combining these last two,
 		there's the case where a common set of aspects should
 		affect two or more modules that are in a dependency relationship
-		to one another.  It should work to reuse the aspects 
+		to one another.  It should work to reuse the aspects
 		in binary form for each compile, in dependency order:
-		
-		<programlisting>
-<![CDATA[
-   ajc -outjar common-aspects.jar
-       -sourceroots "aspectj-src" ...
 
-   ajc -outjar common.jar
-       -sourceroots "src"
-       -aspectpath common-aspects.jar ...
+		<programlisting><![CDATA[
+ajc -outjar common-aspects.jar
+    -sourceroots "aspectj-src" ...
 
-   cd ../module1
-   ajc -outjar module1.jar
-       -sourceroots "src"
-       -classpath common.jar
-       -aspectpath ../common-aspects.jar ...
+ajc -outjar common.jar
+    -sourceroots "src"
+    -aspectpath common-aspects.jar ...
 
-   cd ../module2
-   ajc -outjar module2.jar
-       -sourceroots "src"
-       -classpath "common.jar;../module1.jar"
-       -aspectpath ../common-aspects.jar ...
-]]>
-		</programlisting>   
+cd ../module1
+ajc -outjar module1.jar
+    -sourceroots "src"
+    -classpath common.jar
+    -aspectpath ../common-aspects.jar ...
+
+cd ../module2
+ajc -outjar module2.jar
+    -sourceroots "src"
+    -classpath "common.jar;../module1.jar"
+    -aspectpath ../common-aspects.jar ...
+]]></programlisting>
 		</para>
 		<para>
 		If two modules are visibly affected by aspects and
@@ -2286,23 +2282,21 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         <answer>
           <para>
 			Just incrementally-compile the whole system.
-			Specify to ajc the modules as multiple source roots  
+			Specify to ajc the modules as multiple source roots
 			(or input jars if you are weaving libraries).
 			</para>
 			<para>
-			In Eclipse's AJDT, you can create a top-level project with symbolic 
+			In Eclipse's AJDT, you can create a top-level project with symbolic
 			links out to the sources:
-			
-			<programlisting>
-<![CDATA[
-   app-assembly/
-	 {link common/aspects}
-	 {link common/src}
-	 {link module1/src}
-	 ...
-]]>
-			</programlisting>   
-			
+
+			<programlisting><![CDATA[
+app-assembly/
+{link common/aspects}
+{link common/src}
+{link module1/src}
+...
+]]></programlisting>
+
 			Then everything is part of one huge incremental compile.  Also, you
 			can close this master project and work the others using the Java
 			compiler or AJDT.
@@ -2320,17 +2314,17 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         <question id="q:methodsignatures"
             xreflabel="Q:Is it possible to change methods by introducing keywords, adding parameters, or changing the throws clause?">
           <para>Is it possible to change methods by introducing keywords (like
-            <literal>synchronized</literal>), adding parameters, 
+            <literal>synchronized</literal>), adding parameters,
                      or changing the "throws" clause?
           </para>
         </question>
         <answer>
           <para>AspectJ does not enable you to change the signature of a method,
-            but you can (by express declaration) work around some 
+            but you can (by express declaration) work around some
             limits imposed by the signature.  You can convert a checked exception to
             unchecked using <literal>declare soft</literal>, privileged aspects
-            have access to private methods, and you can use a percflow aspect to 
-            ferry additional state to a callee without changing intervening 
+            have access to private methods, and you can use a percflow aspect to
+            ferry additional state to a callee without changing intervening
             signatures.   For more details, see
             <ulink url="progguide/index.html">The AspectJ Programming Guide</ulink>.
             In the case of <literal>synchronized</literal>,
@@ -2356,25 +2350,24 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
         <answer>
           <para>
           You can trace them using using an aspect.
-           For example, you can start logging at a particular method call and 
+           For example, you can start logging at a particular method call and
 	   see what join points occur after the call and before it returns.
           </para>
           <para>
           Here's some code Jim Hugunin wrote to trace join points
-          and posted to the users list. To reuse the aspect, 
+          and posted to the users list. To reuse the aspect,
           define a subaspect and implement the pointcuts, for example:
           <programlisting>
-
 aspect JoinPointSampleAspect extends aj.TraceJoinPoints {
-    protected pointcut entry() : 
+    protected pointcut entry() :
         execution(static void JoinPointSample.main(String[]));
-    protected pointcut exit() : 
+    protected pointcut exit() :
         call(static void JoinPointSampleAspect.exit());
 
     public static void main (String[] args) {
-        JoinPointSample.main(args);   
-        JoinPointSampleAspect.exit();   
-    } 
+        JoinPointSample.main(args);
+        JoinPointSampleAspect.exit();
+    }
     public static void exit() {}
 }
 
@@ -2384,8 +2377,7 @@ class JoinPointSample {
           </programlisting>
           </para>
           <para>Here's the aspect:
-          <programlisting>
-<![CDATA[
+          <programlisting><![CDATA[
 /* TraceJoinPoints.java */
 
 package aj;
@@ -2494,8 +2486,7 @@ public abstract aspect TraceJoinPoints {
         while (i-- > 0) out.print("  ");
     }
 }
-]]>
-          </programlisting>
+]]></programlisting>
           </para>
           <para>Note that if you are using AspectJ 1.0,
           	the line starting with <literal>declare precedence</literal>
@@ -2548,8 +2539,8 @@ public abstract aspect TraceJoinPoints {
                 this object to some method on the target object with a
                 particular signature; and (2) the execution of the actual code
                 in the particular method dispatched in the target object.
-                The call join point starts with the initial call and ends 
-                when control returns to the call (by return or perhaps 
+                The call join point starts with the initial call and ends
+                when control returns to the call (by return or perhaps
                 thrown exception).  The execution join point starts with
                 the method body and ends when the body completes (again
                 by return or throwing an exception), so the execution join
@@ -2557,10 +2548,10 @@ public abstract aspect TraceJoinPoints {
                 call join point.  You can see this if you use the
 	        join-point tracing aspect in see <xref linkend="q:seeingjoinpoints"/>.
           </para>
-          <para>As you would expect, the context differs 
+          <para>As you would expect, the context differs
                 in advice on pointcuts picking out execution and call join
-                points; for call, <literal>this</literal> refers to the caller, whereas 
-                for execution <literal>this</literal> refers to the called 
+                points; for call, <literal>this</literal> refers to the caller, whereas
+                for execution <literal>this</literal> refers to the called
                 (executing) object.
           </para>
           <para>
@@ -2574,10 +2565,10 @@ public abstract aspect TraceJoinPoints {
 	your sources within the code the compiler controls
 	(described in the <ulink url="progguide/semantics.html">appendix</ulink>
      to the <literal>Programming Guide</literal>).
-	For example, to trace calls into a 
+	For example, to trace calls into a
 	method from classes which are outside the code the compiler controls
 	at compile time, then using <literal>execution()</literal> will work
-	while using <literal>call()</literal>may not.  Finally, since 
+	while using <literal>call()</literal>may not.  Finally, since
 	<literal>super</literal> invocations are not considered method calls,
 	to trace <literal>super.foo()</literal> would require using
 	<literal>execution</literal>.
@@ -2585,9 +2576,9 @@ public abstract aspect TraceJoinPoints {
           <para>
           		Because of differences in the way AspectJ 1.0 and 1.1
           		are implemented, in 1.0
-                you should use the <literal>call()</literal> 
+                you should use the <literal>call()</literal>
                 pointcut designator unless you have a good reason to use
-	        <literal>execution()</literal>; in AspectJ 1.1, the 
+	        <literal>execution()</literal>; in AspectJ 1.1, the
 	        reverse is true.
           </para>
         </answer>
@@ -2619,7 +2610,7 @@ public abstract aspect TraceJoinPoints {
         <answer>
           <para>This is best seen by way of example.
 	Given a recursive call to <literal>int factorial(int)</literal>
-	  you can print the arguments for 
+	  you can print the arguments for
 	(a) the current and most-recent recursive call
 	or (b) the current and original recursive call:
           </para>
@@ -2628,13 +2619,13 @@ aspect LogFactorial {
     pointcut f(int i) : call(int factorial(int)) &amp;&amp; args(i);
 
     // most-recent
-    before(int i, final int j) : f(i) &amp;&amp; cflowbelow(f(j)) { 
+    before(int i, final int j) : f(i) &amp;&amp; cflowbelow(f(j)) {
         System.err.println(i + "-" + j);
     }
 
     // original
-    before(int i, final int j) : f(i) 
-        &amp;&amp; cflowbelow(cflow(f(j)) &amp;&amp; !cflowbelow(f(int))) { 
+    before(int i, final int j) : f(i)
+        &amp;&amp; cflowbelow(cflow(f(j)) &amp;&amp; !cflowbelow(f(int))) {
         System.err.println(i + "@" + j);
     }
 }
@@ -2644,8 +2635,8 @@ aspect LogFactorial {
       <qandaentry>
         <question id="q:initializationjoinpoints"
             xreflabel="Q:What is the difference between constructor call, constructor execution, initialization, and static initialization join points?">
-          <para>What is the difference between constructor call, 
-          constructor execution, initialization, and static 
+          <para>What is the difference between constructor call,
+          constructor execution, initialization, and static
           initialization join points?
           </para>
         </question>
@@ -2655,21 +2646,20 @@ aspect LogFactorial {
           are akin to method call, and initialization generalizes this and
           picks out the first constructor called.
           </para>
-          <para>Their relations are best 
+          <para>Their relations are best
           demonstrated by tracing the join points.  Below is the class
           Test which implements an interface and extends a class
           along with a trace of the join points below and including
-          the constructor call obtained using 
+          the constructor call obtained using
           <literal>TraceJointPoints.java</literal>
                from <xref linkend="q:seeingjoinpoints"/>.
           </para>
-          <programlisting>
-            <![CDATA[
+          <programlisting><![CDATA[
 public class Init {
     public static void main (String[] args) {
-        new Test(); 
+        new Test();
         end();
-    } 
+    }
     static void end() {}
 }
 class Super {}
@@ -2677,37 +2667,33 @@ interface I {}
 class Test extends Super implements I {
     Test() {}
 }
-
-]]>
-          </programlisting>
-          <para>For a program compiled with AspectJ 1.0, 
+]]></programlisting>
+          <para>For a program compiled with AspectJ 1.0,
           	the result is this:</para>
-          <programlisting>
-            <![CDATA[
-  <constructor-call sig="Test()" >
-    <staticinitialization sig="Super._init_" />
-    <staticinitialization sig="Test._init_" />
-    <initialization sig="Super()" >
-      <instanceinitializer-execution sig="Super._init_" />
-      <constructor-execution sig="Super()" />
-    </initialization>
-    <initialization sig="I()" >
-      <instanceinitializer-execution sig="I._init_" />
-      <constructor-execution sig="I()" />
-    </initialization>
-    <initialization sig="Test()" >
-      <instanceinitializer-execution sig="Test._init_" />
-      <constructor-execution sig="Test()" />
-    </initialization>
-  </constructor-call>
-]]>
-          </programlisting>
+          <programlisting><![CDATA[
+<constructor-call sig="Test()" >
+  <staticinitialization sig="Super._init_" />
+  <staticinitialization sig="Test._init_" />
+  <initialization sig="Super()" >
+    <instanceinitializer-execution sig="Super._init_" />
+    <constructor-execution sig="Super()" />
+  </initialization>
+  <initialization sig="I()" >
+    <instanceinitializer-execution sig="I._init_" />
+    <constructor-execution sig="I()" />
+  </initialization>
+  <initialization sig="Test()" >
+    <instanceinitializer-execution sig="Test._init_" />
+    <constructor-execution sig="Test()" />
+  </initialization>
+</constructor-call>
+]]></programlisting>
           <para>
-        Ordinarily, using a <literal>call</literal> pointcut designator 
+        Ordinarily, using a <literal>call</literal> pointcut designator
         is best because the call join point surrounds the others, but in
         the case of constructors there is no target object for
         the call (because it has not been constructed yet), so you
-        might prefer to use the <literal>initialization</literal> 
+        might prefer to use the <literal>initialization</literal>
         pointcut designator.
           </para>
         </answer>
@@ -2721,15 +2707,15 @@ class Test extends Super implements I {
         <answer>
           <para>
           You can advise some form of constructor join point.
-          Constructors are tricky in Java, and that's exposed in AspectJ.  
+          Constructors are tricky in Java, and that's exposed in AspectJ.
           Here are some rules of thumb:
           <itemizedlist>
             <listitem>
-              <para>If you want the join point on the "outside" of object creation, 
+              <para>If you want the join point on the "outside" of object creation,
               use after returning from call to the constructor:
               </para>
               <programlisting>
-    after() returning (Foo newlyCreatedObject): call(Foo.new(..)) { ... }
+after() returning (Foo newlyCreatedObject): call(Foo.new(..)) { ... }
               </programlisting>
               <para>
   You might be tempted to use "this" or "target" to expose the new object, but remember
@@ -2737,28 +2723,28 @@ class Test extends Super implements I {
   created yet... it only exists "on the way out", when you return the object.
               </para>
             </listitem>
-            <listitem> 
+            <listitem>
               <para>If you want the join point inside a particular constructor, use:
               </para>
               <programlisting>
-    after(Foo newlyCreatedObject) returning: this(newlyCreatedObject) &amp;&amp; execution(Foo.new(..)) { ... }
+after(Foo newlyCreatedObject) returning: this(newlyCreatedObject) &amp;&amp; execution(Foo.new(..)) { ... }
               </programlisting>
               <para>
     Remember, though, that if you use "before" advice here, the body of the constructor
     will not have run, and so the object may be somewhat uninitialized.
               </para>
             </listitem>
-            <listitem> 
+            <listitem>
               <para>
-    In the rare case that there are all sorts of constructors for the object that call 
-    each other with <literal>this(...)</literal> and you want exactly one join point 
-    for each initialization of <literal>Foo</literal>, regardless of the path of 
+    In the rare case that there are all sorts of constructors for the object that call
+    each other with <literal>this(...)</literal> and you want exactly one join point
+    for each initialization of <literal>Foo</literal>, regardless of the path of
     constructors it takes, then use:
               </para>
               <programlisting>
-    after(Foo f) returning: this(f) &amp;&amp; initialization(Foo.new(..)) { ... }
+after(Foo f) returning: this(f) &amp;&amp; initialization(Foo.new(..)) { ... }
               </programlisting>
-            </listitem> 
+            </listitem>
           </itemizedlist>
           </para>
         </answer>
@@ -2773,11 +2759,11 @@ class Test extends Super implements I {
         <answer>
           <para>
 	  This usually reflects both a conceptual error and a programming mistake.
-	  Most likely you want to do something like "run the advice for all 
+	  Most likely you want to do something like "run the advice for all
 	public and private calls," and the code looks something like this:
           </para>
           <programlisting>
-            within(com.xerox.printing..*) &amp;&amp; call(public * *(..)) &amp;&amp; call(private * *(..))
+within(com.xerox.printing..*) &amp;&amp; call(public * *(..)) &amp;&amp; call(private * *(..))
           </programlisting>
           <para>
 	But a pointcut is evaluated at *each* join point.
@@ -2788,7 +2774,7 @@ class Test extends Super implements I {
 	The correct pointcut would use <literal>||</literal> as follows:
           </para>
           <programlisting>
-            within(com.xerox.printing..*) &amp;&amp; (call(public * *(..)) || call(private * *(..)))
+within(com.xerox.printing..*) &amp;&amp; (call(public * *(..)) || call(private * *(..)))
           </programlisting>
           <para>
             Then the advice will run at the join point.
@@ -2805,11 +2791,11 @@ class Test extends Super implements I {
         <answer>
           <para>There is no way in advice to refer to the type of the
 	  code executing in a static context except by specification.
-	  This makes it impossible to refer to static members using 
+	  This makes it impossible to refer to static members using
 	  runtime information.
           </para>
           <para>However, AspectJ can determine the class for something
-          	in the join point context, which you can use as a per-class key. 
+          	in the join point context, which you can use as a per-class key.
           	Then you can actually declare an instance field to contain
           	the per-class value (see the next question).  This comes at
           	the cost of an extra reference, but the field can be final.
@@ -2830,7 +2816,7 @@ class Test extends Super implements I {
 	your program.  For example:
           </para>
           <programlisting>
-/** 
+/**
  * Example of using an interface to represent a type pattern.
  * sub-aspects use declare parents to add to traced types, e.g.,
  *    declare parents: com.mycompany.whatever..* implements Marked;
@@ -2867,37 +2853,37 @@ aspect MyMarker extends MarkerExample {
            and instructions for using AspectJ with other programming tools.
 		  <orderedlist>
 			<listitem><para>
-			The AspectJ release includes examples in its 
+			The AspectJ release includes examples in its
           	<literal>doc</literal> directory.
 			</para></listitem>
-			
+
 			<listitem><para>
            There is a community repository of sample code and tutorials
-           in the AspectJ CVS tree  
+           in the AspectJ CVS tree
            <literal>docs</literal> module <literal>sandbox</literal> directory.
-           These are extracted and published (online only) 
+           These are extracted and published (online only)
            <ulink url="http://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-code.html">
 		   here
            </ulink>.
 			</para></listitem>
-			
+
 			<listitem><para>
-			The <literal>teaching</literal> directory of the 
-			<literal>docs</literal> module contains public materials 
-			the AspectJ committers use for presentations, some of 
+			The <literal>teaching</literal> directory of the
+			<literal>docs</literal> module contains public materials
+			the AspectJ committers use for presentations, some of
 			which include example code.  To access CVS, see
-			<xref linkend="q:buildingsource"/>.			
+			<xref linkend="q:buildingsource"/>.
 			</para></listitem>
-			
+
 			<listitem><para>
-			The archives for the user and developer mailing lists 
+			The archives for the user and developer mailing lists
 			contain many good examples.  To search the archives, see
 			<xref linkend="q:searchingsite"/>.
 			</para></listitem>
 		  </orderedlist>
            This code can vary in quality.
            Code that we publish or include with AspectJ is generally
-           correct.  However, code found in our CVS tree might not have 
+           correct.  However, code found in our CVS tree might not have
            been tested thoroughly, and code from the mailing lists might
            be untested or use older versions of the language.
           </para>
@@ -2912,18 +2898,18 @@ aspect MyMarker extends MarkerExample {
           <para>Some libraries are distributed in the release under the
             examples folder in the distribution.
             These are "libraries" in the sense that they are reusable,
-            but they are delivered in source form. 
+            but they are delivered in source form.
             Similarly, some of the sample code is reusable; for that,
             see <xref linkend="q:exampleprograms"/>.
-            If you develop such a library and want to make it available to 
+            If you develop such a library and want to make it available to
             other users, feel to send it to the users mailing list
             <literal>aspectj-users@eclipse.org</literal>.
           </para>
           <para>In AspectJ 1.1, ajc supports binary aspects, so
           	you can distribute aspect libraries without distributing the
-          	source.  For more information, see the 
+          	source.  For more information, see the
           		<literal>-aspectpath</literal>
-          	option in the 
+          	option in the
           		<ulink url="devguide/ajc-ref.html">
               				Reference for ajc</ulink>.
           </para>
@@ -2964,28 +2950,26 @@ aspect MyMarker extends MarkerExample {
         </question>
         <answer>
           <para>
-            Just include the aspectjrt.jar as a required archive.  
-            For example, here is the HTML code for an HTML editor 
+            Just include the aspectjrt.jar as a required archive.
+            For example, here is the HTML code for an HTML editor
             applet that contains some debugging aspects:
           </para>
-          <programlisting>
-            <![CDATA[
+          <programlisting><![CDATA[
 <APPLET
    CODE='com.company.swing.applets.EditorApplet'
   WIDTH='700'
  HEIGHT='525'>
     <PARAM NAME="CODE" VALUE="com.company.swing.applets.EditorApplet" >
-    <PARAM NAME="ARCHIVE" 
+    <PARAM NAME="ARCHIVE"
          VALUE ="../company-applets.jar,../aspectjrt.jar,../xmlrpc-applet.jar" >
     <PARAM NAME="type" VALUE="application/x-java-applet;version=1.4">
     <PARAM NAME="scriptable" VALUE="false">
 </APPLET>
-]]>
-          </programlisting>
+]]></programlisting>
           <para>
           The above markup has worked reliably with the Java Plugin
-          (included in the JRE 1.4.x) in IE 6, Mozilla 1.1 (Win32), 
-          and Mozilla 1.0.1 (Red Hat Linux 8.0).  
+          (included in the JRE 1.4.x) in IE 6, Mozilla 1.1 (Win32),
+          and Mozilla 1.0.1 (Red Hat Linux 8.0).
           The following link describes how to configure Mozilla/Netscape
           6.x/7.x to use the Java Plugin from a JRE/SDK installation:
           <ulink url="http://java.sun.com/j2se/1.4.1/manual_install_linux.html">
@@ -3001,8 +2985,8 @@ aspect MyMarker extends MarkerExample {
         </question>
         <answer>
           <para>
-	In some cases, AspectJ allows conversion from values of primitive types to Object, 
-	so that highly polymorphic advice may be written.  This works if an advice parameter 
+	In some cases, AspectJ allows conversion from values of primitive types to Object,
+	so that highly polymorphic advice may be written.  This works if an advice parameter
 	or the return type for around is typed to Object.  So:
           </para>
           <programlisting>
@@ -3049,8 +3033,8 @@ java.lang.Integer
           detect the version of the AspectJ runtime while running
           under Java 1.4 or later, get the version from the package:
           <programlisting>
-    Package lang = org.aspectj.lang.JoinPoint.class.getPackage();
-    String version = lang.getImplementationVersion();
+Package lang = org.aspectj.lang.JoinPoint.class.getPackage();
+String version = lang.getImplementationVersion();
           </programlisting>
           </para>
           <para>When running under Java 1.3 or earlier, read the manifest
@@ -3102,8 +3086,8 @@ before() : pc() {
           </para>
         </question>
         <answer>
-          <para>Most likely this is a case of infinite recursion, 
-          where advice is advising itself. It presents as a 
+          <para>Most likely this is a case of infinite recursion,
+          where advice is advising itself. It presents as a
           <literal>StackOverflowError</literal>
           or silence as the VM exhausts itself in the recursion.
           </para>
@@ -3122,7 +3106,7 @@ public class Main {
           <para>If you compile and run this program, and it will fail silently, trying
             to process the finally clause even after throwing the StackOverflowError.
           </para>
-          <para>Here's a similar AspectJ program where the recursion is 
+          <para>Here's a similar AspectJ program where the recursion is
           not so obvious:
           </para>
           <programlisting>
@@ -3132,18 +3116,18 @@ aspect A {
           </programlisting>
           <para>This re-invokes itself because it advises any call.
           It invokes itself even after an exception is thrown, since
-          <literal>after</literal> advice, like a finally clause, runs even 
+          <literal>after</literal> advice, like a finally clause, runs even
           after exceptions are thrown. You can fix this by following two practices:
           </para>
           <para>In AspectJ 1.1, the String concatenation operator (+) is
-          	advised in its StringBuffer form, so if your advise uses 
+          	advised in its StringBuffer form, so if your advise uses
           	String + in a way that is picked out by your pointcut,
           	you will get infinite recursion.</para>
           <para>
           (1) Use <literal>after returning</literal> to advise normal completions
               or <literal>after throwing</literal> to advise abrupt completions.
-              If you use <literal>after</literal> or <literal>after throwing</literal>, 
-              write the advice with the same care you would a finally clause, 
+              If you use <literal>after</literal> or <literal>after throwing</literal>,
+              write the advice with the same care you would a finally clause,
               understanding that it may run after some failure.
           </para>
           <para>(2) Avoid writing advice that advises itself.  One simple way to
@@ -3151,20 +3135,20 @@ aspect A {
           </para>
           <programlisting>
 aspect A {
-    after() returning:  !within(A) &amp;&amp; call(* *(..)) { 
-        System.out.println("after " + thisJoinPoint); 
+    after() returning:  !within(A) &amp;&amp; call(* *(..)) {
+        System.out.println("after " + thisJoinPoint);
     }
 }
           </programlisting>
-          <para>A better way is often to re-write the pointcut.  
-          If the advice is advising itself accidentally, that's a sign that 
+          <para>A better way is often to re-write the pointcut.
+          If the advice is advising itself accidentally, that's a sign that
           the pointcut is not saying what you mean.
           </para>
           <programlisting>
 aspect A {
     pointcut withinTargetClasses() : within(A+) || within(B+);
-    after() returning:  withinTargetClasses() &amp;&amp; call(* *(..)) { 
-        System.out.println("after " + thisJoinPoint); 
+    after() returning:  withinTargetClasses() &amp;&amp; call(* *(..)) {
+        System.out.println("after " + thisJoinPoint);
     }
 }
           </programlisting>
@@ -3179,7 +3163,7 @@ aspect A {
           <programlisting>
 aspect A {
     boolean com.xerox..*.dirtyFlag;
-    after (Object target) returning 
+    after (Object target) returning
         : target(target) &amp;&amp; call(* com.xerox..*.set*(..)) {
         target.dirtyFlag = true; // compile fails here
     }
@@ -3198,9 +3182,9 @@ aspect A {
     boolean TrackingSets.dirtyFlag;
     declare parents : com.xerox..* implements TrackingSets;
 
-    after (TrackingSets target) returning 
+    after (TrackingSets target) returning
         : target(target) &amp;&amp; call(* com.xerox..*.set*(..)) {
-        target.dirtyFlag = true; 
+        target.dirtyFlag = true;
     }
 }
           </programlisting>
@@ -3238,7 +3222,7 @@ aspect A {
 			  trades space for time in recompiles.
           </para>
         </answer>
-      </qandaentry> 
+      </qandaentry>
       <qandaentry>
         <question id="q:duplicateclass"
             xreflabel="Q:Why do I get a message that my class is already defined?">
@@ -3251,7 +3235,7 @@ aspect A {
             Most commonly, a source file was specified twice on the command line
             (e.g., directly and by a *.java entry in a .lst file).
             However, sometimes you have defined a class in two files in the
-            same package, and you need to rename the class or change its 
+            same package, and you need to rename the class or change its
             scope.  You should get this message from any Java compiler.
           </para>
         </answer>
@@ -3260,14 +3244,14 @@ aspect A {
         <question id="q:ajcrecompile"
             xreflabel="Q:ajc recompiles all files every time. How can I make it recompile only the files that have changed?">
           <para>
-            <literal>ajc</literal> recompiles all files every time. 
+            <literal>ajc</literal> recompiles all files every time.
           How can I make it recompile only the files that have changed?
           </para>
         </question>
         <answer>
           <para>
             <literal>ajc</literal> 1.0 does not support incremental
-          compilation, but since 1.1 <literal>ajc</literal> does when passed the 
+          compilation, but since 1.1 <literal>ajc</literal> does when passed the
           	<literal>-incremental</literal> option.  It may still recompile
           files that have not changed, if they could be affected by aspects
           in particular ways, but the files compiled should be fewer
@@ -3308,12 +3292,12 @@ aspect A {
         </question>
         <answer>
           <para>
-        When working with an unsupported IDE that objects to the syntax of 
-        AspectJ source files (and, e.g., automatically gathers them 
-        in a source tree as Java files based on the .java extension), 
-        you can use the .aj extension for your AspectJ files.  
-        The ajc compiler accepts both .java and .aj files, and you can 
-        set up your build scripts to include the correct list of 
+        When working with an unsupported IDE that objects to the syntax of
+        AspectJ source files (and, e.g., automatically gathers them
+        in a source tree as Java files based on the .java extension),
+        you can use the .aj extension for your AspectJ files.
+        The ajc compiler accepts both .java and .aj files, and you can
+        set up your build scripts to include the correct list of
         source files.  (You will have to find another editor for
         editing AspectJ files; you can use the ajbrowser to view
         edit your AspectJ files and navigate the crosscutting structure.)
@@ -3337,23 +3321,23 @@ aspect A {
         slow the process considerably.
           </para>
           <para>
-        If you are having problems and would like to find the optimal memory 
-        allocation, iteratively decrease the amount of memory available until 
-        AJDE or ajc signals out-of-memory errors, and then increase that 
+        If you are having problems and would like to find the optimal memory
+        allocation, iteratively decrease the amount of memory available until
+        AJDE or ajc signals out-of-memory errors, and then increase that
         amount by 5-10%.
           </para>
           <para>
         To increase memory for the ajc compiler, see <xref linkend="q:ajcoom"/>.
         For your IDE, do something similar or follow the provider's instructions.
-        For example, to increase memory in JBuilder, edit the 
+        For example, to increase memory in JBuilder, edit the
         <literal>jbuilderX/bin/jbuilder.config</literal>
         file to have an entry like:
-<programlisting>        
+<programlisting>
 vmparam -Xmx384m
-</programlisting>        
+</programlisting>
           </para>
           <para>
-        If it turns out that your project is too big to use with AJDE, your IDE 
+        If it turns out that your project is too big to use with AJDE, your IDE
         may nonetheless support external commands or Ant build processes, which
         run outside the IDE memory space.  For a JBuilder Ant plugin, some
         people have directed us to <ulink url="http://antrunner.sourceforge.net"/>.
@@ -3374,21 +3358,21 @@ vmparam -Xmx384m
         		that is being advised.  We have seen this happen two ways:
 			  <itemizedlist>
 				<listitem>
-				  <para>You get a ClassNotFound message for 
-				  	<literal>NoAspectBoundException</literal> when loading a 
-				  	class affected by aspects if <literal>aspectjrt.jar</literal> 
-				  	classes are not on the runtime classpath.   
+				  <para>You get a ClassNotFound message for
+				  	<literal>NoAspectBoundException</literal> when loading a
+				  	class affected by aspects if <literal>aspectjrt.jar</literal>
+				  	classes are not on the runtime classpath.
         			To fix this, put the classes on the classpath.
 				  </para>
 				</listitem>
 				<listitem>
 				  <para>
 				  	You can get a <literal>NoAspectBoundException</literal> when
-				  	there is a cycle in aspect initialization or static 
+				  	there is a cycle in aspect initialization or static
 				  	initialization, most commonly when an aspect advises
 				  	its own initializer.  To fix this, first find the class that
-				  	fails to load by running java in debug mode or looking 
-				  	at the <literal>NoAspectBoundException</literal> trace, 
+				  	fails to load by running java in debug mode or looking
+				  	at the <literal>NoAspectBoundException</literal> trace,
 				  	and then fix the offending (probably unintended) dependency.
 				  	Most often, it comes from a pointcut like
 				  	<literal>staticinitialization(com.company..*)</literal>
@@ -3401,10 +3385,10 @@ vmparam -Xmx384m
 				  </para>
 				</listitem>
 			  </itemizedlist>
-          </para> 
+          </para>
         </answer>
       </qandaentry>
-		
+
       <qandaentry>
         <question id="q:stacktraces"
             xreflabel="Q:My stack traces don't make sense.  What gives?">
@@ -3413,10 +3397,10 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>In 1.0, unless you are using the <literal>ajdb</literal> debugger, 
+          <para>In 1.0, unless you are using the <literal>ajdb</literal> debugger,
           stack traces may
           have synthetic methods in the stack, and the line numbers may
-          not track your source code.  The 
+          not track your source code.  The
             <ulink url="devguide/index.html">
               Development Environment Guide</ulink>
           discusses how to interpret stack at the end of the
@@ -3438,17 +3422,17 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          	When advice is not running,   
+          	When advice is not running,
           	there is probably a problem in the pointcut.
-          Sometimes users specify pointcuts that 
+          Sometimes users specify pointcuts that
           do not mean what they intend -
 	      most often when they misspell a type name. Run the compiler in
 	      <literal>-Xlint</literal> mode, which will flag some likely mistakes,
-	      like the type name.  
+	      like the type name.
           If that does not work, and your pointcut is staticly-determinable,
-          use a declare statement to identify affected code.  (For more 
+          use a declare statement to identify affected code.  (For more
           information, see <xref linkend="q:knowWhenAspectsAffectClasses"/>.)
-          If that does not work and your pointcut is dynamically determined, 
+          If that does not work and your pointcut is dynamically determined,
           see if your join points are executing at all by using
               TraceJoinPoints.java from <xref linkend="q:seeingjoinpoints"/>.
           </para>
@@ -3460,9 +3444,9 @@ vmparam -Xmx384m
           </para>
           <para>
           In the case of advice in abstract aspects, the advice will run once
-          for each concrete instance of the aspect. 
-          If the pointcut for that advice picks out the same join point for two 
-          concrete aspects, then the correct behavior is for the advice to run 
+          for each concrete instance of the aspect.
+          If the pointcut for that advice picks out the same join point for two
+          concrete aspects, then the correct behavior is for the advice to run
           the advice twice at that join point.
           </para>
           <para>
@@ -3470,16 +3454,16 @@ vmparam -Xmx384m
           can use IDE support, logging, or declare-warnings.
           If you are using IDE support, you should be able to trace back from
           the pointcut or advice to the join points which can be statically
-          determined to be affected.  
+          determined to be affected.
           Without IDE support, you can write
           declare-warning statements to identify code affected by staticly-
           determinable pointcuts.
           To identify advised dynamic join points,
-          you can try using <literal>TraceJoinPoints.java</literal> as above, 
-          or update the advice to print the source location of the join point.  
-          Doing any of these should show if the advice applies to code that 
+          you can try using <literal>TraceJoinPoints.java</literal> as above,
+          or update the advice to print the source location of the join point.
+          Doing any of these should show if the advice applies to code that
           you did not expect.
-          </para>                
+          </para>
           <para>If you've done this and convinced yourself it's not working,
           it may be a bug.  See <xref linkend="q:bugreports"/>.
           </para>
@@ -3497,7 +3481,7 @@ vmparam -Xmx384m
            	point and specifying the defining signature.
            	Since all overriding methods share this signature,
            	the advice runs for each method executed.
-           	(This happens, e.g., when one method invokes the same method  
+           	(This happens, e.g., when one method invokes the same method
            	in the superclass using <literal>super.{method}(..)</literal>).
            	This is the correct behavior.
           </para>
@@ -3506,7 +3490,7 @@ vmparam -Xmx384m
           	out only the initial method-execution.
           </para>
         </answer>
-      </qandaentry> 
+      </qandaentry>
       <qandaentry>
         <question id="q:tejpsp"
             xreflabel="Q:I don't understand when thisEnclosingJoinPointStaticPart is available.">
@@ -3516,7 +3500,7 @@ vmparam -Xmx384m
         </question>
         <answer>
           <para>
-          	<literal>thisEnclosingJoinPointStaticPart</literal> is a special 
+          	<literal>thisEnclosingJoinPointStaticPart</literal> is a special
           	variable available in the context of advice to refer to the
           	join point, if any, lexically enclosing the current join point:
           	<table>
@@ -3529,24 +3513,24 @@ vmparam -Xmx384m
           				</row>
           				<row>
           				<entry>
-						constructor-execution, method-execution, 
+						constructor-execution, method-execution,
 						advice execution, initialization,
   						pre-initialization, static initialization
           				</entry>
           				<entry>
- 						constructor-call, method-call, handler, 
+ 						constructor-call, method-call, handler,
  						field-set, field-get
        					</entry>
           				</row>
           			</tbody>
-          		</tgroup>	
+          		</tgroup>
           	</table>
 			Expressions in the body of handlers have the same
   			<literal>thisEnclosingJoinPointStaticPart</literal>
   			as the handler itself.
           </para>
         </answer>
-      </qandaentry> 
+      </qandaentry>
       <qandaentry>
         <question id="q:packagedeclares"
             xreflabel="Q:I declared a member on a class with package access, but other classes in the package cannot see it.">
@@ -3570,19 +3554,19 @@ vmparam -Xmx384m
           <para>I declared a member on a interface, but javac does not see it.
           </para>
         </question>
-      
+
         <answer>
           <para>
           	You have to compile all the top-level implementating
           	classes of the interface using <literal>ajc</literal>.
-            From an email by Jim Hugunin on the requirements for AspectJ 1.1 to 
+            From an email by Jim Hugunin on the requirements for AspectJ 1.1 to
             implement members declared by an aspect on an interface:
           </para>
           <para>
-            If you introduce non-static fields or non-abstract methods on an interface 
-            from an aspect, then all of the top-most implementors of that interface must 
-            be woven by that same aspect.  
-            (A class C is a top-most implementor of an interface I if C implements I 
+            If you introduce non-static fields or non-abstract methods on an interface
+            from an aspect, then all of the top-most implementors of that interface must
+            be woven by that same aspect.
+            (A class C is a top-most implementor of an interface I if C implements I
             and the superclass of C does not implement I.)
           </para>
         </answer>
@@ -3603,8 +3587,8 @@ vmparam -Xmx384m
             classes are found in <literal>tools.jar</literal> (in the
             <literal>lib</literal> directory of the JDK distribution), which
             must be on your classpath to make
-            <literal>ajc</literal> work with <literal>javac</literal>. 
-            Inspect the java command that launches ajc to make sure that 
+            <literal>ajc</literal> work with <literal>javac</literal>.
+            Inspect the java command that launches ajc to make sure that
             <literal>tools.jar</literal> is on the classpath for ajc;
             the -classpath option only applies to the sources compiled.
           </para>
@@ -3614,7 +3598,7 @@ vmparam -Xmx384m
         <question id="q:ajdocneeds13"
             xreflabel="Q:I'm running under 1.4, but ajdoc asks for 1.3 (or throws IllegalAccessError for HtmlWriter.configuration)">
           <para>
-          I'm running under 1.4, but <literal>ajdoc</literal> asks for 1.3 
+          I'm running under 1.4, but <literal>ajdoc</literal> asks for 1.3
           (or throws IllegalAccessError for HtmlWriter.configuration)
           </para>
         </question>
@@ -3635,7 +3619,7 @@ vmparam -Xmx384m
           (to make javac, et al work).  That makes it impossible to run the ajdoc
           taskdef (which does not currently support forking), so you'll need to
           run a separate ant process, either from the command-line or via Ant's
-          exec task (the Ant task will propagate the classpath).  
+          exec task (the Ant task will propagate the classpath).
           If the wrong tools.jar is not on the ant classpath, then it should work
           to put the 1.3 tools.jar in the taskdef classpath.
           </para>
@@ -3652,11 +3636,11 @@ vmparam -Xmx384m
         <answer>
           <para>It is a bad practice to use the compilation unit
 	   to control crosscutting.  Aspects and pointcuts especially
-            should be written to specify crosscutting precisely.	
+            should be written to specify crosscutting precisely.
             Aspects will behave the same when you add files if
             you initially included all files affected by your aspects.
             If you use the compilation unit, then your code will behave
-	    differently in AspectJ implementations that do not limit 
+	    differently in AspectJ implementations that do not limit
 	    themselves to specified files.
           </para>
         </answer>
@@ -3684,7 +3668,7 @@ vmparam -Xmx384m
       <qandaentry>
         <question id="q:injection"
             xreflabel="Q:I've heard AspectJ can generate or inject code into my code.  Is this true?">
-          <para>I've heard AspectJ can generate or inject code into my code.  
+          <para>I've heard AspectJ can generate or inject code into my code.
 	        Is this true?
           </para>
         </question>
@@ -3699,7 +3683,7 @@ vmparam -Xmx384m
 	  join points.
           </para>
           <para>
-	  So the semantic model of advice is like the semantic model of a 
+	  So the semantic model of advice is like the semantic model of a
 	  method -- it says "when any of these things happen, do this".
           </para>
           <para>
@@ -3724,10 +3708,10 @@ vmparam -Xmx384m
           </para>
         </question>
         <answer>
-          <para>Users have sometimes wanted AspectJ to pick out 
+          <para>Users have sometimes wanted AspectJ to pick out
           	many more join points, including
           	<itemizedlist>
-          		<listitem><para>method-local field access</para></listitem>	
+          		<listitem><para>method-local field access</para></listitem>
           		<listitem><para>array-element access</para></listitem>
           		<listitem><para>loop iteration</para></listitem>
           		<listitem><para>method parameter evaluation</para></listitem>
@@ -3739,8 +3723,8 @@ vmparam -Xmx384m
           		<listitem><para>there are very few use-cases for advice on the join point</para></listitem>
           		<listitem><para>a seemingly-insignificant change to the underlying program
           			      causes a change in the join point</para></listitem>
-          		<listitem><para>pointcuts can't really distinguish the join point in question</para></listitem>	
-          		<listitem><para>the join point would differ too much for different 
+          		<listitem><para>pointcuts can't really distinguish the join point in question</para></listitem>
+          		<listitem><para>the join point would differ too much for different
           			implementations of AspectJ, or would only be implementable
           			in one way
           			</para></listitem>
@@ -3756,15 +3740,15 @@ vmparam -Xmx384m
         <question id="q:reflectiveCalls"
             xreflabel="Q:Why doesn't AspectJ pick out reflective calls?">
           <para>Why doesn't AspectJ pick out reflective calls?
-			  The pointcut <literal>call(void run())</literal> 
+			  The pointcut <literal>call(void run())</literal>
 			  won't pick out a call using reflection, like
 			  <literal>((Method)run).invoke(null, args)</literal>.
           </para>
         </question>
         <answer>
-          <para>The pointcut 
+          <para>The pointcut
 			  <literal>execution(void run())</literal> will
-			  work. The call pointcut doesn't work because 
+			  work. The call pointcut doesn't work because
 			  <literal>Method.invoke(..)</literal> is the Java method-call,
 			  and AspectJ cannot delve into the Java reflection library to
 			  implement call semantics.  To advise a reflective call
@@ -3776,9 +3760,9 @@ vmparam -Xmx384m
           <programlisting>
 aspect A {
     pointcut runReflectiveCall(Method run) : target(run) &amp;&amp;
-         call(Object Method.invoke(..)) &amp;&amp; if("run".equals(run.getName()));		  
-    before() : runReflectiveCall(Method) { 
-        System.out.println("before reflective call " + thisJoinPoint); 
+         call(Object Method.invoke(..)) &amp;&amp; if("run".equals(run.getName()));
+    before() : runReflectiveCall(Method) {
+        System.out.println("before reflective call " + thisJoinPoint);
     }
 }
           </programlisting>
@@ -3809,7 +3793,7 @@ aspect A {
           <para>When running classes produced by the AspectJ weaver or compiler,
               there are no significant hidden uses of memory.  As would be expected,
               each aspect is instantiated.  The per-object aspects (like
-              <literal>pertarget</literal> or <literal>perthis</literal>)  
+              <literal>pertarget</literal> or <literal>perthis</literal>)
 			  in some implementations
               use a map to link aspects and the associated object.  When using
               <literal>cflow</literal>-related pointcuts, a <literal>ThreadLocal</literal>
@@ -3817,26 +3801,26 @@ aspect A {
 		  </para>
 		  <para>Of course, the size and code in an aspect can require memory.
 			  Aside from normal Java practices, take care with join point references.
-              When referencing the static part of a join point (e.g., 
+              When referencing the static part of a join point (e.g.,
               <literal>thisJoinPointStaticPart</literal>), only one object is
               created.  However, if you reference the join point itself
-              (e.g., <literal>thisJoinPoint</literal>), then one 
-              <literal>JoinPoint</literal> object will be created for each 
+              (e.g., <literal>thisJoinPoint</literal>), then one
+              <literal>JoinPoint</literal> object will be created for each
               join point running advice.
 		  </para>
-		  <para>Aspect instances will be garbage collected just like regular objects 
+		  <para>Aspect instances will be garbage collected just like regular objects
 			  after there are no more strong references to them.  For the default
 			  aspect instantiation model, <literal>issingleton</literal>, the aspect
-			  class retains a reference to the singleton instance, in order to 
-			  implement <literal>static {AspectClass} aspectOf()</literal>, so 
+			  class retains a reference to the singleton instance, in order to
+			  implement <literal>static {AspectClass} aspectOf()</literal>, so
 			  singleton instances will not be garbage collected until the class is.
-			  For long-running or memory-critical programs, consider using weak 
+			  For long-running or memory-critical programs, consider using weak
 			  references in singleton aspects for state that should be garbage collected.
 		  </para>
 		  <para>Finally, when using load-time weaving, the weaver can require
-              memory in its own right.  Because the class loader never can 
+              memory in its own right.  Because the class loader never can
               know when it is done loading classes, the weaver can hold on
-              to the aspects required to weave for some time.  There are 
+              to the aspects required to weave for some time.  There are
               strategies for minimizing this (with different trade-off's),
               so the time and memory required for load-time weaving will
               vary as load-time weaving evolves.
@@ -3869,11 +3853,11 @@ aspect A {
           </para>
            <programlisting>
 &lt;weaver&gt;
-  &lt;exclude within="*CGLIB*" /&gt; 
+  &lt;exclude within="*CGLIB*" /&gt;
 &lt;/weaver&gt;
           </programlisting>
         </answer>
-      </qandaentry> 
+      </qandaentry>
     </qandadiv>
 
     <qandadiv id="aj11" xreflabel="AspectJ 1.1 and eclipse.org">
@@ -3893,7 +3877,7 @@ aspect A {
             commercial users; the 1.1 release is imminent and will
             include byte-code weaving and incremental compilation;
             and the tool support is now well integrated with several
-            major IDEs. 
+            major IDEs.
           </para>
           <para>
             This growth of the community and the technology means
@@ -3902,7 +3886,7 @@ aspect A {
             development and support of AspectJ to move outside of
             PARC. This has already started to happen; the Eclipse
             AJDT plug-in and the several books in preparation are
-            examples. 
+            examples.
           </para>
           <para>
             To encourage the growth of the AspectJ technology and
@@ -3916,7 +3900,7 @@ aspect A {
             remain at eclipse.org, while the NetBeans, JBuilder and
             Emacs support will move to SourceForge.net projects.
             We look forward to your involvement with and
-            contribution to those projects. 
+            contribution to those projects.
           </para>
           <para>
             We see Eclipse as an excellent new home for core
@@ -3943,16 +3927,16 @@ aspect A {
       </qandaentry>
       <qandaentry>
         <question id="q:eclipseetc"
-            xreflabel="Q:What are the relationships between AspectJ, JDT, 
+            xreflabel="Q:What are the relationships between AspectJ, JDT,
                 Eclipse, AJDT, and IDE support generally?">
-          <para>What are the relationships between AspectJ, JDT, 
+          <para>What are the relationships between AspectJ, JDT,
                 Eclipse, AJDT, and IDE support generally?
           </para>
         </question>
         <answer>
           <para>Eclipse is a software platform.
           </para>
-          <para>JDT is an eclipse project to support Java development.  
+          <para>JDT is an eclipse project to support Java development.
 			JDT has a Java compiler.
           </para>
 		  <para>AspectJ 1.1 is built on Eclipse/JDT's Java compiler
@@ -3960,27 +3944,27 @@ aspect A {
                 With the AspectJ distribution, you can compile and run
                 AspectJ programs and use the AspectJ structure browser.
           </para>
-		  <para>AJDT is an eclipse project to integrate AspectJ 
-		  into Eclipse/JDT so you can use Eclipse to develop 
+		  <para>AJDT is an eclipse project to integrate AspectJ
+		  into Eclipse/JDT so you can use Eclipse to develop
 		  AspectJ programs.  AJDT aims to support the full Eclipse
 		  experience - searching, compiler-error tasks, etc.
 		  AJDT will use the AspectJ Development Environment (AJDE)
 		  API's for creating IDE integrations, as well as hooking
 		  in to the model underlying the Java compiler.
           </para>
-          <para>Similarly, Sourceforge has projects integrating 
+          <para>Similarly, Sourceforge has projects integrating
           AspectJ into other development environments
-          using the AJDE API's: 
+          using the AJDE API's:
           <ulink url="http://aspectj4emacs.sourceforge.net">
-              AspectJ for Emacs</ulink>, 
+              AspectJ for Emacs</ulink>,
           <ulink url="http://aspectj4jbuildr.sourceforge.net">
-              AspectJ for JBuilder</ulink>, and 
+              AspectJ for JBuilder</ulink>, and
           <ulink url="http://aspectj4netbean.sourceforge.net">
               AspectJ for NetBeans</ulink>.
           </para>
-          <para>This is the right level of separation/integration.  
+          <para>This is the right level of separation/integration.
           AspectJ is available standalone, leverages an existing open-source
-          compliant Java compiler, and supports external projects 
+          compliant Java compiler, and supports external projects
           doing IDE integrations in Eclipse, Emacs, JBuilder, and NetBeans
           through a common API, AJDE.
           </para>
@@ -3998,10 +3982,10 @@ aspect A {
         </question>
         <answer>
             <para>
-                All the new features are documented in the 
+                All the new features are documented in the
                 <ulink url="adk15notebook/index.html">
               AspectJ 5 Developer's Notebook</ulink>
-                and the 
+                and the
                 <ulink url="devguide/index.html">
               AspectJ Development Environment Guide</ulink>.
                 To summarize:
@@ -4011,7 +3995,7 @@ aspect A {
                     Java 5 support: as an extension to Java, AspectJ supports
                     all the new language features of Java 5, including generics
                     (parameterized types), autoboxing, covariant return types,
-                    enhanced for-loops, enums, varargs, and of course 
+                    enhanced for-loops, enums, varargs, and of course
                     annotations.
 				</para></listitem>
 				<listitem><para>
@@ -4020,7 +4004,7 @@ aspect A {
                     <itemizedlist>
                         <listitem><para>
                             Generic aspects: an abstract aspect can be declared
-                            with a generic type parameter which can be used 
+                            with a generic type parameter which can be used
                             in pointcuts and when declaring members on the aspect
                             (but not when declaring members on other types).
         				</para></listitem>
@@ -4032,11 +4016,11 @@ aspect A {
                             and annotations may be declared on other types in
                             an aspect.
         				</para></listitem>
-                    </itemizedlist>                    
+                    </itemizedlist>
 				</para></listitem>
 				<listitem><para>
                     Annotation-style aspects: AspectJ 5 integrates AspectWerkz-style
-                    aspects declared in annotations.  This permits aspects to 
+                    aspects declared in annotations.  This permits aspects to
                     be written and compiled in pure-java code and woven using
                     build-time or load-time weaving with the AspectJ weaver.
                     (The original AspectJ language aspects are distinguished
@@ -4073,7 +4057,7 @@ aspect A {
         <answer>
           <para>
             To use AspectJ, you can use the original code-style aspects
-            or the annotation-style aspects new in AspectJ 5.  
+            or the annotation-style aspects new in AspectJ 5.
           </para>
           <para>
             The original code-style is a small extension of the Java language
@@ -4091,7 +4075,7 @@ aspect A {
             aspects are written (not surprisingly) using annotations.
             They use the subset of the AspectJ language that works
             when aspects are woven after the code is compiled.
-            The source files are compiled with Javac, which simply saves the 
+            The source files are compiled with Javac, which simply saves the
             annotations in the .class files.  The resulting .class files
               must be woven using
             the AspectJ weaver, which reads the annotations from the
@@ -4118,36 +4102,32 @@ aspect A {
               an XML file for configuration that allows deployers to declare
               concrete aspects using only XML.  This means aspect developers
               can write abstract aspects, and deployers need only configure
-              <literal>aop.xml</literal> and run using the AspectJ weaver in Java 5.  
+              <literal>aop.xml</literal> and run using the AspectJ weaver in Java 5.
               For example, to run Java 5 VM with load-time weaving,
           </para>
-<programlisting>
-            <![CDATA[
+<programlisting><![CDATA[
 java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
-]]>
-          </programlisting>        
+]]></programlisting>
           <para>
-              To declare a concrete aspect, add a a 
+              To declare a concrete aspect, add a a
               concrete-aspect XML entity to <literal>META-INF/aop.xml</literal>.
-              This example extends a tracing aspect to apply to 
+              This example extends a tracing aspect to apply to
               every type in the application:
           </para>
-<programlisting>
-            <![CDATA[
-<concrete-aspect 
+<programlisting><![CDATA[
+<concrete-aspect
     name="com.company.tracing.ConcreteTracing"
     extends="tracing.AbstractTracing">
-    <pointcut 
-        name="tracingScope" 
+    <pointcut
+        name="tracingScope"
         expression="within(com.company.app..*)"/>
-</concrete-aspect>                
-]]>
-          </programlisting>  
+</concrete-aspect>
+]]></programlisting>
             <para>
                 For more information, see the
                 <ulink url="devguide/index.html">
               AspectJ Development Environment Guide</ulink>.
-            </para>      
+            </para>
         </answer>
       </qandaentry>
     </qandadiv>
@@ -4164,28 +4144,28 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           <ulink url="progguide/index.html">Programming Guide</ulink>.
           However, current implementations do not control everything in
           a system, so AspectJ program semantics may be limited to code
-          the implementation controls.  For our implementation, these 
-          limitations are stated in 
+          the implementation controls.  For our implementation, these
+          limitations are stated in
           <ulink url="progguide/implementation.html">
              Programming Guide Appendix:  Implementation Notes</ulink>.
-		  Aside from understanding the use and limitations of the 
-		  implementation, there is no need to understand the underlying 
+		  Aside from understanding the use and limitations of the
+		  implementation, there is no need to understand the underlying
 		  technology when writing AspectJ programs.
           </para>
           <para>
-          The technology that implements AspectJ interests 
-          some academic researchers and some developers 
+          The technology that implements AspectJ interests
+          some academic researchers and some developers
           who want new features or new ways to weave.
           These extensions are not discussed in the documentation.
           Some are being developed already,
           others are on the drawing board (or perhaps were left off
           long ago), and still others haven't been considered.
-		  If you are interested in a certain extension, 
+		  If you are interested in a certain extension,
           check the bug database for feature requests
           and the mailing list archives for any past discussions.
-		  Then email the list to see if it's been considered. 
+		  Then email the list to see if it's been considered.
 		  For more information, see
-		      <xref linkend="Developers"/>.     
+		      <xref linkend="Developers"/>.
           </para>
         </answer>
       </qandaentry>
@@ -4197,10 +4177,10 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         </question>
         <answer>
           <para>
-          There are currently no documents describing this process in detail.  
+          There are currently no documents describing this process in detail.
           You can compile programs and inspect the generated source or bytecode,
           or view the source code (see <xref linkend="Developers"/>).
-          We hope to write papers on the bytecode weaving model used in 
+          We hope to write papers on the bytecode weaving model used in
           AspectJ-1.1 if we can find the time.
           Erik Hilsdale and Jim Hugunin did draft a paper for AOSD 2004,
           now available on Jim's web site:
@@ -4211,28 +4191,28 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           	following mailing-list reply</ulink>:
           </para>
           <para>
-			Each piece of advice in an aspect is associated with a pointcut.  
-			This pointcut is stored in an attribute on the methods 
-			corresponding to each piece of advice.  
-			Before weaving, all of these pieces of advice are gathered 
+			Each piece of advice in an aspect is associated with a pointcut.
+			This pointcut is stored in an attribute on the methods
+			corresponding to each piece of advice.
+			Before weaving, all of these pieces of advice are gathered
 			into one large list.
           </para>
           <para>
-			Each .class file is woven independently.  
+			Each .class file is woven independently.
 			A .class file is woven by the following steps:
 			<itemizedlist>
 				<listitem><para>
-					Collect all of the joinpoint shadows in the .class file.  
-					For every dynamic joinpoint in the AspectJ language model, 
-					there is a corresponding static shadow of that joinpoint 
-					in the bytecode.  
-					For example, every method call joinpoint has an INVOKE 
-					bytecode as its static shadow.  Some joinpoints 
-					(such as initialization) have much more 
+					Collect all of the joinpoint shadows in the .class file.
+					For every dynamic joinpoint in the AspectJ language model,
+					there is a corresponding static shadow of that joinpoint
+					in the bytecode.
+					For example, every method call joinpoint has an INVOKE
+					bytecode as its static shadow.  Some joinpoints
+					(such as initialization) have much more
 					complicated static shadows.
 				</para></listitem>
 				<listitem><para>
-					Each piece of advice is matched to each static shadow.  
+					Each piece of advice is matched to each static shadow.
 					There are three results possible from this match.
 					<itemizedlist>
 						<listitem><para>
@@ -4240,36 +4220,36 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 							in which case nothing is done to the shadow
 						</para></listitem>
 						<listitem><para>
-							Always matches, 
+							Always matches,
 							in which case the advice is woven into this joinpoint shadow
 						</para></listitem>
 						<listitem><para>
 							Sometimes matches,
-							in which case the advice is woven into the shadow 
-							along with the minimal dynamic tests to determine 
-							if any particular joinpoint in the actual running 
-							program matches the advice. 
-							The simplest example of sometimes matches is 
+							in which case the advice is woven into the shadow
+							along with the minimal dynamic tests to determine
+							if any particular joinpoint in the actual running
+							program matches the advice.
+							The simplest example of sometimes matches is
 							when the pointcut uses if(test()).
-						</para></listitem>						
+						</para></listitem>
 					</itemizedlist>
 				</para></listitem>
 				<listitem><para>
-					If any advice matched any static shadows in the .class file, 
-					then the transformed .class file is written out, 
+					If any advice matched any static shadows in the .class file,
+					then the transformed .class file is written out,
 					otherwise it is left unchanged.
 				</para></listitem>
 			</itemizedlist>
-		See <literal>BcelClassWeaver</literal> and 
+		See <literal>BcelClassWeaver</literal> and
 		<literal>BcelShadow</literal> in the
 		<literal>org.aspectj.weaver.bcel</literal> package
 		for the two primary classes involved in this process.
 
 		</para>
 		<para>
-			Note: This explanation ignores the implementations of inter-type 
-			declarations completely.  
-			It also ignores performance optimizations such as fast-match 
+			Note: This explanation ignores the implementations of inter-type
+			declarations completely.
+			It also ignores performance optimizations such as fast-match
 			or pipelining that speed up the process.
 		</para>
         </answer>
@@ -4281,22 +4261,22 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           </para>
         </question>
         <answer>
-          <para>You have two choices based on how wide you want the weaving to take effect: application-server wide and application-specific weaving. 
-          You choose between the two by loading aspect artifacts--aspects, associated types, and aop.xml--through the right classloader. 
-          The aop.xml must be in the META-INF directory on the classpath for the chosen classloader. In either case, you modify the 
-          startup script to specify the -javaagent:path-to/aspectjweaver.jar option to the Java virtual machine. Note that it is not 
-          essential that all the artifacts be placed in a single jar.  
+          <para>You have two choices based on how wide you want the weaving to take effect: application-server wide and application-specific weaving.
+          You choose between the two by loading aspect artifacts--aspects, associated types, and aop.xml--through the right classloader.
+          The aop.xml must be in the META-INF directory on the classpath for the chosen classloader. In either case, you modify the
+          startup script to specify the -javaagent:path-to/aspectjweaver.jar option to the Java virtual machine. Note that it is not
+          essential that all the artifacts be placed in a single jar.
           </para>
-          <para>For application-server wide weaving, you make aspect artifacts accessible to the server's classloader. Typically, you 
-          achieve such access by putting these artifacts in the server's lib directory. For example, for Tomcat, you will place 
+          <para>For application-server wide weaving, you make aspect artifacts accessible to the server's classloader. Typically, you
+          achieve such access by putting these artifacts in the server's lib directory. For example, for Tomcat, you will place
           the aspect artifacts in the TOMCAT_HOME/lib directory.</para>
-		  <para>For application-specific weaving, you make aspect artifacts accessible to application classloader by bundling 
-		  them along with application's classes. For example, for a web application, you will place the aspect artifacts in 
+		  <para>For application-specific weaving, you make aspect artifacts accessible to application classloader by bundling
+		  them along with application's classes. For example, for a web application, you will place the aspect artifacts in
 		  the MY_APP/WEB-INF/lib and/or MY_APP/WEB-INF/classes directory.</para>
 	      <para>
 		  We recommend that you start with application-specific weaving.
-          Note that you have an additional option if your application is based on the Spring framework. If you deploy in one of 
-          the supported web servers or application servers, you can avoid modifications to the startup script. Please 
+          Note that you have an additional option if your application is based on the Spring framework. If you deploy in one of
+          the supported web servers or application servers, you can avoid modifications to the startup script. Please
           see <ulink url="http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring">http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring</ulink> for more details.
           </para>
         </answer>
@@ -4309,10 +4289,10 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         </question>
         <answer>
           <para>
-          The only time that reflection is used during run-time is when the special 
-          thisJoinPoint object is used to discover reflective information about the 
+          The only time that reflection is used during run-time is when the special
+          thisJoinPoint object is used to discover reflective information about the
           join point.  If you don't use thisJoinPoint then no reflection will be used.
-          </para> 
+          </para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -4338,22 +4318,22 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
               load-time weaving, including declaring concrete aspects
               in XML files and integrating with Java 5 and BEA JRocket
               JVM's.  See <xref linkend="q:aspectj5ltw"/>.
-          </para> 
-          <para>Some have asked about only weaving particular classes 
+          </para>
+          <para>Some have asked about only weaving particular classes
           specified at run-time.
-		  Aspects should work across an entire namespace, and problems 
+		  Aspects should work across an entire namespace, and problems
 		  will likely result from weaving
-          some classes but not others.  Also, it's confusing to 
+          some classes but not others.  Also, it's confusing to
           specify crosscutting both in the aspect and in the
           list of runtime classes; the crosscutting specification
           should be in the aspect itself,
           where it can be processed by tools.
-          </para> 
+          </para>
           <para>And just to state the obvious:
           do not use bytecode weaving, at load-time or otherwise,
           to modify .class files protected by license,
           without permission from the licensor.
-          </para> 
+          </para>
         </answer>
       </qandaentry>
     </qandadiv>
@@ -4371,10 +4351,10 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           and tools for writing AspectJ programs.
           </para>
           <para>For people who want to know how the AspectJ technology works,
-          the source code is the best resource, until we write some 
+          the source code is the best resource, until we write some
           proper white papers
           (see <xref linkend="q:implementation"/>).
-		  To get and compile the Java source code for the AspectJ 
+		  To get and compile the Java source code for the AspectJ
           distribution, see
                  <xref linkend="q:buildingsource"/>.
 		  </para>
@@ -4409,12 +4389,12 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
               </para>
             </listitem>
             <listitem>
-              <para>Write bugs.  Good bugs, especially with test cases, 
+              <para>Write bugs.  Good bugs, especially with test cases,
               	are always appreciated.  We especially like proposals for
               	new <literal>XLint</literal> messages, since they are
               	sometimes easy to implement and help users learn
               	AspectJ, and for other implementable features
-              	grounded in a compelling use-case.  
+              	grounded in a compelling use-case.
               </para>
             </listitem>
             <listitem>
@@ -4425,7 +4405,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
               </para>
               <para>Find them by searching open compiler bugs and picking out
               any which do not have test case attachments or a comment that
-              a test case has been written.  
+              a test case has been written.
               Here is a query for open compiler bugs:
               <!-- ulink gacks on ampersands in url value, so quote them -->
               <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;component=Compiler&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
@@ -4438,21 +4418,21 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
             </listitem>
             <listitem>
               <para>Write patches to fix bugs.
-              If you particularly need a bug to be fixed, or if you're interested in 
+              If you particularly need a bug to be fixed, or if you're interested in
               learning about the system, then get the source code and try to fix the
-              bug.  Most likely you'll want to email aspectj-dev@eclipse.org to 
+              bug.  Most likely you'll want to email aspectj-dev@eclipse.org to
               declare your intentions and the approach you propose (based on having
               looked at the code).
               Mailing the list gives those experienced with the code a chance to
               guide you away from pitfalls.  To submit the patch, attach it to
-              the bug.  (When creating patches, do so on a per-module basis; that 
+              the bug.  (When creating patches, do so on a per-module basis; that
               means if fixing the bug involves changes to three modules, submit
               three patches.)
               </para>
             </listitem>
             <listitem>
               <para>Write patches for other reasons.
-              Often documentation needs to be fixed, or there may be a small new 
+              Often documentation needs to be fixed, or there may be a small new
               feature you'd like to see.  You can just do it and then submit it
               as a patch to a bug you create.  As with bugs, in some cases you
               might want to declare your intentions on the mailing list to avoid
@@ -4471,21 +4451,21 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           </para>
         </question>
         <answer>
-          <para>AspectJ 1.0 source code is available in an archive available 
+          <para>AspectJ 1.0 source code is available in an archive available
            with the 1.0 downloads.  It contains instructions for building
            from sources.
           </para>
-			<para>AspectJ 1.1+ source code is available through CVS using the 
-				CVS Root <literal>dev.eclipse.org:/cvsroot/technology</literal>. 
-				For more information on accessing the CVS tree at eclipse.org, 
-				see the documentation from <ulink 
-				url="http://eclipse.org">http://eclipse.org</ulink>. Find 
-				specific instructions in the AspectJ tree at <ulink 
-				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project"> 
-				org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>. 
-				If you would like to use Ant to checkout the sources, build the 
-				distribution, and test everything, see <ulink 
-				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project"> 
+			<para>AspectJ 1.1+ source code is available through CVS using the
+				CVS Root <literal>dev.eclipse.org:/cvsroot/technology</literal>.
+				For more information on accessing the CVS tree at eclipse.org,
+				see the documentation from <ulink
+				url="http://eclipse.org">http://eclipse.org</ulink>. Find
+				specific instructions in the AspectJ tree at <ulink
+				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&amp;content-type=text/html&amp;cvsroot=Technology_Project">
+				org.aspectj/modules/build/readme-build-and-test-aspectj.html</ulink>.
+				If you would like to use Ant to checkout the sources, build the
+				distribution, and test everything, see <ulink
+				url="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&amp;content-type=text/xml&amp;cvsroot=Technology_Project">
 				org.aspectj/modules/build/release/build.xml</ulink>. </para>
           <para>
           To check out the source code in Eclipse go to (<literal>File > new > Other > CVS > Checkout Projects from CVS</literal>). You'll need about 125 MB of space for the source and build.
@@ -4527,7 +4507,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 		  </itemizedlist>
 		  </para>
 		  <para>
-		  The <literal>org.aspectj.lib</literal> project is an AspectJ project so 
+		  The <literal>org.aspectj.lib</literal> project is an AspectJ project so
           you also have to have AJDT installed. For the latest AJDT release and
           download instructions visit the
 		  <ulink url="http://www.eclipse.org/ajdt/downloads/">AJDT Downloads</ulink> page.
@@ -4543,15 +4523,15 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           <para>
           Further details:
 			</para>
-			<para>                             
+			<para>
           You can check out the entire modules directory and build using the
           Ant build script <literal>modules/build/build.xml</literal>.
           All required libraries are included in <literal>modules/lib/</literal>,
           (including Ant 1.5.1 in <literal>modules/lib/ant</literal>).
-          If you are using Eclipse, you can check out any <literal>modules/</literal> 
-          subdirectory as an eclipse Java project.  
+          If you are using Eclipse, you can check out any <literal>modules/</literal>
+          subdirectory as an eclipse Java project.
           Depending on what you are trying to build, you need not check out
-          all modules; as of this writing, here are the modules to get 
+          all modules; as of this writing, here are the modules to get
           for building the specific parts of AspectJ:
           </para>
           <para>
@@ -4567,7 +4547,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
             <listitem><para>For ajbrowser: the compiler modules, plus
             ajbrowser, ajdoc, taskdefs, and ajde.
             </para></listitem>
-            <listitem><para>For the AspectJ distribution, the ajbrowser modules, 
+            <listitem><para>For the AspectJ distribution, the ajbrowser modules,
 				plus aspectj5rt and org.aspectj.lib.
             </para></listitem>
             <listitem><para>For the test harness (or to run the release build
@@ -4580,7 +4560,7 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
           </itemizedlist>
           </para>
           <para>
-          Note that module interdependencies are recorded only in the eclipse 
+          Note that module interdependencies are recorded only in the eclipse
           <literal>modules/{module}/.classpath
           </literal>
            files and may
@@ -4598,9 +4578,9 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
         <answer>
           <para>To build AspectJ, first get the source tree as
           described in <xref linkend="q:buildingsource"/>. Once you have
-          a development environment set up, copy the 
+          a development environment set up, copy the
           <literal>build/sample-local.properties</literal> file
-          to <literal>build/local.properties</literal> and within this file point the 
+          to <literal>build/local.properties</literal> and within this file point the
           <literal>java14.home</literal> and <literal>java15.home</literal>
           to the corresponding places on your machine.
           </para>
@@ -4616,20 +4596,20 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 			</listitem>
 			<listitem>
 			<para>
-			Navigate to the <literal>build</literal> directory within your AspectJ workspace 
-			(to find out where your workspace is go to <literal>File > 
+			Navigate to the <literal>build</literal> directory within your AspectJ workspace
+			(to find out where your workspace is go to <literal>File >
 			Switch Workspace</literal> within Eclipse).
 			</para>
 			</listitem>
 			<listitem>
 			<para>
-			Run <literal>ant clean</literal> to remove the files from 
-			previously built AspectJ versions. 
+			Run <literal>ant clean</literal> to remove the files from
+			previously built AspectJ versions.
 			</para>
 			</listitem>
 		  	<listitem>
 		  	<para>
-			Run <literal>ant</literal> to build AspectJ. The built files are created in 
+			Run <literal>ant</literal> to build AspectJ. The built files are created in
 			<literal>your_eclipse_installation_directory/aspectj_development_workspace/aj-build</literal>.
 			</para>
 			</listitem>
@@ -4639,14 +4619,14 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 			To import a locally built AspectJ into AJDT first follow the
 			instructions on <ulink url="http://www.eclipse.org/ajdt/faq.php#q:develop">
 			How do I setup an AJDT development environment in Eclipse?</ulink>
-			for setting up an AJDT development environment and running the 
+			for setting up an AJDT development environment and running the
 			correctness tests. Then:
 			</para>
 		  <para>
 		  <itemizedlist>
 		  	<listitem>
 		  	<para>
-			Create a file <literal>aspectjlib.properties</literal> within 
+			Create a file <literal>aspectjlib.properties</literal> within
 			the <literal>org.aspectj.ajde</literal> project and add the following two lines
 			<programlisting>
 aspectj.lib.dir=C:/eclipse/aspectj-workspace/aj-build/dist/tools/lib
@@ -4657,12 +4637,12 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 			</listitem>
 			<listitem>
 			<para>
-			Run the <literal>build.xml</literal> file in <literal>org.aspectj.ajde</literal> 
+			Run the <literal>build.xml</literal> file in <literal>org.aspectj.ajde</literal>
 			with the <literal>plugin jars</literal> target:
 			<itemizedlist>
 		  	   	<listitem>
 		  		<para>
-	 			Right click on the <literal>build.xml</literal> file in the 
+	 			Right click on the <literal>build.xml</literal> file in the
 	 			<literal>org.aspectj.ajde</literal> plugin
 	 			</para>
 	 			</listitem>
@@ -4686,17 +4666,17 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 				Click <literal>Run</literal>
 				</para>
 				</listitem>
-			</itemizedlist>	
+			</itemizedlist>
 			</para>
 			</listitem>
 			<listitem>
 			<para>
-			Refresh the <literal>org.aspectj.ajde, org.aspectj.runtime</literal> 
+			Refresh the <literal>org.aspectj.ajde, org.aspectj.runtime</literal>
 			and <literal>org.aspectj.weaver</literal> plugins.
 			</para>
 			</listitem>
 		  </itemizedlist>
-		  </para>					
+		  </para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -4707,9 +4687,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
         </question>
         <answer>
           <para>Find the developer documentation in HTML files in the CVS tree,
-          inside the <literal>build</literal> and <literal>testing</literal> modules 
+          inside the <literal>build</literal> and <literal>testing</literal> modules
           (i.e., in <literal>org.aspectj/modules/build/...</literal>).
-          Most pertinant:          
+          Most pertinant:
             <itemizedlist>
               <listitem><para>
               	<literal>../build/readme-build-and-test-aspectj.html</literal>
@@ -4722,7 +4702,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                   how to build the documentation using Ant.
               </para></listitem>
               <listitem><para><literal>../build/readme-tests-module.html</literal>
-                  describes the all the tests 
+                  describes the all the tests
                   in the <literal>tests</literal> module.
               </para></listitem>
               <listitem><para><literal>../build/readme-writing-compiler-tests.html</literal>
@@ -4738,7 +4718,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                   in the <literal>testing</literal> module.
               </para></listitem>
             </itemizedlist>
-          </para> 
+          </para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -4758,9 +4738,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           and the expected results are the test definitions
           described next.
           </para>
-          <para>For more complex bugs requiring many files, 
+          <para>For more complex bugs requiring many files,
           create a zip file of a directory containing all the files
-          and an XML test definition file.  
+          and an XML test definition file.
           The XML test definition file contains specifications
           for how to compile, recompile, or run the test sources.
           Complete documentation is available in the CVS tree
@@ -4770,8 +4750,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           of the files referred to in the test definitions.
           </para>
           <para>
-          <programlisting>
-<![CDATA[
+          <programlisting><![CDATA[
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
 
@@ -4793,7 +4772,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
     <run class="pack1.Main"/>
 </ajc-test>
 
-<!-- Check that compiler warning was emitted 
+<!-- Check that compiler warning was emitted
      using the following files:
 
        {testDefinitions}.xml
@@ -4801,13 +4780,13 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
          UsesDeprecated.java
  -->
 <ajc-test dir="two" pr="244" title="deprecated, noImportError">
-    <compile options="-warn:deprecated,-noImportError" 
+    <compile options="-warn:deprecated,-noImportError"
           files="UsesDeprecated.java">
         <message kind="warning" line="20"/>
     </compile>
 </ajc-test>
 
-<!-- Cooked example that uses all compiler attributes 
+<!-- Cooked example that uses all compiler attributes
      and the following files:
        {testDefinitions}.xml
        testCaseDir/
@@ -4824,7 +4803,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                AnotherRequired.class
   -->
 <ajc-test dir="testCaseDir" title="attributes test">
-    <compile files="pack/Main.java,jars/injar.jar" 
+    <compile files="pack/Main.java,jars/injar.jar"
            staging="true"
            options="-Xlint,-g:none"
           argfiles="debug.lst,aspects/test.lst"
@@ -4843,7 +4822,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
            IncCompileFix.20.java
 
      Before compiling, IncCompileFix.java is copied to a staging
-     directory.  Before recompiling, IncCompileFix.20.java 
+     directory.  Before recompiling, IncCompileFix.20.java
      replaces it, so the compiler treats file as updated.
   -->
 <ajc-test dir="three" pr="622" title="incremental fix">
@@ -4856,8 +4835,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 </ajc-test>
 
 </suite>
-]]>
-          </programlisting>
+]]></programlisting>
           </para>
         </answer>
       </qandaentry>
@@ -4873,10 +4851,10 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           described in <xref linkend="q:buildingsource"/> and then
           build the <literal>build-testing-drivers</literal> target:
           <programlisting>
-  cd build
-  ../lib/ant/bin/ant -f build.xml build-testing-drivers
+cd build
+../lib/ant/bin/ant -f build.xml build-testing-drivers
           </programlisting>
-          This produces 
+          This produces
           <literal>../aj-build/jars/testing-drivers-all.jar</literal>
           which you can run as described in
           <literal>tests/readme-tests-module.html</literal>.
@@ -4891,13 +4869,13 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
         </question>
         <answer>
           <para>The AspectJ bytecode weaver has used BCEL for bytecode manipulation
-			  since its first release.  We have upgraded it extensively, to improve 
+			  since its first release.  We have upgraded it extensively, to improve
 			  performance, support Java 5, etc.  The BCEL developers have not
 			  incorporated our patches, so we continue to maintain our own version.
-			  Ours has been optimized for the AspectJ weaver and battle-hardened 
+			  Ours has been optimized for the AspectJ weaver and battle-hardened
 			  over years of development and use.  At some point in the future,
-			  the AspectJ weaver might be restructured to make it easy to see 
-			  whether another bytecode package offers the same stability, 
+			  the AspectJ weaver might be restructured to make it easy to see
+			  whether another bytecode package offers the same stability,
 			  functionality, and performance, but for now we prefer using something
 			  that we know works well.
           </para>
@@ -4932,12 +4910,12 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>How do I submit a bug report?</para>
         </question>
         <answer>
-          <para>You can submit a bug from 
+          <para>You can submit a bug from
               <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
                           http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
               </ulink>.
             If it seems to be a bug in the compiler,
-            please attach a small test case (source code) 
+            please attach a small test case (source code)
             to reproduce the problem.
             For more information on writing compiler test cases, see
             <xref linkend="q:ajcbugs"/>.
@@ -5008,7 +4986,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
             <listitem>
               <para>
   	Describe what you think it takes, in AspectJ terms
-  	(concepts, syntax, and semantics) from the 
+  	(concepts, syntax, and semantics) from the
             <ulink url="progguide/index.html">Programming Guide</ulink>...
               </para>
             </listitem>
@@ -5025,7 +5003,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 	about the problem (the most common being to confuse join points
 	and pointcuts).
            The code is key to clarifying your question and getting a good
-           response.  On the mail list, someone can reply by fixing your 
+           response.  On the mail list, someone can reply by fixing your
            code.  In bugs, the developers can reproduce the problem immediately
            and start analyzing the fix.
            The code should not be incomplete; it should run (or fail) as-is,
@@ -5033,7 +5011,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           </para>
           <para>
              For the mail lists, we try to follow the conventions for open-source
-             discussions that help avoid "the tragedy of the commons." 
+             discussions that help avoid "the tragedy of the commons."
              For example conventions, see
             <ulink url="http://jakarta.apache.org/site/mail.html">
               http://jakarta.apache.org/site/mail.html
@@ -5072,9 +5050,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           <para>
         Bug reports on ajbrowser should have version
 	information for both Java and AspectJ, and
-	(most importantly) clear steps for reproducing the bug.  
-        You may submit ajbrowser bugs against the IDE component of AspectJ 
-        via the web form 
+	(most importantly) clear steps for reproducing the bug.
+        You may submit ajbrowser bugs against the IDE component of AspectJ
+        via the web form
             <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
                         http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
             </ulink>.
@@ -5083,7 +5061,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 	One of the benefits of open-source is that you can
 	find and fix the bug for yourself; when you submit
 	the fix back to us, we can validate the fix for you
-	and incorporate it into the next release.  
+	and incorporate it into the next release.
     You can submit a patch by attaching it to the bug.
           </para>
         </answer>
@@ -5097,15 +5075,15 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
         </question>
         <answer>
           <para>
-	The best compiler bug report is a reproducible test case, 
+	The best compiler bug report is a reproducible test case,
 	standalone code that demonstrates the problem.
-	Sometimes with aspects, a test case requires several 
+	Sometimes with aspects, a test case requires several
 	files, if not some way to capture the behavior.
 	Here's how we recommend submitting test cases:
             <orderedlist>
               <listitem>
                 <para>
-	Write the test case so that when the compiler bug 
+	Write the test case so that when the compiler bug
   	is fixed, the test completes normally without output
   	(e.g., expected compiler errors are issued,
    	or classes produced run correctly).  This usually
@@ -5115,14 +5093,14 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
               <listitem>
                 <para>
 	In the bug report, briefly summarize the bug.
-	If it is not obvious, be sure to specify 
+	If it is not obvious, be sure to specify
 	the expected output/behavior (e.g., compiler error on line 32)
 	and, if the compile should complete, the main class to run.
                 </para>
               </listitem>
               <listitem>
                 <para>
-	Submit the bugs via the web form 
+	Submit the bugs via the web form
             <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
                         http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
             </ulink>.
@@ -5148,9 +5126,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           </para>
         </question>
         <answer>
-          <para>The documentation available in the distribution is the 
+          <para>The documentation available in the distribution is the
           best source for language and usage questions.  You can also find
-          selected AspectJ papers and presentations on the 
+          selected AspectJ papers and presentations on the
           <ulink url="http://www.parc.com/groups/csl/projects/aspectj/index.html">
                             PARC AspectJ page</ulink>.
           For links to Aspect-oriented programming materials in general, see
@@ -5214,7 +5192,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                 <para>Because the code is available to all, anyone can find
 		and fix bugs.  There is no need to hope for it to be fixed
 		in the next product release.  Those who encounter the bugs
-		are motivated to fix them, and there are more eyeballs on 
+		are motivated to fix them, and there are more eyeballs on
 		the code than in closed-source, so the quality tends to be high.
 		This can be particularly true for the AspectJ community,
 		which tends to be highly skilled.
@@ -5227,11 +5205,11 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
                 </para>
               </listitem>
               <listitem>
-                <para>For a programming language which forms the basis of 
+                <para>For a programming language which forms the basis of
 		an entire solution stack, open source facilitates the kind
 		of adoption -- tool integrations and significant projects --
-		that develop and prove the technology for wider adoption.  This 
-		limits delays caused by waiting for the completion of standards 
+		that develop and prove the technology for wider adoption.  This
+		limits delays caused by waiting for the completion of standards
 		process or promulgation by industry leaders, and also provides
 	        the proofs necessary for such adoption.
                 </para>
@@ -5255,7 +5233,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
             integrating it into IDEs, or possibly incorporating it into
             standard Java with Sun's blessing.
           </para>
-          <para>We currently focus on developing for the 1.1 implementation 
+          <para>We currently focus on developing for the 1.1 implementation
             which improves AspectJ in key areas: rapid
             incremental compilation, bytecode weaving, and IDE integration.
           </para>
@@ -5284,22 +5262,22 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
 	   works as described in an email to the users list by Jim Hugugin:
           </para>
           <para>
-              The AspectJ language was designed to support weaving at many different times: 
-              compile, load, or even run-time in the JVM.  Weaving into bytecodes at both 
-              compile and load-time will definitely be provided in a future release.  This 
-              will allow weaving at compile-time into libraries for which source code is 
-              not available.  It will also support aspect-aware class loaders that can 
-              perform weaving at load time on arbitrary classes.  One advantage of a 
-              language like AspectJ, rather than an explicit meta-tool like jiapi, is 
-              that it separates the specification of a crosscutting concern from any 
+              The AspectJ language was designed to support weaving at many different times:
+              compile, load, or even run-time in the JVM.  Weaving into bytecodes at both
+              compile and load-time will definitely be provided in a future release.  This
+              will allow weaving at compile-time into libraries for which source code is
+              not available.  It will also support aspect-aware class loaders that can
+              perform weaving at load time on arbitrary classes.  One advantage of a
+              language like AspectJ, rather than an explicit meta-tool like jiapi, is
+              that it separates the specification of a crosscutting concern from any
               particular implementation strategy for weaving.
           </para>
           <para>
-              ...AspectJ provides a language that can cleanly 
-              capture crosscutting concerns while preserving the static type checking, 
+              ...AspectJ provides a language that can cleanly
+              capture crosscutting concerns while preserving the static type checking,
               modularity, and composability of Java.
           </para>
-          <para>If you have an application for using aspects and bytecode, 
+          <para>If you have an application for using aspects and bytecode,
               please let the AspectJ team know of your requirements.
               We expect to have a demonstration classloader available in
               the 1.1 release or soon thereafter.
@@ -5314,9 +5292,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
           </para>
         </question>
         <answer>
-	  <para>The AspectJ team aims to keep the implementation bug-free and 
-	  	up-to-date with the Java language, 
-	 	to limit AspectJ language changes to those that 
+	  <para>The AspectJ team aims to keep the implementation bug-free and
+	  	up-to-date with the Java language,
+	 	to limit AspectJ language changes to those that
 		are carefully considered, compelling, and backwards-compatible,
 		and to deliver those language changes only in significant releases (1.0, 1.1).
 	  </para>
@@ -5406,7 +5384,7 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
               </tbody>
             </tgroup>
           </table>
-          <para> More details for 1.0 and earlier releases are available in 
+          <para> More details for 1.0 and earlier releases are available in
             <ulink url="changes.html">changes.html</ulink>.
           </para>
         </answer>
@@ -5425,9 +5403,9 @@ aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspec
             for <literal>RFE</literal>'s ("requests for enhancement") by
             <ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;bug_severity=enhancement">
             	selecting severity of "enhancement"</ulink>.
-     
+
             Like many open-source projects, we don't make or promise
-            schedules, but we do follow a pattern of issuing preview releases 
+            schedules, but we do follow a pattern of issuing preview releases
             which can give observers an idea of when
             a particular release might be available.
           </para>

@@ -1,55 +1,55 @@
 <chapter id="ltwdump" xreflabel="Dumping classes during load-time weaving">
     <title>Dumping classes during load-time weaving</title>
-    
+
     <sect1 id="ltwdump-introduction">
         <title>Introduction</title>
-        
-        <para> 
-        	Very rarely problems may be encountered with classes that have been 
+
+        <para>
+        	Very rarely problems may be encountered with classes that have been
         	load-time woven.
-        	Symptoms will include incorrect program function or a Java exception such as 
+        	Symptoms will include incorrect program function or a Java exception such as
         	<literal>java.lang.VerifyError</literal>.
-            In these situations it's most helpful to include the offending class 
-            in the bug report. When using load-time weaving the woven classes are 
+            In these situations it's most helpful to include the offending class
+            in the bug report. When using load-time weaving the woven classes are
             in memory only so to save them to disk configure
-            <literal>META-INF/aop.xml</literal> to dump the classes (by default 
-            to an <literal>_ajdump</literal> subdirectory of the current working 
-            directory).  Also if the input class file is not available 
+            <literal>META-INF/aop.xml</literal> to dump the classes (by default
+            to an <literal>_ajdump</literal> subdirectory of the current working
+            directory).  Also if the input class file is not available
             (e.g. it is a generated proxy or has already been instrumented by another agent)
             you can configure the weaver to dump the input classes as well.
         </para>
         <sect2 id="ltw-examples" xreflabel="ltwdump-configuration">
             <title>Configuring bytecode dumping in load-time weaving</title>
             <para>
-  			For details of how to configure byte-code dumping, see the             
-            AspectJ Development Environment Guide section on 
+  			For details of how to configure byte-code dumping, see the
+            AspectJ Development Environment Guide section on
 				<ulink url="../devguide/ltw-configuration.html#configuring-load-time-weaving-with-aopxml-files">
-				Configuring Load-time Weaving</ulink>.  
+				Configuring Load-time Weaving</ulink>.
             Following is a simple example.
             </para>
             </sect2>
 
         <sect2 id="ltwdump-examples" xreflabel="LTW Dump Examples">
             <title>LTW Dump Examples</title>
-                    
-            <para> The following <literal>META-INF/aop.xml</literal> will 
+
+            <para> The following <literal>META-INF/aop.xml</literal> will
             weave classes in the <literal>com.foo</literal> package (and subpackages) but not
-            CGLIB generated classes in the <literal>com.foo.bar</literal> package (and subpackages). 
+            CGLIB generated classes in the <literal>com.foo.bar</literal> package (and subpackages).
             It will also ensure all
             woven byte-code is dumped both before and after weaving. </para>
 	        <programlisting><![CDATA[
-	<aspectj>
-		<aspects>
-			<aspect name="ataspectj.EmptyAspect"/>
-		</aspects>
-	    <weaver options="-verbose -debug">
-	        <dump within="com.foo.bar..*" beforeandafter="true"/> 
-    	    <include within="com.foo..*"/>
-        	<exclude within="com.foo.bar..*CGLIB*"/>
-		</weaver>
-	</aspectj>
-			]]></programlisting>
-            
+<aspectj>
+    <aspects>
+        <aspect name="ataspectj.EmptyAspect"/>
+    </aspects>
+    <weaver options="-verbose -debug">
+        <dump within="com.foo.bar..*" beforeandafter="true"/>
+        <include within="com.foo..*"/>
+        <exclude within="com.foo.bar..*CGLIB*"/>
+    </weaver>
+</aspectj>
+]]></programlisting>
+
             <para> You should see messages similar to this: </para>
 
 	        <programlisting><![CDATA[
@@ -59,15 +59,15 @@
 [WeavingURLClassLoader] info register aspect ataspectj.EmptyAspect
 [WeavingURLClassLoader] debug not weaving 'com.foo.bar.Test$$EnhancerByCGLIB$$12345'
 [WeavingURLClassLoader] debug weaving 'com.foo.bar.Test'
-			]]></programlisting>
-            
+]]></programlisting>
+
             <para> On disk you would find the following files: </para>
 
 	        <programlisting><![CDATA[
-	_ajdump/_before/com/foo/bar/Test.class
-	_ajdump/com/foo/bar/Test.class
-			]]></programlisting>
-            
+_ajdump/_before/com/foo/bar/Test.class
+_ajdump/com/foo/bar/Test.class
+]]></programlisting>
+
         </sect2>
     </sect1>
 </chapter>

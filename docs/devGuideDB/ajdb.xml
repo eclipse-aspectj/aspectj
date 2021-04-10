@@ -43,11 +43,11 @@
     <para>
       Note: As of the 1.0.3 release, AspectJ supports JSR-45, which provides
       source-level debugging from many source files per class
-      and non-Java source files. 
-      JSR-45 is implemented in the J2SE 1.4 debugger support, so 
+      and non-Java source files.
+      JSR-45 is implemented in the J2SE 1.4 debugger support, so
       you may be able to use your existing debugger to step through
       AspectJ source code if both the source and target VM's are
-      running under Java 1.4 or later.  
+      running under Java 1.4 or later.
       However, existing debuggers will display synthetic methods
       in the stack frame.
     </para> <!-- todo find docs on JSR-45 -->
@@ -132,23 +132,23 @@
   	  spacewar/Ship.java</userinput> which generates the following
   	output:
   	<programlisting>
-  	  209 void fire() {
-  	  210     // firing a shot takes energy
-  	  211     if (!expendEnergy(BULLET_ENERGY))
-  	  212     return;
-  	  213
-  	  214     //create a bullet object so it doesn't hit the ship that's firing it
-  	  215     double xV = getXVel() + BULLET_SPEED * (Math.cos(orientation));
-  	  216     double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
-  	  217
-  	  218     // create the actual bullet
-  	  219     new Bullet(
-  	  220         getGame(),
-  	  221         (getXPos() + ((getSize()/2 + 2) * (Math.cos(orientation))) + xV),
-  	  222         (getYPos() + ((getSize()/2 + 2) * (Math.sin(orientation))) + yV),
-  	  223         xV,
-  	  224         yV);
-  	  225 }
+209 void fire() {
+210     // firing a shot takes energy
+211     if (!expendEnergy(BULLET_ENERGY))
+212     return;
+213
+214     //create a bullet object so it doesn't hit the ship that's firing it
+215     double xV = getXVel() + BULLET_SPEED * (Math.cos(orientation));
+216     double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
+217
+218     // create the actual bullet
+219     new Bullet(
+220         getGame(),
+221         (getXPos() + ((getSize()/2 + 2) * (Math.cos(orientation))) + xV),
+222         (getYPos() + ((getSize()/2 + 2) * (Math.sin(orientation))) + yV),
+223         xV,
+224         yV);
+225 }
   	</programlisting>
         </para>
         <para>This is different from <command>jdb</command> because it allows
@@ -187,8 +187,8 @@
   	breakpoint has been noted but will not be set until the class has
   	been loaded by the VM: </para>
         <programlisting>
-  	Deferring breakpoint spacewar.Ship.fire()
-  	It will be set after the class is loaded.
+Deferring breakpoint spacewar.Ship.fire()
+It will be set after the class is loaded.
         </programlisting>
 
         <para>
@@ -198,14 +198,14 @@
         <para>
   	When the breakpoint is set, the following message appears:
   	<programlisting>
-  	  Set deferred breakpoint spacewar.Ship.fire()
+Set deferred breakpoint spacewar.Ship.fire()
   	</programlisting>
         </para>
 
         <para> We are notified that we've hit the breakpoint:
 
   	<programlisting>
-  	  Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=174, bci=0 209 void fire() {
+Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=174, bci=0 209 void fire() {
   	</programlisting></para>
 
         <para>
@@ -213,10 +213,10 @@
   	can view the current stack with the <literal>where</literal>
   	command, as follows:
   	<programlisting>
-  	  Thread-2[1] where
-  	  [1] fire (spacewar\Ship.java:209)
-  	  [2] run (spacewar\Robot.java:100)
-  	  [3] run [class java.lang.Thread]
+Thread-2[1] where
+[1] fire (spacewar\Ship.java:209)
+[2] run (spacewar\Robot.java:100)
+[3] run [class java.lang.Thread]
   	</programlisting>
         </para>
 
@@ -228,23 +228,23 @@
         <para>
   	The following message tells us the breakpoint was set:
   	<programlisting>
-  	  Set breakpoint Ship.java:216
+Set breakpoint Ship.java:216
   	</programlisting>
         </para>
         <para>
   	To continue execution, we type <userinput>cont</userinput> and the
   	breakpoint at line 216 is hit
   	<programlisting>
-  	  Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=216, bci=28
-  	  216 double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
+Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=216, bci=28
+216 double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
   	</programlisting></para>
 
         <para>
   	To view the visible local variables, we type
   	<userinput>locals</userinput> and ajdb responds with:
   	<programlisting>
-  	  Local variables
-  	  xV = 12.242462584304468
+Local variables
+xV = 12.242462584304468
   	</programlisting></para>
 
         <para>
@@ -252,22 +252,22 @@
   	<userinput>set xV = 16.1</userinput>
 
   	<programlisting>
-  	  Changed 'xV' from '12.242462584304468' to '16.1'
+Changed 'xV' from '12.242462584304468' to '16.1'
   	</programlisting></para>
 
         <para>
   	To see our changes we can print the value of <literal>i</literal>
   	by the following:
   	<programlisting>
-  	  print xV
-  	  Value for printing 'xV' = 12.242462584304468
+print xV
+Value for printing 'xV' = 12.242462584304468
   	</programlisting></para>
 
         <para>We can now type exit or quit to leave the debugger, and we
   	receive the following message:
 
   	<programlisting>
-  	  The application has exited.
+The application has exited.
   	</programlisting></para>
       </example>
 

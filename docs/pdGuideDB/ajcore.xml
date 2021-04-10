@@ -1,26 +1,26 @@
 <chapter id="ajcore" xreflabel="AspectJ Core Files">
     <title>AspectJ Core Files</title>
-    
+
     <sect1 id="ajcore-introduction">
         <title>Introduction</title>
-        
+
         <para> When the compiler terminates abnormally, either because a particular kind of message was
         issued or an exception was thrown, an AspectJ core file will be produced. You will
         find it the working directory of the compiler and it will have a name that contains
-        the date and time that the file was produced 
+        the date and time that the file was produced
         e.g. <literal>ajcore.20060810.173655.626.txt</literal>. The file contains details
         of the problem such as the exception thrown as well as information about the
         environment such as operating system and Java version. When submitting a bug,
         include this file whenever it is available.</para>
-            
+
         <sect2 id="configuration" xreflabel="configuration">
             <title>Configuring dump files</title>
-            
-            <para> By default AspectJ will only create an <literal>ajcore</literal> file 
-            when an unexpected exception is thrown by the weaver or an 
+
+            <para> By default AspectJ will only create an <literal>ajcore</literal> file
+            when an unexpected exception is thrown by the weaver or an
             <literal>abort</literal> message is
             issued. However it is possible to disable this feature or enable files to
-            be produced under different circumstances. The table below lists the System 
+            be produced under different circumstances. The table below lists the System
             properties that can be used to configure <literal>ajcore</literal> files. </para>
             <informaltable>
                 <tgroup cols="3">
@@ -52,7 +52,7 @@
                             </entry>
                             <entry>
                             	Message kind for which to generate <literal>ajcore</literal>
-                            	e.g. <literal>error</literal>. 
+                            	e.g. <literal>error</literal>.
                             </entry>
                         </row>
                         <row>
@@ -63,7 +63,7 @@
                                 <literal>none</literal>
                             </entry>
                             <entry>
-                            	The directory used for ajcore files. 
+                            	The directory used for ajcore files.
                             </entry>
                         </row>
                     </tbody>
@@ -73,7 +73,7 @@
 
         <sect2 id="ajcore-examples" xreflabel="AJCore File Examples">
             <title>AJCore File Examples</title>
-        
+
             <para> Below is an extract from an <literal>ajcore</literal> file. You will see
             details of the dump configuration as well as the exception (with stack trace) that
             is the source of the problem and any messages issued by the compiler. Most importantly
@@ -191,8 +191,8 @@ java.lang.NoClassDefFoundError: org/apache/commons/logging/LogFactory
 	at org.aspectj.tools.ajc.Main.run(Main.java:367)
 	at org.aspectj.tools.ajc.Main.runMain(Main.java:246)
 	at org.aspectj.tools.ajc.Main.main(Main.java:86)
-			]]></programlisting>
-            
+]]>       </programlisting>
+
         </sect2>
     </sect1>
 </chapter>

@@ -146,54 +146,53 @@
                 may define abstract pointcuts (but not abstract
                 methods). The following example shows a simple aop.xml file: </para>
             <programlisting><![CDATA[
-          <aspectj>
+<aspectj>
 
-            <aspects>
-              <!-- declare two existing aspects to the weaver -->
-              <aspect name="com.MyAspect"/>
-              <aspect name="com.MyAspect.Inner"/>
+  <aspects>
+    <!-- declare two existing aspects to the weaver -->
+    <aspect name="com.MyAspect"/>
+    <aspect name="com.MyAspect.Inner"/>
 
-              <!-- define a concrete aspect inline -->
-              <concrete-aspect name="com.xyz.tracing.MyTracing"
-                               extends="tracing.AbstractTracing"
-                               precedence="com.xyz.first, *">
-                <pointcut name="tracingScope" expression="within(org.maw.*)"/>
-              </concrete-aspect>
+    <!-- define a concrete aspect inline -->
+    <concrete-aspect name="com.xyz.tracing.MyTracing"
+                     extends="tracing.AbstractTracing"
+                     precedence="com.xyz.first, *">
+      <pointcut name="tracingScope" expression="within(org.maw.*)"/>
+    </concrete-aspect>
 
-              <!-- Of the set of aspects declared to the weaver
-                   use aspects matching the type pattern "com..*" for weaving. -->
-              <include within="com..*"/>
+    <!-- Of the set of aspects declared to the weaver
+         use aspects matching the type pattern "com..*" for weaving. -->
+    <include within="com..*"/>
 
-              <!-- Of the set of aspects declared to the weaver
-                   do not use any aspects with the @CoolAspect annotation for weaving -->
-              <exclude within="@CoolAspect *"/>
+    <!-- Of the set of aspects declared to the weaver
+         do not use any aspects with the @CoolAspect annotation for weaving -->
+    <exclude within="@CoolAspect *"/>
 
-            </aspects>
+  </aspects>
 
-            <weaver options="-verbose">
-              <!-- Weave types that are within the javax.* or org.aspectj.*
-                   packages. Also weave all types in the foo package that do
-                   not have the @NoWeave annotation. -->
-              <include within="javax.*"/>
-              <include within="org.aspectj.*"/>
-              <include within="(!@NoWeave foo.*) AND foo.*"/>
+  <weaver options="-verbose">
+    <!-- Weave types that are within the javax.* or org.aspectj.*
+         packages. Also weave all types in the foo package that do
+         not have the @NoWeave annotation. -->
+    <include within="javax.*"/>
+    <include within="org.aspectj.*"/>
+    <include within="(!@NoWeave foo.*) AND foo.*"/>
 
-              <!-- Do not weave types within the "bar" pakage -->
-              <exclude within="bar.*"/>
+    <!-- Do not weave types within the "bar" pakage -->
+    <exclude within="bar.*"/>
 
-              <!-- Dump all types within the "com.foo.bar" package
-                   to the "./_ajdump" folder on disk (for diagnostic purposes) -->
-              <dump within="com.foo.bar.*"/>
+    <!-- Dump all types within the "com.foo.bar" package
+         to the "./_ajdump" folder on disk (for diagnostic purposes) -->
+    <dump within="com.foo.bar.*"/>
 
-              <!-- Dump all types within the "com.foo.bar" package and sub-packages,
-                   both before are after they are woven,
-                   which can be used for byte-code generated at runtime
-              <dump within="com.foo.bar..*" beforeandafter="true"/>
-            </weaver>
+    <!-- Dump all types within the "com.foo.bar" package and sub-packages,
+         both before are after they are woven,
+         which can be used for byte-code generated at runtime
+    <dump within="com.foo.bar..*" beforeandafter="true"/>
+  </weaver>
 
-          </aspectj>
-
-		  ]]></programlisting>
+</aspectj>
+]]></programlisting>
 
             <para>
                 The DTD defining the format of this file is available here:
@@ -301,37 +300,37 @@
                 Consider the following:
             </para>
             <programlisting><![CDATA[
-            package mypack;
+package mypack;
 
-            @Aspect
-            public abstract class AbstractAspect {
+@Aspect
+public abstract class AbstractAspect {
 
-                // abstract pointcut: no expression is defined
-                @Pointcut
-                abstract void scope();
+    // abstract pointcut: no expression is defined
+    @Pointcut
+    abstract void scope();
 
-                @Before("scope() && execution(* *..doSome(..))")
-                public void before(JoinPoint jp) {
-                   ....
-                }
-            }
-            ]]></programlisting>
+    @Before("scope() && execution(* *..doSome(..))")
+    public void before(JoinPoint jp) {
+       ....
+    }
+}
+]]></programlisting>
             <para>
                 This aspect is equivalent to the following in code style:
             </para>
             <programlisting><![CDATA[
-            package mypack;
+package mypack;
 
-            public abstract aspect AbstractAspect {
+public abstract aspect AbstractAspect {
 
-                // abstract pointcut: no expression is defined
-                abstract pointcut scope();
+    // abstract pointcut: no expression is defined
+    abstract pointcut scope();
 
-                before() : scope() && execution(* *..doSome(..)) {
-                   ....
-                }
-            }
-            ]]></programlisting>
+    before() : scope() && execution(* *..doSome(..)) {
+       ....
+    }
+}
+]]></programlisting>
             <para>
                 This aspect (in either style) can be made concrete using <literal>META-INF/aop.xml</literal>.
                 It defines the abstract pointcut <literal>scope()</literal>. When using this mechanism the
@@ -361,14 +360,14 @@
                 The following XML definition shows a valid concrete sub-aspect for the abstract aspects above:
             </para>
             <programlisting><![CDATA[
-            <aspectj>
-                <aspects>
-                    <concrete-aspect name="mypack.__My__AbstractAspect" extends="mypack.AbstractAspect">
-                        <pointcut name="scope" expression="within(yourpackage..*)"/>
-                    </concrete-aspect>
-                <aspects>
-            </aspectj>
-            ]]></programlisting>
+<aspectj>
+    <aspects>
+        <concrete-aspect name="mypack.__My__AbstractAspect" extends="mypack.AbstractAspect">
+            <pointcut name="scope" expression="within(yourpackage..*)"/>
+        </concrete-aspect>
+    <aspects>
+</aspectj>
+]]></programlisting>
             <para>
                 It is important to remember that the <literal>name</literal> attribute in the
                 <literal>concrete-aspect</literal> directive defines the fully qualified name that will be given to the
@@ -381,12 +380,12 @@
                 as in:
             </para>
             <programlisting><![CDATA[
-                // exception handling omitted
-                Class myConcreteAspectClass = Class.forName("mypack.__My__AbstractAspect");
+// exception handling omitted
+Class myConcreteAspectClass = Class.forName("mypack.__My__AbstractAspect");
 
-                // here we are using a singleton aspect
-                AbstractAspect concreteInstance = Aspects.aspectOf(myConcreteAspectClass);
-            ]]></programlisting>
+// here we are using a singleton aspect
+AbstractAspect concreteInstance = Aspects.aspectOf(myConcreteAspectClass);
+]]></programlisting>
        </sect2>
 
         <sect2 id="concrete-aspect-precedence" xreflabel="concrete-aspect-precedence">
@@ -406,13 +405,13 @@
                 Consider the following:
             </para>
             <programlisting><![CDATA[
-                <aspectj>
-                    <aspects>
-                        <concrete-aspect name="mypack.__MyDeclarePrecedence"
-                                         precedence="*..*Security*, Logging+, *"/>
-                    </aspects>
-                </aspectj>
-            ]]></programlisting>
+<aspectj>
+    <aspects>
+        <concrete-aspect name="mypack.__MyDeclarePrecedence"
+                         precedence="*..*Security*, Logging+, *"/>
+    </aspects>
+</aspectj>
+]]></programlisting>
             <para>
                 This deployment time definitions is only declaring a precedence rule. You have to remember
                 that the <literal>name</literal> attribute must be a valid fully qualified class name
@@ -430,13 +429,13 @@
                 search path. Everything that can be configured through XML can be configured using a
                 Properties file, with the exception of declarative concrete aspects. For example: </para>
             <programlisting><![CDATA[
-          aspects.names=com.MyAspect,com.MyAspect.Inner
-          aspects.include=com..*
-          aspects.exclude=@CoolAspect
+aspects.names=com.MyAspect,com.MyAspect.Inner
+aspects.include=com..*
+aspects.exclude=@CoolAspect
 
-          weaver.options=-verbose
-          weaver.include=javax.* OR org.aspectj.*
-		  ]]></programlisting>
+weaver.options=-verbose
+weaver.include=javax.* OR org.aspectj.*
+]]></programlisting>
         </sect2>
         -->
 
@@ -594,8 +593,8 @@
             <para> When using Java 5 the JVMTI agent can be used by starting the JVM with the
                 following option (adapt according to the path to aspectjweaver.jar): </para>
             <programlisting><![CDATA[
-			-javaagent:pathto/aspectjweaver.jar
-		  ]]></programlisting>
+-javaagent:pathto/aspectjweaver.jar
+]]></programlisting>
         </sect2>
         <sect2 id="jrockit" xreflabel="jrockit">
             <title>JRockit with Java 1.3/1.4 (use JVMTI on Java 5)</title>

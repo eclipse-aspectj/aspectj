@@ -1,10 +1,10 @@
 <chapter id="miscellaneous" xreflabel="Miscellaneous Changes">
 
   <title>Other Changes in AspectJ 5</title>
-  
+
   <sect1 id="pointcuts-change">
       <title>Pointcuts</title>
-      
+
           <para>
            AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut expressions
            that bind context variables in more than one location. For example, AspectJ
@@ -12,10 +12,10 @@
            </para>
 
        	<programlisting><![CDATA[
-       	pointcut foo(Foo foo) : (execution(* *(..)) && this(foo) ) ||
-       	                                (set(* *) && target(foo));
-		]]></programlisting>
-		
+pointcut foo(Foo foo) : (execution(* *(..)) && this(foo) ) ||
+                        (set(* *) && target(foo));
+]]></programlisting>
+
 		 <para>
 		     whereas this expression is permitted in AspectJ 5. Each context variable must
 		     be bound exactly once in each branch of a disjunction, and the disjunctive branches
@@ -23,63 +23,59 @@
 		     can be both an execution join point and a set join point so the two branches
 		     are mutually exclusive.
 		  </para>
-           
+
   </sect1>
-  
+
   <sect1 id="declare-soft-change">
       <title>Declare Soft</title>
       <para>
-          The semantics of the <literal>declare soft</literal> statement have been 
-          refined in AspectJ 5 to only soften exceptions that are not already runtime 
+          The semantics of the <literal>declare soft</literal> statement have been
+          refined in AspectJ 5 to only soften exceptions that are not already runtime
           exceptions. If the exception type specified in a declare soft statement is <literal>RuntimeException</literal>
           or a subtype of <literal>RuntimeException</literal> then a new XLint warning will be issued:</para>
-    
+
        	<programlisting><![CDATA[
-       	  declare soft : SomeRuntimeException : execution(* *(..));
-       	  
-       	  >> "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
-		]]></programlisting>
-	
+declare soft : SomeRuntimeException : execution(* *(..));
+
+>> "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
+]]></programlisting>
+
 	   <para>
 	       This XLint message can be controlled by setting the <literal>runtimeExceptionNotSoftened</literal> XLint parameter.
  	   </para>
-	
+
 	   <para>
 	      If the exception type specified in a declare soft statement is a super type of <literal>RuntimeException</literal>
-	      (such as <literal>Exception</literal> for example) then any <emphasis>checked</emphasis> exception thrown at a matched join point, 
-	      where the exception is an instance of the softened exception, will be softened to an 
-	      <literal>org.aspectj.lang.SoftException</literal>. 
+	      (such as <literal>Exception</literal> for example) then any <emphasis>checked</emphasis> exception thrown at a matched join point,
+	      where the exception is an instance of the softened exception, will be softened to an
+	      <literal>org.aspectj.lang.SoftException</literal>.
       </para>
-      
+
        	<programlisting><![CDATA[
-       	public aspect SoftenExample {
-       	
-       	  declare soft : Exception : execution(* Foo.*(..));
-       	
-       	}
-       	
-       	class Foo {
-       	
-       	  public static void main(String[] args) {
-       	    Foo foo = new Foo();
-       	    foo.foo();   
-       	    foo.bar();
-       	  }
-       	
-       	  void foo() throws Exception {
-       	    throw new Exception();        // this will be converted to a SoftException
-       	  }
-       	  
-       	  void bar() throws Exception {
-       	    throw new RuntimeException();  // this will remain a RuntimeException
-       	  }
-       	
-       	}
-		]]></programlisting>
-		
-      
+public aspect SoftenExample {
+  declare soft : Exception : execution(* Foo.*(..));
+}
+
+class Foo {
+  public static void main(String[] args) {
+    Foo foo = new Foo();
+    foo.foo();
+    foo.bar();
+  }
+
+  void foo() throws Exception {
+    throw new Exception();        // this will be converted to a SoftException
+  }
+
+  void bar() throws Exception {
+    throw new RuntimeException();  // this will remain a RuntimeException
+  }
+}
+]]></programlisting>
+
+
   </sect1>
-  
+
 
 </chapter>
 

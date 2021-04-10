@@ -9,76 +9,76 @@
         for understanding the matching rules in the presence of annotations,
         generics, covariance, varargs, and autoboxing.
     </para>
-  
+
     <sect1 id="join-point-matching">
         <title>Join Point Matching</title>
-    
+
         <para>AspectJ supports 11 different kinds of join points. These are
         the <literal>method call, method execution, constructor call,
         constructor execution, field get, field set, pre-initialization,
         initialization, static initialization, handler,</literal> and
         <literal>advice execution</literal> join points.</para>
-        
+
         <para>The <emphasis>kinded</emphasis> pointcut designators match
         based on the kind of a join point. These are the <literal>call,
-        execution, get, set, preinitialization, initialization, 
+        execution, get, set, preinitialization, initialization,
         staticinitialization, handler,</literal> and <literal>adviceexecution</literal>
         designators.</para>
-        
-        <para>A kinded pointcut is written using patterns, some of which 
+
+        <para>A kinded pointcut is written using patterns, some of which
         match based on <emphasis>signature</emphasis>, and some of which
-        match based on <emphasis>modifiers</emphasis>. For example, in 
+        match based on <emphasis>modifiers</emphasis>. For example, in
         the <literal>call</literal> pointcut designator:</para>
-        
+
         <programlisting><![CDATA[
-        call(ModifierPattern TypePattern TypePattern.IdPattern(TypePatternList) ThrowsPattern)
-		]]></programlisting>
-		
+call(ModifierPattern TypePattern TypePattern.IdPattern(TypePatternList) ThrowsPattern)
+]]></programlisting>
+
 		<para>the modifiers matching patterns are <literal>ModifierPattern</literal>
 		and <literal>ThrowsPattern</literal>, and the signature matching patterns
 		are <literal>TypePattern TypePattern.IdPattern(TypePatternList)</literal>.
 		</para>
-		
+
 		<para>
 		A join point has potentially multiple signatures, but only one set of
-		modifiers. <emphasis>A kinded primitive pointcut matches a particular join point 
+		modifiers. <emphasis>A kinded primitive pointcut matches a particular join point
 		if and only if</emphasis>:
 		</para>
-		
+
 		<orderedlist>
 		    <listitem>They are of the same kind</listitem>
-		    <listitem>The signature pattern (exactly) matches at least one 
+		    <listitem>The signature pattern (exactly) matches at least one
 		    signature of the join point</listitem>
 		    <listitem>The modifiers pattern matches the modifiers of the
 		    subject of the join point</listitem>
 		</orderedlist>
-        
-        <para>These rules make it very easily to quickly determine whether a 
+
+        <para>These rules make it very easily to quickly determine whether a
         given pointcut matches a given join point. In the next two sections,
         we describe what the signature(s) of a join point are, and what the
         subjects of join points are.</para>
-        
+
     </sect1>
-  
+
       <sect1 id="join-point-signatures">
         <title>Join Point Signatures</title>
-        
+
         <para>Call, execution, get, and set join points may potentially have multiple
         signatures. All other join points have exactly one signature. The
         following table summarizes the constituent parts of a join point
         signature for the different kinds of join point.</para>
-        
+
         <informaltable>
         <tgroup cols="7">
             <thead>
                 <row>
                     <entry>Join Point Kind</entry>
-                    <entry>Return Type</entry>                
-                    <entry>Declaring Type</entry>                
-                    <entry>Id</entry>                
-                    <entry>Parameter Types</entry>                
-                    <entry>Field Type</entry>                
-                    <entry>Exception Type</entry>                
+                    <entry>Return Type</entry>
+                    <entry>Declaring Type</entry>
+                    <entry>Id</entry>
+                    <entry>Parameter Types</entry>
+                    <entry>Field Type</entry>
+                    <entry>Exception Type</entry>
                 </row>
             </thead>
             <tbody>
@@ -184,25 +184,25 @@
             </tbody>
         </tgroup>
         </informaltable>
-        
+
         <para>Note that whilst an advice execution join point has a
         signature comprising the declaring type of the advice and the
         advice parameter types, the <literal>adviceexecution</literal>
         pointcut designator does not support matching based on this
         signature.</para>
-        
+
         <para>The signatures for most of the join point kinds should be
         self-explanatory, except for field get and set, and method call and execution
-        join points, which can have multiple signatures. Each signature of 
+        join points, which can have multiple signatures. Each signature of
         a method call or execution join point has the same id and parameter
         types, but the declaring type and return type (with covariance) may vary.
         Each signature of a field get or set join point has the same id and field
         type, but the declaring type may vary.
         </para>
-        
-        <para>The following sections examine signatures for these join points 
+
+        <para>The following sections examine signatures for these join points
         in more detail.</para>
-        
+
         <sect2 id="method-call-join-point-signatures" xreflabel="method-call-join-point-signatures">
             <title>Method call join point signatures</title>
 
@@ -213,72 +213,71 @@
         </para>
 
 		<programlisting><![CDATA[
-		T t = new T(); 
-		t.m("hello");  <= call join point occurs when this line is executed
-		]]></programlisting>
-        
+T t = new T();
+t.m("hello");  <= call join point occurs when this line is executed
+]]></programlisting>
+
         <para>
             Then the signature <literal>R(T) T.m(parameter_types)</literal> is a signature
             of the call join point, where <literal>R(T)</literal> is the return
-            type of <literal>m</literal> in <literal>T</literal>, and 
+            type of <literal>m</literal> in <literal>T</literal>, and
             <literal>parameter_types</literal> are the parameter types of
             <literal>m</literal>. If <literal>T</literal> itself does not
-            declare a definition of <literal>m(parameter_types)</literal>, then 
-            <literal>R(T)</literal> is the return type in the definition of 
+            declare a definition of <literal>m(parameter_types)</literal>, then
+            <literal>R(T)</literal> is the return type in the definition of
             <literal>m</literal> that <literal>T</literal> inherits. Given the
-            call above, and the definition of <literal>T.m</literal>:                      
+            call above, and the definition of <literal>T.m</literal>:
         </para>
-        
+
         <programlisting><![CDATA[
-        interface Q {
-          R m(String s);
-        }
-        
-        class P implements Q {
-          R m(String s) {...}        
-        }
-        
-        class S extends P {
-          R' m(String s) {...}
-        }
-        
-        class T extends S {} 
-		
-		]]></programlisting>
-        
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  R m(String s) {...}
+}
+
+class S extends P {
+  R' m(String s) {...}
+}
+
+class T extends S {}
+]]></programlisting>
+
         <para>Then <literal>R' T.m(String)</literal> is a signature of the
         call join point for <literal>t.m("hello")</literal>.</para>
-        
+
         <para>
-            For each ancestor (super-type) <literal>A</literal> of <literal>T</literal>, 
+            For each ancestor (super-type) <literal>A</literal> of <literal>T</literal>,
             if <literal>m(parameter_types)</literal> is defined for that super-type, then
             <literal>R(A) A.m(parameter_types)</literal> is a signature of the call join
             point, where <literal>R(A)</literal> is the return type of <literal>
             m(parameter_types)</literal> as defined in <literal>A</literal>, or as inherited
             by <literal>A</literal> if <literal>A</literal> itself does not
-            provide a definition of <literal>m(parameter_types)</literal>.            
+            provide a definition of <literal>m(parameter_types)</literal>.
         </para>
-        
+
         <para>
             Continuing the example from above,we can deduce that
         </para>
 
         <programlisting><![CDATA[
-        R' S.m(String)
-        R  P.m(String)
-        R  Q.m(String)
-		]]></programlisting>
-        
+R' S.m(String)
+R  P.m(String)
+R  Q.m(String)
+]]></programlisting>
+
         <para>are all additional signatures for the call join point arising
         from the call <literal>t.m("hello")</literal>. Thus this call
         join point has four signatures in total. Every signature has the same
         id and parameter types, and a different declaring type.</para>
-        
+
        </sect2>
-      
+
       <sect2 id="method-execution-join-point-signatures" xreflabel="method-execution-join-point-signatures">
           <title>Method execution join point signatures</title>
-          
+
           <para>Join point signatures for execution join points are defined
           in a similar manner to signatures for call join points. Given the
           hierarchy:
@@ -286,39 +285,38 @@
 
 
         <programlisting><![CDATA[
-        interface Q {
-          R m(String s);
-        }
-        
-        class P implements Q {
-          R m(String s) {...}        
-        }
-        
-        class S extends P {
-          R' m(String s) {...}
-        }
-        
-        class T extends S { }
-        
-        class U extends T {
-          R' m(String s) {...}
-        }
-		
-		]]></programlisting>
-        
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  R m(String s) {...}
+}
+
+class S extends P {
+  R' m(String s) {...}
+}
+
+class T extends S { }
+
+class U extends T {
+  R' m(String s) {...}
+}
+]]></programlisting>
+
         <para>Then the execution join point signatures arising as a result
         of the call to <literal>u.m("hello")</literal> are: </para>
 
         <programlisting><![CDATA[
-        R' U.m(String)
-        R' S.m(String)
-        R  P.m(String)
-        R  Q.m(String)
-		]]></programlisting>
+R' U.m(String)
+R' S.m(String)
+R  P.m(String)
+R  Q.m(String)
+]]></programlisting>
 
-        <para>Each signature has the same id and parameter types, and a 
+        <para>Each signature has the same id and parameter types, and a
         different declaring type. There is one signature for each type
-        that provides its own declaration of the method. Hence in this 
+        that provides its own declaration of the method. Hence in this
         example there is no signature <literal>R' T.m(String)</literal>
         as <literal>T</literal> does not provide its own declaration of
         the method.</para>
@@ -330,11 +328,11 @@
 
         <para>
             For a field get join point where an access is made to a field
-            <literal>f</literal> of type <literal>F</literal> 
+            <literal>f</literal> of type <literal>F</literal>
             on a object with declared type <literal>T</literal>, then
-            <literal>F T.f</literal> is a signature of the get join point.  
+            <literal>F T.f</literal> is a signature of the get join point.
         </para>
-        
+
         <para>
             If <literal>T</literal> does not directly declare a member
             <literal>f</literal>, then for each super type <literal>S</literal>
@@ -344,18 +342,18 @@
             of the join point. For example, given the hierarchy:
         </para>
 
-        <programlisting><![CDATA[        
-        class P  {
-          F f;        
-        }
-        
-        class S extends P {
-          F f;
-        }
-        
-        class T extends S { }                
-		]]></programlisting>
-		
+        <programlisting><![CDATA[
+class P  {
+  F f;
+}
+
+class S extends P {
+  F f;
+}
+
+class T extends S { }
+]]></programlisting>
+
 		<para>
 		    Then the join point signatures for a field get join point of
 		    the field <literal>f</literal> on an object with declared type
@@ -363,26 +361,26 @@
 		</para>
 
         <programlisting><![CDATA[
-        F S.f
-        F T.f
-		]]></programlisting>
+F S.f
+F T.f
+]]></programlisting>
 
         <para>The signatures for a field set join point are derived in an
             identical manner.</para>
-            
+
        </sect2>
-             
+
       </sect1>
-      
+
       <sect1 id="join-point-modifiers">
           <title>Join Point Modifiers</title>
-          
+
           <para>Every join point has a single set of modifiers - these include
           the standard Java modifiers such as <literal>public, private,
           static, abstract</literal> etc., any annotations, and the throws
           clauses of methods and constructors. These modifiers are the
           modifiers of the <emphasis>subject</emphasis> of the join point.</para>
-          
+
           <para>
           The following table defines the join point subject for each kind
           of join point.
@@ -447,40 +445,40 @@
                    </row>
                </tbody>
            </tgroup>
-          </informaltable>          
+          </informaltable>
 
              <para>For example, given the following types</para>
 
         <programlisting><![CDATA[
-        public class X {        
-          @Foo
-          protected void doIt() {...} 
-        }
-        
-        public class Y extends X {        
-          public void doIt() {...}        
-        }
-		]]></programlisting>
-          
+public class X {
+  @Foo
+  protected void doIt() {...}
+}
+
+public class Y extends X {
+  public void doIt() {...}
+}
+]]></programlisting>
+
          <para>Then the modifiers for a call to <literal>(Y y) y.doIt()</literal>
          are simply <literal>{public}</literal>. The modifiers for a call to
          <literal>(X x) x.doIt()</literal> are <literal>{@Foo,protected}</literal>.
          </para>
-          
+
       </sect1>
-      
+
       <sect1 id="join-point-matching-summary">
           <title>Summary of Join Point Matching</title>
 
 		<para>
 		A join point has potentially multiple signatures, but only one set of
-		modifiers. <emphasis>A kinded primitive pointcut matches a particular join point 
+		modifiers. <emphasis>A kinded primitive pointcut matches a particular join point
 		if and only if</emphasis>:
 		</para>
-		
+
 		<orderedlist>
 		    <listitem>They are of the same kind</listitem>
-		    <listitem>The signature pattern (exactly) matches at least one 
+		    <listitem>The signature pattern (exactly) matches at least one
 		    signature of the join point</listitem>
 		    <listitem>The modifiers pattern matches the modifiers of the
 		    subject of the join point</listitem>
@@ -489,39 +487,38 @@
         <para>Given the hierarchy</para>
 
         <programlisting><![CDATA[
-        interface Q {
-          R m(String s);
-        }
-        
-        class P implements Q {
-          @Foo
-          public R m(String s) {...}        
-        }
-        
-        class S extends P {
-          @Bar
-          public R' m(String s) {...}
-        }
-        
-        class T extends S {} 
-		
-		]]></programlisting>
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  @Foo
+  public R m(String s) {...}
+}
+
+class S extends P {
+  @Bar
+  public R' m(String s) {...}
+}
+
+class T extends S {}
+]]></programlisting>
 
         <para>and the program fragment:</para>
-        
+
         <programlisting><![CDATA[
-        P p = new P();
-        S s = new S();
-        T t = new T();
-        ...
-        p.m("hello");
-        s.m("hello");
-        t.m("hello");
-		]]></programlisting>
-        
+P p = new P();
+S s = new S();
+T t = new T();
+...
+p.m("hello");
+s.m("hello");
+t.m("hello");
+]]></programlisting>
+
         <para>
         The the pointcut <literal>call(@Foo R P.m(String))</literal> matches the
-        call <literal>p.m("hello")</literal> since both the signature and the 
+        call <literal>p.m("hello")</literal> since both the signature and the
         modifiers match. It does not match the call <literal>s.m("hello")</literal>
         because even though the signature pattern matches one of the signatures
         of the join point, the modifiers pattern does not match the modifiers of
@@ -534,6 +531,6 @@
         signature pattern does not match any signature for the call join point
         of m in P.</para>
       </sect1>
-  
+
 </chapter>
 

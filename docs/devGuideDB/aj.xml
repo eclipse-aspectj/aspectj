@@ -1,9 +1,9 @@
 <refentry id="aj-ref" xreflabel="The aj Command-line Reference">
-	
-  <refnamediv>	
+
+  <refnamediv>
     <refname>aj</refname>
     <refpurpose>command-line launcher for basic load-time weaving</refpurpose>
-  </refnamediv>  
+  </refnamediv>
 
   <refsynopsisdiv>
     <cmdsynopsis>
@@ -16,39 +16,39 @@
   </refsynopsisdiv>
     <refsect1 id="aj" xreflabel="aj">
         <title>Description</title>
-        
+
         <para>The
             <command>aj</command> command runs Java programs in Java 1.4 or
             later by setting up
             <literal>WeavingURLClassLoader</literal> as the system class
             loader, to do load-time bytecode weaving. </para>
-        
+
         <para> The arguments are the same as those used to launch the Java program.
             Users should define the environment variables
             <literal>CLASSPATH</literal> and
             <literal>ASPECTPATH</literal>. </para>
-        
+
         <para>For more information and alternatives for load-time weaving,
         see <xref linkend="ltw"/>.
         </para>
-        
+
         <refsect2>
             <title>Examples</title>
-            
+
             <example id="simpleajexample">
                 <title>A simple example</title>
-                
+
                 <para>Use ajc to build a library, then weave at load time</para>
-                
-                <programlisting><![CDATA[                     
-    REM compile library
-    ${ASPECTJ_HOME}\bin\ajc.bat -outjar lib\aspects.jar @aspects.lst
-                
-    REM run, weaving into application at load-time set
-    ASPECTPATH=lib\aspects.jar set CLASSPATH=app\app.jar
-    ${ASPECTJ_HOME}\bin\aj.bat com.company.app.Main "Hello, World!" 
-]]>                </programlisting>
-                
+
+                <programlisting><![CDATA[
+REM compile library
+${ASPECTJ_HOME}\bin\ajc.bat -outjar lib\aspects.jar @aspects.lst
+
+REM run, weaving into application at load-time set
+ASPECTPATH=lib\aspects.jar set CLASSPATH=app\app.jar
+${ASPECTJ_HOME}\bin\aj.bat com.company.app.Main "Hello, World!"
+]]>             </programlisting>
+
             </example>
         </refsect2>
     </refsect1>

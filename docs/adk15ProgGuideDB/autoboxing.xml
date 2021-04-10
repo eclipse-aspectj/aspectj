@@ -1,54 +1,54 @@
 <chapter id="autoboxing" xreflabel="Autoboxing and Unboxing">
 
   <title>Autoboxing and Unboxing</title>
-  
+
       <sect1 id="boxing-inJava5">
         <title>Autoboxing and Unboxing in Java 5</title>
-        
+
         <para>
-          Java 5 (and hence AspectJ 1.5) supports automatic conversion of 
+          Java 5 (and hence AspectJ 1.5) supports automatic conversion of
           primitive types (int, float, double etc.) to their object equivalents
           (Integer, Float, Double,...) in assignments and method and constructor
           invocations. This conversion is know as autoboxing.
         </para>
-        
+
         <para>Java 5 also supports automatic unboxing, where wrapper types
         are automatically converted into their primitive equivalents if
         needed for assignments or method or constructor invocations.</para>
-        
+
         <para>For example:</para>
 
 		<programlisting><![CDATA[
-		int i = 0;
-		i = new Integer(5); // auto-unboxing
-		
-		Integer i2 = 5;  // autoboxing
-		]]></programlisting>
-        
+int i = 0;
+i = new Integer(5); // auto-unboxing
+
+Integer i2 = 5;  // autoboxing
+]]></programlisting>
+
       </sect1>
-      
+
       <sect1 id="autoboxing-in-aspectj5">
           <title>Autoboxing and Join Point matching in AspectJ 5</title>
-          
+
           <para>Most of the pointcut designators match based on signatures, and
           hence are unaffected by autoboxing. For example, a call to a method</para>
 
    		<programlisting><![CDATA[
-   		public void foo(Integer i);
-   		]]></programlisting>
-    
+public void foo(Integer i);
+]]></programlisting>
+
          <para>is <emphasis>not</emphasis> matched by a pointcut
          <literal>call(void foo(int))</literal> since the signature declares
          a single <literal>Integer</literal> parameter, not an <literal>int</literal>.
          </para>
-         
+
          <para>The <literal>args</literal> pointcut designator is affected by
          autoboxing since it matches based on the runtime type of the arguments.
          AspectJ 5 applies autoboxing and unboxing in determining argument matching.
          In other words, <literal>args(Integer)</literal> will match any join
          point at which there is a single argument of type <literal>Integer</literal>
          or of type <literal>int</literal>.</para>
-         
+
          <itemizedlist>
              <listitem>args(Integer) and args(int) are equivalent</listitem>
              <listitem>args(Float) and args(float) are equivalent</listitem>
@@ -58,29 +58,29 @@
              <listitem>args(Long) and args(long) are equivalent</listitem>
              <listitem>args(Boolean) and args(boolean) are equivalent</listitem>
          </itemizedlist>
-      
+
       <para>
-        Autoboxing and unboxing are also applied when binding pointcut or 
-        advice parameters, for example:   
+        Autoboxing and unboxing are also applied when binding pointcut or
+        advice parameters, for example:
       </para>
 
    		<programlisting><![CDATA[
-   		pointcut foo(int i) : args(i);
-   		
-   		before(Integer i) : foo(i) {
-   		  ...
-   		}
-   		]]></programlisting>
+pointcut foo(int i) : args(i);
+
+before(Integer i) : foo(i) {
+  ...
+}
+]]></programlisting>
 
       </sect1>
-      
+
       <sect1 id="autoboxing-and-method-dispatch">
           <title>Inter-type method declarations and method dispatch</title>
-          
+
           <para>Autoboxing, unboxing, and also varargs all affect the method
           dispatch algorithm used in Java 5. In AspectJ 5, the target method
           of a call is selected according to the following algorithm:</para>
-          
+
           <orderedlist>
               <listitem>Attempt to locate a matching method or inter-type declared
               method without considering
@@ -90,11 +90,11 @@
               <listitem>Finally try again considering both autoboxing, unboxing,
               and varargs.</listitem>
           </orderedlist>
-          
+
           <para>One consequence is that a directly matching inter-type declared
-          method will take precedence over a method declared locally in the 
+          method will take precedence over a method declared locally in the
           target class but that only matches via autoboxing.</para>
       </sect1>
-        
+
 </chapter>
 
