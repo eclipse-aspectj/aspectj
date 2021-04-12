@@ -16,11 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>asm</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
 			<artifactId>bridge</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -46,56 +41,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
+			<artifactId>asm-renamed</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
 			<artifactId>testing-util</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>bcel-builder</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<!-- Identical to lib/ant/lib/xml-apis.jar, a former system-scoped dependency -->
-			<groupId>xerces</groupId>
-			<artifactId>xmlParserAPIs</artifactId>
-			<version>${lib.ant.xerces.version}</version>
-		</dependency>
-		<dependency>
-			<!-- Identical to lib/ant/lib/xercesImpl.jar, a former system-scoped dependency -->
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>${lib.ant.xerces.version}</version>
-		</dependency>
-    <dependency>
-			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
-			<groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-			<version>${lib.ant.version}</version>
-    </dependency>
 	</dependencies>
 
-<!--
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-				</configuration>
-				<executions>
-					<execution>
-						<id>javadoc</id>
-						<phase>package</phase>
-						<goals>
-							<goal>javadoc</goal>
-						</goals>
-						<configuration>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
--->
 </project>

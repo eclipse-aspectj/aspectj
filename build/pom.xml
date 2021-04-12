@@ -15,12 +15,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>testing-util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>

@@ -38,5 +38,15 @@
       <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>testing-util</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

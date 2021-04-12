@@ -21,24 +21,10 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>weaver</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
       <artifactId>testing</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-util</artifactId>
-      <version>${project.version}</version>
+      <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-client</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -52,14 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>asm</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
   </dependencies>
 

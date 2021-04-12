@@ -48,11 +48,7 @@
       <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-client</artifactId>
-      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -60,13 +56,12 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>loadtime</artifactId>
+      <artifactId>org.aspectj.matcher</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>org.aspectj.matcher</artifactId>
-      <version>${project.version}</version>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
   </dependencies>
 

@@ -206,6 +206,11 @@
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.1.2</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -245,6 +250,22 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-help-plugin</artifactId>
+			</plugin>
+
+			<!--
+				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'analyze' or
+				'tree' from a modern IDE in order to inspect dependency management in the project.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<ignoredUnusedDeclaredDependencies>
+						<!-- Declared in parent POM for convenience, but not used in every module -->
+						<ignoredUnusedDeclaredDependency>junit:junit:jar</ignoredUnusedDeclaredDependency>
+					</ignoredUnusedDeclaredDependencies>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -303,6 +324,12 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.13.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>org.eclipse.jdt.core</artifactId>
 				<version>${jdt.core.version}</version>
@@ -327,19 +354,13 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<!--
+			Actually, it would be cleaner to only define JUnit only it modules which actually use it. But since this comprises
+			the majority, we can afford to be a little bit unclean here with regard to dependency management.
+		-->
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

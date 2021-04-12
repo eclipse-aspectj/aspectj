@@ -34,7 +34,8 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13</version>
+      <!-- Yes, not 'test' here -->
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <!-- Identical to lib/jdiff/jdiff.jar, a former system-scoped dependency. Now to be found on GitHub Packages. -->

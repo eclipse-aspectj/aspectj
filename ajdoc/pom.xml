@@ -35,40 +35,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <!-- enables easy dependency on tools.jar -->
-      <groupId>com.github.olivergondza</groupId>
-      <artifactId>maven-jdk-tools-wrapper</artifactId>
-      <version>0.1</version>
-    </dependency>
-
-    <!-- Dependencies needed for running tests in this module independently of complete reactor build -->
-    <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>org.aspectj.matcher</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>weaver</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>bcel-builder</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>runtime</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>

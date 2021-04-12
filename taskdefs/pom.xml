@@ -35,16 +35,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <!-- Identical to lib/ant/lib/xml-apis.jar, a former system-scoped dependency -->
-      <groupId>xerces</groupId>
-      <artifactId>xmlParserAPIs</artifactId>
-      <version>${lib.ant.xerces.version}</version>
-    </dependency>
-    <dependency>
-      <!-- Identical to lib/ant/lib/xercesImpl.jar, a former system-scoped dependency -->
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${lib.ant.xerces.version}</version>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
     <dependency>
       <!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
