@@ -650,6 +650,7 @@
                     <include>ant/**</include>
                     <include>asm/**</include>
                     <include>commons/**</include>
+                    <include>docbook/**</include>
                     <include>jarjar/**</include>
                     <!-- Obsolete because JDiff is on GitHub Packages now. Keep for reference. -->
                     <!--<include>jdiff/**</include>-->
