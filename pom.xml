@@ -255,11 +255,16 @@
 			<!--
 				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'analyze' or
 				'tree' from a modern IDE in order to inspect dependency management in the project.
+
+				Tip: If you want a quick overview, run this from the project from the project root directory:
+				mvn -P \!create-docs dependency:analyze | grep -E '\[(WARNING|INFO\] -+< .+:.+ >-+)' > dependency-analyze.txt
+				But be careful that all modules are actually listed - usually 'org.aspectj:installer' is the last one in the
+				list. You can make sure by running the command without 'grep' first, then you see if there are any compile
+				problems which 'grep' would filter out.
 			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.2</version>
 				<configuration>
 					<ignoredUnusedDeclaredDependencies>
 						<!-- Declared in parent POM for convenience, but not used in every module -->

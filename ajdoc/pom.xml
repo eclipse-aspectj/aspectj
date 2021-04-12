@@ -13,6 +13,21 @@
   <packaging>jar</packaging>
   <name>ajdoc</name>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <usedDependencies>
+            <!-- The tests need this during runtime, even though no direct usage is in our classes -->
+            <usedDependency>com.github.olivergondza:maven-jdk-tools-wrapper</usedDependency>
+          </usedDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -33,6 +48,12 @@
       <groupId>org.aspectj</groupId>
       <artifactId>org.aspectj.ajdt.core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <!-- enables easy dependency on tools.jar -->
+      <groupId>com.github.olivergondza</groupId>
+      <artifactId>maven-jdk-tools-wrapper</artifactId>
+      <version>0.1</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
