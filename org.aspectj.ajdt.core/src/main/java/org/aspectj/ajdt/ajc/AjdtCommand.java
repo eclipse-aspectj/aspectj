@@ -158,20 +158,35 @@ public class AjdtCommand implements ICommand {
     /**
      * Heuristically infer the type of output message logged by the AspectJ compiler. This is a simple keyword matcher
      * looking for substrings like "[error]", "[warning]", "AspectJ-specific options:", "AspectJ-specific non-standard
-     * options:"
+     * options:", "Warning options:".
      *
      * @param message AspectJ compiler message
      * @return inferred message kind, either of ERROR, WARNING, USAGE, INFO
      */
     protected static IMessage.Kind inferKind(String message) { // XXX dubious
-        if (message.contains("[error]")) {
-            return IMessage.ERROR;
-        } else if (message.contains("[warning]")) {
-            return IMessage.WARNING;
-        } else if (message.contains("AspectJ-specific options:") || message.contains("AspectJ-specific non-standard options:")) {
-            return IMessage.USAGE;
-        } else {
-            return IMessage.INFO;
-        }
+      if (message.contains("[error]")) {
+        return IMessage.ERROR;
+      }
+      else if (message.contains("[warning]")) {
+        return IMessage.WARNING;
+      }
+      else if (
+        containsAll(message, "Usage: <options>", "AspectJ-specific options:", "Classpath options:") ||
+          containsAll(message, "Warning options:", "-nowarn", "localHiding", "uselessTypeCheck") ||
+          containsAll(message, "AspectJ-specific non-standard options:", "-XnoInline", "-Xjoinpoints:")
+      )
+      {
+        return IMessage.USAGE;
+      }
+      else {
+        return IMessage.INFO;
+      }
     }
+
+  private static boolean containsAll(String message, String... searchStrings) {
+    for (String searchString : searchStrings)
+      if (!message.contains(searchString))
+        return false;
+    return true;
+  }
 }
