@@ -10,8 +10,6 @@
 	</parent>
 
 	<artifactId>bridge</artifactId>
-	<packaging>jar</packaging>
-	<name>bridge</name>
 
 	<dependencies>
 		<dependency>

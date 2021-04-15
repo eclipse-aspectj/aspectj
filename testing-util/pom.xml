@@ -10,17 +10,8 @@
   </parent>
 
   <artifactId>testing-util</artifactId>
-  <packaging>jar</packaging>
-  <name>testing-util</name>
 
   <dependencies>
-<!--
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>asm</artifactId>
-      <version>${project.version}</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>util</artifactId>

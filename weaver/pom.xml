@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>weaver</artifactId>
-  <packaging>jar</packaging>
-  <name>weaver</name>
 
   <dependencies>
     <dependency>

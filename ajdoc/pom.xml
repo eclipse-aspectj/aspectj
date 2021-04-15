@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>ajdoc</artifactId>
-  <packaging>jar</packaging>
-  <name>ajdoc</name>
 
   <build>
     <plugins>

@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>runtime</artifactId>
-  <packaging>jar</packaging>
-  <name>runtime</name>
 
   <dependencies>
     <dependency>

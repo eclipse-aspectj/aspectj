@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>org.aspectj.ajdt.core</artifactId>
-  <packaging>jar</packaging>
-  <name>org.aspectj.ajdt.core</name>
 
   <dependencies>
     <dependency>

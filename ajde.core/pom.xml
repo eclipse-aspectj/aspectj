@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>ajde.core</artifactId>
-  <packaging>jar</packaging>
-  <name>ajde.core</name>
 
   <dependencies>
     <dependency>

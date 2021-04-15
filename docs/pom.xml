@@ -9,8 +9,6 @@
   </parent>
 
   <artifactId>docs</artifactId>
-  <packaging>jar</packaging>
-  <name>docs</name>
 
   <profiles>
     <profile>

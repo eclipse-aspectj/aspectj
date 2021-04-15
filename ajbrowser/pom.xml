@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>ajbrowser</artifactId>
-  <packaging>jar</packaging>
-  <name>ajbrowser</name>
 
   <dependencies>
     <dependency>

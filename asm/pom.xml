@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>asm</artifactId>
-  <packaging>jar</packaging>
-  <name>asm</name>
 
   <dependencies>
     <dependency>

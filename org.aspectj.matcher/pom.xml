@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>org.aspectj.matcher</artifactId>
-  <packaging>jar</packaging>
-  <name>org.aspectj.matcher</name>
 
   <dependencies>
     <dependency>

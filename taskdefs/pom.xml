@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>taskdefs</artifactId>
-  <packaging>jar</packaging>
-  <name>taskdefs</name>
 
   <dependencies>
     <dependency>

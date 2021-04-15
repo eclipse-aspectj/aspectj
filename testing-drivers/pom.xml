@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>testing-drivers</artifactId>
-  <packaging>jar</packaging>
-  <name>testing-drivers</name>
 
   <dependencies>
     <dependency>

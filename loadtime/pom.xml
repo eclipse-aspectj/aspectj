@@ -10,8 +10,6 @@
 	</parent>
 
 	<artifactId>loadtime</artifactId>
-	<packaging>jar</packaging>
-	<name>loadtime</name>
 
 	<dependencies>
 		<dependency>

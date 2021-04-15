@@ -10,8 +10,6 @@
 	</parent>
 
 	<artifactId>build</artifactId>
-	<packaging>jar</packaging>
-	<name>build</name>
 
 	<dependencies>
 		<dependency>
