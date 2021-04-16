@@ -99,14 +99,14 @@
 					</execution>
 
 					<execution>
-						<id>aspectjrt-src-assembly</id>
+						<id>aspectjrt-sources-assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<classifier>sources</classifier>
-							<finalName>aspectjrt-${project.version}</finalName>
+							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
+							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 							</archive>
 							<descriptors>

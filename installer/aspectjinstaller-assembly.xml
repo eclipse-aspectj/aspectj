@@ -3,9 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
 	<id>aspectjinstaller</id>
+
 	<formats>
 		<format>jar</format>
 	</formats>
+
 	<includeBaseDirectory>false</includeBaseDirectory>
 
 	<fileSets>
@@ -20,7 +22,6 @@
 			<directory>../aj-build/dist/docs</directory>
 			<outputDirectory>files</outputDirectory>
 		</fileSet>
-
 		<fileSet>
 			<directory>../runtime/target/site/apidocs</directory>
 			<outputDirectory>files/doc/runtime-apidocs</outputDirectory>

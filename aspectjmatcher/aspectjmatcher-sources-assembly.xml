@@ -2,7 +2,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
-<id>aspectjmatcher-sources</id>
+	<!-- Do not change this ID. It becomes the artifact classifier with appendAssemblyId=true. -->
+	<id>sources</id>
 
 	<formats>
 		<format>jar</format>

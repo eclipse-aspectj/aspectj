@@ -119,8 +119,8 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<classifier>sources</classifier>
-							<finalName>aspectjtools-${project.version}</finalName>
+							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
+							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 							</archive>
 							<descriptors>
