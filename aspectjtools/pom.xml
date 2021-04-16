@@ -14,14 +14,6 @@
 	<packaging>pom</packaging>
 	<name>AspectJ Compiler</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>org.aspectj.ajdt.core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<plugins>
 
@@ -37,58 +29,24 @@
 				</executions>
 			</plugin>
 
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>3.0.0</version>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>unzipasm</id>
+						<id>unzip-dependency-sources</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
-							<target>
-								<echo message="unzip jarjar'd asm" />
-								<unzip
-									src="${project.basedir}/../lib/asm/asm-9.1.renamed.jar"
-									dest="target/asm-unzipped" />
-							</target>
+							<classifier>sources</classifier>
+							<!--<failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>-->
+							<includeArtifactIds>org.eclipse.jdt.core,asm-renamed</includeArtifactIds>
+							<outputDirectory>${project.build.directory}/unzipped-sources</outputDirectory>
+							<!-- Avoid accidentally shading test-scoped dependencies like JUnit -->
+							<includeScope>runtime</includeScope>
 						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>unzipjdt</id>
-						<phase>prepare-package</phase>
-						<configuration>
-							<target>
-								<echo message="unzip patched jdtcore" />
-								<unzip
-									src="${project.basedir}/../lib/jdtcore-aj/jdtcore-for-aspectj.jar"
-									dest="target/jdtcore-unzipped" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>unzipjdtsrc</id>
-						<phase>prepare-package</phase>
-						<configuration>
-							<target>
-								<echo message="unzip patched jdtcore sources" />
-								<unzip
-									src="${project.basedir}/../lib/jdtcore-aj/jdtcore-for-aspectj-src.zip"
-									dest="target/jdtcore-unzipped-src" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
@@ -176,4 +134,21 @@
 
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>org.aspectj.ajdt.core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>asm-renamed</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>

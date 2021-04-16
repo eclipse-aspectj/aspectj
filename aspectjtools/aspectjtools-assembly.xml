@@ -1,14 +1,24 @@
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
 	<id>aspectjtools</id>
-	
+
 	<formats>
 		<format>jar</format>
 	</formats>
 
 	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<dependencySets>
+		<dependencySet>
+			<unpack>true</unpack>
+			<includes>
+				<include>org.aspectj:org.eclipse.jdt.core</include>
+				<include>org.aspectj:asm-renamed</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
 
 	<fileSets>
 		<!-- runtime -->
@@ -70,16 +80,7 @@
 				<exclude>META-INF/maven/**</exclude>
 			</excludes>
 		</fileSet>
-		<fileSet>
-			<directory>target/asm-unzipped</directory>
-			<outputDirectory>.</outputDirectory>
-			<excludes>
-				<exclude>META-INF/maven/**</exclude>
-				<exclude>org/**</exclude>
-				<exclude>META-INF/MANIFEST.MF</exclude>
-			</excludes>
-		</fileSet>
-		
+
 		<!-- tools -->
 		<fileSet>
 			<directory>../ajbrowser/target/classes</directory>
@@ -121,13 +122,6 @@
 			<outputDirectory>.</outputDirectory>
 			<excludes>
 				<exclude>META-INF/maven/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>target/jdtcore-unzipped</directory>
-			<outputDirectory>.</outputDirectory>
-			<excludes>
-				<exclude>META-INF/MANIFEST.MF</exclude>
 			</excludes>
 		</fileSet>
 	</fileSets>
