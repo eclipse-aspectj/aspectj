@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -53,29 +53,23 @@ import static org.aspectj.util.LangUtil.is16VMOrGreater;
  * Element {@code <stdout><line text="..">} and {@code <stderr><line text="..">} can be used. For now, a full match is
  * performed on the output of the runned target only (not the whole Ant invocation). This is experimental and you are
  * advised to use a {@code <junit>} task instead or a {@code <java>} whose main throws some exception upon failure.
- * 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AntSpec implements ITestStep {
 
-	
-	public static final String outputFolders(String... modules) {
+	public static String outputFolders(String... modules) {
 		StringBuilder s = new StringBuilder();
 		for (String module: modules) {
 			s.append(File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes");
 		}
 		return s.toString();
 	}
-	
-	
+
+
 	// ALSO SEE AJC
 	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES =
 			outputFolders("asm", "bridge", "loadtime", "weaver", "org.aspectj.matcher", "bcel-builder");
-//	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES = ".." + File.separator + "asm/bin" + File.pathSeparator + ".."
-//			+ File.separator + "bridge/bin" + File.pathSeparator + ".." + File.separator + "loadtime/bin" + File.pathSeparator
-//			+ ".." + File.separator + "loadtime5/bin" + File.pathSeparator + ".." + File.separator + "weaver/bin"
-//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher/bin" + File.pathSeparator + ".." + File.separator
-//			+ "lib/bcel/bcel.jar" + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel-verifier.jar";;
 
 	private boolean m_verbose = false;
 	private AjcTest m_ajcTest;
@@ -107,9 +101,9 @@ public class AntSpec implements ITestStep {
 			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
 			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
 			// during runtime. See also docs/dist/doc/README-187.html.
-			// 
+			//
 			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
-			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line. 
+			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line.
 			p.setUserProperty("aj.addOpensKey", is16VMOrGreater() ? "--add-opens" : "-D_dummy");
 			p.setUserProperty("aj.addOpensValue", is16VMOrGreater() ? "java.base/java.lang=ALL-UNNAMED" : "-D_dummy");
 
@@ -164,18 +158,14 @@ public class AntSpec implements ITestStep {
 								fr.close();
 							}
 						} catch (Exception e) {
-							System.out.println("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+							String exceptionMessage = "Exception whilst loading forked java task output " + e.getMessage() + "\n";
+							System.out.println(exceptionMessage);
 							e.printStackTrace();
-							stdout.append("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+							stdout.append(exceptionMessage);
 						}
 
-						StringBuffer message = new StringBuffer();
-						message.append(event.getException().toString()).append("\n");
-						message.append(verboseLog);
-						message.append(stdout);
-						message.append(stderr);
 						// AjcTestCase.fail(failMessage + "failure " + event.getException());
-						AjcTestCase.fail(message.toString());
+						AjcTestCase.fail(event.getException() + "\n" + verboseLog + stdout + stderr);
 					}
 				}
 
@@ -239,7 +229,7 @@ public class AntSpec implements ITestStep {
 //				WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor
 //				WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 //				WARNING: All illegal access operations will be denied in a future release
-				
+
 				stderr2 = stderr2.replaceAll("WARNING: An illegal reflective access operation has occurred\n","");
 				stderr2 = stderr2.replaceAll("WARNING: Illegal reflective access using Lookup on org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor[^\n]*\n","");
 				stderr2 = stderr2.replaceAll("WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor\n","");
@@ -266,7 +256,7 @@ public class AntSpec implements ITestStep {
 	}
 
 	public void setVerbose(String verbose) {
-		if (verbose != null && "true".equalsIgnoreCase(verbose)) {
+		if ("true".equalsIgnoreCase(verbose)) {
 			m_verbose = true;
 		}
 	}
