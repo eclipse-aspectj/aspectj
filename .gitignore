@@ -33,7 +33,6 @@ bin/
 
 # Downloaded libraries used during tests
 /lib/ant/
-/lib/asm/
 /lib/commons/
 /lib/docbook/
 /lib/jarjar/

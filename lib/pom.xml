@@ -221,27 +221,6 @@
                 </artifactItem>
 
                 <artifactItem>
-                  <!-- Available from GitHub Packages (needs special repository declaration) -->
-                  <groupId>org.aspectj</groupId>
-                  <artifactId>asm-renamed</artifactId>
-                  <version>${asm.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>asm</outputDirectory>
-                  <destFileName>asm-${asm.version}.renamed.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Available from GitHub Packages (needs special repository declaration) -->
-                  <groupId>org.aspectj</groupId>
-                  <artifactId>asm-renamed</artifactId>
-                  <version>${asm.version}</version>
-                  <type>java-source</type>
-                  <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>asm</outputDirectory>
-                  <destFileName>asm-${asm.version}.renamed-src.zip</destFileName>
-                </artifactItem>
-                <artifactItem>
                   <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
                   <groupId>com.googlecode.jarjar</groupId>
                   <artifactId>jarjar</artifactId>
@@ -648,7 +627,6 @@
                   <directory>.</directory>
                   <includes>
                     <include>ant/**</include>
-                    <include>asm/**</include>
                     <include>commons/**</include>
                     <include>docbook/**</include>
                     <include>jarjar/**</include>
@@ -671,10 +649,6 @@
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>asm-renamed</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>

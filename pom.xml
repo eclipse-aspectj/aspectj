@@ -300,7 +300,6 @@
 									<files>
 										<file>${lib.directory}/ant/bin/ant.bat</file>
 										<file>${lib.directory}/ant/lib/junit.jar</file>
-										<file>${lib.directory}/asm/asm-${asm.version}.renamed.jar</file>
 										<file>${lib.directory}/commons/commons.jar</file>
 										<file>${lib.directory}/docbook/docbook-dtd/docbookx.dtd</file>
 										<file>${lib.directory}/docbook/docbook-xsl/html/chunk.xsl</file>
