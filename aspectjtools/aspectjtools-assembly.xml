@@ -13,6 +13,8 @@
 	<dependencySets>
 		<dependencySet>
 			<unpack>true</unpack>
+			<!-- Avoid warning when trying to add non-existing main artifact JAR -->
+			<useProjectArtifact>false</useProjectArtifact>
 			<includes>
 				<include>org.aspectj:org.eclipse.jdt.core</include>
 				<include>org.aspectj:asm-renamed</include>

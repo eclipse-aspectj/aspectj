@@ -11,17 +11,20 @@
 	</parent>
 
 	<artifactId>aspectjweaver</artifactId>
-	<packaging>pom</packaging>
 	<name>AspectJ Weaver</name>
 
 	<build>
 		<plugins>
 
-			<!-- skip creation of test-jar in here -->
+			<!-- Skip creation of main + test JARs -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
 					<execution>
 						<id>test-jar</id>
 						<phase>none</phase>
@@ -132,6 +135,31 @@
 						</configuration>
 					</execution>
 
+				</executions>
+			</plugin>
+
+			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<!-- Remove dependencies declared in this POM (if any) from uber JAR and strip down POM -->
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+						<configuration>
+							<flattenMode>oss</flattenMode>
+							<pomElements>
+								<dependencies>remove</dependencies>
+								<repositories>remove</repositories>
+							</pomElements>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<flattenedPomFilename>flattened-pom.xml</flattenedPomFilename>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
