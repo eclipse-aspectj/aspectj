@@ -56,7 +56,7 @@ public class StackMapAdder {
 	private static class AspectJClassVisitor extends ClassVisitor {
 
 		public AspectJClassVisitor(ClassVisitor classwriter) {
-			super(Opcodes.ASM8, classwriter);
+			super(Opcodes.ASM9, classwriter);
 		}
 
 		@Override
@@ -69,7 +69,7 @@ public class StackMapAdder {
 		// created by a ClassWriter (see top level class comment)
 		static class AJMethodVisitor extends MethodVisitor {
 			public AJMethodVisitor(MethodVisitor mv) {
-				super(Opcodes.ASM8,mv);
+				super(Opcodes.ASM9,mv);
 			}
 		}
 

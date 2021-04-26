@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.ltw;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -179,10 +180,8 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	private static Map makeConcurrentMap() {
 		if (concurrentMapClass != null) {
 			try {
-				return (Map) concurrentMapClass.newInstance();
-			} catch (InstantiationException ie) {
-			} catch (IllegalAccessException iae) {
-			}
+				return (Map) concurrentMapClass.getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 			// fall through if exceptions
 		}
 		return Collections.synchronizedMap(new HashMap());

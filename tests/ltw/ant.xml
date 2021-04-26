@@ -11,15 +11,17 @@
         <java fork="yes" classname="HelloWorldWithException" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
-<!--        	
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
+            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+<!--
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
--->            
-            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+-->
             <!-- use META-INF/aop.xml style -->
-<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
-<!--            <jvmarg line="${jdwp}"/>-->
+            <!--<jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+            <!--<jvmarg line="${jdwp}"/>-->
+        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
         </java>
     </target>
 
@@ -27,22 +29,24 @@
         <java fork="yes" classname="HelloWorldWithException" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
-        	<sysproperty key="aj.aspect.path" path="${aj.sandbox}/handler.jar"/>
-<!--        	
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
+            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+<!--
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
--->            
-            <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
+-->
             <!-- use META-INF/aop.xml style -->
-<!--            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
-<!--            <jvmarg line="${jdwp}"/>-->
+            <!--<jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>-->
+            <!--<jvmarg line="${jdwp}"/>-->
+        	<sysproperty key="aj.class.path" path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar"/>
+        	<sysproperty key="aj.aspect.path" path="${aj.sandbox}/handler.jar"/>
         </java>
     </target>
 
 	<!-- We have three JARs files, two containing aspects (ExceptionHandler and Tracing)
 	     for which aop-ajc.xml files have been generate. However we supply our own
-	     aop.xml which declares only ExceptionHandler. We then override the 
+	     aop.xml which declares only ExceptionHandler. We then override the
 	     configuration search path -->
     <target name="override default path using -Dorg.aspectj.weaver.loadtime.configuration">
         <copy file="${aj.root}/tests/ltw/aop-orgaspectjweaverloadtimeconfiguration.xml"
@@ -58,22 +62,26 @@
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
 
-	<!-- Beware, this is complicated! We need to intercept class loading on 
+	<!-- Beware, this is complicated! We need to intercept class loading on
 	     the System class loader before any classes are loaded. We do this
 	     by replacing the URLClassLoader. We then define a custom
 	     SecurityManager that will be loaded _before_ the class loader
 	     hierarch is fully initialized. -->
     <target name="NPE with custom agent">
         <java fork="yes" classname="HelloWorldWithException" failonerror="yes">
-        	
+
         	<!-- Prepend custom URLClassLoader and append AspectJ
         	     to bootclasspath -->
         	<jvmarg value="-Xbootclasspath/p:${aj.sandbox}"/>
             <jvmarg value="-Xbootclasspath/a:${aj.bootpath}"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 
         	<classpath>
                 <pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar:${aj.sandbox}/security.jar"/>
@@ -82,15 +90,15 @@
         	<!-- Specify custom SecurityManager that will be loaded
         	     and woven very early -->
         	<jvmarg value="-Djava.security.manager=NullSecurityManager"/>
-        	
+
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
-        	
-<!--        	
+
+<!--
             <jvmarg value="-Dorg.aspectj.tracing.enabled=true"/>
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
--->            
+-->
         </java>
     </target>
 
@@ -101,6 +109,8 @@
             <classpath refid="aj.path"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -114,8 +124,10 @@
         	<sysproperty key="org.aspectj.dump.directory" path="${aj.sandbox}"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-<!--            <jvmarg line="${jdwp}"/>-->
+            <jvmarg value="${aj.addOpensKey}"/>
+            <jvmarg value="${aj.addOpensValue}"/>
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
+<!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
 

@@ -204,7 +204,7 @@
       <literal>this</literal> expression would pick out at the join
       point.  The target object is where control or attention is
       transferred to by the join point.  The arguments are those
-      values passed for that transfer of control or attention. 
+      values passed for that transfer of control or attention.
     </para>
 
     <informaltable frame="1">
@@ -216,7 +216,7 @@
             <entry><emphasis role="bold">Target Object</emphasis></entry>
             <entry><emphasis role="bold">Arguments</emphasis></entry>
           </row>
-       </thead>   
+       </thead>
        <tbody>
           <row>
             <entry>Method Call</entry>
@@ -296,7 +296,7 @@
      </para>
 
      <para>** There is no target object for join points associated
-     with static methods or fields. 
+     with static methods or fields.
      </para>
 
   </sect1>
@@ -485,9 +485,9 @@
         <listitem>
           Picks out each join point where the arguments are instances of
           the appropriate type (or type of the identifier if using that form). A
-          <literal>null</literal> argument is matched iff the static type of the 
+          <literal>null</literal> argument is matched iff the static type of the
           argument (declared parameter type or field type) is the same as, or a subtype of,
-          the specified args type. 
+          the specified args type.
         </listitem>
       </varlistentry>
 
@@ -556,8 +556,8 @@
       </para>
 
 <programlisting>
-  pointcut publicIntCall(int i):
-      call(public * *(int)) <![CDATA[&&]]> args(i);
+pointcut publicIntCall(int i):
+    call(public * *(int)) <![CDATA[&&]]> args(i);
 </programlisting>
 
       <para>
@@ -568,15 +568,15 @@
       </para>
 
 <programlisting>
-  class C {
-      pointcut publicCall(int i):
-	  call(public * *(int)) <![CDATA[&&]]> args(i);
-  }
+class C {
+    pointcut publicCall(int i):
+  call(public * *(int)) <![CDATA[&&]]> args(i);
+}
 
-  class D {
-      pointcut myPublicCall(int i):
-	  C.publicCall(i) <![CDATA[&&]]> within(SomeType);
-  }
+class D {
+    pointcut myPublicCall(int i):
+  C.publicCall(i) <![CDATA[&&]]> within(SomeType);
+}
 </programlisting>
 
       <para>
@@ -586,9 +586,9 @@
       </para>
 
 <programlisting>
-  abstract aspect A {
-      abstract pointcut publicCall(int i);
-  }
+abstract aspect A {
+    abstract pointcut publicCall(int i);
+}
 </programlisting>
 
       <para>
@@ -597,9 +597,9 @@
       </para>
 
 <programlisting>
-  aspect B extends A {
-      pointcut publicCall(int i): call(public Foo.m(int)) <![CDATA[&&]]> args(i);
-  }
+aspect B extends A {
+    pointcut publicCall(int i): call(public Foo.m(int)) <![CDATA[&&]]> args(i);
+}
 </programlisting>
 
       <para>
@@ -622,9 +622,9 @@
       </para>
 
 <programlisting>
-  aspect B percflow(publicCall()) {
-      pointcut publicCall(): call(public Foo.m(int));
-  }
+aspect B percflow(publicCall()) {
+    pointcut publicCall(): call(public Foo.m(int));
+}
 </programlisting>
     </sect2>
 
@@ -653,7 +653,7 @@
       </para>
 
 <programlisting>
-  pointcut intArg(int i): args(i);
+pointcut intArg(int i): args(i);
 </programlisting>
 
       <para>
@@ -662,7 +662,7 @@
         <literal>char</literal>; anything assignable to an
         <literal>int</literal>) is being passed as an argument.
         Second, though, it makes the value of that argument
-        available to the enclosing advice or pointcut.  
+        available to the enclosing advice or pointcut.
       </para>
 
       <para>
@@ -670,8 +670,8 @@
       </para>
 
 <programlisting>
-  pointcut publicCall(int x): call(public *.*(int)) <![CDATA[&&]]> intArg(x);
-  pointcut intArg(int i): args(i);
+pointcut publicCall(int x): call(public *.*(int)) <![CDATA[&&]]> intArg(x);
+pointcut intArg(int i): args(i);
 </programlisting>
 
       <para>
@@ -686,7 +686,7 @@
       </para>
 
 <programlisting>
-  pointcut publicCall(): call(public *.*(..)) <![CDATA[&&]]> args(Object);
+pointcut publicCall(): call(public *.*(..)) <![CDATA[&&]]> args(Object);
 </programlisting>
 
       <para>
@@ -696,7 +696,7 @@
       </para>
 
 <programlisting>
-  pointcut publicCall(Object o): call(public *.*(..)) <![CDATA[&&]]> args(o);
+pointcut publicCall(Object o): call(public *.*(..)) <![CDATA[&&]]> args(o);
 </programlisting>
 
       <para>
@@ -712,23 +712,23 @@
       </para>
 
 <programlisting>
-  public class InstanceOf {
+public class InstanceOf {
 
-    public static void main(String[] args) {
-      doInt(5);
-    }
-
-    static void doInt(int i) {  }
+  public static void main(String[] args) {
+    doInt(5);
   }
 
-  aspect IntToLong {
-    pointcut el(long l) : 
-        execution(* doInt(..)) <![CDATA[&&]]> args(l);
+  static void doInt(int i) {  }
+}
 
-    before(Object o) : el(o) {
-         System.out.println(o.getClass());
-    }
+aspect IntToLong {
+  pointcut el(long l) :
+      execution(* doInt(..)) <![CDATA[&&]]> args(l);
+
+  before(Object o) : el(o) {
+       System.out.println(o.getClass());
   }
+}
 </programlisting>
 
       <para>
@@ -775,13 +775,13 @@
         </para>
 
 <programlisting><![CDATA[
-  aspect GuardedX {
-      static final int MAX_CHANGE = 100;
-      before(int newval): set(static int T.x) && args(newval) {
-	  if (Math.abs(newval - T.x) > MAX_CHANGE)
-	      throw new RuntimeException();
-      }
-  }
+aspect GuardedX {
+    static final int MAX_CHANGE = 100;
+    before(int newval): set(static int T.x) && args(newval) {
+  if (Math.abs(newval - T.x) > MAX_CHANGE)
+      throw new RuntimeException();
+    }
+}
 ]]></programlisting>
 
       </sect3>
@@ -838,11 +838,11 @@
         </para>
 
 <programlisting>
-  aspect NormalizeFooException {
-      before(FooException e): handler(FooException) <![CDATA[&&]]> args(e) {
-	  e.normalize();
-      }
-  }
+aspect NormalizeFooException {
+    before(FooException e): handler(FooException) <![CDATA[&&]]> args(e) {
+  e.normalize();
+    }
+}
 </programlisting>
 
       </sect3>
@@ -865,13 +865,13 @@
         </para>
 
 <programlisting>
-  aspect TraceStuff {
-      pointcut myAdvice(): adviceexecution() <![CDATA[&&]]> within(TraceStuff);
+aspect TraceStuff {
+    pointcut myAdvice(): adviceexecution() <![CDATA[&&]]> within(TraceStuff);
 
-      before(): call(* *(..)) <![CDATA[&&]]> !cflow(myAdvice) {
-	  // do something
-      }
-  }
+    before(): call(* *(..)) <![CDATA[&&]]> !cflow(myAdvice) {
+  // do something
+    }
+}
 </programlisting>
 
       </sect3>
@@ -926,7 +926,7 @@
         </para>
 
 <programlisting>
-  args(int, .., String)
+args(int, .., String)
 </programlisting>
 
         <para>
@@ -978,7 +978,7 @@
             <literal>cflowbelow</literal> pointcuts may expose context
             state through enclosed <literal>this</literal>,
             <literal>target</literal>, and <literal>args</literal>
-            pointcuts. 
+            pointcuts.
           </para>
 
           <para>
@@ -1006,7 +1006,7 @@ class Test {
 aspect A {
     pointcut entry(int i): call(int fact(int)) <![CDATA[&&]]> args(i);
     pointcut writing(): call(void println(String)) <![CDATA[&&]]> ! within(A);
-    
+
     before(int i): writing() <![CDATA[&&]]> cflow(entry(i)) {
         System.err.println("Current arg is " + i);
     }
@@ -1079,14 +1079,14 @@ aspect A {
         </para>
 
 <programlisting>
-  if(thisJoinPoint.getKind().equals("call"))
+if(thisJoinPoint.getKind().equals("call"))
 </programlisting>
 
 	    <para>
-	    	Note that the order of evaluation for pointcut expression 
-	    	components at a join point is undefined. Writing <literal>if</literal> 
-	    	pointcuts that have side-effects is considered bad style and may also 
-	    	lead to potentially confusing or even changing behavior with regard 
+	    	Note that the order of evaluation for pointcut expression
+	    	components at a join point is undefined. Writing <literal>if</literal>
+	    	pointcuts that have side-effects is considered bad style and may also
+	    	lead to potentially confusing or even changing behavior with regard
 	    	to when or if the test code will run.
 	    </para>
       </sect3>
@@ -1207,9 +1207,9 @@ aspect A {
 
 
 <programlisting>
-  class C {
-      public final void foo() throws ArrayOutOfBoundsException { ... }
-  }
+class C {
+    public final void foo() throws ArrayOutOfBoundsException { ... }
+}
 </programlisting>
 
       <para>
@@ -1219,7 +1219,7 @@ aspect A {
 
 
 <programlisting>
-  call(public final void C.foo() throws ArrayOutOfBoundsException)
+call(public final void C.foo() throws ArrayOutOfBoundsException)
 </programlisting>
 
       <para>
@@ -1227,7 +1227,7 @@ aspect A {
       </para>
 
 <programlisting>
-  call(public final void *.*() throws ArrayOutOfBoundsException)
+call(public final void *.*() throws ArrayOutOfBoundsException)
 </programlisting>
 
 
@@ -1245,16 +1245,16 @@ aspect A {
       </para>
 
 <programlisting>
-  call(public final void *() throws ArrayOutOfBoundsException)
+call(public final void *() throws ArrayOutOfBoundsException)
 </programlisting>
 
       <para>
-        The wildcard <literal>..</literal> indicates zero or more 
+        The wildcard <literal>..</literal> indicates zero or more
         parameters, so
       </para>
 
 <programlisting>
-  execution(void m(..))
+execution(void m(..))
 </programlisting>
 
       <para>
@@ -1263,7 +1263,7 @@ aspect A {
       </para>
 
 <programlisting>
-  execution(void m(.., int))
+execution(void m(.., int))
 </programlisting>
 
       <para>
@@ -1280,7 +1280,7 @@ aspect A {
       </para>
 
 <programlisting>
-  withincode(!public void foo())
+withincode(!public void foo())
 </programlisting>
 
       <para>
@@ -1289,7 +1289,7 @@ aspect A {
       </para>
 
 <programlisting>
-  withincode(void foo())
+withincode(void foo())
 </programlisting>
 
       <para>
@@ -1303,7 +1303,7 @@ aspect A {
       </para>
 
 <programlisting>
-  call(int *())
+call(int *())
 </programlisting>
 
       <para>
@@ -1312,7 +1312,7 @@ aspect A {
       </para>
 
 <programlisting>
-  call(int get*())
+call(int get*())
 </programlisting>
 
       <para>
@@ -1328,7 +1328,7 @@ aspect A {
       </para>
 
 <programlisting>
-  execution(private C.new() throws ArithmeticException)
+execution(private C.new() throws ArithmeticException)
 </programlisting>
 
       <sect3>
@@ -1341,23 +1341,23 @@ aspect A {
         </para>
 
         <para>
-        When matching for pointcuts <literal>withincode</literal>, 
+        When matching for pointcuts <literal>withincode</literal>,
         <literal>get</literal>, and <literal>set</literal>, the declaring
         type is the class that contains the declaration.
         </para>
 
         <para>
-        When matching method-call join points, the 
+        When matching method-call join points, the
         declaring type is the static type used to access the method.
-        A common mistake is to specify a declaring type for the 
-        <literal>call</literal> pointcut that is a subtype of the 
+        A common mistake is to specify a declaring type for the
+        <literal>call</literal> pointcut that is a subtype of the
         originally-declaring type. For example, given the class
         </para>
 
 <programlisting>
-  class Service implements Runnable {
-    public void run() { ... }
-  } 
+class Service implements Runnable {
+  public void run() { ... }
+}
 </programlisting>
 
         <para>
@@ -1365,7 +1365,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call(void Service.run())
+call(void Service.run())
 </programlisting>
 
         <para>
@@ -1373,49 +1373,49 @@ aspect A {
         </para>
 
 <programlisting>
-  ((Runnable) new Service()).run();
+((Runnable) new Service()).run();
 </programlisting>
 
         <para>
         Specifying the originally-declaring type is correct, but would
         pick out any such call (here, calls to the <literal>run()</literal>
-        method of any Runnable).  
+        method of any Runnable).
         In this situation, consider instead picking out the target type:
         </para>
 
 <programlisting>
-  call(void run()) &amp;&amp; target(Service)
+call(void run()) &amp;&amp; target(Service)
 </programlisting>
 
         <para>
-        When matching method-execution join points, 
-        if the execution pointcut method signature specifies a declaring type, 
-        the pointcut will only match methods declared in that type, or methods 
+        When matching method-execution join points,
+        if the execution pointcut method signature specifies a declaring type,
+        the pointcut will only match methods declared in that type, or methods
         that override methods declared in or inherited by that type.
         So the pointcut
       </para>
 
 <programlisting>
-  execution(public void Middle.*())
+execution(public void Middle.*())
 </programlisting>
 
       <para>
       picks out all method executions for public methods returning void
-      and having no arguments that are either declared in, or inherited by, 
-      Middle, even if those methods are overridden in a subclass of Middle. 
+      and having no arguments that are either declared in, or inherited by,
+      Middle, even if those methods are overridden in a subclass of Middle.
       So the pointcut would pick out the method-execution join point
       for Sub.m() in this code:
       </para>
 
 <programlisting>
-  class Super {
-    protected void m() { ... }
-  }
-  class Middle extends Super {
-  }
-  class Sub extends Middle {
-    public void m() { ... }
-  }
+class Super {
+  protected void m() { ... }
+}
+class Middle extends Super {
+}
+class Sub extends Middle {
+  public void m() { ... }
+}
 </programlisting>
 
       </sect3>
@@ -1430,15 +1430,15 @@ aspect A {
         </para>
 
 <programlisting>
-  pointcut throwsMathlike():
-      // each call to a method with a throws clause containing at least
-      // one exception exception with "Math" in its name.
-      call(* *(..) throws *..*Math*);
+pointcut throwsMathlike():
+    // each call to a method with a throws clause containing at least
+    // one exception exception with "Math" in its name.
+    call(* *(..) throws *..*Math*);
 
-  pointcut doesNotThrowMathlike():
-      // each call to a method with a throws clause containing no
-      // exceptions with "Math" in its name.
-      call(* *(..) throws !*..*Math*);
+pointcut doesNotThrowMathlike():
+    // each call to a method with a throws clause containing no
+    // exceptions with "Math" in its name.
+    call(* *(..) throws !*..*Math*);
 </programlisting>
 
         <para>
@@ -1550,7 +1550,7 @@ aspect A {
           <literal>java.util.HashMap</literal> unless the aspect
           were in <literal>java.util</literal> or the type had
           been imported.
-          </listitem> 
+          </listitem>
         </itemizedlist>
 
         <para>
@@ -1569,7 +1569,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call(void foo(*))
+call(void foo(*))
 </programlisting>
 
         <para>
@@ -1585,7 +1585,7 @@ aspect A {
         </para>
 
 <programlisting>
-  handler(java.util.*Map)
+handler(java.util.*Map)
 </programlisting>
 
         <para>
@@ -1594,7 +1594,7 @@ aspect A {
         </para>
 
 <programlisting>
-  handler(java.util.*)
+handler(java.util.*)
 </programlisting>
 
         <para>
@@ -1611,11 +1611,11 @@ aspect A {
         </para>
 
 <programlisting>
-  within(com.xerox..*)
+within(com.xerox..*)
 </programlisting>
 
         <para>
-          picks out all join points where the code is in any 
+          picks out all join points where the code is in any
           declaration of a type whose name begins with "<literal>com.xerox.</literal>".
         </para>
 
@@ -1638,7 +1638,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call(Foo.new())
+call(Foo.new())
 </programlisting>
 
         <para>
@@ -1647,7 +1647,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call(Foo+.new())
+call(Foo+.new())
 </programlisting>
 
         <para>
@@ -1656,7 +1656,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call(*Handler+.new())
+call(*Handler+.new())
 </programlisting>
 
         <para>
@@ -1689,7 +1689,7 @@ aspect A {
         </para>
 
 <programlisting>
-  staticinitialization(Foo || Bar)
+staticinitialization(Foo || Bar)
 </programlisting>
 
         <para>
@@ -1698,7 +1698,7 @@ aspect A {
         </para>
 
 <programlisting>
-  call((Foo+ <![CDATA[&&]]> ! Foo).new(..))
+call((Foo+ <![CDATA[&&]]> ! Foo).new(..))
 </programlisting>
 
         <para>
@@ -1716,24 +1716,24 @@ aspect A {
       </para>
 
 <programlisting>
-MethodPattern = 
-  [ModifiersPattern] TypePattern 
-        [TypePattern . ] IdPattern (TypePattern | ".." , ... ) 
+MethodPattern =
+  [ModifiersPattern] TypePattern
+        [TypePattern . ] IdPattern (TypePattern | ".." , ... )
         [ throws ThrowsPattern ]
-ConstructorPattern = 
-  [ModifiersPattern ] 
-        [TypePattern . ] new (TypePattern | ".." , ...) 
+ConstructorPattern =
+  [ModifiersPattern ]
+        [TypePattern . ] new (TypePattern | ".." , ...)
         [ throws ThrowsPattern ]
-FieldPattern = 
+FieldPattern =
   [ModifiersPattern] TypePattern [TypePattern . ] IdPattern
-ThrowsPattern = 
+ThrowsPattern =
   [ ! ] TypePattern , ...
-TypePattern = 
+TypePattern =
     IdPattern [ + ] [ [] ... ]
     | ! TypePattern
     | TypePattern <![CDATA[&&]]> TypePattern
     | TypePattern || TypePattern
-    | ( TypePattern )  
+    | ( TypePattern )
 IdPattern =
   Sequence of characters, possibly with special * and .. wildcards
 ModifiersPattern =
@@ -1785,7 +1785,7 @@ ModifiersPattern =
     <para>
       and where <replaceable>Formal</replaceable> refers to a
         variable binding like those used for method parameters,
-        of the form 
+        of the form
         <literal><replaceable>Type</replaceable></literal>
         <literal><replaceable>Variable-Name</replaceable></literal>,
         and <replaceable>Formals</replaceable> refers to a comma-delimited
@@ -1816,18 +1816,18 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  aspect A {
-      pointcut publicCall(): call(public Object *(..));
-      after() returning (Object o): publicCall() {
-	  System.out.println("Returned normally with " + o);
-      }
-      after() throwing (Exception e): publicCall() {
-	  System.out.println("Threw an exception: " + e);
-      }
-      after(): publicCall(){
-	  System.out.println("Returned or threw an Exception");
-      }
-  }
+aspect A {
+    pointcut publicCall(): call(public Object *(..));
+    after() returning (Object o): publicCall() {
+  System.out.println("Returned normally with " + o);
+    }
+    after() throwing (Exception e): publicCall() {
+  System.out.println("Threw an exception: " + e);
+    }
+    after(): publicCall(){
+  System.out.println("Returned or threw an Exception");
+    }
+}
 </programlisting>
 
     <para>
@@ -1836,9 +1836,9 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  after() returning: call(public Object *(..)) {
-      System.out.println("Returned normally");
-  }
+after() returning: call(public Object *(..)) {
+    System.out.println("Returned normally");
+}
 </programlisting>
 
     <para>
@@ -1888,11 +1888,11 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  aspect A {
-      int around(): call(int C.foo()) {
-	  return 3;
-      }
-  }
+aspect A {
+    int around(): call(int C.foo()) {
+  return 3;
+    }
+}
 </programlisting>
 
     <para>
@@ -1901,7 +1901,7 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  proceed( ... )
+proceed( ... )
 </programlisting>
 
     <para>
@@ -1913,12 +1913,12 @@ ModifiersPattern =
 
 
 <programlisting>
-  aspect A {
-      int around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
-	  int newi = proceed(i*2)
-	  return newi/2;
-      }
-  }
+aspect A {
+    int around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
+  int newi = proceed(i*2)
+  return newi/2;
+    }
+}
 </programlisting>
 
     <para>
@@ -1931,38 +1931,38 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  aspect A {
-      Object around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
-	  Integer newi = (Integer) proceed(i*2)
-	  return new Integer(newi.intValue() / 2);
-      }
-  }
+aspect A {
+    Object around(int i): call(int C.foo(Object, int)) <![CDATA[&&]]> args(i) {
+  Integer newi = (Integer) proceed(i*2)
+  return new Integer(newi.intValue() / 2);
+    }
+}
 </programlisting>
-    
+
     <para>
-		Any occurence of <literal>proceed(..)</literal> within the body of around 
+		Any occurence of <literal>proceed(..)</literal> within the body of around
         advice is treated as the special proceed form (even if the
-		aspect defines a method named <literal>proceed</literal>), unless a 
+		aspect defines a method named <literal>proceed</literal>), unless a
 		target other than the aspect instance is specified as the recipient of
 		the call.
-		For example, in the following program the first 
+		For example, in the following program the first
 		call to proceed will be treated as a method call to
 		the <literal>ICanProceed</literal> instance, whereas the second call to
 		proceed is treated as the special proceed form.
 	</para>
 
 <programlisting>
-  aspect A {
-     Object around(ICanProceed canProceed) : execution(* *(..)) <![CDATA[&&]]> this(canProceed) {
-        canProceed.proceed();         // a method call
-        return proceed(canProceed);   // the special proceed form
-     }
-     
-     private Object proceed(ICanProceed canProceed) {
-        // this method cannot be called from inside the body of around advice in
-        // the aspect
-     }
-  }	
+aspect A {
+   Object around(ICanProceed canProceed) : execution(* *(..)) <![CDATA[&&]]> this(canProceed) {
+      canProceed.proceed();         // a method call
+      return proceed(canProceed);   // the special proceed form
+   }
+
+   private Object proceed(ICanProceed canProceed) {
+      // this method cannot be called from inside the body of around advice in
+      // the aspect
+   }
+}
 </programlisting>
 
     <para>
@@ -1973,11 +1973,11 @@ ModifiersPattern =
     </para>
 
 <programlisting>
-  aspect A {
-      after() returning (int i): call(int C.foo()) {
-	  i = i * 2;
-      }
-  }
+aspect A {
+    after() returning (int i): call(int C.foo()) {
+  i = i * 2;
+    }
+}
 </programlisting>
 
     <para>
@@ -1990,47 +1990,47 @@ ModifiersPattern =
         With <literal>proceed(..)</literal> it is possible to change the values
         used by less-precedent advice and the underlying join point by supplying
         different values for the variables.  For example, this aspect replaces
-        the string bound to <literal>s</literal> in the named pointcut 
+        the string bound to <literal>s</literal> in the named pointcut
         <literal>privateData</literal>:
     </para>
 
 <programlisting>
-  aspect A {
-    Object around(String s): MyPointcuts.privateData(s) {
-      return proceed("private data");
-    }
+aspect A {
+  Object around(String s): MyPointcuts.privateData(s) {
+    return proceed("private data");
   }
+}
 </programlisting>
     <para>
-        If you replace an argument to <literal>proceed(..)</literal>, you can cause 
+        If you replace an argument to <literal>proceed(..)</literal>, you can cause
         a <literal>ClassCastException</literal> at runtime when the argument
-        refers to a supertype of the actual type and you do not supply a 
+        refers to a supertype of the actual type and you do not supply a
         reference of the actual type.  In the following aspect, the
-        around advice replaces the declared target <literal>List</literal> 
+        around advice replaces the declared target <literal>List</literal>
         with an <literal>ArrayList</literal>.  This is valid code at
-        compile-time since the types match.  
+        compile-time since the types match.
     </para>
 <programlisting>
-  import java.util.*;
+import java.util.*;
 
-  aspect A {
-    Object around(List list): call(* List+.*()) <![CDATA[&&]]> target(list) {
-      return proceed(new ArrayList());
-    }
+aspect A {
+  Object around(List list): call(* List+.*()) <![CDATA[&&]]> target(list) {
+    return proceed(new ArrayList());
   }
+}
 </programlisting>
     <para>
         But imagine a simple program where the actual target is
         <literal>LinkedList</literal>.  In this case, the advice would cause a
-        <literal>ClassCastException</literal> at runtime, and 
+        <literal>ClassCastException</literal> at runtime, and
         <literal>peek()</literal> is not declared in <literal>ArrayList</literal>.
     </para>
 <programlisting>
-  public class Test {
-    public static void main(String[] args) {
-      new LinkedList().peek();
-    }
+public class Test {
+  public static void main(String[] args) {
+    new LinkedList().peek();
   }
+}
 </programlisting>
     <para>
         The <literal>ClassCastException</literal> can occur even in situations
@@ -2038,17 +2038,17 @@ ModifiersPattern =
         call <literal>size()</literal>, declared in <literal>List</literal>:
     </para>
 <programlisting>
-  public class Test {
-    public static void main(String[] args) {
-      new LinkedList().size();
-    }
+public class Test {
+  public static void main(String[] args) {
+    new LinkedList().size();
   }
+}
 </programlisting>
     <para>
         There will still be a <literal>ClassCastException</literal> because
         it is impossible to prove that there won't be a runtime binary-compatible
         change in the hierarchy of <literal>LinkedList</literal> or some
-        other advice on the join point that requires a 
+        other advice on the join point that requires a
         <literal>LinkedList</literal>.
     </para>
 
@@ -2077,22 +2077,22 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  import java.io.FileNotFoundException;
+import java.io.FileNotFoundException;
 
-  class C {
-      int i;
+class C {
+    int i;
 
-      int getI() { return i; }
-  }
+    int getI() { return i; }
+}
 
-  aspect A {
-      before(): get(int C.i) {
-	  throw new FileNotFoundException();
-      }
-      before() throws FileNotFoundException: get(int C.i) {
-	  throw new FileNotFoundException();
-      }
-  }
+aspect A {
+    before(): get(int C.i) {
+  throw new FileNotFoundException();
+    }
+    before() throws FileNotFoundException: get(int C.i) {
+  throw new FileNotFoundException();
+    }
+}
 </programlisting>
 
       <para>
@@ -2124,7 +2124,7 @@ ModifiersPattern =
       <varlistentry>
         <term>field get and set</term>
         <listitem>
-          no checked exceptions can be thrown from these join points. 
+          no checked exceptions can be thrown from these join points.
         </listitem>
       </varlistentry>
 
@@ -2138,7 +2138,7 @@ ModifiersPattern =
       <varlistentry>
         <term>static initializer execution</term>
         <listitem>
-          no checked exceptions can be thrown from these join points. 
+          no checked exceptions can be thrown from these join points.
         </listitem>
       </varlistentry>
 
@@ -2146,14 +2146,14 @@ ModifiersPattern =
         <term>pre-initialization and initialization</term>
         <listitem>
           any exception that is in the throws clause of
-          <emphasis>all</emphasis> constructors of the initialized class. 
+          <emphasis>all</emphasis> constructors of the initialized class.
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>advice execution</term>
         <listitem>
-          any exception that is in the throws clause of the advice. 
+          any exception that is in the throws clause of the advice.
         </listitem>
       </varlistentry>
 
@@ -2218,11 +2218,11 @@ ModifiersPattern =
         <para>These rules can lead to circularity, such as</para>
 
 <programlisting>
-  aspect A {
-      before(): execution(void main(String[] args)) {}
-      after():  execution(void main(String[] args)) {}
-      before(): execution(void main(String[] args)) {}
-  }
+aspect A {
+    before(): execution(void main(String[] args)) {}
+    after():  execution(void main(String[] args)) {}
+    before(): execution(void main(String[] args)) {}
+}
 </programlisting>
 
         <para>such circularities will result in errors signalled by the compiler. </para>
@@ -2268,7 +2268,7 @@ ModifiersPattern =
 
       <para>
         Three special variables are visible within bodies of advice
-          and within <literal>if()</literal> pointcut expressions: 
+          and within <literal>if()</literal> pointcut expressions:
         <literal>thisJoinPoint</literal>,
         <literal>thisJoinPointStaticPart</literal>, and
         <literal>thisEnclosingJoinPointStaticPart</literal>. Each is bound to
@@ -2280,7 +2280,7 @@ ModifiersPattern =
 
 
 <programlisting>
-  pointcut publicCall(): call(public * *(..));
+pointcut publicCall(): call(public * *(..));
 </programlisting>
 
 
@@ -2372,17 +2372,17 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  interface Iface {}
+interface Iface {}
 
-  aspect A {
-      private void Iface.m() {
-	  System.err.println("I'm a private method on an interface");
-      }
-      void worksOnI(Iface iface) {
-	  // calling a private method on an interface
-	  iface.m();
-      }
-  }
+aspect A {
+    private void Iface.m() {
+  System.err.println("I'm a private method on an interface");
+    }
+    void worksOnI(Iface iface) {
+  // calling a private method on an interface
+  iface.m();
+    }
+}
 </programlisting>
 
       <para>
@@ -2499,7 +2499,7 @@ ModifiersPattern =
         is illegal because it would say that a public interface
         has a constraint that only non-public implementors must
         fulfill.  This would not be compatible with Java's type
-        system.  
+        system.
       </para>
     </sect2>
 
@@ -2514,13 +2514,13 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  aspect A {
-      private Registry otherPackage.onType.r;
-      public void otherPackage.onType.register(Registry r) {
-	    r.register(this);
-	    this.r = r;
-      }
-  }
+aspect A {
+    private Registry otherPackage.onType.r;
+    public void otherPackage.onType.register(Registry r) {
+    r.register(this);
+    this.r = r;
+    }
+}
 </programlisting>
 
       <para>
@@ -2546,7 +2546,7 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  this.r = r
+this.r = r
 </programlisting>
 
       <para>
@@ -2614,10 +2614,10 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  aspect A {
-      declare parents: SomeClass implements Runnable;
-      public void SomeClass.run() { ... }
-  }
+aspect A {
+    declare parents: SomeClass implements Runnable;
+    public void SomeClass.run() { ... }
+}
 </programlisting>
 
     </sect2>
@@ -2647,13 +2647,13 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-    Object  M   O
-	 \ / \ /
-	  C   N   Q
-	   \ /   /
-	    D   P
-	     \ /
-	      E
+  Object  M   O
+ \ / \ /
+  C   N   Q
+   \ /   /
+    D   P
+     \ /
+      E
 </programlisting>
 
       <para>
@@ -2661,7 +2661,7 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-    Object M C O N D Q P E
+Object M C O N D Q P E
 </programlisting>
 
     </sect2>
@@ -2703,9 +2703,9 @@ ModifiersPattern =
       <para>For example, the aspect</para>
 
 <programlisting>
-  aspect A {
-      declare soft: Exception: execution(void main(String[] args));
-  }
+aspect A {
+    declare soft: Exception: execution(void main(String[] args));
+}
 </programlisting>
 
       <para>Would, at the execution join point, catch any
@@ -2716,14 +2716,14 @@ ModifiersPattern =
       <para>This is similar to what the following advice would do</para>
 
 <programlisting>
-  aspect A {
-      void around() execution(void main(String[] args)) {
-	  try { proceed(); }
-	  catch (Exception e) {
-	      throw new org.aspectj.lang.SoftException(e);
-	  }
-      }
+aspect A {
+    void around() execution(void main(String[] args)) {
+  try { proceed(); }
+  catch (Exception e) {
+      throw new org.aspectj.lang.SoftException(e);
   }
+    }
+}
 </programlisting>
 
       <para>except, in addition to wrapping the exception, it also affects
@@ -2735,15 +2735,15 @@ ModifiersPattern =
       extending concrete aspect:</para>
 
 <programlisting>
-  abstract aspect A {
-    abstract pointcut softeningPC();
+abstract aspect A {
+  abstract pointcut softeningPC();
 
-    before() : softeningPC() {     
-      Class.forName("FooClass"); // error:  uncaught ClassNotFoundException
-    }    
-                                                      
-    declare soft : ClassNotFoundException : call(* Class.*(..));
+  before() : softeningPC() {
+    Class.forName("FooClass"); // error:  uncaught ClassNotFoundException
   }
+
+  declare soft : ClassNotFoundException : call(* Class.*(..));
+}
 </programlisting>
 
     </sect2>
@@ -2777,7 +2777,7 @@ ModifiersPattern =
       expressed by:</para>
 
 <programlisting>
-  declare precedence: *..*Security*, Logging+, *;
+declare precedence: *..*Security*, Logging+, *;
 </programlisting>
 
       <para>
@@ -2791,22 +2791,22 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  aspect Ordering {
-      declare precedence: CountEntry, DisallowNulls;
-  }
-  aspect DisallowNulls {
-      pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
-      before(Type obj):  allTypeMethods(obj) {
-	  if (obj == null) throw new RuntimeException();
-      }
-  }
-  aspect CountEntry {
-      pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
-      static int count = 0;
-      before():  allTypeMethods(Type) {
-	  count++;
-      }
-  }
+aspect Ordering {
+    declare precedence: CountEntry, DisallowNulls;
+}
+aspect DisallowNulls {
+    pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
+    before(Type obj):  allTypeMethods(obj) {
+  if (obj == null) throw new RuntimeException();
+    }
+}
+aspect CountEntry {
+    pointcut allTypeMethods(Type obj): call(* *(..)) <![CDATA[&&]]> args(obj, ..);
+    static int count = 0;
+    before():  allTypeMethods(Type) {
+  count++;
+    }
+}
 </programlisting>
 
       <sect3>
@@ -2818,7 +2818,7 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  declare precedence:  A, B, A ;  // error
+declare precedence:  A, B, A ;  // error
 </programlisting>
 
         <para>
@@ -2828,8 +2828,8 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  declare precedence: B, A;
-  declare precedence: A, B;
+declare precedence: B, A;
+declare precedence: A, B;
 </programlisting>
 
         <para>
@@ -2848,31 +2848,31 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  abstract aspect Logging {
-      abstract pointcut logged();
+abstract aspect Logging {
+    abstract pointcut logged();
 
-      before(): logged() {
-          System.err.println("thisJoinPoint: " + thisJoinPoint);
-      }
-  }
+    before(): logged() {
+        System.err.println("thisJoinPoint: " + thisJoinPoint);
+    }
+}
 
-  abstract aspect MyProfiling {
-      abstract pointcut profiled();
+abstract aspect MyProfiling {
+    abstract pointcut profiled();
 
-      Object around(): profiled() {
-          long beforeTime = System.currentTimeMillis();
-          try {
-              return proceed();
-          } finally {
-              long afterTime = System.currentTimeMillis();
-              addToProfile(thisJoinPointStaticPart,
-                           afterTime - beforeTime);
-          }
-      }
-      abstract void addToProfile(
-          org.aspectj.JoinPoint.StaticPart jp,
-          long elapsed);
-  }
+    Object around(): profiled() {
+        long beforeTime = System.currentTimeMillis();
+        try {
+            return proceed();
+        } finally {
+            long afterTime = System.currentTimeMillis();
+            addToProfile(thisJoinPointStaticPart,
+                         afterTime - beforeTime);
+        }
+    }
+    abstract void addToProfile(
+        org.aspectj.JoinPoint.StaticPart jp,
+        long elapsed);
+}
 </programlisting>
 
         <para>
@@ -2883,7 +2883,7 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  declare precedence: Logging, Profiling;
+declare precedence: Logging, Profiling;
 </programlisting>
 
         <para>
@@ -2891,8 +2891,8 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  declare precedence: MyLogging, MyProfiling;
-  declare precedence: Logging+, Profiling+;
+declare precedence: MyLogging, MyProfiling;
+declare precedence: Logging+, Profiling+;
 </programlisting>
 
         <para>
@@ -2932,7 +2932,7 @@ ModifiersPattern =
 
     <para>
       An aspect is a crosscutting type defined by the <literal>aspect</literal>
-      declaration. 
+      declaration.
     </para>
 
     <sect2 id="aspect-declaration" xreflabel="aspect-declaration">
@@ -2955,7 +2955,7 @@ ModifiersPattern =
 	declarations that can can cut across other types (including those defined by
 	other aspect declarations).
         </para>
-      </sect3> 
+      </sect3>
 
       <sect3>
         <title>Aspects are not directly instantiated</title>
@@ -2966,19 +2966,19 @@ ModifiersPattern =
 	constructor taking no arguments and throwing no checked
 	exceptions.
         </para>
-      </sect3> 
+      </sect3>
 
       <sect3>
         <title>Nested aspects must be <literal>static</literal></title>
 
-	<para> 
+	<para>
 	  Aspects may be defined either at the package level, or as a static nested
           aspect -- that is, a static member of a class, interface, or aspect.  If it
           is not at the package level, the aspect <emphasis>must</emphasis> be
           defined with the static keyword.  Local and anonymous aspects are not
           allowed.
         </para>
-      </sect3> 
+      </sect3>
     </sect2>
 
     <sect2 id="aspect-extension" xreflabel="aspect-extension">
@@ -3041,7 +3041,7 @@ ModifiersPattern =
         The criteria used to determine how an aspect is instantiated
         is inherited from its parent aspect.  If the aspect has no parent
         aspect, then by default the aspect is a singleton aspect.
-        How an aspect is instantiated controls the form of the 
+        How an aspect is instantiated controls the form of the
         <literal>aspectOf(..)</literal> method defined on the
         concrete aspect class.
       </para>
@@ -3103,7 +3103,7 @@ ModifiersPattern =
           target object of the join points picked out by
           <replaceable>Pointcut</replaceable>.
           The advice defined in A will run only at a join point where the
-          target object has been associated with an instance of 
+          target object has been associated with an instance of
 		  A.
         </para>
 
@@ -3156,20 +3156,20 @@ ModifiersPattern =
         </para>
 
 <programlisting>
-  public class Client
-  {
-      public static void main(String[] args) {
-          Client c = new Client();
-      }
-  }
+public class Client
+{
+    public static void main(String[] args) {
+        Client c = new Client();
+    }
+}
 
-  aspect Watchcall {
-      pointcut myConstructor(): execution(new(..));
+aspect Watchcall {
+    pointcut myConstructor(): execution(new(..));
 
-      before(): myConstructor() {
-          System.err.println("Entering Constructor");
-      }
-  }
+    before(): myConstructor() {
+        System.err.println("Entering Constructor");
+    }
+}
 </programlisting>
 
         <para>
@@ -3214,16 +3214,16 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  class C {
-      private int i = 0;
-      void incI(int x) { i = i+x; }
-  }
-  privileged aspect A {
-      static final int MAX = 1000;
-      before(int x, C c): call(void C.incI(int)) <![CDATA[&&]]> target(c) <![CDATA[&&]]> args(x) {
-	  if (c.i+x &gt; MAX) throw new RuntimeException();
-      }
-  }
+class C {
+    private int i = 0;
+    void incI(int x) { i = i+x; }
+}
+privileged aspect A {
+    static final int MAX = 1000;
+    before(int x, C c): call(void C.incI(int)) <![CDATA[&&]]> target(c) <![CDATA[&&]]> args(x) {
+      if (c.i+x &gt; MAX) throw new RuntimeException();
+    }
+}
 </programlisting>
 
       <para>
@@ -3238,16 +3238,17 @@ ModifiersPattern =
       </para>
 
 <programlisting>
-  class C {
-      private int i = 0;
-      void foo() { }
-  }
-  privileged aspect A {
-      private int C.i = 999;
-      before(C c): call(void C.foo()) target(c) {
-	  System.out.println(c.i);
-      }
-  }
+class C {
+    private int i = 0;
+    void foo() { }
+}
+
+privileged aspect A {
+    private int C.i = 999;
+    before(C c): call(void C.foo()) target(c) {
+        System.out.println(c.i);
+    }
+}
 </programlisting>
 
       <para>

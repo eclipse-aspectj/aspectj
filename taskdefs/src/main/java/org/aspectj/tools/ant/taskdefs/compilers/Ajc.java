@@ -92,7 +92,7 @@ public class Ajc extends DefaultCompilerAdapter {
             System.setErr(logstr);
             return (Integer) main.getMethod
 					("compile", new Class[]{String[].class}).invoke
-					(main.newInstance(), new Object[]{
+					(main.getDeclaredConstructor().newInstance(), new Object[]{
 							removeUnsupported(cline, logstr)
 					}) == AJC_COMPILER_SUCCESS;
         } catch (Exception e) {

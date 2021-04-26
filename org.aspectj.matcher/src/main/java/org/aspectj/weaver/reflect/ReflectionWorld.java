@@ -8,6 +8,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,16 +117,17 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		AnnotationFinder annotationFinder = null;
 		try {
 			Class<?> java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
-			annotationFinder = (AnnotationFinder) java15AnnotationFinder.newInstance();
+			annotationFinder = (AnnotationFinder) java15AnnotationFinder.getDeclaredConstructor().newInstance();
 			annotationFinder.setClassLoader(loader);
 			annotationFinder.setWorld(world);
 		} catch (ClassNotFoundException ex) {
 			// must be on 1.4 or earlier
-		} catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException | InstantiationException | NoSuchMethodException ex) {
 			// not so good
 			throw new BCException("AspectJ internal error", ex);
-		} catch (InstantiationException ex) {
-			throw new BCException("AspectJ internal error", ex);
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 		return annotationFinder;
 	}

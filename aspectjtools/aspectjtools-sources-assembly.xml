@@ -1,7 +1,8 @@
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
+	<!-- Do not change this ID. It becomes the artifact classifier with appendAssemblyId=true. -->
 	<id>sources</id>
 
 	<formats>
@@ -11,6 +12,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 
 	<fileSets>
+
 		<fileSet>
 			<directory>../weaver/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
@@ -43,14 +45,8 @@
 			<directory>../loadtime/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
-		<!-- 
-		<fileSet>
-			<directory>target/asm-unzipped</directory>
-			<outputDirectory>.</outputDirectory>
-		</fileSet>
-		 -->
-		 
-		<!-- tools -->
+
+		<!-- Tools -->
 		<fileSet>
 			<directory>../ajbrowser/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
@@ -75,10 +71,13 @@
 			<directory>../taskdefs/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
+
+		<!-- Dependencies -->
 		<fileSet>
-			<directory>target/jdtcore-unzipped-src</directory>
+			<directory>target/unzipped-sources</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
+
 	</fileSets>
 
 </assembly>

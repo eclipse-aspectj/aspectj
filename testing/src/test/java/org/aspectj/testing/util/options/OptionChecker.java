@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 import org.aspectj.testing.util.LangUtil;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Drivers to test a given set of Options.

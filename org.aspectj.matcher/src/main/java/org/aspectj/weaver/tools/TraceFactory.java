@@ -45,7 +45,7 @@ public abstract class TraceFactory {
 			}
 			else {
 	    		Class factoryClass = Class.forName(factoryName);
-	    		instance = (TraceFactory)factoryClass.newInstance();
+	    		instance = (TraceFactory)factoryClass.getDeclaredConstructor().newInstance();
 			}
 		}
     	catch (Throwable th) {
@@ -58,7 +58,7 @@ public abstract class TraceFactory {
     	if (instance == null) try {
 			{
 	    		Class factoryClass = Class.forName("org.aspectj.weaver.tools.Jdk14TraceFactory");
-	    		instance = (TraceFactory)factoryClass.newInstance();
+	    		instance = (TraceFactory)factoryClass.getDeclaredConstructor().newInstance();
 			}
     	}
     	catch (Throwable th) {

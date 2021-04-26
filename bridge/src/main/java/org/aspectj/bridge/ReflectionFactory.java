@@ -47,7 +47,7 @@ public class ReflectionFactory { // XXX lease, pool
 			final Class<?> cfn = Class.forName(cname);
 			String error = null;
 			if (args == NONE) {
-				result = cfn.newInstance();
+				result = cfn.getDeclaredConstructor().newInstance();
 			} else {
 				Class<?>[] types = getTypes(args);
 				Constructor<?> constructor = cfn.getConstructor(types);

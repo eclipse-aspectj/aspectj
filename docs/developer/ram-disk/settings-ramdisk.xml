@@ -1,0 +1,68 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!--
+    RAM disk (RD) how-to:
+
+      1. Make sure the cloned project moves its local Git repository to a place outside the working directory on a
+         physical drive:
+           # Remove the "_" in between the two dashes in "-_-", two dashes are forbidden inside XML tags
+           git init -_-separate-git-dir=../MyProject.git
+         This ensures that your local Git commits are not lost if the computer reboots unexpectedly, even if you did not
+         push those commits to a remote yet. Ideally, make the Git repository directory a sibling right beside the
+         actual working directory and give it the same name as the workdir + ".git", as shown above.
+
+      2. Set up a RD, bind it to a drive letter (Windows) or mount it into an empty local folder (Linux, can also be
+         done on Windows). The RD should be big enough to house
+           - the project's working directory,
+           - all plugins, dependencies and artifacts needed and created by your Maven build,
+           - plus all the space needed during the build of your project for target folders, temporary files used while
+             creating assemblies or fat JARs, files created during tests etc.
+         On Windows, you might want to deactivate the Recycle Bin for the RAM disk drive. Screenshot
+         docs/developer/ram-disk/windows-recycle-bin-remove-immediately.png explains how to do that in English and
+         German.
+
+      3. Make sure to commit all your changes before shutting down the RD and/or the computer. You can skip that step
+         (at your own risk), if you make sure to save the RD contents to a shapshot file before unmounting.
+           - On Windows, products like Dataram RAMDisk (free up to 1 GB, needs licence otherwise, limited to a single
+             mounted RD) can do that for you. With RAMMap, you can mount any number of drives and have no size limit
+             (other than physical RAM), but have to save snapshots manually.
+           - On Linux, setting up a RD should be easy with on-board means. Mounting, unmounting and saving snapshots can
+             be done via start/stop scripts, which optionally can also be integrated into the Linux start-up and
+             shutdown processes. You could even regularly save snapshots using a cron job.
+
+      4. Copy the working directory to the root folder (e.g. R:/MyProject) of the RD and also create the base folder
+         specified here under "<localRepository>" for the local Maven repository.
+
+      5. Copy this file to <workdir>/.mvn/settings-ramdisk.xml.
+
+      6. Create a file <workdir>/.mvn/maven.config which will be found automatically by Maven - see
+         https://maven.apache.org/configure.html. Add this line, pointing Maven to this settings file with the
+         corresponding absolute path on your RD:
+           # Remove the "_" in between the two dashes in "-_-", two dashes are forbidden inside XML tags
+           -_-settings R:/MyProject/.mvn/settings-ramdisk.xml
+         Using relative paths will not work reliably, this Maven option will be added to each "mvn" call. So depending
+         on the current directory (e.g. submodule folder), you will get into trouble.
+
+      7. Download all plugins Maven needs and do a full build, checking if your RD is big enough:
+           mvn dependency:go-offline
+           mvn clean install
+
+      8. Enjoy, if the previous step was successful. Otherwise, start over with an increased RD size.
+
+      You may want to put .mvn/settings-ramdisk.xml and .mvn/maven.config on your project's .gitignore so as not to
+      commit them accidentally, if you or other project members do not permanently work with the RD or their
+      configuration differs. You may commit this file to another safe place in your project and put some information
+      into a development environment setup guide.
+  -->
+
+  <!-- Default - use if you want to switch to the default local Maven repo temporarily for some reason -->
+  <!--<localRepository>${user.home}/.m2/repository</localRepository>-->
+
+  <!-- RAM disk Windows -->
+  <localRepository>r:/.m2/repository</localRepository>
+
+  <!-- RAM disk Linux (Ubuntu via Windows Subsystem for Linux 2) -->
+  <!--<localRepository>/mnt/r/.m2/repository</localRepository>-->
+
+</settings>

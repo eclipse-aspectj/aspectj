@@ -10,8 +10,6 @@
 	</parent>
 
 	<artifactId>tests</artifactId>
-	<packaging>jar</packaging>
-	<name>tests</name>
 
 	<dependencies>
 		<dependency>
@@ -36,8 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>runtime</artifactId>
-			<version>${project.version}</version>
+			<artifactId>asm-renamed</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -50,42 +47,23 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>org.aspectj.ajdt.core</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>org.aspectj.ajdt.core</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
-		</dependency>
-		<dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>ajde.core</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -96,55 +74,48 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>testing</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>testing</artifactId>
-			<version>${project.version}</version>
 			<type>test-jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>testing-drivers</artifactId>
-			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>testing-util</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<!-- Identical to lib/ant/lib/ant-launcher.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant-launcher</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/ant-launcher.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>commons</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+			<version>${lib.ant.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-
 	<build>
-		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration combine.self="override">
 						<testFailureIgnore>false</testFailureIgnore>
+						<argLine>${jvm.arg.addOpens}</argLine>
 						<includes>
 							<include>**/TestsModuleTests*</include>
 						</includes>
 					</configuration>
 				</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<usedDependencies>
+						<!-- The tests need this during runtime, even though no direct usage is in our classes -->
+						<usedDependency>ant:ant-launcher</usedDependency>
+					</usedDependencies>
+				</configuration>
+			</plugin>
 			</plugins>
-		</pluginManagement>
 	</build>
 
 </project>

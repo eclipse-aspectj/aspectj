@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc167;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
-
 import junit.framework.Test;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
@@ -27,14 +26,17 @@ public class Ajc167Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("optimizing string anno value binding");
 	}
 
+	// FIXME: This test is flaky - can depend on machine load
 	public void testOptimizingAnnotationBinding() {
 		runTest("optimizing annotation binding");
 	}
 
-	// bit flakey - can depend on machine load
-	// public void testOptimizingAnnotationBindingPerfTest() {
-	// runTest("optimizing annotation binding - 2");
-	// }
+	// FIXME: This test is flaky - can depend on machine load
+/*
+	public void testOptimizingAnnotationBindingPerfTest() {
+		runTest("optimizing annotation binding - 2");
+	}
+*/
 
 	/*
 	 * public void testPerThisLTW_295092() { runTest("perthis ltw"); }

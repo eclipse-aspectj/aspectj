@@ -19,6 +19,8 @@ import org.aspectj.util.FileUtil;
 
 import junit.framework.Test;
 
+import static org.aspectj.util.LangUtil.is16VMOrGreater;
+
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
@@ -133,11 +135,21 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 
 		// The working directory is different because this test must be forked
 		File dir = new File("../tests/java5/ataspectj");
-		File f = new File(dir, "_ajdump/_before/com/sun/proxy");
+
+		// Before Java 16, JDK proxies were given a virtual package name of 'com.sun.proxy'. Now the packages are numbered
+		// 'jdk.proxy[n]', i.e. 'jdk.proxy1', 'jdk.proxy2' etc. This makes the package-name-derived path name here less
+		// predictable. In our simple runtime scenario, we can be pretty sure than the counter starts at 1 because
+		// it is the first and only proxy we create.
+		//
+		// TODO: A better solution would be a recursive filtered search via Files.walk, ideally added as a recursive search
+		//       option for CountingFilenameFilter.
+		String proxyDir = is16VMOrGreater() ? "jdk/proxy1" : "com/sun/proxy";
+
+		File f = new File(dir, "_ajdump/_before/" + proxyDir);
 		CountingFilenameFilter cff = new CountingFilenameFilter(".class");
 		f.listFiles(cff);
 		assertEquals("Expected dump file in " + f.getAbsolutePath(), 1, cff.getCount());
-		f = new File(dir, "_ajdump/com/sun/proxy");
+		f = new File(dir, "_ajdump/" + proxyDir);
 		cff = new CountingFilenameFilter(".class");
 		f.listFiles(cff);
 		assertEquals(1, cff.getCount());

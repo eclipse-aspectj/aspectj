@@ -1,38 +1,38 @@
 <chapter id="enumeratedtypes" xreflabel="Enumerated Types">
 
   <title>Enumerated Types</title>
-  
+
   <sect1 id="enums-in-java5">
       <title>Enumerated Types in Java 5</title>
-      
+
       <para>Java 5 (and hence AspectJ 5) provides explicit support for
       enumerated types. In the simplest case, you can declare an enumerated
       type as follows:</para>
-      
+
       <programlisting><![CDATA[
-      public enum ProgrammingLanguages {
-       COBOL,C,JAVA,ASPECTJ
-      }
-      ]]></programlisting>
-      
+public enum ProgrammingLanguages {
+  COBOL, C, JAVA, ASPECTJ
+}
+]]></programlisting>
+
       <para>Enumerated types are just classes, and they can contain method
       and field declarations, and may implement interfaces. Enums may only
       have private constructors, and may not be extended.</para>
-      
+
       <para>Enumerated types in Java 5 all implicitly extend the type
       <literal>java.lang.Enum</literal>. It is illegal to explicitly
       declare a subtype of this class.</para>
   </sect1>
-  
+
   <sect1 id="enums-in-aspectj5">
       <title>Enumerated Types in AspectJ 5</title>
-      
+
       <para>
       AspectJ 5 supports the declaration of enumerated types just as Java 5
       does. Because of the special restrictions Java 5 places around enumerated
       types, AspectJ makes the following additional restrictions:
       </para>
-      
+
       <itemizedlist>
           <listitem>You cannot use declare parents to change the super type of
           an enum.</listitem>
@@ -42,23 +42,23 @@
           enum.</listitem>
           <listitem>You cannot extend the set of values in an enum via any
           ITD-like construct.</listitem>
-          <listitem>You cannot make inter-type method or field declarations on 
+          <listitem>You cannot make inter-type method or field declarations on
           an enum.</listitem>
           <listitem>You cannot use declare parents to make an enum type implement
           an interface.</listitem>
       </itemizedlist>
-      
+
       <para>In theory, the last of these two items <emphasis>could</emphasis>
       be supported. However, AspectJ 5 follows the simple rule that <emphasis>
       an enum type cannot be the target of an inter-type declaration or declare
       parents statement</emphasis>. This position may be relaxed in a future
       version of AspectJ.</para>
-      
+
       <para>If an enum is named explicitly as the target of a
     declare parents statement, a compilation error will result. If an enumerated
     type is matched by a non-explicit type pattern used in a declare parents
     statement it will be ignored (and an XLint warning issued).</para>
   </sect1>
-  
+
 </chapter>
 

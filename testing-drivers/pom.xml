@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>testing-drivers</artifactId>
-  <packaging>jar</packaging>
-  <name>testing-drivers</name>
 
   <dependencies>
     <dependency>
@@ -21,24 +19,10 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>weaver</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
       <artifactId>testing</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-util</artifactId>
-      <version>${project.version}</version>
+      <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-client</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -52,46 +36,32 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>asm</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons</groupId>
-      <artifactId>commons</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
   </dependencies>
 
   <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <testFailureIgnore>false</testFailureIgnore>
-<excludes>
-<exclude>**/*AjcTestSpecAsTest*</exclude>
-</excludes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-</build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <testFailureIgnore>false</testFailureIgnore>
+          <argLine>${jvm.arg.addOpens}</argLine>
+          <excludes>
+            <exclude>**/*AjcTestSpecAsTest*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

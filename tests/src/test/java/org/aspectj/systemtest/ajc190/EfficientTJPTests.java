@@ -11,7 +11,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 
 /**

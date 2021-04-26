@@ -23,9 +23,12 @@ public class AllTestsAspectJ196 {
 			suite.addTest(Ajc196Tests.suite());
 			suite.addTest(SanityTestsJava14.suite());
 		}
+		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
+/*
 		if (LangUtil.is14VMOrGreater() && !LangUtil.is15VMOrGreater()) {
 			suite.addTest(Ajc196PreviewFeaturesTests.suite());
 		}
+*/
 		return suite;
 	}
 }

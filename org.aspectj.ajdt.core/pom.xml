@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>org.aspectj.ajdt.core</artifactId>
-  <packaging>jar</packaging>
-  <name>org.aspectj.ajdt.core</name>
 
   <dependencies>
     <dependency>
@@ -48,37 +46,20 @@
       <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>testing-client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
--->
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>loadtime</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.aspectj.matcher</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
   </dependencies>
 
@@ -87,7 +68,6 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
        <executions>
          <execution>
            <goals>

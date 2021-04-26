@@ -20,7 +20,7 @@
         <antcall target="eclipse.plugins"/>
     </target>
     <target name="clean"   depends="clean-directories"/>
-		    
+
     <target name="compile" depends="build-module"
     	description="compile module ${module.name} (without tests, by default)"/>
 
@@ -38,11 +38,11 @@
     <!-- ===================================================================== -->
     <property name="modules.dir" location="${basedir}/.."/>
     <property name="module.name" value="${ant.project.name}"/>
-    
+
     <import file="${modules.dir}/build/build-properties.xml"/>
-	
+
     <target name="init" depends="init-properties,init-directories">
-      <property name="build.config" value=""/> 
+      <property name="build.config" value=""/>
       <property name="trim.testing.default" value="true"/>
       <property name="aj.installer.jar" location="${aj.dist.dir}/aspectj-${build.version.long}.jar"/>
 
@@ -66,7 +66,7 @@
 			version="${build.version}"
 			versionSourceFile="${aspectj.modules.dir}/bridge/src/org/aspectj/bridge/Version.java"
 			versionTagFile="${aj.temp.dir}/versionUptodate"/>
-		 
+
 		 <available file="${aj.temp.dir}/versionUptodate"
 		       property="version.uptodate"/>
          <property name="version-uptodate.done" value="done"/>
@@ -87,21 +87,21 @@
     <!-- ===================================================================== -->
 
     <target name="warn.ant.lib.aspectjrt" if="ant.lib.aspectjrt">
-      <echo message="----- WARNING: ${ant.lib.aspectjrt}" /> 
+      <echo message="----- WARNING: ${ant.lib.aspectjrt}" />
     </target>
 
     <target name="warn.ant.lib.aspectjtools" if="ant.lib.aspectjtools">
-      <echo message="----- WARNING: ${ant.lib.aspectjtools}" /> 
+      <echo message="----- WARNING: ${ant.lib.aspectjtools}" />
     </target>
 
 	<target name="fail-unless-boot-libraries-uptodate" depends="init"
 	 description="fail unless all boot libraries are up-to-date">
-		
+
 		<antcall target="verify-boot-lib">
 			<param name="boot.lib"        value="test/aspectjrt.jar"/>
 			<param name="vbl.module.name" value="runtime"/>
 		</antcall>
-		
+
 		<antcall target="verify-boot-lib">
 			<param name="boot.lib"        value="build/build.jar"/>
 			<param name="vbl.module.name" value="build"/>
@@ -117,40 +117,40 @@
 			<param name="boot.lib"        value="test/testing-client.jar"/>
 			<param name="vbl.module.name" value="util"/>
 		</antcall>
-		
+
 		<antcall target="verify-boot-lib">
 			<param name="boot.lib"        value="test/testing-client.jar"/>
 			<param name="vbl.module.name" value="bridge"/>
 		</antcall>
 
-		<echo message="all boot libraries verified"/>		
+		<echo message="all boot libraries verified"/>
 	</target>
 
 	<target name="update-tree" depends="init"
      description="update tree">
-      <fail unless="CVSROOT" 
+      <fail unless="CVSROOT"
            message="required: {ant} -DCVSROOT=... ..."/>
       <cvs cvsRoot="${CVSROOT}"
               dest="${aspectj.modules.dir}"
-             quiet="on" 
-       failonerror="on" 
+             quiet="on"
+       failonerror="on"
            command="update -dP" />
     </target>
-		
+
     <!-- ===================================================================== -->
     <!-- antcall targets                                                       -->
-    <!-- ===================================================================== -->	
-	
+    <!-- ===================================================================== -->
+
 	<target name="build-product" depends="init,init-taskdefs,init-version" description="build $${product.name}">
       <ajbuild jarDir="${aj.jar.dir}"
               baseDir="${aspectj.modules.dir}"
               distDir="${aj.dist.dir}"
            productDir="${aspectj.modules.dir}/build/products/${product.name}"
           trimTesting="true"
-          buildConfig="${build.config}" 
+          buildConfig="${build.config}"
               version="${build.version.long}"
               verbose="${build.verbose}"
-          failonerror="true"/>		
+          failonerror="true"/>
 	</target>
 
 	<target name="build-module" depends="init,init-taskdefs,init-version">
@@ -159,11 +159,11 @@
               distDir="${aj.dist.dir}"
                jarDir="${aj.jar.dir}"
           trimTesting="${trim.testing}"
-          buildConfig="${build.config}" 
+          buildConfig="${build.config}"
               version="${build.version.long}"
               verbose="${build.verbose}"
           assembleall="${assemble}"
-          failonerror="true"/>		
+          failonerror="true"/>
 	</target>
 
     <macrodef name="build-module-all">
@@ -189,7 +189,7 @@
 			</antcall>
 		</sequential>
 	</macrodef>
-    
+
     <macrodef name="assemble-module-test">
 		<attribute name="module"/>
 		<sequential>
@@ -197,11 +197,11 @@
 		</sequential>
 	</macrodef>
 
-    
+
 	<target name="create-installer" depends="init,init-taskdefs,init-filters"
 	 description="create ${installer.file} from ${staging.dir} using ${htmlSrc.dir} and ${simpleClassName}">
         <!-- init-filters: filter on copy used by ajinstaller taskdef -->
-        
+
         <delete quiet="on" file="${installer.file}"/>
         <ajinstaller zipfile="${installer.file}"
            installerclassjar="${aspectj.build.jar}"
@@ -218,7 +218,7 @@
       	<srcfiles dir="${aspectj.modules.dir}/${vbl.module.name}/src"
               includes="**/*.java"/>
       </uptodate>
-      
+
       <fail unless="lib-warning-${vbl.module.name}"
         message="${boot.lib} out of date wrt module ${vbl.module.name}"/>
 
@@ -226,16 +226,16 @@
 
     <!-- ===================================================================== -->
     <!-- test targets                                                          -->
-    <!-- ===================================================================== -->	
-    <target name="test-run-all-junit-tests" 
+    <!-- ===================================================================== -->
+    <target name="test-run-all-junit-tests"
 		depends="init"
         description="run unit tests via run-all-junit-tests module">
 	    <antcall target="test">
 	        <param name="module.name" value="run-all-junit-tests"/>
 	    </antcall>
     </target>
-    
-    <target name="test-compiler-tests" 
+
+    <target name="test-compiler-tests"
 		depends="init"
         description="run compiler tests via tests module">
 	    <antcall target="test">
@@ -243,7 +243,7 @@
 	    </antcall>
     </target>
 
-    <target name="test-each-module" 
+    <target name="test-each-module"
 		depends="init"
 	    description="run JUnit tests for each module">
 	    <subant target="test">
@@ -294,7 +294,7 @@
   </target>
 
 
-	                	    
+
     <target name="junitreport" depends="init,init-taskdefs"
         if="junitreport.available">
 	    <clean-dir dir="${aj.junit.dir}/html"/>
@@ -309,9 +309,9 @@
         </pathconvert>
         <echo message="see file:${jur.url}"/>
 	</target>
-    
-	<target name="do-test-junit" 
-	    depends="init-taskdefs" 
+
+	<target name="do-test-junit"
+	    depends="init-taskdefs"
 		description="run junit tests for a module using module root or leaves">
 		<property name="dtj.dir"
 	    	location="${aj.junit.dir}/${module.name}"/>
@@ -327,24 +327,24 @@
 	        else="">
 	        <istrue value="${junit.leaves}"/>
 	    </condition>
-      	
-	    <junit 
+
+	    <junit
 	    	dir="${aspectj.modules.build.dir}"
       	    failureproperty="test-junit-${module.name}.failed"
-      	    fork="on" 
+      	    fork="on"
       	    forkmode="perTest"
       	    maxmemory="400m"
-      		includeAntRuntime="off" 
-           	printsummary="yes" 
+      		includeAntRuntime="off"
+           	printsummary="yes"
            	haltonfailure="${haltOnTestFailure}" >
            	<classpath>
            	    <pathelement location="${aj.jar.dir}/${module.name}-test-all.jar"/>
 				<!-- see skipped libraries in Builder.properties -->
            	    <pathelement location="${jdk.tools.jar}"/>
-            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/> 
+            	<pathelement location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
            		<fileset dir="${aspectj.modules.lib.dir}/commons" includes="commons.jar"/>
            		<!-- XML api's used by loadtime, also needed when running under 1.3 per Ant FAQ -->
-           	    <fileset dir="${aspectj.modules.lib.dir}/ant/lib" 
+           	    <fileset dir="${aspectj.modules.lib.dir}/ant/lib"
                 	includes="ant.jar,ant-junit.jar,xml-apis.jar,xercesImpl.jar"/>
            	</classpath>
     		<jvmarg value="-Daspectjrtpath=${lib.test.aspectjrt.jar}" />
@@ -353,13 +353,13 @@
 	            <fileset dir="${modules.dir}/${module.name}/testsrc"
 	                includes="${dtj.includes}"
 	                excludes="${dtj.excludes}"/>
-            </batchtest>        
+            </batchtest>
 	    </junit>
 	    <report-if-failed text="JUnit tests for ${module.name} failed"
 	        property="test-junit-${module.name}.failed"/>
     </target>
 
-    	
+
     <!-- ===================================================================== -->
     <!-- custom targets                                                        -->
     <!-- ===================================================================== -->
@@ -369,7 +369,7 @@
         <antcall target="clean-jars"/>
 		<assemble-module-test module="testing-drivers"/>
 	</target>
-	
+
     <target name="build-testing-jars" depends="init"
 		description="build testing jars from scratch">
         <antcall target="build-harness-jar"/>
@@ -379,7 +379,7 @@
 		<build-module module="testing-client" assemble="true"/>
 		<assemble-module-test module="testing-client"/>
 	  <echo>
-To use testing client jar in tests, 
+To use testing client jar in tests,
   mv ../aj-build/jars/testing-client-all.jar ../lib/tests/testing-client.jar
 </echo>
 	</target>
@@ -391,23 +391,23 @@ To use testing client jar in tests,
 	    <fileset dir="${aj.dist.dir}/tools"/>
 	    <fileset dir="${aj.dist.dir}/docs"/>
 	  </copy>
-	  
+
 	  <antcall target="create-installer">
 	    <param name="installer.file" location="${aj.installer.jar}"/>
 	    <param name="staging.dir" location="${installer.staging.dir}"/>
 	    <param name="htmlSrc.dir" location="${aspectj.modules.build.dir}/products/aspectj/install"/>
 	    <param name="simpleClassName" value="ToolsInstaller"/>
 	  </antcall>
-	  <delete dir="${installer.staging.dir}"/> 
+	  <delete dir="${installer.staging.dir}"/>
 	</target>
-	
+
 	<target name="docs-dist" depends="init">
 	   <ant dir="${aspectj.modules.dir}/docs"
 	    antfile="build.xml"
 	    target="local-dist"
 	    inheritAll="false"/>
 	</target>
-	
+
 	<target name="aspectjrt" depends="init"
 	 description="build aspectjrt.jar (differently than release)">
 		<build-module-all module="aspectj5rt"/>
@@ -423,12 +423,12 @@ To use testing client jar in tests,
 		<antcall target="compile-runtime-11-flag-unless13"/>
 		<antcall target="compile-runtime-11-do-if13"/>
     </target>
-    
+
     <target name="compile-runtime-11-flag-unless13" depends="init-properties"
     	unless="cr1.in13">
         <echo message="Skipping compile-runtime-11 unless 1.3"/>
     </target>
-    
+
     <target name="compile-runtime-11-do-if13" depends="init-properties"
         if="cr1.in13">
         <mkdir dir="${aj.build.dir}/classes-1.1"/>
@@ -451,7 +451,7 @@ To use testing client jar in tests,
             />
        <delete dir="${aj.build.dir}/classes-1.1"/>
     </target>
-    
+
     <!-- ===================================================================== -->
     <!-- boilerplate antcalls                                                  -->
     <!-- ===================================================================== -->
@@ -497,12 +497,12 @@ To use testing client jar in tests,
     <!-- ===================================================================== -->
 
 	<target name="eclipse.plugins" depends="init"
-     	    description="create the Eclipse distribution plugins">	  
+     	    description="create the Eclipse distribution plugins">
 	   <ant dir="${aspectj.modules.dir}/eclipse.plugin" inheritAll="false"/>
     </target>
-	
+
 	<target name="src" depends="init" description="build src modules">
-		
+
 		<mkdir dir="${aj.src.dir}"/>
 		<jar destfile="${aj.src.dir}/aspectjrt${build.version}-src.jar">
 			<fileset dir="${aspectj.modules.dir}/aspectj5rt/java5-src">
@@ -564,9 +564,9 @@ To use testing client jar in tests,
 				<exclude name="**/.cvsignore"/>
 			</fileset>
 		</jar>
-		
+
         <!-- missing from this are the jdtDepends.jar src files -->
-		<unzip dest="${aj.src.dir}/jdtsrc" src="${aspectj.modules.dir}/org.eclipse.jdt.core/jdtcore-for-aspectj-src.zip"/>
+		<unzip dest="${aj.src.dir}/jdtsrc" src="${aspectj.modules.dir}/lib/jdtcore-aj/jdtcore-for-aspectj-src.zip"/>
         <!-- ajde/ajde.core/ajdoc/asm/bridge/loadtime/org.aspectj.ajdt.core/taskdefs/util/weaver5 -->
 		<jar destfile="${aj.src.dir}/aspectjtools${build.version}-src.jar">
 			<fileset dir="${aj.src.dir}/jdtsrc">
@@ -644,7 +644,7 @@ To use testing client jar in tests,
 		</jar>
 		<delete dir="${aj.src.dir}/bcelsrc" failonerror="false"/>
 		<delete dir="${aj.src.dir}/jdtsrc" failonerror="false"/>
-		
+
 		<jar destfile="${aj.src.dir}/org.aspectj.matcher-${build.version}-src.jar">
 					<fileset dir="${aspectj.modules.dir}/bridge/src">
 						<exclude name="CVS"/>
@@ -721,28 +721,28 @@ To use testing client jar in tests,
 					</fileset>
 					-->
 				</jar>
-		
+
 		<jar destfile="${aj.src.dir}/org.aspectj-${build.version}-src.jar">
 			<fileset dir="${aj.src.dir}">
-				<include name="aspectjrt${build.version}-src.jar"/> 
-				<include name="aspectjweaver${build.version}-src.jar"/> 
+				<include name="aspectjrt${build.version}-src.jar"/>
+				<include name="aspectjweaver${build.version}-src.jar"/>
 				<include name="aspectjtools${build.version}-src.jar"/>
 				<include name="org.aspectj.matcher-${build.version}-src.jar"/>
 			</fileset>
 		</jar>
-		
-		<delete file="{aj.src.dir}/aspectjrt${build.version}-src.jar"/> 
-		<delete file="{aj.src.dir}/aspectjweaver${build.version}-src.jar"/> 
-		<delete file="{aj.src.dir}/aspectjtools${build.version}-src.jar"/> 
-		<delete file="{aj.src.dir}/org.aspectj.matcher${build.version}-src.jar"/> 
+
+		<delete file="{aj.src.dir}/aspectjrt${build.version}-src.jar"/>
+		<delete file="{aj.src.dir}/aspectjweaver${build.version}-src.jar"/>
+		<delete file="{aj.src.dir}/aspectjtools${build.version}-src.jar"/>
+		<delete file="{aj.src.dir}/org.aspectj.matcher${build.version}-src.jar"/>
     </target>
-	
+
 
 
 	<target name="repo" depends="init" description="deploy maven repo">
 		<property name="repo.url" value="scp://simonegianni.it/home/mavenrsync/repo"/>
 		<property name="repo.id" value="simonegianni-rsync"/>
-		
+
 		<mkdir dir="${modules.dir}/aj-build/repo"/>
 		<copy toDir="${modules.dir}/aj-build/repo" file="aspectjtools.pom"/>
 		<copy toDir="${modules.dir}/aj-build/repo" file="aspectjweaver.pom"/>
@@ -752,45 +752,45 @@ To use testing client jar in tests,
 			<substitution expression="${repo.version}"/>
 			<fileset dir="${modules.dir}/aj-build/repo">
 				<include name="*.pom"/>
-			</fileset>			
+			</fileset>
 		</replaceregexp>
-		
-		
+
+
 		<!-- Invoke maven to deploy the jars to the rsynced repo -->
 		<antcall target="mavenDeployJar">
 			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjtools.jar"/>
 			<param name="artifact" value="aspectjtools"/>
 			<param name="desc" value="AspectJ Tools"/>
-		</antcall>		
+		</antcall>
 		<antcall target="mavenDeployJar">
 			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjweaver.jar"/>
 			<param name="artifact" value="aspectjweaver"/>
 			<param name="desc" value="AspectJ Weaver"/>
-		</antcall>		
+		</antcall>
 		<antcall target="mavenDeployJar">
 			<param name="file" value="${modules.dir}/aj-build/dist/tools/lib/aspectjrt.jar"/>
 			<param name="artifact" value="aspectjrt"/>
 			<param name="desc" value="AspectJ Runtime"/>
-		</antcall>		
-		
+		</antcall>
+
 		<antcall target="mavenDeploySource">
 			<param name="file" value="${modules.dir}/aj-build/src/aspectjtools${build.version}-src.jar"/>
 			<param name="artifact" value="aspectjtools"/>
 			<param name="desc" value="AspectJ Tools"/>
-		</antcall>		
+		</antcall>
 		<antcall target="mavenDeploySource">
 			<param name="file" value="${modules.dir}/aj-build/src/aspectjweaver${build.version}-src.jar"/>
 			<param name="artifact" value="aspectjweaver"/>
 			<param name="desc" value="AspectJ Weaver"/>
-		</antcall>		
+		</antcall>
 		<antcall target="mavenDeploySource">
 			<param name="file" value="${modules.dir}/aj-build/src/aspectjrt${build.version}-src.jar"/>
 			<param name="artifact" value="aspectjrt"/>
 			<param name="desc" value="AspectJ Runtime"/>
-		</antcall>		
-		
-		
-		
+		</antcall>
+
+
+
 	</target>
 
 <!--
@@ -838,7 +838,7 @@ ant -propertyfile XXX publishtomaven
       <pom file="usedForMavenUpload/aspectjweaver.pom"/>
       <attach file="${build.root}/aspectjweaver/target/aspectjweaver-${suffix}-sources.jar" classifier="sources"/>
     </maven:deploy>
-	
+
     <!-- ASPECTJMATCHER -->
     <maven:deploy file="${build.root}/aspectjmatcher/target/aspectjmatcher-${suffix}.jar">
       <remoteRepository url="${maven.central.repository}">
@@ -857,7 +857,7 @@ ant -propertyfile XXX publishtomaven
   <target name="publishtomaven_milestone" depends="maven.init">
     <property name="build.root" value="/Users/aclement/gits/org.aspectj"/>
     <property name="suffix" value="1.9.7.M1"/>
-	
+
     <property name="adjusted.release.type" value="milestone"/>
     <property name="maven.central.repository" value="s3://maven.springframework.org/${adjusted.release.type}"/>
     <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
@@ -889,7 +889,7 @@ ant -propertyfile XXX publishtomaven
       <pom file="usedForMavenUpload_milestone/aspectjweaver.pom"/>
       <attach file="${build.root}/aspectjweaver/target/aspectjweaver-${suffix}-sources.jar" classifier="sources"/>
     </maven:deploy>
-		
+
     <!-- ASPECTJMATCHER -->
     <maven:deploy file="${build.root}/aspectjmatcher/target/aspectjmatcher-${suffix}.jar">
       <remoteRepository url="${maven.central.repository}">
@@ -938,13 +938,13 @@ ant -propertyfile XXX publishtomaven
     </maven:deploy>
   </target>
 
-	
+
   <target name="repo2" depends="maven.init">
   </target>
 
 	<target name="mavenDeployJar">
-		<!-- 
-		  Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71 
+		<!--
+		  Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71
 		  this mean you need to have maven installed on your system.
 		-->
 		<exec executable="n:/tools/apache-maven-2.0.9/bin/mvn.bat" failonerror="true">
@@ -957,15 +957,15 @@ ant -propertyfile XXX publishtomaven
 			<arg line="-DartifactId=${artifact}"/>
 			<arg line="-Dpackaging=jar"/>
 			<arg line="-Dversion=${repo.version}"/>
-			<arg line="-DpomFile=${modules.dir}/aj-build/repo/${artifact}.pom"/>			
-		</exec>	
+			<arg line="-DpomFile=${modules.dir}/aj-build/repo/${artifact}.pom"/>
+		</exec>
 	</target>
-	
+
 	<target name="mavenDeploySource">
-		<!-- 
-		     Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71 
+		<!--
+		     Currently only an exec is usable, see http://jira.codehaus.org/browse/MANTTASKS-71
 		     this mean you need to have maven installed on your system.
-		     
+
 		     failonerror is set to false because deploy:deploy-file goes NPE for some obscure reason
 		     on recent versions, see http://jira.codehaus.org/browse/MDEPLOY-48
 		     -->
@@ -979,10 +979,10 @@ ant -propertyfile XXX publishtomaven
 			<arg line="-DartifactId=${artifact}"/>
 			<arg line="-Dpackaging=java-source"/>
 			<arg line="-Dversion=${repo.version}"/>
-			<arg value="-DgeneratePom=false"/>			
-		</exec>	
+			<arg value="-DgeneratePom=false"/>
+		</exec>
 	</target>
-	
+
 
 </project>
 

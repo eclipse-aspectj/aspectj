@@ -98,13 +98,10 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 			File f = new File(t.nextToken().trim());
 			try {
 				if (f.exists()) {
-					URL url = f.toURL();
-					if (url != null) {
+					URL url = f.toURI().toURL();
 						urlList.add(url);
 					}
-				}
-			} catch (MalformedURLException e) {
-			}
+			} catch (MalformedURLException ignored) {}
 		}
 
 		URL[] urls = new URL[urlList.size()];

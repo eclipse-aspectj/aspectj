@@ -95,9 +95,10 @@ public class Main {
 	 * @param errors the List sink, if any, for String error messages
 	 * @param warnings the List sink, if any, for String warning messages
 	 * @param infos the List sink, if any, for String info messages
+	 * @param usages the List sink, if any, for String usage messages
 	 * @return number of messages reported with level ERROR or above
 	 */
-	public static int bareMain(String[] args, boolean useSystemExit, List fails, List errors, List warnings, List infos) {
+	public static int bareMain(String[] args, boolean useSystemExit, List fails, List errors, List warnings, List infos, List usages) {
 		Main main = new Main();
 		MessageHandler holder = new MessageHandler();
 		main.setHolder(holder);
@@ -108,6 +109,7 @@ public class Main {
 			readMessages(holder, IMessage.ERROR, false, errors);
 			readMessages(holder, IMessage.WARNING, false, warnings);
 			readMessages(holder, IMessage.INFO, false, infos);
+			readMessages(holder, IMessage.USAGE, false, usages);
 		}
 		return holder.numMessages(IMessage.ERROR, true);
 	}
@@ -295,9 +297,8 @@ public class Main {
 		final String customMessageHolder = parmInArgs(MESSAGE_HOLDER_OPTION, args);
 		if (customMessageHolder != null) {
 			try {
-				holder = (IMessageHolder) Class.forName(customMessageHolder).newInstance();
+				holder = (IMessageHolder) Class.forName(customMessageHolder).getDeclaredConstructor().newInstance();
 			} catch (Exception ex) {
-				holder = ourHandler;
 				throw new AbortException("Failed to create custom message holder of class '" + customMessageHolder + "' : " + ex);
 			}
 		}
@@ -639,6 +640,8 @@ public class Main {
 			if (IMessage.WARNING.isSameOrLessThan(kind)) {
 				return System.err;
 			} else if (verbose && IMessage.INFO.equals(kind)) {
+				return System.out;
+			} else if (IMessage.USAGE.equals(kind)) {
 				return System.out;
 			} else if (IMessage.WEAVEINFO.equals(kind)) {
 				return System.out;

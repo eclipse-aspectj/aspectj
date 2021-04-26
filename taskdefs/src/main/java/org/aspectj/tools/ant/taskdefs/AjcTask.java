@@ -250,9 +250,9 @@ public class AjcTask extends MatchingTask {
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
-	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14" };
-	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14" };
-	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12", "-13", "-14" };
+	static final String[] TARGET_INPUTS = new String[] { "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14", "15" };
+	static final String[] SOURCE_INPUTS = new String[] { "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9", "10", "11", "12", "13", "14", "15" };
+	static final String[] COMPLIANCE_INPUTS = new String[] { "-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9", "-10", "-11", "-12", "-13", "-14", "15" };
 
 	private static final ICommandEditor COMMAND_EDITOR;
 
@@ -287,7 +287,7 @@ public class AjcTask extends MatchingTask {
 			if (null != editorClassName) {
 				ClassLoader cl = AjcTask.class.getClassLoader();
 				Class editorClass = cl.loadClass(editorClassName);
-				editor = (ICommandEditor) editorClass.newInstance();
+				editor = (ICommandEditor) editorClass.getDeclaredConstructor().newInstance();
 			}
 		} catch (Throwable t) {
 			System.err.println("Warning: unable to load command editor");
@@ -865,7 +865,7 @@ public class AjcTask extends MatchingTask {
 	public void setMessageHolderClass(String className) {
 		try {
 			Class mclass = Class.forName(className);
-			IMessageHolder holder = (IMessageHolder) mclass.newInstance();
+			IMessageHolder holder = (IMessageHolder) mclass.getDeclaredConstructor().newInstance();
 			setMessageHolder(holder);
 		} catch (Throwable t) {
 			String m = "unable to instantiate message holder: " + className;
@@ -889,7 +889,7 @@ public class AjcTask extends MatchingTask {
 	public void setCommandEditorClass(String className) { // skip Ant interface?
 		try {
 			Class mclass = Class.forName(className);
-			setCommandEditor((ICommandEditor) mclass.newInstance());
+			setCommandEditor((ICommandEditor) mclass.getDeclaredConstructor().newInstance());
 		} catch (Throwable t) {
 			String m = "unable to instantiate command editor: " + className;
 			throw new BuildException(m, t);

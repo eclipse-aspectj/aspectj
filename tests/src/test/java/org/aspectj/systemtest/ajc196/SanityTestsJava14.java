@@ -60,23 +60,22 @@ public class SanityTestsJava14 extends XMLBasedAjcTestCaseForJava14OrLater {
 		runTest("simple - i");
 	}
 
-	public void testVersionCorrect1() throws ClassNotFoundException {
+	public void testVersionCorrect1() {
 		runTest("simple - j");
 		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
-	public void testVersionCorrect2() throws ClassNotFoundException {
+	public void testVersionCorrect2() {
 		runTest("simple - k");
 		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
-	public void testVersionCorrect4() throws ClassNotFoundException { // check it is 49.0 when -1.5 is specified
+	public void testVersionCorrect4() {
 		runTest("simple - m");
+		// Must be 49.0 when -1.5 is specified
 		checkVersion("A", 49, 0);
 	}
 
-
-	// ///////////////////////////////////////
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(SanityTestsJava14.class);
 	}

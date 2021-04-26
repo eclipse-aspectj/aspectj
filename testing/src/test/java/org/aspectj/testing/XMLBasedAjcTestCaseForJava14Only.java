@@ -8,8 +8,6 @@
  * ******************************************************************/
 package org.aspectj.testing;
 
-import org.aspectj.util.LangUtil;
-
 /**
  * Makes sure tests are running on the right level of JDK.
  *
@@ -18,14 +16,21 @@ import org.aspectj.util.LangUtil;
 public abstract class XMLBasedAjcTestCaseForJava14Only extends XMLBasedAjcTestCase {
 
 	@Override
-	public void runTest(String title) {
+	public void setUp() throws Exception {
+		throw new IllegalStateException(
+			"These tests need a Java 14 level AspectJ compiler " +
+				"(e.g. because they use version-specific preview features). " +
+				"This compiler does not support preview features of a previous version anymore."
+		);
+		/*
 		if (!LangUtil.is14VMOrGreater() || LangUtil.is15VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 14 only " +
 				"(e.g. because they use version-specific preview features)"
 			);
 		}
-		super.runTest(title);
+		super.setUp();
+		*/
 	}
 
 }

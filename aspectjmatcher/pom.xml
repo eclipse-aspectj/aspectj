@@ -11,17 +11,20 @@
 	</parent>
 
 	<artifactId>aspectjmatcher</artifactId>
-	<packaging>pom</packaging>
 	<name>AspectJ Matcher</name>
 
 	<build>
 		<plugins>
 
-			<!-- skip creation of test-jar in here -->
+			<!-- Skip creation of main + test JARs -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
 					<execution>
 						<id>test-jar</id>
 						<phase>none</phase>
@@ -29,39 +32,9 @@
 				</executions>
 			</plugin>
 
-
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>unzipasm</id>
-						<phase>validate</phase>
-						<configuration>
-							<tasks>
-								<echo message="unzip jarjar'd asm" />
-								<unzip
-									src="${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar"
-									dest="target/asm-unzipped" />
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
-
-			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<!--
-					Set version manually in order to override version from super POM, e.g. 2.2-beta-5 from
-					https://maven.apache.org/ref/3.6.3/maven-model-builder/super-pom
-				-->
-				<version>3.1.1</version>
 				<executions>
 					<execution>
 						<id>aspectjmatcher-assembly</id>
@@ -98,9 +71,23 @@
 
 											<Bundle-Name>AspectJ Matcher</Bundle-Name>
 											<Bundle-Version>${project.version}</Bundle-Version>
-											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation,
-												2002 Palo Alto Research Center, Incorporated (PARC),
-												2003-2020 Contributors. All Rights Reserved</Bundle-Copyright>
+											<!--
+												WARNING: Please avoid line breaks in manifest values! They are passed on like this:
+												Assembly Plugin -> Plexus Archiver -> JRE java.util.jar.Manifest.write(OutputStream).
+
+												The JRE Manifest class inserts hard line breaks always after 72 characters, no matter if those
+												72 characters contain line feeds, tabs or spaces. Hence, it can happen that unwanted blank lines
+												end up in the middle of a manifest section, making the manifest invalid. Calls like e.g.
+												'java -cp aspectjtools.jar org.aspectj.tools.ajc.Main' can then fail with the absolutely
+												unexpected error 'Could not find or load main class org.aspectj.tools.ajc.Main'.
+
+												Alexander Kriegisch created this bug ticket:
+												https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8263924
+
+												In IntelliJ IDEA you can deactivate wrapping text inside XML tags like this:
+												File | Settings | Editor | Code Style | XML | Wrap text -> deactivate
+											-->
+											<Bundle-Copyright>(C) Copyright 1999-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated (PARC), 2003-2020 Contributors. All Rights Reserved</Bundle-Copyright>
 										</manifestEntries>
 									</manifestSection>
 								</manifestSections>
@@ -119,8 +106,8 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<classifier>sources</classifier>
-							<finalName>aspectjmatcher-${project.version}</finalName>
+							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
+							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 							</archive>
 							<descriptors>
@@ -129,6 +116,31 @@
 						</configuration>
 					</execution>
 
+				</executions>
+			</plugin>
+
+			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<!-- Remove dependencies declared in this POM (if any) from uber JAR and strip down POM -->
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+						<configuration>
+							<flattenMode>oss</flattenMode>
+							<pomElements>
+								<dependencies>remove</dependencies>
+								<repositories>remove</repositories>
+							</pomElements>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<flattenedPomFilename>flattened-pom.xml</flattenedPomFilename>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 

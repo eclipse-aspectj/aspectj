@@ -20,32 +20,19 @@ import org.aspectj.util.LangUtil;
  */
 public class AjcTest {
 
-	//	private static boolean is13VMOrGreater = true;
+	//	private static boolean is1dot3VMOrGreater = true;
 	private static boolean is1dot4VMOrGreater = true;
-	private static boolean is15VMOrGreater = false;
-	private static boolean is16VMOrGreater = false;
-	private static boolean is17VMOrGreater = false;
-	private static boolean is18VMOrGreater = false;
-	private static boolean is19VMOrGreater = false;
-	private static boolean is10VMOrGreater = false;
-	private static boolean is11VMOrGreater = false;
-	private static boolean is12VMOrGreater = false;
-	private static boolean is13VMOrGreater = false;
-	private static boolean is14VMOrGreater = false;
-
-	static { // matching logic is also in org.aspectj.util.LangUtil
-		is1dot4VMOrGreater = true;
-		is15VMOrGreater = true;
-		is16VMOrGreater = true;
-		is17VMOrGreater = true;
-		is18VMOrGreater = true;
-		is19VMOrGreater = LangUtil.is9VMOrGreater();
-		is10VMOrGreater = LangUtil.is10VMOrGreater();
-		is11VMOrGreater = LangUtil.is11VMOrGreater();
-		is12VMOrGreater = LangUtil.is12VMOrGreater();
-		is13VMOrGreater = LangUtil.is13VMOrGreater();
-		is14VMOrGreater = LangUtil.is14VMOrGreater();
-	}
+	private static boolean is1dot5VMOrGreater = true;
+	private static boolean is1dot6VMOrGreater = true;
+	private static boolean is1dot7VMOrGreater = true;
+	private static boolean is1dot8VMOrGreater = true;
+	private static boolean is9VMOrGreater = LangUtil.is9VMOrGreater();
+	private static boolean is10VMOrGreater = LangUtil.is10VMOrGreater();
+	private static boolean is11VMOrGreater = LangUtil.is11VMOrGreater();
+	private static boolean is12VMOrGreater = LangUtil.is12VMOrGreater();
+	private static boolean is13VMOrGreater = LangUtil.is13VMOrGreater();
+	private static boolean is14VMOrGreater = LangUtil.is14VMOrGreater();
+	private static boolean is15VMOrGreater = LangUtil.is15VMOrGreater();
 
 	private List<ITestStep> testSteps = new ArrayList<>();
 
@@ -83,11 +70,11 @@ public class AjcTest {
 		if (vmLevel.equals("1.3")) return true;
 		boolean canRun = true;
 		if (vmLevel.equals("1.4")) canRun = is1dot4VMOrGreater;
-		if (vmLevel.equals("1.5")) canRun = is15VMOrGreater;
-		if (vmLevel.equals("1.6")) canRun = is16VMOrGreater;
-		if (vmLevel.equals("1.7")) canRun = is17VMOrGreater;
-		if (vmLevel.equals("1.8")) canRun = is18VMOrGreater;
-		if (vmLevel.equals("1.9")) canRun = is19VMOrGreater;
+		if (vmLevel.equals("1.5")) canRun = is1dot5VMOrGreater;
+		if (vmLevel.equals("1.6")) canRun = is1dot6VMOrGreater;
+		if (vmLevel.equals("1.7")) canRun = is1dot7VMOrGreater;
+		if (vmLevel.equals("1.8")) canRun = is1dot8VMOrGreater;
+		if (vmLevel.equals("1.9")) canRun = is9VMOrGreater;
 		if (vmLevel.equals("10")) canRun = is10VMOrGreater;
 		if (vmLevel.equals("11")) canRun = is11VMOrGreater;
 		if (vmLevel.equals("12")) canRun = is12VMOrGreater;

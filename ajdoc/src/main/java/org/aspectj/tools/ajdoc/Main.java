@@ -148,6 +148,8 @@ public class Main implements Config {
 			System.out.println("> Finished.");
 		} catch (Throwable e) {
 			handleInternalError(e);
+			// TODO: Is this really necessary? Why not just re-throw the exception after logging the error message?
+			//       This interrupts tests, making them exit hard, eg. stopping a whole Maven build somewhere in the middle.
 			exit(-2);
 		}
 	}

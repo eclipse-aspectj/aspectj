@@ -14,6 +14,8 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import static org.aspectj.testing.server.TestServer.REGEX_PROJECT_ROOT_FOLDER;
+
 public class TestServerTest extends TestCase {
 
 	private TestServer server;
@@ -32,6 +34,17 @@ public class TestServerTest extends TestCase {
 		catch (IOException ex) {
 			fail(ex.toString());
 		}
+	}
+
+	public void testFindProjectRootDirectory() throws IOException {
+		// Give developers some advice in the build log about why their LTW tests fail
+		assertNotNull(
+			"Cannot find AspectJ project root folder. " +
+				"This will lead to subsequent failures in all tests using class TestServer. " +
+				"Please make sure to name your project root folder 'org.aspectj', 'AspectJ' or " +
+				"something else matching regex '"+ REGEX_PROJECT_ROOT_FOLDER+"'.",
+			server.findProjectRootFolder()
+		);
 	}
 
 	public void testSetWorkingDirectory() {

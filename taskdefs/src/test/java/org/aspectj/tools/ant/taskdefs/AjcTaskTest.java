@@ -394,18 +394,19 @@ public class AjcTaskTest extends TestCase {
 
         checkRun(task, null);
 
-        JarFile jarFile = new JarFile(destJar);
-        String[] expected = {"copyMe.htm", "pack/includeme",
-                "pack/Pack.class", "Default.class"};
-        String[] unexpected = {"doNotCopy", "skipTxtFiles.txt", "pack/something.txt"};
-		for (String value : expected) {
-			JarEntry entry = jarFile.getJarEntry(value);
-			assertTrue(value + " not found", null != entry);
-		}
-		for (String s : unexpected) {
-			JarEntry entry = jarFile.getJarEntry(s);
-			assertTrue(s + " found", null == entry);
-		}
+        try (JarFile jarFile = new JarFile(destJar)) {
+            String[] expected = { "copyMe.htm", "pack/includeme",
+                    "pack/Pack.class", "Default.class" };
+            String[] unexpected = { "doNotCopy", "skipTxtFiles.txt", "pack/something.txt" };
+            for (String value : expected) {
+                    JarEntry entry = jarFile.getJarEntry(value);
+                    assertTrue(value + " not found", null != entry);
+            }
+            for (String s : unexpected) {
+                    JarEntry entry = jarFile.getJarEntry(s);
+                    assertTrue(s + " found", null == entry);
+            }
+        }
     }
 
     public void testInpathDirCopyFilterError() {
@@ -651,7 +652,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoSuchFileList() {
 		AjcTask task = getTask("NoSuchFile.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
 	public void testVersions() {
@@ -734,7 +735,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoFile() {
 		AjcTask task = getTask(NOFILE);
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
 	public void testCompileErrorFile() {
@@ -753,7 +754,7 @@ public class AjcTaskTest extends TestCase {
 	public void testNoSuchFile() {
 		AjcTask task = getTask("NoSuchFile.lst");
 		task.setFailonerror(false);
-		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR_ONE_ABORT);
+		runTest(task, NO_EXCEPTION, MessageHolderChecker.ONE_ERROR);
 	}
 
     public void testDefaultFileComplete() {

@@ -415,8 +415,15 @@ public class AjdeInteractionTestbed extends TestCase {
 		for (String s : woven) {
 			System.out.println("    :" + s);
 		}
+		try {
 		if (wasFullBuild()) {
 			System.out.println("It was a batch (full) build");
+		}
+		} catch (RuntimeException ignored) {
+			// There is "RuntimeException: I never heard about what kind of build it was!!" thrown by
+			// MyStateListener.wasFullBuild().
+			//
+			// TODO: Ensure that 'MyStateListener.informedAboutKindOfBuild' is set for failed builds, too.
 		}
 		System.out.println("=============================================");
 	}

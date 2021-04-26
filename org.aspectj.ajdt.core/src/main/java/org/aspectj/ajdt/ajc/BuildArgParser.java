@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.aspectj.ajdt.internal.compiler.lookup.EclipseSourceLocation;
@@ -50,17 +49,6 @@ import org.aspectj.weaver.WeaverMessages;
 
 @SuppressWarnings("unchecked")
 public class BuildArgParser extends Main {
-
-	private static final String BUNDLE_NAME = "org.aspectj.ajdt.ajc.messages";
-	private static boolean LOADED_BUNDLE = false;
-
-	static {
-		Main.bundleName = BUNDLE_NAME;
-		ResourceBundleFactory.getBundle(Locale.getDefault());
-		if (!LOADED_BUNDLE) {
-			LOADED_BUNDLE = true;
-		}
-	}
 
 	/** to initialize super's PrintWriter but refer to underlying StringWriter */
 	private static class StringPrintWriter extends PrintWriter {
@@ -287,11 +275,15 @@ public class BuildArgParser extends Main {
 
 	@Override
 	public void printVersion() {
-		final String version = bind("misc.version", //$NON-NLS-1$
-				new String[] { bind("compiler.name"), //$NON-NLS-1$
-						Version.getText() + " - Built: " + Version.getTimeText(), bind("compiler.version"), //$NON-NLS-1$
+		final String version = bind(
+			"misc.version", //$NON-NLS-1$
+				new String[] {
+					bind("compiler.name"), //$NON-NLS-1$
+					Version.getText() + " - Built: " + Version.getTimeText(),
+					bind("compiler.version"), //$NON-NLS-1$
 						bind("compiler.copyright") //$NON-NLS-1$
-				});
+				}
+		);
 		System.out.println(version);
 	}
 
@@ -320,12 +312,6 @@ public class BuildArgParser extends Main {
 		if (this.compilerOptions.complianceLevel < ClassFileConstants.JDK1_6 || !this.compilerOptions.processAnnotations)
 			return;
 		super.initializeAnnotationProcessorManager();
-	}
-
-	@Override
-	public void printUsage() {
-		System.out.println(getUsage());
-		System.out.flush();
 	}
 
 	/**

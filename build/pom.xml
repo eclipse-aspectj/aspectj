@@ -10,22 +10,13 @@
 	</parent>
 
 	<artifactId>build</artifactId>
-	<packaging>jar</packaging>
-	<name>build</name>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>testing-util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
+			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+			<version>${lib.ant.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -34,7 +25,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.9.1</version>
 				<executions>
 					<execution>
 						<id>build.date</id>
@@ -42,11 +32,11 @@
 							<goal>timestamp-property</goal>
 						</goals>
 						<configuration>
+							<!-- Timestamp format: Thu Apr 8, 2021 -->
 							<name>build.date</name>
 							<pattern>E MMM d, YYYY</pattern>
-							<timeZone>Europe/Zurich</timeZone>
-							<!-- build.date: Monday Feb 4, 2019 -->
 							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
 						</configuration>
 					</execution>
 					<execution>
@@ -55,13 +45,11 @@
 							<goal>timestamp-property</goal>
 						</goals>
 						<configuration>
+							<!-- Timestamp format: Thursday Apr 8, 2021 at 20:20:16 PDT -->
 							<name>build.time</name>
-							<!-- 
-							<pattern>E MMM d, YYYY 'at' HH:MM:SS z</pattern>
-							 -->
 							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
-							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
+							<locale>en_US</locale>
 						</configuration>
 					</execution>
 					<execution>
@@ -70,10 +58,11 @@
 							<goal>timestamp-property</goal>
 						</goals>
 						<configuration>
+							<!-- Timestamp format: 2021 -->
 							<name>build.year</name>
 							<pattern>YYYY</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
-							<!-- year: 2019 -->
+							<locale>en_US</locale>
 						</configuration>
 					</execution>
 				</executions>

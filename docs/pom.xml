@@ -9,8 +9,6 @@
   </parent>
 
   <artifactId>docs</artifactId>
-  <packaging>jar</packaging>
-  <name>docs</name>
 
   <profiles>
     <profile>
@@ -18,77 +16,6 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-
-      <dependencies>
-        <!--
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>util</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>runtime</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>util</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>testing-util</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>bridge</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>asm</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>org.aspectj.matcher</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>runtime</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>org.aspectj.matcher</artifactId>
-              <version>${project.version}</version>
-              <type>test-jar</type>
-              <scope>test</scope>
-            </dependency>
-            <dependency>
-              <groupId>org.aspectj</groupId>
-              <artifactId>bcel-builder</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>commons</groupId>
-              <artifactId>commons</artifactId>
-              <version>1.0</version>
-              <scope>system</scope>
-              <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
-            </dependency>
-            <dependency>
-              <groupId>asm</groupId>
-              <artifactId>asm</artifactId>
-              <version>1.0</version>
-              <scope>system</scope>
-              <systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
-            </dependency>
-        -->
-      </dependencies>
 
       <build>
         <resources>
@@ -99,15 +26,6 @@
               <include>**/local.properties</include>
             </includes>
           </resource>
-          <!--
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <filtering>false</filtering>
-                  <excludes>
-                    <exclude>**/local.properties</exclude>
-                  </excludes>
-                </resource>
-          -->
         </resources>
 
         <pluginManagement>
@@ -143,7 +61,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
+            <version>3.0.0</version>
             <executions>
               <execution>
                 <id>make-docs</id>

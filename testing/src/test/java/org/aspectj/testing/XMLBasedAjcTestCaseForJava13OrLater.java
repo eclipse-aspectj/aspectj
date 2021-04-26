@@ -21,11 +21,10 @@ import org.aspectj.util.LangUtil;
 public abstract class XMLBasedAjcTestCaseForJava13OrLater extends XMLBasedAjcTestCase {
 
 	@Override
-	public void runTest(String title) {
-		if (!LangUtil.is13VMOrGreater()) {
+	public void setUp() throws Exception {
+		if (!LangUtil.is13VMOrGreater())
 			throw new IllegalStateException("These tests should be run on Java 13 or later");
-		}
-		super.runTest(title);
+		super.setUp();
 	}
 
 }

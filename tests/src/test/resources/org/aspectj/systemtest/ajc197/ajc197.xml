@@ -1,0 +1,106 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<suite>
+
+	<!-- Java 15 final, no preview -->
+	<ajc-test dir="features197/java15" vm="16" title="hidden class">
+		<compile files="HiddenClassDemo.java" options="-16" />
+		<compile files="HiddenClass.java" options="-16 -outjar hidden.jar"/>
+		<run class="HiddenClassDemo" classpath="hidden.jar">
+			<stdout>
+				<line text="Hidden class name = HiddenClass/" />
+				<line text="Hidden class canonical name = null" />
+				<line text="Class.forName resolution error = java.lang.ClassNotFoundException: HiddenClass/" />
+				<line text="Hello from dynamically defined hidden class" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 16 final, Java 15, 14 preview -->
+	<ajc-test dir="features196/java14" vm="16" title="simple record">
+		<compile files="Person.java" options="-16" />
+	</ajc-test>
+
+	<!-- Java 16 final, Java 15, 14 preview -->
+	<ajc-test dir="features196/java14" vm="16" title="using a record">
+		<compile files="Person.java UsingPersonRecord.java" options="-16" />
+		<run class="UsingPersonRecord">
+			<stdout>
+				<line text="Person[firstName=A, lastName=B, age=99]" />
+				<line text="A" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 16 final, Java 15, 14 preview -->
+	<ajc-test dir="features196/java14" vm="16" title="advising records">
+		<compile files="TraceRecordComponents.aj Person.java UsingPersonRecord.java" options="-16" />
+		<run class="UsingPersonRecord">
+			<stdout>
+				<line text="execution(String Person.toString())" />
+				<line text="Person[firstName=A, lastName=B, age=99]" />
+				<line text="execution(String Person.firstName())" />
+				<line text="A" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 16 final, Java 15, 14 preview -->
+	<ajc-test dir="features196/java14" vm="16" title="instanceof patterns">
+		<compile files="Jep305.java" options="-16" />
+		<run class="Jep305">
+			<stdout>
+				<line text="orange" />
+				<line text="apple" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 15 final, Java 14, 13 preview -->
+	<ajc-test dir="features195/textblock" vm="16" title="textblock 1">
+		<compile files="Code.java" options="-source 16">
+		</compile>
+		<run class="Code">
+			<stdout>
+				<line text="this is a text" />
+				<line text="block" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 15 final, Java 14, 13 preview -->
+	<ajc-test dir="features195/textblock" vm="16" title="textblock 2">
+		<compile files="Code2.java" options="-source 16">
+		</compile>
+		<run class="Code2">
+			<stdout>
+				<line text="this is a text" />
+				<line text="block in advice" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 16, 15 preview -->
+	<ajc-test dir="features197/java15" vm="16" title="sealed class with legal subclasses">
+		<compile files="Person.java Employee.java Manager.java" options="--enable-preview -16" />
+	</ajc-test>
+
+	<!-- Java ?? final, Java 16, 15 preview -->
+	<ajc-test dir="features197/java15" vm="16" title="sealed class with illegal subclass">
+		<compile files="Person.java  Employee.java Manager.java PersonaNonGrata.java" options="--enable-preview -16">
+			<message kind="error" file="PersonaNonGrata.java" text="should be a permitted subtype of Person"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 16, 15 preview -->
+	<ajc-test dir="features197/java15" vm="16" title="weave sealed class">
+		<compile files="Person.java Employee.java Manager.java TopManager.java PersonAspect.aj" options="--enable-preview -16" />
+		<run class="TopManager" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello Sir John" />
+				<line text="CEO" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

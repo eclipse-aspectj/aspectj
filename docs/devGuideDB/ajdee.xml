@@ -274,22 +274,23 @@
 	your <literal>load-path</literal> and are ``required''. This is an
     	example for the 1.0 release:
     	<programlisting>
-    	  ;; I keep my emacs packages in C:/Emacs
-    	  (setq load-path
-    	  (append
-	   '(
-	    "C:/Emacs/aspectj-emacsMode-1.0"	; for AJDEE
-	    "C:/Emacs/aspectj-emacsAJDEE-1.0"
-	    "C:/Emacs/jde-2.2.9beta6/lisp"
-	    "C:/Emacs/elib-1.0"			; for JDEE
-	    "C:/Emacs/speedbar-0.14beta2"	; for JDEE
-	    "C:/Emacs/semantic-1.4beta12"	; for JDEE/speedbar
-	    "C:/Emacs/eieio-0.17beta3"		; for JDEE
-	    )
-	   load-path))
+   ;; I keep my emacs packages in C:/Emacs
+   (setq load-path
+   (append
+'(
+ "C:/Emacs/aspectj-emacsMode-1.0"	; for AJDEE
+ "C:/Emacs/aspectj-emacsAJDEE-1.0"
+ "C:/Emacs/jde-2.2.9beta6/lisp"
+ "C:/Emacs/elib-1.0"			; for JDEE
+ "C:/Emacs/speedbar-0.14beta2"	; for JDEE
+ "C:/Emacs/semantic-1.4beta12"	; for JDEE/speedbar
+ "C:/Emacs/eieio-0.17beta3"		; for JDEE
+ )
+load-path))
 
-    	  (require 'jde)
-    	  (require 'ajdee) ; can also appear in prj.el</programlisting>
+   (require 'jde)
+   (require 'ajdee) ; can also appear in prj.el
+      </programlisting>
           </para>
         </listitem>
 
@@ -315,31 +316,33 @@
     	Here is a simple example:
 
     	<programlisting>
-    	  ;; A default version for simple projects, maybe good for
-    	  ;;; .emacs file.
-    	  (custom-set-variables
-    	  '(jde-compiler '("ajc" "ajc"))
-    	  '(jde-javadoc-command-path "ajdoc")
+;; A default version for simple projects, maybe good for
+;;; .emacs file.
+(custom-set-variables
+'(jde-compiler '("ajc" "ajc"))
+'(jde-javadoc-command-path "ajdoc")
 
-    	  ;; ajc requires all files to be named for a compile
-    	  '(aspectj-compile-file-specification "*.java"))</programlisting>
+;; ajc requires all files to be named for a compile
+'(aspectj-compile-file-specification "*.java"))
+      </programlisting>
 
     	Here is an example for spacewar, in
 	<filename>examples/spacewar</filename>.
     	<programlisting>
-    	  ;;; These options are for the spacewar, in examples/spacewar.
-    	  (custom-set-variables
-    	  '(jde-compiler '("ajc" "ajc"))
-    	  '(jde-javadoc-command-path "ajdoc")
+;;; These options are for the spacewar, in examples/spacewar.
+(custom-set-variables
+'(jde-compiler '("ajc" "ajc"))
+'(jde-javadoc-command-path "ajdoc")
 
-    	  ;; ajc provides an ``argfile'' mechanism for specifying all files.
-    	  '(aspectj-compile-file-specification "-argfile demo.lst")
+;; ajc provides an ``argfile'' mechanism for specifying all files.
+'(aspectj-compile-file-specification "-argfile demo.lst")
 
-    	  ;; *if* compiling packages, name root dir for package hierarchy
-    	  ;; to tell ajc where .class files should go.
-    	  '(jde-compile-option-directory "..")
-    	  '(jde-run-working-directory ".."))
-    	  '(jde-run-application-class "spacewar.Game")</programlisting>
+;; *if* compiling packages, name root dir for package hierarchy
+;; to tell ajc where .class files should go.
+'(jde-compile-option-directory "..")
+'(jde-run-working-directory ".."))
+'(jde-run-application-class "spacewar.Game")
+      </programlisting>
           </para>
         </listitem>
         <listitem>

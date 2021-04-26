@@ -10,7 +10,5 @@
   </parent>
 
   <artifactId>util</artifactId>
-  <packaging>jar</packaging>
-  <name>util</name>
 
 </project>

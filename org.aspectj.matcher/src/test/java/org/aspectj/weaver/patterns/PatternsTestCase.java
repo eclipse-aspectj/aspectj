@@ -24,7 +24,7 @@ public abstract class PatternsTestCase extends TestCase {
 
 	public URLClassLoader getClassLoaderForFile(File f) {
 		try {
-			URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() }, this.getClass().getClassLoader());
+			URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURI().toURL() }, this.getClass().getClassLoader());
 			return ucl;
 		} catch (MalformedURLException mue) {
 			throw new RuntimeException(mue);

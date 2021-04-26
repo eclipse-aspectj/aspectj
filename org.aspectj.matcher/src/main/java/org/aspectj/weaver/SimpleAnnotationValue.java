@@ -84,7 +84,7 @@ public class SimpleAnnotationValue extends AnnotationValue {
 		case 'B': // byte
 			return Byte.toString(theByte);
 		case 'C': // char
-			return new Character(theChar).toString();
+			return Character.toString(theChar);
 		case 'D': // double
 			return Double.toString(theDouble);
 		case 'F': // float

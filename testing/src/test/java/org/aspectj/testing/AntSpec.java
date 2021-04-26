@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -26,44 +26,50 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.aspectj.tools.ajc.AjcTestCase;
 
+import static org.aspectj.util.LangUtil.is16VMOrGreater;
+
 /**
  * Element that allow to run an abritrary Ant target in a sandbox.
  * <p/>
- * Such a spec is used in a "<ajc-test><ant file="myAnt.xml" [target="..."] [verbose="true"]/> XML element. The "target" is
- * optional. If not set, default myAnt.xml target is used. The "file" file is looked up from the <ajc-test dir="..."/> attribute. If
- * "verbose" is set to "true", the ant -v output is piped, else nothing is reported except errors.
+ * Such a spec is used in a {@code <ajc-test><ant file="myAnt.xml" [target="..."] [verbose="true"]/>} XML element. The
+ * {@code target} is optional. If not set, default <i>myAnt.xml</i> target is used. The {@code file} is looked up from
+ * the {@code <ajc-test dir="..."/>} attribute. If @{code verbose} is set to {@code true}, the {@code ant -v} output is
+ * piped, else nothing is reported except errors.
  * <p/>
- * The called Ant target benefits from 2 implicit variables: "${aj.sandbox}" points to the test current sandbox folder. "aj.path" is
- * an Ant refid on the classpath formed with the sandbox folder + ltw + the AjcTestCase classpath (ie usually aspectjrt, junit, and
- * testing infra)
+ * The called Ant target benefits from some implicit variables:
+ * <ul>
+ *   <li>{@code ${aj.sandbox}} points to the test current sandbox folder.</li>
+ *   <li>
+ *     {@code ${aj.path}} is an Ant refid on the classpath formed with the sandbox folder + ltw + the AjcTestCase
+ *     classpath (i.e. usually aspectjrt, junit, and testing infra).
+ *   </li>
+ *   <li>
+ *     For Java 16+, {@code ${aj.addOpensKey}} and {@code ${aj.addOpensValue}} together add {@code --add-opens} and
+ *     {@code java.base/java.lang=ALL-UNNAMED} as JVM parameters. They have to be used together and consecutively in
+ *     this order as {@code jvmarg} parameter tags inside the {@code java} Ant task.
+ *   </li>
+ * </ul>
  * <p/>
- * Element "<stdout><line text="..">" and "<stderr><line text="..">" can be used. For now a full match is performed on the output of
- * the runned target only (not the whole Ant invocation). This is experimental and advised to use a "<junit>" task instead or a
- * "<java>" whose main that throws some exception upon failure.
- * 
- * 
+ * Element {@code <stdout><line text="..">} and {@code <stderr><line text="..">} can be used. For now, a full match is
+ * performed on the output of the runned target only (not the whole Ant invocation). This is experimental and you are
+ * advised to use a {@code <junit>} task instead or a {@code <java>} whose main throws some exception upon failure.
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class AntSpec implements ITestStep {
 
-	
-	public static final String outputFolders(String... modules) {
+	public static String outputFolders(String... modules) {
 		StringBuilder s = new StringBuilder();
 		for (String module: modules) {
 			s.append(File.pathSeparator + ".." +File.separator + module + File.separator + "target" + File.separator + "classes");
 		}
 		return s.toString();
 	}
-	
-	
+
+
 	// ALSO SEE AJC
 	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES =
 			outputFolders("asm", "bridge", "loadtime", "weaver", "org.aspectj.matcher", "bcel-builder");
-//	private final static String DEFAULT_LTW_CLASSPATH_ENTRIES = ".." + File.separator + "asm/bin" + File.pathSeparator + ".."
-//			+ File.separator + "bridge/bin" + File.pathSeparator + ".." + File.separator + "loadtime/bin" + File.pathSeparator
-//			+ ".." + File.separator + "loadtime5/bin" + File.pathSeparator + ".." + File.separator + "weaver/bin"
-//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher/bin" + File.pathSeparator + ".." + File.separator
-//			+ "lib/bcel/bcel.jar" + File.pathSeparator + ".." + File.separator + "lib/bcel/bcel-verifier.jar";;
 
 	private boolean m_verbose = false;
 	private AjcTest m_ajcTest;
@@ -91,6 +97,15 @@ public class AntSpec implements ITestStep {
 			p.setUserProperty("aj.sandbox", inTestCase.getSandboxDirectory().getAbsolutePath());
 			// setup aj.dir "modules" folder
 			p.setUserProperty("aj.root", new File("..").getAbsolutePath());
+
+			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
+			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
+			// during runtime. See also docs/dist/doc/README-187.html.
+			//
+			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
+			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line.
+			p.setUserProperty("aj.addOpensKey", is16VMOrGreater() ? "--add-opens" : "-D_dummy");
+			p.setUserProperty("aj.addOpensValue", is16VMOrGreater() ? "java.base/java.lang=ALL-UNNAMED" : "-D_dummy");
 
 			// create the test implicit path aj.path that contains the sandbox + regular test infra path
 			Path path = new Path(p, inTestCase.getSandboxDirectory().getAbsolutePath());
@@ -143,18 +158,14 @@ public class AntSpec implements ITestStep {
 								fr.close();
 							}
 						} catch (Exception e) {
-							System.out.println("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+							String exceptionMessage = "Exception whilst loading forked java task output " + e.getMessage() + "\n";
+							System.out.println(exceptionMessage);
 							e.printStackTrace();
-							stdout.append("Exception whilst loading forked java task output " + e.getMessage() + "\n");
+							stdout.append(exceptionMessage);
 						}
 
-						StringBuffer message = new StringBuffer();
-						message.append(event.getException().toString()).append("\n");
-						message.append(verboseLog);
-						message.append(stdout);
-						message.append(stderr);
 						// AjcTestCase.fail(failMessage + "failure " + event.getException());
-						AjcTestCase.fail(message.toString());
+						AjcTestCase.fail(event.getException() + "\n" + verboseLog + stdout + stderr);
 					}
 				}
 
@@ -218,18 +229,16 @@ public class AntSpec implements ITestStep {
 //				WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor
 //				WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 //				WARNING: All illegal access operations will be denied in a future release
-				
+
 				stderr2 = stderr2.replaceAll("WARNING: An illegal reflective access operation has occurred\n","");
 				stderr2 = stderr2.replaceAll("WARNING: Illegal reflective access using Lookup on org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor[^\n]*\n","");
 				stderr2 = stderr2.replaceAll("WARNING: Please consider reporting this to the maintainers of org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor\n","");
 				stderr2 = stderr2.replaceAll("WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\n","");
 				stderr2 = stderr2.replaceAll("WARNING: All illegal access operations will be denied in a future release\n","");
 			}
-			// J12
-			String msg = "Java HotSpot(TM) 64-Bit Server VM warning: Archived non-system classes are disabled because the java.system.class.loader property is specified (value = \"org.aspectj.weaver.loadtime.WeavingURLClassLoader\"). To use archived non-system classes, this property must not be set";
-			if (stderr2.contains(msg)) {
-				stderr2 = stderr2.replace(msg+"\n","");
-			}
+			// J12: Line can start with e.g."OpenJDK 64-Bit Server VM" or "Java HotSpot(TM) 64-Bit Server VM". Therefore,
+			// we have to match a substring instead of a whole line
+			stderr2 = stderr2.replaceAll("[^\n]+ warning: Archived non-system classes are disabled because the java.system.class.loader property is specified .*org.aspectj.weaver.loadtime.WeavingURLClassLoader[^\n]+\n?","");
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}
@@ -247,7 +256,7 @@ public class AntSpec implements ITestStep {
 	}
 
 	public void setVerbose(String verbose) {
-		if (verbose != null && "true".equalsIgnoreCase(verbose)) {
+		if ("true".equalsIgnoreCase(verbose)) {
 			m_verbose = true;
 		}
 	}

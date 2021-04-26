@@ -65,7 +65,7 @@ public class Options {
 					String handlerClass = arg.substring(OPTIONVALUED_messageHandler.length()).trim();
 					try {
 						Class<?> handler = Class.forName(handlerClass, false, laoder);
-						weaverOption.messageHandler = ((IMessageHandler) handler.newInstance());
+						weaverOption.messageHandler = ((IMessageHandler) handler.getDeclaredConstructor().newInstance());
 					} catch (Throwable t) {
 						weaverOption.messageHandler.handleMessage(new Message("Cannot instantiate message handler " + handlerClass,
 								IMessage.ERROR, t, null));

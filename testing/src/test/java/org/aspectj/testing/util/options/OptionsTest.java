@@ -14,7 +14,7 @@ package org.aspectj.testing.util.options;
 
 import org.aspectj.testing.util.options.Option.InvalidInputException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 /**

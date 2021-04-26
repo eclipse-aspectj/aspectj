@@ -4,16 +4,47 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<revision>1.9.7.BUILD-SNAPSHOT</revision>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.9.7.BUILD-SNAPSHOT</version>
 	<name>AspectJ Parent Project</name>
+
+	<properties>
+		<revision>1.9.7.BUILD-SNAPSHOT</revision>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<jdt.core.version>3.25.0-SNAPSHOT</jdt.core.version>
+		<lib.ant.version>1.6.3</lib.ant.version>
+		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
+		<lib.regexp.version>1.2</lib.regexp.version>
+		<lib.commons.beanutils.version>1.4</lib.commons.beanutils.version>
+		<lib.commons.beanutils.tag>BEANUTILS_1_4</lib.commons.beanutils.tag>
+		<lib.commons.collections.version>2.0</lib.commons.collections.version>
+		<lib.commons.collections.tag>collections-2.0</lib.commons.collections.tag>
+		<lib.commons.digester.version>1.3</lib.commons.digester.version>
+		<lib.commons.digester.tag>DIGESTER_1_3</lib.commons.digester.tag>
+		<lib.commons.logging.version>1.0.1</lib.commons.logging.version>
+		<lib.commons.logging.tag>LOGGING_1_0_1</lib.commons.logging.tag>
+		<asm.version>9.1</asm.version>
+		<lib.directory>${maven.multiModuleProjectDirectory}/lib</lib.directory>
+	</properties>
+
+	<repositories>
+		<!--
+			Separately built dependencies unavailable on Maven Central, e.g.:
+			  - org.aspectj:asm-renamed
+			  - org.aspectj:org.eclipse.jdt.core
+		-->
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/kriegaex/aspectj-packages</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<modules>
 		<module>util</module>
@@ -27,7 +58,6 @@
 		<module>bcel-builder</module>
 		<module>weaver</module>
 		<module>loadtime</module>
-		<module>org.eclipse.jdt.core</module>
 		<module>org.aspectj.ajdt.core</module>
 		<module>ajde.core</module>
 		<module>ajde</module>
@@ -40,6 +70,12 @@
 		<module>run-all-junit-tests</module>
 		<module>docs</module>
 
+		<!-- FYI: These are NOT meant to be sub-modules but a stand-alone projects built and deployed independently. -->
+		<!--
+		<module>asm-renamed</module>
+		<module>lib</module>
+		-->
+
 		<!-- create the important artifacts we care about -->
 		<module>aspectjrt</module>
 		<module>aspectjweaver</module>
@@ -50,12 +86,41 @@
 		<module>installer</module>
 	</modules>
 
+	<!--
+    Caveat: Automatic, JDK-based profile activation can *not* be inherited by child POMs defining
+    the same profiles. Thus, we have to repeat activation conditions there.
+
+    Note: We can check if automatic profile activation works via mvn help:active-profiles.
+  -->
+	<profiles>
+		<profile>
+			<id>jdk-8-to-15</id>
+			<activation>
+				<jdk>[1.8,16)</jdk>
+			</activation>
+			<properties>
+				<jvm.arg.addOpens/>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk-16-to-xx</id>
+			<activation>
+				<jdk>[16,)</jdk>
+			</activation>
+			<properties>
+				<jvm.arg.addOpens>--add-opens java.base/java.lang=ALL-UNNAMED</jvm.arg.addOpens>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
@@ -66,61 +131,197 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.2</version>
 					<configuration>
-<!--
-						<testFailureIgnore>true</testFailureIgnore>
--->
+						<!--<testFailureIgnore>true</testFailureIgnore>-->
+						<argLine>${jvm.arg.addOpens}</argLine>
 						<excludes>
 							<exclude>**/*ModuleTests.java</exclude>
 						</excludes>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-help-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.0</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>package</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.2.0</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>test-jar</id>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<!-- TODO: upgrade after https://issues.apache.org/jira/browse/MSHADE-366 is fixed -->
+					<version>3.2.4</version>
+					<configuration>
+						<createSourcesJar>true</createSourcesJar>
+						<createDependencyReducedPom>false</createDependencyReducedPom>
+						<shadedArtifactAttached>false</shadedArtifactAttached>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.0.0-M3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.1.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>1.2.2</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-<id>test-jar</id>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
 				<configuration>
 					<filesets>
 						<fileset>
 							<directory>.</directory>
 							<includes>
-<include>**/ajcore.*.txt</include>
-
-								</includes>
-<!--
-<excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude>
-								</excludes> -->
+								<!-- AspectJ core dumps -->
+								<include>**/ajcore.*.txt</include>
+								<!-- Test temp-dirs in 'weaver' module, see AsynchronousFileCacheBackingTestSupport.getCacheDir -->
+								<include>**/dir-0.*/**</include>
+							</includes>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 						<fileset>
 							<directory>aj-build</directory>
-							<!-- <includes> <include>**/*.tmp</include> <include>**/*.log</include>
-								</includes> <excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude>
-								</excludes> -->
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>
 				</configuration>
+			</plugin>
+
+			<!--
+				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'effective-pom',
+				'active-profiles', 'effective-settings' or 'evaluate' from a modern IDE in order to get quick information about
+				the current build configuration for any given module.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
+			</plugin>
+
+			<!--
+				This plugin is nice to have in the POM, because then it is easy to double-click a goal such as 'analyze' or
+				'tree' from a modern IDE in order to inspect dependency management in the project.
+
+				Tip: If you want a quick overview, run this from the project from the project root directory:
+				mvn -P \!create-docs dependency:analyze | grep -E '\[(WARNING|INFO\] -+< .+:.+ >-+)' > dependency-analyze.txt
+				But be careful that all modules are actually listed - usually 'org.aspectj:installer' is the last one in the
+				list. You can make sure by running the command without 'grep' first, then you see if there are any compile
+				problems which 'grep' would filter out.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<ignoredUnusedDeclaredDependencies>
+						<!-- Declared in parent POM for convenience, but not used in every module -->
+						<ignoredUnusedDeclaredDependency>junit:junit:jar</ignoredUnusedDeclaredDependency>
+					</ignoredUnusedDeclaredDependencies>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-libraries-exist</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireFilesExist>
+									<!--
+										Do NOT insert any line breaks + indentation inside the message, keep it on a single line.
+										Maven Enforcer does not strip any whitespace or unindent, which looks quite ugly on the console.
+									-->
+									<message>
+										Please go to module subdirectory 'lib' and run 'mvn compile' there. This should take care of downloading all necessary libraries to that directory, where some tests expect them to be.
+									</message>
+									<files>
+										<file>${lib.directory}/ant/bin/ant.bat</file>
+										<file>${lib.directory}/ant/lib/junit.jar</file>
+										<file>${lib.directory}/commons/commons.jar</file>
+										<file>${lib.directory}/docbook/docbook-dtd/docbookx.dtd</file>
+										<file>${lib.directory}/docbook/docbook-xsl/html/chunk.xsl</file>
+										<file>${lib.directory}/docbook/fop.jar</file>
+										<file>${lib.directory}/docbook/batik.jar</file>
+										<file>${lib.directory}/jarjar/jarjar-1.3.jar</file>
+										<file>${lib.directory}/jdtcore-aj/jdtcore-for-aspectj.jar</file>
+										<file>${lib.directory}/junit/junit.jar</file>
+										<file>${lib.directory}/regexp/jakarta-regexp-1.2.jar</file>
+										<file>${lib.directory}/saxon/saxon.jar</file>
+									</files>
+								</requireFilesExist>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
@@ -132,27 +333,48 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.6.2</version>
+				<version>5.7.1</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.13.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>org.eclipse.jdt.core</artifactId>
+				<version>${jdt.core.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Because commons-digester:commons-digester:1.3 refers to version 1.4-dev -->
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${lib.commons.beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>asm-renamed</artifactId>
+				<version>${asm.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
+		<!--
+			Actually, it would be cleaner to only define JUnit only it modules which actually use it. But since this comprises
+			the majority, we can afford to be a little bit unclean here with regard to dependency management.
+		-->
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

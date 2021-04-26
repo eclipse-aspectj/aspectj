@@ -314,6 +314,7 @@ public class CompileSpec implements ITestStep {
 		List<AjcTestCase.Message> errors = new ArrayList<>();
 		List<AjcTestCase.Message> fails = new ArrayList<>();
 		List<AjcTestCase.Message> weaveInfos = new ArrayList<>();
+		List<AjcTestCase.Message> usages = new ArrayList<>();
 		for (ExpectedMessageSpec exMsg: expected) {
 			String kind = exMsg.getKind();
 			if (kind.equals("info")) {
@@ -329,9 +330,11 @@ public class CompileSpec implements ITestStep {
 				fails.add(exMsg.toMessage());
 			} else if (kind.equals("weave")) {
 				weaveInfos.add(exMsg.toMessage());
+			} else if (kind.equals("usage")) {
+				weaveInfos.add(exMsg.toMessage());
 			}
 		}
-		return new AjcTestCase.MessageSpec(infos,warnings,errors,fails,weaveInfos);
+		return new AjcTestCase.MessageSpec(infos,warnings,errors,fails,weaveInfos, usages);
 	}
 
 }

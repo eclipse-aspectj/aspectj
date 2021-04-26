@@ -205,6 +205,13 @@ public class SoftMessage implements IMessage {
 		return kind == IMessage.DEBUG;
 	}
 
+	/**
+	 * @return true if kind == IMessage.USAGE
+	 */
+	public boolean isUsage() {
+		return kind == IMessage.USAGE;
+	}
+
 	/** 
 	 * @return true if kind == IMessage.INFO  
 	 */

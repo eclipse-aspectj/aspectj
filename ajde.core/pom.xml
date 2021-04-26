@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>ajde.core</artifactId>
-  <packaging>jar</packaging>
-  <name>ajde.core</name>
 
   <dependencies>
     <dependency>
@@ -34,22 +32,19 @@
       <artifactId>org.aspectj.ajdt.core</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-
-
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
     </dependency>
-<!--
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
+      <artifactId>asm-renamed</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
--->
   </dependencies>
 </project>

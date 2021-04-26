@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -62,52 +63,24 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	protected Ajc ajc;
 
+	public static final String CLASSPATH_ASM_RENAMED =
+		Arrays.stream(System.getProperty("java.class.path")
+			.split(File.pathSeparator))
+			.filter(path -> path.contains("asm-renamed"))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("library 'asm-renamed' not found on classpath"));
+
 	// see Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
 			Ajc.outputFolders("bridge","util","loadtime","weaver","asm","testing-client","runtime","org.aspectj.matcher")
-			//			File.pathSeparator + ".." + File.separator + "bridge" + File.separator
-			//			+ "bin" + File.pathSeparator + ".." + File.separator + "util" + File.separator + "bin" + File.pathSeparator + ".."
-			//			+ File.separator + "loadtime" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver"
-			//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "weaver5" + File.separator + "bin"
-			//			+ File.pathSeparator + ".." + File.separator + "asm" + File.separator + "bin" + File.pathSeparator + ".."
-			//			+ File.separator + "testing-client" + File.separator + "bin" + File.pathSeparator + ".." + File.separator + "runtime"
-			//			+ File.separator + "bin" + File.pathSeparator + ".." + File.separator + "aspectj5rt" + File.separator + "bin"
-			//			+ File.pathSeparator + ".." + File.separator + "org.aspectj.matcher" + File.separator + "bin"
-			+ File.pathSeparator
-			+ ".." + File.separator + "lib" + File.separator + "junit" + File.separator
-			+ "junit.jar"
-			+ File.pathSeparator
-			+ ".."
-			+ File.separator
-			+ "lib"
-			+ File.separator
-			+ "bcel"
-			+ File.separator
-			+ "bcel.jar"
-			+ File.pathSeparator
-			+ ".."
-			+ File.separator
-			+ "lib"
-			+ File.separator
-			+ "bcel"
-			+ File.separator
-			+ "bcel-verifier.jar"
-
-			+ File.pathSeparator + ".." +  File.separator + "lib" + File.separator + "asm" + File.separator + "asm-8.0.1.renamed.jar"
-
-			// When the build machine executes the tests, it is using code built into jars rather than code build into
-			// bin directories. This means for the necessary types to be found we have to put these jars on the classpath:
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "bridge.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator + "util.jar"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars" + File.separator
-			+ "org.aspectj.matcher.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-			+ File.separator + "loadtime.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-			+ File.separator + "weaver.jar" + File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-			+ File.pathSeparator + ".." + File.separator + "aj-build" + File.separator + "jars"
-			+ File.separator + "asm.jar" + File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test"
-			+ File.separator + "testing-client.jar"
-			// hmmm, this next one should perhaps point to an aj-build jar...
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
+				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar"
+				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel.jar"
+				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel-verifier.jar"
+				+ File.pathSeparator + CLASSPATH_ASM_RENAMED
+				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "testing-client.jar"
+				// hmmm, this next one should perhaps point to an aj-build jar...
+				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar"
+			;
 
 	/*
 	 * Save reference to real stderr and stdout before starting redirection
@@ -297,8 +270,10 @@ public abstract class AjcTestCase extends TestCase {
 		/**
 		 * Convenience constant that matches a CompilationResult with any number of information messages, but no others.
 		 */
-		public static final MessageSpec EMPTY_MESSAGE_SET = new MessageSpec(null, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-				Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+		public static final MessageSpec EMPTY_MESSAGE_SET = new MessageSpec(
+			null, Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+			Collections.EMPTY_LIST, Collections.EMPTY_LIST
+		);
 
 		boolean ignoreInfos = true;
 		public List<AjcTestCase.Message> fails;
@@ -306,6 +281,7 @@ public abstract class AjcTestCase extends TestCase {
 		public List<AjcTestCase.Message> warnings;
 		public List<AjcTestCase.Message> errors;
 		public List<AjcTestCase.Message> weaves;
+		public List<AjcTestCase.Message> usages;
 
 		/**
 		 * Set to true to enable or disable comparison of information messages.
@@ -330,8 +306,14 @@ public abstract class AjcTestCase extends TestCase {
 		 * @param errors The set of error messages to test for - can pass null to indicate empty set.
 		 * @param fails The set of fail or abort messages to test for - can pass null to indicate empty set.
 		 */
-		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings,
-				List<AjcTestCase.Message> errors, List<AjcTestCase.Message> fails, List<AjcTestCase.Message> weaves) {
+		public MessageSpec(
+			List<AjcTestCase.Message> infos,
+			List<AjcTestCase.Message> warnings,
+			List<AjcTestCase.Message> errors,
+			List<AjcTestCase.Message> fails,
+			List<AjcTestCase.Message> weaves,
+			List<AjcTestCase.Message> usages
+		) {
 			if (infos != null) {
 				this.infos = infos;
 				ignoreInfos = false;
@@ -342,6 +324,7 @@ public abstract class AjcTestCase extends TestCase {
 			this.errors = ((errors == null) ? Collections.<AjcTestCase.Message>emptyList() : errors);
 			this.fails = ((fails == null) ? Collections.<AjcTestCase.Message>emptyList() : fails);
 			this.weaves = ((weaves == null) ? Collections.<AjcTestCase.Message>emptyList() : weaves);
+			this.usages = ((weaves == null) ? Collections.<AjcTestCase.Message>emptyList() : usages);
 		}
 
 		/**
@@ -349,7 +332,7 @@ public abstract class AjcTestCase extends TestCase {
 		 * presence of any fail or abort messages in a CompilationResult will be a test failure.
 		 */
 		public MessageSpec(List<AjcTestCase.Message> infos, List<AjcTestCase.Message> warnings, List<AjcTestCase.Message> errors) {
-			this(infos, warnings, errors, null, null);
+			this(infos, warnings, errors, null, null, null);
 		}
 
 		/**
@@ -357,7 +340,7 @@ public abstract class AjcTestCase extends TestCase {
 		 * of any fail or abort messages in a CompilationResult will be a test failure. Informational messages will be ignored.
 		 */
 		public MessageSpec(List<AjcTestCase.Message> warnings, List<AjcTestCase.Message> errors) {
-			this(null, warnings, errors, null, null);
+			this(null, warnings, errors, null, null, null);
 		}
 	}
 
@@ -422,8 +405,8 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Assert that no (non-informational) messages where produced during a compiler run.
 	 */
-	public void assertNoMessages(CompilationResult result, String message) {
-		assertMessages(result, message, MessageSpec.EMPTY_MESSAGE_SET);
+	public void assertNoMessages(CompilationResult result, String assertionFailedMessage) {
+		assertMessages(result, assertionFailedMessage, MessageSpec.EMPTY_MESSAGE_SET);
 	}
 
 	/**
@@ -436,7 +419,7 @@ public abstract class AjcTestCase extends TestCase {
 	/**
 	 * Assert that messages in accordance with the <code>expected</code> message specification where produced during a compiler run.
 	 */
-	public void assertMessages(CompilationResult result, String message, MessageSpec expected) {
+	public void assertMessages(CompilationResult result, String assertionFailedMessage, MessageSpec expected) {
 		if (result == null)
 			fail("Attempt to compare null compilation results against expected.");
 		List<AjcTestCase.Message> missingFails = copyAll(expected.fails);
@@ -457,10 +440,10 @@ public abstract class AjcTestCase extends TestCase {
 		}
 		compare(expected.weaves, result.getWeaveMessages(), missingWeaves, extraWeaves);
 
-		boolean infosEmpty = expected.isIgnoringInfoMessages() ? true : (missingInfos.isEmpty() && extraInfos.isEmpty());
+		boolean infosEmpty = expected.isIgnoringInfoMessages() || missingInfos.isEmpty() && extraInfos.isEmpty();
 		if (!(missingFails.isEmpty() && missingWarnings.isEmpty() && missingErrors.isEmpty() && missingWeaves.isEmpty()
 				&& extraFails.isEmpty() && extraWarnings.isEmpty() && extraErrors.isEmpty() && extraWeaves.isEmpty() && infosEmpty)) {
-			StringBuffer failureReport = new StringBuffer(message);
+			StringBuffer failureReport = new StringBuffer(assertionFailedMessage);
 			failureReport.append("\n");
 			if (!expected.isIgnoringInfoMessages()) {
 				addMissing(failureReport, "info", missingInfos);
@@ -484,7 +467,7 @@ public abstract class AjcTestCase extends TestCase {
 			}
 			String report = failureReport.toString();
 			System.err.println(failureReport);
-			fail(message + "'\n" + report);
+			fail(assertionFailedMessage + "'\n" + report);
 		}
 	}
 
@@ -888,7 +871,7 @@ public abstract class AjcTestCase extends TestCase {
 		URL[] urls = new URL[strTok.countTokens()];
 		try {
 			for (int i = 0; i < urls.length; i++) {
-				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURL();
+				urls[i] = new File(strTok.nextToken()).getCanonicalFile().toURI().toURL();
 			}
 		} catch (Exception malEx) {
 			fail("Bad classpath specification: " + classpath);

@@ -10,8 +10,6 @@
 	</parent>
 
 	<artifactId>bridge</artifactId>
-	<packaging>jar</packaging>
-	<name>bridge</name>
 
 	<dependencies>
 		<dependency>
@@ -26,7 +24,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.9.1</version>
 				<executions>
 					<execution>
 						<id>build.time</id>
@@ -34,10 +31,11 @@
 							<goal>timestamp-property</goal>
 						</goals>
 						<configuration>
+							<!-- Timestamp format: Thursday Apr 8, 2021 at 20:04:07 PDT -->
 							<name>version.time_text</name>
 							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
 							<timeZone>America/Los_Angeles</timeZone>
-							<!-- build.time: Monday Feb 4, 2019 at 23:50:25 GMT -->
+							<locale>en_US</locale>
 						</configuration>
 					</execution>
 				</executions>

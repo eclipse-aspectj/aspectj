@@ -12,7 +12,6 @@
 
 package org.aspectj.ajdt.ajc;
 
-//import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +24,6 @@ import java.util.ListIterator;
 import junit.framework.TestCase;
 
 import org.aspectj.ajdt.StreamPrintWriter;
-import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
@@ -136,65 +134,57 @@ public class AjdtCommandTestCase extends TestCase {
 		assertTrue("specified a file", outputWriter.getContents().contains("incremental mode only handles source files using -sourceroots"));
 	}
 
-	public void testBadOptionAndUsagePrinting() throws InvalidInputException {
-		try {
+	public void testBadOptionAndUsagePrinting() {
 			AjdtCommand.genBuildConfig(new String[] { "-mubleBadOption" }, counter);
-		} catch (AbortException ae) {
-		}
-		// usage printed by caller to genBuildConfig now...
-		assertTrue(outputWriter.getContents() + " contains? " + "Usage",
-				outputWriter.getContents().contains("-mubleBadOption"));
-
+		String outputText = outputWriter.getContents();
+		assertTrue(
+			"bad option error not found in compiler output",
+			outputText.contains("error") && outputText.contains("argument") && outputText.contains("-mubleBadOption")
+		);
+		assertFalse(
+			"usage text found in compiler output unexpectedly",
+			outputWriter.getContents().contains("AspectJ-specific options:")
+		);
 	}
 
 	public void testHelpUsagePrinting() {
-		String[] args = new String[] { "-help" };
-
-		PrintStream saveOut = System.out;
-		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
-		PrintStream newOut = new PrintStream(byteArrayOut);
-		System.setOut(newOut);
-
-		try {
-			try {
-
-				AjdtCommand.genBuildConfig(args, counter);
-			} catch (AbortException ae) {
-			}
-		} finally {
-			System.setOut(saveOut);
-		}
-
-		String text = byteArrayOut.toString();
-		assertTrue(text + " contains? " + "Usage", text.contains("Usage"));
+		AjdtCommand.genBuildConfig(new String[] { "-help" }, counter);
+		String outputText = outputWriter.getContents();
+		assertTrue(
+			"usage text not found in compiler output",
+			outputText.contains("AspectJ-specific options:")
+		);
 	}
 
-	public void q() throws InvalidInputException {
-		String[] args = new String[] { "-version" };
+	public void testXHelpUsagePrinting() {
+		AjdtCommand.genBuildConfig(new String[] { "-X" }, counter);
+		String outputText = outputWriter.getContents();
+		assertTrue(
+			"usage text not found in compiler output",
+			outputText.contains("AspectJ-specific non-standard options:")
+		);
+	}
 
+	public void testVersionPrinting() {
+		// Version string is not identified as any kind of special message like usage, error, warning. Therefore, it is
+		// printed to stdOut directly in order not to be filtered out. This is why we have to check System.out directly.
+		// Attention, this is not thread-safe when running tests in parallel and another thread prints at the same time!
 		PrintStream saveOut = System.out;
-		PrintStream saveErr = System.err;
 		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
-		ByteArrayOutputStream byteArrayErr = new ByteArrayOutputStream();
 		PrintStream newOut = new PrintStream(byteArrayOut);
-		PrintStream newErr = new PrintStream(byteArrayErr);
-		System.setOut(newOut);
-		System.setErr(newErr);
 
 		try {
-			try {
-
-				AjdtCommand.genBuildConfig(args, counter);
-			} catch (AbortException ae) {
+		System.setOut(newOut);
+			AjdtCommand.genBuildConfig(new String[] { "-version" }, counter);
 			}
-		} finally {
+		finally {
 			System.setOut(saveOut);
-			System.setErr(saveErr);
 		}
-
-		String text = byteArrayOut.toString();
-		// String text2 = byteArrayErr.toString();
-		assertTrue("version output does not include 'AspectJ Compiler', output was:\n'" + text + "'", text.contains("AspectJ Compiler"));
+		String outputText = byteArrayOut.toString();
+		assertTrue(
+			"AspectJ version string not found in compiler output",
+			outputText.contains("AspectJ Compiler")
+		);
 	}
 
 	public void testNonExistingLstFile() {

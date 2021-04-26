@@ -280,7 +280,7 @@ public final class LazyClassGen {
 	}
 
 	public String getNewGeneratedNameTag() {
-		return new Integer(childCounter++).toString();
+		return Integer.toString(childCounter++);
 	}
 
 	// ----

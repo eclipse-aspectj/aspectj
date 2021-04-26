@@ -44,19 +44,6 @@ public class AjdtCommand implements ICommand {
 		buildManager = new AjBuildManager(handler); 
 		savedArgs = new String[args.length];
         System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
-		for (String arg : args) {
-// AMC - PR58681. No need to abort on -help as the Eclipse compiler does the right thing.
-//            if ("-help".equals(args[i])) {
-//                // should be info, but handler usually suppresses
-//                MessageUtil.abort(handler, BuildArgParser.getUsage());
-//                return true;
-//            } else
-			if ("-X".equals(arg)) {
-				// should be info, but handler usually suppresses
-				MessageUtil.abort(handler, BuildArgParser.getXOptionUsage());
-				return true;
-			}
-		}
         return doCommand(handler, false);
     }
 
@@ -103,9 +90,11 @@ public class AjdtCommand implements ICommand {
             if (!config.hasSources()) {
                 MessageUtil.error(counter, "no sources specified");
             }
-            if (counter.hasErrors())  { // print usage for config errors
-                String usage = BuildArgParser.getUsage();
-                MessageUtil.abort(handler, usage);
+            if (counter.hasErrors())  {
+                // Do *not* print usage for config errors (just like ECJ does it). Otherwise the user would have to
+                // scroll up several screens in order to actually see the error messages.
+                // String usage = BuildArgParser.getUsage();
+                // MessageUtil.abort(handler, usage);
                 return false;
             }
             //System.err.println("errs: " + counter.hasErrors());          
@@ -166,14 +155,38 @@ public class AjdtCommand implements ICommand {
         return config;
     }
     
-    /** @return IMessage.WARNING unless message contains error or info */
+    /**
+     * Heuristically infer the type of output message logged by the AspectJ compiler. This is a simple keyword matcher
+     * looking for substrings like "[error]", "[warning]", "AspectJ-specific options:", "AspectJ-specific non-standard
+     * options:", "Warning options:".
+     *
+     * @param message AspectJ compiler message
+     * @return inferred message kind, either of ERROR, WARNING, USAGE, INFO
+     */
     protected static IMessage.Kind inferKind(String message) { // XXX dubious
-        if (message.contains("error")) {
-            return IMessage.ERROR;
-        } else if (message.contains("info")) {
-            return IMessage.INFO;
-        } else {
-            return IMessage.WARNING;
-        }
+      if (message.contains("[error]")) {
+        return IMessage.ERROR;
+      }
+      else if (message.contains("[warning]")) {
+        return IMessage.WARNING;
+      }
+      else if (
+        containsAll(message, "Usage: <options>", "AspectJ-specific options:", "Classpath options:") ||
+          containsAll(message, "Warning options:", "-nowarn", "localHiding", "uselessTypeCheck") ||
+          containsAll(message, "AspectJ-specific non-standard options:", "-XnoInline", "-Xjoinpoints:")
+      )
+      {
+        return IMessage.USAGE;
+      }
+      else {
+        return IMessage.INFO;
+      }
     }
+
+  private static boolean containsAll(String message, String... searchStrings) {
+    for (String searchString : searchStrings)
+      if (!message.contains(searchString))
+        return false;
+    return true;
+  }
 }

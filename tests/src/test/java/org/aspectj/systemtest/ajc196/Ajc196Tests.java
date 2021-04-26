@@ -22,11 +22,6 @@ public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
     runTest("early resolution of supporting interfaces");
   }
 
-  public void testRecords() {
-    runTest("simple record");
-    checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);
-  }
-
   public void testSwitch1() {
     runTest("switch 1");
     checkVersion("Switch1", Constants.MAJOR_14, 0);
@@ -41,8 +36,6 @@ public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
     runTest("switch 3");
     checkVersion("Switch3", Constants.MAJOR_14, 0);
   }
-
-  // ---
 
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc196Tests.class);

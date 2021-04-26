@@ -541,14 +541,14 @@ public aspect ComparablePoint {
         </para>
 
         <para>
-          The method <literal>Object.hashCode</literal> returns an 
+          The method <literal>Object.hashCode</literal> returns an
           integer, suitable for use as a hash table key.  It is not required
-          that two objects which are not equal (according to the 
+          that two objects which are not equal (according to the
           <literal>equals</literal> method) return different integer
           results from <literal>hashCode</literal> but it can
-          improve performance when the integer is used as a key into a 
-          data structure.  However, any two objects which are equal 
-          must return the same integer value from a call to 
+          improve performance when the integer is used as a key into a
+          data structure.  However, any two objects which are equal
+          must return the same integer value from a call to
           <literal>hashCode</literal>.  Since the default implementation
           of <literal>Object.equals</literal> returns <literal>true</literal>
           only when two objects are identical, we need to redefine both
@@ -851,7 +851,7 @@ aspect TraceMyClasses {
       </para>
 
 <programlisting><![CDATA[
-  ajc -argfile tracing/tracev1.lst
+ajc -argfile tracing/tracev1.lst
 ]]></programlisting>
 
       <para>
@@ -969,7 +969,7 @@ public aspect TraceMyClasses extends Trace {
       </para>
 
 <programlisting><![CDATA[
-  ajc -argfile tracing/tracev2.lst
+ajc -argfile tracing/tracev2.lst
 ]]></programlisting>
 
       <para>
@@ -1099,7 +1099,7 @@ abstract aspect Trace {
       </para>
 
       <para>
-        This example examines an aspect that makes Point objects into 
+        This example examines an aspect that makes Point objects into
         Java beans with bound properties.
       </para>
 
@@ -1190,10 +1190,10 @@ class Point {
         <literal>Point</literal>'s "beanness". The first thing it does is
         privately declare that each <literal>Point</literal> has a
         <literal>support</literal> field that holds reference to an
-        instance of <classname>PropertyChangeSupport</classname>.  
+        instance of <classname>PropertyChangeSupport</classname>.
 
 <programlisting><![CDATA[
-  private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
+private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 ]]></programlisting>
 
         The property change support object must be constructed with a
@@ -1210,24 +1210,24 @@ class Point {
         which delegate the work to the property change support object:
 
 <programlisting><![CDATA[
-  public void Point.addPropertyChangeListener(PropertyChangeListener listener){
-    support.addPropertyChangeListener(listener);
-  }
-  public void Point.addPropertyChangeListener(String propertyName,
-                                              PropertyChangeListener listener){
+public void Point.addPropertyChangeListener(PropertyChangeListener listener){
+  support.addPropertyChangeListener(listener);
+}
+public void Point.addPropertyChangeListener(String propertyName,
+                                            PropertyChangeListener listener){
 
-    support.addPropertyChangeListener(propertyName, listener);
-  }
-  public void Point.removePropertyChangeListener(String propertyName,
-                                                 PropertyChangeListener listener) {
-    support.removePropertyChangeListener(propertyName, listener);
-  }
-  public void Point.removePropertyChangeListener(PropertyChangeListener listener) {
-    support.removePropertyChangeListener(listener);
-  }
-  public void Point.hasListeners(String propertyName) {
-    support.hasListeners(propertyName);
-  }
+  support.addPropertyChangeListener(propertyName, listener);
+}
+public void Point.removePropertyChangeListener(String propertyName,
+                                               PropertyChangeListener listener) {
+  support.removePropertyChangeListener(propertyName, listener);
+}
+public void Point.removePropertyChangeListener(PropertyChangeListener listener) {
+  support.removePropertyChangeListener(listener);
+}
+public void Point.hasListeners(String propertyName) {
+  support.hasListeners(propertyName);
+}
 ]]></programlisting>
       </para>
 
@@ -1237,7 +1237,7 @@ class Point {
         <classname>Serializable</classname> interface:
 
 <programlisting><![CDATA[
-  declare parents: Point implements Serializable;
+declare parents: Point implements Serializable;
 ]]></programlisting>
 
         Implementing this interface in Java does not require any methods to
@@ -1254,7 +1254,7 @@ class Point {
         <literal>Y</literal> properties, calls the original
         <literal>set</literal> method and then fires the appropriate
         property change event according to which set method was
-        called. 
+        called.
       </para>
 
 <programlisting><![CDATA[
@@ -1323,33 +1323,33 @@ aspect BoundPoint {
       </para>
 
 <programlisting><![CDATA[
-  class Demo implements PropertyChangeListener {
+class Demo implements PropertyChangeListener {
 
-    static final String fileName = "test.tmp";
+  static final String fileName = "test.tmp";
 
-    public void propertyChange(PropertyChangeEvent e){
-      System.out.println("Property " + e.getPropertyName() + " changed from " +
-         e.getOldValue() + " to " + e.getNewValue() );
-    }
-
-    public static void main(String[] args){
-      Point p1 = new Point();
-      p1.addPropertyChangeListener(new Demo());
-      System.out.println("p1 =" + p1);
-      p1.setRectangular(5,2);
-      System.out.println("p1 =" + p1);
-      p1.setX( 6 );
-      p1.setY( 3 );
-      System.out.println("p1 =" + p1);
-      p1.offset(6,4);
-      System.out.println("p1 =" + p1);
-      save(p1, fileName);
-      Point p2 = (Point) restore(fileName);
-      System.out.println("Had: " + p1);
-      System.out.println("Got: " + p2);
-      }
-    ...
+  public void propertyChange(PropertyChangeEvent e){
+    System.out.println("Property " + e.getPropertyName() + " changed from " +
+       e.getOldValue() + " to " + e.getNewValue() );
   }
+
+  public static void main(String[] args){
+    Point p1 = new Point();
+    p1.addPropertyChangeListener(new Demo());
+    System.out.println("p1 =" + p1);
+    p1.setRectangular(5,2);
+    System.out.println("p1 =" + p1);
+    p1.setX( 6 );
+    p1.setY( 3 );
+    System.out.println("p1 =" + p1);
+    p1.offset(6,4);
+    System.out.println("p1 =" + p1);
+    save(p1, fileName);
+    Point p2 = (Point) restore(fileName);
+    System.out.println("Had: " + p1);
+    System.out.println("Got: " + p2);
+    }
+  ...
+}
 ]]></programlisting>
 
     </sect3>
@@ -1381,7 +1381,7 @@ java bean.Demo
 
       <para>
         This demo illustrates how the Subject/Observer design pattern can be
-        coded with aspects. 
+        coded with aspects.
       </para>
 
       <para>
@@ -1419,26 +1419,26 @@ java bean.Demo
       </para>
 
 <programlisting><![CDATA[
-    interface Subject {
-      void addObserver(Observer obs);
-      void removeObserver(Observer obs);
-      Vector getObservers();
-      Object getData();
-  }
+interface Subject {
+    void addObserver(Observer obs);
+    void removeObserver(Observer obs);
+    Vector getObservers();
+    Object getData();
+}
 ]]></programlisting>
 
-      <para> 
+      <para>
         The <classname>Observer</classname> interface is just as simple,
         with methods to set and get <classname>Subject</classname> objects,
         and a method to call when the subject gets updated.
       </para>
 
 <programlisting><![CDATA[
-  interface Observer {
-      void setSubject(Subject s);
-      Subject getSubject();
-      void update();
-  }
+interface Observer {
+    void setSubject(Subject s);
+    Subject getSubject();
+    void update();
+}
 ]]></programlisting>
 
       <para>
@@ -1449,32 +1449,32 @@ java bean.Demo
       </para>
 
 <programlisting><![CDATA[
-  abstract aspect SubjectObserverProtocol {
+abstract aspect SubjectObserverProtocol {
 
-      abstract pointcut stateChanges(Subject s);
+    abstract pointcut stateChanges(Subject s);
 
-      after(Subject s): stateChanges(s) {
-          for (int i = 0; i < s.getObservers().size(); i++) {
-              ((Observer)s.getObservers().elementAt(i)).update();
-          }
-      }
+    after(Subject s): stateChanges(s) {
+        for (int i = 0; i < s.getObservers().size(); i++) {
+            ((Observer)s.getObservers().elementAt(i)).update();
+        }
+    }
 
-      private Vector Subject.observers = new Vector();
-      public void   Subject.addObserver(Observer obs) {
-          observers.addElement(obs);
-          obs.setSubject(this);
-      }
-      public void   Subject.removeObserver(Observer obs) {
-          observers.removeElement(obs);
-          obs.setSubject(null);
-      }
-      public Vector Subject.getObservers() { return observers; }
+    private Vector Subject.observers = new Vector();
+    public void   Subject.addObserver(Observer obs) {
+        observers.addElement(obs);
+        obs.setSubject(this);
+    }
+    public void   Subject.removeObserver(Observer obs) {
+        observers.removeElement(obs);
+        obs.setSubject(null);
+    }
+    public Vector Subject.getObservers() { return observers; }
 
-      private Subject Observer.subject = null;
-      public void     Observer.setSubject(Subject s) { subject = s; }
-      public Subject  Observer.getSubject() { return subject; }
+    private Subject Observer.subject = null;
+    public void     Observer.setSubject(Subject s) { subject = s; }
+    public Subject  Observer.getSubject() { return subject; }
 
-  }
+}
 ]]></programlisting>
 
       <para>
@@ -1482,7 +1482,7 @@ java bean.Demo
         pointcut that extending aspects can override. It defines advice
         that should run after the join points of the pointcut. And it
         declares an inter-type field and two inter-type methods so that
-        each <literal>Observer</literal> can hold onto its <literal>Subject</literal>. 
+        each <literal>Observer</literal> can hold onto its <literal>Subject</literal>.
       </para>
     </sect3>
 
@@ -1497,28 +1497,28 @@ java bean.Demo
       </para>
 
 <programlisting><![CDATA[
-  class Button extends java.awt.Button {
+class Button extends java.awt.Button {
 
-      static final Color  defaultBackgroundColor = Color.gray;
-      static final Color  defaultForegroundColor = Color.black;
-      static final String defaultText = "cycle color";
+    static final Color  defaultBackgroundColor = Color.gray;
+    static final Color  defaultForegroundColor = Color.black;
+    static final String defaultText = "cycle color";
 
-      Button(Display display) {
-          super();
-          setLabel(defaultText);
-          setBackground(defaultBackgroundColor);
-          setForeground(defaultForegroundColor);
-          addActionListener(new ActionListener() {
-                  public void actionPerformed(ActionEvent e) {
-                      Button.this.click();
-                  }
-              });
-          display.addToFrame(this);
-      }
+    Button(Display display) {
+        super();
+        setLabel(defaultText);
+        setBackground(defaultBackgroundColor);
+        setForeground(defaultForegroundColor);
+        addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Button.this.click();
+                }
+            });
+        display.addToFrame(this);
+    }
 
-      public void click() {}
+    public void click() {}
 
-  }
+}
 ]]></programlisting>
 
       <para>
@@ -1531,24 +1531,24 @@ java bean.Demo
       </para>
 
 <programlisting><![CDATA[
-  class ColorLabel extends Label {
+class ColorLabel extends Label {
 
-      ColorLabel(Display display) {
-          super();
-          display.addToFrame(this);
-      }
+    ColorLabel(Display display) {
+        super();
+        display.addToFrame(this);
+    }
 
-      final static Color[] colors = {Color.red, Color.blue,
-                                     Color.green, Color.magenta};
-      private int colorIndex = 0;
-      private int cycleCount = 0;
-      void colorCycle() {
-          cycleCount++;
-          colorIndex = (colorIndex + 1) % colors.length;
-          setBackground(colors[colorIndex]);
-          setText("" + cycleCount);
-      }
-  }
+    final static Color[] colors = {Color.red, Color.blue,
+                                   Color.green, Color.magenta};
+    private int colorIndex = 0;
+    private int cycleCount = 0;
+    void colorCycle() {
+        cycleCount++;
+        colorIndex = (colorIndex + 1) % colors.length;
+        setBackground(colors[colorIndex]);
+        setText("" + cycleCount);
+    }
+}
 ]]></programlisting>
 
       <para>
@@ -1577,7 +1577,8 @@ aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
         target(s) &&
         call(void Button.click());
 
-}]]></programlisting>
+}
+]]></programlisting>
 
       <para>
         It does this by assuring that <classname>Button</classname> and
@@ -1594,7 +1595,7 @@ aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
     <sect3>
       <title>Compiling and Running</title>
 
-      <para> 
+      <para>
         <classname>Demo</classname> is the top class that starts this
         demo. It instantiates a two buttons and three observers and links
         them together as subjects and observers. So to run the demo, go to
@@ -1602,8 +1603,8 @@ aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
       </para>
 
 <programlisting><![CDATA[
-  ajc -argfile observer/files.lst
-  java observer.Demo
+ajc -argfile observer/files.lst
+java observer.Demo
 ]]></programlisting>
 
       </sect3>
@@ -1803,43 +1804,43 @@ public class Customer {
       </para>
 
 <programlisting><![CDATA[
-  abstract class Connection {
+abstract class Connection {
 
-      public static final int PENDING = 0;
-      public static final int COMPLETE = 1;
-      public static final int DROPPED = 2;
+    public static final int PENDING = 0;
+    public static final int COMPLETE = 1;
+    public static final int DROPPED = 2;
 
-      Customer caller, receiver;
-      private int state = PENDING;
+    Customer caller, receiver;
+    private int state = PENDING;
 
-      Connection(Customer a, Customer b) {
-          this.caller = a;
-          this.receiver = b;
-      }
+    Connection(Customer a, Customer b) {
+        this.caller = a;
+        this.receiver = b;
+    }
 
-      public int getState(){
-          return state;
-      }
+    public int getState(){
+        return state;
+    }
 
-      public Customer getCaller() { return caller; }
+    public Customer getCaller() { return caller; }
 
-      public Customer getReceiver() { return receiver; }
+    public Customer getReceiver() { return receiver; }
 
-      void complete() {
-          state = COMPLETE;
-          System.out.println("connection completed");
-      }
+    void complete() {
+        state = COMPLETE;
+        System.out.println("connection completed");
+    }
 
-      void drop() {
-          state = DROPPED;
-          System.out.println("connection dropped");
-      }
+    void drop() {
+        state = DROPPED;
+        System.out.println("connection dropped");
+    }
 
-      public boolean connects(Customer c){
-          return (caller == c || receiver == c);
-      }
+    public boolean connects(Customer c){
+        return (caller == c || receiver == c);
+    }
 
-  }
+}
 ]]></programlisting>
 
     </sect3>
@@ -1854,23 +1855,23 @@ public class Customer {
       </para>
 
 <programlisting><![CDATA[
-  class Local extends Connection {
-      Local(Customer a, Customer b) {
-          super(a, b);
-          System.out.println("[new local connection from " +
-             a + " to " + b + "]");
-      }
-  }
+class Local extends Connection {
+    Local(Customer a, Customer b) {
+        super(a, b);
+        System.out.println("[new local connection from " +
+           a + " to " + b + "]");
+    }
+}
 ]]></programlisting>
 
 <programlisting><![CDATA[
-  class LongDistance extends Connection {
-      LongDistance(Customer a, Customer b) {
-          super(a, b);
-          System.out.println("[new long distance connection from " +
-              a + " to " + b + "]");
-      }
-  }
+class LongDistance extends Connection {
+    LongDistance(Customer a, Customer b) {
+        super(a, b);
+        System.out.println("[new long distance connection from " +
+            a + " to " + b + "]");
+    }
+}
 ]]></programlisting>
 
       </sect3>
@@ -1913,22 +1914,22 @@ java telecom.BasicSimulation
         </para>
 
 <programlisting><![CDATA[
-  class Timer {
-      long startTime, stopTime;
+class Timer {
+    long startTime, stopTime;
 
-      public void start() {
-          startTime = System.currentTimeMillis();
-          stopTime = startTime;
-      }
+    public void start() {
+        startTime = System.currentTimeMillis();
+        stopTime = startTime;
+    }
 
-      public void stop() {
-          stopTime = System.currentTimeMillis();
-      }
+    public void stop() {
+        stopTime = System.currentTimeMillis();
+    }
 
-      public long getTime() {
-          return stopTime - startTime;
-      }
-  }
+    public long getTime() {
+        return stopTime - startTime;
+    }
+}
 ]]></programlisting>
 
         </sect4>
@@ -1963,14 +1964,14 @@ public aspect TimerLog {
 
         <para>
           The <classname>Timing</classname> aspect is declares an
-          inter-type field <literal>totalConnectTime</literal> for 
+          inter-type field <literal>totalConnectTime</literal> for
           <classname>Customer</classname> to store the accumulated connection
           time per <classname>Customer</classname>.  It also declares that
-          each <classname>Connection</classname> object has a timer. 
+          each <classname>Connection</classname> object has a timer.
 
 <programlisting><![CDATA[
-    public long Customer.totalConnectTime = 0;
-    private Timer Connection.timer = new Timer();
+public long Customer.totalConnectTime = 0;
+private Timer Connection.timer = new Timer();
 ]]></programlisting>
 
           Two pieces of after advice ensure that the timer is started when
@@ -2029,7 +2030,7 @@ public aspect Timing {
         runs after <classname>Timing</classname>'s advice on the same join
         point.  Finally, it declares inter-type methods and fields for
         <classname>Customer</classname> to handle the
-        <literal>totalCharge</literal>. 
+        <literal>totalCharge</literal>.
       </para>
 
 <programlisting><![CDATA[
@@ -2097,10 +2098,10 @@ public aspect Billing {
       </para>
 
 <programlisting><![CDATA[
-  protected void report(Customer c){
-      Timing t = Timing.aspectOf();
-      System.out.println(c + " spent " + t.getTotalConnectTime(c));
-  }
+protected void report(Customer c){
+    Timing t = Timing.aspectOf();
+    System.out.println(c + " spent " + t.getTotalConnectTime(c));
+}
 ]]></programlisting>
       </sect3>
 
@@ -2115,8 +2116,8 @@ public aspect Billing {
       </para>
 
 <programlisting><![CDATA[
-  ajc -argfile telecom/timing.lst
-  java telecom.TimingSimulation
+ajc -argfile telecom/timing.lst
+java telecom.TimingSimulation
 ]]></programlisting>
 
       <para>
@@ -2125,8 +2126,8 @@ public aspect Billing {
       </para>
 
 <programlisting><![CDATA[
-  ajc -argfile telecom/billing.lst
-  java telecom.BillingSimulation
+ajc -argfile telecom/billing.lst
+java telecom.BillingSimulation
 ]]></programlisting>
 
       </sect3>
@@ -2199,8 +2200,8 @@ public aspect Billing {
 	</para>
 
 <programlisting><![CDATA[
-  public static void traceEntry(String str);
-  public static void traceExit(String str);
+public static void traceEntry(String str);
+public static void traceExit(String str);
 ]]></programlisting>
 
 	<para>
@@ -2210,7 +2211,7 @@ public aspect Billing {
 	</para>
 
 <programlisting><![CDATA[
-  Trace.traceEntry("Square.distance in " + toString());
+Trace.traceEntry("Square.distance in " + toString());
 ]]></programlisting>
 
 	<para>
@@ -2219,8 +2220,8 @@ public aspect Billing {
 	</para>
 
 <programlisting><![CDATA[
-  public static void traceEntry(String str, Object obj);
-  public static void traceExit(String str, Object obj);
+public static void traceEntry(String str, Object obj);
+public static void traceExit(String str, Object obj);
 ]]></programlisting>
 
 	<para>
@@ -2230,7 +2231,7 @@ public aspect Billing {
 	</para>
 
 <programlisting><![CDATA[
-  Trace.traceEntry("Square.distance", this);
+Trace.traceEntry("Square.distance", this);
 ]]></programlisting>
 
 	<para>

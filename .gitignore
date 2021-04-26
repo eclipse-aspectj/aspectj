@@ -30,3 +30,17 @@ log.txt
 
 # No idea where these come from
 bin/
+
+# Downloaded libraries used during tests
+/lib/ant/
+/lib/commons/
+/lib/docbook/
+/lib/jarjar/
+/lib/jdtcore-aj/
+/lib/junit/
+/lib/regexp/
+/lib/saxon/
+
+# When using a RAM disk to speed up development, see how-to in docs/developer/ram-disk/settings-ramdisk.xml
+/.mvn/maven.config
+/.mvn/settings-ramdisk.xml

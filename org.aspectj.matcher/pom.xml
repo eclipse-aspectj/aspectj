@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>org.aspectj.matcher</artifactId>
-  <packaging>jar</packaging>
-  <name>org.aspectj.matcher</name>
 
   <dependencies>
     <dependency>
@@ -28,23 +26,20 @@
       <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons</groupId>
-      <artifactId>commons</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>${lib.commons.logging.version}</version>
     </dependency>
   </dependencies>
-
 
   <build>
     <plugins>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
        <executions>
          <execution>
            <goals>

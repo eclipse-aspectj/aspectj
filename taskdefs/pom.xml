@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>taskdefs</artifactId>
-  <packaging>jar</packaging>
-  <name>taskdefs</name>
 
   <dependencies>
     <dependency>
@@ -35,25 +33,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xml-apis.jar</systemPath>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
     <dependency>
-      <groupId>xercesImpl</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xercesImpl.jar</systemPath>
-    </dependency>
-    <dependency>
+      <!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
       <groupId>ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
+      <version>${lib.ant.version}</version>
     </dependency>
   </dependencies>
 </project>

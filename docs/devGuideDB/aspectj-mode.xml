@@ -118,7 +118,7 @@
     	  <entry>M-x aspectj-jump-menu (C-x C-j)</entry>
     	  <entry>
     	    Display popup menu of advisers, advisees, and inter-type declarations.
-    	    Navigate to item by selecting with mouse 
+    	    Navigate to item by selecting with mouse
             (see <link linkend="aspectjmodescreenshot2">figure</link> below).
     	  </entry>
     	</row>
@@ -208,9 +208,10 @@
     	The files in this package need to be in the load-path and
     	``required''. For example, for the 1.0 release:
     	<programlisting>
-    	  ;; I keep my emacs packages in C:/Emacs
-    	  (setq load-path (cons "C:/Emacs/aspectj-emacsMode-1.0" load-path))
-    	  (require 'aspectj-mode)</programlisting>
+;; I keep my emacs packages in C:/Emacs
+(setq load-path (cons "C:/Emacs/aspectj-emacsMode-1.0" load-path))
+(require 'aspectj-mode)
+      </programlisting>
           </para>
         </listitem>
 
@@ -329,17 +330,17 @@ Error in init file: File error: "Cannot open load file", "aspectj-mode"
 
       <listitem>
         <para><emphasis>Symptom</emphasis>: When trying to get a jump menu,
-       I get the message "No crosscut elements at point" even though 
+       I get the message "No crosscut elements at point" even though
        there is a [list] on the same line.
         </para>
 
         <para>The caret (point) is probably on or after the list.
-        To see the crosscut elements you need to hit the jump menu 
-        on the same line that the annotated elements appear as a list 
-        of items surrounded by '[' and ']' on the same line as the 
-        affected declaration.  If the caret is on the same line as the 
-        elements and before the list (i.e. not at the end of the 
-        list of elements) the jump menu should work. 
+        To see the crosscut elements you need to hit the jump menu
+        on the same line that the annotated elements appear as a list
+        of items surrounded by '[' and ']' on the same line as the
+        affected declaration.  If the caret is on the same line as the
+        elements and before the list (i.e. not at the end of the
+        list of elements) the jump menu should work.
         </para>
       </listitem>
     </itemizedlist>

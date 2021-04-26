@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>weaver</artifactId>
-  <packaging>jar</packaging>
-  <name>weaver</name>
 
   <dependencies>
     <dependency>
@@ -26,13 +24,9 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -51,11 +45,6 @@
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>runtime</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
       <artifactId>org.aspectj.matcher</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
@@ -67,18 +56,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons</groupId>
-      <artifactId>commons</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/asm/asm-8.0.1.renamed.jar</systemPath>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -10,8 +10,6 @@
   </parent>
 
   <artifactId>testing</artifactId>
-  <packaging>jar</packaging>
-  <name>testing</name>
 
   <dependencies>
     <dependency>
@@ -22,16 +20,6 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>bridge</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>ajde</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -53,6 +41,10 @@
       <groupId>org.aspectj</groupId>
       <artifactId>bcel-builder</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>asm-renamed</artifactId>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -85,25 +77,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>jdiff</groupId>
-      <artifactId>jdiff</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/jdiff/jdiff.jar</systemPath>
-    </dependency>
-    <dependency>
+      <!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
       <groupId>ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/regexp/jakarta-regexp-1.2.jar</systemPath>
+      <version>${lib.ant.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -118,37 +95,25 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>xercesImpl</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xercesImpl.jar</systemPath>
+      <!-- Identical to lib/ant/lib/xml-apis.jar, a former system-scoped dependency -->
+      <groupId>xerces</groupId>
+      <artifactId>xmlParserAPIs</artifactId>
+      <version>${lib.ant.xerces.version}</version>
     </dependency>
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/xml-apis.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13</version>
-    </dependency>
-    <dependency>
-      <groupId>commons</groupId>
-      <artifactId>commons</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/commons/commons.jar</systemPath>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>${lib.commons.digester.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../org.eclipse.jdt.core/jdtcore-for-aspectj.jar</systemPath>
+      <artifactId>ajdoc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>${lib.commons.logging.version}</version>
     </dependency>
   </dependencies>
 
@@ -157,7 +122,6 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
        <executions>
          <execution>
            <goals>

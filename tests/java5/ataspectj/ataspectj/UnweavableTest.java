@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution and is available at
+ * http://eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -18,15 +18,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.security.ProtectionDomain;
 import java.io.Serializable;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.AnnotationVisitor;
+import aj.org.objectweb.asm.ClassWriter;
+import aj.org.objectweb.asm.Opcodes;
+import aj.org.objectweb.asm.MethodVisitor;
+import aj.org.objectweb.asm.AnnotationVisitor;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -40,8 +39,8 @@ public class UnweavableTest extends TestCase {
         assertEquals(1, TestAspect.I);
     }
 
-    static interface ISome {
-        public int giveOne();
+    interface ISome {
+        int giveOne();
     }
 
     ISome getProxy() {
@@ -50,7 +49,7 @@ public class UnweavableTest extends TestCase {
                 new Class[]{ISome.class},
                 new InvocationHandler() {
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return new Integer(1);
+                        return 1;
                     }
                 }
         );
@@ -84,17 +83,17 @@ public class UnweavableTest extends TestCase {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    static @interface ASome {}
+    @interface ASome {}
 
     ISome getJit() {
-        ClassWriter cw = new ClassWriter(true, true);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "ataspectj/ISomeGen", null, "java/lang/Object", new String[]{"ataspectj/UnweavableTest$ISome"});
         AnnotationVisitor av = cw.visitAnnotation("Lataspectj/UnweavableTest$ASome;", true);
         av.visitEnd();
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, new String[0]);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(0, 0);
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "giveOne", "()I", null, new String[0]);
@@ -105,10 +104,10 @@ public class UnweavableTest extends TestCase {
 
         try {
             ClassLoader loader = this.getClass().getClassLoader();
-            Method def = ClassLoader.class.getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class, int.class, int.class});
+            Method def = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             def.setAccessible(true);
-            Class gen = (Class) def.invoke(loader, "ataspectj.ISomeGen", cw.toByteArray(), 0, cw.toByteArray().length);
-            return (ISome) gen.newInstance();
+            Class<?> gen = (Class<?>) def.invoke(loader, "ataspectj.ISomeGen", cw.toByteArray(), 0, cw.toByteArray().length);
+            return (ISome) gen.getDeclaredConstructor().newInstance();
         } catch (Throwable t) {
             fail(t.toString());
             return null;
@@ -116,22 +115,22 @@ public class UnweavableTest extends TestCase {
     }
 
     Serializable getJitNoMatch() {
-        ClassWriter cw = new ClassWriter(true, true);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "ataspectj/unmatched/Gen", null, "java/lang/Object", new String[]{"java/io/Serializable"});
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, new String[0]);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(0, 0);
         cw.visitEnd();
 
         try {
             ClassLoader loader = this.getClass().getClassLoader();
-            Method def = ClassLoader.class.getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class, int.class, int.class});
+            Method def = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             def.setAccessible(true);
-            Class gen = (Class) def.invoke(loader, "ataspectj.unmatched.Gen", cw.toByteArray(), 0, cw.toByteArray().length);
-            return (Serializable) gen.newInstance();
+            Class<?> gen = (Class<?>) def.invoke(loader, "ataspectj.unmatched.Gen", cw.toByteArray(), 0, cw.toByteArray().length);
+            return (Serializable) gen.getDeclaredConstructor().newInstance();
         } catch (Throwable t) {
             fail(t.toString());
             return null;
@@ -147,7 +146,7 @@ public class UnweavableTest extends TestCase {
         }
     }
 
-    public static void main(String args[]) throws Throwable {
+    public static void main(String[] args) throws Throwable {
         TestHelper.runAndThrowOnFailure(suite());
     }
 

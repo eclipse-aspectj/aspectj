@@ -1,29 +1,29 @@
 <chapter id="trace" xreflabel="Tracing">
     <title>Tracing</title>
-    
+
     <sect1 id="trace-introduction">
         <title>Introduction</title>
-        
-        <para> 
+
+        <para>
             The AspectJ developers have instrumented the compiler/weaver with
             many "trace" messages for their own debugging use.  These remain in
-            the production releases because tracing helps when it is hard to 
+            the production releases because tracing helps when it is hard to
             isolate the problem in a test case.  This sections describes how
             to enable tracing so you can provide trace information on bug reports.
-        </para> 
-        <para> 
-            The usual approach to opening a report on Bugzilla is to describe the symptoms of the 
+        </para>
+        <para>
+            The usual approach to opening a report on Bugzilla is to describe the symptoms of the
         problem and attach a simple testcase. This allows the AspectJ team to try and reproduce the problem in
         an attempt to fix it as well as improve the test suite. Unfortunately it may not be possible
-        to produce such a testcase either because your program is too large or is commercially sensitive. Alternatively 
+        to produce such a testcase either because your program is too large or is commercially sensitive. Alternatively
         the problem may relate to your specific environment where AspectJ is being used and will not be
         reproducible by the AspectJ team. In each of these situations you can produce a
         trace of the compiler when the problem occurs instead. This can then be attached to the bug report. </para>
 
         <sect2 id="trace-configuration" xreflabel="Configuring Tracing">
             <title>Configuring Tracing</title>
-        
-            <para> When available (Java 5 or later) AspectJ will use the 
+
+            <para> When available (Java 5 or later) AspectJ will use the
             <ulink url="http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html">
             java.util.logging</ulink> infrastructure
             configured using a <literal>logging.properties</literal> file. By default only error
@@ -31,14 +31,14 @@
             method entry and exit events can be obtained using the appropriate configuration. All
             regular compiler messages can also be logged through the infrastructure by setting the
             <literal>org.aspectj.weaving.messages</literal> System property. </para>
-            
-            <para> If you are running the AspectJ compiler/weaver under JDK 1.4 or earlier, 
+
+            <para> If you are running the AspectJ compiler/weaver under JDK 1.4 or earlier,
                 AspectJ will use a simple built-in trace
-            infrastructure that logs to stderr. This is enabled by setting the 
+            infrastructure that logs to stderr. This is enabled by setting the
             <literal>org.aspectj.weaving.tracing.enabled</literal> System property. You may also override
             the default behaviour or provide your own trace implementation using the
             <literal>org.aspectj.weaving.tracing.factory</literal> System property. </para>
-            
+
             <para> The table below lists the System properties that can be used to configure tracing. </para>
             <informaltable>
                 <tgroup cols="2">
@@ -73,10 +73,10 @@
                             </entry>
                             <entry>
                             	Select trace infrastructure. Specify the fully qualified class name
-                            	of the <literal>org.aspectj.weaver.tools.TraceFactory</literal> 
+                            	of the <literal>org.aspectj.weaver.tools.TraceFactory</literal>
                             	interface to use a custom infrastructure. Specify a value of
                             	<literal>default</literal> to force AspectJ to use it's
-                            	built-in infrastructure. 
+                            	built-in infrastructure.
                             </entry>
                         </row>
                         <row>
@@ -97,68 +97,68 @@
 
         <sect2 id="trace-examples" xreflabel="trace-examples">
             <title>Examples</title>
-        
+
             <para> Using <literal>-Dorg.aspectj.tracing.factory=default</literal>
             	to force AspectJ to use its internal infrastructure,
-            	<literal>-Dorg.aspectj.tracing.enabled=true</literal> to turn it on and  
+            	<literal>-Dorg.aspectj.tracing.enabled=true</literal> to turn it on and
             	<literal>-Dorg.aspectj.tracing.messages=true</literal> to include messages
             	running a simple HelloWorld with LTW will generate tracing to stderr. Below
-            	is an extract from that trace with method arguments removed. 
+            	is an extract from that trace with method arguments removed.
             	You will notice the millisecond time stamp,
             	thread id and indication of entry/exit/event or message type for each line
             	of trace.
             </para>
 	        <programlisting><![CDATA[
-15:44:18.630 main > org.aspectj.weaver.loadtime.Aj.<init> 
+15:44:18.630 main > org.aspectj.weaver.loadtime.Aj.<init>
 15:44:18.660 main < org.aspectj.weaver.loadtime.Aj.<init>
 15:44:18.660 main > org.aspectj.weaver.loadtime.Aj.preProcess
 15:44:18.660 main - org.aspectj.weaver.loadtime.Aj.preProcess
 15:44:18.730 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.<init>
 15:44:18.730 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.<init>
-15:44:18.730 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.initialize 
+15:44:18.730 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.initialize
 15:44:18.821 main I [AppClassLoader@92e78c] info AspectJ Weaver Version DEVELOPMENT ...
 15:44:18.821 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions
 15:44:18.821 main I [AppClassLoader@92e78c] info register classloader ...
-15:44:18.821 main - org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions 
-15:44:18.841 main - org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions 
+15:44:18.821 main - org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions
+15:44:18.841 main - org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions
 15:44:18.841 main I [AppClassLoader@92e78c] info using configuration ...
-15:44:18.891 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions 
+15:44:18.891 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.parseDefinitions
 15:44:19.021 main > org.aspectj.weaver.World$TypeMap.<init>
 15:44:19.021 main < org.aspectj.weaver.World$TypeMap.<init>
 15:44:19.021 main > org.aspectj.weaver.CrosscuttingMembersSet.<init>
 15:44:19.021 main < org.aspectj.weaver.CrosscuttingMembersSet.<init>
 15:44:19.021 main > org.aspectj.weaver.Lint.<init>
 15:44:19.021 main < org.aspectj.weaver.Lint.<init>
-15:44:19.021 main > org.aspectj.weaver.World.<init> 
+15:44:19.021 main > org.aspectj.weaver.World.<init>
 15:44:19.111 main < org.aspectj.weaver.World.<init>
-15:44:19.201 main > org.aspectj.weaver.bcel.BcelWeaver.<init> 
+15:44:19.201 main > org.aspectj.weaver.bcel.BcelWeaver.<init>
 15:44:19.201 main < org.aspectj.weaver.bcel.BcelWeaver.<init>
-15:44:19.201 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerDefinitions 
-15:44:19.211 main > org.aspectj.weaver.bcel.BcelWeaver.setReweavableMode 
+15:44:19.201 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerDefinitions
+15:44:19.211 main > org.aspectj.weaver.bcel.BcelWeaver.setReweavableMode
 15:44:19.351 main < org.aspectj.weaver.bcel.BcelWeaver.setReweavableMode
-15:44:19.351 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerAspects 
+15:44:19.351 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerAspects
 15:44:19.351 main I [AppClassLoader@92e78c] info register aspect Aspect
-15:44:19.351 main > org.aspectj.weaver.bcel.BcelWeaver.addLibraryAspect 
-15:44:19.501 main - org.aspectj.weaver.bcel.BcelWorld.lookupJavaClass 
-15:44:19.632 main > org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect 
-15:44:19.792 main < org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect 
-15:44:19.792 main < org.aspectj.weaver.bcel.BcelWeaver.addLibraryAspect 
-15:44:19.792 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerAspects 
-15:44:19.792 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerDefinitions 
-15:44:19.792 main > org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave 
+15:44:19.351 main > org.aspectj.weaver.bcel.BcelWeaver.addLibraryAspect
+15:44:19.501 main - org.aspectj.weaver.bcel.BcelWorld.lookupJavaClass
+15:44:19.632 main > org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect
+15:44:19.792 main < org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect
+15:44:19.792 main < org.aspectj.weaver.bcel.BcelWeaver.addLibraryAspect
+15:44:19.792 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerAspects
+15:44:19.792 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.registerDefinitions
+15:44:19.792 main > org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave
 15:44:19.822 main < org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave
 15:44:19.822 main > org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.weaveAndDefineConcete...
 15:44:19.822 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.weaveAndDefineConcete...
-15:44:19.822 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.initialize 
-15:44:19.822 main > org.aspectj.weaver.tools.WeavingAdaptor.weaveClass 
-...            
-			]]></programlisting>
-        
+15:44:19.822 main < org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor.initialize
+15:44:19.822 main > org.aspectj.weaver.tools.WeavingAdaptor.weaveClass
+...
+]]></programlisting>
+
             <para> Alternatively when running under Java 5 the <literal>logging.properties</literal>
             	file below could be used to configure Java Logging. The resulting
-            	file, just containing trace for the 
+            	file, just containing trace for the
             	<literal>org.aspectj.weaver.loadtime</literal> package, will be
-            	written to <literal>java0.log</literal> in your <literal>user.home</literal> directory. 
+            	written to <literal>java0.log</literal> in your <literal>user.home</literal> directory.
             </para>
 
 	        <programlisting><![CDATA[
@@ -172,15 +172,15 @@ java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
 java.util.logging.FileHandler.level = FINER
 
 org.aspectj.weaver.loadtime.level = FINER
-			]]></programlisting>
-        
-            <para> 
+]]></programlisting>
+
+            <para>
             	By setting the System property <literal>-Dorg.aspectj.tracing.debug=true</literal>
             	you should see a message confirming which trace infrastructure is being used.
             </para>
 	        <programlisting><![CDATA[
-	TraceFactory.instance=org.aspectj.weaver.tools.Jdk14TraceFactory@12dacd1	        
-			]]></programlisting>
+TraceFactory.instance=org.aspectj.weaver.tools.Jdk14TraceFactory@12dacd1
+]]></programlisting>
         </sect2>
     </sect1>
 </chapter>

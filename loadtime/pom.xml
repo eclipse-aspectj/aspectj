@@ -10,15 +10,8 @@
 	</parent>
 
 	<artifactId>loadtime</artifactId>
-	<packaging>jar</packaging>
-	<name>loadtime</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>asm</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>bridge</artifactId>
@@ -46,67 +39,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
+			<artifactId>asm-renamed</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
 			<artifactId>testing-util</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>bcel-builder</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>xml-apis</groupId>
-			<artifactId>xml-apis</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/xml-apis.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>xercesImpl</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ant/lib/xercesImpl.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>jrockit</groupId>
-			<artifactId>jrockit</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../lib/ext/jrockit/jrockit.jar</systemPath>
-		</dependency>
-		
-    <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../lib/ant/lib/ant.jar</systemPath>
-    </dependency>
 	</dependencies>
 
-<!-- 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-				</configuration>
-				<executions>
-					<execution>
-						<id>javadoc</id>
-						<phase>package</phase>
-						<goals>
-							<goal>javadoc</goal>
-						</goals>
-						<configuration>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
--->
 </project>

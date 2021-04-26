@@ -49,7 +49,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 	
 	private ClassLoaderRepository setupRepository() throws Exception {
     	ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		ClassLoader res = new URLClassLoader(new URL[]{f.toURL()},cl);
+		ClassLoader res = new URLClassLoader(new URL[]{f.toURI().toURL()},cl);
 		ClassLoaderRepository rep = new ClassLoaderRepository(res);
 		return rep;
 	}
