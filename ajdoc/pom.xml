@@ -18,7 +18,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
           <usedDependencies>
-            <!-- The tests need this during runtime, even though no direct usage is in our classes -->
+            <!-- The tests need these during runtime, even though no direct usage is in our classes -->
             <usedDependency>com.github.olivergondza:maven-jdk-tools-wrapper</usedDependency>
           </usedDependencies>
         </configuration>
@@ -27,6 +27,7 @@
   </build>
 
   <dependencies>
+
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>util</artifactId>
@@ -48,12 +49,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <!-- enables easy dependency on tools.jar -->
-      <groupId>com.github.olivergondza</groupId>
-      <artifactId>maven-jdk-tools-wrapper</artifactId>
-      <version>0.1</version>
-    </dependency>
-    <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>asm-renamed</artifactId>
     </dependency>
@@ -62,6 +57,17 @@
       <artifactId>testing-util</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <!--
+      The tests need these during runtime, even though no direct usage is in our classes.
+      See also 'usedDependencies' in maven-dependency-plugin configuration.
+    -->
+    <dependency>
+      <!-- enables easy dependency on tools.jar -->
+      <groupId>com.github.olivergondza</groupId>
+      <artifactId>maven-jdk-tools-wrapper</artifactId>
+      <version>0.1</version>
     </dependency>
 
   </dependencies>
