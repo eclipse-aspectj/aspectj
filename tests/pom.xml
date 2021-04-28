@@ -12,6 +12,7 @@
 	<artifactId>tests</artifactId>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>util</artifactId>
@@ -83,13 +84,18 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!--
+			The tests need these during runtime, even though no direct usage is in our classes.
+			See also 'usedDependencies' in maven-dependency-plugin configuration.
+		-->
 		<dependency>
-			<!-- Identical to lib/ant/lib/ant-launcher.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant-launcher</artifactId>
 			<version>${lib.ant.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -110,7 +116,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<configuration>
 					<usedDependencies>
-						<!-- The tests need this during runtime, even though no direct usage is in our classes -->
+						<!-- The tests need these during runtime, even though no direct usage is in our classes -->
 						<usedDependency>ant:ant-launcher</usedDependency>
 					</usedDependencies>
 				</configuration>
