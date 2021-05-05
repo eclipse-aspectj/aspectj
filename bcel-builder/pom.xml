@@ -11,4 +11,12 @@
 
 	<artifactId>bcel-builder</artifactId>
 
+	<dependencies>
+		<dependency>
+			<!-- All modules referencing files inside 'lib' need this dependency -->
+			<groupId>org.aspectj</groupId>
+			<artifactId>lib</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>

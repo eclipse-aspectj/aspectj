@@ -87,6 +87,15 @@
         </plugins>
 
       </build>
+
+      <dependencies>
+        <dependency>
+          <!-- All modules referencing files inside 'lib' need this dependency -->
+          <groupId>org.aspectj</groupId>
+          <artifactId>lib</artifactId>
+        </dependency>
+      </dependencies>
+
     </profile>
   </profiles>
 

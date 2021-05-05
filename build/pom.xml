@@ -13,6 +13,11 @@
 
 	<dependencies>
 		<dependency>
+			<!-- All modules referencing files inside 'lib' need this dependency -->
+			<groupId>org.aspectj</groupId>
+			<artifactId>lib</artifactId>
+		</dependency>
+		<dependency>
 			<!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>

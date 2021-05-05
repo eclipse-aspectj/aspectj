@@ -11,4 +11,13 @@
 
   <artifactId>util</artifactId>
 
+  <dependencies>
+    <dependency>
+      <!-- All modules referencing files inside 'lib' need this dependency -->
+      <groupId>org.aspectj</groupId>
+      <artifactId>lib</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
 </project>
