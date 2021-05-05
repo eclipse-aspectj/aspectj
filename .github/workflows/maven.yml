@@ -31,9 +31,6 @@ jobs:
           ./mvnw -B --version
           ant -version
 
-      - name: Download + install test libraries
-        run: ./mvnw -B --settings .mvn/settings-read-github-packages.xml --file lib/pom.xml compile
-
       - name: Compile + package code
         run: ./mvnw -B --settings .mvn/settings-read-github-packages.xml --file pom.xml -DskipTests package
 
