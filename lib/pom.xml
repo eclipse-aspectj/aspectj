@@ -708,7 +708,7 @@
         <executions>
           <execution>
             <id>enforce-libraries-exist</id>
-            <phase>process-resources</phase>
+            <phase>compile</phase>
             <goals>
               <goal>enforce</goal>
             </goals>
