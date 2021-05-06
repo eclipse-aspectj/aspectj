@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>aspectjtools</artifactId>
-	<name>AspectJ Compiler</name>
+	<name>AspectJ Tools (Compiler)</name>
 
 	<build>
 		<plugins>

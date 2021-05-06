@@ -12,7 +12,6 @@
 
   <artifactId>lib</artifactId>
 
-  <name>AspectJ Test Libraries</name>
   <description>
     This module downloads + installs libraries used by many tests, especially those running as Ant jobs. You should not
     build this module during every build because it is somewhat slow, downloading stuff from 3rd-party websites,
