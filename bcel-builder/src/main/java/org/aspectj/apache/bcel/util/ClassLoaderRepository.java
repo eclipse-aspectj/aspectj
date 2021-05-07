@@ -98,10 +98,10 @@ public class ClassLoaderRepository implements Repository {
 
 	//Cache not found classes as well to prevent unnecessary file I/O operations
 	public static final boolean useUnavailableClassesCache =
-		System.getProperty("org.aspectj.apache.bcel.useUnavailableClassesCache", "true").equalsIgnoreCase("true");
+		System.getProperty("org.aspectj.apache.bcel.useUnavailableClassesCache", "false").equalsIgnoreCase("true");
 	//Ignore cache clear requests to not build up the cache over and over again
 	public static final boolean ignoreCacheClearRequests =
-		System.getProperty("org.aspectj.apache.bcel.ignoreCacheClearRequests", "true").equalsIgnoreCase("true");
+		System.getProperty("org.aspectj.apache.bcel.ignoreCacheClearRequests", "false").equalsIgnoreCase("true");
 
 	//Second cache for the unavailable classes
 	private static Set<String> unavailableClasses = new HashSet<String>();
@@ -349,7 +349,9 @@ public class ClassLoaderRepository implements Repository {
 			classesLoadedCount++;
 			return clazz;
 		} catch (IOException e) {
-			unavailableClasses.add(className);
+			if (useUnavailableClassesCache) {
+				unavailableClasses.add(className);
+			}
 			throw new ClassNotFoundException(e.toString());
 		}
 	}
