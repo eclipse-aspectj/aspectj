@@ -50,7 +50,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 
 	//Use single instance of Repository and ClassLoader
 	public static final boolean useSingleInstances =
-		System.getProperty("org.aspectj.apache.bcel.useSingleRepositoryInstance", "true").equalsIgnoreCase("true");
+		System.getProperty("org.aspectj.apache.bcel.useSingleRepositoryInstance", "false").equalsIgnoreCase("true");
 
 	static {
 		try {
@@ -76,13 +76,13 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			if (useSingleInstances && staticBcelRepository == null)
 				staticBcelRepository = new ClassLoaderRepository(getClassLoader());
 			else
-				this.bcelRepository = new ClassLoaderRepository(getClassLoader());
+				this.bcelRepository = new ClassLoaderRepository(classLoaderRef);
 		}
 		else {
 			if (useSingleInstances && staticBcelRepository == null)
 				staticBcelRepository = new NonCachingClassLoaderRepository(getClassLoader());
 			else
-				this.bcelRepository = new NonCachingClassLoaderRepository(getClassLoader());
+				this.bcelRepository = new NonCachingClassLoaderRepository(classLoaderRef);
 		}
 	}
 
