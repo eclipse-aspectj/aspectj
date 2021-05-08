@@ -13,6 +13,11 @@
 	<artifactId>aspectjtools</artifactId>
 	<name>AspectJ Compiler</name>
 
+	<properties>
+		<!-- By default, do not deploy artifacts - but deploy this public one -->
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
+
 	<build>
 		<plugins>
 

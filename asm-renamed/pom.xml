@@ -41,6 +41,11 @@
     the binaries. IDEA will just stop looking at the local Maven repository in this case.
   </description>
 
+  <properties>
+    <!-- By default, do not deploy artifacts - but deploy this one used by the main build -->
+    <maven.deploy.skip>false</maven.deploy.skip>
+  </properties>
+
   <distributionManagement>
     <repository>
       <id>github</id>
