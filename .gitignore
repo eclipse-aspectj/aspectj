@@ -31,7 +31,8 @@ log.txt
 # No idea where these come from
 bin/
 
-# Downloaded libraries used during tests
+# Downloaded libraries used during tests + marker file
+/lib/provisioned.marker
 /lib/ant/
 /lib/commons/
 /lib/docbook/

@@ -12,7 +12,6 @@
 
   <artifactId>lib</artifactId>
 
-  <name>AspectJ Test Libraries</name>
   <description>
     This module downloads + installs libraries used by many tests, especially those running as Ant jobs. You should not
     build this module during every build because it is somewhat slow, downloading stuff from 3rd-party websites,
@@ -33,626 +32,719 @@
   <!-- TODO: Add lib (for now, then finally lib) to .gitignore -->
 
   <properties>
+    <lib.provisioned.marker>provisioned.marker</lib.provisioned.marker>
     <lib.ant.name>apache-ant</lib.ant.name>
     <lib.ant.artifact>${lib.ant.name}-${lib.ant.version}</lib.ant.artifact>
   </properties>
 
+  <profiles>
+
+    <!-- Profile for provisioning - i.e. downloading and (un)zipping - libraries needed during the build -->
+    <profile>
+      <id>provision-libs</id>
+
+      <!-- If marker file is missing, activate profile and provision all libraries -->
+      <activation>
+        <file>
+          <missing>${lib.provisioned.marker}</missing>
+        </file>
+      </activation>
+
+      <build>
+        <plugins>
+
+          <!-- Download libraries + source code which are unavailable in Maven repositories like Maven Central -->
+          <plugin>
+            <groupId>com.googlecode.maven-download-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>1.6.3</version>
+            <executions>
+              <execution>
+                <id>download-ant-binaries</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://archive.apache.org/dist/ant/binaries/${lib.ant.artifact}-bin.zip</url>
+                  <outputDirectory>ant</outputDirectory>
+                  <sha1>3fa9f816a0c4c63249efad8e6225f2e83794f0c0</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-ant-sources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://archive.apache.org/dist/ant/source/${lib.ant.artifact}-src.zip</url>
+                  <outputDirectory>ant</outputDirectory>
+                  <sha1>b9f3c8c31bb6c9069ad5b655059a17769af12f20</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-beanutils-sources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://github.com/apache/commons-beanutils/archive/refs/tags/${lib.commons.beanutils.tag}.zip</url>
+                  <outputDirectory>commons</outputDirectory>
+                  <outputFileName>commons-beanutils-${lib.commons.beanutils.version}-sources.jar</outputFileName>
+                  <sha1>b2c02afe7e6475cd7c811932b8415d171a8afa00</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-collections-sources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://github.com/apache/commons-collections/archive/refs/tags/${lib.commons.collections.tag}.zip</url>
+                  <outputDirectory>commons</outputDirectory>
+                  <outputFileName>commons-collections-${lib.commons.collections.version}-sources.jar</outputFileName>
+                  <sha1>824cacd0aafe21a94fb142388fd62f28a12df5ef</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-digester-sources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://github.com/apache/commons-digester/archive/refs/tags/${lib.commons.digester.tag}.zip</url>
+                  <outputDirectory>commons</outputDirectory>
+                  <outputFileName>commons-digester-${lib.commons.digester.version}-sources.jar</outputFileName>
+                  <sha1>49f653c7ea726301c564f9662b72c051fee9390a</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-logging-sources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://github.com/apache/commons-logging/archive/refs/tags/${lib.commons.logging.tag}.zip</url>
+                  <outputDirectory>commons</outputDirectory>
+                  <outputFileName>commons-logging-${lib.commons.logging.version}-sources.jar</outputFileName>
+                  <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-docbook-dtd</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://www.oasis-open.org/docbook/xml/4.1.2/docbkx412.zip</url>
+                  <outputDirectory>docbook</outputDirectory>
+                  <outputFileName>docbkx412.zip</outputFileName>
+                  <sha1>b9ae7a41056bfaf885581812d60651b7b5531519</sha1>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-docbook-xsl</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://sourceforge.net/projects/docbook/files/OldFiles/docbook-xsl-1.44.zip/download</url>
+                  <outputDirectory>docbook</outputDirectory>
+                  <outputFileName>docbook-xsl-1.44.zip</outputFileName>
+                  <sha1>626e7bee806ea14812f6f95cc2d187ab6ba9114a</sha1>
+                </configuration>
+              </execution>
+              <!--
+                Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a
+                normal dependency. Keep this for reference, so we can remember where we found it.
+              -->
+              <!--
+              <execution>
+                <id>download-jdiff</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>https://downloads.sourceforge.net/project/jedit-plugins/JDiffPlugin/1.3/JDiffPlugin-1.3.zip</url>
+                  <outputDirectory>jdiff</outputDirectory>
+                  <outputFileName>JDiffPlugin-1.3.zip</outputFileName>
+                  <sha1>eba63fd845203c6b245fbcb81c0de8e2c83d16c7</sha1>
+                </configuration>
+              </execution>
+              -->
+            </executions>
+          </plugin>
+
+          <!-- Download libraries + source code which are available in Maven repositories like Maven Central -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.1.2</version>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+
+                    <artifactItem>
+                      <!-- Available from GitHub Packages (needs special repository declaration) -->
+                      <groupId>org.aspectj</groupId>
+                      <artifactId>org.eclipse.jdt.core</artifactId>
+                      <version>${jdt.core.version}</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>jdtcore-aj</outputDirectory>
+                      <destFileName>jdtcore-for-aspectj.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Available from GitHub Packages (needs special repository declaration) -->
+                      <groupId>org.aspectj</groupId>
+                      <artifactId>org.eclipse.jdt.core</artifactId>
+                      <version>${jdt.core.version}</version>
+                      <type>java-source</type>
+                      <classifier>sources</classifier>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>jdtcore-aj</outputDirectory>
+                      <destFileName>jdtcore-for-aspectj-src.zip</destFileName>
+                    </artifactItem>
+
+                    <artifactItem>
+                      <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
+                      <groupId>com.googlecode.jarjar</groupId>
+                      <artifactId>jarjar</artifactId>
+                      <version>1.3</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>jarjar</outputDirectory>
+                      <destFileName>jarjar-1.3.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <groupId>junit</groupId>
+                      <artifactId>junit</artifactId>
+                      <version>3.8.1</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>junit</outputDirectory>
+                      <destFileName>junit.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <!-- TODO: Is this redundant JUnit JAR in ant/lib really necessary? If so, why? -->
+                      <groupId>junit</groupId>
+                      <artifactId>junit</artifactId>
+                      <version>3.8.1</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>ant/lib</outputDirectory>
+                      <destFileName>junit.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <groupId>junit</groupId>
+                      <artifactId>junit</artifactId>
+                      <version>3.8.1</version>
+                      <type>jar</type>
+                      <classifier>sources</classifier>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>junit</outputDirectory>
+                      <destFileName>junit-src.zip</destFileName>
+                    </artifactItem>
+
+                    <!-- Jython does not seem to be used anywhere in AspectJ -->
+
+                    <artifactItem>
+                      <!-- Binary is a bit newer than committed version, but produces identical results in 'docs' -->
+                      <groupId>saxon</groupId>
+                      <artifactId>saxon</artifactId>
+                      <version>6.5.3</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>saxon</outputDirectory>
+                      <destFileName>saxon.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <groupId>regexp</groupId>
+                      <artifactId>regexp</artifactId>
+                      <version>${lib.regexp.version}</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>regexp</outputDirectory>
+                      <destFileName>jakarta-regexp-1.2.jar</destFileName>
+                    </artifactItem>
+
+                    <!--
+                      About commons.jar + commons-src.zip:
+                        - Beanutils Binaries are commons-beanutils:commons-beanutils:1.4 (no sources on Maven Central, but
+                          https://github.com/apache/commons-beanutils/archive/refs/tags/BEANUTILS_1_4.zip)
+                        - Collections: Binaries are commons-collections:commons-collections:2.0 (no sources on Maven Central, but
+                          https://github.com/apache/commons-collections/archive/refs/tags/collections-2.0.zip)
+                        - Digester: Binaries are commons-digester:commons-digester:1.3 (no sources on Maven Central, but
+                          https://github.com/apache/commons-digester/archive/refs/tags/DIGESTER_1_3.zip)
+                        - Logging: Binaries are commons-logging:commons-logging:1.0.1 (no sources on Maven Central, but
+                          https://github.com/apache/commons-logging/archive/refs/tags/LOGGING_1_0_1.zip)
+                    -->
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <!-- TODO: not used anywhere -> remove -->
+                      <groupId>commons-beanutils</groupId>
+                      <artifactId>commons-beanutils</artifactId>
+                      <version>${lib.commons.beanutils.version}</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>commons</outputDirectory>
+                      <destFileName>commons-beanutils-${lib.commons.beanutils.version}.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <!-- TODO: not used anywhere -> remove -->
+                      <groupId>commons-collections</groupId>
+                      <artifactId>commons-collections</artifactId>
+                      <version>2.0</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>commons</outputDirectory>
+                      <destFileName>commons-collections-2.0.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <!-- TODO: used in module 'testing' -->
+                      <groupId>commons-digester</groupId>
+                      <artifactId>commons-digester</artifactId>
+                      <version>${lib.commons.digester.version}</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>commons</outputDirectory>
+                      <destFileName>commons-digester-${lib.commons.digester.version}.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <!-- TODO: used in modules 'org.aspectj.matcher' -->
+                      <groupId>commons-logging</groupId>
+                      <artifactId>commons-logging</artifactId>
+                      <version>${lib.commons.logging.version}</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>commons</outputDirectory>
+                      <destFileName>commons-logging-${lib.commons.logging.version}.jar</destFileName>
+                    </artifactItem>
+
+                    <!-- Libraries used to create HTML docs from XML DocBook files -->
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <groupId>fop</groupId>
+                      <artifactId>fop</artifactId>
+                      <version>0.20.5</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>docbook</outputDirectory>
+                      <destFileName>fop.jar</destFileName>
+                    </artifactItem>
+                    <artifactItem>
+                      <!-- Binary is identical to committed version -->
+                      <groupId>batik</groupId>
+                      <artifactId>batik-1.5-fop</artifactId>
+                      <version>0.20-5</version>
+                      <type>jar</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>docbook</outputDirectory>
+                      <destFileName>batik.jar</destFileName>
+                    </artifactItem>
+
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- (Un)zip downloaded libraries the way our build needs them -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>truezip-maven-plugin</artifactId>
+            <version>1.2</version>
+            <!--
+              The TrueZIP plugin can seamlessly copy out of or into (nested) ZIP files as if they were normal file system
+              paths. No additional moves and deletes with Antrun are necessary.
+            -->
+            <executions>
+              <execution>
+                <id>unzip-ant-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
+                    <outputDirectory>ant</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-ant-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
+                    <outputDirectory>ant/ant-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-beanutils-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-beanutils-${lib.commons.beanutils.version}.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-collections-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-collections-${lib.commons.collections.version}.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-digester-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-digester-${lib.commons.digester.version}.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-logging-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-logging-${lib.commons.logging.version}.jar</directory>
+                    <outputDirectory>commons/commons.jar</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-beanutils-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-beanutils-${lib.commons.beanutils.version}-sources.jar/commons-beanutils-${lib.commons.beanutils.tag}/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-collections-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-collections-${lib.commons.collections.version}-sources.jar/commons-collections-${lib.commons.collections.tag}/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-digester-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-digester-${lib.commons.digester.version}-sources.jar/commons-digester-${lib.commons.digester.tag}/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-logging-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
+                    <outputDirectory>commons/commons-src.zip</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>unzip-docbook-dtd</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>docbook/docbkx412.zip</directory>
+                    <outputDirectory>docbook/docbook-dtd</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>unzip-docbook-xsl</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>docbook/docbook-xsl-1.44.zip/docbook-xsl-1.44</directory>
+                    <outputDirectory>docbook/docbook-xsl</outputDirectory>
+                  </fileset>
+                </configuration>
+              </execution>
+              <!--
+                Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a normal
+                dependency. Keep this for reference, so we can remember how we built it. After download + zip the deployment
+                was made right from the lib/jdiff directory, using the following commands (without the line breaks):
+
+                mvn -Dfile=jdiff.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
+                  -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
+                  deploy:deploy-file
+
+                mvn -Dfile=jdiff-src.zip -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
+                  -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
+                  -Dtypes=java-source -Dclassifier=sources
+                  deploy:deploy-file
+
+                The second command yields an error, trying to re-upload a POM, but that is no problem because the POM would
+                be identical to the one already uploaded with the first command.
+              -->
+              <!--
+              <execution>
+                <id>zip-jdiff-binaries</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin.jar</directory>
+                    <outputDirectory>jdiff/jdiff.jar</outputDirectory>
+                    <includes>
+                      <include>**/*.class</include>
+                    </includes>
+                    <excludes>
+                      <exclude>jdiff/options/**</exclude>
+                      <exclude>jdiff/*.class</exclude>
+                    </excludes>
+                  </fileset>
+                </configuration>
+              </execution>
+              <execution>
+                <id>zip-jdiff-sources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <verbose>true</verbose>
+                  <fileset>
+                    <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin</directory>
+                    <outputDirectory>jdiff/jdiff-src.zip</outputDirectory>
+                    <includes>
+                      <include>**/*.java</include>
+                    </includes>
+                    <excludes>
+                      <exclude>jdiff/options/**</exclude>
+                      <exclude>jdiff/*.java</exclude>
+                    </excludes>
+                  </fileset>
+                </configuration>
+              </execution>
+              -->
+            </executions>
+          </plugin>
+
+          <!--
+            After all libraries have been provisioned successfully, create a marker file in order to avoid provisioning
+            them again during the next build
+          -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-marker-file</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>bsh-property</goal>
+                </goals>
+                <configuration>
+                  <source><![CDATA[
+                    myFile = new File(project.getBasedir(), "${lib.provisioned.marker}");
+                    print("Finished provisioning libraries, creating marker file " + myFile.getCanonicalPath());
+                    myFile.createNewFile();
+                  ]]></source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.aspectj</groupId>
+          <artifactId>org.eclipse.jdt.core</artifactId>
+        </dependency>
+      </dependencies>
+
+    </profile>
+
+    <!-- Profile for including provisioned libraries when running 'mvn clean'; inactive by default, activate manually -->
+    <profile>
+      <id>clean-libs</id>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>clean-up-libs</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <configuration>
+                  <filesets>
+                    <fileset>
+                      <directory>.</directory>
+                      <includes>
+                        <include>${lib.provisioned.marker}</include>
+                        <include>ant/**</include>
+                        <include>commons/**</include>
+                        <include>docbook/**</include>
+                        <include>jarjar/**</include>
+                        <!-- Obsolete because JDiff is on GitHub Packages now. Keep for reference. -->
+                        <!--<include>jdiff/**</include>-->
+                        <include>jdtcore-aj/**</include>
+                        <include>junit/**</include>
+                        <include>regexp/**</include>
+                        <include>saxon/**</include>
+                      </includes>
+                      <followSymlinks>false</followSymlinks>
+                    </fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+
+  </profiles>
+
   <build>
     <plugins>
-
+      <!--
+        Heuristic consistency check for existence of provisioned library files. Do not just rely on
+        ${lib.provisioned.marker} file.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <!--
-              Deactivate this execution from the parent, because here it would be counter-productive, given the fact
-              that this module must be built before the enforcer rule can even pass elsewhere.
-            -->
             <id>enforce-libraries-exist</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.6.1</version>
-        <executions>
-          <execution>
-            <id>download-ant-binaries</id>
-            <phase>generate-resources</phase>
+            <phase>compile</phase>
             <goals>
-              <goal>wget</goal>
+              <goal>enforce</goal>
             </goals>
             <configuration>
-              <url>https://archive.apache.org/dist/ant/binaries/${lib.ant.artifact}-bin.zip</url>
-              <outputDirectory>ant</outputDirectory>
-              <sha1>3fa9f816a0c4c63249efad8e6225f2e83794f0c0</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-ant-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://archive.apache.org/dist/ant/source/${lib.ant.artifact}-src.zip</url>
-              <outputDirectory>ant</outputDirectory>
-              <sha1>b9f3c8c31bb6c9069ad5b655059a17769af12f20</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-beanutils-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://github.com/apache/commons-beanutils/archive/refs/tags/${lib.commons.beanutils.tag}.zip</url>
-              <outputDirectory>commons</outputDirectory>
-              <outputFileName>commons-beanutils-${lib.commons.beanutils.version}-sources.jar</outputFileName>
-              <sha1>b2c02afe7e6475cd7c811932b8415d171a8afa00</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-collections-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://github.com/apache/commons-collections/archive/refs/tags/${lib.commons.collections.tag}.zip</url>
-              <outputDirectory>commons</outputDirectory>
-              <outputFileName>commons-collections-${lib.commons.collections.version}-sources.jar</outputFileName>
-              <sha1>824cacd0aafe21a94fb142388fd62f28a12df5ef</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-digester-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://github.com/apache/commons-digester/archive/refs/tags/${lib.commons.digester.tag}.zip</url>
-              <outputDirectory>commons</outputDirectory>
-              <outputFileName>commons-digester-${lib.commons.digester.version}-sources.jar</outputFileName>
-              <sha1>49f653c7ea726301c564f9662b72c051fee9390a</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-logging-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://github.com/apache/commons-logging/archive/refs/tags/${lib.commons.logging.tag}.zip</url>
-              <outputDirectory>commons</outputDirectory>
-              <outputFileName>commons-logging-${lib.commons.logging.version}-sources.jar</outputFileName>
-              <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-docbook-dtd</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://www.oasis-open.org/docbook/xml/4.1.2/docbkx412.zip</url>
-              <outputDirectory>docbook</outputDirectory>
-              <outputFileName>docbkx412.zip</outputFileName>
-              <sha1>b9ae7a41056bfaf885581812d60651b7b5531519</sha1>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-docbook-xsl</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://sourceforge.net/projects/docbook/files/OldFiles/docbook-xsl-1.44.zip/download</url>
-              <outputDirectory>docbook</outputDirectory>
-              <outputFileName>docbook-xsl-1.44.zip</outputFileName>
-              <sha1>626e7bee806ea14812f6f95cc2d187ab6ba9114a</sha1>
-            </configuration>
-          </execution>
-          <!--
-            Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a
-            normal dependency. Keep this for reference, so we can remember where we found it.
-          -->
-          <!--
-          <execution>
-            <id>download-jdiff</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://downloads.sourceforge.net/project/jedit-plugins/JDiffPlugin/1.3/JDiffPlugin-1.3.zip</url>
-              <outputDirectory>jdiff</outputDirectory>
-              <outputFileName>JDiffPlugin-1.3.zip</outputFileName>
-              <sha1>eba63fd845203c6b245fbcb81c0de8e2c83d16c7</sha1>
-            </configuration>
-          </execution>
-          -->
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.2</version>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-
-                <artifactItem>
-                  <!-- Available from GitHub Packages (needs special repository declaration) -->
-                  <groupId>org.aspectj</groupId>
-                  <artifactId>org.eclipse.jdt.core</artifactId>
-                  <version>${jdt.core.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>jdtcore-aj</outputDirectory>
-                  <destFileName>jdtcore-for-aspectj.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Available from GitHub Packages (needs special repository declaration) -->
-                  <groupId>org.aspectj</groupId>
-                  <artifactId>org.eclipse.jdt.core</artifactId>
-                  <version>${jdt.core.version}</version>
-                  <type>java-source</type>
-                  <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>jdtcore-aj</outputDirectory>
-                  <destFileName>jdtcore-for-aspectj-src.zip</destFileName>
-                </artifactItem>
-
-                <artifactItem>
-                  <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
-                  <groupId>com.googlecode.jarjar</groupId>
-                  <artifactId>jarjar</artifactId>
-                  <version>1.3</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>jarjar</outputDirectory>
-                  <destFileName>jarjar-1.3.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
-                  <version>3.8.1</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>junit</outputDirectory>
-                  <destFileName>junit.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <!-- TODO: Is this redundant JUnit JAR in ant/lib really necessary? If so, why? -->
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
-                  <version>3.8.1</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>ant/lib</outputDirectory>
-                  <destFileName>junit.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
-                  <version>3.8.1</version>
-                  <type>jar</type>
-                  <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>junit</outputDirectory>
-                  <destFileName>junit-src.zip</destFileName>
-                </artifactItem>
-
-                <!-- Jython does not seem to be used anywhere in AspectJ -->
-
-                <artifactItem>
-                  <!-- Binary is a bit newer than committed version, but produces identical results in 'docs' -->
-                  <groupId>saxon</groupId>
-                  <artifactId>saxon</artifactId>
-                  <version>6.5.3</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>saxon</outputDirectory>
-                  <destFileName>saxon.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <groupId>regexp</groupId>
-                  <artifactId>regexp</artifactId>
-                  <version>${lib.regexp.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>regexp</outputDirectory>
-                  <destFileName>jakarta-regexp-1.2.jar</destFileName>
-                </artifactItem>
-
-                <!--
-                  About commons.jar + commons-src.zip:
-                    - Beanutils Binaries are commons-beanutils:commons-beanutils:1.4 (no sources on Maven Central, but
-                      https://github.com/apache/commons-beanutils/archive/refs/tags/BEANUTILS_1_4.zip)
-                    - Collections: Binaries are commons-collections:commons-collections:2.0 (no sources on Maven Central, but
-                      https://github.com/apache/commons-collections/archive/refs/tags/collections-2.0.zip)
-                    - Digester: Binaries are commons-digester:commons-digester:1.3 (no sources on Maven Central, but
-                      https://github.com/apache/commons-digester/archive/refs/tags/DIGESTER_1_3.zip)
-                    - Logging: Binaries are commons-logging:commons-logging:1.0.1 (no sources on Maven Central, but
-                      https://github.com/apache/commons-logging/archive/refs/tags/LOGGING_1_0_1.zip)
-                -->
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <!-- TODO: not used anywhere -> remove -->
-                  <groupId>commons-beanutils</groupId>
-                  <artifactId>commons-beanutils</artifactId>
-                  <version>${lib.commons.beanutils.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>commons</outputDirectory>
-                  <destFileName>commons-beanutils-${lib.commons.beanutils.version}.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <!-- TODO: not used anywhere -> remove -->
-                  <groupId>commons-collections</groupId>
-                  <artifactId>commons-collections</artifactId>
-                  <version>2.0</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>commons</outputDirectory>
-                  <destFileName>commons-collections-2.0.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <!-- TODO: used in module 'testing' -->
-                  <groupId>commons-digester</groupId>
-                  <artifactId>commons-digester</artifactId>
-                  <version>${lib.commons.digester.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>commons</outputDirectory>
-                  <destFileName>commons-digester-${lib.commons.digester.version}.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <!-- TODO: used in modules 'org.aspectj.matcher' -->
-                  <groupId>commons-logging</groupId>
-                  <artifactId>commons-logging</artifactId>
-                  <version>${lib.commons.logging.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>commons</outputDirectory>
-                  <destFileName>commons-logging-${lib.commons.logging.version}.jar</destFileName>
-                </artifactItem>
-
-                <!-- Libraries used to create HTML docs from XML DocBook files -->
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <groupId>fop</groupId>
-                  <artifactId>fop</artifactId>
-                  <version>0.20.5</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>docbook</outputDirectory>
-                  <destFileName>fop.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <!-- Binary is identical to committed version -->
-                  <groupId>batik</groupId>
-                  <artifactId>batik-1.5-fop</artifactId>
-                  <version>0.20-5</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>docbook</outputDirectory>
-                  <destFileName>batik.jar</destFileName>
-                </artifactItem>
-
-              </artifactItems>
+              <rules>
+                <requireFilesExist>
+                  <!--
+                    Do NOT insert any line breaks + indentation inside the message, keep it on a single line.
+                    Maven Enforcer does not strip any whitespace or unindent, which looks quite ugly on the console.
+                  -->
+                  <message>
+                    There is an inconsistency in module subdirectory 'lib'. Please run 'mvn --projects lib -P clean-libs clean compile'. This should take care of cleaning and freshly downloading all necessary libraries to that directory, where some tests expect them to be.
+                  </message>
+                  <files>
+                    <file>${lib.provisioned.marker}</file>
+                    <file>ant/bin/ant.bat</file>
+                    <file>ant/lib/junit.jar</file>
+                    <file>commons/commons.jar</file>
+                    <file>docbook/docbook-dtd/docbookx.dtd</file>
+                    <file>docbook/docbook-xsl/html/chunk.xsl</file>
+                    <file>docbook/fop.jar</file>
+                    <file>docbook/batik.jar</file>
+                    <file>jarjar/jarjar-1.3.jar</file>
+                    <file>jdtcore-aj/jdtcore-for-aspectj.jar</file>
+                    <file>junit/junit.jar</file>
+                    <file>regexp/jakarta-regexp-1.2.jar</file>
+                    <file>saxon/saxon.jar</file>
+                  </files>
+                </requireFilesExist>
+              </rules>
+              <fail>true</fail>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>truezip-maven-plugin</artifactId>
-        <version>1.2</version>
-        <!--
-          The TrueZIP plugin can seamlessly copy out of or into (nested) ZIP files as if they were normal file system
-          paths. No additional moves and deletes with Antrun are necessary.
-        -->
-        <executions>
-          <execution>
-            <id>unzip-ant-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>ant/${lib.ant.artifact}-bin.zip/${lib.ant.artifact}</directory>
-                <outputDirectory>ant</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-ant-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>ant/${lib.ant.artifact}-src.zip/${lib.ant.artifact}/src/main</directory>
-                <outputDirectory>ant/ant-src.zip</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-beanutils-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-beanutils-${lib.commons.beanutils.version}.jar</directory>
-                <outputDirectory>commons/commons.jar</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-collections-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-collections-${lib.commons.collections.version}.jar</directory>
-                <outputDirectory>commons/commons.jar</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-digester-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-digester-${lib.commons.digester.version}.jar</directory>
-                <outputDirectory>commons/commons.jar</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-logging-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-logging-${lib.commons.logging.version}.jar</directory>
-                <outputDirectory>commons/commons.jar</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-beanutils-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-beanutils-${lib.commons.beanutils.version}-sources.jar/commons-beanutils-${lib.commons.beanutils.tag}/src/java</directory>
-                <outputDirectory>commons/commons-src.zip</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-collections-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-collections-${lib.commons.collections.version}-sources.jar/commons-collections-${lib.commons.collections.tag}/src/java</directory>
-                <outputDirectory>commons/commons-src.zip</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-digester-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-digester-${lib.commons.digester.version}-sources.jar/commons-digester-${lib.commons.digester.tag}/src/java</directory>
-                <outputDirectory>commons/commons-src.zip</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-logging-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>commons/commons-logging-${lib.commons.logging.version}-sources.jar/commons-logging-${lib.commons.logging.tag}/src/java</directory>
-                <outputDirectory>commons/commons-src.zip</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unzip-docbook-dtd</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>docbook/docbkx412.zip</directory>
-                <outputDirectory>docbook/docbook-dtd</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unzip-docbook-xsl</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>docbook/docbook-xsl-1.44.zip/docbook-xsl-1.44</directory>
-                <outputDirectory>docbook/docbook-xsl</outputDirectory>
-              </fileset>
-            </configuration>
-          </execution>
-          <!--
-            Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a normal
-            dependency. Keep this for reference, so we can remember how we built it. After download + zip the deployment
-            was made right from the lib/jdiff directory, using the following commands (without the line breaks):
-
-            mvn -Dfile=jdiff.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
-              -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
-              deploy:deploy-file
-
-            mvn -Dfile=jdiff-src.zip -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
-              -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
-              -Dtypes=java-source -Dclassifier=sources
-              deploy:deploy-file
-
-            The second command yields an error, trying to re-upload a POM, but that is no problem because the POM would
-            be identical to the one already uploaded with the first command.
-          -->
-          <!--
-          <execution>
-            <id>zip-jdiff-binaries</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin.jar</directory>
-                <outputDirectory>jdiff/jdiff.jar</outputDirectory>
-                <includes>
-                  <include>**/*.class</include>
-                </includes>
-                <excludes>
-                  <exclude>jdiff/options/**</exclude>
-                  <exclude>jdiff/*.class</exclude>
-                </excludes>
-              </fileset>
-            </configuration>
-          </execution>
-          <execution>
-            <id>zip-jdiff-sources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <fileset>
-                <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin</directory>
-                <outputDirectory>jdiff/jdiff-src.zip</outputDirectory>
-                <includes>
-                  <include>**/*.java</include>
-                </includes>
-                <excludes>
-                  <exclude>jdiff/options/**</exclude>
-                  <exclude>jdiff/*.java</exclude>
-                </excludes>
-              </fileset>
-            </configuration>
-          </execution>
-          -->
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>clean-up-libs</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-            <configuration>
-              <filesets>
-                <fileset>
-                  <directory>.</directory>
-                  <includes>
-                    <include>ant/**</include>
-                    <include>commons/**</include>
-                    <include>docbook/**</include>
-                    <include>jarjar/**</include>
-                    <!-- Obsolete because JDiff is on GitHub Packages now. Keep for reference. -->
-                    <!--<include>jdiff/**</include>-->
-                    <include>jdtcore-aj/**</include>
-                    <include>junit/**</include>
-                    <include>regexp/**</include>
-                    <include>saxon/**</include>
-                  </includes>
-                  <followSymlinks>false</followSymlinks>
-                </fileset>
-              </filesets>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-    </dependency>
-  </dependencies>
 
 </project>
