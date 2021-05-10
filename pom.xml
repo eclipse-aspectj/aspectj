@@ -18,7 +18,7 @@
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
 		<lib.regexp.version>1.2</lib.regexp.version>
-		<lib.commons.beanutils.version>1.4</lib.commons.beanutils.version>
+		<lib.commons.beanutils.version>1.9.4</lib.commons.beanutils.version>
 		<lib.commons.beanutils.tag>BEANUTILS_1_4</lib.commons.beanutils.tag>
 		<lib.commons.collections.version>2.0</lib.commons.collections.version>
 		<lib.commons.collections.tag>collections-2.0</lib.commons.collections.tag>
