@@ -14,6 +14,8 @@
 		<revision>1.9.7.BUILD-SNAPSHOT</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
+		<maven.deploy.skip>true</maven.deploy.skip>
 		<jdt.core.version>3.25.0-SNAPSHOT</jdt.core.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>

@@ -13,6 +13,11 @@
 	<artifactId>aspectjrt</artifactId>
 	<name>AspectJ Runtime</name>
 
+	<properties>
+		<!-- By default, do not deploy artifacts - but deploy this public one -->
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.aspectj</groupId>
