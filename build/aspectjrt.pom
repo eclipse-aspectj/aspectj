@@ -8,7 +8,7 @@
   <version>ASPECTJVERSION</version>
   <name>AspectJ runtime</name>
   <description>The runtime needed to execute a program using AspectJ</description>
-  <url>http://www.aspectj.org</url>
+  <url>https://www.eclipse.org/aspectj/</url>
 
   <licenses>
     <license>

@@ -8,7 +8,7 @@
   <version>1.9.7.M1</version>
   <name>AspectJ weaver</name>
   <description>The AspectJ weaver introduces advices to java classes</description>
-  <url>http://www.aspectj.org</url>
+  <url>https://www.eclipse.org/aspectj/</url>
 
   <licenses>
     <license>

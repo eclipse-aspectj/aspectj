@@ -8,7 +8,7 @@
   <version>1.9.6.BUILD-SNAPSHOT</version>
   <name>AspectJ tools</name>
   <description>Tools from the AspectJ project</description>
-  <url>http://www.aspectj.org</url>
+  <url>https://www.eclipse.org/aspectj/</url>
 
   <licenses>
     <license>

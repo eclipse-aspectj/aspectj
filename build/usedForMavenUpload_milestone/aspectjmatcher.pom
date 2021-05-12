@@ -8,7 +8,7 @@
   <version>1.9.7.M1</version>
   <name>AspectJ matcher</name>
   <description>The AspectJ matcher can be used for matching pointcuts</description>
-  <url>http://www.aspectj.org</url>
+  <url>https://www.eclipse.org/aspectj/</url>
 
   <licenses>
     <license>
