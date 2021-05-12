@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -11,7 +10,42 @@
 	</parent>
 
 	<artifactId>aspectjtools</artifactId>
+
 	<name>AspectJ Tools (Compiler)</name>
+	<description>
+		AspectJ tools most notably contains the AspectJ compiler (AJC). AJC applies aspects to Java classes during
+		compilation, fully replacing Javac for plain Java classes and also compiling native AspectJ or annotation-based
+		@AspectJ syntax. Furthermore, AJC can weave aspects into existing class files in a post-compile binary weaving step.
+		This library is a superset of AspectJ weaver and hence also of AspectJ runtime.
+	</description>
+	<url>https://www.eclipse.org/aspectj/</url>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 1.0</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>aclement</id>
+			<name>Andy Clement</name>
+			<email>aclement@vmware.com</email>
+		</developer>
+		<developer>
+			<id>kriegaex</id>
+			<name>Alexander Kriegisch</name>
+			<email>kriegaex@aspectj.dev</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/eclipse/org.aspectj</url>
+		<connection>scm:git:https://github.com/eclipse/org.aspectj.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:eclipse/org.aspectj.git</developerConnection>
+	</scm>
 
 	<properties>
 		<!-- By default, do not deploy artifacts - but deploy this public one -->

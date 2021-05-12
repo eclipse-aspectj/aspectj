@@ -22,6 +22,7 @@
 			<directory>../aj-build/dist/docs</directory>
 			<outputDirectory>files</outputDirectory>
 		</fileSet>
+		<!-- Runtime javadocs - TODO: use full tools javadocs instead -->
 		<fileSet>
 			<directory>../runtime/target/site/apidocs</directory>
 			<outputDirectory>files/doc/runtime-apidocs</outputDirectory>
