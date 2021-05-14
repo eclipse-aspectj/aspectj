@@ -14,33 +14,38 @@ package org.aspectj.testing.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.Reflection;
-
-import jdiff.text.FileLine;
-import jdiff.util.Diff;
-import jdiff.util.DiffNormalOutput;
 import org.junit.Assert;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -48,8 +53,7 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 /**
- * Things that junit should perhaps have, but doesn't. Note the file-comparison methods require JDiff to run, but JDiff types are
- * not required to resolve this class. Also, the bytecode weaver is required to compare class files, but not to compare other files.
+ * Things that junit should perhaps have, but doesn't. Also, the bytecode weaver is required to compare class files, but not to compare other files.
  */
 public final class TestUtil {
 	private static final String SANDBOX_NAME = "ajcSandbox";
@@ -208,9 +212,9 @@ public final class TestUtil {
 		return path.toString();
 	}
 
-    public static String aspectjrtClasspath() {
-        return TestUtil.aspectjrtPath().getPath();
-    }
+	public static String aspectjrtClasspath() {
+		return TestUtil.aspectjrtPath().getPath();
+	}
 
 	/**
 	 * @param input the String to parse for [on|off|true|false]
@@ -536,76 +540,115 @@ public final class TestUtil {
 		File expectedFile = new File(expectedBaseDir, path);
 		return doSameFile(handler, expectedBaseDir, actualBaseDir, expectedFile, actualFile);
 	}
+	
+	public static String disassembleClass(File basedir, File file) {
+		String basedirPath = FileUtil.normalizedPath(basedir);
+		String name = FileUtil.fileToClassName(basedir, file);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    String utf8 = StandardCharsets.UTF_8.name();
+	    try (PrintStream out = new PrintStream(baos, true, utf8)) {
+			Class<?> c = Class.forName("org.aspectj.weaver.bcel.LazyClassGen");
+			Method m = c.getMethod("disassemble", new Class[] { String.class, String.class, PrintStream.class });
+			m.invoke(null, new Object[] { basedirPath, name, out });
+			return baos.toString(utf8);
+	    } catch (Throwable t) {
+	    	throw new IllegalStateException(t);
+		}
+	}
+	
+	public static List<String> toLines(String inputString) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new StringReader(inputString))) {
+			String line = null;
+			while ((line= br.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (IOException ioe) {
+			throw new IllegalStateException("Unable to create lines from string "+inputString,ioe);
+		}
+		return lines;
+	}
+	
+	public static String toString(List<String> lines) {
+		return String.join("\n", lines);
+	}
+	
+	private static int longestLine(List<String> lines) {
+		int longest = -1;
+		for (String line: lines) {
+			if (line.length()>longest) {
+				longest = line.length();
+			}
+		}
+		return longest;
+	}
 
-	/**
-	 * This does the work, selecting a lineator subclass and converting public API's to JDiff APIs for comparison. Currently, all
-	 * jdiff interfaces are method-local, so this class will load without it; if we do use it, we can avoid the duplication.
-	 */
 	private static boolean doSameFile(IMessageHandler handler, File expectedBaseDir, File actualBaseDir, File expectedFile,
 			File actualFile) {
 		String path = expectedFile.getPath();
-		// XXX permit user to specify lineator
-		ILineator lineator = Lineator.TEXT;
+		List<String> expectedLines = null;
+		List<String> actualLines = null;
+		List<String> errorContext = new ArrayList<>();
 		if (path.endsWith(".class")) {
-			if (ClassLineator.haveDisassembler()) {
-				lineator = Lineator.CLASS;
-			} else {
-				MessageUtil.abort(handler, "skipping - dissassembler not available");
+			expectedLines = toLines(disassembleClass(expectedBaseDir, expectedFile));
+			actualLines = toLines(disassembleClass(actualBaseDir, actualFile));
+		} else {
+			expectedLines = FileUtil.readAsLines(expectedFile);
+			actualLines = FileUtil.readAsLines(actualFile);
+		}
+		// TODO replace this section with assertMultiLineStringEquals ?
+		int longestLine = longestLine(expectedLines);
+		int actualLongestLine = longestLine(actualLines);
+		String padding = null;
+		if (actualLongestLine>longestLine) {
+			longestLine = actualLongestLine;
+		}
+		StringBuilder s = new StringBuilder();
+		for (int i=0;i<longestLine;i++) {
+			s.append(" ");
+		}
+		padding = s.toString();
+		if (expectedLines.isEmpty() && !actualLines.isEmpty()) {
+			MessageUtil.fail(handler, "Expected no output but "+path+" contained:\n"+toString(actualLines));
+			return false;
+		} else {
+			for (int l=0;l<expectedLines.size();l++) {
+				String expectedLine = expectedLines.get(l);
+				if (actualLines.size()<(l-1)) {
+					MessageUtil.fail(handler, "Error comparing "+path+" - ran out of data in actual output compared to expect after "+(l+1)+" lines");
+					return false;
+				}
+				String actualLine = actualLines.get(l);
+				if (!expectedLine.equals(actualLine)) {
+					errorContext.add(padded(actualLine,padding,longestLine)+" ! "+
+									 padded(expectedLine, padding, longestLine));
+					MessageUtil.fail(handler, "Error comparing actual vs expected "+path+" - line "+(l+1)+" differs\n"+
+							"expected: ["+expectedLine+"]\n"+
+							"  actual: ["+actualLine+"]\n"+
+							String.join("\n", errorContext));
+					return false;
+				}
+				errorContext.add(padded(actualLine,padding,longestLine)+" = "+
+								 padded(expectedLine, padding, longestLine));
+			}
+			if (actualLines.size()>expectedLines.size()) {
+				StringBuilder extra = new StringBuilder();
+				for (int l=expectedLines.size();l<actualLines.size();l++) {
+					extra.append(actualLines.get(l)).append("\n");
+				}
+				MessageUtil.fail(handler, "Error comparing actual vs expected "+path+" - actual data contains more lines, the first "+
+						expectedLines.size()+" were as expected, extra data was: \n"+extra.toString()+"\n"+String.join("\n", errorContext));
 				return false;
 			}
 		}
-		CanonicalLine[] actualLines = null;
-		CanonicalLine[] expectedLines = null;
-		try {
-			actualLines = lineator.getLines(handler, actualFile, actualBaseDir);
-			expectedLines = lineator.getLines(handler, expectedFile, expectedBaseDir);
-		} catch (IOException e) {
-			MessageUtil.fail(handler, "rendering lines ", e);
-			return false;
-		}
-		if (!LangUtil.isEmpty(actualLines) && !LangUtil.isEmpty(expectedLines)) {
-			// here's the transmutation back to jdiff - extract if publishing
-			// JDiff
-			CanonicalLine[][] clines = new CanonicalLine[][] { expectedLines, actualLines };
-			FileLine[][] flines = new FileLine[2][];
-			for (int i = 0; i < clines.length; i++) {
-				CanonicalLine[] cline = clines[i];
-				FileLine[] fline = new FileLine[cline.length];
-				for (int j = 0; j < fline.length; j++) {
-					fline[j] = new FileLine(cline[j].canonical, cline[j].line);
-				}
-				flines[i] = fline;
-			}
+		return true;
+	}
 
-			Diff.change edits = new Diff(flines[0], flines[1]).diff_2(false);
-			if ((null == edits) || (0 == (edits.inserted + edits.deleted))) {
-				// XXX confirm with jdiff that null means no edits
-				return true;
-			} else {
-				// String m = render(handler, edits, flines[0], flines[1]);
-				StringWriter writer = new StringWriter();
-				DiffNormalOutput out = new DiffNormalOutput(flines[0], flines[1]);
-				out.setOut(writer);
-				out.setLineSeparator(LangUtil.EOL);
-				try {
-					out.writeScript(edits);
-				} catch (IOException e) {
-					MessageUtil.fail(handler, "rendering edits", e);
-				} finally {
-					if (null != writer) {
-						try {
-							writer.close();
-						} catch (IOException e) {
-							MessageUtil.fail(handler, "closing after rendering edits", e);
-						}
-					}
-				}
-				String message = "diff between " + path + " in expected dir " + expectedBaseDir + " and actual dir "
-						+ actualBaseDir + LangUtil.EOL + writer.toString();
-				MessageUtil.fail(handler, message);
-			}
-		}
-		return false;
+	private static String padded(String line, String padding, int longestLine) {
+		StringBuilder s = new StringBuilder();
+		String line2 = line.replace("\t","    ");
+		s.append(line2).append(padding.substring(0,longestLine-line2.length()));
+		return s.toString();
 	}
 
 	public static String cleanTestName(String name) {
@@ -670,9 +713,9 @@ public final class TestUtil {
 				sink.addTest(test);
 			} else {
 				TestSuite source = (TestSuite) test;
-				Enumeration tests = source.tests();
+				Enumeration<Test> tests = source.tests();
 				while (tests.hasMoreElements()) {
-					sink.addTest((Test) tests.nextElement());
+					sink.addTest(tests.nextElement());
 				}
 			}
 
@@ -772,168 +815,6 @@ public final class TestUtil {
 		}
 	}
 
-	/** component that reduces file to CanonicalLine[] */
-	public interface ILineator {
-		/** Lineator suitable for text files */
-		ILineator TEXT = new TextLineator();
-
-		/** Lineator suitable for class files (disassembles first) */
-		ILineator CLASS = new ClassLineator();
-
-		/**
-		 * Reduce file to CanonicalLine[].
-		 *
-		 * @param handler the IMessageHandler for errors (may be null)
-		 * @param file the File to render
-		 * @param basedir the File for the base directory (may be null)
-		 * @return CanonicalLine[] of lines - not null, but perhaps empty
-		 */
-		CanonicalLine[] getLines(IMessageHandler handler, File file, File basedir) throws IOException;
-	}
-
-	/** alias for jdiff FileLine to avoid client binding */
-	public static class CanonicalLine {
-		public static final CanonicalLine[] NO_LINES = new CanonicalLine[0];
-
-		/** canonical variant of line for comparison */
-		public final String canonical;
-
-		/** actual line, for logging */
-		public final String line;
-
-		public CanonicalLine(String canonical, String line) {
-			this.canonical = canonical;
-			this.line = line;
-		}
-
-		public String toString() {
-			return line;
-		}
-	}
-
-	private abstract static class Lineator implements ILineator {
-		/**
-		 * Reduce file to CanonicalLine[].
-		 *
-		 * @param handler the IMessageHandler for errors (may be null)
-		 * @param file the File to render
-		 * @param basedir the File for the base directory (may be null)
-		 */
-		public CanonicalLine[] getLines(IMessageHandler handler, File file, File basedir) throws IOException {
-
-			if (!file.canRead() || !file.isFile()) {
-				MessageUtil.error(handler, "not readable file: " + basedir + " - " + file);
-				return null;
-			}
-			// capture file as FileLine[]
-			InputStream in = null;
-			/* String path = */FileUtil.normalizedPath(file, basedir);
-			LineStream capture = new LineStream();
-			try {
-				lineate(capture, handler, basedir, file);
-			} catch (IOException e) {
-				MessageUtil.fail(handler, "NormalizedCompareFiles IOException reading " + file, e);
-				return null;
-			} finally {
-				if (null != in) {
-					try {
-						in.close();
-					} catch (IOException e) {
-					} // ignore
-				}
-				capture.flush();
-				capture.close();
-			}
-			String missed = capture.getMissed();
-			if (!LangUtil.isEmpty(missed)) {
-				MessageUtil.warn(handler, "NormalizedCompareFiles missed input: " + missed);
-				return null;
-			} else {
-				String[] lines = capture.getLines();
-				CanonicalLine[] result = new CanonicalLine[lines.length];
-				for (int i = 0; i < lines.length; i++) {
-					result[i] = new CanonicalLine(lines[i], lines[i]);
-				}
-				return result;
-			}
-		}
-
-		protected abstract void lineate(PrintStream sink, IMessageHandler handler, File basedir, File file) throws IOException;
-	}
-
-	private static class TextLineator extends Lineator {
-
-		protected void lineate(PrintStream sink, IMessageHandler handler, File basedir, File file) throws IOException {
-			InputStream in = null;
-			try {
-				in = new FileInputStream(file);
-				FileUtil.copyStream(new DataInputStream(in), sink);
-			} finally {
-				try {
-					in.close();
-				} catch (IOException e) {
-				} // ignore
-			}
-		}
-	}
-
-	public static class ClassLineator extends Lineator {
-
-		protected void lineate(PrintStream sink, IMessageHandler handler, File basedir, File file) throws IOException {
-			String name = FileUtil.fileToClassName(basedir, file);
-			// XXX re-enable preflight?
-			// if ((null != basedir) && (path.length()-6 != name.length())) {
-			// MessageUtil.error(handler, "unexpected class name \""
-			// + name + "\" for path " + path);
-			// return null;
-			// }
-			disassemble(handler, basedir, name, sink);
-		}
-
-		public static boolean haveDisassembler() {
-			try {
-				return (null != Class.forName("org.aspectj.weaver.bcel.LazyClassGen"));
-			} catch (ClassNotFoundException e) {
-				// XXX fix
-				// System.err.println(e.getMessage());
-				// e.printStackTrace(System.err);
-				return false;
-			}
-		}
-
-		/** XXX dependency on bcweaver/bcel */
-		private static void disassemble(IMessageHandler handler, File basedir, String name, PrintStream out) throws IOException {
-			// LazyClassGen.disassemble(FileUtil.normalizedPath(basedir), name,
-			// capture);
-
-			Throwable thrown = null;
-			String basedirPath = FileUtil.normalizedPath(basedir);
-			// XXX use reflection utilities to invoke dissassembler?
-			try {
-				// XXX need test to detect when this is refactored
-				Class c = Class.forName("org.aspectj.weaver.bcel.LazyClassGen");
-				Method m = c.getMethod("disassemble", new Class[] { String.class, String.class, PrintStream.class });
-				m.invoke(null, new Object[] { basedirPath, name, out });
-			} catch (ClassNotFoundException e) {
-				thrown = e;
-			} catch (NoSuchMethodException e) {
-				thrown = e;
-			} catch (IllegalAccessException e) {
-				thrown = e;
-			} catch (InvocationTargetException e) {
-				Throwable t = e.getTargetException();
-				if (t instanceof IOException) {
-					throw (IOException) t;
-				}
-				thrown = t;
-			}
-			if (null != thrown) {
-				MessageUtil.fail(handler, "disassembling " + name + " path: " + basedirPath, thrown);
-			}
-		}
-	}
-
-
 	public static File createEmptySandbox() {
 		File sandbox;
 
@@ -944,9 +825,9 @@ public final class TestUtil {
 		if (os.startsWith("Windows")) {
 			tempDir = new File("N:\\temp");
 			if (!tempDir.exists()) {
-		  		tempDir = new File("C:\\temp");
-			    if (!tempDir.exists()) {
-				    tempDir.mkdir();
+				tempDir = new File("C:\\temp");
+				if (!tempDir.exists()) {
+					tempDir.mkdir();
 				}
 			}
 		} else {
@@ -1056,6 +937,14 @@ public final class TestUtil {
 			String line = sb.toString();
 			sink.add(line);
 			sb.setLength(0);
+		}
+	}
+
+	public static boolean haveDisassembler() {
+		try {
+			return (Class.forName("org.aspectj.weaver.bcel.LazyClassGen") != null);
+		} catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 

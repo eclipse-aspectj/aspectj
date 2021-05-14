@@ -36,6 +36,9 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1138,6 +1141,16 @@ public class FileUtil {
 		}
 		r.close();
 		return b.toString();
+	}
+	
+	public static List<String> readAsLines(File file) {
+		try {
+			return Files.readAllLines(Paths.get(file.toURI()));
+		} catch (NoSuchFileException nsfe) {
+			return Collections.emptyList();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	// /**

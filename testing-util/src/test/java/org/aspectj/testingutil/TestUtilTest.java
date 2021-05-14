@@ -81,16 +81,14 @@ public class TestUtilTest extends TestCase {
 
     public void testFileCompareNonClassStaticNegative() throws IOException {
         MessageHandler holder = new MessageHandler();
-        File basedir = new File("testdata/testCompareTextFiles/differentFile");
+        File basedir = new File(UtilTests.TESTING_UTIL_PATH + "/testdata/testCompareTextFiles/differentFile");
         File expectedBaseDir = new File(basedir, "expected");
         File actualBaseDir = new File(basedir, "actual");
         String filename = "TestUtilTest.java";
         File expected = new File(expectedBaseDir, filename);
         File actual = new File(actualBaseDir, filename);
-
-        assertTrue(!TestUtil.sameFiles(holder, expected, actual));
-
-        assertTrue(!TestUtil.sameFiles(holder, expectedBaseDir, actualBaseDir, filename));
+       	assertTrue(!TestUtil.sameFiles(holder, expected, actual));
+       	assertTrue(!TestUtil.sameFiles(holder, expectedBaseDir, actualBaseDir, filename));
     }
 
     public void testParseBoolean() {
@@ -127,8 +125,9 @@ public class TestUtilTest extends TestCase {
         }
         
     }
+
     public void testFileCompareClass() throws IOException {
-        if (!TestUtil.ClassLineator.haveDisassembler()) {
+        if (!TestUtil.haveDisassembler()) {
             System.err.println("skipping testFileCompareClass - no disassembler on classpath");
             return;
         }

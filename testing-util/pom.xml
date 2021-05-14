@@ -33,12 +33,6 @@
       <!-- Yes, not 'test' here -->
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <!-- Identical to lib/jdiff/jdiff.jar, a former system-scoped dependency. Now to be found on GitHub Packages. -->
-      <groupId>jdiff</groupId>
-      <artifactId>jdiff</artifactId>
-      <version>1.3</version>
-    </dependency>
   </dependencies>
 
 </project>

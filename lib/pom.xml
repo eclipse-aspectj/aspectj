@@ -161,25 +161,6 @@
                   <sha1>626e7bee806ea14812f6f95cc2d187ab6ba9114a</sha1>
                 </configuration>
               </execution>
-              <!--
-                Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a
-                normal dependency. Keep this for reference, so we can remember where we found it.
-              -->
-              <!--
-              <execution>
-                <id>download-jdiff</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://downloads.sourceforge.net/project/jedit-plugins/JDiffPlugin/1.3/JDiffPlugin-1.3.zip</url>
-                  <outputDirectory>jdiff</outputDirectory>
-                  <outputFileName>JDiffPlugin-1.3.zip</outputFileName>
-                  <sha1>eba63fd845203c6b245fbcb81c0de8e2c83d16c7</sha1>
-                </configuration>
-              </execution>
-              -->
             </executions>
           </plugin>
 
@@ -548,67 +529,6 @@
                   </fileset>
                 </configuration>
               </execution>
-              <!--
-                Obsolete because we uploaded both binary and source JARs to GitHub Packages, so we can use JDiff as a normal
-                dependency. Keep this for reference, so we can remember how we built it. After download + zip the deployment
-                was made right from the lib/jdiff directory, using the following commands (without the line breaks):
-
-                mvn -Dfile=jdiff.jar -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
-                  -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
-                  deploy:deploy-file
-
-                mvn -Dfile=jdiff-src.zip -DrepositoryId=github -Durl=https://maven.pkg.github.com/kriegaex/aspectj-packages
-                  -DgroupId=jdiff -DartifactId=jdiff -Dpackaging=jar -Dversion=1.3
-                  -Dtypes=java-source -Dclassifier=sources
-                  deploy:deploy-file
-
-                The second command yields an error, trying to re-upload a POM, but that is no problem because the POM would
-                be identical to the one already uploaded with the first command.
-              -->
-              <!--
-              <execution>
-                <id>zip-jdiff-binaries</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin.jar</directory>
-                    <outputDirectory>jdiff/jdiff.jar</outputDirectory>
-                    <includes>
-                      <include>**/*.class</include>
-                    </includes>
-                    <excludes>
-                      <exclude>jdiff/options/**</exclude>
-                      <exclude>jdiff/*.class</exclude>
-                    </excludes>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>zip-jdiff-sources</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <directory>jdiff/JDiffPlugin-1.3.zip/JDiffPlugin</directory>
-                    <outputDirectory>jdiff/jdiff-src.zip</outputDirectory>
-                    <includes>
-                      <include>**/*.java</include>
-                    </includes>
-                    <excludes>
-                      <exclude>jdiff/options/**</exclude>
-                      <exclude>jdiff/*.java</exclude>
-                    </excludes>
-                  </fileset>
-                </configuration>
-              </execution>
-              -->
             </executions>
           </plugin>
 
@@ -675,8 +595,6 @@
                         <include>commons/**</include>
                         <include>docbook/**</include>
                         <include>jarjar/**</include>
-                        <!-- Obsolete because JDiff is on GitHub Packages now. Keep for reference. -->
-                        <!--<include>jdiff/**</include>-->
                         <include>jdtcore-aj/**</include>
                         <include>junit/**</include>
                         <include>regexp/**</include>
