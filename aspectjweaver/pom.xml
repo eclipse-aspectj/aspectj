@@ -260,6 +260,12 @@
 				</executions>
 			</plugin>
 
+			<!-- Deploy this module to Nexus (Sonatype OSSRH, releases promotable to Maven Central) -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+			</plugin>
+
 		</plugins>
 	</build>
 

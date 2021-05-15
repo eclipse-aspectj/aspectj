@@ -19,7 +19,7 @@
 
 		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<!-- By default, do create javadoc - override in release profile or manually -->
+		<!-- By default, do not create javadoc - override in release profile or manually -->
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
@@ -189,7 +189,7 @@
 		<profile>
 			<id>release</id>
 			<properties>
-				<!-- By default, do create javadoc - override in release profile -->
+				<!-- By default, do not create javadoc - override in release profile -->
 				<maven.javadoc.skip>false</maven.javadoc.skip>
 			</properties>
 			<build>
@@ -197,10 +197,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>
@@ -351,6 +347,12 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<!--
+						Other than Maven Deploy, this plugin cannot just be added to the 'build/plugins' section of the parent POM
+						once and (de-)activated with a simple property like 'maven.deploy.skip' on a per-module basis. See also
+						https://issues.sonatype.org/browse/OSSRH-68966. Consequently, we do not add it to the parent but separately
+						to each module meant to be published.
+					-->
 					<groupId>org.sonatype.plugins</groupId>
 					<artifactId>nexus-staging-maven-plugin</artifactId>
 					<version>1.6.8</version>
@@ -359,8 +361,6 @@
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
-						<!-- Only stage artifacts to which are also meant to be deployed -->
-						<skipStaging>${maven.deploy.skip}</skipStaging>
 					</configuration>
 				</plugin>
 				<plugin>
