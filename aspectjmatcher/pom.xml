@@ -157,6 +157,59 @@
 				</executions>
 			</plugin>
 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unzip-relocated-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<!--
+								Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
+								profile is active or the property is overridden manually to be false. See property definitions in parent
+								POM for default case and release profile.
+							-->
+							<skip>${maven.javadoc.skip}</skip>
+							<verbose>true</verbose>
+							<fileset>
+								<directory>${project.build.directory}/${project.build.finalName}-sources.jar</directory>
+								<outputDirectory>${project.build.directory}/unpacked-sources</outputDirectory>
+							</fileset>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<sourcepath>${project.build.directory}/unpacked-sources</sourcepath>
+							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjtools? -->
+							<subpackages>org.aspectj</subpackages>
+							<!-- Deactivate doclint checks in order to suppress errors -->
+							<doclint>none</doclint>
+							<!-- Generate class use xref, making javadocs considerably bigger, but also more informative -->
+							<use>true</use>
+							<!-- FIXME: Why does it fail without this parameter? -->
+							<javadocVersion>8</javadocVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -184,4 +237,23 @@
 
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>bridge</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>org.aspectj.matcher</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
 </project>

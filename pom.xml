@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<packaging>pom</packaging>
 	<version>1.9.7.BUILD-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
 	<name>AspectJ Parent Project</name>
 
 	<properties>
@@ -16,8 +16,12 @@
 		<!-- Basic build properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<!-- By default, do create javadoc - override in release profile or manually -->
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+
 		<!-- Dependency versions -->
 		<jdt.core.version>3.25.0-SNAPSHOT</jdt.core.version>
 		<asm.version>9.1</asm.version>
@@ -35,29 +39,23 @@
 	</properties>
 
 	<distributionManagement>
-		<repository>
-			<id>aspectj-dev-deploy</id>
-			<name>AspectJ.dev WebDAV Releases</name>
-			<!-- Please specify the local mount point for the WebDAV share in your settings.xml -->
-			<url>${aspectj.dev.webdav.share}</url>
-			<uniqueVersion>false</uniqueVersion>
-		</repository>
 		<snapshotRepository>
-			<id>aspectj-dev-deploy</id>
-			<name>AspectJ.dev WebDAV Snapshots</name>
-			<!-- Please specify the local mount point for the WebDAV share in your settings.xml -->
-			<url>${aspectj.dev.webdav.share}</url>
-			<uniqueVersion>true</uniqueVersion>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</distributionManagement>
 
 	<repositories>
 		<!--
-      Repeat Central definition from super POM https://maven.apache.org/ref/3.6.3/maven-model-builder/super-pom.html.
-      Define it as the first repository to search at, otherwise Maven would always search any other repositories defined
-      in the POM or in settings.xml first, slowing down the build, because most artifacts reside at Maven Central. See
-      https://maven.apache.org/guides/mini/guide-multiple-repositories.html#repository-order for more details.
-    -->
+			Repeat Central definition from super POM https://maven.apache.org/ref/3.6.3/maven-model-builder/super-pom.html.
+			Define it as the first repository to search at, otherwise Maven would always search any other repositories defined
+			in the POM or in settings.xml first, slowing down the build, because most artifacts reside at Maven Central. See
+			https://maven.apache.org/guides/mini/guide-multiple-repositories.html#repository-order for more details.
+		-->
 		<repository>
 			<id>central</id>
 			<name>Central Repository</name>
@@ -89,11 +87,11 @@
 
 	<pluginRepositories>
 		<!--
-      Repeat Central definition from super POM https://maven.apache.org/ref/3.6.3/maven-model-builder/super-pom.html.
-      Define it as the first repository to search at, otherwise Maven would always search any other repositories defined
-      in the POM or in settings.xml first, slowing down the build, because most artifacts reside at Maven Central. See
-      https://maven.apache.org/guides/mini/guide-multiple-repositories.html#repository-order for more details.
-    -->
+			Repeat Central definition from super POM https://maven.apache.org/ref/3.6.3/maven-model-builder/super-pom.html.
+			Define it as the first repository to search at, otherwise Maven would always search any other repositories defined
+			in the POM or in settings.xml first, slowing down the build, because most artifacts reside at Maven Central. See
+			https://maven.apache.org/guides/mini/guide-multiple-repositories.html#repository-order for more details.
+		-->
 		<pluginRepository>
 			<id>central</id>
 			<name>Central Repository</name>
@@ -187,6 +185,25 @@
 			<properties>
 				<jvm.arg.addOpens>--add-opens java.base/java.lang=ALL-UNNAMED</jvm.arg.addOpens>
 			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<properties>
+				<!-- By default, do create javadoc - override in release profile -->
+				<maven.javadoc.skip>false</maven.javadoc.skip>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
@@ -297,6 +314,58 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>flatten-maven-plugin</artifactId>
 					<version>1.2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+					<executions>
+						<execution>
+							<id>default-deploy</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<!-- Deploy at the end of a multi-module build -->
+						<deployAtEnd>true</deployAtEnd>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.8</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrh</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>false</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>truezip-maven-plugin</artifactId>
+					<version>1.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

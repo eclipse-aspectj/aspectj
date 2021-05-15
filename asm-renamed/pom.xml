@@ -19,20 +19,52 @@
     using Maven Shade Plugin.
 
     In order to avoid committing the binary to the AspectJ SCM repository and using it as a system-scoped dependency, we
-    deploy it to aspectj.dev.
+    deploy it to and Sonatype OSSRH separately, promoting releases to Maven Central. From there it can be consumed by
+    the main AspectJ build.
 
     Whenever it is necessary to upgrade to a new ASM version in order to make AspectJ compatible with a new Java
-    version, please build and deploy this module after upgrading property 'asm.version'. Make sure you have the
-    credentials for write access to the aspectj.dev Maven repository WebDAV share and the correct server, profile and
-    property entries in settings.xml.
-
-    Then you should be able to run 'mvn clean deploy' for this module and be fine.
+    version, please build and deploy this module after upgrading property 'asm.version'.
 
     Caveat for IntelliJ IDEA: The project cannot be built in IDEA (Ctrl-F9) if this module is visible in the Maven view.
     If so, right-click it and select "Unlink Maven Projects". Unfortunately, "Ignore Projects" is not enough. If Maven
     knows of this Maven module, it cannot compile other modules depending on shaded class names, because it cannot find
     the binaries. IDEA will just stop looking at the local Maven repository in this case.
   </description>
+  <url>https://www.eclipse.org/aspectj/</url>
+
+  <licenses>
+    <!--
+      Even though we release the package-relocated version under the 'org.aspectj' group ID, we do respect the original
+      licence, hence BSD-3 and not Eclipse
+    -->
+    <license>
+      <name>BSD-3-Clause</name>
+      <url>https://asm.ow2.io/license.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <!--
+      AspectJ developers only. For a list of original developers, mailing lists, SCM, issue management information etc.,
+      please see the original upstream POM, e.g. https://repo1.maven.org/maven2/org/ow2/asm/asm/9.1/asm-9.1.pom
+    -->
+    <developer>
+      <id>aclement</id>
+      <name>Andy Clement</name>
+      <email>aclement@vmware.com</email>
+    </developer>
+    <developer>
+      <id>kriegaex</id>
+      <name>Alexander Kriegisch</name>
+      <email>kriegaex@aspectj.dev</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/eclipse/org.aspectj</url>
+    <connection>scm:git:https://github.com/eclipse/org.aspectj.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:eclipse/org.aspectj.git</developerConnection>
+  </scm>
 
   <properties>
     <!-- By default, do not deploy artifacts - but deploy this one used by the main build -->
@@ -110,6 +142,7 @@
         <artifactId>maven-shade-plugin</artifactId>
         <configuration>
           <createSourcesJar>true</createSourcesJar>
+          <!-- Flatten Maven plugin takes care of customising the POM for deployment -->
           <createDependencyReducedPom>false</createDependencyReducedPom>
           <shadedArtifactAttached>false</shadedArtifactAttached>
         </configuration>
@@ -149,6 +182,55 @@
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>truezip-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unzip-relocated-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <!--
+                Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
+                profile is active or the property is overridden manually to be false. See property definitions in parent
+                POM for default case and release profile.
+              -->
+              <skip>${maven.javadoc.skip}</skip>
+              <verbose>true</verbose>
+              <fileset>
+                <directory>${project.build.directory}/${project.build.finalName}-sources.jar</directory>
+                <outputDirectory>${project.build.directory}/unpacked-sources</outputDirectory>
+              </fileset>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>javadoc-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <sourcepath>${project.build.directory}/unpacked-sources</sourcepath>
+              <!-- Deactivate doclint checks in order to suppress errors -->
+              <doclint>none</doclint>
+              <subpackages>aj</subpackages>
+              <javadocVersion>8</javadocVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
         <version>1.2.2</version>
         <executions>
@@ -160,9 +242,10 @@
               <goal>flatten</goal>
             </goals>
             <configuration>
-              <flattenMode>defaults</flattenMode>
+              <flattenMode>oss</flattenMode>
               <pomElements>
                 <dependencies>remove</dependencies>
+                <repositories>remove</repositories>
               </pomElements>
               <outputDirectory>${project.build.directory}</outputDirectory>
               <flattenedPomFilename>flattened-pom.xml</flattenedPomFilename>

@@ -355,7 +355,6 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>truezip-maven-plugin</artifactId>
-            <version>1.2</version>
             <!--
               The TrueZIP plugin can seamlessly copy out of or into (nested) ZIP files as if they were normal file system
               paths. No additional moves and deletes with Antrun are necessary.
