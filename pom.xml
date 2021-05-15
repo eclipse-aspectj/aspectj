@@ -326,6 +326,10 @@
 							<goals>
 								<goal>sign</goal>
 							</goals>
+							<configuration>
+								<!-- Only sign artifacts which are also meant to be deployed -->
+								<skip>${maven.deploy.skip}</skip>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
@@ -355,6 +359,8 @@
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
+						<!-- Only stage artifacts to which are also meant to be deployed -->
+						<skipStaging>${maven.deploy.skip}</skipStaging>
 					</configuration>
 				</plugin>
 				<plugin>
