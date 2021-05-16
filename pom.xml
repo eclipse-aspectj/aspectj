@@ -148,11 +148,6 @@
 		<module>run-all-junit-tests</module>
 		<module>docs</module>
 
-		<!-- FYI: These are NOT meant to be sub-modules but a stand-alone projects built and deployed independently. -->
-		<!--
-		<module>asm-renamed</module>
-		-->
-
 		<!-- create the important artifacts we care about -->
 		<module>aspectjrt</module>
 		<module>aspectjweaver</module>
