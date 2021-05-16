@@ -17,7 +17,7 @@
 			<useProjectArtifact>false</useProjectArtifact>
 			<includes>
 				<include>org.aspectj:org.eclipse.jdt.core</include>
-				<include>org.aspectj:asm-renamed</include>
+				<include>org.ow2.asm:asm</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

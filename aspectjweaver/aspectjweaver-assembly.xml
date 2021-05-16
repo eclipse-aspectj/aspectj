@@ -16,7 +16,7 @@
 			<!-- Avoid warning when trying to add non-existing main artifact JAR -->
 			<useProjectArtifact>false</useProjectArtifact>
 			<includes>
-				<include>org.aspectj:asm-renamed</include>
+				<include>org.ow2.asm:asm</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

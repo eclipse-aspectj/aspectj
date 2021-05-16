@@ -50,7 +50,8 @@
 						<configuration>
 							<classifier>sources</classifier>
 							<!--<failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>-->
-							<includeArtifactIds>org.eclipse.jdt.core,asm-renamed</includeArtifactIds>
+							<includeGroupIds>org.aspectj,org.ow2.asm</includeGroupIds>
+							<includeArtifactIds>org.eclipse.jdt.core,asm</includeArtifactIds>
 							<outputDirectory>${project.build.directory}/unzipped-sources</outputDirectory>
 							<!-- Avoid accidentally shading test-scoped dependencies like JUnit -->
 							<includeScope>runtime</includeScope>
@@ -140,6 +141,49 @@
 				</executions>
 			</plugin>
 
+			<!--
+				Relocate ASM from 'org.objectweb.asm' to 'aj.org.objectweb.asm'
+
+				TODO: Using Maven Shade after Maven Assembly instead of creating uber JAR and relocating package names at the
+				  same time is suboptimal and maybe slower than doing both at the same time. Migrating from Assembly to Shade
+				  requires all dependencies to produce source JARs, though, which currently is not the case. Because we also
+				  want to create a complete source JAR, for now we keep Assembly around, because it manually copies project
+				  sources from their respective directories before zipping them up.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<createSourcesJar>true</createSourcesJar>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<shadedArtifactAttached>false</shadedArtifactAttached>
+				</configuration>
+				<executions>
+					<execution>
+						<id>asm-relocate</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<minimizeJar>false</minimizeJar>
+							<shadeSourcesContent>true</shadeSourcesContent>
+							<artifactSet>
+								<includes>
+									<include>${project.groupId}:${project.artifactId}</include>
+								</includes>
+							</artifactSet>
+							<relocations>
+								<relocation>
+									<pattern>org.objectweb.asm</pattern>
+									<shadedPattern>aj.org.objectweb.asm</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -179,8 +223,8 @@
 			<artifactId>org.eclipse.jdt.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>asm-renamed</artifactId>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
 		</dependency>
 	</dependencies>
 
