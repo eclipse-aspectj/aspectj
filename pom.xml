@@ -5,14 +5,12 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.7.BUILD-SNAPSHOT</version>
+	<version>1.9.7-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
 
 	<properties>
-		<!-- TODO: Do we still need this? -->
-		<revision>1.9.7.BUILD-SNAPSHOT</revision>
 		<!-- Basic build properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
