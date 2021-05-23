@@ -217,7 +217,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>truezip-maven-plugin</artifactId>
@@ -319,8 +319,8 @@
 			<artifactId>org.eclipse.jdt.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>asm-renamed</artifactId>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -333,10 +333,6 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-<<<<<<< HEAD
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-=======
 			<groupId>org.aspectj</groupId>
 			<artifactId>util</artifactId>
 			<version>${project.version}</version>
@@ -344,11 +340,6 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>bridge</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>asm</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -395,7 +386,6 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>taskdefs</artifactId>
 			<version>${project.version}</version>
->>>>>>> xander/maven-central-deployment
 		</dependency>
 	</dependencies>
 
