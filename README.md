@@ -24,4 +24,4 @@ Once you have imported all the projects using `m2e`, close the `org.eclipse.jdt.
  
 ## Setting version for release:
 
-mvn versions:set -DgroupId=org.aspectj -DartifactId=* -DoldVersion=1.9.3.BUILD-SNAPSHOT -DnewVersion=1.9.3
+mvn versions:set -DgroupId=org.aspectj -DartifactId=* -DoldVersion=1.9.3-SNAPSHOT -DnewVersion=1.9.3

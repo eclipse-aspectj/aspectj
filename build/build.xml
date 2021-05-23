@@ -806,11 +806,11 @@ ant -propertyfile XXX publishtomaven
     <property name="maven.central.repository" value="https://repo.spring.io/libs-snapshot-local/org/aspectj/aspectjweaver"/>
 -->
 
-<!-- aspectjtools/target/aspectjtools-1.9.6.BUILD-SNAPSHOT.jar -->
+<!-- aspectjtools/target/aspectjtools-1.9.7-SNAPSHOT.jar -->
 
     <property name="bin.jars.folder" value="${build.root}/dist/tools/lib"/>
     <property name="src.jars.folder" value="${build.root}/src"/>
-    <property name="suffix" value="1.9.6.BUILD-SNAPSHOT"/>
+    <property name="suffix" value="1.9.7-SNAPSHOT"/>
 
     <!-- ASPECTJRT -->
     <maven:deploy file="${build.root}/aspectjrt/target/aspectjrt-${suffix}.jar">
