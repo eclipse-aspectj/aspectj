@@ -344,6 +344,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
+			<artifactId>asm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
 			<artifactId>org.aspectj.matcher</artifactId>
 			<version>${project.version}</version>
 		</dependency>
