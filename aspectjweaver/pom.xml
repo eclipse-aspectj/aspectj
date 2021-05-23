@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -11,7 +10,40 @@
 	</parent>
 
 	<artifactId>aspectjweaver</artifactId>
+
 	<name>AspectJ Weaver</name>
+	<description>
+		The AspectJ weaver applies aspects to Java classes. It can be used as a Java agent in order to apply load-time
+		weaving (LTW) during class-loading and also contains the AspectJ runtime classes.
+	</description>
+	<url>https://www.eclipse.org/aspectj/</url>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 1.0</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>aclement</id>
+			<name>Andy Clement</name>
+			<email>aclement@vmware.com</email>
+		</developer>
+		<developer>
+			<id>kriegaex</id>
+			<name>Alexander Kriegisch</name>
+			<email>kriegaex@aspectj.dev</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/eclipse/org.aspectj</url>
+		<connection>scm:git:https://github.com/eclipse/org.aspectj.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:eclipse/org.aspectj.git</developerConnection>
+	</scm>
 
 	<properties>
 		<!-- By default, do not deploy artifacts - but deploy this public one -->
@@ -186,6 +218,66 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unzip-relocated-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<!--
+								Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
+								profile is active or the property is overridden manually to be false. See property definitions in parent
+								POM for default case and release profile.
+							-->
+							<skip>${maven.javadoc.skip}</skip>
+							<verbose>true</verbose>
+							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjweaver? -->
+							<fileset>
+								<directory>${project.build.directory}/${project.build.finalName}-sources.jar/org/aspectj</directory>
+								<outputDirectory>${project.build.directory}/unpacked-sources/org/aspectj</outputDirectory>
+							</fileset>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<!--
+						  FIXME: This configuration works with JDK 16, but throws errors on other JDK versions, e.g. 14. It looks as
+						   if the Maven Javadoc plugin does not do a particularly good job applying the plugin settings in a way
+						   making it work with different JDK javadoc tool versions. I am saying that, because when using the tool
+						   directly on the console, it works with basic settings and the correct classpath.
+						-->
+						<configuration>
+							<sourcepath>${project.build.directory}/unpacked-sources</sourcepath>
+							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjtools? -->
+							<subpackages>org.aspectj</subpackages>
+							<!-- Deactivate doclint checks in order to suppress errors -->
+							<doclint>none</doclint>
+							<!-- Generate class use xref, making javadocs considerably bigger, but also more informative -->
+							<use>true</use>
+							<!-- FIXME: Why does it fail without this parameter? -->
+							<javadocVersion>8</javadocVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
 			<plugin>
@@ -210,6 +302,12 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<!-- Deploy this module to Nexus (Sonatype OSSRH, releases promotable to Maven Central) -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
 			</plugin>
 
 		</plugins>

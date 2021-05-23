@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -11,17 +10,85 @@
 	</parent>
 
 	<artifactId>installer</artifactId>
+
 	<name>AspectJ Installer</name>
+	<description>
+		The AspectJ installer is an executable JAR capable of installing a full AspectJ distribution consisting of libraries
+		(AspectJ runtime, weaver and tools/compiler) and API Javadoc.
+	</description>
+	<url>https://www.eclipse.org/aspectj/</url>
+
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 1.0</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>aclement</id>
+			<name>Andy Clement</name>
+			<email>aclement@vmware.com</email>
+		</developer>
+		<developer>
+			<id>kriegaex</id>
+			<name>Alexander Kriegisch</name>
+			<email>kriegaex@aspectj.dev</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/eclipse/org.aspectj</url>
+		<connection>scm:git:https://github.com/eclipse/org.aspectj.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:eclipse/org.aspectj.git</developerConnection>
+	</scm>
 
 	<properties>
+		<!--
+			TODO: Decide whether to publish this artifact on Maven Central or not. For now, skip the deployment until a final
+			  decision was made. If we do decide to publish, we need to add source and javadoc JARs. I suggest to re-use the
+			  ones from aspectjtools, because the installer contains runtime, weaver and tools and the latter one is a
+			  superset of the former two.
+		-->
 		<!-- By default, do not deploy artifacts - but deploy this public one -->
-		<maven.deploy.skip>false</maven.deploy.skip>
+		<!--<maven.deploy.skip>false</maven.deploy.skip>-->
 	</properties>
 
 	<dependencies>
+		<!-- Uber JARs to add to the installer archive: runtime, weaver, tools -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>run-all-junit-tests</artifactId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Executable JAR installer classes -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>build</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- AspectJ documentation, created by Ant job in aj-build/dist/docs -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>docs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Runtime javadocs - TODO: use full tools javadocs instead -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>runtime</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
