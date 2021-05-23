@@ -11,26 +11,25 @@
  * ******************************************************************/
 package org.aspectj.weaver.bcel.asm;
 
-import java.lang.reflect.Method;
-
 /**
  * Determines if a version of asm is around that will enable us to add stack map attributes to classes that we produce.
- * 
+ *
  * @author Andy Clement
  */
 public class AsmDetector {
-
+	public static final String CLASS_READER = "org.objectweb.asm.ClassReader";
+	public static final String CLASS_VISITOR = "org.objectweb.asm.ClassVisitor";
 	public static boolean isAsmAround;
 
 	static {
 		try {
-			Class<?> reader = Class.forName("aj.org.objectweb.asm.ClassReader");
-			Class<?> visitor = Class.forName("aj.org.objectweb.asm.ClassVisitor");
-			Method m = reader.getMethod("accept", new Class[] { visitor, Integer.TYPE });
-			isAsmAround = m != null;
+			Class<?> reader = Class.forName(CLASS_READER);
+			Class<?> visitor = Class.forName(CLASS_VISITOR);
+			reader.getMethod("accept", visitor, Integer.TYPE);
+			isAsmAround = true;
 		} catch (Exception e) {
 			isAsmAround = false;
 		}
-		// System.out.println(isAsmAround?"ASM detected":"No ASM found");
+		//System.out.println(isAsmAround ? "ASM detected" : "No ASM found");
 	}
 }

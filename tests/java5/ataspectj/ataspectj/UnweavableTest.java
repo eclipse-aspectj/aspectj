@@ -22,10 +22,10 @@ import java.io.Serializable;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import aj.org.objectweb.asm.ClassWriter;
-import aj.org.objectweb.asm.Opcodes;
-import aj.org.objectweb.asm.MethodVisitor;
-import aj.org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.AnnotationVisitor;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

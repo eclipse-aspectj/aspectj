@@ -63,12 +63,12 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	protected Ajc ajc;
 
-	public static final String CLASSPATH_ASM_RENAMED =
+	public static final String CLASSPATH_ASM =
 		Arrays.stream(System.getProperty("java.class.path")
 			.split(File.pathSeparator))
-			.filter(path -> path.contains("asm-renamed"))
+			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/"))
 			.findFirst()
-			.orElseThrow(() -> new RuntimeException("library 'asm-renamed' not found on classpath"));
+			.orElseThrow(() -> new RuntimeException("ASM library not found on classpath"));
 
 	// see Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
@@ -76,7 +76,7 @@ public abstract class AjcTestCase extends TestCase {
 				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar"
 				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel.jar"
 				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "bcel" + File.separator + "bcel-verifier.jar"
-				+ File.pathSeparator + CLASSPATH_ASM_RENAMED
+				+ File.pathSeparator + CLASSPATH_ASM
 				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "testing-client.jar"
 				// hmmm, this next one should perhaps point to an aj-build jar...
 				+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar"

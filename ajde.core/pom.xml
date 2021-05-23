@@ -42,8 +42,8 @@
       <artifactId>org.eclipse.jdt.core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>asm-renamed</artifactId>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>

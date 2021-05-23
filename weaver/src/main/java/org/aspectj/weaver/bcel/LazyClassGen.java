@@ -754,7 +754,11 @@ public final class LazyClassGen {
 		// are required (unless turning off the verifier)
 		if ((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6) {
 			if (!AsmDetector.isAsmAround) {
-				throw new BCException("Unable to find Asm for stackmap generation (Looking for 'aj.org.objectweb.asm.ClassReader'). Stackmap generation for woven code is required to avoid verify errors on a Java 1.7 or higher runtime");
+				throw new BCException(
+					"Unable to find ASM classes (" + AsmDetector.CLASS_READER + ", " + AsmDetector.CLASS_VISITOR + ") " +
+						"for stackmap generation. Stackmap generation for woven code is required to avoid verify errors " +
+						"on a Java 1.7 or higher runtime."
+				);
 			}
 			wovenClassFileData = StackMapAdder.addStackMaps(world, wovenClassFileData);
 		}

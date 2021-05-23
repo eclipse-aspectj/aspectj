@@ -15,11 +15,11 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
-import aj.org.objectweb.asm.ClassReader;
-import aj.org.objectweb.asm.ClassVisitor;
-import aj.org.objectweb.asm.ClassWriter;
-import aj.org.objectweb.asm.MethodVisitor;
-import aj.org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Uses asm to add the stack map attribute to methods in a class. The class is passed in as pure byte data and then a reader/writer

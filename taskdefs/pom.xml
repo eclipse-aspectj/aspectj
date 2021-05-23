@@ -39,8 +39,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>asm-renamed</artifactId>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
     </dependency>
     <dependency>
       <!-- Identical to lib/ant/lib/ant.jar, a former system-scoped dependency -->

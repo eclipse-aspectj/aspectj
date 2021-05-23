@@ -157,8 +157,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>asm-renamed</artifactId>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -245,7 +245,7 @@
 					<usedDependencies>
 						<!-- The tests need these during runtime, even though no direct usage is in our classes -->
 						<usedDependency>ant:ant-launcher</usedDependency>
-						<usedDependency>org.aspectj:asm-renamed</usedDependency>
+						<usedDependency>org.ow2.asm:asm</usedDependency>
 						<usedDependency>org.aspectj:ajde</usedDependency>
 						<usedDependency>org.aspectj:build</usedDependency>
 						<usedDependency>org.aspectj:tests</usedDependency>
