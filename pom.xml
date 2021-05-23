@@ -261,8 +261,13 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<!-- TODO: upgrade after https://issues.apache.org/jira/browse/MSHADE-366 is fixed -->
-					<version>3.2.4</version>
+					<!--
+						TODO: Replace by release in which
+						  - https://issues.apache.org/jira/browse/MSHADE-252,
+						  - https://issues.apache.org/jira/browse/MSHADE-391,
+						  - https://issues.apache.org/jira/browse/MSHADE-366 are fixed.
+					-->
+					<version>3.2.4.MSHADE-252-391</version>
 					<configuration>
 						<createSourcesJar>true</createSourcesJar>
 						<createDependencyReducedPom>false</createDependencyReducedPom>
