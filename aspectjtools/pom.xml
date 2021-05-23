@@ -333,10 +333,10 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-<<<<<<< HEAD
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
-=======
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>util</artifactId>
 			<version>${project.version}</version>
@@ -395,7 +395,6 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>taskdefs</artifactId>
 			<version>${project.version}</version>
->>>>>>> xander/maven-central-deployment
 		</dependency>
 	</dependencies>
 
