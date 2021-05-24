@@ -767,9 +767,9 @@ public class Main implements Config {
 	/* This section of code handles errors that occur during compilation */
 	static final String internalErrorMessage = "                                                                  \n"
 			+ "If this has not already been logged as a bug raised please raise  \n"
-			+ "a new AspectJ bug at https://bugs.eclipse.org/bugs including the  \n"
-			+ "text below. To make the bug a priority, please also include a test\n"
-			+ "program that can reproduce this problem.\n ";
+			+ "a new AspectJ bug at https://github.com/eclipse/org.aspectj/issues \n"
+			+ "including the text below. To make the bug a priority, please also \n"
+			+ "include a test program that can reproduce this problem.\n ";
 
 	static public void handleInternalError(Throwable uncaughtThrowable) {
 		System.err.println("An internal error occured in ajdoc");
