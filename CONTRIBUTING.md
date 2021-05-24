@@ -49,3 +49,5 @@ Some issues involving compiler problems, for example if Java code isn't working 
 ## Contributions
 
 Please contribute via Pull Request against the GitHub repository.
+
+Contributors should ensure they have signed the [Eclipse Contributor Agreement](https://accounts.eclipse.org/user/7644/eca/3.1.0), this will be verified by automatic validation that occurs against any Pull Requests.
