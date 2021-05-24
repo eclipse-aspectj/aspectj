@@ -237,11 +237,16 @@
 							-->
 							<skip>${maven.javadoc.skip}</skip>
 							<verbose>true</verbose>
-							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjweaver? -->
-							<fileset>
-								<directory>${project.build.directory}/${project.build.finalName}-sources.jar/org/aspectj</directory>
-								<outputDirectory>${project.build.directory}/unpacked-sources/org/aspectj</outputDirectory>
-							</fileset>
+							<filesets>
+								<fileset>
+									<directory>${project.build.directory}/${project.build.finalName}-sources.jar/org/aspectj</directory>
+									<outputDirectory>${project.build.directory}/unpacked-sources/org/aspectj</outputDirectory>
+								</fileset>
+								<fileset>
+									<directory>${project.build.directory}/${project.build.finalName}-sources.jar/aj</directory>
+									<outputDirectory>${project.build.directory}/unpacked-sources/aj</outputDirectory>
+								</fileset>
+							</filesets>
 						</configuration>
 					</execution>
 				</executions>
