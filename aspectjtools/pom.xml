@@ -236,11 +236,16 @@
 							-->
 							<skip>${maven.javadoc.skip}</skip>
 							<verbose>true</verbose>
-							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjtools? -->
-							<fileset>
-								<directory>${project.build.directory}/${project.build.finalName}-sources.jar/org/aspectj</directory>
-								<outputDirectory>${project.build.directory}/unpacked-sources/org/aspectj</outputDirectory>
-							</fileset>
+							<filesets>
+								<fileset>
+									<directory>${project.build.directory}/${project.build.finalName}-sources.jar/org/aspectj</directory>
+									<outputDirectory>${project.build.directory}/unpacked-sources/org/aspectj</outputDirectory>
+								</fileset>
+								<fileset>
+									<directory>${project.build.directory}/${project.build.finalName}-sources.jar/aj</directory>
+									<outputDirectory>${project.build.directory}/unpacked-sources/aj</outputDirectory>
+								</fileset>
+							</filesets>
 						</configuration>
 					</execution>
 				</executions>
@@ -249,7 +254,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>javadoc-jar</id>
