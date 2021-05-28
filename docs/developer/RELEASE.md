@@ -149,6 +149,34 @@ under https://repo1.maven.org/maven2/org/aspectj/, e.g. AspectJ Tools 1.9.7.M2 w
 https://repo1.maven.org/maven2/org/aspectj/aspectjtools/1.9.7.M2/. As soon as you see the artifacts there instead of
 "404 not found", you can announce release availability on the AspectJ mailing list and wherever else appropriate.
 
-Finally, probably want to publish the AspectJ installer (`installer/target/aspectj-[VERSION].jar`), e.g. by creating a
+Finally, you probably want to publish the AspectJ installer (`installer/target/aspectj-[VERSION].jar`), e.g. by creating a
 GitHub release and attaching artifacts and/or updating the Eclipse AspectJ website. You also want to update the AspectJ
 documentation, if there were any changes.
+
+## Deploying the AspectJ installer to aspectj.dev
+
+An easy way to quickly publish the installer is to simply deploy it to the Maven repository aspectj.dev. In order to do
+that, you need to mount the target directory as a WebDAV share first (ask an AspectJ maintainer for credentials). This
+can be done on all operating systems, for this example let us assume we are working on Windows and already have mounted
+the share to drive letter M: (M like Maven). Command `net use` would show something like this (sorry, in German):
+
+```text
+C:\Users\me>net use
+...
+Status       Lokal     Remote                    Netzwerk
+-------------------------------------------------------------------------------
+OK           M:        \\s000b153.kasserver.com\s000b153
+                                                Microsoft Windows Network
+...
+```
+
+Next, we need to tell Maven to
+  - actually deploy the installer (remember, by default only the artifacts listed above are deployed),
+  - override the default deployment repository (Sonatype OSSRH) by our WebDAV share.
+
+Before issuing the following command, make sure that you successfully built AspectJ before. Otherwise, Maven cannot find
+the artifacts it needs to create the installer JAR.
+
+```shell
+mvn --projects installer -Dmaven.deploy.skip=false -DaltDeploymentRepository=aspectj-dev::default::file:///M: deploy
+```
