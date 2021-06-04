@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -36,7 +36,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author colyer
- * 
+ *
  *         Adapts standard JDT Compiler to add in AspectJ specific behaviours.
  */
 public class AjCompilerAdapter extends AbstractCompilerAdapter {
@@ -69,7 +69,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 
 	/**
 	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ parts of a compile cycle.
-	 * 
+	 *
 	 * @param compiler the JDT compiler that produces class files from source
 	 * @param isBatchCompile true if this is a full build (non-incremental)
 	 * @param world the bcelWorld used for type resolution during weaving

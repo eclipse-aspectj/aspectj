@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.tools.ajc;
@@ -20,14 +20,14 @@ import org.aspectj.bridge.IMessageHolder;
 
 /**
  * @author Adrian
- * 
+ *
  *         Deliberately empty implementation of IMessageHolder
  */
 public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHolder#hasAnyMessage(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public boolean hasAnyMessage(Kind kind, boolean orGreater) {
@@ -37,7 +37,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHolder#numMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public int numMessages(Kind kind, boolean orGreater) {
@@ -47,7 +47,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHolder#getMessages(org.aspectj.bridge.IMessage.Kind, boolean)
 	 */
 	public IMessage[] getMessages(Kind kind, boolean orGreater) {
@@ -57,7 +57,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHolder#getUnmodifiableListView()
 	 */
 	public List<IMessage> getUnmodifiableListView() {
@@ -67,7 +67,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHolder#clearMessages()
 	 */
 	public void clearMessages() throws UnsupportedOperationException {
@@ -77,7 +77,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHandler#handleMessage(org.aspectj.bridge.IMessage)
 	 */
 	public boolean handleMessage(IMessage message) throws AbortException {
@@ -87,7 +87,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 	 */
 	public boolean isIgnoring(Kind kind) {
@@ -97,7 +97,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHandler#dontIgnore(org.aspectj.bridge.IMessage.Kind)
 	 */
 	public void dontIgnore(Kind kind) {
@@ -107,7 +107,7 @@ public class TestMessageHolder implements IMessageHolder {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.bridge.IMessageHandler#ignore(org.aspectj.bridge.IMessage.Kind)
 	 */
 	public void ignore(Kind kind) {

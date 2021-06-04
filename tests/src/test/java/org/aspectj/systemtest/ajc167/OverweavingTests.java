@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -18,7 +18,7 @@ import junit.framework.Test;
  * Testing whether AspectJ can overweave. Overweaving is where we attempt to weave something that has already been woven. The simple
  * rule followed is that aspects that applied to the type before are not applied this time around (if they are visible to the
  * weaver).
- * 
+ *
  * @author Andy Clement
  */
 public class OverweavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {

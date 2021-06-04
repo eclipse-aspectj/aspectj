@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util.options;
@@ -54,7 +54,7 @@ public class Values {
             LangUtil.throwIaxIfNull(input, "values");
         } else {
             int length = 0;
-            for (int i = 0; i < values.length; i++) {            
+            for (int i = 0; i < values.length; i++) {
                 if (values[i] == null) {
                     LangUtil.throwIaxIfNull(null, "null value[" + i + "]");
                 }
@@ -71,7 +71,7 @@ public class Values {
         }
         return new Values(input);
     }
-    
+
     static int[] invert(int[] missed, int length) {
         final int MAX = length;
         final int len = MAX - missed.length;
@@ -107,7 +107,7 @@ public class Values {
      * is a matching force-on, then this will return an error.
      * Next, for any force-on value, it is converted to set-on,
      * and any other matching set-on value is removed.
-     * Finally, this signals a collision if two values share 
+     * Finally, this signals a collision if two values share
      * the same option family and the family reports that this is
      * a collision.
      * In all cases, only the first error detected is reported.
@@ -145,26 +145,26 @@ public class Values {
     }
 
     /**
-     * Resolve all related options into one 
+     * Resolve all related options into one
      * by nullifying or modifying the values.
-     * 
-     * First, for any force-off value, 
-     * remove all identical set-on 
-     * and the force-off itself, 
+     *
+     * First, for any force-off value,
+     * remove all identical set-on
+     * and the force-off itself,
      * and alert on any identical force-on.
      *
-     * Next, for any force-on value, 
+     * Next, for any force-on value,
      * convert to set-on,
      * throw Error on any same-family force-off value,
      * remove any identical force-on or set-on value,
      * alert on any other non-identical same-family force-on value,
      * remove any same-family set-on value,
      * and alert on any same-family set-off value.
-     * 
-     * Finally, alert if any two remaining values share 
+     *
+     * Finally, alert if any two remaining values share
      * the same option family, unless the option is marked
      * as permitting multiple values.
-     * 
+     *
      * @param input the Option.Value[] matching the input
      * @param matches the int[] list of indexes into input for
      *      values for related by option
@@ -241,9 +241,9 @@ public class Values {
     }
 
     /**
-     * For any force-off value, 
+     * For any force-off value,
      * remove all  set-on or force-off with same value
-     * (including the force-off itself), 
+     * (including the force-off itself),
      * and alert on any identical force-on.
      * @param input the Option.Value[] matching the input
      * @param value the force-off Option.Value to remove
@@ -356,7 +356,7 @@ public class Values {
         }
         return result.getList();
     }
-       
+
     static int nullify(Option.Value[] values, Selector selector) {
         LangUtil.throwIaxIfNull(selector, "selector");
         int changed = 0;
@@ -425,7 +425,7 @@ public class Values {
     }
 
     /**
-     * Emit as String[] the non-null values. 
+     * Emit as String[] the non-null values.
      * @return String[] of matched entries (never null, elements not null)
      */
     public String[] render() {
@@ -450,7 +450,7 @@ public class Values {
 
     /**
      * Create index into values of missed input,
-     * taking into account that matched arguments are 
+     * taking into account that matched arguments are
      * represented as null.
      * @return int[] of elements in values that are null
      *         or optionally represent option arguments
@@ -496,7 +496,7 @@ public class Values {
     }
 
     /**
-     * 
+     *
      * @param selector the Selector to pick out entries to nullify
      *    (should throw STOP to halt processing)
      * @return Values resulting from nullifying entries,
@@ -509,11 +509,11 @@ public class Values {
         Value[] temp = asArray();
         int changed = nullify(temp, selector);
         if (0 == changed) {
-            return this;    
+            return this;
         }
-        return new Values(temp);        
+        return new Values(temp);
     }
-    
+
     /**
      * Resolve options, removing duplicates by force if necessary.
      * If any error is returned, then the values are left unchanged.
@@ -636,7 +636,7 @@ public class Values {
 
         /**
          * add index if value is null
-         * unless skipArguments 
+         * unless skipArguments
          */
         protected boolean accept(Value value) {
             index++;

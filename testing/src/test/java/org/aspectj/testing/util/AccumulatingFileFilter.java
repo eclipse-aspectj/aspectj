@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -16,7 +16,7 @@ package org.aspectj.testing.util;
 import java.io.File;
 import java.util.Vector;
 
-/** 
+/**
  * A FileFilter that accumulates the results when called if they exist.
  * Subclasses override accumulate to determine whether it should be
  * accumulated.
@@ -30,17 +30,17 @@ public class AccumulatingFileFilter extends ValidFileFilter {
         return true;
     }
 
-    /** 
+    /**
      * This implementation accumulates everything.
      * Subclasses should override to implement filter
-     * @param file a File guaranteed to exist 
-     * @return true if file should be accumulated. 
+     * @param file a File guaranteed to exist
+     * @return true if file should be accumulated.
      */
     public boolean accumulate(File f) {
         return true;
     }
     /**
-     * @return list of files currently accumulated 
+     * @return list of files currently accumulated
      */
     public File[] getFiles() {
         int numFiles = files.size();

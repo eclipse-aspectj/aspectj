@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Lucierna 
+ * Copyright (c) 2012 Lucierna
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Abraham Nevado (lucierna) - initial implementation
@@ -23,7 +23,7 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testSharedCache() {
 		this.runTest("Test Shared Cache");
 		File cacheFolder =  new File(ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "panenka.cache");
-		assertTrue("Cache folder should be written when using share cache", cacheFolder.exists());		
+		assertTrue("Cache folder should be written when using share cache", cacheFolder.exists());
 		//Delete the cache from the ajc sandbox
 		deleteFolder(cacheFolder);
 	}
@@ -31,13 +31,13 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testPerClassLoaderCache() {
 		this.runTest("Test Per ClassLoader Cache");
 		File cacheFolder =  new File(ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "panenka.cache");
-		assertFalse("Shared Cache Folder should not be present", cacheFolder.exists());		
+		assertFalse("Shared Cache Folder should not be present", cacheFolder.exists());
 	}
-	
+
 	public void testDefaultCachePerClassloader() {
 		this.runTest("Test Default Cache Per ClassLoader");
 		File cacheFolder =  new File(ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "panenka.cache");
-		assertFalse("By Default Per ClassLoader Cache should be used and not the shared one", cacheFolder.exists());		
+		assertFalse("By Default Per ClassLoader Cache should be used and not the shared one", cacheFolder.exists());
 	}
 
 	// ///////////////////////////////////////

@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -21,7 +21,7 @@ import javax.swing.JDialog;
 
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.core.IBuildProgressMonitor;
-  
+
 /**
  * This dialog box is open while ajc is compiling the system and displays
  * a corresponding progress bar.
@@ -31,7 +31,7 @@ import org.aspectj.ajde.core.IBuildProgressMonitor;
 public class DefaultBuildProgressMonitor extends Thread implements IBuildProgressMonitor {
 
 	public static final String PROGRESS_HEADING = "AspectJ Build";
-	
+
 	private BuildProgressPanel progressDialog = null;
 	private JDialog dialog = null;
 
@@ -41,7 +41,7 @@ public class DefaultBuildProgressMonitor extends Thread implements IBuildProgres
         dialog.setContentPane(progressDialog);
         dialog.setSize(550, 120);
         try {
-	        dialog.setLocationRelativeTo(parent);	
+	        dialog.setLocationRelativeTo(parent);
 		} catch (NoSuchMethodError nsme) {
 			// running on 1.3
 		}
@@ -69,7 +69,7 @@ public class DefaultBuildProgressMonitor extends Thread implements IBuildProgres
      */
     public void finish(boolean wasFullBuild) {
 		progressDialog.finish();
-		dialog.dispose();    	
+		dialog.dispose();
     }
 
 	public boolean isCancelRequested() {
@@ -77,6 +77,6 @@ public class DefaultBuildProgressMonitor extends Thread implements IBuildProgres
 	}
 
 	public void setProgress(double percentDone) {
-		progressDialog.setProgressBarVal((int) (percentDone*progressDialog.getProgressBarMax()));	
+		progressDialog.setProgressBarVal((int) (percentDone*progressDialog.getProgressBarMax()));
 	}
 }

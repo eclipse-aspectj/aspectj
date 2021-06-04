@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -42,17 +42,17 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * (formals*): ... if(expr) ...
- * 
+ *
  * generates the following: public static final boolean ajc$if_N(formals*,
  * [thisJoinPoints as needed]) { return expr; }
- * 
+ *
  * Here's the complicated bit, it deals with cflow: (a): ... this(a) &amp;&amp; cflow(if
  * (a == foo)) is an error. The way we capture this is: We generate the ajc$if
  * method with an (a) parameter, we let eclipse do the proper name binding. We
  * then, as a post pass (that we need to do anyway) look for the used
  * parameters. If a is used, we signal an error because a was not one of the
  * cflow variables. XXX we'll do this part after we do cflow
- * 
+ *
  * The IfPointcut pcd then generates itself always as a dynamic test, it has to
  * get the right parameters through any named pointcut references...
  */
@@ -98,15 +98,15 @@ public class IfPseudoToken extends PseudoToken {
 	private final static char[] CodeGenerationHint = "CodeGenerationHint".toCharArray();
 	private final static char[] FullyQualifiedCodeGenerationHint = "org.aspectj.lang.annotation.control.CodeGenerationHint".toCharArray();
 	private final static char[] IfNameSuffix = "ifNameSuffix".toCharArray();
-	
+
 	// XXX todo: make sure that errors in Arguments only get displayed once
 	private MethodDeclaration makeIfMethod(CompilationResult result, MethodDeclaration enclosingDec, TypeDeclaration containingTypeDec, int counter) {
 		MethodDeclaration ret = new IfMethodDeclaration(result, pointcut);
 		ret.modifiers = ClassFileConstants.AccStatic | ClassFileConstants.AccFinal | ClassFileConstants.AccPublic;
 		ret.returnType = AstUtil.makeTypeReference(TypeBinding.BOOLEAN);
-		
+
 		String nameSuffix = null;
-		
+
 		if (enclosingDec!=null && enclosingDec.annotations!=null) {
 			NormalAnnotation interestingAnnotation = null;
 			Annotation[] as = enclosingDec.annotations;
@@ -136,8 +136,8 @@ public class IfPseudoToken extends PseudoToken {
 				}
 			}
 		}
-		
-		
+
+
 		// create a more stable name 277508
 		StringBuffer ifSelector = new StringBuffer();
 		ifSelector.append("ajc$if$");
@@ -176,7 +176,7 @@ public class IfPseudoToken extends PseudoToken {
 			ifSelector.append(nameSuffix);
 		}
 
-		
+
 		ret.selector = ifSelector.toString().toCharArray();
 		ret.arguments = makeArguments(enclosingDec, containingTypeDec);
 		ret.statements = new Statement[] { new ReturnStatement(expr,

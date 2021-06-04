@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -23,14 +23,14 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
+/**
   * A node in a tree containing other Node or SpecElements items.
   */
 public class Node { // XXX render
     public static final Node[] EMPTY_NODES = new Node[0];
     public static final Object[] EMPTY_ITEMS = new Object[0];
 
-    /** 
+    /**
      * Visit all the SpecElements (and Node) reachable from node
      * in depth-first order, halting if checker objects.
      * @param node the Node to pass to checker
@@ -48,7 +48,7 @@ public class Node { // XXX render
 
         Node[] nodes = node.getNodes();
         for (int i = 0; result && (i < nodes.length); i++) {
-            result = (null == nodeVisitor 
+            result = (null == nodeVisitor
                     ? visit(nodes[i], itemChecker, null)
                     : nodeVisitor.isValid(nodes[i]));
         }
@@ -82,7 +82,7 @@ public class Node { // XXX render
         this(name, type, name);
     }
     /**  */
-    public Node(String name, Class type, Object key) {    
+    public Node(String name, Class type, Object key) {
         if (null == name) {
             throw new IllegalArgumentException("null name");
         }
@@ -100,14 +100,14 @@ public class Node { // XXX render
         typeArray = (Object[]) Array.newInstance(type, 0);
     }
 
-    /** 
+    /**
      * clear all items and nodes.
      */
     public void clear() { // XXX synchronize
         nodes.clear();
         items.clear();
     }
-    
+
     /**
      * Add item to list of items
      * unless it is null, of the wrong type, or the collection fails to add

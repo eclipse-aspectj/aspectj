@@ -22,15 +22,15 @@ import org.apache.commons.digester.Digester;
  */
 public class MakeTestClass {
 
-	private static final String HEADER = 
+	private static final String HEADER =
 		"/* *******************************************************************\n" +
 		" * Copyright (c) 2004 IBM Corporation\n" +
-		" * All rights reserved.\n" + 
-		" * This program and the accompanying materials are made available\n" + 
-		" * under the terms of the Eclipse Public License v1.0\n" + 
-		" * which accompanies this distribution and is available at\n" + 
-		" * http://www.eclipse.org/legal/epl-v10.html \n" + 
-		" * \n" +  
+		" * All rights reserved.\n" +
+		" * This program and the accompanying materials are made available\n" +
+		" * under the terms of the Eclipse Public License v 2.0\n" +
+		" * which accompanies this distribution and is available at\n" +
+		" * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt\n" +
+		" * \n" +
 		" * ******************************************************************/\n" +
 		"package org.aspectj.systemtest.XXX;\n" +
         "\n" +
@@ -40,34 +40,34 @@ public class MakeTestClass {
 		"\n" +
 		"public class ";
 
-	private static final String BODY_1 = 
+	private static final String BODY_1 =
 		" extends org.aspectj.testing.XMLBasedAjcTestCase {\n" +
 		"\n" +
 		"  public static Test suite() {\n" +
 		"    return XMLBasedAjcTestCase.loadSuite(";
-	
+
 	private static final String BODY_2 =
 		".class);\n" +
 		"  }\n" +
 		"\n" +
 		"  protected File getSpecFile() {\n" +
 		"    return new File(\"";
-	
+
 	private static final String BODY_3 =
 		"\");\n" +
 		"  }\n";
-	
+
 	private static final String FOOTER =
 		"}\n";
-	
+
 	private List<AjcTest> tests = new ArrayList<>();
 	private String className;
 	private String suiteFile;
-	
+
 	public static void main(String[] args) throws Exception {
 		new MakeTestClass(args[0],args[1]).makeTestClass();
 	}
-	
+
 	public MakeTestClass(String className, String suiteFile)throws Exception {
 		this.className = className;
 		this.suiteFile = suiteFile;
@@ -75,11 +75,11 @@ public class MakeTestClass {
 		InputStreamReader isr = new InputStreamReader(new FileInputStream(suiteFile));
 		d.parse(isr);
 	}
-	
+
 	public void addTest(AjcTest test) {
 		tests.add(test);
 	}
-	
+
 	public void makeTestClass() throws Exception {
 		FileOutputStream fos = new FileOutputStream(className + ".java");
 		PrintStream out = new PrintStream(fos);
@@ -106,7 +106,7 @@ public class MakeTestClass {
 		out.println(FOOTER);
 		out.close();
 	}
-	
+
 	private Digester getDigester() {
 		Digester digester = new Digester();
 		digester.push(this);

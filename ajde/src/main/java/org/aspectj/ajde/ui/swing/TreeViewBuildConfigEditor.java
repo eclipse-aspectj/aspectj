@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -60,12 +60,12 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
 	private ConfigTreeNode root;
 //	private ConfigTreeNode currNode;
 	private BuildConfigModel model = null;
-	
+
     private static java.util.List selectedEntries = new ArrayList();
 //    private String configFile = null;
 //    private File sourcePath = null;
     //private BuildConfigModelBuilder configTreeBuilder = new BuildConfigModelBuilder();
-    
+
     BorderLayout borderLayout1 = new BorderLayout();
     JPanel jPanel1 = new JPanel();
     JLabel jLabel1 = new JLabel();
@@ -88,7 +88,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             jbInit();
             jLabel1.setText(" Build configuration: " + configFile);
 
-            model = Ajde.getDefault().getBuildConfigManager().buildModel(configFile);            
+            model = Ajde.getDefault().getBuildConfigManager().buildModel(configFile);
 			root = buildTree(model.getRoot());
 
             buildConfig_tree.setModel(new DefaultTreeModel(root));
@@ -103,15 +103,15 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
         	Ajde.getDefault().getMessageHandler().handleMessage(msg);
         }
     }
-    
+
     private ConfigTreeNode buildTree(BuildConfigNode node) {
     	ConfigTreeNode treeNode = new ConfigTreeNode(node);
 		for (BuildConfigNode childNode : node.getChildren()) {
 			treeNode.add(buildTree(childNode));
 		}
     	return treeNode;
-    }	
-    
+    }
+
     private void saveModel() {
     	Ajde.getDefault().getBuildConfigManager().writeModel(model);
     }
@@ -154,7 +154,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
     }
 
     private static class ConfigTreeNode extends DefaultMutableTreeNode {
-       
+
 		private static final long serialVersionUID = 1L;
 		public JCheckBox checkBox = null;
         public BuildConfigNode modelNode;
@@ -193,12 +193,12 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             // if (isCheckBox(x, tree.getPathBounds(path).x)) {
             if (node.checkBox.isSelected()) {
             	node.getModelNode().setActive(false);
-	           	node.checkBox.setSelected(false);	
+	           	node.checkBox.setSelected(false);
             } else {
             	node.getModelNode().setActive(true);
-            	node.checkBox.setSelected(true);	
+            	node.checkBox.setSelected(true);
             }
-            
+
             ((DefaultTreeModel)tree.getModel()).nodeChanged(node);
             if (node.getModelNode().getName() != null) {
                 if (node.checkBox.isSelected()) {
@@ -237,41 +237,41 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
             final JCheckBox cbox = ((ConfigTreeNode)value).checkBox;
             cbox.setBackground(Color.white);
             if (row != 0) {
-	            p.add(cbox);  
+	            p.add(cbox);
             }
 
             ConfigTreeNode ctn = (ConfigTreeNode)value;
             //if (TreeViewBuildConfigEditor.selectedEntries.contains(ctn.getSourceFile())) {
             if (ctn.getModelNode().isActive()) {
                 cbox.setSelected(true);
-            }   
-            
-            if (!ctn.getModelNode().isValidResource()) {
-            	ctn.checkBox.setEnabled(false);	
             }
-            
+
+            if (!ctn.getModelNode().isValidResource()) {
+            	ctn.checkBox.setEnabled(false);
+            }
+
             //}
             BuildConfigNode.Kind kind = ctn.getModelNode().getBuildConfigNodeKind();
             if (kind.equals(BuildConfigNode.Kind.FILE_ASPECTJ)) {
-            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_ASPECTJ));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_ASPECTJ));
             } else if (kind.equals(BuildConfigNode.Kind.FILE_JAVA)) {
-            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_JAVA));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_JAVA));
             } else if (kind.equals(BuildConfigNode.Kind.FILE_LST)) {
-            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.FILE_LST));
             } else if (kind.equals(BuildConfigNode.Kind.DIRECTORY)) {
-            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));	
+            	setIcon(Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.PACKAGE));
             } else {
-            	setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.ERROR).getIconResource());	
+            	setIcon((Icon)Ajde.getDefault().getIconRegistry().getIcon(IProgramElement.Kind.ERROR).getIconResource());
             	p.remove(cbox);
             }
-           
+
 //            if (ctn.getModelNode().getResourcePath() != null) {
 //	            if (ctn.getModelNode().getResourcePath().endsWith(".java")) {
-//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.CLASS));	
+//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.CLASS));
 //	            } else if (ctn.getModelNode().getResourcePath().endsWith(".aj")) {
-//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.ASPECT));	
+//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.ASPECT));
 //	            } else {
-//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.PACKAGE));	
+//	            	this.setIcon(AjdeUIManager.getDefault().getIconRegistry().getStructureSwingIcon(ProgramElementNode.Kind.PACKAGE));
 //	            }
 //            }
 

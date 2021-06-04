@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -22,18 +22,18 @@ import java.util.List;
  * by AspectDeclaration, a further subtype of AjTypeDeclaration.
  */
 public class AjTypeDeclaration extends TypeDeclaration {
-	
+
 	/**
 	 * The "aspect" structural property of this node type.
 	 * @since 3.0
 	 */
-	public static final SimplePropertyDescriptor ASPECT_PROPERTY = 
+	public static final SimplePropertyDescriptor ASPECT_PROPERTY =
 		new SimplePropertyDescriptor(TypeDeclaration.class, "aspect", boolean.class, MANDATORY); //$NON-NLS-1$
-	
+
 	protected static List ajPROPERTY_DESCRIPTORS_2_0;
 	protected static List ajPROPERTY_DESCRIPTORS_3_0;
 
-	
+
 	// Need to fix up the property lists created during the super's static initializer
 	static {
 		// Need to fix up the property lists created during the super's static initializer
@@ -42,7 +42,7 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		temporary.addAll(PROPERTY_DESCRIPTORS_2_0);
 		addProperty(ASPECT_PROPERTY, temporary);
 		ajPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
-		
+
 		temporary.clear();
 		createPropertyList(TypeDeclaration.class, temporary);
 		temporary.addAll(PROPERTY_DESCRIPTORS_3_0);
@@ -55,20 +55,20 @@ public class AjTypeDeclaration extends TypeDeclaration {
 	 * Defaults to class.
 	 */
 	private boolean isAspect = false;
-	
+
 
 	/**
-	 * Creates a new AST node for a type declaration owned by the given 
+	 * Creates a new AST node for a type declaration owned by the given
 	 * AST. By default, the type declaration is for a class of an
-	 * unspecified, but legal, name; no modifiers; no javadoc; 
+	 * unspecified, but legal, name; no modifiers; no javadoc;
 	 * no type parameters; no superclass or superinterfaces; and an empty list
 	 * of body declarations.
 	 * <p>
-	 * N.B. This constructor is package-private; all subclasses must be 
-	 * declared in the same package; clients are unable to declare 
+	 * N.B. This constructor is package-private; all subclasses must be
+	 * declared in the same package; clients are unable to declare
 	 * additional subclasses.
 	 * </p>
-	 * 
+	 *
 	 * @param ast the AST that is to own this node
 	 */
 	public AjTypeDeclaration(AST ast) {
@@ -122,15 +122,15 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		// allow default implementation to flag the error
 		return super.internalGetSetBooleanProperty(property, get, value);
 	}
-	
+
  	/**
  	 * Returns a list of structural property descriptors for this node type.
  	 * Clients must not modify the result.
- 	 * 
+ 	 *
  	 * @param apiLevel the API level; one of the
  	 * <code>AST.JLS&ast;</code> constants
 
- 	 * @return a list of property descriptors (element type: 
+ 	 * @return a list of property descriptors (element type:
  	 * {@link StructuralPropertyDescriptor})
  	 * @since 3.0
  	 */
@@ -141,26 +141,26 @@ public class AjTypeDeclaration extends TypeDeclaration {
  			return ajPROPERTY_DESCRIPTORS_3_0;
  		}
  	}
- 	
+
 	/**
-	 * Returns whether this type declaration declares a class or an 
+	 * Returns whether this type declaration declares a class or an
 	 * aspect.
-	 * 
+	 *
 	 * @return <code>true</code> if this is an aspect declaration,
 	 *    and <code>false</code> if this is a class or interface declaration
-	 */ 
+	 */
 	public boolean isAspect() {
 		return this.isAspect;
 	}
-	
+
 	/**
-	 * Sets whether this type declaration declares a class or an 
+	 * Sets whether this type declaration declares a class or an
 	 * aspect.
-	 * 
+	 *
 	 * @param isAspect <code>true</code> if this is an aspect
 	 *    declaration, and <code>false</code> if this is a class or interface
 	 * 	  declaration
-	 */ 
+	 */
 	public void setAspect(boolean isAspect) {
 		preValueChange(ASPECT_PROPERTY);
 		this.isAspect = isAspect;
@@ -186,11 +186,11 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		}
 		return pointcuts;
 	}
-	
+
 	public ASTNode.NodeList getSuperInterfaceNames() {
 		return superInterfaceNames;
 	}
-	
+
 	public ASTNode.NodeList getTypeParameters() {
 		return typeParameters;
 	}

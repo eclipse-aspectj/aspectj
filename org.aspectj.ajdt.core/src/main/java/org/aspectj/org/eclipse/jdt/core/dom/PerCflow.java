@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -21,16 +21,16 @@ import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
  * has:
  *   everything PointcutDesignators have
  *   a PointcutDesignator called 'body'
- *   
+ *
  * @author ajh02
  */
-public class PerCflow extends PointcutDesignator {	
+public class PerCflow extends PointcutDesignator {
 	// ajh02: should make an abstract PerClause Pointcut parent
 	// of this and all the other PerClause nodes
-	
-	
+
+
 	private PointcutDesignator body = null;
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(PerCflow.class, "body", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	public PointcutDesignator getBody() {
 		return this.body;
@@ -44,7 +44,7 @@ public class PerCflow extends PointcutDesignator {
 		this.body = body;
 		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
-	
+
 	private boolean isBelow = false; // percflow or percflowbelow
 	public boolean isBelow(){
 		return isBelow;
@@ -52,9 +52,9 @@ public class PerCflow extends PointcutDesignator {
 	public void setIsBelow(boolean isBelow){
 		this.isBelow = isBelow;
 	}
-	
-	
-	
+
+
+
 	PerCflow(AST ast) {
 		super(ast);
 	}

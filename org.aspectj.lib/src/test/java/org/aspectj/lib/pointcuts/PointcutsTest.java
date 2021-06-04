@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg       initial implementation
  * ******************************************************************/
 
 package org.aspectj.lib.pointcuts;
@@ -15,7 +15,7 @@ package org.aspectj.lib.pointcuts;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class PointcutsTest extends TestCase {
 
@@ -27,34 +27,34 @@ public class PointcutsTest extends TestCase {
             // ok, advice worked
         }
     }
-    
+
     private static aspect Test_anyPublicMethodExecution {
         public static void error() {
             throw new RuntimeException("wrong exception");
         }
-        
+
         static void nonpublic() {}
-        
-        before() : 
-            execution(static void Test_anyPublicMethodExecution.error()) 
+
+        before() :
+            execution(static void Test_anyPublicMethodExecution.error())
             && Pointcuts.anyPublicMethodExecution() {
             throw new Error("");
         }
-        
-        declare error : 
-            execution(static void Test_anyPublicMethodExecution.nonpublic()) 
-            && Pointcuts.anyPublicMethodExecution() 
+
+        declare error :
+            execution(static void Test_anyPublicMethodExecution.nonpublic())
+            && Pointcuts.anyPublicMethodExecution()
             : "anyPublicMethodExecution failed - not public";
-        
+
     }
     private static aspect compileChecks {
         /** balk if Pointcuts has code - s.b. only pointcuts */
-        declare error : within(Pointcuts) && 
-            (set(* *) || Pointcuts.anyMethodExecution() || 
+        declare error : within(Pointcuts) &&
+            (set(* *) || Pointcuts.anyMethodExecution() ||
                     (Pointcuts.anyConstructorExecution()
                             && !execution(private Pointcuts.new()))) :
                 "only pointcuts permitted in Pointcuts";
 
-        
+
     }
 }

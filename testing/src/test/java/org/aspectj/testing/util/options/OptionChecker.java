@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util.options;
@@ -20,8 +20,8 @@ import org.junit.Assert;
 
 /**
  * Drivers to test a given set of Options.
- * They now throw AssertionFailedError on failure, 
- * but subclasses can reimplement 
+ * They now throw AssertionFailedError on failure,
+ * but subclasses can reimplement
  * <code>assertionFailed(String)</code>
  * to handle failures differently.
  */
@@ -36,10 +36,10 @@ public class OptionChecker {
     /**
      * Subclasses override this to throw different exceptions
      * on assertion failures.
-     * This implementation delegates to 
+     * This implementation delegates to
      * <code>Assert.assertTrue(label, false)</code>.
      * @param label the String message for the assertion
-     * 
+     *
      */
     public void assertionFailed(String label) {
         Assert.assertTrue(label, false);

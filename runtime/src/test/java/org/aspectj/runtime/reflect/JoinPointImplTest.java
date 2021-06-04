@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -24,7 +24,7 @@ public class JoinPointImplTest extends TestCase {
 	    Object arg3 = new Object();
 		Object[] args = new Object[] { arg1, arg2, arg3 };
 		JoinPointImpl jpi = new JoinPointImpl(null,null,null,args);
-		
+
 		Object[] retrievedArgs = jpi.getArgs();
 		assertEquals("First arg unchanged",arg1,retrievedArgs[0]);
 		assertEquals("Second arg unchanged",arg2,retrievedArgs[1]);
@@ -38,5 +38,5 @@ public class JoinPointImplTest extends TestCase {
 		assertEquals("state of referenced object updated","defghi",afterUpdateArgs[1].toString());
 		assertEquals("Object reference not changed",arg3,afterUpdateArgs[2]);
 	}
-	
+
 }

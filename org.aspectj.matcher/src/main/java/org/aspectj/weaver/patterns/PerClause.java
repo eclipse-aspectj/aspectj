@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -29,7 +29,7 @@ public abstract class PerClause extends Pointcut {
 		else if (kind == PEROBJECT) return PerObject.readPerClause(s, context);
 		else if (kind == FROMSUPER) return PerFromSuper.readPerClause(s, context);
 		else if (kind == PERTYPEWITHIN) return PerTypeWithin.readPerClause(s,context);
-			
+
 		throw new BCException("unknown kind: " + kind);
 	}
 
@@ -38,14 +38,14 @@ public abstract class PerClause extends Pointcut {
     }
 
 	public abstract PerClause concretize(ResolvedType inAspect);
-	
+
 	public abstract PerClause.Kind getKind();
-	
+
 	public abstract String toDeclarationString();
-	
+
 	public static class Kind extends TypeSafeEnum {
         public Kind(String name, int key) { super(name, key); }
-        
+
         public static Kind read(VersionedDataInputStream s) throws IOException {
             int key = s.readByte();
             switch(key) {

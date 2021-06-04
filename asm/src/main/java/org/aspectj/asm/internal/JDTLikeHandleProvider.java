@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.asm.internal;
@@ -20,11 +20,11 @@ import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Creates JDT-like handles, for example
- * 
+ *
  * method with string argument: &lt;tjp{Demo.java[Demo~main~\[QString; method with generic argument:
  * &lt;pkg{MyClass.java[MyClass~myMethod~QList\&lt;QString;&gt;; an aspect: &lt;pkg*A1.aj}A1 advice with Integer arg:
  * &lt;pkg*A8.aj}A8&amp;afterReturning&amp;QInteger; method call: &lt;pkg*A10.aj[C~m1?method-call(void pkg.C.m2())
- * 
+ *
  */
 public class JDTLikeHandleProvider implements IElementHandleProvider {
 
@@ -151,7 +151,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 	/**
 	 * Determine a count to be suffixed to the handle, this is only necessary for identical looking entries at the same level in the
 	 * model (for example two anonymous class declarations). The format is !<n> where n will be greater than 2.
-	 * 
+	 *
 	 * @param ipe the program element for which the handle is being constructed
 	 * @return a char suffix that will either be empty or of the form "!<n>"
 	 */

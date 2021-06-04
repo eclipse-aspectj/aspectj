@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement    - initial implementation 26Jul06
  *******************************************************************************/
@@ -49,20 +49,20 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * and then woven immediately, unlike AjCompilerAdapter which compiles everything then weaves everything. (One small note: because
  * all aspects have to be known before weaving can take place, the weaving pipeline is 'stalled' until all aspects have been
  * compiled).
- * 
+ *
  * The basic strategy is this:
- * 
+ *
  * 1. diet parse all input source files - this is enough for us to implement ITD matching - this enables us to determine which are
  * aspects 2. sort the input files, aspects first - keep a note of how many files contain aspects 3. if there are aspects, mark the
  * pipeline as 'stalled' 3. repeat 3a. compile a file 3b. have we now compiled all aspects? NO - put file in a weave pending queue
  * YES- unstall the 'pipeline' 3c. is the pipeline stalled? NO - weave all pending files and this one YES- do nothing
- * 
+ *
  * Complexities arise because of: - what does -XterminateAfterCompilation mean? since there is no stage where everything is compiled
  * and nothing is woven
- * 
- * 
+ *
+ *
  * Here is the compiler loop difference when pipelining.
- * 
+ *
  * the old way: Finished diet parsing [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java] Finished diet parsing
  * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] &gt; AjLookupEnvironment.completeTypeBindings() &lt;
  * AjLookupEnvironment.completeTypeBindings() compiling C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java
@@ -74,7 +74,7 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * &gt;BcelWeaver.prepareForWeave &lt;BcelWeaver.prepareForWeave woven class ClassOne (from
  * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java) woven class ClassTwo (from
  * C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) &lt;AjCompilerAdapter.weave()
- * 
+ *
  * the new way (see the compiling/weaving mixed up): Finished diet parsing
  * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassOne.java] Finished diet parsing
  * [C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java] &gt;AjLookupEnvironment.completeTypeBindings()
@@ -87,8 +87,8 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * &gt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java)
  * &lt;Compiler.process(C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) &gt;AjCompilerAdapter.weave() woven class ClassTwo
  * (from C:\temp\ajcSandbox\aspectjhead\ajcTest23160.tmp\ClassTwo.java) <AjCompilerAdapter.weave()
- * 
- * 
+ *
+ *
  */
 public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
@@ -128,7 +128,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	/**
 	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ parts of a compile cycle.
-	 * 
+	 *
 	 * @param compiler the JDT compiler that produces class files from source
 	 * @param isBatchCompile true if this is a full build (non-incremental)
 	 * @param world the bcelWorld used for type resolution during weaving
@@ -665,7 +665,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	// Keys into pipelineOutput:
 	// compileOrder "[XXX,YYY]" a list of the order in which files will be woven (aspects should be first)
 	// filesContainingAspects "NNN" how many input source files have aspects inside
-	// 
+	//
 
 	public static String getPipelineDebugOutput(String key) {
 		if (pipelineOutput == null) {

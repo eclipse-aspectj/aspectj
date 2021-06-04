@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -16,41 +16,41 @@ import java.util.List;
 
 /**
  * DeclarePrecedenceDeclaration DOM AST node.
- * 
+ *
  * Has everything a DeclareDeclaration has plus:
  *   	a TypePattern list called 'parentTypePatterns'
  */
 public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 
-	public static final ChildPropertyDescriptor JAVADOC_PROPERTY = 
+	public static final ChildPropertyDescriptor JAVADOC_PROPERTY =
 		internalJavadocPropertyFactory(DeclarePrecedenceDeclaration.class);
-	
-	public static final ChildListPropertyDescriptor TYPE_PATTERNS_LIST_PROPERTY = 
+
+	public static final ChildListPropertyDescriptor TYPE_PATTERNS_LIST_PROPERTY =
 		new ChildListPropertyDescriptor(DeclarePrecedenceDeclaration.class, "parentTypePatterns", TypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
-	
-	private static final List PROPERTY_DESCRIPTORS_2_0;	
+
+	private static final List PROPERTY_DESCRIPTORS_2_0;
 	private static final List PROPERTY_DESCRIPTORS_3_0;
-	
+
 	static {
 		List propertyList = new ArrayList(2);
 		createPropertyList(DeclarePrecedenceDeclaration.class, propertyList);
 		addProperty(JAVADOC_PROPERTY, propertyList);
 		addProperty(TYPE_PATTERNS_LIST_PROPERTY, propertyList);
 		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
-		
+
 		propertyList = new ArrayList(2);
 		createPropertyList(DeclarePrecedenceDeclaration.class, propertyList);
 		addProperty(JAVADOC_PROPERTY, propertyList);
 		addProperty(TYPE_PATTERNS_LIST_PROPERTY, propertyList);
 		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
-	
+
 	protected ASTNode.NodeList typePatterns =new ASTNode.NodeList(TYPE_PATTERNS_LIST_PROPERTY);
-	
+
 	DeclarePrecedenceDeclaration(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -71,7 +71,7 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 		// dispatch to correct overloaded match method
 		return ((AjASTMatcher)matcher).match(this, other);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -89,8 +89,8 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 
 	/* (omit javadoc for this method)
 	 * Method declared on BodyDeclaration.
-	 * 
-	 * There are no modifiers declared for DeclareErrorDeclaration - 
+	 *
+	 * There are no modifiers declared for DeclareErrorDeclaration -
 	 * therefore we don't do anything with this
 	 */
 	SimplePropertyDescriptor internalModifiersProperty() {
@@ -99,8 +99,8 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 
 	/* (omit javadoc for this method)
 	 * Method declared on BodyDeclaration.
-	 * 
-	 * There are no modifiers declared for DeclareErrorDeclaration - 
+	 *
+	 * There are no modifiers declared for DeclareErrorDeclaration -
 	 * therefore we don't do anything with this
 	 */
 	ChildListPropertyDescriptor internalModifiers2Property() {
@@ -117,10 +117,10 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	/**
 	 * Returns a list of structural property descriptors for this node type.
 	 * Clients must not modify the result.
-	 * 
+	 *
 	 * @param apiLevel the API level; one of the
 	 * <code>AST.JLS&ast;</code> constants
-	 * @return a list of property descriptors (element type: 
+	 * @return a list of property descriptors (element type:
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
@@ -131,14 +131,14 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 			return PROPERTY_DESCRIPTORS_3_0;
 		}
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -165,18 +165,18 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
-	
+
 	/**
 	 * Returns the live ordered list of type patterns for this
 	 * declare precedence.
-	 * 
+	 *
 	 * @return the live list of type patterns
 	 *    (element type: <code>TypePattern</code>)
-	 */ 
+	 */
 	public List typePatterns() {
 		return this.typePatterns;
 	}
-	
+
 	int treeSize() {
 		return
 			memSize()

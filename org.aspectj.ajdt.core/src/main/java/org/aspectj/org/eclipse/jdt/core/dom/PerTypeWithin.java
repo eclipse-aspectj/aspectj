@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -20,13 +20,13 @@ import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
  * OrPointcut DOM AST node.
  * has:
  *   everything PointcutDesignators have
- *   
+ *
  * note:
  *   should also have a typepattern or something. I haven't put one in yet.
  * @author ajh02
  */
-public class PerTypeWithin extends PointcutDesignator {	
-	
+public class PerTypeWithin extends PointcutDesignator {
+
 	PerTypeWithin(AST ast) {
 		super(ast);
 	}

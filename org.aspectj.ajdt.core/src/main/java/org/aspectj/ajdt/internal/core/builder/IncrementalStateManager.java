@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  * Andy Clement          initial implementation
  * ******************************************************************/
 package org.aspectj.ajdt.internal.core.builder;
@@ -27,7 +27,7 @@ import org.aspectj.weaver.CompressingDataOutputStream;
 /**
  * Central point for all things incremental... - keeps track of the state recorded for each different config file - allows limited
  * interaction with these states
- * 
+ *
  * - records dependency/change info for particular classpaths &gt; this will become what JDT keeps in its 'State' object when it's
  * finished
  */

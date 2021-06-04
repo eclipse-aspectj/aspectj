@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -37,7 +37,7 @@ import org.aspectj.weaver.ast.Var;
 
 /**
  * @author colyer
- * 
+ *
  *         TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code
  *         Templates
  */
@@ -86,7 +86,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
@@ -95,7 +95,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
@@ -116,7 +116,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope,
 	 * org.aspectj.weaver.patterns.Bindings)
 	 */
@@ -132,7 +132,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
 	protected Pointcut concretize1(ResolvedType inAspect, ResolvedType declaringType, IntMap bindings) {
@@ -144,7 +144,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
 	protected Test findResidueInternal(Shadow shadow, ExposedState state) {

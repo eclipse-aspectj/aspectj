@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     PARC     initial implementation
  *     Alexandre Vasseur    @AspectJ ITDs
  * ******************************************************************/
@@ -73,7 +73,7 @@ public abstract class ResolvedTypeMunger {
 			}
 		}
 		// boolean aChangeOccurred = false;
-		//		
+		//
 		// UnresolvedType rt = signature.getReturnType();
 		// if (rt.isParameterizedType() || rt.isGenericType()) {rt = rt.getRawType();aChangeOccurred=true;}
 		// UnresolvedType[] pt = signature.getParameterTypes();
@@ -99,7 +99,7 @@ public abstract class ResolvedTypeMunger {
 
 	// fromType is guaranteed to be a non-abstract aspect
 	// public ConcreteTypeMunger concretize(World world, ResolvedType aspectType) {
-	//    	
+	//
 	// ConcreteTypeMunger munger = world.concreteTypeMunger(this, aspectType);
 	// return munger;
 	// }
@@ -477,10 +477,10 @@ public abstract class ResolvedTypeMunger {
 	/**
 	 * Some type mungers are created purely to help with the implementation of shadow mungers. For example to support the cflow()
 	 * pointcut we create a new cflow field in the aspect, and that is added via a BcelCflowCounterFieldAdder.
-	 * 
+	 *
 	 * During compilation we need to compare sets of type mungers, and if some only come into existence after the 'shadowy' type
 	 * things have been processed, we need to ignore them during the comparison.
-	 * 
+	 *
 	 * Returning true from this method indicates the type munger exists to support 'shadowy' stuff - and so can be ignored in some
 	 * comparison.
 	 */

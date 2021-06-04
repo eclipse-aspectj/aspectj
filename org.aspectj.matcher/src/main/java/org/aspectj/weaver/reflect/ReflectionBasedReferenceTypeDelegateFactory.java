@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
@@ -44,7 +44,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 			return null;
 		}
 	}
-	
+
 	public static ReflectionBasedReferenceTypeDelegate createDelegate(ReferenceType forReferenceType, World inWorld,
 			Class<?> clazz) {
 		ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, clazz, clazz.getClassLoader(), inWorld);
@@ -119,7 +119,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	/**
 	 * convert a java.lang.reflect.Member into a resolved member in the world
-	 * 
+	 *
 	 * @param reflectMember
 	 * @param inWorld
 	 * @return

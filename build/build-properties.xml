@@ -1,12 +1,12 @@
 <!-- -*- Mode: SGML; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-     -->
 <!-- ========================================================================= -->
 <!-- Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).        -->
-<!-- Copyright (c) 2003, 2005 Contributors.                                          -->
+<!-- Copyright (c) 2003, 2005 Contributors.                                    -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                         -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Xerox/PARC             initial implementation                         -->
@@ -16,7 +16,7 @@
 <!-- include as common entity for module build scripts -->
 <!-- should only need to edit version properties -->
 <project name="build-properties" default="init-properties">
-	
+
     <target name="init-properties"
            unless="init-properties.done">
 		<!-- callers should define aspectj.modules.dir -->
@@ -24,7 +24,7 @@
 		<require-available property="local-properties"
 			path="${aspectj.modules.dir}/build/local.properties"/>
 		<property file="${aspectj.modules.dir}/build/local.properties"/>
-	<!-- 
+	<!--
       	Changing version:
       	- base should always be 1.1 (used for manifests, other version-parsing code)
       	- Others should be DEVELOPMENT unless testing/doing release builds, when
@@ -36,67 +36,67 @@
       -->
 	  <property name="min.vm" value="13"/>
 	  <property name="max.vm" value="15"/>
-	  <property name="build.verbose"       value="false"/> 
-      <property name="build.version"       value="DEVELOPMENT"/> 
-      <property name="build.version.base"  value="1.2"/> 
-      <property name="build.version.long"  value="DEVELOPMENT"/> 
-      <property name="build.version.short" value="DEVELOPMENT"/> 
+	  <property name="build.verbose"       value="false"/>
+      <property name="build.version"       value="DEVELOPMENT"/>
+      <property name="build.version.base"  value="1.2"/>
+      <property name="build.version.long"  value="DEVELOPMENT"/>
+      <property name="build.version.short" value="DEVELOPMENT"/>
 
       <!-- formats comply with SimpleDateFormat -->
-      <property name="build.time.format"   value="EEEE MMM d, yyyy 'at' HH:mm:ss z"/> 
-      <property name="build.date.format"   value="EEEE MMM d, yyyy"/> 
+      <property name="build.time.format"   value="EEEE MMM d, yyyy 'at' HH:mm:ss z"/>
+      <property name="build.date.format"   value="EEEE MMM d, yyyy"/>
 	  <tstamp>
-		<format property="build.date" 
+		<format property="build.date"
 		         pattern="${build.date.format}"
 		         timezone="GMT"/>
-		<format property="build.time" 
+		<format property="build.time"
 		         pattern="${build.time.format}"
 		         timezone="GMT"/>
 	  </tstamp>
-	  
+
 	  <property name="company.name"         value="aspectj.org"/>
 	  <property name="copyright.allRights.from1998"
                value="Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2008 Contributors.  All rights reserved." />
-				
+
 	  <!-- aj... names are generated, can be mutated/cleaned -->
 	  <!-- these names are known to BuildModule.java and common to all -->
-      <property name="aj.build.dir" 
+      <property name="aj.build.dir"
             location="${aspectj.modules.dir}/aj-build"/>
-	  <property name="aj.temp.dir" 
+	  <property name="aj.temp.dir"
             location="${aj.build.dir}/temp"/>
-  	  <property name="aj.src.dir" 
+  	  <property name="aj.src.dir"
               location="${aj.build.dir}/src"/>
-      <property name="aj.jar.dir" 
+      <property name="aj.jar.dir"
             location="${aj.build.dir}/jars"/>
-      <property name="aj.dist.dir" 
+      <property name="aj.dist.dir"
             location="${aj.build.dir}/dist"/>
-      <property name="aj.webDeploy.dir" 
+      <property name="aj.webDeploy.dir"
             location="${aj.build.dir}/webDeploy"/>
-      <property name="aj.install.dir" 
+      <property name="aj.install.dir"
             location="${aj.build.dir}/install"/>
 
-	  <property name="aj.build.allresults.dir" 
+	  <property name="aj.build.allresults.dir"
             location="${aj.build.dir}/allresults"/>
-	  <property name="aj.build.allfailures.file" 
+	  <property name="aj.build.allfailures.file"
             location="${aj.build.allresults.dir}/allfailures.txt"/>
-	  <property name="aj.build.results.dir" 
+	  <property name="aj.build.results.dir"
             location="${aj.build.dir}/results"/>
 	  <property name="aj.failure.file"
 		    location="${aj.build.results.dir}/failures.txt"/>
-	  <property name="aj.build-id.file" 
+	  <property name="aj.build-id.file"
             location="${aj.build.results.dir}/build-id.txt"/>
-	  <property name="aj.junit.dir" 
+	  <property name="aj.junit.dir"
             location="${aj.build.results.dir}/junit"/>
-	  <property name="aj.logs.dir" 
+	  <property name="aj.logs.dir"
             location="${aj.build.results.dir}/logs"/>
-        
+
 
 	  <!-- aspectj... names are sources, not to be mutated -->
       <property name="aspectj.modules.lib.dir"
             location="${aspectj.modules.dir}/lib"/>
-      <property name="aspectj.modules.build.dir" 
+      <property name="aspectj.modules.build.dir"
             location="${aspectj.modules.dir}/build"/>
-      <property name="aspectj.modules.docs.dir" 
+      <property name="aspectj.modules.docs.dir"
             location="${aspectj.modules.dir}/docs"/>
       <property name="aspectj.modules.tests.dir"
             location="${aspectj.modules.dir}/tests"/>
@@ -107,19 +107,19 @@
             location="${aspectj.modules.dir}/tests"/>
 
 		<property file="${aspectj.modules.build.dir}/junit-patterns.properties"/>
-				
+
 		<property name="aspectj.tools.modules.13"
 			value="ajbrowser,ajde,ajde.core,ajdoc,asm,bridge,loadtime,org.aspectj.ajdt.core,runtime,taskdefs,util,weaver"/>
 		<property name="aspectj.tools.modules.15"
 			value="loadtime5,aspectj5rt,weaver5"/>
 		<condition property="aspectj.tools.modules"
 			value="${aspectj.tools.modules.13},${aspectj.tools.modules.15}">
-			<equals arg1="1.5" arg2="${ant.java.version}"/>			
+			<equals arg1="1.5" arg2="${ant.java.version}"/>
 		</condition>
 		<condition property="aspectj.tools.modules"
 			value="${aspectj.tools.modules.13}">
 			<not>
-				<equals arg1="1.5" arg2="${ant.java.version}"/>			
+				<equals arg1="1.5" arg2="${ant.java.version}"/>
 			</not>
 		</condition>
 		<property name="aspectj.test.modules"
@@ -128,8 +128,8 @@
 			value="tests"/>
 		<property name="aspectj.other.modules"
 			value="docs,eclipse.plugin"/>
-		
-		<jar-property name="junit.jar" 
+
+		<jar-property name="junit.jar"
 			location="${aspectj.modules.lib.dir}/junit/junit.jar"/>
 		<!-- TODO need version-specific JDK? -->
 		<guarded-property name="jdk.tools.jar"
@@ -141,12 +141,12 @@
 		<property name="init-properties.done" value="true"/>
     </target>
 
-    <target name="init-taskdefs" 
+    <target name="init-taskdefs"
          depends="init-properties"
           unless="init-taskdefs.done" >
-		<jar-property name="aspectj.build.jar" 
+		<jar-property name="aspectj.build.jar"
 			location="${aspectj.modules.lib.dir}/build/build.jar"/>
-		<jar-property name="lib.ant.jar" 
+		<jar-property name="lib.ant.jar"
 			location="${aspectj.modules.lib.dir}/ant/lib/ant.jar"/>
 		<taskdef resource="org/aspectj/internal/tools/ant/taskdefs/taskdefs.properties"
               classpath="${aspectj.build.jar}"/>
@@ -155,12 +155,12 @@
 				<include name="**/*.jar"/>
 			</fileset>
 			</path>
-		<taskdef name="junit"             
+		<taskdef name="junit"
 			classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"
 			classpathref="ant.lib.path"/>
-	    <available classname="org.apache.xalan.processor.TransformerFactoryImpl" 
+	    <available classname="org.apache.xalan.processor.TransformerFactoryImpl"
 	        property="xalan.available"
-	        value="true">        
+	        value="true">
 	        <classpath refid="ant.lib.path"/>
 	    </available>
         <condition property="junitreport.available" value="true">
@@ -172,12 +172,12 @@
 
     <target name="init-junitreport" depends="init-properties"
         if="xalan.available">
-		<taskdef name="junitreport"             
+		<taskdef name="junitreport"
 			classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"
 			classpathref="ant.lib.path"/>
     </target>
 
-    <target name="init-directories" 
+    <target name="init-directories"
          depends="init-properties"
 		description="ensure dirs, possibly many times in a build">
       <mkdir dir="${aj.build.dir}" />
@@ -193,20 +193,20 @@
           unless="init-filters.done" >
 
 	  <!-- build.version and build.date used in filters throughout, and
-	       build.version.base used in filtering manifest, but 
+	       build.version.base used in filtering manifest, but
 	       others used mainly for installer-resources/properties.txt -->
 
-      <filter token="build.version"       value="${build.version}"/> 
-      <filter token="build.version.base"  value="${build.version.base}"/> 
-      <filter token="build.version.long"  value="${build.version.long}"/> 
-      <filter token="build.version.short" value="${build.version.short}"/> 
+      <filter token="build.version"       value="${build.version}"/>
+      <filter token="build.version.base"  value="${build.version.base}"/>
+      <filter token="build.version.long"  value="${build.version.long}"/>
+      <filter token="build.version.short" value="${build.version.short}"/>
 
-      <filter token="build.time.format"   value="${build.time.format}"/> 
-      <filter token="build.date.format"   value="${build.date.format}"/> 
+      <filter token="build.time.format"   value="${build.time.format}"/>
+      <filter token="build.date.format"   value="${build.date.format}"/>
       <filter token="build.date"          value="${build.date}"/>
       <filter token="build.time"          value="${build.time}"/>
-      <filter token="company.name"        value="${company.name}"/> 
-      <filter token="copyright.allRights.from1998" 
+      <filter token="company.name"        value="${company.name}"/>
+      <filter token="copyright.allRights.from1998"
               value="${copyright.allRights.from1998}" />
       <property name="init-filters.done" value="done"/>
     </target>
@@ -214,11 +214,11 @@
     <target name="clean-directories" depends="init-properties">
       <delete quiet="on">
 		  <fileset dir="${aj.build.dir}" includes="*,**/*"/>
-	  </delete> 
+	  </delete>
       <antcall target="init-directories"/>
 	</target>
-        		
-    <target name="clean-jars" 
+
+    <target name="clean-jars"
          depends="init-directories"
           unless="clean-jars.done" >
 		<delete quiet="on">
@@ -226,30 +226,30 @@
 		</delete>
       <property name="clean-jars.done" value="done"/>
     </target>
-    
+
 	<target name="clean-keep-results" depends="init-properties">
 		<delete>
 			<fileset dir="${aj.build.dir}">
-				<exclude name="results/*"/>  
-				<exclude name="results/**"/>  
-				<exclude name="allresults/*"/>  
-				<exclude name="allresults/**"/>  
-			</fileset> 
-		</delete> 
+				<exclude name="results/*"/>
+				<exclude name="results/**"/>
+				<exclude name="allresults/*"/>
+				<exclude name="allresults/**"/>
+			</fileset>
+		</delete>
     </target>
-	
+
 	<target name="clean-default-results" depends="init-properties">
 		<delete>
 			<fileset dir="${aj.build.results.dir}" includes="*,**/*"/>
-		</delete> 
+		</delete>
     </target>
-	    
+
 	<target name="clean-result" depends="init-properties">
 		<delete quiet="on">
         	<fileset dir="${aj.build.results.dir}" includes="*,**/*"/>
 		</delete>
     </target>
-    
+
     <macrodef name="save-build-id"
         description="save ${id} to ${aj.build-id.file}">
         <attribute name="id"/>
@@ -267,13 +267,13 @@
 	        <loadfile srcfile="${aj.build-id.file}" property="@{property}"/>
 		</sequential>
     </macrodef>
-    
+
     <target name="ensure-build-id" unless="aj.build-id.file.available"
         description="create datestamp build id in ${aj.build-id.file} if n/a">
 	    <tstamp>
-	        <format property="build.id.name" 
+	        <format property="build.id.name"
 	    		timezone="GMT+10"
-	    		pattern="yyyyMMdd-hhmmss" 
+	    		pattern="yyyyMMdd-hhmmss"
 	  			/>
 		</tstamp>
         <echo file="${aj.build-id.file}" message="${build.id.name}"/>
@@ -283,8 +283,8 @@
 		<load-build-id property="build.id"/>
 		<copy todir="${aj.build.allresults.dir}/${build.id}">
 			<fileset dir="${aj.build.results.dir}" />
-		</copy> 
-    </target>	    
+		</copy>
+    </target>
 
     <target name="echo-properties" depends="init-properties">
       <echo>
@@ -318,12 +318,12 @@
 					<not>
 						<isset property="@{name}"/>
 					</not>
-					<available file="${@{name}.path}"/>			  			  
+					<available file="${@{name}.path}"/>
 				</and>
 			</condition>
         </sequential>
 	</macrodef>
-	
+
 	<macrodef name="clean-dir">
 		<attribute name="dir"/>
 		<sequential>
@@ -335,13 +335,13 @@
 		</sequential>
 	</macrodef>
 
-	<!-- 
+	<!--
 	Reporting failures
-	
-	Failure-reports supports running multiple build targets in sequence for a 
-	configuration, saving off those results, doing it over, etc., and then 
+
+	Failure-reports supports running multiple build targets in sequence for a
+	configuration, saving off those results, doing it over, etc., and then
 	checking the result (of the current builds or all builds), i.e.,
-		
+
 		# first set of builds
 		- build, report-if-failed ...
 		- build, report-if-failed ...
@@ -354,40 +354,40 @@
 		- build, report-if-failed ...
 		...
 		- save-result
-		
-		# fail build if anything in either set failed
-        - fail-if-allresults-allfailures							
 
-	Clients call 
+		# fail build if anything in either set failed
+        - fail-if-allresults-allfailures
+
+	Clients call
 		<report-if-failed property="failed" text="JUnit failed"/>
 	to signal failure.  This goes into results/failures.txt, to be read later.
-	Many clients can call this, across many (current) build invocations, so 
+	Many clients can call this, across many (current) build invocations, so
 	results just accumulate.  Clients should never call <fail> directly; while
 	the cruise-control script can handle build failures, they won't be recorded
     in a way that supports easy evaluation.
-		
-	To fail if the current builds fail, do 
+
+	To fail if the current builds fail, do
 		<antcall target="fail-if-results-failures"/>
-	
+
 	You can do a sequence of builds (e.g., in 1.3), save the results off,
 	and do it again (e.g., in 1.4), save the results, and then compare them.
 	Use save-result to store the current build results in ../allresults.
-		
+
 	Between such builds, you can do a clean-keep-results (to clear out jars
 	and such), followed by clean-default-results (to clear the current results).
-	(The normal clean also cleans out any results, so avoid that when saving 
+	(The normal clean also cleans out any results, so avoid that when saving
 	results from multiple builds.)
-				
+
 	Each build can be named using save-build-id.  This name must be a valid
 	directory name.  When the results are saved to ../allresults, the directory
 	name will use the most recent build-id.  If none has been saved, then this
 	creates a name out of the date (down to the second).
-			
+
 	To fail if any of the saved builds has failed, do fail-if-allresults-allfailures.
 	This target ignores the current builds (if they are unsaved).
 
     -->
-	
+
 	<macrodef name="report-if-failed">
 		<attribute name="property"/>
 		<attribute name="text"/>
@@ -415,7 +415,7 @@
 
 	<target name="fail-if-allresults-allfailures" depends="init-properties">
 	    <concat destfile="${aj.build.allfailures.file}">
-        	<fileset dir="${aj.build.allresults.dir}" 
+        	<fileset dir="${aj.build.allresults.dir}"
 				includes="*/failures.txt"/>
 	    </concat>
         <fail-if-failures failureFile="${aj.build.allfailures.file}"/>
@@ -425,19 +425,19 @@
 		description="fail if ${failureFile} exists and is not empty">
 	    <attribute name="failureFile"/>
 	    <sequential>
-        <loadfile 
+        <loadfile
 			failonerror="false"
-			property="failures" 
+			property="failures"
 			srcfile="@{failureFile}"/>
 		<fail>
 			<condition>
-				<length file="@{failureFile}" 
+				<length file="@{failureFile}"
 					when="greater" length="0"/>
 			</condition>
-# @{failureFile} failures: 
+# @{failureFile} failures:
 ${failures}
 </fail>
-	    </sequential>								
+	    </sequential>
 	</macrodef>
 	<macrodef name="jar-property">
         <attribute name="name"/>
@@ -452,15 +452,15 @@ ${failures}
 			  message="unable to find @{name}: ${@{name}}"/>
         </sequential>
 	</macrodef>
-			
+
 	<macrodef name="set-available"
 	    description="set property and property.available if path exists">
 		<attribute name="property"/>
 	    <attribute name="path"/>
 		<sequential>
-		<property name="@{property}.location" 
+		<property name="@{property}.location"
 				location="@{path}"/>
-	
+
 			<available property="@{property}"
 				file="${@{property}.location}"
 				value="${@{property}.location}"/>
@@ -475,12 +475,12 @@ ${failures}
 	    <attribute name="path"/>
 	    <attribute name="message" default=""/>
 		<sequential>
-			
+
 	    <set-available property="@{property}" path="@{path}"/>
 	    <fail unless="@{property}.available">
 @{message} (property "@{property}" not at "@{path}")
 		</fail>
 		</sequential>
 	</macrodef>
-						
+
 </project>

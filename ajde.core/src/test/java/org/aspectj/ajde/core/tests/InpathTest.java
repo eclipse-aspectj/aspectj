@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Mik Kersten     initial implementation
- *    Andy Clement     Copied/changed for -inpath testing 
+ *    Andy Clement     Copied/changed for -inpath testing
  *    Helen Hawkins    Changed to use new ajde interface (bug 148190)
  * ******************************************************************/
 package org.aspectj.ajde.core.tests;
@@ -67,7 +67,7 @@ public class InpathTest extends AjdeCoreTestCase {
 
 	/**
 	 * Inputs to the compiler: inpath = 'indir1/' source = 'src' output = a jar file
-	 * 
+	 *
 	 * Expected result = output jar file contains contents of indir1 and class file for source that was in src
 	 */
 	public void testInpathToOutjar() {
@@ -97,7 +97,7 @@ public class InpathTest extends AjdeCoreTestCase {
 
 	/**
 	 * Similar to the first test but outputs to a directory rather than a jar.
-	 * 
+	 *
 	 */
 	public void testInpathToBin() {
 		Set<File> inpath = new HashSet<>();
@@ -126,10 +126,10 @@ public class InpathTest extends AjdeCoreTestCase {
 	/**
 	 * Inputs to the compiler: inpath is 'indir2' that contains a helloworld source file and class file. source is 'src2' which
 	 * contains Aspect.java which weaves before advice into the HelloWorld code from 'indir2'
-	 * 
+	 *
 	 * Expected result: HelloWorld copied through to output jar and 'weaved'. Compiled version of Aspect.java put into the output
 	 * jar. The HelloWorld.java source file is also copied through to the output jar.
-	 * 
+	 *
 	 * An extra check is done at the end of this test to verify that HelloWorld has changed size (due to the weaving).
 	 */
 	public void testInpathToOutjar2() {
@@ -174,11 +174,11 @@ public class InpathTest extends AjdeCoreTestCase {
 
 	/**
 	 * More complex inpath - a jar and a directory
-	 * 
+	 *
 	 * Inputs: -inpath injar.jar;indir2 source is 'src2' which contains Aspect.java
-	 * 
+	 *
 	 * Expected result: Result should be a directory containing the contents of injar.jar and indir2 and the Aspect.class file.
-	 * 
+	 *
 	 */
 	public void testInpathAndInjarToBin() {
 		Set<File> inpath = new HashSet<>();

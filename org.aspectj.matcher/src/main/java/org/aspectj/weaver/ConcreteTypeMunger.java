@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -111,7 +111,7 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	 * 'share' type variables with the generic type. Usually this method is called because we need to know whether to tailor the
 	 * munger for addition to a particular type. For example: <pre><code>
 	 *   interface I&lt;T&gt; {}
-	 *   
+	 *
 	 *   aspect X implements I&lt;String&gt; {
 	 *     List&lt;T&gt; I&lt;T&gt;.foo { return null; }
 	 *   }
@@ -144,10 +144,10 @@ public abstract class ConcreteTypeMunger implements PartialOrder.PartialComparab
 	/**
 	 * Some type mungers are created purely to help with the implementation of shadow mungers. For example to support the cflow()
 	 * pointcut we create a new cflow field in the aspect, and that is added via a BcelCflowCounterFieldAdder.
-	 * 
+	 *
 	 * During compilation we need to compare sets of type mungers, and if some only come into existence after the 'shadowy' type
 	 * things have been processed, we need to ignore them during the comparison.
-	 * 
+	 *
 	 * Returning true from this method indicates the type munger exists to support 'shadowy' stuff - and so can be ignored in some
 	 * comparison.
 	 */

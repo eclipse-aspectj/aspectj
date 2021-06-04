@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2010 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - Repro test case
- *    Abraham Nevado 
+ *    Abraham Nevado
  *******************************************************************************/
 
 aspect X {
@@ -20,7 +20,7 @@ aspect X {
 }
 
 interface LogNoi18n {
-boolean isDebugEnabled(); 
+boolean isDebugEnabled();
 void debug(String message);
 String getString(String key);
 }
@@ -39,10 +39,10 @@ class RollbackException extends RuntimeException {
 public class A {
 public static void main(String []argv) {
 	System.out.println("It WORKS");
-int i = 1;  
+int i = 1;
  }
   static LogNoi18n logger;
-  AtomicAction _theTransaction; 
+  AtomicAction _theTransaction;
   Throwable _rollbackOnlyCallerStacktrace;
   public void m() {
     if (logger.isDebugEnabled()) {
@@ -75,11 +75,11 @@ int i = 1;
              RollbackException o = new RollbackException(logger.getString("inactive"));
              if (_rollbackOnlyCallerStacktrace!=null) {
                o.initCause(_rollbackOnlyCallerStacktrace);
-             } else 
+             } else
                if (_theTransaction.getDeferredThrowable()!=null) {
                o.initCause(_theTransaction.getDeferredThrowable());
                }
-            
+
              throw o;
            default:
              throw new RuntimeException(logger.getString("inactive"));

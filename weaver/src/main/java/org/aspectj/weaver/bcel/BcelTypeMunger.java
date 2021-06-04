@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     PARC     initial implementation
  *     Alexandre Vasseur    @AspectJ ITDs
  * ******************************************************************/
@@ -757,7 +757,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			LazyMethodGen ret = new LazyMethodGen(member.getModifiers(), returnType,
 					member.getName(), parameterTypes, UnresolvedType.getNames(member
 							.getExceptions()), gen);
-	
+
 			// 43972 : Static crosscutting makes interfaces unusable for javac
 			// ret.makeSynthetic();
 			return ret;
@@ -1291,7 +1291,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	/**
 	 * Create a bridge method for a particular munger.
-	 * 
+	 *
 	 * @param world
 	 * @param munger
 	 * @param unMangledInterMethod the method to bridge 'to' that we have already created in the 'subtype'
@@ -1307,7 +1307,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		int pos = 0;
 
 		// The bridge method in this type will have the same signature as the one in the supertype
-		LazyMethodGen bridgeMethod = makeMethodGen(clazz, theBridgeMethod); 
+		LazyMethodGen bridgeMethod = makeMethodGen(clazz, theBridgeMethod);
 		bridgeMethod.setAccessFlags(bridgeMethod.getAccessFlags() | 0x00000040 /* BRIDGE = 0x00000040 */);
 		// UnresolvedType[] newParams = munger.getSignature().getParameterTypes();
 		Type returnType = BcelWorld.makeBcelType(theBridgeMethod.getReturnType());
@@ -1777,7 +1777,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		body.append(InstructionConstants.RETURN);
 
 		addNeededSuperCallMethods(weaver, onType, munger.getSuperMethodsCalled());
-		
+
 		return true;
 	}
 
@@ -1905,7 +1905,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (Modifier.isStatic(field.getModifiers())) {
 				throw new RuntimeException("unimplemented");
 			}
-			
+
 			boolean alreadyExists = false;
 			// only need to check for version 2 style mungers
 			if (munger.version==NewFieldTypeMunger.VersionTwo) {
@@ -1916,11 +1916,11 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					}
 				}
 			}
-			
+
 			// FieldGen fg = makeFieldGen(gen, AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType));
 			ResolvedMember newField = AjcMemberMaker.interFieldInterfaceField(field, onType, aspectType, munger.version == NewFieldTypeMunger.VersionTwo);
 			String fieldName = newField.getName();
-			
+
 			Type fieldType = BcelWorld.makeBcelType(field.getType());
 			if (!alreadyExists) {
 				weaver.addInitializer(this);

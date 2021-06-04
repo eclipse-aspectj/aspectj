@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2012 VMware, Inc.
  *
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  * Lyor Goldstein
  */
@@ -22,7 +22,7 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.tools.cache.AbstractIndexedFileCacheBacking.IndexEntry;
 
 /**
- * 
+ *
  */
 public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTestSupport {
 	private File	zipTestFile;
@@ -57,13 +57,13 @@ public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTest
         Map<String, IndexEntry>			indexMap=cache.getIndexMap();
         assertEquals("Mismatched index size", entries.length, indexMap.size());
 
-        Map<String, byte[]> bytesMap=cache.getBytesMap(); 
+        Map<String, byte[]> bytesMap=cache.getBytesMap();
         assertEquals("Mismatched bytes size", entriesMap.size() /* the ignored one has no file */, bytesMap.size());
-        
+
         for (IndexEntry entry : entries) {
             String  key=entry.key;
             assertNotNull("Missing entry for key=" + key, indexMap.get(key));
-            
+
             if (entry.ignored) {
                 assertNull("Unexpected bytes for ignored key=" + key, bytesMap.get(key));
             } else {
@@ -121,7 +121,7 @@ public class ZippedFileCacheBackingTest extends AsynchronousFileCacheBackingTest
         Map<String, IndexEntry> 		indexMap=cache.getIndexMap();
         assertEquals("Mismatched index size", 1 /* only the ignored entry */, indexMap.size());
 
-        Map<String, byte[]> bytesMap=cache.getBytesMap(); 
+        Map<String, byte[]> bytesMap=cache.getBytesMap();
         assertEquals("Non empty data bytes", 0, bytesMap.size());
         assertFalse("Zip file not deleted: " + zipFile, zipFile.canRead());
     }

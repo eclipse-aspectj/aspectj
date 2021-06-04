@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -42,7 +42,7 @@ import org.aspectj.util.LangUtil;
  * (add Thread to key to restrict access?)
  */
 public class AjcTest extends RunSpecIterator {
-    
+
     /** Unwrap an AjcTest.Spec from an IRunStatus around an AjcTest */
     public static Spec unwrapSpec(IRunStatus status) {
         if (null != status) {
@@ -54,9 +54,9 @@ public class AjcTest extends RunSpecIterator {
                 }
             }
         }
-        return null;        
+        return null;
     }
-    
+
     /** Unwrap initial CompilerRun.Spec from an AjcTest.Spec */
     public static CompilerRun.Spec unwrapCompilerRunSpec(Spec spec) {
         if (null != spec) {
@@ -68,14 +68,14 @@ public class AjcTest extends RunSpecIterator {
                 }
             }
         }
-        return null;        
+        return null;
     }
 
     /** The spec creates the sandbox, so we use it throughout */
  	public AjcTest(Spec spec, Sandbox sandbox, Validator validator) {
 	   super(spec, sandbox, validator, true);
     }
-    
+
     /**
      * Clear the command from the sandbox, to avoid memory leaks.
 	 * @see org.aspectj.testing.harness.bridge.RunSpecIterator#iterationCompleted()
@@ -84,9 +84,9 @@ public class AjcTest extends RunSpecIterator {
 		super.iterationCompleted();
         sandbox.clearCommand(this);
 	}
-    
-    
-    /** 
+
+
+    /**
      * Specification for an ajc test.
      * Keyword directives are global/parent options passed, e.g., as
      * <pre>-ajctest[Require|Skip]Keywords=keyword{,keyword}..</pre>.
@@ -95,15 +95,15 @@ public class AjcTest extends RunSpecIterator {
     public static class Spec extends AbstractRunSpec {
         public static final String XMLNAME = "ajc-test";
         /**
-         * do description as title, do sourceLocation, 
+         * do description as title, do sourceLocation,
          * do keywords, do options, skip paths, do comment,
          * skip staging, skip badInput,
          * skip dirChanges, do messages and do children
-         * (though we do children directly). 
+         * (though we do children directly).
          */
         private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
                 "title", null, null, null, "", null, "", "", true, false, false);
-        
+
         private static final String OPTION_PREFIX = "-ajctest";
         private static final String[] VALID_OPTIONS = new String[] { OPTION_PREFIX };
 
@@ -113,14 +113,14 @@ public class AjcTest extends RunSpecIterator {
         private static final String REQUIRE_KEYWORDS = "RequireKeywords=";
         private static final String SKIP_KEYWORDS = "SkipKeywords=";
         private static final String PICK_PR = "PR=";
-        private static final List<String> VALID_SUFFIXES 
-            = Collections.unmodifiableList(Arrays.asList(new String[] 
-            { TITLE_LIST, TITLE_FAIL_LIST, TITLE_CONTAINS, 
+        private static final List<String> VALID_SUFFIXES
+            = Collections.unmodifiableList(Arrays.asList(new String[]
+            { TITLE_LIST, TITLE_FAIL_LIST, TITLE_CONTAINS,
                 REQUIRE_KEYWORDS, SKIP_KEYWORDS, PICK_PR }));
-        
+
         /** Map String titlesName to List (String) of titles to accept */
         private static final Map<String,List<String>> TITLES = new HashMap<>();
-        
+
         private static List<String> getTitles(String titlesName) {
             return getTitles(titlesName, false);
         }
@@ -135,7 +135,7 @@ public class AjcTest extends RunSpecIterator {
             }
             return result;
         }
-        
+
         /**
          * Make titles list per titlesKey, either a path to a file
          * containing "[PASS|FAIL] {title}(..)" entries,
@@ -148,7 +148,7 @@ public class AjcTest extends RunSpecIterator {
          */
         private static List<String> makeTitlesList(String titlesKey, boolean fail) {
             File file = new File(titlesKey);
-            return file.canRead() 
+            return file.canRead()
                 ? readTitlesFile(file, fail)
                 : parseTitlesList(titlesKey);
         }
@@ -184,7 +184,7 @@ public class AjcTest extends RunSpecIterator {
                     result.add(next);
                 }
             }
-            if (null != last) { 
+            if (null != last) {
                 String m = "unterminated entry \"" + last; // XXX messages
                 System.err.println(m + "\" in " + titlesList);
                 result.add(last.trim());
@@ -198,7 +198,7 @@ public class AjcTest extends RunSpecIterator {
          * excluding the "[PASS|FAIL] Suite.Spec(.." entry.
          * @param titlesFile the File containing a
          * list of titles from test results,
-         * with some lines of the form 
+         * with some lines of the form
          * <code>[PASS|FAIL] {title}()<code> (excluding
          * <code>[PASS|FAIL] Suite.Spec(...<code>.
          * @param titlesFile the File path to the file containing titles
@@ -238,13 +238,13 @@ public class AjcTest extends RunSpecIterator {
             }
             return Collections.unmodifiableList(result);
         }
-        
+
         /** base directory of the test suite - set before making run */
         private File suiteDir;
-        
+
         /** path offset from suite directory to base of test directory */
         String testDirOffset; // XXX revert to private after fixes
-        
+
         /** id of bug - if 0, then no bug associated with this test */
         private int bugId;
 
@@ -252,49 +252,49 @@ public class AjcTest extends RunSpecIterator {
             super(XMLNAME);
             setXMLNames(NAMES);
         }
-        
-        protected void initClone(Spec spec) 
+
+        protected void initClone(Spec spec)
                 throws CloneNotSupportedException {
             super.initClone(spec);
             spec.bugId = bugId;
             spec.suiteDir = suiteDir;
             spec.testDirOffset = testDirOffset;
         }
-        
+
         public Object clone() throws CloneNotSupportedException {
             Spec result = new Spec();
             initClone(result);
-            return result;    
+            return result;
         }
-        
+
         public void setSuiteDir(File suiteDir) {
             this.suiteDir = suiteDir;
         }
-        
+
         public File getSuiteDir() {
             return suiteDir;
         }
-        
+
         /** @param bugId 100..999999 */
         public void setBugId(int bugId) {
             LangUtil.throwIaxIfFalse((bugId > 10) && (bugId < 1000000), "bad bug id: " + bugId);
             this.bugId = bugId;
         }
-        
+
         public int getBugId() {
             return bugId;
         }
-        
+
         public void setTestDirOffset(String testDirOffset) {
             if (!LangUtil.isEmpty(testDirOffset)) {
                 this.testDirOffset = testDirOffset;
             }
         }
-        
+
         public String getTestDirOffset() {
             return (null == testDirOffset ? "" : testDirOffset);
         }
-        
+
         /**
          * @param sandbox ignored
          * @see org.aspectj.testing.harness.bridge.AbstractRunSpec#makeAjcRun(Sandbox, Validator)
@@ -316,7 +316,7 @@ public class AjcTest extends RunSpecIterator {
                 suiteDir = locDir;
             }
 
-            // we make a new sandbox with more state for our subruns, keep that, 
+            // we make a new sandbox with more state for our subruns, keep that,
             // in order to defer initialization to nextRun()
             File testBaseDir;
             String testDirOffset = getTestDirOffset();
@@ -352,10 +352,10 @@ public class AjcTest extends RunSpecIterator {
             out.endAttributes();
             super.writeChildren(out);
             out.endElement(xmlElementName);
-        } 
-               
+        }
+
         /**
-         * AjcTest overrides this to skip if 
+         * AjcTest overrides this to skip if
          * <ul>
          * <li>the spec has a keyword the parent wants to skip</li>
          * <li>the spec does not have a required keyword</li>
@@ -373,7 +373,7 @@ public class AjcTest extends RunSpecIterator {
                 return false;
             }
             runtime.copy(parentRuntime);
-            
+
             String[] globalOptions = runtime.extractOptions(VALID_OPTIONS, true);
 			for (String globalOption : globalOptions) {
 				String option = globalOption;
@@ -461,17 +461,17 @@ public class AjcTest extends RunSpecIterator {
 				}
 			}
             return true;
-        }  
+        }
 
     } // AjcTest.Spec
-    
-    /** 
+
+    /**
      * A suite of AjcTest has children for each AjcTest
-     * and flows all options down as globals 
+     * and flows all options down as globals
      */
     public static class Suite extends RunSpecIterator {
         final Spec spec;
-        
+
         /**
          * Count the number of AjcTest in this suite.
          * @param spec
@@ -492,7 +492,7 @@ public class AjcTest extends RunSpecIterator {
             super(spec, sandbox, validator, false);
             this.spec = spec;
         }
-        
+
         /**
          * While being called to make the sandbox for the child,
          * set up the child's suite dir based on ours.
@@ -514,9 +514,9 @@ public class AjcTest extends RunSpecIterator {
 			return super.makeSandbox(child, validator);
 		}
 
-        /** 
+        /**
          * A suite spec contains AjcTest children.
-         * The suite dir or source location should be set 
+         * The suite dir or source location should be set
          * if the tests do not each have a source location
          * with a source file in the suite dir.
          * XXX whether to write out suiteDir in XML?
@@ -524,11 +524,11 @@ public class AjcTest extends RunSpecIterator {
         public static class Spec extends AbstractRunSpec {
             public static final String XMLNAME = "suite";
             /**
-             * do description, do sourceLocation, 
+             * do description, do sourceLocation,
              * do keywords, do options, skip paths, do comment,
              * skip staging, skip badInput,
              * skip dirChanges, skip messages and do children
-             * (though we do children directly). 
+             * (though we do children directly).
              */
 //            private static final XMLNames NAMES = new XMLNames(XMLNames.DEFAULT,
 //                    null, null, null, null, "", null, "", "", true, true, false);
@@ -536,26 +536,26 @@ public class AjcTest extends RunSpecIterator {
             public Spec() {
                 super(XMLNAME, false); // do not skip this even if children skip
             }
-            
+
             public Object clone() throws CloneNotSupportedException {
                 Spec spec = new Spec();
                 super.initClone(spec);
-                spec.suiteDir = suiteDir;                
+                spec.suiteDir = suiteDir;
                 return spec;
             }
-            
+
             /** @param suiteDirPath the String path to the base suite dir */
             public void setSuiteDir(String suiteDirPath) {
                 if (!LangUtil.isEmpty(suiteDirPath)) {
                     this.suiteDir = new File(suiteDirPath);
                 }
             }
-            
+
             /** @param suiteDirFile the File for the base suite dir */
             public void setSuiteDirFile(File suiteDir) {
                 this.suiteDir = suiteDir;
             }
-            
+
             /** @return suiteDir from any set or source location if set */
             public File getSuiteDirFile() {
                 if (null == suiteDir) {
@@ -569,13 +569,13 @@ public class AjcTest extends RunSpecIterator {
                 }
                 return suiteDir;
             }
-            
+
             /**
              * @return
              * @see org.aspectj.testing.harness.bridge.AbstractRunSpec#makeRunIterator(Sandbox, Validator)
              */
             public IRunIterator makeRunIterator(
-                Sandbox sandbox, 
+                Sandbox sandbox,
                 Validator validator) {
                 return new Suite(this, sandbox, validator);
             }
@@ -583,9 +583,9 @@ public class AjcTest extends RunSpecIterator {
             public String toString() {
                 // removed nKids as misleading, since children.size() may change
                 //int nKids = children.size();
-                //return "Suite.Spec(" + suiteDir + ", " + nKids + " tests)"; 
-                return "Suite.Spec(" + suiteDir + ")"; 
+                //return "Suite.Spec(" + suiteDir + ", " + nKids + " tests)";
+                return "Suite.Spec(" + suiteDir + ")";
             }
-        }        
-    }    
+        }
+    }
 }

@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -18,7 +18,7 @@ import junit.framework.Test;
  * These are tests that will run on Java 1.4 and use the old harness format for test specification.
  */
 public class BringUpTests extends org.aspectj.testing.XMLBasedAjcTestCase {
-	  
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(BringUpTests.class);
   }
@@ -31,7 +31,7 @@ public class BringUpTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void testEmptyClass() {
 	  runTest("empty class");
   }
-  
+
   public void testEmptyAspect() {
 	  runTest("empty aspect");
   }

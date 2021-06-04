@@ -2,9 +2,9 @@
  * Copyright (c) 2002-2010 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
@@ -95,7 +95,7 @@ import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
 /**
- * 
+ *
  * @author PARC
  * @author Andy Clement
  * @author Alexandre Vasseur
@@ -143,7 +143,7 @@ public class BcelWeaver {
 
 	/**
 	 * Add the given aspect to the weaver. The type is resolved to support DOT for static inner classes as well as DOLLAR
-	 * 
+	 *
 	 * @param aspectName
 	 * @return aspect
 	 */
@@ -221,13 +221,13 @@ public class BcelWeaver {
 			} else {
 				IMessage message = new Message("Cannot register '"+aspectName+"' because the type found with that name is not an aspect", null, true);
 				world.getMessageHandler().handleMessage(message);
-			}				
+			}
 			return null;
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param inFile directory containing classes or zip/jar class archive
 	 */
 	public void addLibraryJarFile(File inFile) throws IOException {
@@ -279,7 +279,7 @@ public class BcelWeaver {
 
 	/**
 	 * Look for .class files that represent aspects in the supplied directory - return the list of accumulated aspects.
-	 * 
+	 *
 	 * @param directory the directory in which to look for Aspect .class files
 	 * @return the list of discovered aspects
 	 * @throws FileNotFoundException
@@ -307,7 +307,7 @@ public class BcelWeaver {
 	/**
 	 * Determine if the supplied bytes represent an aspect, if they do then create a ResolvedType instance for the aspect and return
 	 * it, otherwise return null
-	 * 
+	 *
 	 * @param classbytes the classbytes that might represent an aspect
 	 * @param name the name of the class
 	 * @param directory directory which contained the class file
@@ -347,7 +347,7 @@ public class BcelWeaver {
 	/**
 	 * Add any .class files in the directory to the outdir. Anything other than .class files in the directory (or its
 	 * subdirectories) are considered resources and are also copied.
-	 * 
+	 *
 	 */
 	public List<UnwovenClassFile> addDirectoryContents(File inFile, File outDir) throws IOException {
 		List<UnwovenClassFile> addedClassFiles = new ArrayList<>();
@@ -1084,7 +1084,7 @@ public class BcelWeaver {
 			if (classFile.shouldBeWoven()) {
 				String className = classFile.getClassName();
 				BcelObjectType classType = getClassType(className);
-	
+
 				// null return from getClassType() means the delegate is an eclipse
 				// source type - so
 				// there *cant* be any reweavable state... (he bravely claimed...)
@@ -1143,7 +1143,7 @@ public class BcelWeaver {
 				if (theType.isAspect()) {
 					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 					if (classType == null) {
-	
+
 						// Sometimes.. if the Bcel Delegate couldn't be found then a
 						// problem occurred at compile time - on
 						// a previous compiler run. In this case I assert the
@@ -1155,7 +1155,7 @@ public class BcelWeaver {
 						if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
 							continue;
 						}
-	
+
 						throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 					}
 					weaveAndNotify(classFile, classType, requestor);
@@ -1177,16 +1177,16 @@ public class BcelWeaver {
 				if (!theType.isAspect()) {
 					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
 					if (classType == null) {
-	
+
 						// bug 119882 - see above comment for bug 113531
 						ReferenceTypeDelegate theDelegate = ((ReferenceType) theType).getDelegate();
-	
+
 						// TODO urgh - put a method on the interface to check this,
 						// string compare is hideous
 						if (theDelegate.getClass().getName().endsWith("EclipseSourceType")) {
 							continue;
 						}
-	
+
 						throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 					}
 					weaveAndNotify(classFile, classType, requestor);
@@ -1296,7 +1296,7 @@ public class BcelWeaver {
 	 * 'typeToWeave' is one from the 'typesForWeaving' list. This routine ensures we process supertypes (classes/interfaces) of
 	 * 'typeToWeave' that are in the 'typesForWeaving' list before 'typeToWeave' itself. 'typesToWeave' is then removed from the
 	 * 'typesForWeaving' list.
-	 * 
+	 *
 	 * Note: Future gotcha in here ... when supplying partial hierarchies, this algorithm may break down. If you have a hierarchy
 	 * A>B>C and only give A and C to the weaver, it may choose to weave them in either order - but you'll probably have other
 	 * problems if you are supplying partial hierarchies like that !
@@ -1328,7 +1328,7 @@ public class BcelWeaver {
 		}
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.PROCESSING_DECLARE_PARENTS,
 				resolvedTypeToWeave.getName());
-		// If A was processed before B (and was declared 'class A implements B') then there is no need to complete B again, it 
+		// If A was processed before B (and was declared 'class A implements B') then there is no need to complete B again, it
 		// will have been done whilst processing A.
 		if (!resolvedTypeToWeave.isTypeHierarchyComplete()) {
 			weaveParentTypeMungers(resolvedTypeToWeave);
@@ -1397,7 +1397,7 @@ public class BcelWeaver {
 							WeaverMessages.format(WeaverMessages.MUST_KEEP_OVERWEAVING_ONCE_START,
 									className)));
 //									onType.getName(), annoX.getTypeName(), annoX.getValidTargets()),
-//							decA.getSourceLocation()));					
+//							decA.getSourceLocation()));
 				} else {
 					byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
 					JavaClass newJavaClass = Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes);
@@ -1468,7 +1468,7 @@ public class BcelWeaver {
 
 	/**
 	 * Weaves new parents and annotations onto a type ("declare parents" and "declare @type")
-	 * 
+	 *
 	 * Algorithm: 1. First pass, do parents then do annotations. During this pass record: - any parent mungers that don't match but
 	 * have a non-wild annotation type pattern - any annotation mungers that don't match 2. Multiple subsequent passes which go over
 	 * the munger lists constructed in the first pass, repeatedly applying them until nothing changes. FIXME asc confirm that
@@ -1945,7 +1945,7 @@ public class BcelWeaver {
 	/**
 	 * Perform a fast match of the specified list of shadowmungers against the specified type. A subset of those that might match is
 	 * returned.
-	 * 
+	 *
 	 * @param list list of all shadow mungers that might match
 	 * @param type the target type
 	 * @return a list of shadow mungers that might match with those that cannot (according to fast match rules) removed

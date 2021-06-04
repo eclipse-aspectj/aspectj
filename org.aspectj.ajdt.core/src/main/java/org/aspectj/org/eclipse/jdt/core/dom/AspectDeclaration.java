@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -15,11 +15,11 @@ import java.util.List;
 
 /**
  * AspectDeclaration DOM AST node.
- * 
+ *
  * Has everything an AjTypeDeclaration has plus: an ASTNode called 'perClause' a boolean called 'privileged'
- * 
+ *
  * @author ajh02
- * 
+ *
  */
 public class AspectDeclaration extends AjTypeDeclaration {
 
@@ -158,9 +158,9 @@ public class AspectDeclaration extends AjTypeDeclaration {
 
 	/**
 	 * Returns a list of structural property descriptors for this node type. Clients must not modify the result.
-	 * 
+	 *
 	 * @param apiLevel the API level; one of the <code>AST.JLS&ast;</code> constants
-	 * 
+	 *
 	 * @return a list of property descriptors (element type: {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
@@ -188,7 +188,7 @@ public class AspectDeclaration extends AjTypeDeclaration {
 
 	/**
 	 * Returns whether this aspect is a privileged one.
-	 * 
+	 *
 	 * @return <code>true</code> if this is a privileged aspect declaration, and <code>false</code> otherwise.
 	 */
 	public boolean isPrivileged() {
@@ -197,7 +197,7 @@ public class AspectDeclaration extends AjTypeDeclaration {
 
 	/**
 	 * Sets whether this aspect is a privileged one
-	 * 
+	 *
 	 * @param isPrivileged <code>true</code> if this is a privileged aspect declaration, and <code>false</code> otherwise.
 	 */
 	public void setPrivileged(boolean isPrivileged) {

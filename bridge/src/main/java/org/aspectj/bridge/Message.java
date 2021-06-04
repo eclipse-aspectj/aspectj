@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.bridge;
@@ -33,7 +33,7 @@ public class Message implements IMessage {
 
 	/**
 	 * Create a (compiler) error or warning message
-	 * 
+	 *
 	 * @param message the String used as the underlying message
 	 * @param location the ISourceLocation, if any, associated with this message
 	 * @param isError if true, use IMessage.ERROR; else use IMessage.WARNING
@@ -49,7 +49,7 @@ public class Message implements IMessage {
 
 	/**
 	 * Create a message, handling null values for message and kind if thrown is not null.
-	 * 
+	 *
 	 * @param message the String used as the underlying message
 	 * @param kind the IMessage.Kind of message - not null
 	 * @param thrown the Throwable, if any, associated with this message
@@ -89,7 +89,7 @@ public class Message implements IMessage {
 
 	/**
 	 * Create a message, handling null values for message and kind if thrown is not null.
-	 * 
+	 *
 	 * @param message the String used as the underlying message
 	 * @param kind the IMessage.Kind of message - not null
 	 * @param thrown the Throwable, if any, associated with this message

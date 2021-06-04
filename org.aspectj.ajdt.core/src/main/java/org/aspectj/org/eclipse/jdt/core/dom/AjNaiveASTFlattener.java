@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -35,51 +35,51 @@ import java.util.List;
  * Call the <code>reset</code> method to clear the previous result before reusing an
  * existing instance.
  * </p>
- * 
+ *
  * @since 2.0
  */
 public class AjNaiveASTFlattener extends AjASTVisitor {
-	
+
 	/**
 	 * The string buffer into which the serialized representation of the AST is
 	 * written.
 	 */
 	protected StringBuffer buffer;
-	
+
 	private int indent = 0;
-	
+
 	/**
 	 * Creates a new AST printer.
 	 */
 	public AjNaiveASTFlattener() {
 		this.buffer = new StringBuffer();
 	}
-	
+
 	/**
 	 * Returns the string accumulated in the visit.
 	 *
-	 * @return the serialized 
+	 * @return the serialized
 	 */
 	public String getResult() {
 		return this.buffer.toString();
 	}
-	
+
 	/**
 	 * Resets this printer so that it can be used again.
 	 */
 	public void reset() {
 		this.buffer.setLength(0);
 	}
-	
+
 	void printIndent() {
-		for (int i = 0; i < this.indent; i++) 
+		for (int i = 0; i < this.indent; i++)
 			this.buffer.append("  "); //$NON-NLS-1$
 	}
-	
+
 	/**
 	 * Appends the text representation of the given modifier flags, followed by a single space.
 	 * Used for 3.0 modifiers and annotations.
-	 * 
+	 *
 	 * @param ext the list of modifier and annotation nodes
 	 * (element type: <code>IExtendedModifiers</code>)
 	 */
@@ -89,12 +89,12 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			p.accept(this);
 			this.buffer.append(" ");//$NON-NLS-1$
 		}
-	}		
-	
+	}
+
 	/**
 	 * Appends the text representation of the given modifier flags, followed by a single space.
 	 * Used for JLS2 modifiers.
-	 * 
+	 *
 	 * @param modifiers the modifier flags
 	 */
 	void printModifiers(int modifiers) {
@@ -131,8 +131,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (Modifier.isTransient(modifiers)) {
 			this.buffer.append("transient ");//$NON-NLS-1$
 		}
-	}		
-	
+	}
+
 	/*
 	 * @see ASTVisitor#visit(AnnotationTypeDeclaration)
 	 * @since 3.1
@@ -153,7 +153,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append("}\n");//$NON-NLS-1$
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(AnnotationTypeMemberDeclaration)
 	 * @since 3.1
@@ -175,7 +175,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(";\n");//$NON-NLS-1$
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(AnonymousClassDeclaration)
 	 */
@@ -512,7 +512,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getBody().accept(this);
 		return false;
 	}
-	
+
 	public boolean visit(PointcutDeclaration node) {
 		printIndent();
 		buffer.append(" pointcut ");
@@ -804,7 +804,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getTypeName().accept(this);
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(MemberRef)
 	 * @since 3.0
@@ -817,7 +817,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getName().accept(this);
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(MemberValuePair)
 	 * @since 3.1
@@ -828,7 +828,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getValue().accept(this);
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(MethodRef)
 	 * @since 3.0
@@ -850,7 +850,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(")");//$NON-NLS-1$
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(MethodRefParameter)
 	 * @since 3.0
@@ -868,7 +868,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		}
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(MethodDeclaration)
 	 */
@@ -919,7 +919,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(")");//$NON-NLS-1$
 		for (int i = 0; i < node.getExtraDimensions(); i++) {
 			this.buffer.append("[]"); //$NON-NLS-1$
-		}		
+		}
 		if (!node.thrownExceptions().isEmpty()) {
 			this.buffer.append(" throws ");//$NON-NLS-1$
 			for (Iterator it = node.thrownExceptions().iterator(); it.hasNext(); ) {
@@ -981,7 +981,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(node.getKeyword().toString());
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(NormalAnnotation)
 	 * @since 3.1
@@ -1000,7 +1000,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(")");//$NON-NLS-1$
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(NullLiteral)
 	 */
@@ -1154,7 +1154,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(")");//$NON-NLS-1$
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(SingleVariableDeclaration)
 	 */
@@ -1176,7 +1176,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		node.getName().accept(this);
 		for (int i = 0; i < node.getExtraDimensions(); i++) {
 			this.buffer.append("[]"); //$NON-NLS-1$
-		}			
+		}
 		if (node.getInitializer() != null) {
 			this.buffer.append("=");//$NON-NLS-1$
 			node.getInitializer().accept(this);
@@ -1359,7 +1359,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		}
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(TextElement)
 	 * @since 3.0
@@ -1368,7 +1368,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(node.getText());
 		return false;
 	}
-	
+
 	/*
 	 * @see ASTVisitor#visit(ThisExpression)
 	 */
@@ -1504,7 +1504,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 					// enum constant declarations are separated by commas
 					this.buffer.append(", ");//$NON-NLS-1$
 				} else {
-					// semicolon separates last enum constant declaration from 
+					// semicolon separates last enum constant declaration from
 					// first class body declarations
 					this.buffer.append("; ");//$NON-NLS-1$
 				}
@@ -1653,13 +1653,13 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		printIndent();
 		this.buffer.append("declare parents: ");
 		node.getChildTypePattern().accept(this);
-		
+
 		if(node.isExtends()){
 			this.buffer.append(" extends ");
 		} else {
 			this.buffer.append(" implements ");
 		}
-		
+
 		for (Iterator it = node.parentTypePatterns().iterator(); it.hasNext();) {
 			TypePattern typePat = (TypePattern) it.next();
 			typePat.accept(this);
@@ -1667,15 +1667,15 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 				this.buffer.append(", ");
 			}
 		}
-		
+
 		this.buffer.append(";\n");
-		
+
 		return false;
 	}
-	
+
 	public boolean visit(DeclareWarningDeclaration node) {
 		printIndent();
-		
+
 		this.buffer.append("declare warning: ");
 		node.getPointcut().accept(this);
 		this.buffer.append(" : ");
@@ -1683,10 +1683,10 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(" ;\n");
 		return false;
 	}
-	
+
 	public boolean visit(DeclareErrorDeclaration node) {
 		printIndent();
-		
+
 		this.buffer.append("declare error: ");
 		node.getPointcut().accept(this);
 		this.buffer.append(" : ");
@@ -1694,10 +1694,10 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(" ;\n");
 		return false;
 	}
-	
+
 	public boolean visit(DeclareSoftDeclaration node) {
 		printIndent();
-		
+
 		this.buffer.append("declare soft: ");
 		node.getTypePattern().accept(this);
 		this.buffer.append(" : ");
@@ -1705,10 +1705,10 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(" ;\n");
 		return false;
 	}
-	
+
 	public boolean visit(DeclarePrecedenceDeclaration node) {
 		printIndent();
-		
+
 		this.buffer.append("declare precedence: ");
 		for (Iterator it = node.typePatterns().iterator(); it.hasNext();) {
 			TypePattern typePat = (TypePattern) it.next();
@@ -1717,14 +1717,14 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 				this.buffer.append(", ");
 			}
 		}
-		
+
 		this.buffer.append(";\n");
-		
+
 		return false;
 	}
-	
+
 	public boolean visit(AbstractBooleanTypePattern node) {
-		
+
 		// Flatten boolean expressions in order, meaning
 		// the left node needs to be appended first, followed by the
 		// boolean operator, followed by the right node.
@@ -1733,7 +1733,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		this.buffer.append(node.getTypePatternExpression());
 		this.buffer.append(" ");
 		node.getRight().accept(this);
-		
+
 		// No need to visit the childrena, as they were already visited above
 		return false;
 	}

@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 
 package org.aspectj.weaver.tools;
@@ -21,14 +21,14 @@ public interface StandardPointcutExpression {
 
 	/**
 	 * Set the matching context to be used for subsequent calls to match.
-	 * 
+	 *
 	 * @see MatchingContext
 	 */
 	void setMatchingContext(MatchingContext aMatchContext);
 
 	/**
 	 * Determine whether or not this pointcut could ever match a join point in the given class.
-	 * 
+	 *
 	 * @param aClass the candidate class
 	 * @return true iff this pointcut <i>may</i> match a join point within(aClass), and false otherwise
 	 */
@@ -41,7 +41,7 @@ public interface StandardPointcutExpression {
 
 	/**
 	 * Determine whether or not this pointcut matches the execution of a given method.
-	 * 
+	 *
 	 * @param aMethod the method being executed
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never matches join points representing the
 	 *         execution of the method.
@@ -59,7 +59,7 @@ public interface StandardPointcutExpression {
 	//
 	/**
 	 * Determine whether or not this pointcut matches the static initialization of the given class.
-	 * 
+	 *
 	 * @param aType the class being statically initialized
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never matchs join points representing the static
 	 *         initialization of the given type
@@ -109,7 +109,7 @@ public interface StandardPointcutExpression {
 	/**
 	 * Determine whether or not this pointcut matches a method call to the given method, made during the execution of the given
 	 * method or constructor.
-	 * 
+	 *
 	 * @param aMethod the method being called
 	 * @param withinCode the Method or Constructor from within which the call is made
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never matches join points representing a call to

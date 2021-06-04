@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement -     initial implementation
  * ******************************************************************/
 
 package org.aspectj.apache.bcel.classfile.tests;
@@ -25,19 +25,19 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
 public class FieldAnnotationsTest extends BcelTestCase {
-	
+
 
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-	
-	
+
+
 	/**
 	 * Check field annotations are retrievable.
 	 */
 	public void testFieldAnnotations() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("AnnotatedFields");
-		
+
 		checkAnnotatedField(clazz,"i","SimpleAnnotation","id","1");
 		checkAnnotatedField(clazz,"s","SimpleAnnotation","id","2");
 
@@ -48,17 +48,17 @@ public class FieldAnnotationsTest extends BcelTestCase {
 	 */
 	public void testFieldAnnotationsReadWrite() throws ClassNotFoundException,IOException {
 		JavaClass clazz = getClassFromJar("AnnotatedFields");
-		
+
 		checkAnnotatedField(clazz,"i","SimpleAnnotation","id","1");
 		checkAnnotatedField(clazz,"s","SimpleAnnotation","id","2");
-		
+
 		//	 Write it out
 		File tfile = createTestdataFile("AnnotatedFields.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedFields");
-		
+
 		checkAnnotatedField(clazz,"i","SimpleAnnotation","id","1");
 		checkAnnotatedField(clazz,"s","SimpleAnnotation","id","2");
 
@@ -72,7 +72,7 @@ public class FieldAnnotationsTest extends BcelTestCase {
 	public void testFieldAnnotationsModification() throws ClassNotFoundException, IOException {
 		boolean dbg = false;
 		JavaClass clazz = getClassFromJar("AnnotatedFields");
-		
+
 		ClassGen clg = new ClassGen(clazz);
 		Field f = clg.getFields()[0];
 		if (dbg) System.err.println("Field in freshly constructed class is: "+f);
@@ -87,16 +87,16 @@ public class FieldAnnotationsTest extends BcelTestCase {
 		if (dbg) System.err.println("Replacing original field with new field that has extra annotation");
 		clg.removeField(f);
 		clg.addField(fg.getField());
-		
+
 		f = clg.getFields()[1]; // there are two fields in the class, removing and readding has changed the order
 		                        // so this time index [1] is the 'int i' field
 		if (dbg) System.err.println("Field now looks like this: "+f);
 		if (dbg) System.err.println("With annotations: "+dumpAnnotations(f.getAnnotations()));
 		assertTrue("Should be 2 annotations on this field, but there are "+f.getAnnotations().length,f.getAnnotations().length==2);
 	}
-	
+
 	// helper methods
-		
+
 	public void checkAnnotatedField(JavaClass clazz,String fieldname,
 			String annotationName,String annotationElementName,String annotationElementValue) {
 		Field[] fields = clazz.getFields();
@@ -109,7 +109,7 @@ public class FieldAnnotationsTest extends BcelTestCase {
 			}
 		}
 	}
-	
+
 	private void checkAnnotation(AnnotationGen a,String name,String elementname,String elementvalue) {
 		assertTrue("Expected annotation to have name "+name+" but it had name "+a.getTypeName(),
 				a.getTypeName().equals(name));
@@ -120,10 +120,10 @@ public class FieldAnnotationsTest extends BcelTestCase {
 		assertTrue("Expected element value "+elementvalue+" but was "+envp.getValue().stringifyValue(),
 				elementvalue.equals(envp.getValue().stringifyValue()));
 	}
-	
+
 
 	// helper methods
-	
+
 	public void checkValue(AnnotationGen a,String name,String tostring) {
 		for (NameValuePair element : a.getValues()) {
 			if (element.getNameString().equals(name)) {
@@ -139,5 +139,5 @@ public class FieldAnnotationsTest extends BcelTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 }

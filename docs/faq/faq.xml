@@ -164,8 +164,11 @@
           <para>How is AspectJ licensed?</para>
         </question>
         <answer>
-          <para>Since AspectJ 1.5.2, source code and documentation is available under the
-            <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License 1.0</ulink>.
+          <para>Since AspectJ 1.9.7, source code and documentation is available under the
+            <ulink url="https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt">Eclipse Public License v 2.0</ulink>.
+          </para>
+          <para>AspectJ 1.5.2 through 1.9.6 source code and documentation is available under the
+            <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License v 1.0</ulink>.
           </para>
           <para>AspectJ 1.1 through 1.5.1 source code and documentation is available under the
             <ulink url="http://eclipse.org/legal/cpl-v10.html">Common Public License 1.0</ulink>.
@@ -177,7 +180,7 @@
               redistribution.
           </para>
           <para>The runtime jar aspectjrt.jar and its distribution are also covered by the
-          <ulink url="http://www.eclipse.org/org/documents/epl-v10.php">Eclipse Public License</ulink>.
+          <ulink url="https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt">Eclipse Public License</ulink>.
           </para>
           <para>For answers to common licensing questions, see the
           <ulink url="http://www.eclipse.org/legal/eplfaq.php">Eclipse Public License FAQ</ulink>.
@@ -1022,13 +1025,9 @@ aspect.
                 </para>
               </listitem>
               <listitem>
-                <para>AspectJ is available under a non-proprietary, open source license,
-                 either the
-                  <ulink url="http://www.opensource.org/licenses/mozilla1.1">
-                            Mozilla Public License 1.1</ulink>
-                  for 1.0 or the
-                  <ulink url="http://eclipse.org/legal/cpl-v10.html">
-                   Common Public License 1.0</ulink> for 1.1.
+                <para>AspectJ is available under a non-proprietary, open source license, the
+                  <ulink url="https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt">
+                   Eclipse Public License v 2.0</ulink>.
                   AspectJ will continue to evolve and be available, regardless
                   of the fate of any particular organization involved with
                   AspectJ.

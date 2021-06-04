@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement -     initial implementation
  * ******************************************************************/
 
 package org.aspectj.apache.bcel.classfile.tests;
@@ -21,23 +21,23 @@ import org.aspectj.apache.bcel.classfile.Utility;
 
 
 public class LocalVariableTypeTableTest extends BcelTestCase {
-	
+
 
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-	
+
 	/**
 	 * Check the local variable type table includes information about generic signatures.
 	 */
 	public void testLocalVariableTypeTableAttribute() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("SimpleGenericsProgram");
-		
+
 		Method mainMethod = getMethod(clazz,"main");
 		Code codeAttr = (Code) findAttribute("Code",mainMethod.getAttributes());
-		LocalVariableTypeTable localVariableTypeTable = 
+		LocalVariableTypeTable localVariableTypeTable =
 			(LocalVariableTypeTable) findAttribute("LocalVariableTypeTable",codeAttr.getAttributes());
-		
+
 		assertTrue("Should be two entries in the LocalVariableTypeTable but found "+localVariableTypeTable.getTableLength(),
 				localVariableTypeTable.getTableLength()==2);
 
@@ -64,9 +64,9 @@ public class LocalVariableTypeTableTest extends BcelTestCase {
 		}
 		if (!tc1OK || !tc2OK) fail(errormessage);
 	}
-	
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 }

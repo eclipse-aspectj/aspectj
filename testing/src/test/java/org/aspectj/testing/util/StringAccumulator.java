@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -39,14 +39,14 @@ public class StringAccumulator implements ObjectChecker {
     public StringAccumulator(String delimiter) {
         this(delimiter, null, null, "");
     }
-    
+
     /**
-     * Constructor for StringAccumulator which specifies how to 
+     * Constructor for StringAccumulator which specifies how to
      * process each result, optionally postfixing or prefixing
      * or infixing (adding index plus infix to prefix). e.g.,
      * for prefix="[", infix="]\"", postfix="\"\n", then each entry
      * becomes a line: <pre>"[{index}]"{entry}"\n</pre>
-     * 
+     *
      * @param prefix if not null, prepend to each result
      * @param infix if not null, the add index and infix before each result, after prefix
      * @param postfix if not null, append to each result
@@ -60,10 +60,10 @@ public class StringAccumulator implements ObjectChecker {
         this.nullString = nullString;
         sb = new StringBuffer();
     }
-    
+
     /** Clear buffer and index */
-    public synchronized void clear() { 
-        sb.setLength(0); 
+    public synchronized void clear() {
+        sb.setLength(0);
         index = 0;
     }
 
@@ -85,7 +85,7 @@ public class StringAccumulator implements ObjectChecker {
         if (null != suffix) sb.append(suffix);
         return true;
     }
-    
+
     /** @return result accumulated so far */
     public String toString() {
         return sb.toString();

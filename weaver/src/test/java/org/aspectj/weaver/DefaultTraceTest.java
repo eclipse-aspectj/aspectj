@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -21,7 +21,7 @@ public class DefaultTraceTest extends AbstractTraceTest {
 	}
 
 	public void testDefaultTrace() {
-//		DefaultTrace trace = 
+//		DefaultTrace trace =
 			new DefaultTrace(getClass());
 	}
 
@@ -30,7 +30,7 @@ public class DefaultTraceTest extends AbstractTraceTest {
 		trace.setTraceEnabled(true);
 		assertTrue(trace.isTraceEnabled());
 	}
-	
+
 	public void testSetPrintStream () {
 		DefaultTrace trace = new DefaultTrace(getClass());
 		trace.setPrintStream(System.out);

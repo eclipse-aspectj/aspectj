@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg       initial implementation
  * ******************************************************************/
 
 
@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 import org.aspectj.lang.JoinPoint.StaticPart;
 
 /**
- * 
+ *
  */
 public class TraceJoinPointsTest extends TestCase {
 
@@ -30,7 +30,7 @@ public class TraceJoinPointsTest extends TestCase {
     }
 
     static final int NUMJP = 1;
-    
+
     static void checkTjp() {
         // NUMJP: only 1 join point
         long l = System.currentTimeMillis();
@@ -38,13 +38,13 @@ public class TraceJoinPointsTest extends TestCase {
 
     /** poor design/test */
     static aspect TestTJP extends TraceJoinPoints  {
-       
+
         protected pointcut withinScope() : within(TraceJoinPointsTest)
             && !within(TestTJP);
         pointcut traceJoinPoints() :
             execution(static void TraceJoinPointsTest.testTraceJoinPoints());
 
-        protected pointcut entry() : 
+        protected pointcut entry() :
             execution(static void TraceJoinPointsTest.checkTjp());
 
         boolean checked;
@@ -59,7 +59,7 @@ public class TraceJoinPointsTest extends TestCase {
         protected void logExit(StaticPart jp) {
             logExit++;
         }
-        
+
         protected void startLog() {
             startLog = 0;
             completeLog = 0;
@@ -67,7 +67,7 @@ public class TraceJoinPointsTest extends TestCase {
             logExit = 0;
             startLog++;
         }
-        
+
         protected void completeLog() {
             completeLog++;
         }

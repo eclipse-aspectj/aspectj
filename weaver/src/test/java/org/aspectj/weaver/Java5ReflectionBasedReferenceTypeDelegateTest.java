@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005-2017 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Andrew Clement          Initial implementation
  * ******************************************************************/
 
@@ -37,7 +37,7 @@ public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBas
 		assertTrue("Couldn't find 'toArray' in the set of methods? ", i != -1);
 		// String expectedSignature = "java.lang.Object[] java.util.Collection.toArray(java.lang.Object[])";
 		String expectedSignature = "([Ljava/lang/Object;)[Ljava/lang/Object;";
-		
+
 		assertTrue("Expected signature of '" + expectedSignature + "' but it was '" + methods[i].getSignatureErased(), methods[i]
 				.getSignatureErased().equals(expectedSignature));
 	}
@@ -83,27 +83,27 @@ public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBas
 	public void testAnnotationFinderClassRetention() throws Exception {
 		ResolvedType type = world.resolve(AnnoTesting.class.getName());
 		ResolvedMember[] ms = type.getDeclaredMethods();
-		
+
 		ResolvedMember methodWithOnlyClassLevelAnnotation = ms[findMethod("a", ms)];
 		ResolvedMember methodWithOnlyRuntimeLevelAnnotation = ms[findMethod("b", ms)];
 		ResolvedMember methodWithClassAndRuntimeLevelAnnotations = ms[findMethod("c", ms)];
 		ResolvedMember methodWithClassAndRuntimeLevelAnnotations2 = ms[findMethod("d", ms)];
-		
+
 		assertTrue(methodWithOnlyClassLevelAnnotation.hasAnnotation(world.resolve(AnnoClass.class.getName())));
 		assertTrue(methodWithOnlyRuntimeLevelAnnotation.hasAnnotation(world.resolve(AnnoRuntime.class.getName())));
-		
+
 		// This is the tricky scenario.
-		
+
 		// When asking about the runtime level annotations it should not go digging into bcel
 		assertTrue(methodWithClassAndRuntimeLevelAnnotations.hasAnnotation(world.resolve(AnnoRuntime.class.getName())));
-		
+
 		Field annotationsField = ResolvedMemberImpl.class.getDeclaredField("annotationTypes");
 		annotationsField.setAccessible(true);
 		ResolvedType[] annoTypes = (ResolvedType[])annotationsField.get(methodWithClassAndRuntimeLevelAnnotations);
 
 		// Should only be the runtime one here
 		assertEquals(1, annoTypes.length);
-		
+
 		// But when you do ask again and this time for class level, it should redo the unpack and pull both runtime and class out
 		assertTrue(methodWithClassAndRuntimeLevelAnnotations.hasAnnotation(world.resolve(AnnoClass.class.getName())));
 
@@ -118,24 +118,24 @@ public class Java5ReflectionBasedReferenceTypeDelegateTest extends ReflectionBas
 		ResolvedType[] annotations = methodWithClassAndRuntimeLevelAnnotations2.getAnnotationTypes();
 		assertEquals(2,annotations.length);
 	}
-	
+
 	@Retention(RetentionPolicy.CLASS)
 	@interface AnnoClass {}
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface AnnoRuntime {}
-	
+
 	class AnnoTesting {
-		
+
 		@AnnoClass
 		public void a() {}
-		
+
 		@AnnoRuntime
 		public void b() {}
-		
+
 		@AnnoClass @AnnoRuntime
 		public void c() {}
-		
+
 		@AnnoClass @AnnoRuntime
 		public void d() {}
 

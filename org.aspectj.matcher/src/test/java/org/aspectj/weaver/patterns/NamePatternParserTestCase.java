@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 
 /**
  * @author hugunin
- * 
+ *
  *         To change this generated comment edit the template variable
  *         "typecomment": Window>Preferences>Java>Templates. To enable and
  *         disable the creation of type comments go to
@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 public class NamePatternParserTestCase extends TestCase {
 	/**
 	 * Constructor for PatternTestCase.
-	 * 
+	 *
 	 * @param name
 	 */
 	public NamePatternParserTestCase(String name) {
@@ -53,7 +53,7 @@ public class NamePatternParserTestCase extends TestCase {
 
 	/**
 	 * Method checkMatch.
-	 * 
+	 *
 	 * @param string
 	 * @param matchAll
 	 * @param b

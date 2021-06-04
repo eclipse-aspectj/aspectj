@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *    Andy Clement     initial implementation 
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *    Andy Clement     initial implementation
  * ******************************************************************/
 
 
@@ -21,18 +21,18 @@ import org.aspectj.runtime.internal.cflowstack.ThreadStackFactoryImpl11;
 
 
 public class CFlowCounter {
-	
+
 	private static ThreadStackFactory tsFactory;
 	private ThreadCounter flowHeightHandler;
 
 	static {
 		selectFactoryForVMVersion();
 	}
-	
+
 	public CFlowCounter() {
 		flowHeightHandler = tsFactory.getNewThreadCounter();
 	}
-    
+
     public void inc() {
     	flowHeightHandler.inc();
     }
@@ -43,7 +43,7 @@ public class CFlowCounter {
     		flowHeightHandler.removeThreadCounter();
     	}
     }
-    
+
     public boolean isValid() {
     	return flowHeightHandler.isNotZero();
     }
@@ -51,7 +51,7 @@ public class CFlowCounter {
 
 	private static ThreadStackFactory getThreadLocalStackFactory()      { return new ThreadStackFactoryImpl(); }
 	private static ThreadStackFactory getThreadLocalStackFactoryFor11() { return new ThreadStackFactoryImpl11(); }
-    
+
 	private static void selectFactoryForVMVersion() {
 		String override = getSystemPropertyWithoutSecurityException("aspectj.runtime.cflowstack.usethreadlocal","unspecified");
 		boolean useThreadLocalImplementation = false;
@@ -69,8 +69,8 @@ public class CFlowCounter {
 			tsFactory = getThreadLocalStackFactoryFor11();
 		}
 	}
-	
-	
+
+
 	private static String getSystemPropertyWithoutSecurityException (String aPropertyName, String aDefaultValue) {
 		try {
 			return System.getProperty(aPropertyName, aDefaultValue);
@@ -79,7 +79,7 @@ public class CFlowCounter {
 			return aDefaultValue;
 		}
 	}
-	
+
 	//  For debug ...
 	public static String getThreadStackFactoryClassName() {
 		return tsFactory.getClass().getName();

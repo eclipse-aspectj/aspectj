@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2013 VMware
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement -     initial implementation
  * ******************************************************************/
 package org.aspectj.apache.bcel.classfile.tests;
 
@@ -21,11 +21,11 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
 import org.aspectj.apache.bcel.classfile.annotation.TypeAnnotationGen;
 
 public class TypeAnnotationsTest extends BcelTestCase {
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-	
+
 	public Attribute getAttribute(Attribute[] attrs, byte tag) {
 		for (Attribute attr: attrs) {
 			if (attr.getTag() == tag) {
@@ -34,7 +34,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		}
 		return null;
 	}
-	
+
 	public void testClassTypeParameter() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnClassTypeParameter");
 		RuntimeVisTypeAnnos rvta = (RuntimeVisTypeAnnos)getAttribute(jc.getAttributes(), Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
@@ -44,7 +44,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		checkTypeAnnotationClassTypeParameter(tas[0],0,"@Anno");
 		checkTypeAnnotationClassTypeParameter(tas[1],1,"@Anno(value=2)");
 	}
-	
+
 	public void testMethodTypeParameter() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnMethodTypeParameter");
 		Method m = getMethod(jc, "m");
@@ -54,7 +54,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(1,tas.length);
 		checkTypeAnnotationMethodTypeParameter(tas[0],0,"@Anno");
 	}
-	
+
 	public void testSuperinterface() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnSuperinterface1");
 		RuntimeVisTypeAnnos rvta = (RuntimeVisTypeAnnos)getAttribute(jc.getAttributes(), Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
@@ -64,7 +64,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		TypeAnnotationGen ta = tas[0];
 		checkTypeAnnotationClassExtends(ta, 0, "@Anno");
 	}
-	
+
 	public void testSupertypes() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnSupertypes");
 		RuntimeVisTypeAnnos rvta = (RuntimeVisTypeAnnos)getAttribute(jc.getAttributes(), Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS);
@@ -114,15 +114,15 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(1,tas.length);
 		checkTypeAnnotationField(tas[0],"@Anno");
 		checkTypePath(tas[0],TypeAnnotationGen.NO_TYPE_PATH);
-		
+
 		tas = getTypeAnnotations(getField(jc,"f2"),true);
 		checkTypeAnnotationField(tas[0],"@Anno");
 		checkTypePath(tas[0],new int[]{TypeAnnotationGen.TYPE_PATH_ENTRY_KIND_TYPE_ARGUMENT,0});
-		
+
 		tas = getTypeAnnotations(getField(jc,"f3"),true);
 		checkTypeAnnotationField(tas[0],"@Anno");
 		checkTypePath(tas[0],new int[]{TypeAnnotationGen.TYPE_PATH_ENTRY_KIND_ARRAY,0});
-		
+
 		tas = getTypeAnnotations(getField(jc,"f4"),true);
 		checkTypeAnnotationField(tas[0],"@Anno");
 		checkTypePath(tas[0],new int[]{
@@ -160,7 +160,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		checkTypeAnnotationThrows(tas[1],1, "@Anno(value=2)");
 		checkTypePath(tas[1],TypeAnnotationGen.NO_TYPE_PATH);
 	}
-	
+
 	public void testLocalVariable() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnLocalVariable");
 		// TODO I think the attribute should be on the code for the method, not the method
@@ -177,7 +177,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		checkTypeAnnotationResourceVariable(tas[0],new int[]{17,204,1}, "@Anno");
 		checkTypeAnnotationResourceVariable(tas[1],new int[]{36,114,3}, "@Anno(value=99)");
 	}
-	
+
 	public void testExceptionParameter() throws Exception {
 		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnExceptionParameter");
 		// TODO I think the attribute should be on the code for the method, not the method
@@ -203,7 +203,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(4,tas.length);
 		checkTypeAnnotationNew(tas[0],0, "@Anno");
 		checkTypePath(tas[0],TypeAnnotationGen.NO_TYPE_PATH);
-		
+
 		// TODO type path bugs in javac b90 according to the spec
 //		checkTypeAnnotationNew(tas[1],8, "@Anno(value=2)");
 //		checkTypePath(tas[1],new int[]{
@@ -224,17 +224,17 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		RuntimeTypeAnnos rvta = (RuntimeTypeAnnos)getAttribute(attrs, visible?Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:Constants.ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
 		return rvta.getTypeAnnotations();
 	}
-	
+
 	private TypeAnnotationGen[] getTypeAnnotations(Method m, boolean visible) {
 		RuntimeTypeAnnos rvta = (RuntimeTypeAnnos)getAttribute(m.getAttributes(), visible?Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:Constants.ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
 		return rvta.getTypeAnnotations();
 	}
-	
+
 	private TypeAnnotationGen[] getTypeAnnotations(Field f, boolean visible) {
 		RuntimeTypeAnnos rvta = (RuntimeTypeAnnos)getAttribute(f.getAttributes(), visible?Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:Constants.ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
 		return rvta.getTypeAnnotations();
 	}
-	
+
 	private void checkTypePath(TypeAnnotationGen ta, int[] expectedTypePath) {
 		int[] typepath = ta.getTypePath();
 		if (expectedTypePath==TypeAnnotationGen.NO_TYPE_PATH || expectedTypePath==null) {
@@ -260,7 +260,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 			}
 		}
 	}
-	
+
 	public static String toLocalVarTargetString(int[] localVarTarget) {
 		StringBuilder sb = new StringBuilder();
 		int count = 0;
@@ -327,18 +327,18 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(expectedFormalParameterIndex,ta.getMethodFormalParameterIndex());
 		assertEquals(expectedAnnotationText,ta.getAnnotation().toShortString());
 	}
-	
+
 	private void checkTypeAnnotationThrows(TypeAnnotationGen ta, int expectedThrowsTypeIndex, String expectedAnnotationText) {
 		assertEquals(TypeAnnotationGen.THROWS,ta.getTargetType());
 		assertEquals(expectedThrowsTypeIndex,ta.getThrowsTypeIndex());
 		assertEquals(expectedAnnotationText,ta.getAnnotation().toShortString());
 	}
-	
+
 	private void checkTypeAnnotationMethodReceiver(TypeAnnotationGen ta, String expectedAnnotationText) {
 		assertEquals(TypeAnnotationGen.METHOD_RECEIVER,ta.getTargetType());
 		assertEquals(expectedAnnotationText,ta.getAnnotation().toShortString());
 	}
-	
+
 	private void checkTypeAnnotationClassExtends(TypeAnnotationGen ta, int expectedSupertypeIndex, String expectedAnnotationText) {
 		assertEquals(TypeAnnotationGen.CLASS_EXTENDS,ta.getTargetType());
 		assertEquals(expectedSupertypeIndex,ta.getSupertypeIndex());
@@ -350,7 +350,7 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(expectedTypeParameterIndex,ta.getTypeParameterIndex());
 		assertEquals(expectedAnnotationText,ta.getAnnotation().toShortString());
 	}
-	
+
 	private void checkTypeAnnotationClassTypeParameterBound(TypeAnnotationGen ta, int expectedTypeParameterIndex, int expectedBoundIndex, String expectedAnnotationText) {
 		assertEquals(TypeAnnotationGen.CLASS_TYPE_PARAMETER_BOUND,ta.getTargetType());
 		assertEquals(expectedTypeParameterIndex,ta.getTypeParameterIndex());
@@ -370,5 +370,5 @@ public class TypeAnnotationsTest extends BcelTestCase {
 		assertEquals(expectedTypeParameterIndex,ta.getTypeParameterIndex());
 		assertEquals(expectedAnnotationText,ta.getAnnotation().toShortString());
 	}
-	
+
 }

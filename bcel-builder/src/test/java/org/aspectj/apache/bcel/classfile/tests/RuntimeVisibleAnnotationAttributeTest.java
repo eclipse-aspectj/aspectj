@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement -     initial implementation
  * ******************************************************************/
 
 package org.aspectj.apache.bcel.classfile.tests;
@@ -35,12 +35,12 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 
 
 public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
-	
+
 
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-	
+
 	public void testSeeAnnotationsAsAttribute() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("SimpleAnnotatedClass");
@@ -49,7 +49,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("Expected a RuntimeVisibleAnnotations attribute but found none",
 				rvaAttr.length==1);
 	}
-	
+
 	public void testAnnotationsAttributeContainsRightData() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("SimpleAnnotatedClass");
@@ -73,7 +73,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("'id' should have value 4 but it is "+evalue.getValueInt(),
 				evalue.getValueInt()==4);
 	}
-	
+
 	public void testAccessingAnnotationsOnClazz() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("SimpleAnnotatedClass");
@@ -82,7 +82,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("Expected one annotation on SimpleAnnotatedClass class but got "+anns.length,
 				anns.length==1);
 	}
-	
+
 	public void testReadingWritingAnnotations() throws ClassNotFoundException, IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("SimpleAnnotatedClass");
@@ -90,45 +90,45 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		AnnotationGen[] anns = clazz.getAnnotations();
 		assertTrue("Expected one annotation on SimpleAnnotatedClass class but got "+anns.length,
 				anns.length==1);
-		
+
 		//	 Write it out
 		File tfile = createTestdataFile("SimpleAnnotatedClass.class");
 		clazz.dump(tfile);
-	
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos.loadClass("SimpleAnnotatedClass");
 		ConstantPool pool2 = clazz2.getConstantPool();
 		AnnotationGen[] anns2 = clazz2.getAnnotations();
 		assertTrue("Expected one annotation on SimpleAnnotatedClass class but got "+anns2.length,
 				anns2.length==1);
-		
+
 		assertTrue(tfile.delete());
 	}
-	
-	
-	
+
+
+
 	////
 	// Test for annotations containing string elements
-	
+
 	public void testAnnotationStringElement() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedClass");
 		verifyAnnotationStringElement(clazz);
 	}
-	
+
 
 	public void testAnnotationStringElementReadWrite() throws ClassNotFoundException, IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedClass");
 		verifyAnnotationStringElement(clazz);
-		
+
 		//	 Write it out
 		File tfile = createTestdataFile("AnnotatedClass.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedClass");
-		verifyAnnotationStringElement(clazz2);	
+		verifyAnnotationStringElement(clazz2);
 
 		assertTrue(tfile.delete());
 	}
@@ -148,16 +148,16 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("String value should be 'hello' but was '"+ev.getValueString()+"'",
 				ev.getValueString().equals("hello"));
 	}
-	
+
 	////
 	// Test for complex annotation that includes all primitives
-	
+
 	public void testComplexAnnotation() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("ComplexAnnotatedClass");
 		verifyComplexAnnotation(clazz);
 	}
-	
+
 
 	public void testComplexAnnotationsReadWrite() throws ClassNotFoundException, IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
@@ -167,15 +167,15 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		//	 Write it out
 		File tfile = createTestdataFile("ComplexAnnotatedClass.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos.loadClass("ComplexAnnotatedClass");
 		verifyComplexAnnotation(clazz2);
-		
+
 		assertTrue(tfile.delete());
-		
+
 	}
-	
+
 	private void verifyComplexAnnotation(JavaClass clazz) {
 		AnnotationGen[] anns = clazz.getAnnotations();
 		assertTrue("Should be one annotation but found "+anns.length,anns.length==1);
@@ -194,7 +194,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("Cant find expected element ",names.contains("sval"));
 		assertTrue("Cant find expected element ",names.contains("bval"));
 		assertTrue("Cant find expected element ",names.contains("cval"));
-		
+
 		checkValue(ann,"ival","4");
 		checkValue(ann,"jval","56");
 		checkValue(ann,"fval","3.0");
@@ -203,7 +203,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		checkValue(ann,"bval","2");
 		checkValue(ann,"cval", Character.toString('5'));
 		checkValue(ann,"zval","false");
-		
+
 	}
 
 	private void checkValue(AnnotationGen a,String name,String tostring) {
@@ -220,13 +220,13 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 
 	////
 	// Test an annotation containing a 'Class' element
-	
+
 	public void testAnnotationClassElement() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithClassClass");
 		verifyClassAnnotation(clazz);
 	}
-	
+
 	public void testAnnotationClassElementCopying() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithClassClass");
@@ -236,7 +236,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		new AnnotationGen(anns[0],cg.getConstantPool(),true);
 		new AnnotationGen(anns[0],cg.getConstantPool(),false);
 	}
-	
+
 	public void testAnnotationClassElementReadWrite() throws ClassNotFoundException,IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithClassClass");
@@ -245,14 +245,14 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		//	 Write it out
 		File tfile = createTestdataFile("AnnotatedWithClassClass.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedWithClassClass");
 		verifyClassAnnotation(clazz2);
-		
+
 		assertTrue(wipe("AnnotatedWithClassClass.class"));
 	}
-	
+
 	private void verifyClassAnnotation(JavaClass clazz) {
 		AnnotationGen[] anns = clazz.getAnnotations();
 		assertTrue("should be one annotation but found "+anns.length,anns.length==1);
@@ -267,18 +267,18 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		ClassElementValue ev = (ClassElementValue)nvp.getValue();
 		assertTrue("String value should be 'Ljava/lang/Integer;' but was '"+ev.getClassString()+"'",
 				ev.getClassString().equals("Ljava/lang/Integer;"));
-		
+
 	}
-	
+
 	////
 	// Test an annotation containing an enum element
-	
+
 	public void testAnnotationEnumElement() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithEnumClass");
 		verifyAnnotationEnumElement(clazz);
 	}
-		
+
 	public void testAnnotationEnumElementReadWrite() throws ClassNotFoundException, IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithEnumClass");
@@ -287,14 +287,14 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		//	 Write it out
 		File tfile = createTestdataFile("AnnotatedWithEnumClass.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedWithEnumClass");
 		verifyAnnotationEnumElement(clazz2);
-		
+
 		assertTrue(tfile.delete());
 	}
-	
+
 	public void verifyAnnotationEnumElement(JavaClass clazz) {
 		AnnotationGen[] anns = clazz.getAnnotations();
 		assertTrue("should be one annotation but found "+anns.length,anns.length==1);
@@ -314,10 +314,10 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("String value should be 'Red' but was '"+eev.getEnumValueString()+"'",
 				eev.getEnumValueString().equals("Red"));
 	}
-	
+
 	////
 	// Test an annotation with an array element
-	
+
 	public void testAnnotationArraysOfAnnotations() throws ClassNotFoundException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithCombinedAnnotation");
@@ -325,18 +325,18 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("should be one annotation but found "+anns.length,anns.length==1);
 		checkCombinedAnnotation(anns[0]);
 	}
-	
+
 	public void testAnnotationArraysOfAnnotationsReadWrite() throws ClassNotFoundException, IOException {
 		SyntheticRepository repos = createRepos("testcode.jar");
 		JavaClass           clazz = repos.loadClass("AnnotatedWithCombinedAnnotation");
 		AnnotationGen[] anns = clazz.getAnnotations();
 		assertTrue("should be one annotation but found "+anns.length,anns.length==1);
 		checkCombinedAnnotation(anns[0]);
-		
+
 		//	 Write it out
 		File tfile = createTestdataFile("AnnotatedWithCombinedAnnotation.class");
 		clazz.dump(tfile);
-		
+
 		SyntheticRepository repos2 = createRepos(".");
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedWithCombinedAnnotation");
 		AnnotationGen[] anns2 = clazz2.getAnnotations();
@@ -345,8 +345,8 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 
 		assertTrue(tfile.delete());
 	}
-	
-	
+
+
 	private void checkCombinedAnnotation(AnnotationGen ann) {
 		assertTrue("should be called 'CombinedAnnotation' but was called "+ann.getTypeName(),
 				ann.getTypeName().equals("CombinedAnnotation"));
@@ -358,7 +358,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		ElementValue ev = nvp.getValue();
 		assertTrue("Should be of type ArrayElementValue but is "+ev,ev instanceof ArrayElementValue);
 		ArrayElementValue aev = (ArrayElementValue)ev;
-		
+
 		assertTrue("Array element value should be of size 1 but is "+aev.getElementValuesArraySize(),
 				aev.getElementValuesArraySize()==1);
 		ElementValue[] evs = aev.getElementValuesArray();
@@ -374,7 +374,7 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		assertTrue("Value of 'id' should be 4 but it is "+envp.getValue().stringifyValue(),
 				envp.getValue().stringifyValue().equals("4"));
 	}
-	
+
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -388,5 +388,5 @@ public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
 		}
 	    return names;
 	  }
-	
+
 }

@@ -2,9 +2,9 @@
  * Copyright (c) 2005,2018 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
@@ -14,7 +14,7 @@ import java.security.ProtectionDomain;
 
 /**
  * Java 1.5 adapter for class pre processor
- * 
+ *
  * @author Alexandre Vasseur
  * @author Andy Clement
  */
@@ -33,7 +33,7 @@ public class ClassPreProcessorAgentAdapter implements ClassFileTransformer {
 
 	/**
 	 * Invokes the weaver to modify some set of input bytes.
-	 * 
+	 *
 	 * @param loader the defining class loader
 	 * @param className the name of class being loaded
 	 * @param classBeingRedefined is set when hotswap is being attempted

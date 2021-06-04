@@ -4,9 +4,9 @@
 <!--               2002 Palo Alto Research Center, Incorporated (PARC).        -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Xerox/PARC     initial implementation                                 -->
@@ -16,12 +16,12 @@
 
     <target name="info" >
       <echo>
-  This script builds the AspectJ examples.  
+  This script builds the AspectJ examples.
 
   Relevant targets:
      spacewar        build and run spacewar with debugging (default)
      all             build and run each example
-     {example}       build and run any {example} 
+     {example}       build and run any {example}
                      (use -projecthelp to list {example} names)
      tracing-bc      use AspectJ 1.1 bytecode weaving to build tracing example
 
@@ -32,7 +32,7 @@
   Variants:
      - To avoid running (i.e., compile only), define variable "norun"
      - To define a variable, use the Ant -D option - e.g., on Windows:
-  
+
          ant -f build.xml -DJAVA_HOME=c:\jdk1.3.1 -Dnorun=skip
 
       </echo>
@@ -55,32 +55,32 @@
 
     <target name="init"  depends="init.variables,init.taskdefs"/>
 
-    <target name="init.variables" 
+    <target name="init.variables"
      description="init variables">
-     
+
       <!-- build.compiler value to pick up our CompilerAdapter for javac -->
       <property name="ajc.adapter"
 	           value="org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter"/>
 
       <!-- required directories - run from examples or predefine -->
       <property name="example.dir"
-            location="${basedir}"/> 
+            location="${basedir}"/>
       <property name="aspectj.lib.dir"
-            location="${basedir}/../../lib"/> 
+            location="${basedir}/../../lib"/>
 
       <!-- required libraries - install or predefine -->
       <property name="aspectjrt.jar"
-            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+            location="${aspectj.lib.dir}/aspectjrt.jar"/>
       <property name="aspectjtools.jar"
-            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+            location="${aspectj.lib.dir}/aspectjtools.jar"/>
       <property name="aspectjweaver.jar"
     		location="${aspectj.lib.dir}/aspectjweaver.jar"/>
 
       <!-- created directories -->
       <property name="classes.dir"
-            location="${example.dir}/classes"/> 
+            location="${example.dir}/classes"/>
       <property name="jar.dir"
-            location="${example.dir}/jars"/> 
+            location="${example.dir}/jars"/>
 
       <!-- checking required libraries -->
       <available file="${aspectjtools.jar}"
@@ -97,14 +97,14 @@
                       tracing.version3"/>
     </target>
 
-    <target name="init.taskdefs" depends="init.variables, 
+    <target name="init.taskdefs" depends="init.variables,
          aspectjtools.jar.available,
          aspectjrt.jar.available"
          unless="taskdefs.init">
       <!-- sets name of new task to iajc, old task to ajc -->
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
-          <classpath> 
-            <pathelement path="${aspectjtools.jar}"/> 
+          <classpath>
+            <pathelement path="${aspectjtools.jar}"/>
           </classpath>
       </taskdef>
 	  <property name="taskdefs.init" value="true"/>
@@ -112,12 +112,12 @@
 
     <!-- targets to fail unless required libraries available -->
 
-    <target name="aspectjrt.jar.available" depends="init.variables" 
+    <target name="aspectjrt.jar.available" depends="init.variables"
           unless="aspectjrt.jar.available" >
       <fail message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
     </target>
 
-    <target name="aspectjtools.jar.available" depends="init.variables" 
+    <target name="aspectjtools.jar.available" depends="init.variables"
           unless="aspectjtools.jar.available" >
       <fail message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
     </target>
@@ -130,7 +130,7 @@
        <echo message="##### Ajx list=${list} class=${class}" />
        <antcall target="clean" />
        <!-- can use ajc or iajc here -->
-       <iajc destdir="${classes.dir}" argfiles="${list}" 
+       <iajc destdir="${classes.dir}" argfiles="${list}"
        		fork="true"
        		forkclasspath="${aspectjtools.jar}"
           classpath="${aspectjrt.jar}"/>
@@ -141,8 +141,8 @@
 
     </target>
 
-    <target name="Ajx-run" 
-     description="run {class} unless {norun} is set" 
+    <target name="Ajx-run"
+     description="run {class} unless {norun} is set"
           unless="norun" >
        <echo message="##### Ajx-run list=${list} class=${class}" />
        <java classname="${class}" fork="yes">
@@ -156,14 +156,14 @@
     <!-- ============================================================= -->
     <!-- example targets                                               -->
     <!-- ============================================================= -->
-    <target name="all" 
+    <target name="all"
      description="build and run all examples"
          depends="bean,intro,intro-clone,intro-compare,intro-hash,
                   observer,spacewar,spacewar-demo,telecom,
                   telecom-timing,tracing-none,tracing-1,
                   tracing-2,tracing-3,tracing-lt,tjp"/>
 
-    <target name="nonGui" 
+    <target name="nonGui"
      description="build and run non-GUI examples"
          depends="bean,intro,intro-clone,intro-compare,intro-hash,
                   telecom,telecom-timing,tracing-none,tracing-1,
@@ -303,36 +303,36 @@
     <target name="tracing-adapter" depends="init"
      description="tracing example compiled via javac task">
        <antcall target="clean" />
-       <!-- to fork, set adapter.fork=true 
+       <!-- to fork, set adapter.fork=true
             and put aspectjtools.jar on ant classpath -->
-       <javac destdir="${classes.dir}" 
+       <javac destdir="${classes.dir}"
                  fork="${adapter.fork}">
          <src path="${example.dir}"/>
          <include name="tracing/*.java"/>
-         
+
          <!-- compilerarg's ignored unless using our compiler adapter -->
-		 <compilerarg compiler="${ajc.adapter}" 
+		 <compilerarg compiler="${ajc.adapter}"
 		 	line="-verbose -Xlint -proceedOnError"/>
 		 <!-- use separate values if a path might have spaces -->
-		 <compilerarg compiler="${ajc.adapter}" 
+		 <compilerarg compiler="${ajc.adapter}"
 		 	value="-classpath"/>
-		 <compilerarg compiler="${ajc.adapter}" 
+		 <compilerarg compiler="${ajc.adapter}"
 		 	value="${aspectjrt.jar}"/>
-		 <compilerarg compiler="${ajc.adapter}" 
+		 <compilerarg compiler="${ajc.adapter}"
 		     path="${example.dir}/tracing/version3/Trace.java"/>
-		 <compilerarg compiler="${ajc.adapter}" 
+		 <compilerarg compiler="${ajc.adapter}"
 		     path="${example.dir}/tracing/version3/TraceMyClasses.java"/>
-       </javac>	   
+       </javac>
     </target>
 
     <target name="tracing-adapter-ajc" depends="init"
      description="tracing example compiled using ajc via compiler adapter">
 		<!-- aspectjtools.jar must be on system/ant classpath -->
 		<antcall target="tracing-adapter">
-			<param name="build.compiler" value="${ajc.adapter}"/> 
+			<param name="build.compiler" value="${ajc.adapter}"/>
 		</antcall>
 	</target>
-	
+
     <!-- ============================================================= -->
     <!-- do tracing example with 1.1 bytecode weaving (binary aspects) -->
     <!-- (and use fork/forkclasspath to avoid Eclipse 2.x bug)         -->
@@ -355,8 +355,8 @@
        <echo message="---------- running without tracing - START"/>
        <java classname="tracing.ExampleMain">
          <classpath>
-            <pathelement path="${aspectjrt.jar}"/> 
-            <pathelement path="${jar.dir}/tracingApp.jar"/> 
+            <pathelement path="${aspectjrt.jar}"/>
+            <pathelement path="${jar.dir}/tracingApp.jar"/>
          </classpath>
        </java>
        <echo message="---------- running without tracing - FINISH "/>
@@ -376,7 +376,7 @@
        <!-- but the aspects could be written to be binary only. -->
        <iajc outjar="${jar.dir}/tracedApp.jar"
              inpath="${jar.dir}/tracingApp.jar"
-         aspectpath="${jar.dir}/tracingLib.jar" 
+         aspectpath="${jar.dir}/tracingLib.jar"
           classpath="${aspectjrt.jar}"
           fork="true"
           forkclasspath="${aspectjtools.jar}"
@@ -389,9 +389,9 @@
        <echo message="---------- running with tracing - START"/>
        <java classname="tracing.version3.TraceMyClasses">
          <classpath>
-            <pathelement path="${aspectjrt.jar}"/> 
-            <pathelement path="${jar.dir}/tracingLib.jar"/> 
-            <pathelement path="${jar.dir}/tracedApp.jar"/> 
+            <pathelement path="${aspectjrt.jar}"/>
+            <pathelement path="${jar.dir}/tracingLib.jar"/>
+            <pathelement path="${jar.dir}/tracedApp.jar"/>
          </classpath>
        </java>
        <echo message="---------- running with tracing - FINISH"/>
@@ -431,8 +431,8 @@
        <echo message="---------- running without tracing - START"/>
        <java classname="tracing.ExampleMain">
          <classpath>
-            <pathelement path="${aspectjrt.jar}"/> 
-            <pathelement path="${jar.dir}/tracingApp.jar"/> 
+            <pathelement path="${aspectjrt.jar}"/>
+            <pathelement path="${jar.dir}/tracingApp.jar"/>
          </classpath>
        </java>
        <echo message="---------- running without tracing - FINISH "/>
@@ -442,7 +442,7 @@
        <java classname="tracing.ExampleMain"
          fork="true">
          <classpath>
-            <pathelement path="${aspectjweaver.jar}"/> 
+            <pathelement path="${aspectjweaver.jar}"/>
          </classpath>
 		 <jvmarg line="-showversion"/>
 		 <sysproperty key="java.system.class.loader" value="org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005-2012 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  *   Andy Clement			various fixes
  *   Trask Stanalker		#373195
@@ -19,10 +19,10 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * This class is responsible for tracking progress through the various phases of compilation and weaving. 
- * When an exception occurs (or a message is issued, if desired), you can ask this class for a 
- * "stack trace" that gives information about what the compiler was doing at the time. 
- * The trace will say something like: 
+ * This class is responsible for tracking progress through the various phases of compilation and weaving.
+ * When an exception occurs (or a message is issued, if desired), you can ask this class for a
+ * "stack trace" that gives information about what the compiler was doing at the time.
+ * The trace will say something like:
  * "when matching pointcut xyz when matching shadow sss when weaving type ABC when weaving shadow mungers"
  */
 public class CompilationAndWeavingContext {

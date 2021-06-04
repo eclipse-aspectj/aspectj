@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -80,14 +80,14 @@ class BrowserView extends JPanel {
             configs_comboBox.setRenderer(new ConfigsCellRenderer());
 //            configs_comboBox.addItemListener(new ItemListener() {
 //            	public void itemStateChanged(ItemEvent e) {
-//            		Ajde.getDefault().getConfigurationManager().setCurrConfigFile(lastSelectedConfig);	
+//            		Ajde.getDefault().getConfigurationManager().setCurrConfigFile(lastSelectedConfig);
 //            	}
 //            });
-            
+
             if (Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().size() > 0) {
-            	Ajde.getDefault().getBuildConfigManager().setActiveConfigFile((String)Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().get(0));	
+            	Ajde.getDefault().getBuildConfigManager().setActiveConfigFile((String)Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().get(0));
             }
-            
+
             jbInit();
             fixButtonBorders();
             views_splitPane.add(masterView, JSplitPane.TOP);

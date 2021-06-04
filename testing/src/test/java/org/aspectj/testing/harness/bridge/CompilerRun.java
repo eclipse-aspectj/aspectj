@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2003 updates
  * ******************************************************************/
 
@@ -67,13 +67,13 @@ import org.aspectj.util.LangUtil;
  * <li>Paths are resolved absolutely, which fails to test the
  *     compiler's ability to find files relative to a source base</li>
  * <li>This does not enforce the lifecycle.</li>
- * <li>This must be used as the initial compile 
+ * <li>This must be used as the initial compile
  *     before doing an incremental compile.
  *     In that case, staging must be enabled.</li>
  * </ul>
  */
 public class CompilerRun implements IAjcRun {
-    //    static final String JAVAC_COMPILER 
+    //    static final String JAVAC_COMPILER
     //        = JavacCompileCommand.class.getName();
 
     static final String[] RA_String = new String[0];
@@ -90,21 +90,21 @@ public class CompilerRun implements IAjcRun {
     /** get shared stuff during setup */
     Sandbox sandbox;
 
-    /** 
+    /**
      * During run, these String are passed as the source and arg files to compile.
      * The list is set up in setupAjcRun(..), when arg files are prefixed with "@".
      */
     final List /*String*/
     arguments;
 
-    /** 
+    /**
      * During run, these String are collapsed and passed as the injar option.
      * The list is set up in setupAjcRun(..).
      */
     final List /*String*/
     injars;
 
-    /** 
+    /**
      * During run, these String are collapsed and passed as the inpath option.
      * The list is set up in setupAjcRun(..),
      * which extracts only directories from the files attribute.
@@ -120,7 +120,7 @@ public class CompilerRun implements IAjcRun {
         injars = new ArrayList();
         inpaths = new ArrayList();
     }
-    
+
 
     /**
      * Select from input String[] if readable directories
@@ -144,7 +144,7 @@ public class CompilerRun implements IAjcRun {
 		}
         return (String[]) result.toArray(new String[0]);
     }
-    
+
     /**
      * Select from input String[] based on suffix-matching
      * @param inputs String[] of input - null ignored
@@ -158,7 +158,7 @@ public class CompilerRun implements IAjcRun {
         }
         if (ignoreCase) {
             String[] temp = new String[suffixes.length];
-            for (int i = 0; i < temp.length; i++) {                
+            for (int i = 0; i < temp.length; i++) {
 				String suff = suffixes[i];
                 temp[i] = (null ==  suff ? null : suff.toLowerCase());
 			}
@@ -186,7 +186,7 @@ public class CompilerRun implements IAjcRun {
         return (String[]) result.toArray(new String[0]);
     }
 
-    /** 
+    /**
      * This checks that the spec is reasonable and does setup:
      * <ul>
      * <li>calculate and set sandbox testBaseSrcDir as {Sandbox.testBaseDir}/
@@ -198,7 +198,7 @@ public class CompilerRun implements IAjcRun {
      * <li>get the list of aspectpath entries to use as the aspectpath as
      * {Sandbox. testBaseSrcDir} / {Spec.aspectpath..}</li>
      * </ul>
-     * All sources must be readable at this time, 
+     * All sources must be readable at this time,
      * unless spec.badInput is true (for invalid-input tests).
      * If staging, the source files and source roots are copied
      * to a separate staging directory so they can be modified
@@ -262,7 +262,7 @@ public class CompilerRun implements IAjcRun {
                 }
             }
         }
-        
+
         // validate readable for sources
         if (!spec.badInput) {
             if (!validator.canRead(testBaseSrcDir, srcPaths, "sources")
@@ -282,7 +282,7 @@ public class CompilerRun implements IAjcRun {
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.sourceroots,
-                    "sourceroots") 
+                    "sourceroots")
                 || !validator.canRead(
                     testBaseSrcDir,
                     spec.extdirs,
@@ -334,7 +334,7 @@ public class CompilerRun implements IAjcRun {
                 || !validator.canRead(injarFiles, "injars")) {
             return false;
         }
-        
+
         // hmm - duplicates validation above, verifying getBaseDirFiles?
         if (!spec.badInput) {
             if (!validator.canRead(argFiles, "argFiles")
@@ -433,7 +433,7 @@ public class CompilerRun implements IAjcRun {
             return false;
         }
         arguments.clear();
-        
+
         if (!LangUtil.isEmpty(xlintFiles)) {
             arguments.add("-Xlintfile");
             String sr = FileUtil.flatten(xlintFiles, null);
@@ -500,11 +500,11 @@ public class CompilerRun implements IAjcRun {
      * <li>heed any globals interpreted into a TestSetup by reading
      *     {@link Spec@getOptions()}.  For a list of supported globals, see
      *     {@link setupArgs(ArrayList, IMessageHandler}.</li>
-     * <li>construct a command line, using as classpath 
+     * <li>construct a command line, using as classpath
      *     {@link Sandbox.classpathToString()}<li>
      * <li>construct a compiler using {@link Spec#compiler}
      *     or any overriding value set in TestSetup.<li>
-     * <li>Just before running, set the compiler in the sandbox using 
+     * <li>Just before running, set the compiler in the sandbox using
      *     {@link Sandbox.setCompiler(ICommand)}.<li>
      * <li>After running, report AjcMessageHandler results to the status parameter.
      *     If the AjcMessageHandler reports a failure, then send info messages
@@ -583,7 +583,7 @@ public class CompilerRun implements IAjcRun {
             // add both java/aspectj and argfiles
             argList.addAll(arguments);
 
-            // XXX hack - seek on request as a side effect. reimplement as listener 
+            // XXX hack - seek on request as a side effect. reimplement as listener
             if (null != setupResult.seek) {
                 String slopPrefix = Spec.SEEK_MESSAGE_PREFIX + " slop - ";
                 PrintStream slop =
@@ -627,7 +627,7 @@ public class CompilerRun implements IAjcRun {
                         status,
                         "aborted, but compiler valid?: " + compiler);
                 } else {
-                    // same DirChanges handling for JavaRun, CompilerRun, IncCompilerRun 
+                    // same DirChanges handling for JavaRun, CompilerRun, IncCompilerRun
                     // XXX around advice or template method/class
                     if (!LangUtil.isEmpty(spec.dirChanges)) {
                         LangUtil.throwIaxIfFalse(
@@ -682,7 +682,7 @@ public class CompilerRun implements IAjcRun {
         return "CompilerRun(" + spec + ")";
     }
 
-    /** 
+    /**
      * Initializer/factory for CompilerRun
      * any path or file is relative to this test base dir
      */
@@ -697,7 +697,7 @@ public class CompilerRun implements IAjcRun {
         /**
           * Retitle description to title, paths to files, do comment,
           * staging, badInput,
-          * do dirChanges, and print no chidren. 
+          * do dirChanges, and print no chidren.
           */
         private static final AbstractRunSpec.XMLNames NAMES =
             new AbstractRunSpec.XMLNames(
@@ -716,8 +716,8 @@ public class CompilerRun implements IAjcRun {
 
         /**
          * If the source version warrants, add a -bootclasspath
-         * entry to the list of arguments to add. 
-         * This will fail and return an error String if the 
+         * entry to the list of arguments to add.
+         * This will fail and return an error String if the
          * required library is not found.
          * @param sourceVersion the String (if any) describing the -source option
          *        (expecting one of [null, "1.3", "1.4", "1.5"].
@@ -900,7 +900,7 @@ public class CompilerRun implements IAjcRun {
             }
         }
 
-        /** 
+        /**
          * Set source roots, deleting any old ones
          * @param files comma-delimited list of directories
          *  - ignored if null or empty
@@ -913,12 +913,12 @@ public class CompilerRun implements IAjcRun {
         public void setXlintfile(String path) {
              xlintfile = path;
         }
-        
+
         public void setOutjar(String path) {
         	outjar = path;
         }
 
-        /** 
+        /**
          * Set extension dirs, deleting any old ones
          * @param files comma-delimited list of directories
          *  - ignored if null or empty
@@ -929,7 +929,7 @@ public class CompilerRun implements IAjcRun {
             }
         }
 
-        /** 
+        /**
          * Set aspectpath, deleting any old ones
          * @param files comma-delimited list of aspect jars - ignored if null or
          * empty
@@ -940,7 +940,7 @@ public class CompilerRun implements IAjcRun {
             }
         }
 
-        /** 
+        /**
          * Set argfiles, deleting any old ones
          * @param files comma-delimited list of argfiles - ignored if null or empty
          */
@@ -958,7 +958,7 @@ public class CompilerRun implements IAjcRun {
             }
             return (String[]) copy(argfiles);
         }
-        
+
         /**
          * Make a copy of the array.
          * @return an array with the same component type as source
@@ -966,7 +966,7 @@ public class CompilerRun implements IAjcRun {
          * @throws IllegalArgumentException if source is null
          */
         public static final Object[] copy(Object[] source) {
-            LangUtil.throwIaxIfNull(source, "source");        
+            LangUtil.throwIaxIfNull(source, "source");
             final Class c = source.getClass().getComponentType();
             Object[] result = (Object[]) Array.newInstance(c, source.length);
             System.arraycopy(source, 0, result, 0, result.length);
@@ -1029,7 +1029,7 @@ public class CompilerRun implements IAjcRun {
             return "CompilerRun.Spec " + getShortCompilerName();
         }
 
-        /** 
+        /**
          * Each non-incremental run, fold the global flags in with
          * the run flags, which may involve adding or removing from
          * either list, depending on the flag prefix:
@@ -1040,7 +1040,7 @@ public class CompilerRun implements IAjcRun {
          * </ul>
          * If there is a force conflict, then the test is skipped
          * ("skipping" info message, TestSetup.result is false).
-         * This means an option local to the test which was specified 
+         * This means an option local to the test which was specified
          * without forcing may be overridden by a globally-forced option.
          * <p>
          * There are some flags which are interpreted by the test
@@ -1068,19 +1068,19 @@ public class CompilerRun implements IAjcRun {
          * <li>eclipse does not do -lenient, -strict, -usejavac, -preprocess,
          *     -XOcodeSize, -XSerializable, XaddSafePrefix,
          *     -XserializableAspects,-XtargetNearSource</li>
-         * <li>ajc does not run in incremental (staging) mode, 
+         * <li>ajc does not run in incremental (staging) mode,
          *     nor with -usejavac if javac is not on the classpath</li>
          * </ul>
          * <u>Errors</u>:This will remove an arg not prefixed by [-|!|^] after
          * providing an info message.
-         * <u>TestSetup Result</u>: 
+         * <u>TestSetup Result</u>:
          * If this completes successfully, then TestSetup.result is true,
          * and commandOptions is not null, and any test flags (ignore warning,
          * compiler) are reflected in the TestSetup.
          * If this fails, then TestSetup.result is false,
-         * and a TestSetup.failreason is set. 
-         * This means the test is skipped. 
-         * @return TestSetup with results 
+         * and a TestSetup.failreason is set.
+         * This means the test is skipped.
+         * @return TestSetup with results
          *          (TestSetup result=false if the run should not continue)
          */
         protected TestSetup setupArgs(IMessageHandler handler) {
@@ -1122,7 +1122,7 @@ public class CompilerRun implements IAjcRun {
             getFamily = CRSOPTIONS.ajccompilerOption.getFamily();
             Option.Value compiler = values.firstInFamily(getFamily);
             if (null != compiler) {
-                result.compilerName 
+                result.compilerName
                     = CRSOPTIONS.compilerClassName(compiler.option);
                 if (null == result.compilerName) {
                     result.failureReason =
@@ -1213,7 +1213,7 @@ public class CompilerRun implements IAjcRun {
              * This skips:
              * - old 1.0 options, including lenient v. strict
              * - old ajc options, include !incremental and usejavac w/o javac
-             * - invalid eclipse options (mostly ajc) 
+             * - invalid eclipse options (mostly ajc)
              * @param compilerName the String name of the target compiler
              * @return a String describing any conflicts, or null if none
              */
@@ -1222,7 +1222,7 @@ public class CompilerRun implements IAjcRun {
                     || ReflectionFactory.OLD_AJC.equals(compilerName)
                     || CRSOptions.AJDE_COMPILER.equals(compilerName)
                     || CRSOptions.AJCTASK_COMPILER.equals(compilerName)
-                    || permitAnyCompiler 
+                    || permitAnyCompiler
                     ))) {
                     //|| BUILDER_COMPILER.equals(compilerName))
                 result.failureReason =
@@ -1254,7 +1254,7 @@ public class CompilerRun implements IAjcRun {
             final Options options = CRSOPTIONS.getOptions();
             try {
                 String[] input = getOptionsArray();
-                // this handles reading options, 
+                // this handles reading options,
                 // flattening two-String options, etc.
                 localValues = options.acceptInput(input);
                 // all local values should be picked up
@@ -1416,11 +1416,11 @@ public class CompilerRun implements IAjcRun {
             return -1;
         }
 
-        /** 
+        /**
          * Write this out as a compile element as defined in
          * AjcSpecXmlReader.DOCTYPE.
-         * @see AjcSpecXmlReader#DOCTYPE 
-         * @see IXmlWritable#writeXml(XMLWriter) 
+         * @see AjcSpecXmlReader#DOCTYPE
+         * @see IXmlWritable#writeXml(XMLWriter)
          */
         public void writeXml(XMLWriter out) {
             out.startElement(xmlElementName, false);
@@ -1469,7 +1469,7 @@ public class CompilerRun implements IAjcRun {
             out.endElement(xmlElementName);
         }
 
-        /** 
+        /**
          * Encapsulate the directives that can be set using
          * global arguments supplied in {@link Spec.getOptions()}.
          * This supports changing the compiler and ignoring warnings.
@@ -1477,7 +1477,7 @@ public class CompilerRun implements IAjcRun {
         class TestSetup {
             /** null unless overriding the compiler to be used */
             String compilerName;
-            /** 
+            /**
              * true if we should tell AjcMessageHandler whether
              * to ignore warnings in its result evaluation
              */
@@ -1543,27 +1543,27 @@ public class CompilerRun implements IAjcRun {
             * like classpath,  aspectpath, files, etc. which are set
             * using other fields in the test specification, so the options
             * permitted are a subset of those permitted on the command-line.
-            * 
+            *
             * Global options specified on the harness command-line are
             * adopted for the compiler command-line if they are permitted
             * in the options field.  That means we have to detect each
             * permitted option, rather than just letting all through
             * for the compiler.
-            * 
+            *
             * Conversely, some options are targeted not at the compiler,
-            * but at the test itself (e.g., to ignore warnings, or to 
+            * but at the test itself (e.g., to ignore warnings, or to
             * select a compiler.
-            * 
+            *
             * The harness can run many compilers, and they differ in
             * which options are permitted.  You can specify a compiler
             * as an option (e.g., -eclipse).  So the set of constraints
             * on the list of permitted options can differ from test to test.
-            * 
+            *
             * The following code sets up the lists of permitted options
             * and breaks out subsets for different compiler-variant checks.
             * Most options are created but not named, but some options
-            * are named to detect corresponding values for further 
-            * processing.  e.g., the compiler options are saved so 
+            * are named to detect corresponding values for further
+            * processing.  e.g., the compiler options are saved so
             * we can do per-compiler option verification.
             *
             */
@@ -1588,7 +1588,7 @@ public class CompilerRun implements IAjcRun {
             private CRSOptions() {
                 crsOptions = new Options(true);
                 Option.Factory factory = new Option.Factory("CompilerRun");
-                // compiler options go in map            
+                // compiler options go in map
                 eclipseOption =
                     factory.create(
                         "eclipse",
@@ -1760,7 +1760,7 @@ public class CompilerRun implements IAjcRun {
                         factory.create("XnotReweavable"),
                         factory.create("XserializableAspects")
                     };
-                    
+
                 // among options not permitted: extdirs...
 
 				for (Option option : options) {
@@ -1779,8 +1779,8 @@ public class CompilerRun implements IAjcRun {
             Options getOptions() {
                 return crsOptions;
             }
-            
-            /** 
+
+            /**
              * @return unmodifiable Set of options sharing the
              * family "compiler".
              */

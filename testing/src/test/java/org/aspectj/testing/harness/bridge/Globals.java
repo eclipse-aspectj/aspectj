@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC)
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     removed unused globals.
  * ******************************************************************/
 
@@ -29,7 +29,7 @@ public class Globals {
 
 	/** map from String version to String class implemented in that version or later */
     private static final Map VM_CLASSES;
-    
+
     public static final String FORK_NAME = "harness.fork";
     // XXX in testing-drivers/../package.htm
     /** name/key of the System property to set to define library dir */
@@ -76,7 +76,7 @@ public class Globals {
         map.put("1.3", "java.lang.reflect.Proxy");
         map.put("1.4", "java.nio.Buffer");
         map.put("1.5", "java.lang.annotation.Annotation");
-        
+
         VM_CLASSES = Collections.unmodifiableMap(map);
     }
 
@@ -93,7 +93,7 @@ public class Globals {
                     rtjar = file;
                 } else if (file.isDirectory()) {
                     path = file.getAbsolutePath() + "/jre/lib/rt.jar";
-                    rtjar = new File(path);                            
+                    rtjar = new File(path);
                 }
                 if (rtjar.canRead() && rtjar.isFile()) {
                     j2seJar = rtjar;
@@ -110,8 +110,8 @@ public class Globals {
     }
 
     /**
-     * 
-     * @return null if not found, or 
+     *
+     * @return null if not found, or
      *          String with class path for compiler to load J2SE 1.4 classes from.
      */
     public static String get14Bootclasspath() {
@@ -137,12 +137,12 @@ public class Globals {
         }
         return result;
     }
-    
+
 
     /**
      * Detect whether Java version is supported.
      * @param version String "1.2" or "1.3" or "1.4"
-     * @return true if the currently-running VM supports the version 
+     * @return true if the currently-running VM supports the version
      * @throws IllegalArgumentException if version is not known
      */
     public static final boolean supportsJava(String version) {
@@ -156,7 +156,7 @@ public class Globals {
             return true;
         } catch (Throwable t) {
             return false;
-        }        
+        }
     }
 
 }

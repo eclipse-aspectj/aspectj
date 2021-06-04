@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -38,9 +38,9 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 
 	/**
 	 * Compare 2 pointcuts based on an estimate of how expensive they may be to evaluate.
-	 * 
+	 *
 	 * within
-	 * 
+	 *
 	 * {@literal @}within staticinitialization [make sure this has a fast match method] adviceexecution handler get, set withincode
 	 * {@literal @}withincode execution, initialization, preinitialization call
 	 * {@literal @}annotation this, target
@@ -90,7 +90,7 @@ public class PointcutEvaluationExpenseComparator implements Comparator<Pointcut>
 				if (declaringTypePattern instanceof AnyTypePattern) {
 					return CALL_WITHOUT_DECLARING_TYPE;
 				} else {
-					return CALL_WITH_DECLARING_TYPE;					
+					return CALL_WITH_DECLARING_TYPE;
 				}
 			} else if ((kind == Shadow.ConstructorExecution) || (kind == Shadow.MethodExecution) || (kind == Shadow.Initialization)
 					|| (kind == Shadow.PreInitialization)) {

@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2019 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
@@ -30,18 +30,18 @@ import junit.framework.TestCase;
 
 /**
  * Should run these tests 3 times on each JDK level (8, 9, 11). On each one 3 of the
- * tests should pass indicating that JDK can successfully access system types in 
+ * tests should pass indicating that JDK can successfully access system types in
  * each JDK level.
- * 
+ *
  * @author Andy Clement
  */
 public class ClasspathManagerTestCase extends TestCase {
-	
+
 	// Works on my machine where all jvms under ~/jvms
 	private static String java18_rtjar = findJvm("j.*18.*","rt.jar");
 	private static String java9_jrtfsjar = findJvm("j.*9.*","jrt-fs.jar");;
 	private static String java11_jrtfsjar = findJvm("j.*11.*","jrt-fs.jar");;
-	
+
 	private static String findJvm(String pattern, String jar) {
 		String start = System.getProperty("user.home")+"/jvms";
 		if (new File(start).isDirectory()) {
@@ -57,7 +57,7 @@ public class ClasspathManagerTestCase extends TestCase {
 		}
 		return null;
 	}
-	
+
 	private static File walk(File dir, String jar) {
 		File[] fs = dir.listFiles();
 		if (fs!=null) {
@@ -74,7 +74,7 @@ public class ClasspathManagerTestCase extends TestCase {
 		}
 		return null;
 	}
-	
+
 	public void testInstructions() {
 		System.out.println("This test is really only for standalone usage as it need executing on multiple JDK levels");
 	}
@@ -85,9 +85,9 @@ public class ClasspathManagerTestCase extends TestCase {
     	classpath.add(java18_rtjar);
     	ClassPathManager cpm = new ClassPathManager(classpath, new MH());
     	ClassFile t = cpm.find(UnresolvedType.forSignature("Ljava/lang/Object;"));
-    	assertNotNull(t);	
+    	assertNotNull(t);
     }
-    
+
     public void xtestJava18accessing11JRT() throws ClassFormatException, IOException {
     	if (LangUtil.getVmVersion()>8) fail("Must be Java 8");
     	List<String> classpath = new ArrayList<>();
@@ -116,16 +116,16 @@ public class ClasspathManagerTestCase extends TestCase {
     	assertEquals(0,c);
     }
 
-    
+
     public void xtestSanity19accessing18RTJAR() throws IOException {
     	assertEquals(9.0,LangUtil.getVmVersion());
     	List<String> classpath = new ArrayList<>();
     	classpath.add(java18_rtjar);
     	ClassPathManager cpm = new ClassPathManager(classpath, new MH());
     	ClassFile t = cpm.find(UnresolvedType.forSignature("Ljava/lang/Object;"));
-    	assertNotNull(t);	
+    	assertNotNull(t);
     }
-    
+
     public void xtestJava19accessing11JRT() throws ClassFormatException, IOException {
     	assertEquals(9.0,LangUtil.getVmVersion());
     	List<String> classpath = new ArrayList<>();
@@ -153,16 +153,16 @@ public class ClasspathManagerTestCase extends TestCase {
     	long c = Arrays.asList(clazz.getMethods()).stream().filter(m -> m.getName().equals("isBlank")).count();
     	assertEquals(0,c);
     }
-    
+
     public void xtestSanity11accessing18RTJAR() throws IOException {
     	assertEquals(11.0,LangUtil.getVmVersion());
     	List<String> classpath = new ArrayList<>();
     	classpath.add(java18_rtjar);
     	ClassPathManager cpm = new ClassPathManager(classpath, new MH());
     	ClassFile t = cpm.find(UnresolvedType.forSignature("Ljava/lang/Object;"));
-    	assertNotNull(t);	
+    	assertNotNull(t);
     }
-    
+
     public void xtestJava11accessing11JRT() throws ClassFormatException, IOException {
     	assertEquals(11.0,LangUtil.getVmVersion());
     	List<String> classpath = new ArrayList<>();
@@ -190,7 +190,7 @@ public class ClasspathManagerTestCase extends TestCase {
     	long c = Arrays.asList(clazz.getMethods()).stream().filter(m -> m.getName().equals("isBlank")).count();
     	assertEquals(0,c);
     }
-    
+
     static class MH implements IMessageHandler {
 
 		@Override
@@ -211,6 +211,6 @@ public class ClasspathManagerTestCase extends TestCase {
 		@Override
 		public void ignore(Kind kind) {
 		}
-    	
+
     }
 }

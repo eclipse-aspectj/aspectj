@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.lookup;
 
@@ -147,7 +147,7 @@ public class EclipseTypeMunger extends ConcreteTypeMunger {
 						// If sourceType is a BinaryTypeBinding, this can indicate we are re-applying the ITDs to the target
 						// as we 'pull it in' to resolve something.  This means the clash here is with itself !  So if the ITD
 						// was final when initially added to the target this error logic will trigger.  We can't easily
-						// identify it was added via ITD, so I'm going to make this quick change to say avoid this error for 
+						// identify it was added via ITD, so I'm going to make this quick change to say avoid this error for
 						// BinaryTypeBindings
 						CompilationUnitScope cuScope = sourceType.scope.compilationUnitScope();
 						MethodBinding offendingBinding = sourceType.getExactMethod(binding.selector, binding.parameters, cuScope);

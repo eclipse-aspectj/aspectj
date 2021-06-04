@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2018 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
@@ -15,7 +15,7 @@ import org.junit.Assert;
 import junit.framework.Test;
 
 /**
- * 
+ *
  * @author Andy Clement
  */
 public class EfficientTJPTests extends XMLBasedAjcTestCase {
@@ -55,24 +55,24 @@ public class EfficientTJPTests extends XMLBasedAjcTestCase {
 		runTest("tjp 4a");
 		checkPreClinitContains("FourA","Factory.makeMethodESJP");
 	}
-	
+
 	public void testThisJoinPointFieldGet() {
 		runTest("tjp get fields");
 		checkPreClinitContains("Fields","Factory.makeFieldSJP");
 	}
-	
+
 	public void testThisEnclosingJoinPointFieldGet() {
-		runTest("tjp get fieldsE");		
+		runTest("tjp get fieldsE");
 		checkPreClinitContains("FieldsE","Factory.makeMethodESJP");
 	}
-	
+
 	public void testThisJoinPointFieldSet() {
-		runTest("tjp set fields");		
+		runTest("tjp set fields");
 		checkPreClinitContains("Fields2","Factory.makeFieldSJP");
 	}
 
 	public void testThisJoinPointClinit() {
-		runTest("tjp clinit");		
+		runTest("tjp clinit");
 		checkPreClinitContains("Clinit","Factory.makeInitializerSJP");
 	}
 
@@ -80,13 +80,13 @@ public class EfficientTJPTests extends XMLBasedAjcTestCase {
 		runTest("tejp clinit");
 		checkPreClinitContains("ClinitE","Factory.makeInitializerESJP");
 	}
-	
+
 	public void testThisJoinPointAdvice() {
 		// covers enclosing joinpoint too
 		runTest("tjp advice");
 		checkPreClinitContains("X","Factory.makeAdviceESJP");
 	}
-	
+
 	public void testThisJoinPointInitialization() {
 		runTest("tjp init");
 		checkPreClinitContains("A","Factory.makeConstructorESJP");
@@ -102,7 +102,7 @@ public class EfficientTJPTests extends XMLBasedAjcTestCase {
 	protected java.net.URL getSpecFile() {
 		return getClassResource("features190.xml");
 	}
-	
+
 	public void checkPreClinitContains(String classname, String text) {
 		try {
 			JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), classname);

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 package org.aspectj.tools.ajc;
 
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainTest extends AjcTestCase {
-	
+
   public void testBareMainUsage() {
     List<String> fails = new ArrayList<>();
     List<String> errors = new ArrayList<>();
@@ -49,7 +49,7 @@ public class MainTest extends AjcTestCase {
         .orElse(null)
     );
     }
-    
+
   public void testAjcUsageX() {
     CompilationResult compilationResult = ajc(null, new String[] { "-X" });
     MessageSpec messageSpec = new MessageSpec(
@@ -58,7 +58,7 @@ public class MainTest extends AjcTestCase {
     );
     assertMessages(compilationResult, "Expecting xoptions usage message", messageSpec);
     }
-    
+
   public void testMainMessageHolderFail() {
     	try {
     		new Main().runMain(new String[] {"-messageHolder","org.xyz.abc"},false);
@@ -68,7 +68,7 @@ public class MainTest extends AjcTestCase {
     		// good
     	}
     }
-    
+
   public void testMainMessageHolderOk() {
     	Main main = new Main();
     	main.runMain(new String[] {"-messageHolder","org.aspectj.tools.ajc.TestMessageHolder"},false);

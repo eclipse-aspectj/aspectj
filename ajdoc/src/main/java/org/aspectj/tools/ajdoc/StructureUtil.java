@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  * ******************************************************************/
 package org.aspectj.tools.ajdoc;
 
@@ -27,7 +27,7 @@ public class StructureUtil {
 	/**
 	 * Calculate the targets for a given IProgramElement (and it's immediate children if its not a type or if the child is CODE) and
 	 * relationship kind
-	 * 
+	 *
 	 * @return null if a relationship of that kind is not found
 	 */
 	public static List<String> getTargets(IProgramElement node, IRelationship.Kind kind) {
@@ -37,7 +37,7 @@ public class StructureUtil {
 	/**
 	 * Calculate the targets for a given IProgramElement (and it's immediate children if its not a type or if the child is CODE) and
 	 * relationship kind with the specified relationship name.
-	 * 
+	 *
 	 * @return null if a relationship of that kind is not found
 	 */
 	public static List<String> getTargets(IProgramElement node, IRelationship.Kind kind, String relName) {
@@ -166,7 +166,7 @@ public class StructureUtil {
 		return isIntName || node.getName().startsWith("new ");
 		// return isIntName;
 		// if (!isIntName) {
-		//			 
+		//
 		// return node.getName().startsWith("new ");
 		// } else {
 		// return false;

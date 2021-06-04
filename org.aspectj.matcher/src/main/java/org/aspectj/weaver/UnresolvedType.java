@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002,2005 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Andy Clement  start of generics upgrade...
  *     Adrian Colyer - overhaul
  * ******************************************************************/
@@ -215,27 +215,27 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * NOTE: Use forSignature() if you can, it'll be cheaper ! Constructs a UnresolvedType for a java language type name. For
 	 * example:
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 *   UnresolvedType.forName(&quot;java.lang.Thread[]&quot;)
 	 *   UnresolvedType.forName(&quot;int&quot;)
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * Types may equivalently be produced by this or by {@link #forSignature(String)}.
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 *   UnresolvedType.forName(&quot;java.lang.Thread[]&quot;).equals(Type.forSignature(&quot;[Ljava/lang/Thread;&quot;)
 	 *   UnresolvedType.forName(&quot;int&quot;).equals(Type.forSignature(&quot;I&quot;))
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * @param name the java language type name in question.
 	 * @return a type object representing that java language type.
 	 */
@@ -246,7 +246,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Constructs a UnresolvedType for each java language type name in an incoming array.
-	 * 
+	 *
 	 * @param names an array of java language type names.
 	 * @return an array of UnresolvedType objects.
 	 * @see #forName(String)
@@ -326,7 +326,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Creates a new type array with a fresh type appended to the end.
-	 * 
+	 *
 	 * @param types the left hand side of the new array
 	 * @param end the right hand side of the new array
 	 */
@@ -340,8 +340,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Creates a new type array with a fresh type inserted at the beginning.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param start the left hand side of the new array
 	 * @param types the right hand side of the new array
 	 */
@@ -355,27 +355,27 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Constructs a Type for a JVM bytecode signature string. For example:
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 *   UnresolvedType.forSignature(&quot;[Ljava/lang/Thread;&quot;)
 	 *   UnresolvedType.forSignature(&quot;I&quot;);
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * Types may equivalently be produced by this or by {@link #forName(String)}. This method should not be passed P signatures.
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 *   UnresolvedType.forName(&quot;java.lang.Thread[]&quot;).equals(Type.forSignature(&quot;[Ljava/lang/Thread;&quot;)
 	 *   UnresolvedType.forName(&quot;int&quot;).equals(Type.forSignature(&quot;I&quot;))
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * @param signature the JVM bytecode signature string for the desired type.
 	 * @return a type object represnting that JVM bytecode signature.
 	 */
@@ -421,7 +421,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Constructs a UnresolvedType for each JVM bytecode type signature in an incoming array.
-	 * 
+	 *
 	 * @param sigs an array of JVM bytecode type signatures
 	 * @return an array of UnresolvedType objects.
 	 * @see #forSignature(String)
@@ -437,7 +437,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Returns the name of this type in java language form (e.g. java.lang.Thread or boolean[]). This produces a more aesthetically
 	 * pleasing string than {@link java.lang.Class#getName()}.
-	 * 
+	 *
 	 * @return the java language name of this type.
 	 */
 	public String getName() {
@@ -492,7 +492,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Returns an array of strings representing the java langauge names of an array of types.
-	 * 
+	 *
 	 * @param types an array of UnresolvedType objects
 	 * @return an array of Strings fo the java language names of types.
 	 * @see #getName()
@@ -507,25 +507,25 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Returns the name of this type in JVM signature form. For all UnresolvedType t:
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * UnresolvedType.forSignature(t.getSignature()).equals(t)
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * and for all String s where s is a lexically valid JVM type signature string:
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * UnresolvedType.forSignature(s).getSignature().equals(s)
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * @return the java JVM signature string for this type.
 	 */
 	public String getSignature() {
@@ -559,10 +559,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Returns a UnresolvedType object representing the effective outermost enclosing type for a name type. For all other types,
 	 * this will return the type itself.
-	 * 
+	 *
 	 * The only guarantee is given in JLS 13.1 where code generated according to those rules will have type names that can be split
 	 * apart in this way.
-	 * 
+	 *
 	 * @return the outermost enclosing UnresolvedType object or this.
 	 */
 	public UnresolvedType getOutermostType() {
@@ -581,7 +581,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	/**
 	 * Returns a UnresolvedType object representing the component type of this array, or null if this type does not represent an
 	 * array type.
-	 * 
+	 *
 	 * @return the component UnresolvedType object, or null.
 	 */
 	public UnresolvedType getComponentType() {
@@ -608,7 +608,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	/**
 	 * Returns a resolved version of this type according to a particular world.
-	 * 
+	 *
 	 * @param world the {@link World} within which to resolve.
 	 * @return a resolved type representing this type in the appropriate world.
 	 */
@@ -747,7 +747,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		if (name.endsWith("[]")) {
 			return "[" + nameToSignature(name.substring(0, name.length() - 2));
 		}
-		
+
 		// Sometimes the 'name' for an array is of the form: [Ljava.lang.String;
 		if (name.charAt(0)=='[') {
 			return name.replace('.','/');

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -34,8 +34,8 @@ import org.aspectj.testing.util.UtilLineReader;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 
-/** 
- * SFileReader.Maker implementation to read tests 
+/**
+ * SFileReader.Maker implementation to read tests
  * XXX supports iterative but not yet incremental compiles
  */
 public class FlatSuiteReader implements SFileReader.Maker {
@@ -57,7 +57,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 
     /** if true, clean up records before returning from make */
     public boolean clean;
-    
+
 	private FlatSuiteReader() {
 	}
 
@@ -71,7 +71,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	/**
 	 * This constructs an AjcTest.Spec assuming we are at the start of a
 	 * test definition in reader and taking the parent directory of
-	 * the reader as the base directory for the test suite root. 
+	 * the reader as the base directory for the test suite root.
 	 * @return the next AjcTest in reader, or null
 	 * @see org.aspectj.testing.harness.bridge.SFileReader.Maker#make(UtilLineReader)
 	 */
@@ -223,8 +223,8 @@ public class FlatSuiteReader implements SFileReader.Maker {
         }
         return result;
 	}
-    
-    /** post-process result 
+
+    /** post-process result
      * - use file name as keyword
      * - clip / for dir offsets
      * - extract purejava keyword variants
@@ -271,7 +271,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
             } catch (NumberFormatException e) {
                 throw new Error("unable to convert " + pr + " for " + result
                     + " at " + lineReader);
-            }                      
+            }
         }
         input = description.toString();
         String error = null;
@@ -288,7 +288,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
             throw new Error(error + " in " + input + " at " + lineReader);
         }
         result.description = input;
-    
+
         ArrayList<String> newOptions = new ArrayList<>();
         Iterable<String> optionsCopy = result.getOptionsList();
         for (String option: optionsCopy) {
@@ -300,7 +300,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 		}
         result.setOptionsArray((String[]) newOptions.toArray(new String[0]));
     }
-    
+
     private boolean strip(StringBuffer sb, String infix) {
         String input = sb.toString();
         int loc = input.indexOf(infix);
@@ -341,11 +341,11 @@ public class FlatSuiteReader implements SFileReader.Maker {
 		return (0 == result.size() ? Collections.<Message>emptyList() : result);
 	}
 
-	/** 
+	/**
 	 * Read suite spec from a flat .txt file.
 	 * @throws AbortException on failure
 	 * @return AjcTest.Suite.Spec with any AjcTest.Spec as children
-	 */ 
+	 */
 	public AjcTest.Suite.Spec readSuite(File suiteFile) {
 		LangUtil.throwIaxIfNull(suiteFile, "suiteFile");
 		if (!suiteFile.isAbsolute()) {
@@ -370,7 +370,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 			IMessage m = MessageUtil.fail("reading " + suiteFile, e);
 			throw new AbortException(m);
 		}
-        
+
 		return result;
 	}
 }

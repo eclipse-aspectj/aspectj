@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -26,7 +26,7 @@ import org.aspectj.testing.run.RunValidator;
 import org.aspectj.util.FileUtil;
 
 /**
- * 
+ *
  */
 public class BridgeUtil {
 
@@ -34,18 +34,18 @@ public class BridgeUtil {
 
     /** result value when writeMessage is passed null */
     private static final String NULL_MESSAGE_OUTPUT = "<null message output>";
-    
+
     /** result value when readMessage is passed null */
     private static final IMessage NULL_MESSAGE_INPUT = null;
-    
+
     private static final String KIND_DELIM = ": \"";
     private static final String MESSAGE_DELIM = "\" - ";
 
-    
+
     public static ISourceLocation makeSourceLocation(UtilLineReader reader) {
         LangUtil.throwIaxIfNull(reader, "reader");
         int line = reader.getLineNumber();
-        
+
         return new SourceLocation(reader.getFile(), line, line, 0);
     }
 
@@ -58,11 +58,11 @@ public class BridgeUtil {
     private static ISourceLocation readSourceLocation(String sourceLocStr) {
         return BridgeUtil.makeSourceLocation(sourceLocStr);
     }
-//    public static IMessage makeMessage(String message, IMessage.Kind kind, 
+//    public static IMessage makeMessage(String message, IMessage.Kind kind,
 //                                       Throwable thrown, LineReader reader) {
 //        ISourceLocation sl = (null == reader ? null : MessageUtil.makeSourceLocation(reader));
 //        if (null == kind) kind = IMessage.INFO;
-//        return new Message(message, kind, thrown, sl);        
+//        return new Message(message, kind, thrown, sl);
 //    }
 
     /**
@@ -89,7 +89,7 @@ public class BridgeUtil {
        ISourceLocation loc = readSourceLocation(sourceLocStr);
        return new Message(text, kind, null, loc);
     }
-    
+
 
     /**
      * Write a message to a string to be read by readMessage(String)
@@ -100,13 +100,13 @@ public class BridgeUtil {
         if (null == message) {
             return NULL_MESSAGE_OUTPUT;
         }
-        return message.getKind() 
-            + KIND_DELIM 
-            + message.getMessage() 
+        return message.getKind()
+            + KIND_DELIM
+            + message.getMessage()
             + MESSAGE_DELIM
             + message.getSourceLocation(); // XXX implement
     }
-    
+
 
     public static class Comparators {
         /**
@@ -115,12 +115,12 @@ public class BridgeUtil {
          *  1 if one is null and two is not null,
          *  0 otherwise.
          */
-        static int compareNull(Object one, Object two) {        
+        static int compareNull(Object one, Object two) {
             return (null == one
                  ? (null == two ? 0 : 1)
                  : (null == two ? -1 : 0));
         }
-        
+
         /**
          * Soft comparison of String returns 0 if either is empty
          * or a substring of the other, and the case-insensitive
@@ -141,19 +141,19 @@ public class BridgeUtil {
             return String.CASE_INSENSITIVE_ORDER.compare(lhs_s, rhs_s);
         }
 
-        /** 
+        /**
          * This returns 0 if one file path is a suffix of the other
          * or a case-insensitive string comparison otherwise.
-         * WARNING: it returns 0 if either file is 
-         * ISourceLocation.NO_FILE to permit tests to 
+         * WARNING: it returns 0 if either file is
+         * ISourceLocation.NO_FILE to permit tests to
          * not specify file paths.
-         * 
+         *
          * Use only for sorts, not to maintain maps.
          */
         public static final Comparator<File> WEAK_File = new Comparator<File>() {
             public int compare(File o1, File o2) {
-                if ((o1 == o2) 
-                    || (o1 == ISourceLocation.NO_FILE) 
+                if ((o1 == o2)
+                    || (o1 == ISourceLocation.NO_FILE)
                     || (o2 == ISourceLocation.NO_FILE) ) {
                     return 0;
                 }
@@ -175,10 +175,10 @@ public class BridgeUtil {
                     return 0;
                 }
                 return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
-                
+
             }
         };
-        /** 
+        /**
          * Ordering only uses line number.
          * Use only for sorts, not to maintain maps.
          */
@@ -194,13 +194,13 @@ public class BridgeUtil {
                 ISourceLocation one = (ISourceLocation) o1;
                 ISourceLocation two = (ISourceLocation) o2;
                 int i1 = one.getLine();
-                int i2 = two.getLine(); 
+                int i2 = two.getLine();
                 return i1 - i2;
             }
         };
-        
-        /** 
-         * Like WEAK_ISourceLocation, except it also 
+
+        /**
+         * Like WEAK_ISourceLocation, except it also
          * uses WEAK_FILE on the sourceFile.
          * Use only for sorts, not to maintain maps.
          */
@@ -223,9 +223,9 @@ public class BridgeUtil {
                 return WEAK_File.compare(one.getSourceFile(), two.getSourceFile());
             }
         };
-                    
-        /** 
-         * Ordering uses kind and weak source location, 
+
+        /**
+         * Ordering uses kind and weak source location,
          * and ignores message
          * so use only for sorts, not to maintain maps
          */
@@ -250,9 +250,9 @@ public class BridgeUtil {
                 ISourceLocation sl2 = two.getSourceLocation();
                 return WEAK_ISourceLocation.compare(sl1, sl2);
             }
-        };       
+        };
 
-    /** 
+    /**
      * Ordering uses line and weak filename and message
      * (message matches if either is a substring of the other,
      *  or if either is empty, i.e., none specified).
@@ -276,18 +276,18 @@ public class BridgeUtil {
             String rhs_s = rhs_m.getMessage();
             return compareStringsSoftly(lhs_s, rhs_s);
         }
-    };       
+    };
 }
     public static SourceLocation makeSourceLocation(String input) { // XXX only for testing, not production
         return makeSourceLocation(input, (File) null);
     }
-    
-    public static SourceLocation makeSourceLocation(String input, String path) { 
-        return makeSourceLocation(input, (null == path ? null : new File(path)));        
+
+    public static SourceLocation makeSourceLocation(String input, String path) {
+        return makeSourceLocation(input, (null == path ? null : new File(path)));
     }
-    
+
 	/** attempt to create a source location from the input */
-    public static SourceLocation makeSourceLocation(String input, File defaultFile) { 
+    public static SourceLocation makeSourceLocation(String input, File defaultFile) {
     /*
      * Forms interpreted:
      * # - line
@@ -306,19 +306,19 @@ public class BridgeUtil {
             }
         }
         input = input.trim();
-        
+
         String path = null;
         int line = 0;
         int endLine = 0;
         int column = 0;
 //        String message = null;
-        
+
         // first try line only
         line = convert(input);
         if (-1 != line) {
             return new SourceLocation(defaultFile, line, line, 0);
         }
-        
+
         // if not a line - must be > 2 characters
         if (3 > input.length()) {
             return null; // throw new IllegalArgumentException("too short: " + input);
@@ -361,7 +361,7 @@ public class BridgeUtil {
 
         if (path.startsWith(fixTag)) {
             int len = fixTag.length();
-            path = path.substring(len, 1+len) + ":" + 
+            path = path.substring(len, 1+len) + ":" +
                     path.substring(1+len);
         }
         if ((endLine == 0) && (line != 0)) {
@@ -376,34 +376,34 @@ public class BridgeUtil {
      * Convert String to int using ascii and optionally
      * tolerating text
      * @param s the String to convert
-     * @param permitText if true, pick a sequence of numbers 
+     * @param permitText if true, pick a sequence of numbers
      *         within a possibly non-numeric String
      * @param last if permitText, then if this is true the
      *         last sequence is used - otherwise the first is used
      * XXX only default u.s. encodings..
-     * @return -1 or value if a valid, totally-numeric positive string 0..MAX_WIDTH 
+     * @return -1 or value if a valid, totally-numeric positive string 0..MAX_WIDTH
      */
     private static int convert(String s) {
         return convert(s, false, false);
     }
-    
+
 	// XXX reconsider convert if used in production code
     /**
      * Convert String to int using ascii and optionally
      * tolerating text
      * @param s the String to convert
-     * @param permitText if true, pick a sequence of numbers 
+     * @param permitText if true, pick a sequence of numbers
      *         within a possibly non-numeric String
      * @param last if permitText, then if this is true the
      *         last sequence is used - otherwise the first is used
      * XXX only default u.s. encodings..
-     * @return -1 or value if a valid, positive string 0..MAX_WIDTH 
+     * @return -1 or value if a valid, positive string 0..MAX_WIDTH
      */
-    private static int convert(String s, boolean permitText, 
-        boolean first) { 
+    private static int convert(String s, boolean permitText,
+        boolean first) {
         int result = -1;
         int last = -1;
-        int max = s.length(); 
+        int max = s.length();
         boolean reading = false;
         for (int i = 0; i < max; i++) {
             char c = s.charAt(i);

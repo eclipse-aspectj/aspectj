@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -24,10 +24,10 @@ public class TestUtils {
 	// * more easily compare delegate implementations.
 	// */
 	// public String stringifyDelegate() {
-	//    	
+	//
 	// StringBuffer result = new StringBuffer();
 	// result.append("=== Delegate for "+getResolvedTypeX().getName()+"\n");
-	//    	
+	//
 	// result.append("isAspect?"+isAspect()+"\n");
 	// result.append("isAnnotationStyleAspect?"+isAnnotationStyleAspect()+"\n");
 	// result.append("isInterface?"+isInterface()+"\n");
@@ -49,7 +49,7 @@ public class TestUtils {
 	// }
 	// result.append("isAnnotationWithRuntimeRetention?"+isAnnotationWithRuntimeRetention()+"\n");
 	// result.append("-\n");
-	//    	
+	//
 	// result.append("isAnonymous?"+isAnonymous()+"\n");
 	// result.append("isNested?"+isNested()+"\n");
 	// result.append("-\n");
@@ -57,7 +57,7 @@ public class TestUtils {
 	// result.append("isGeneric?"+isGeneric()+"\n");
 	// result.append("declaredGenericSignature="+getDeclaredGenericSignature()+"\n");
 	// result.append("-\n");
-	//    	
+	//
 	// AnnotationX[] axs = getAnnotations();
 	// if (axs!=null && axs.length>0) {
 	// result.append("getAnnotations() returns: "+axs.length+" annotations\n");
@@ -78,12 +78,12 @@ public class TestUtils {
 	// } else {
 	// result.append("getAnnotationTypes() returns nothing\n");
 	// }
-	//    	
+	//
 	// result.append("isExposedToWeaver?"+isExposedToWeaver()+"\n");
 	// result.append("getSuperclass?"+getSuperclass()+"\n");
 	// result.append("getResolvedTypeX?"+getResolvedTypeX()+"\n");
 	// result.append("--\n");
-	//    	
+	//
 	// ResolvedMember[] fields = getDeclaredFields();
 	// if (fields!=null && fields.length>0) {
 	// result.append("The fields: "+fields.length+"\n");
@@ -110,20 +110,20 @@ public class TestUtils {
 	// }
 	//
 	// result.append("getModifiers?"+getModifiers()+"\n");
-	//    	
+	//
 	// result.append("perclause="+getPerClause()+"\n");
-	//    	
+	//
 	// result.append("aj:weaverstate="+getWeaverState()+"\n");
-	//    	
+	//
 	// ResolvedMember[] pointcuts = getDeclaredPointcuts();
 	// if (pointcuts!=null && pointcuts.length>0) {
 	// result.append("The pointcuts: "+pointcuts.length+"\n");
-	//    		
+	//
 	// // Sort the damn things
 	// List sortedSetOfPointcuts = new ArrayList();
 	// for (int i = 0; i < pointcuts.length; i++) {sortedSetOfPointcuts.add(pointcuts[i]);}
 	// Collections.sort(sortedSetOfPointcuts);
-	//        	
+	//
 	// int i =0;
 	// for (Iterator iter = sortedSetOfPointcuts.iterator(); iter.hasNext();) {
 	// ResolvedMember member = (ResolvedMember) iter.next();
@@ -131,16 +131,16 @@ public class TestUtils {
 	// i++;
 	// }
 	// }
-	//    	
+	//
 	// Collection declares = getDeclares();
 	// if (declares.size()>0) {
 	// result.append("The declares: "+declares.size()+"\n");
-	//    		
+	//
 	// // // Sort the damn things
 	// // List sortedSetOfPointcuts = new ArrayList();
 	// // for (int i = 0; i < pointcuts.length; i++) {sortedSetOfPointcuts.add(pointcuts[i]);}
 	// // Collections.sort(sortedSetOfPointcuts);
-	//        	
+	//
 	// int i=0;
 	// for (Iterator iter = declares.iterator(); iter.hasNext();) {
 	// Declare dec = (Declare) iter.next();
@@ -148,7 +148,7 @@ public class TestUtils {
 	// i++;
 	// }
 	// }
-	//    	
+	//
 	// TypeVariable[] tv = getTypeVariables();
 	// if (tv!=null && tv.length>0) {
 	// result.append("The type variables: "+tv.length+"\n");
@@ -156,7 +156,7 @@ public class TestUtils {
 	// result.append("tv"+i+") "+tv[i]+"\n");
 	// }
 	// }
-	//    	
+	//
 	// Collection tmungers = getTypeMungers();
 	// if (tmungers.size()>0) {
 	// List sorted = new ArrayList();
@@ -176,7 +176,7 @@ public class TestUtils {
 	// }
 	//
 	// result.append("doesNotExposeShadowMungers?"+doesNotExposeShadowMungers()+"\n");
-	//    	
+	//
 	// Collection pas = getPrivilegedAccesses();
 	// if (pas!=null && pas.size()>0) {
 	// // List sorted = new ArrayList();
@@ -203,11 +203,11 @@ public class TestUtils {
 
 	/**
 	 * Build a member from a string representation: <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * static? TypeName TypeName.Id
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
 	 */
 	public static MemberImpl fieldFromString(String str) {
@@ -236,11 +236,11 @@ public class TestUtils {
 
 	/**
 	 * Build a member from a string representation: <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * (static|interface|private)? TypeName TypeName . Id ( TypeName , ...)
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
 	 */
 

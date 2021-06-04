@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.tools.ajbrowser.core;
@@ -47,7 +47,7 @@ public class BrowserErrorHandler {
 		if (t != null) {
 			t.printStackTrace(new PrintWriter(stringWriter));
 			return stringWriter.getBuffer().toString();
-		} 
+		}
 		return "<no stack trace available>";
 	}
 

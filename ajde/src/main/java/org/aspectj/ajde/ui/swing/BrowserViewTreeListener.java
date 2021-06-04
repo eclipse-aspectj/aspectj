@@ -1,18 +1,18 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
-     
+
 package org.aspectj.ajde.ui.swing;
 
 import java.awt.event.ActionEvent;
@@ -67,7 +67,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
                 //if (AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
                 //    AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView((ProgramElementNode)currNode);
                 //}
-            } 
+            }
 //            	else if (currNode instanceof LinkNode) {
                 //if (!AjdeUIManager.getDefault().getViewManager().isSplitViewMode()) {
                 //    AjdeUIManager.getDefault().getViewManager().showNodeInMasterView((LinkNode)currNode);
@@ -87,7 +87,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
                     && e.getModifiers() != 4) {
                     //AjdeUIManager.getDefault().getViewManager().showNodeInMasterView(((LinkNode)currNode).getProgramElementNode());
                     //AjdeUIManager.getDefault().getViewManager().showNodeInSlaveView(((LinkNode)currNode).getProgramElementNode());
-                } 
+                }
 //                else if (currNode instanceof LinkNode) {
 //                    if (clickCount == 1) {
 //                        //AjdeUIManager.getDefault().getViewManager().showLink((LinkNode)currNode);
@@ -118,7 +118,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             JMenuItem showSourcesItem = new JMenuItem("Display sources", Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.CODE));
             showSourcesItem.setFont(new java.awt.Font("Dialog", 0, 11));
             showSourcesItem.addActionListener(new AbstractAction() {
-                
+
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
@@ -150,7 +150,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
             JMenuItem generatePCD = new JMenuItem("Pointcut Wizard (alpha)...", Ajde.getDefault().getIconRegistry().getStructureSwingIcon(IProgramElement.Kind.POINTCUT));
             generatePCD.setFont(new java.awt.Font("Dialog", 0, 11));
             generatePCD.addActionListener(new AbstractAction() {
-                
+
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {

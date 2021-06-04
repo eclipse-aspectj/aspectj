@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM 
+ * Copyright (c) 2005 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -28,25 +28,25 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-  
+
   /**
    * First few tests:
-   * 
+   *
    * Five types p.A, p.B, p.C, q.D, q.E and an aspect a.X.
-   * 
+   *
    * The aspect is pertypewithin(p..*) - this should match A,B,C but not D,E.
-   * 
+   *
    * Aspect instances should be accessible for A,B,C but not D,E.
    * The aspect instances for A,B,C should be different.
-   * 
+   *
    * hasAspect(), aspectOf() should work.
-   * 
-   * We test these assumptions in A,B,C,D,E. 
+   *
+   * We test these assumptions in A,B,C,D,E.
    */
   public void testDoesItWorkAtAll() {
   	runTest("basic ptw test");
   }
-  
+
   public void testCheckHasAspectWorks() {
   	runTest("ptw hasAspect");
   }
@@ -76,8 +76,8 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
   	assertEquals("Expected same number of messages regardless of perclause",
   			weavingMessagesFromNormalDeploymentModel,weavingMessagesFromPerTypeWithin);
   }
-  
-  
+
+
   public void testBinaryWeaving_ClassesAreBinary() {
   	runTest("ptw binary");
   }
@@ -85,7 +85,7 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
     public void testBinaryWeaving_AspectsAreBinary() {
     	runTest("ptw binary aspect");
     }
-	
+
   public void testAJDKExamples() {
 	  runTest("ajdk: ptw");
   }
@@ -99,6 +99,6 @@ public class PerTypeWithinTests extends XMLBasedAjcTestCase {
 //  			rR.getStdErr().indexOf("advice running")!=-1);
 //  	setShouldEmptySandbox(true);
 //  }
-//  
+//
 //  // binary weaving case ...
 }

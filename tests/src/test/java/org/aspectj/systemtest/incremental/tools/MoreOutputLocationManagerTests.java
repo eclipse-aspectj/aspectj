@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
@@ -28,9 +28,9 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
 /**
  * Similar to OutputLocationManagerTests, however, tests the different scenarios when no outputDir is set but instead there is an
  * OutputLocationManager which returns the same output location for all files and resources.
- * 
+ *
  * There are eight places where AjBuildConfig.getOutputDir() is called that are tested here:
- * 
+ *
  * AjBuildManager.getOutputClassFileName(..) - testCorrectInfoWhenNoOutputPath AjBuildManager.initBcelWorld(..) -
  * testPathResolutionWithInpathDirAndNoOutputPath testPathResolutionWithInpathJarAndNoOutputPath AjBuildManager.writeManifest(..) -
  * testCopyManifest AjBuildManager.writeOutxml(..) - testOutxml - testOutXmlForAspectsWithDifferentOutputDirs
@@ -38,9 +38,9 @@ import org.aspectj.weaver.bcel.UnwovenClassFile;
  * testAjStateDeleteResources AjState.maybeDeleteResources(..) - testAjStateDeleteResourcesInInputDir
  * AjState.removeAllResultsOfLastBuild(..) - testAllResourcesAreDeletedCorrectlyOnPathChange
  * IncrementalStateManager.findStateManagingOutputLocation(..) - testFindStateManagingOutputLocation
- * 
+ *
  * The other three places are not tested here because they were implemented when OutputLocationManager was introduced.
- * 
+ *
  */
 public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
@@ -211,11 +211,11 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	// public void testAjStateDeleteResources() {
 	// String inpathDir = inpathTestingDir + File.separator + "inpathJar.jar";
 	// addInpathEntry(inpathDir);
-	//		
+	//
 	// build("inpathTesting");
-	//		
+	//
 	// AjState state = getState();
-	//		
+	//
 	// String resource = expectedOutputDir + File.separator + "inpathResource.txt";
 	// File f = new File(resource);
 	// assertTrue("expected file " + resource + " to exist but it did not",f.exists());
@@ -250,7 +250,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	// } finally {
 	// AjBuildManager.COPY_INPATH_DIR_RESOURCES = false;
 	// }
-	//		
+	//
 	// }
 	/**
 	 * Changing inpath entry from a jar to a directory between builds means that AjState should realise somethings changed. This
@@ -336,7 +336,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 		public File getOutputLocationForClass(File compilationUnit) {
 			return outputLoc;
 		}
-		
+
 		@Override
 		public Map<File,String> getInpathMap() {
 			return Collections.emptyMap();

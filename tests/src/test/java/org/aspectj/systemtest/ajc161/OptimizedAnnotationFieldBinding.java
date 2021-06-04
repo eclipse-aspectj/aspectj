@@ -1,16 +1,16 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  *  Contributors
- *  Andy Clement 
+ *  Andy Clement
  * ******************************************************************/
 package org.aspectj.systemtest.ajc161;
- 
+
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
@@ -18,10 +18,10 @@ import junit.framework.Test;
 /**
  * Optimising Annotation Field Binding - better code gen for the cases where the user just wants a field from the
  * annotation on a method but not the whole annotation.
- * 
+ *
  */
 public class OptimizedAnnotationFieldBinding extends XMLBasedAjcTestCase {
-	
+
     public void testCaseOne_Syntax() {
         runTest("case one - syntax");
     }
@@ -58,7 +58,7 @@ public class OptimizedAnnotationFieldBinding extends XMLBasedAjcTestCase {
     public void testCaseThirteen_bugNPE() {
         runTest("case thirteen - bug npe");
     }
-    
+
 	/////////////////////////////////////////
 	public static Test suite() {
 	    return XMLBasedAjcTestCase.loadSuite(OptimizedAnnotationFieldBinding.class);

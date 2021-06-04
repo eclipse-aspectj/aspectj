@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
- *     Matthew Webster 
+ *     Matthew Webster
  *******************************************************************************/
 package org.aspectj.weaver;
 
@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 /**
  * @author websterm
  *
- * Test Dump facility. Ensure it can be configured and files contain expected contents. Testcase 
+ * Test Dump facility. Ensure it can be configured and files contain expected contents. Testcase
  * returns Dump configuration to orginal state.
  */
 public class DumpTestCase extends TestCase {
@@ -39,18 +39,18 @@ public class DumpTestCase extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+
 		dumpFile = null;
 		savedDumpCondition = Dump.getDumpOnExit();
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		
+
 		if (dumpFile != null && dumpFile.exists()) {
 			boolean deleted = dumpFile.delete();
 			assertTrue("Dump file '" + dumpFile.getPath() + "' could not be deleted",deleted);
-		} 
+		}
 		Dump.setDumpOnExit(savedDumpCondition);
 	}
 
@@ -58,26 +58,26 @@ public class DumpTestCase extends TestCase {
 		Dump.setDumpOnException(true);
 		assertTrue("DumpOnException should be true",Dump.getDumpOnException());
 	}
-	
+
 	public void testSetDumpOnExit () {
 		assertTrue("Should be able to set condition 'error'",Dump.setDumpOnExit("error"));
 		assertTrue("Should be able to set condition 'warning'",Dump.setDumpOnExit("warning"));
 		assertFalse("Should not be able to set condition 'junk'",Dump.setDumpOnExit("junk"));
 	}
-	
+
 	public void testDump () {
 		String fileName = Dump.dump("testDump()");
 		dumpFile = new File(fileName);
 		assertTrue("Dump file '" + fileName + "' should exist",dumpFile.exists());
 	}
-	
+
 	public void testDumpWithException () {
 		String message = "testDumpWithException()";
 		String fileName = recursiveCall(message,100);
 		dumpFile = new File(fileName);
 		assertContents(dumpFile,"Exception Information",message);
 	}
-	
+
 	public void testDumpOnExit () {
 		Dump.setDumpOnExit("abort");
 		Dump.saveMessageHolder(null);
@@ -85,7 +85,7 @@ public class DumpTestCase extends TestCase {
 		dumpFile = new File(fileName);
 		assertTrue("Dump file '" + fileName + "' should exist",dumpFile.exists());
 	}
-	
+
 	public void testDumpOnExitExcluded () {
 		Dump.setDumpOnExit("abort");
 		IMessageHolder holder = new MessageHandler();
@@ -95,7 +95,7 @@ public class DumpTestCase extends TestCase {
 		dumpFile = new File(fileName);
 		assertEquals("Dump '" + fileName + "' should be excluded",Dump.DUMP_EXCLUDED,fileName);
 	}
-	
+
 	public void testDumpOnExitIncluded () {
 		Dump.setDumpOnExit("error");
 		IMessageHolder holder = new MessageHandler();
@@ -106,17 +106,17 @@ public class DumpTestCase extends TestCase {
 		dumpFile = new File(fileName);
 		assertContents(dumpFile,"Compiler Messages",error.getMessage());
 	}
-	
+
 	/* Ensure dump file exists and contains certain contents under a given heading */
 	public static void assertContents (File dumpFile, String heading, String contents) {
 		assertTrue("Dump file '" + dumpFile.getPath() + "' should exist",dumpFile.exists());
 		assertTrue("Dump file '" + dumpFile.getPath()+ "' should contain '" + contents + "'",fileContains(dumpFile,heading,contents));
 	}
-	
+
 	private static boolean fileContains (File dumpFile, String heading, String contents) {
 		boolean result = false;
-		
-		try { 
+
+		try {
 			BufferedReader reader = new BufferedReader(new FileReader(dumpFile));
 			String currentHeading = "";
 			String record;
@@ -129,10 +129,10 @@ public class DumpTestCase extends TestCase {
 		catch (IOException ex) {
 			fail(ex.toString());
 		}
-		
+
 		return result;
 	}
-	
+
 	/* Generate a big stack trace */
 	private String recursiveCall (String message, int depth) {
 		if (depth == 0) {

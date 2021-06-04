@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -55,7 +55,7 @@ import org.eclipse.core.runtime.Path;
 
 /**
  * @author colyer
- * 
+ *
  *         This is the builder class used by AJDT, and that the org.eclipse.ajdt.core plugin references.
  */
 public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFactory {
@@ -71,7 +71,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int, java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map ignored, IProgressMonitor monitor) throws CoreException {
@@ -94,7 +94,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
 	public ICompilerAdapter getAdapter(Compiler forCompiler) {
@@ -145,7 +145,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jdt.internal.core.builder.JavaBuilder#createBuildNotifier(org.eclipse.core.runtime.IProgressMonitor,
 	 * org.eclipse.core.resources.IProject)
 	 */
@@ -190,7 +190,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @seeorg.aspectj.ajdt.internal.compiler.IIntermediateResultsRequestor#acceptResult(org.aspectj.ajdt.internal.compiler.
 		 * InterimCompilationResult)
 		 */
@@ -217,7 +217,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#handleMessage(org.aspectj.bridge.IMessage)
 		 */
 		public boolean handleMessage(IMessage message) throws AbortException {
@@ -233,7 +233,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 		 */
 		public boolean isIgnoring(Kind kind) {
@@ -244,7 +244,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/**
 		 * No-op
-		 * 
+		 *
 		 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 		 * @param kind
 		 */
@@ -272,7 +272,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.ajdt.internal.compiler.IOutputClassFileNameProvider#getOutputClassFileName(char[],
 		 * org.eclipse.jdt.internal.compiler.CompilationResult)
 		 */
@@ -293,7 +293,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.ajdt.internal.compiler.IBinarySourceProvider#getBinarySourcesForThisWeave()
 		 */
 		public Map getBinarySourcesForThisWeave() {

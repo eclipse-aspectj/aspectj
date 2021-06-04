@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
@@ -30,7 +30,7 @@ public class PointcutImpl implements Pointcut {
 	private final Method baseMethod;
 	private final AjType declaringType;
 	private String[] parameterNames = new String[0];
-	
+
 	protected PointcutImpl(String name, String pc, Method method, AjType declaringType, String pNames) {
 		this.name = name;
 		this.pc = new PointcutExpressionImpl(pc);
@@ -38,14 +38,14 @@ public class PointcutImpl implements Pointcut {
 		this.declaringType = declaringType;
 		this.parameterNames = splitOnComma(pNames);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.Pointcut#getPointcutExpression()
 	 */
 	public PointcutExpression getPointcutExpression() {
 		return pc;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -66,7 +66,7 @@ public class PointcutImpl implements Pointcut {
 	public AjType getDeclaringType() {
 		return declaringType;
 	}
-	
+
 	public String[] getParameterNames() {
 		return parameterNames;
 	}
@@ -79,7 +79,7 @@ public class PointcutImpl implements Pointcut {
 		}
 		return ret;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(getName());

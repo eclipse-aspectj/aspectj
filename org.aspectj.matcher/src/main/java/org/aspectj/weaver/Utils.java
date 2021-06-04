@@ -1,16 +1,16 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver;
 
 /**
- * 
+ *
  * @author Andy Clement
  */
 public class Utils {
@@ -18,7 +18,7 @@ public class Utils {
 	/**
 	 * Check if the annotations contain a SuppressAjWarnings annotation and if that annotation specifies that the given lint message
 	 * (identified by its key) should be ignored.
-	 * 
+	 *
 	 */
 	public static boolean isSuppressing(AnnotationAJ[] anns, String lintkey) {
 		if (anns == null) {

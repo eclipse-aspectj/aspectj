@@ -1,17 +1,17 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
- 
+
 package org.aspectj.testing.run;
 
 import java.util.Arrays;
@@ -26,11 +26,11 @@ import org.aspectj.util.LangUtil;
  * Adapt IRun or Run[] or List or ListIterator to RunIteratorI.
  */
 public class RunIterator implements IRunIterator {
-    
+
     protected String name;
     protected ListIterator iter;
     protected IRun run;
-    
+
     public RunIterator(String name, IRun run) {
         init(name, run);
     }
@@ -38,7 +38,7 @@ public class RunIterator implements IRunIterator {
     public RunIterator(String name, List list) {
         init(name, list);
     }
-    
+
     public RunIterator(String name, IRun[] runs) {
         init(name, Arrays.asList(runs).listIterator());
     }
@@ -54,13 +54,13 @@ public class RunIterator implements IRunIterator {
     public void init(String name, IRun[] runs) {
         init(name, Arrays.asList(runs).listIterator());
     }
-    
+
     /** @return true if the first IRun from nextRun can be the sole IRun */
     public boolean isHoistable() {
         return (null != run);
     }
-    
-    /** 
+
+    /**
      * @param name if null, use iterator.toString();
      * @param iterator not null
      * @throws IllegalArgumentException if iterator is null
@@ -71,8 +71,8 @@ public class RunIterator implements IRunIterator {
         name = (null != name? name : iterator.toString());
         run = null;
     }
-    
-    /** 
+
+    /**
      * @param name if null, use run();
      * @param run not null
      * @throws IllegalArgumentException if iterator is null
@@ -105,7 +105,7 @@ public class RunIterator implements IRunIterator {
 	public void iterationCompleted() {
 	}
 
-    
+
     /**
 	 * @see org.aspectj.testing.run.RunIteratorI#nextRun(IMessageHandler, Runner)
 	 */
@@ -126,7 +126,7 @@ public class RunIterator implements IRunIterator {
                 }
             }
         }
-        return null;            
+        return null;
 	}
 
     /** @return name */

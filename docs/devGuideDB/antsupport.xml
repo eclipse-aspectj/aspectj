@@ -52,7 +52,7 @@
 	with Ant 1.3 and Ant 1.4, but the task sources must be
 	compiled with those versions of the Ant libraries to be used
 	under those versions of Ant.
-	Sources are available under the Eclipse Public License v. 1.0
+	Sources are available under the Eclipse Public License v 2.0
 	at <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
 	</para>
 	<para>

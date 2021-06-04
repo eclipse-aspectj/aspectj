@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 2000-2001 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs.compilers;
@@ -41,14 +41,14 @@ public class Ajc extends DefaultCompilerAdapter {
 
     /** The name of the compiler's main class. */
     private final static String MAIN_CLASS_NAME = "org.aspectj.tools.ajc.Main";
-    
+
     /**
      * List of arguments allowed only by javac and <b>not</b> ajc.
-     */    
+     */
     final static List<String> javacOnlyFlags
         = finalList(new String[] { "-g:none", "-g:lines",
         "-g:vars", "-g:source", "-nowarn"});
-    final static List<String> javacOnlyArgs  
+    final static List<String> javacOnlyArgs
         = finalList(new String[] { "-sourcepath",
         "-encoding", "-target" });
 
@@ -108,7 +108,7 @@ public class Ajc extends DefaultCompilerAdapter {
         }
     }
 
-    
+
     /**
      * Removes unsupported arguments from <code>cline</code>
      * issuing warnings for each using <code>log</code>.
@@ -139,7 +139,7 @@ public class Ajc extends DefaultCompilerAdapter {
         }
         return (String[])argsList.toArray(new String[0]);
     }
-    
+
     /**
      * Adds arguments that setupJavacCommand() doesn't pick up.
      *
@@ -151,7 +151,7 @@ public class Ajc extends DefaultCompilerAdapter {
      */
     private Commandline addAjcOptions(Commandline cline) throws BuildException {
         Javac javac = getJavac();
-                               
+
         org.aspectj.tools.ant.taskdefs.Ajc2 ajc = null;
 
         try {
@@ -159,7 +159,7 @@ public class Ajc extends DefaultCompilerAdapter {
         } catch (ClassCastException cce) {
             throw new BuildException(cce+"");
         }
-        
+
         if (ajc.getThreads() != null) {
             cline.createArgument().setValue("-threads");
             cline.createArgument().setValue(ajc.getThreads() + "");
@@ -182,7 +182,7 @@ public class Ajc extends DefaultCompilerAdapter {
     }
 
     /**
-     * Logs the compilation parameters, adds the files to compile and logs the 
+     * Logs the compilation parameters, adds the files to compile and logs the
      * &quot;niceSourceList&quot;
      */
     @Override
@@ -215,5 +215,5 @@ public class Ajc extends DefaultCompilerAdapter {
 			niceSourceList.append("   " + arg + rest + lSep);
 		}
         attributes.log(niceSourceList.toString(), Project.MSG_VERBOSE);
-    }    
+    }
 }

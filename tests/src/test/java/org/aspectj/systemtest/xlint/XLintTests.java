@@ -2,10 +2,10 @@
  * Copyright (c) 2004 IBM Corporation
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.systemtest.xlint;
 
@@ -100,63 +100,63 @@ public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
   public void test019(){
     runTest("XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)");
   }
-  
+
 
   // the following five tests check various scenarios around the lazyTjp XLint message
   public void test020(){
      runTest("no XLint warning: thisJoinPoint potentially lazy and nothing stopping it");
      assertTrue("Something prevented the lazytjp optimization from working??",BcelShadow.appliedLazyTjpOptimization);
   }
-  
+
   public void test021(){
      runTest("XLint warning: thisJoinPoint potentially lazy but stopped by around advice which doesn't use tjp");
      assertFalse("lazytjp optimization should have failed to be applied because of around advice at the jp",
     		 BcelShadow.appliedLazyTjpOptimization);
   }
-  
+
   public void test022(){
     runTest("no XLint warning: thisJoinPoint not lazy (no if PCD) but would have been stopped anyway by around advice");
     assertFalse("lazytjp optimization should have failed to be applied because of around advice *and* before advice has no if() at the jp",
    		 BcelShadow.appliedLazyTjpOptimization);
   }
-  
+
   public void test023(){
     runTest("no XLint warning: thisJoinPoint cannot be built lazily");
     assertFalse("lazytjp optimization should have failed to be applied because before advice has no if() at the jp",
       		 BcelShadow.appliedLazyTjpOptimization);
-  }  
-   
+  }
+
   public void test024(){
     runTest("XLint warning: thisJoinPoint potentially lazy but stopped by around advice which uses tjp");
     assertFalse("lazytjp optimization should have failed to be applied because around advice uses tjp",
      		 BcelShadow.appliedLazyTjpOptimization);
   }
-    
+
   public void test025(){
 	runTest("check for xlazytjp warning if actually supplied");
     assertTrue("Something prevented the lazytjp optimization from working??",BcelShadow.appliedLazyTjpOptimization);
   }
-  
+
   public void test026(){
 	runTest("lazytjp: warning when around advice uses tjp");
   }
-  
+
   public void test027() {
 		runTest("lazytjp: warning when if missing on before advice");
   }
-  
+
   public void test028() {
 		runTest("lazytjp: warning when if missing on after advice");
   }
-  
+
   public void test029() {
 		runTest("lazytjp: multiple clashing advice preventing lazytjp");
   }
-  
+
   public void test030() {
 		runTest("lazytjp: interfering before and around");
   }
-  
+
   // FIXME asc put this back in !
 //  public void test031() {
 //	 if (is15VMOrGreater)

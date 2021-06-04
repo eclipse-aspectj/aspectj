@@ -1,17 +1,17 @@
 /* *******************************************************************
  * Copyright (c) 2002 - 2018 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Adrian Colyer  added constructor to populate javaOptions with
  * 					  default settings - 01.20.2003
  * 					  Bugzilla #29768, 29769
- *      Andy Clement 
+ *      Andy Clement
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -41,9 +41,9 @@ import org.aspectj.util.FileUtil;
  * an AjCompilerOptions instance
  */
 public class AjBuildConfig implements CompilerConfigurationChangeFlags {
-	
+
 	public static final Classpath[] NO_CHECKED_CLASSPATHS = new Classpath[0];
-	
+
 	private boolean shouldProceed = true;
 
 	public static final String AJLINT_IGNORE = "ignore";
@@ -156,22 +156,22 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public List<File> getXmlFiles() {
 		return xmlfiles;
 	}
-	
+
 	public void setProcessor(String processor) {
 		this.processor = processor;
 	}
-	
+
 	/**
 	 * @return the list of processor classes to execute
 	 */
 	public String getProcessor() {
 		return this.processor;
 	}
-	
+
 	public void setProcessorPath(String processorPath) {
 		this.processorPath = processorPath;
 	}
-	
+
 	/**
 	 * @return the processor path which can be searched for processors (via META-INF/services)
 	 */
@@ -230,7 +230,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public List<String> getModulepath() {
 		return modulepath;
 	}
-	
+
 	public List<String> getModulesourcepath() {
 		return modulesourcepath;
 	}
@@ -246,10 +246,10 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	}
 
 	public void setCheckedClasspaths(Classpath[] checkedClasspaths) {
-		this.checkedClasspaths = checkedClasspaths;	
+		this.checkedClasspaths = checkedClasspaths;
 		checkedClasspaths = null;
 	}
-	
+
 	private List<Classpath> processFilePath(List<File> path, java.lang.String encoding) {
 		List<Classpath> entries = new ArrayList<>();
 		for (File file: path) {
@@ -414,7 +414,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		this.aspectpath = aspectpath;
 		checkedClasspaths = null;
 	}
-	
+
 	public void addToAspectpath(File file) {
 		this.aspectpath.add(file);
 		checkedClasspaths = null;
@@ -847,7 +847,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	public void setProjectEncoding(String projectEncoding) {
 		options.defaultEncoding = projectEncoding;
 	}
-	
+
 	public String getProjectEncoding() {
 		return options.defaultEncoding;
 	}
@@ -921,19 +921,19 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	// This is similar to the calculation done in Main.setPaths() but it isn't as sophisticated
 	// as that one (doesn't need to be) and it also considers the additional paths for an
 	// AspectJ project (aspectpath/inpath/injars)
-	private void computeCheckedClasspath() {		
+	private void computeCheckedClasspath() {
 		// Follow what we do in getFullClasspath():
 		// bootclasspath, injars, inpath, aspectpath, classpath, modulepath
 
 		String encoding = getProjectEncoding();
 		// What to do about bootclasspath on java 9?
-		
+
 		// ArrayList<Classpath> allPaths = handleBootclasspath(bootclasspaths, customEncoding);
 		ArrayList<FileSystem.Classpath> allPaths = new ArrayList<>();
 	 	allPaths.addAll(processStringPath(bootclasspath, encoding));
 		allPaths.addAll(processFilePath(inJars, encoding));
-	 	allPaths.addAll(processFilePath(inPath, encoding)); 
-	 	allPaths.addAll(processFilePath(aspectpath, encoding)); 
+	 	allPaths.addAll(processFilePath(inPath, encoding));
+	 	allPaths.addAll(processFilePath(aspectpath, encoding));
 	 	if (modulepathClasspathEntries != null) {
 	 		allPaths.addAll(modulepathClasspathEntries);
 	 	}
@@ -958,5 +958,5 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 			}
 		}
 	}
-	
+
 }

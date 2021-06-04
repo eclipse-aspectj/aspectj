@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 public class WeavingContextTest extends TestCase {
 
 	private boolean called;
-	
+
 	public void testWeavingContext() {
 		URLClassLoader loader = new URLClassLoader(new URL[] {},null);
 		IWeavingContext context = new TestWeavingContext(loader);
@@ -40,11 +40,11 @@ public class WeavingContextTest extends TestCase {
 				called = true;
 				return super.getResources(name);
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader,context);
-		
+
 		assertTrue("IWeavingContext not called",called);
 	}
 
@@ -55,7 +55,7 @@ public class WeavingContextTest extends TestCase {
 			public String getBundleIdFromURL(URL url) {
 				throw new UnsupportedOperationException();
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		try {
@@ -74,11 +74,11 @@ public class WeavingContextTest extends TestCase {
 				called = true;
 				return super.getClassLoaderName();
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader,context);
-		
+
 		assertTrue("IWeavingContext not called",called);
 	}
 
@@ -92,11 +92,11 @@ public class WeavingContextTest extends TestCase {
 				called = true;
 				return super.getFile(url);
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader,context);
-		
+
 		assertTrue("IWeavingContext not called",called);
 	}
 
@@ -110,11 +110,11 @@ public class WeavingContextTest extends TestCase {
 				called = true;
 				return super.getId();
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader,context);
-		
+
 		assertTrue("IWeavingContext not called",called);
 	}
 
@@ -128,22 +128,22 @@ public class WeavingContextTest extends TestCase {
 				called = true;
 		        return super.getDefinitions(loader,adaptor);
 			}
-			
+
 		};
 		ClassLoaderWeavingAdaptor adaptor = new ClassLoaderWeavingAdaptor();
 		adaptor.initialize(loader,context);
-		
+
 		assertTrue("getDefinitions not called",called);
 	}
-	
+
 	private static class TestWeavingContext implements IWeavingContext {
 
 		private ClassLoader loader;
-		
+
 		public TestWeavingContext (ClassLoader classLoader) {
 			this.loader = classLoader;
 		}
-		
+
 		public String getBundleIdFromURL(URL url) {
 			return null;
 		}
@@ -151,7 +151,7 @@ public class WeavingContextTest extends TestCase {
 		public String getClassLoaderName() {
 			return "ClassLoaderName";
 		}
-		
+
 		public ClassLoader getClassLoader() { return this.loader;}
 
 		public String getFile(URL url) {
@@ -177,7 +177,7 @@ public class WeavingContextTest extends TestCase {
 	        if (parent != null) {
 	            URL parentURL = parent.getResource(asResource);
 	            if (localURL.equals(parentURL)) isLocallyDefined =  false;
-	        } 
+	        }
 	        return isLocallyDefined;
 		}
 
@@ -191,5 +191,5 @@ public class WeavingContextTest extends TestCase {
 
 		this.called = false;
 	}
-	
+
 }

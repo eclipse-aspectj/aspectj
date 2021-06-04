@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -51,7 +51,7 @@ public class StreamsHandler {
 
     /** if logToOut, then out, else err */
     private final PrintStream log;
-    
+
     /** true if the last logged item was a newline */
     private boolean loggedLine;
 
@@ -80,7 +80,7 @@ public class StreamsHandler {
 
     /**
      * @param listen possible to sniff streams only if true
-     * @param logToOut if true, then log methods go to System.out -- otherwise, System.err. 
+     * @param logToOut if true, then log methods go to System.out -- otherwise, System.err.
      */
     public StreamsHandler(
         boolean listen,
@@ -125,7 +125,7 @@ public class StreamsHandler {
     public PrintStream getLogStream() {
         return log;
     }
-    
+
     /** log item without newline. */
     public void log(String s) {
         log.print(s);
@@ -134,9 +134,9 @@ public class StreamsHandler {
         }
     }
 
-    /** 
+    /**
      * Log item with newline.
-     * If previous log did not have a newline, 
+     * If previous log did not have a newline,
      * then this prepends a newline.
      */
     public void lnlog(String s) {
@@ -146,7 +146,7 @@ public class StreamsHandler {
         log.println(s);
     }
 
-    /** 
+    /**
      * Start listening to both streams.
      * Tosses any old data captured.
      * (Has no effect if not listening.)
@@ -170,7 +170,7 @@ public class StreamsHandler {
         }
     }
 
-    /** 
+    /**
      * End listening to both streams and return data captured.
      * Must call startListening() first.
      * @throws IllegalStateException if called when not listening
@@ -181,10 +181,10 @@ public class StreamsHandler {
         return endListening(true);
     }
 
-    /** 
+    /**
      * End listening to both streams and return data captured.
      * Must call startListening() first.
-     * @param getResult if false, return Result.EMPTY 
+     * @param getResult if false, return Result.EMPTY
      *         and avoid converting buffer to String.
      * @throws IllegalStateException if called when not listening
      * @return Result with sniffed output and error String
@@ -201,7 +201,7 @@ public class StreamsHandler {
                 : new Result(outListener.toString(), errListener.toString()));
         errListener = null;
         outListener = null;
-        return result;        
+        return result;
     }
 
     /** output and error String */

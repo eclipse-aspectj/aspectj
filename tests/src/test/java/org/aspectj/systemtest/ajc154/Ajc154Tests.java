@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM 
+ * Copyright (c) 2006 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -197,7 +197,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	/**
 	 * Complex test that attempts to damage a class like a badly behaved bytecode transformer would and checks if AspectJ can cope.
-	 * 
+	 *
 	 * @throws NoSuchFieldException
 	 * @throws SecurityException
 	 * @throws IllegalAccessException
@@ -226,7 +226,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		 * java/io/PrintStream.println:(Ljava/lang/String;)V 12: goto 23 15: pop 16: getstatic #24; //Field
 		 * java/lang/System.out:Ljava/io/PrintStream; 19: iload_1 20: invokevirtual #33; //Method java/io/PrintStream.println:(I)V
 		 * 23: return Exception table: from to target type 2 15 15 Class java/lang/Exception
-		 * 
+		 *
 		 * LineNumberTable: line 4: 0 line 6: 2 line 7: 5 line 8: 15 line 9: 16 line 11: 23 LocalVariableTable: Start Length Slot
 		 * Name Signature 0 24 0 argv [Ljava/lang/String; 2 22 1 i I 5 10 2 s Ljava/lang/String;
 		 */
@@ -368,7 +368,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.weaver.tools.PointcutDesignatorHandler#parse(java.lang.String)
 		 */
 		public ContextBasedMatcher parse(String expression) {
@@ -397,7 +397,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#couldMatchJoinPointsInType(java.lang.Class)
 		 */
 		public boolean couldMatchJoinPointsInType(Class aClass, MatchingContext context) {
@@ -410,7 +410,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#mayNeedDynamicTest()
 		 */
 		public boolean mayNeedDynamicTest() {
@@ -430,7 +430,7 @@ public class Ajc154Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#matchesDynamically(org.aspectj.weaver.tools.MatchingContext)
 		 */
 		public boolean matchesDynamically(MatchingContext matchContext) {

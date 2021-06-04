@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2014 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -20,7 +20,7 @@ import junit.framework.Test;
 public class Ajc184Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	// The thisAspectInstance tests here are a copy from Ajc1612Tests but we are compiling with -1.8 and not -1.5
-	
+
 	public void testThisAspectInstance_239649_1() throws Exception {
 		// simple case
 		runTest("thisAspectInstance - 1");
@@ -95,7 +95,7 @@ public class Ajc184Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// abstract aspects
 		runTest("thisAspectInstance - 15");
 	}
-	
+
 	public void testIsFinal_449739() {
 		runTest("is final");
 	}
@@ -103,7 +103,7 @@ public class Ajc184Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testIsFinal_449739_2() {
 		runTest("is final - 2");
 	}
-	
+
 	// ---
 
 	public static Test suite() {

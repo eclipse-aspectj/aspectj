@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2012 VMware, Inc. custard
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  * Lyor Goldstein
  * ******************************************************************/
 
@@ -32,8 +32,8 @@ import org.aspectj.util.LangUtil;
  * O/S-es may impose internal limits on the maximum number of &quot;children&quot;
  * a folder node may have. On the other hand, it is much faster (again, for
  * small number of instrumented classes) than the ZIP cache since each class/aspect
- * is represented by a single file - thus adding/removing/modifying it is easier. 
- * 
+ * is represented by a single file - thus adding/removing/modifying it is easier.
+ *
  * @author Lyor Goldstein
  */
 public class FlatFileCacheBacking extends AsynchronousFileCacheBacking {
@@ -106,7 +106,7 @@ public class FlatFileCacheBacking extends AsynchronousFileCacheBacking {
 
         return result;
     }
-    
+
     @Override
     protected IndexEntry resolveIndexMapEntry (File cacheDir, IndexEntry ie) {
         File cacheEntry = new File(cacheDir, ie.key);

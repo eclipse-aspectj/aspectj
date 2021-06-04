@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -15,7 +15,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
  * InterTypeFieldDeclaration DOM AST node.
  * has:
  *   everything FieldDeclarations have
- *   
+ *
  * Refused Bequest:
  *   has the variableDeclarationFragments list
  *   it redundantly inherits from FieldDeclaration
@@ -33,14 +33,14 @@ public class InterTypeFieldDeclaration extends FieldDeclaration {
 		super(ast);
 	}
 
-	public String getOnType() { 
+	public String getOnType() {
 		return onType;
 	}
-	
+
 	public void setOnType(String onType) {
 		this.onType = onType;
 	}
-	
+
 	ASTNode clone0(AST target) {
 		InterTypeFieldDeclaration result = new InterTypeFieldDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
@@ -57,7 +57,7 @@ public class InterTypeFieldDeclaration extends FieldDeclaration {
 			ASTNode.copySubtrees(target, fragments()));
 		return result;
 	}
-	
+
 	void accept0(ASTVisitor visitor) {
 		if (visitor instanceof AjASTVisitor) {
 			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);

@@ -2,13 +2,13 @@
  * Copyright (c) 2011 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Abraham Nevado - Lucierna	initial implementation
- *   	Just a slight variation of current DocumentParser.java from Alexandre Vasseur. 
+ *   	Just a slight variation of current DocumentParser.java from Alexandre Vasseur.
  *******************************************************************************/
 package org.aspectj.weaver.loadtime.definition;
 
@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 /**
  * This class has been created to avoid deadlocks when instrumenting SAXParser.
  * So it is used as a wrapper for the ligthweigh XML parser LightXMLParser.
- * 
+ *
  * @author A. Nevado
  */
 public class SimpleAOPParser {
@@ -183,7 +183,7 @@ public class SimpleAOPParser {
 						}
 					}
 				}
-			
+
 			}
 		}
 		else if (BEFORE_ELEMENT.equals(qName) && m_inAspects ) {

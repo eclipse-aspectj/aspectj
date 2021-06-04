@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -58,14 +58,14 @@ public class OptionsFrame extends JFrame {
         "version 1.0, approved by the Open Source Initiative as\n" +
         "conforming to the Open Source Definition.\n\n" +
         "For support or for more information about the AspectJ\n" +
-        "project or the license, visit the project home page at\n" + 
+        "project or the license, visit the project home page at\n" +
         "    http://eclipse.org/aspectj\n\n" +
         "If you find a bug (not solved by the documentation in the\n" +
         "Development Environment Guide available with this release,\n" +
         "any release notes, or the bug database), please submit steps\n" +
-        "to reproduce the bug (using the IDE component) at:\n" + 
+        "to reproduce the bug (using the IDE component) at:\n" +
         "    http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ";
-        
+
     private JTabbedPane main_tabbedPane = new JTabbedPane();
     private JPanel button_panel = new JPanel();
     private JButton apply_button = new JButton();
@@ -267,7 +267,7 @@ public class OptionsFrame extends JFrame {
         jTextArea1.setFont(new java.awt.Font("SansSerif", 0, 12));
         jTextArea1.setEditable(false);
         jTextArea1.setText(ABOUT_TEXT);
-        
+
         about_panel.setBorder(border9);
         built_label.setText("Built: ");
         built_label.setFont(new java.awt.Font("Dialog", 1, 12));

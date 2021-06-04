@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004, 2017 Contributors
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -51,7 +51,7 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 
 /**
  * A PointcutParser can be used to build PointcutExpressions for a user-defined subset of AspectJ's pointcut language
- * 
+ *
  * @author Adrian Colyer
  * @author Andy Clement
  */
@@ -121,7 +121,7 @@ public class PointcutParser {
 	 * <p>
 	 * When resolving types in pointcut expressions, the context classloader is used to find types.
 	 * </p>
-	 * 
+	 *
 	 * @param supportedPointcutKinds a set of PointcutPrimitives this parser should support
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
@@ -161,7 +161,7 @@ public class PointcutParser {
 	 * <p>
 	 * When resolving types in pointcut expressions, the given classloader is used to find types.
 	 * </p>
-	 * 
+	 *
 	 * @param supportedPointcutKinds a set of PointcutPrimitives this parser should support
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
@@ -193,7 +193,7 @@ public class PointcutParser {
 	 * <li>Pointcut expressions must be self-contained :- they cannot contain references to other named pointcuts
 	 * <li>The pointcut expression must be anonymous with no formals allowed.
 	 * </ul>
-	 * 
+	 *
 	 * @param supportedPointcutKinds a set of PointcutPrimitives this parser should support
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
@@ -214,17 +214,17 @@ public class PointcutParser {
 
 	/**
 	 * Set the classloader that this parser should use for type resolution.
-	 * 
+	 *
 	 * @param aLoader
 	 */
 	protected void setClassLoader(ClassLoader aLoader) {
 		this.classLoaderReference = new WeakClassLoaderReference(aLoader);
 		world = ReflectionWorld.getReflectionWorldFor(this.classLoaderReference);
 	}
-	
+
 	/**
 	 * Set the classloader that this parser should use for type resolution.
-	 * 
+	 *
 	 * @param aLoader
 	 * @param shareWorlds if true then two PointcutParsers operating using the same classloader will share a ReflectionWorld
 	 */
@@ -239,7 +239,7 @@ public class PointcutParser {
 
 	/**
 	 * Set the lint properties for this parser from the given resource on the classpath.
-	 * 
+	 *
 	 * @param resourcePath path to a file containing aspectj lint properties
 	 */
 	public void setLintProperties(String resourcePath) throws IOException {
@@ -252,7 +252,7 @@ public class PointcutParser {
 
 	/**
 	 * Set the lint properties for this parser from the given properties set.
-	 * 
+	 *
 	 * @param properties
 	 */
 	public void setLintProperties(Properties properties) {
@@ -262,7 +262,7 @@ public class PointcutParser {
 	/**
 	 * Register a new pointcut designator handler with this parser. This provides an extension mechansim for the integration of
 	 * domain-specific pointcut designators with the AspectJ pointcut language.
-	 * 
+	 *
 	 * @param designatorHandler
 	 */
 	public void registerPointcutDesignatorHandler(PointcutDesignatorHandler designatorHandler) {
@@ -274,7 +274,7 @@ public class PointcutParser {
 
 	/**
 	 * Create a pointcut parameter of the given name and type.
-	 * 
+	 *
 	 * @param name
 	 * @param type
 	 * @return
@@ -286,7 +286,7 @@ public class PointcutParser {
 	/**
 	 * Parse the given pointcut expression. A global scope is assumed for resolving any type references, and the pointcut must
 	 * contain no formals (variables to be bound).
-	 * 
+	 *
 	 * @throws UnsupportedPointcutPrimitiveException if the parser encounters a primitive pointcut expression of a kind not
 	 *         supported by this PointcutParser.
 	 * @throws IllegalArgumentException if the expression is not a well-formed pointcut expression
@@ -300,7 +300,7 @@ public class PointcutParser {
 	 * Parse the given pointcut expression. The pointcut is resolved as if it had been declared inside the inScope class (this
 	 * allows the pointcut to contain unqualified references to other pointcuts declared in the same type for example). The pointcut
 	 * may contain zero or more formal parameters to be bound at matched join points.
-	 * 
+	 *
 	 * @throws UnsupportedPointcutPrimitiveException if the parser encounters a primitive pointcut expression of a kind not
 	 *         supported by this PointcutParser.
 	 * @throws IllegalArgumentException if the expression is not a well-formed pointcut expression
@@ -351,7 +351,7 @@ public class PointcutParser {
 
 	/**
 	 * Parse the given aspectj type pattern, and return a matcher that can be used to match types using it.
-	 * 
+	 *
 	 * @param typePattern an aspectj type pattern
 	 * @return a type pattern matcher that matches using the given pattern
 	 * @throws IllegalArgumentException if the type pattern cannot be successfully parsed.
@@ -578,5 +578,5 @@ public class PointcutParser {
 		msg.append("\n");
 		return msg.toString();
 	}
-	
+
 }

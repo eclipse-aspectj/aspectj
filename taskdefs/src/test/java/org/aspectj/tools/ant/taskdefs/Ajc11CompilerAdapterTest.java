@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2003 Contributors. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * Copyright (c) 2003 Contributors.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -25,16 +25,16 @@ import java.util.List;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class Ajc11CompilerAdapterTest extends TestCase {
     public static boolean LOGGING = false;
     List tempFiles = new ArrayList();
-    
+
     public Ajc11CompilerAdapterTest(String name) {
         super(name);
     }
-    
+
     public void tearDown() {
 		for (Object tempFile : tempFiles) {
 			File file = (File) tempFile;
@@ -42,14 +42,14 @@ public class Ajc11CompilerAdapterTest extends TestCase {
 			file.delete();
 		}
     }
-    
-//    public void testCompilerAdapterWithJavac() { // XXX requires tools.jar 
+
+//    public void testCompilerAdapterWithJavac() { // XXX requires tools.jar
 //        Javac javac = getJavac(new Project());
 //        setupTracingJava(javac);
 //        javac.execute();
 //    }
 
-    public void testCompilerAdapterWithAjc() { // XXX unverified        
+    public void testCompilerAdapterWithAjc() { // XXX unverified
         Project project = new Project();
         String cname = Ajc11CompilerAdapter.class.getName();
         project.setProperty("build.compiler", cname);
@@ -59,7 +59,7 @@ public class Ajc11CompilerAdapterTest extends TestCase {
         System.out.flush();
         javac.execute();
         log("---- second compile (none: nothing out of date?)...");
-        javac.execute(); 
+        javac.execute();
     }
 
     public void testCompilerAdapterWithAjcRecursively() { // XXX unverified
@@ -90,9 +90,9 @@ public class Ajc11CompilerAdapterTest extends TestCase {
         javac.setClasspath(new Path(project, rt.getAbsolutePath()));
         return javac;
     }
-    
+
     void setupTracingJava(Javac javac) { // XXX assumes module dir, doc loc
-        String exDir = "../docs/dist/doc/examples"; 
+        String exDir = "../docs/dist/doc/examples";
         javac.setSrcdir(new Path(javac.getProject(), exDir));
         javac.setIncludes("tracing/*.java"); // XXX assumes tracing example
     }

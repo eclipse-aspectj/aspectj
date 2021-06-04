@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.internal.tools;
@@ -39,7 +39,7 @@ import org.aspectj.weaver.tools.MatchingContext;
 
 /**
  * Implementation of Pointcut that is backed by a user-extension pointcut designator handler.
- * 
+ *
  */
 public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
@@ -53,7 +53,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#getPointcutKind()
 	 */
 	public byte getPointcutKind() {
@@ -62,7 +62,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	public FuzzyBoolean fastMatch(FastMatchInfo info) {
@@ -80,7 +80,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 					if (rtd instanceof ReflectionBasedReferenceTypeDelegate) {
 						clazz = ((ReflectionBasedReferenceTypeDelegate)rtd).getClazz();
 					}
-				}					
+				}
 			}
 			if (clazz == null) {
 				return FuzzyBoolean.MAYBE;
@@ -92,7 +92,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#couldMatchKinds()
 	 */
 	public int couldMatchKinds() {
@@ -101,7 +101,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#matchInternal(org.aspectj.weaver.Shadow)
 	 */
 	protected FuzzyBoolean matchInternal(Shadow shadow) {
@@ -121,7 +121,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope,
 	 * org.aspectj.weaver.patterns.Bindings)
 	 */
@@ -131,7 +131,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.ResolvedType,
 	 * org.aspectj.weaver.IntMap)
 	 */
@@ -141,7 +141,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidueInternal(org.aspectj.weaver.Shadow,
 	 * org.aspectj.weaver.patterns.ExposedState)
 	 */
@@ -157,7 +157,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#parameterizeWith(java.util.Map)
 	 */
 	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
@@ -166,7 +166,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	public void write(CompressingDataOutputStream s) throws IOException {
@@ -175,7 +175,7 @@ public class PointcutDesignatorHandlerBasedPointcut extends Pointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.PatternNode#accept(org.aspectj.weaver.patterns.PatternNodeVisitor, java.lang.Object)
 	 */
 	public Object accept(PatternNodeVisitor visitor, Object data) {

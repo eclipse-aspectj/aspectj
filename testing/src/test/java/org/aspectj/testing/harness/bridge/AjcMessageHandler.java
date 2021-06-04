@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -70,7 +70,7 @@ public class AjcMessageHandler extends MessageHandler {
 	AjcMessageHandler(IMessageHolder expectedMessages) {
 		this(expectedMessages, false);
 	}
-	/** 
+	/**
 	 * @param messages the (constant) IMessageHolder with expected messages
 	 */
 	AjcMessageHandler(
@@ -117,7 +117,7 @@ public class AjcMessageHandler extends MessageHandler {
 		return expecting(message);
 	}
 
-	/** 
+	/**
 	 * Set the actual files recompiled.
 	 * @param List of File recompiled - may be null; adopted but not modified
 	 * @throws IllegalStateException if they have been set already.
@@ -150,7 +150,7 @@ public class AjcMessageHandler extends MessageHandler {
             if (usingNew) {
                 final IMessage.Kind[] NOSKIPS = new IMessage.Kind[0];
                 IMessage.Kind[] skipActual =  new IMessage.Kind[] { IMessage.INFO };
-                int expectedInfo 
+                int expectedInfo
                     = MessageUtil.numMessages(expected, IMessage.INFO, false);
                 if (0 < expectedInfo) {
                     // fyi, when expecting any info messages, have to expect all
@@ -164,11 +164,11 @@ public class AjcMessageHandler extends MessageHandler {
                     skipActual);
             } else {
                 messages = Diffs.makeDiffs(
-                    "message", 
-                    expected, 
-                    actual, 
-                    COMP_IMessage, 
-                    Diffs.ACCEPT_ALL, 
+                    "message",
+                    expected,
+                    actual,
+                    COMP_IMessage,
+                    Diffs.ACCEPT_ALL,
                     CompilerDiffs.SKIP_UNEXPECTED_INFO);
             }
 			Diffs recompiled =
@@ -186,7 +186,7 @@ public class AjcMessageHandler extends MessageHandler {
 	 * Get the (current) result of this run,
 	 * ignoring differences in warnings on request.
 	 * Note it may return passed (true) when there are expected error messages.
-	 * @return false 
+	 * @return false
 	 * if there are any fail or abort messages,
 	 * or if the expected errors, warnings, or recompiled do not match actual.
 	 */
@@ -240,9 +240,9 @@ public class AjcMessageHandler extends MessageHandler {
 		return sb.toString(); // XXX cache toString
 	}
 
-	/** 
+	/**
 	 * Check if the message was expected, and clear diffs if not.
-	 * @return true if we expect a message of this kind with this line number 
+	 * @return true if we expect a message of this kind with this line number
 	 */
 	private boolean expecting(IMessage message) {
 		boolean match = false;

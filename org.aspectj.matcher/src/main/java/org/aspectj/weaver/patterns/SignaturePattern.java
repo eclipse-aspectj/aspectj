@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -386,7 +386,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		// if (subjectMatch && !matchesAnnotations(aMember, inAWorld).alwaysTrue()) {
 		// return FuzzyBoolean.NO;
 		// } else {
-		//			
+		//
 		// return matchesIgnoringAnnotations;
 		// }
 
@@ -428,7 +428,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	/**
 	 * Quickly detect if the joinpoint absolutely cannot match becaused the method parameters at the joinpoint cannot match against
 	 * this signature pattern.
-	 * 
+	 *
 	 * @param methodJoinpoint the joinpoint to quickly match against
 	 * @return true if it is impossible for the joinpoint to match this signature
 	 */
@@ -557,7 +557,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 	/**
 	 * Determine if any pattern in the parameter type pattern list is attempting to match on parameter annotations.
-	 * 
+	 *
 	 * @return true if a parameter type pattern wants to match on a parameter annotation
 	 */
 	private boolean isMatchingParameterAnnotations() {

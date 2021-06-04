@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.model;
@@ -929,12 +929,12 @@ public class AsmRelationshipProvider {
 
 	/**
 	 * Finds or creates a code IProgramElement for the given shadow.
-	 * 
+	 *
 	 * The byteCodeName of the created node is set to 'shadowSig.getName() + "!" + counter', eg "println!3". The counter is the
 	 * occurence count of children within the enclosingNode which have the same name. So, for example, if a method contains two
 	 * System.out.println statements, the first one will have byteCodeName 'println!1' and the second will have byteCodeName
 	 * 'println!2'. This is to ensure the two nodes have unique handles when the handles do not depend on sourcelocations.
-	 * 
+	 *
 	 * Currently the shadows are examined in the sequence they appear in the source file. This means that the counters are
 	 * consistent over incremental builds. All aspects are compiled up front and any new aspect created will force a full build.
 	 * Moreover, if the body of the enclosingShadow is changed, then the model for this is rebuilt from scratch.

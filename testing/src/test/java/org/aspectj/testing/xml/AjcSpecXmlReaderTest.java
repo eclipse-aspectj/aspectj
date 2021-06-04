@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
@@ -32,7 +32,7 @@ import org.aspectj.util.LangUtil;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class AjcSpecXmlReaderTest extends TestCase {
 
@@ -59,7 +59,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
 			}
 		}
     }
-    
+
     /** test that all AjcSpecXmlReader.me.expectedProperties() are bean-writable */
     public void testBeanInfo() throws IntrospectionException {
 //        AjcSpecXmlReader me = AjcSpecXmlReader.getReader();
@@ -85,25 +85,25 @@ public class AjcSpecXmlReaderTest extends TestCase {
 				assertTrue("no such property: " + fqn, gotIt);
 			}
 		}
-        
+
     }
-//    public void testAjcTests() throws IOException { 
+//    public void testAjcTests() throws IOException {
 //        checkXmlRoundTrip("../tests/ajcTests");
 //    }
 
-    public void testAjcTests10() throws IOException { 
+    public void testAjcTests10() throws IOException {
         checkXmlRoundTrip("../tests/ajcTests10");
     }
 
-    public void testAjcTestsBroken() throws IOException { 
+    public void testAjcTestsBroken() throws IOException {
         checkXmlRoundTrip("../tests/ajcTestsBroken");
     }
 
-    public void testAjcTestsAttic() throws IOException { 
+    public void testAjcTestsAttic() throws IOException {
         checkXmlRoundTrip("../tests/ajcTestsAttic");
     }
-    
-    public void testAjcHarnessTests() throws IOException { 
+
+    public void testAjcHarnessTests() throws IOException {
         checkXmlRoundTrip("../tests/ajcHarnessTests");
     }
 
@@ -127,7 +127,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcTest.Suite.Spec suite2 = writer.readAjcSuite(file1);
         assertNotNull(suite2);
         AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
-        
+
         // check clone while we're here
         try {
             Object clone = (AjcTest.Suite.Spec) suite1.clone();
@@ -159,7 +159,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcTest.Suite.Spec suite0 = null;
         if (file0.canRead()) {
             System.out.println("reading " + file0);
-            suite0 = FlatSuiteReader.ME.readSuite(file0);            
+            suite0 = FlatSuiteReader.ME.readSuite(file0);
             String warning = writer.writeSuiteToXmlFile(file1, suite0);
             toDelete.add(file1);
             assertTrue(warning, null == warning);
@@ -174,7 +174,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
             }
         }
         assertNotNull(suite0);
-        
+
         //System.err.println("----------------------- suite0 " + txtPath);
         //suite0.printAll(System.err, "");
         assertTrue("" + file1, file1.canRead());
@@ -208,7 +208,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
 
 	// ------------------- XXX retry execution round-trips when eclipse working
         //AjcSpecTest.sameAjcTestSpec(txtList, xmlSpec, this);
-        
+
 //        List xmlList = writer.readAjcTests(xmlFile);
 //        AjcSpecTest.sameAjcTestLists(txtList, xmlList, this);
 //        List xml2List = writer.readAjcTests(xmlFile);
@@ -221,8 +221,8 @@ public class AjcSpecXmlReaderTest extends TestCase {
 //        IRunStatus xmlStatus = runFile(xmlPath, xmlHandler);
 //        MessageHandler txtHandler = new MessageHandler();
 //        IRunStatus txtStatus = runFile(txtPath, txtHandler);
-//        
-//        
+//
+//
 //        // both should pass or fail..
 //        IRunValidator v = RunValidator.NORMAL;
 //        boolean xmlPassed = v.runPassed(xmlStatus);
@@ -239,5 +239,5 @@ public class AjcSpecXmlReaderTest extends TestCase {
 //    IRunStatus runFile(String path, MessageHandler handler) throws IOException {
 //        Main runner = new Main(new String[] {path}, handler);
 //        String id = "AjcSpecXmlReaderTest.runFile(" + path + ")";
-//        return runner.runMain(id, handler, System.err); 
+//        return runner.runMain(id, handler, System.err);
 //    }

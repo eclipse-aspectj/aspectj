@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2017 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
@@ -19,11 +19,11 @@ import junit.framework.Test;
 
 /**
  * Building and weaving with modules in the picture.
- * 
+ *
  * Module options from http://openjdk.java.net/jeps/261
- * 
+ *
  * @author Andy Clement
- * 
+ *
  */
 public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 
@@ -38,7 +38,7 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 	public void testRunModuleModulePath() {
 		runTest("run a module - modulepath");
 	}
-	
+
 	public void testPackageAndRunModuleFromModulePath() {
 		runTest("package and run a module - modulepath");
 	}
@@ -46,7 +46,7 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 	public void testBuildModuleIncludingAspects() {
 		runTest("compile module including aspects");
 	}
-	
+
 	public void testBuildModuleAndApplyAspectsFromAspectPath() {
 		runTest("compile module and apply aspects via aspectpath");
 	}
@@ -63,9 +63,9 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 //	public void testModulepathClasspathResolution2() {
 //		runTest("module path vs classpath 2");
 //	}
-	
+
 	// --add-modules
-	
+
 	// This tests that when using --add-modules with one of the JDK modules (in the jmods subfolder of the JDK)
 	// that it can be found without needing to set --module-path (this seems to be implicitly included by javac too)
 	public void testAddModules1() {
@@ -75,7 +75,7 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 		}
 		runTest("compile use of java.xml.bind");
 	}
-	
+
 	// This tests that we can use add-modules to pull in something from the JDK jmods package and that
 	// when subsequently weaving we can see types from those modules
 	public void testWovenAfterAddModules() {
@@ -85,7 +85,7 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 		}
 		runTest("weave use of java.xml.bind");
 	}
-	
+
 	// --limit-modules
 	public void testLimitModules1() {
 		if (LangUtil.is11VMOrGreater()) {
@@ -103,8 +103,8 @@ public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
 		}
 		runTest("add reads 1");
 	}
-	
-	
+
+
 	// ---
 
 	/* For the specified class, check that each method has a stackmap attribute */

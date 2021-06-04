@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2005-2017 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
@@ -28,7 +28,7 @@ import org.aspectj.weaver.World;
 /**
  * A ReflectionWorld is used solely for purposes of type resolution based on the runtime classpath (java.lang.reflect). It does not
  * support weaving operations (creation of mungers etc..).
- * 
+ *
  * @author Adrian Colyer
  * @author Andy Clement
  */
@@ -40,15 +40,15 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	private AnnotationFinder annotationFinder;
 	private boolean mustUseOneFourDelegates = false; // for testing
 	private Map<String,Class<?>> inProgressResolutionClasses = new HashMap<>();
-	
+
 	public static ReflectionWorld getReflectionWorldFor(WeakClassLoaderReference classLoaderReference) {
-		
+
 		// Temporarily do as before. Although the cache makes things faster it needs a bit more thought because
 		// if the world has pointcutdesignators registered then someone may inadvertently register additional
 		// ones on reusing a world (when they would be expecting a clean world). We can't automatically
 		// clear them because we don't know when they are finished with.
 		return new ReflectionWorld(classLoaderReference);
-		
+
 		/*
 		synchronized (rworlds) {
 			// Tidyup any no longer relevant entries...
@@ -71,13 +71,13 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		}
 		*/
 	}
-	
+
 	public static void cleanUpWorlds() {
 		synchronized (rworlds) {
 			rworlds.clear();
 		}
 	}
-	
+
 	private ReflectionWorld() {
 		// super();
 		// this.setMessageHandler(new ExceptionBasedMessageHandler());
@@ -88,7 +88,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 		// makeAnnotationFinderIfAny(classLoaderReference.getClassLoader(),
 		// this);
 	}
-	
+
 	public ReflectionWorld(WeakClassLoaderReference classloaderRef) {
 		this.setMessageHandler(new ExceptionBasedMessageHandler());
 		setBehaveInJava5Way(true);
@@ -154,7 +154,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 			return world.resolve(className);
 		}
 	}
-	
+
 	/**
 	 * Resolve a type using the specified class. Normal resolution in a reflection
 	 * world uses Class.forName() via the classloader (attached to this world)
@@ -162,17 +162,17 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	 * type delegate based on that. For some classes generated at runtime (e.g.
 	 * proxy or lambda representation) the forName() call will not work. In those
 	 * situations we should just use the clazz we have.
-	 * 
+	 *
 	 * Should the whole thing switch from using forName() to using the clazz objects?
 	 * Possibly but that introduces a lot of change and we don't have a lot
 	 * of test coverage for this scenario (reflection world). What we are doing
 	 * right now is that this can optionally be used if the regular resolution
 	 * scheme did not work.
-	 * 
+	 *
 	 * Although AspectJ is *not* multi threaded or re-entrant, Spring doesn't
 	 * always respect that. There might be an issue here if two attempts are
 	 * made to resolve the same thing at the same time via this method.
-	 * 
+	 *
 	 * @param clazz the class to use as the delegate for the resolved type
 	 */
 	public ResolvedType resolveUsingClass(Class<?> clazz) {

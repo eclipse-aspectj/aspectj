@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -19,23 +19,23 @@ import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
  * @author colyer
  *
  *	Adaptor for ClassFiles that lets them act as the bytecode repository
- *	for UnwovenClassFiles (asking a ClassFile for its bytes causes a 
+ *	for UnwovenClassFiles (asking a ClassFile for its bytes causes a
  *	copy to be made).
  */
-public class ClassFileBasedByteCodeProvider 
+public class ClassFileBasedByteCodeProvider
 	   implements UnwovenClassFileWithThirdPartyManagedBytecode.IByteCodeProvider{
-	
+
 	private ClassFile cf;
-		
+
 	public ClassFileBasedByteCodeProvider(ClassFile cf) {
 		this.cf = cf;
 	}
-		
+
 	public byte[] getBytes() {
 		return cf.getBytes();
 	}
-		
-	public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result, 
+
+	public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result,
 										            IOutputClassFileNameProvider nameProvider) {
 		ClassFile[] cfs = result.getClassFiles();
 		UnwovenClassFile[] ret = new UnwovenClassFile[result.compiledTypes.size()];
@@ -50,5 +50,5 @@ public class ClassFileBasedByteCodeProvider
 		}
 		return ret;
 	}
-		
+
 }

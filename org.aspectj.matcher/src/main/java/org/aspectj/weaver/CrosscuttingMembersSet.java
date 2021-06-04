@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002-2009 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -33,7 +33,7 @@ import org.aspectj.weaver.patterns.IVerificationRequired;
 
 /**
  * This holds on to all CrosscuttingMembers for a world. It handles management of change.
- * 
+ *
  * @author Jim Hugunin
  * @author Andy Clement
  */
@@ -66,7 +66,7 @@ public class CrosscuttingMembersSet {
 	public boolean addOrReplaceAspect(ResolvedType aspectType) {
 		return addOrReplaceAspect(aspectType, true);
 	}
-	
+
 	/**
 	 * Check if any parent aspects of the supplied aspect have unresolved dependencies (and so
 	 * should cause this aspect to be turned off).
@@ -99,13 +99,13 @@ public class CrosscuttingMembersSet {
 			return false;
 		}
 		if (world.hasUnsatisfiedDependency(aspectType)) {
-			return false;				
+			return false;
 		}
 		// Abstract super aspects might have unsatisfied dependencies
 		if (excludeDueToParentAspectHavingUnresolvedDependency(aspectType)) {
 			return false;
 		}
-		
+
 		boolean change = false;
 		CrosscuttingMembers xcut = members.get(aspectType);
 		if (xcut == null) {
@@ -134,7 +134,7 @@ public class CrosscuttingMembersSet {
 
 		return change;
 	}
-	
+
 	private boolean addOrReplaceDescendantsOf(ResolvedType aspectType, boolean inWeavePhase) {
 		// System.err.println("Looking at descendants of "+aspectType.getName());
 		Set<ResolvedType> knownAspects = members.keySet();
@@ -242,7 +242,7 @@ public class CrosscuttingMembersSet {
 
 	/**
 	 * Retrieve a subset of all known mungers, those of a specific kind.
-	 * 
+	 *
 	 * @param kind the kind of munger requested
 	 * @return a list of those mungers (list is empty if none found)
 	 */

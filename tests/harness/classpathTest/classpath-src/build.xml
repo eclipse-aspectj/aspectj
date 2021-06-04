@@ -3,9 +3,9 @@
 <!-- Copyright (c) 2002 Wes Isberg                                             -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Xerox/PARC     initial implementation                                 -->
@@ -14,38 +14,38 @@
 <project name="classpath-test" default="all" basedir=".">
 
 
-    <target name="init.variables" 
+    <target name="init.variables"
      description="setup variables - user defines aspectj.lib.dir">
 
       <!-- required directories - run from examples or predefine -->
       <property name="test.base.dir"
-            location="${basedir}/.."/> 
+            location="${basedir}/.."/>
       <property name="classes.dir"
-            location="${test.base.dir}/classesDir"/> 
+            location="${test.base.dir}/classesDir"/>
       <property name="jar.dir"
-            location="${test.base.dir}/jars"/> 
+            location="${test.base.dir}/jars"/>
 
-       
+
       <!-- caller must define aspectj.lib.dir -->
       <property name="aspectj.lib.dir"
-            location="lib"/> 
+            location="lib"/>
       <property name="aspectjrt.jar"
-            location="${aspectj.lib.dir}/aspectjrt.jar"/> 
+            location="${aspectj.lib.dir}/aspectjrt.jar"/>
       <available file="${aspectjrt.jar}"
              property="aspectjrt.jar.available"/>
       <fail unless="aspectjrt.jar.available"
            message="expecting aspectjrt.jar at ${aspectjrt.jar}"/>
 
       <property name="aspectjtools.jar"
-            location="${aspectj.lib.dir}/aspectjtools.jar"/> 
+            location="${aspectj.lib.dir}/aspectjtools.jar"/>
       <available file="${aspectjtools.jar}"
              property="aspectjtools.jar.available"/>
       <fail unless="aspectjtools.jar.available"
            message="expecting aspectjtools.jar at ${aspectjtools.jar}"/>
 
       <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
-          <classpath> 
-            <pathelement path="${aspectjtools.jar}"/> 
+          <classpath>
+            <pathelement path="${aspectjtools.jar}"/>
           </classpath>
       </taskdef>
 
@@ -55,15 +55,15 @@
         <iajc outjar="${jar.dir}/required.jar"
            sourceroots="${test.base.dir}/classpath-src/classjar">
            <classpath>
-               <pathelement path="${aspectjrt.jar}"/> 
+               <pathelement path="${aspectjrt.jar}"/>
            </classpath>
         </iajc>
 
         <iajc outjar="${jar.dir}/requiredAspects.jar"
            sourceroots="${test.base.dir}/classpath-src/aspectjar">
            <classpath>
-               <pathelement path="${aspectjrt.jar}"/> 
-               <pathelement path="${test.base.dir}/../../../lib/test/testing-client.jar"/> 
+               <pathelement path="${aspectjrt.jar}"/>
+               <pathelement path="${test.base.dir}/../../../lib/test/testing-client.jar"/>
            </classpath>
         </iajc>
 
@@ -73,7 +73,7 @@
         <iajc destdir="${classes.dir}"
            sourceroots="${test.base.dir}/classpath-src/classesDir">
            <classpath>
-               <pathelement path="${aspectjrt.jar}"/> 
+               <pathelement path="${aspectjrt.jar}"/>
            </classpath>
         </iajc>
     </target>

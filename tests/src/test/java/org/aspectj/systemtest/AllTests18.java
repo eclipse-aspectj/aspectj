@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Contributors 
+ * Copyright (c) 2013, 2014 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -30,19 +30,19 @@ public class AllTests18 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.8");
-		// $JUnit-BEGIN$ 
-		suite.addTest(AllTestsAspectJ1811.suite()); 
-		suite.addTest(AllTestsAspectJ1810.suite()); 
-		suite.addTest(AllTestsAspectJ189.suite()); 
-		suite.addTest(AllTestsAspectJ188.suite()); 
-		suite.addTest(AllTestsAspectJ187.suite()); 
-		suite.addTest(AllTestsAspectJ186.suite()); 
-		suite.addTest(AllTestsAspectJ185.suite()); 
-		suite.addTest(AllTestsAspectJ184.suite()); 
-		suite.addTest(AllTestsAspectJ183.suite()); 
-		suite.addTest(AllTestsAspectJ182.suite()); 
-		suite.addTest(AllTestsAspectJ181.suite()); 
-		suite.addTest(AllTestsAspectJ180.suite()); 
+		// $JUnit-BEGIN$
+		suite.addTest(AllTestsAspectJ1811.suite());
+		suite.addTest(AllTestsAspectJ1810.suite());
+		suite.addTest(AllTestsAspectJ189.suite());
+		suite.addTest(AllTestsAspectJ188.suite());
+		suite.addTest(AllTestsAspectJ187.suite());
+		suite.addTest(AllTestsAspectJ186.suite());
+		suite.addTest(AllTestsAspectJ185.suite());
+		suite.addTest(AllTestsAspectJ184.suite());
+		suite.addTest(AllTestsAspectJ183.suite());
+		suite.addTest(AllTestsAspectJ182.suite());
+		suite.addTest(AllTestsAspectJ181.suite());
+		suite.addTest(AllTestsAspectJ180.suite());
 		suite.addTest(AllTests17.suite());
 //		suite.addTest(AllTests16.suite());
 //		suite.addTest(AllTests15.suite());

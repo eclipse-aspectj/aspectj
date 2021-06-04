@@ -1,10 +1,10 @@
 /********************************************************************
- * Copyright (c) 2010 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ * Copyright (c) 2010 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors: Nieraj Singh - initial implementation
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -22,7 +22,7 @@ public abstract class IdentifierTypePattern extends TypePattern {
 	/**
 	 * This may be null if no Type has been resolved. A String representation
 	 * may still exist.
-	 * 
+	 *
 	 * @return type if defined or resolved, or null if not defined or resolved
 	 *         at the time when this node is created
 	 */
@@ -32,7 +32,7 @@ public abstract class IdentifierTypePattern extends TypePattern {
 
 	/**
 	 * Generate an expression (String representation) for the given type.
-	 * 
+	 *
 	 * @param type
 	 * @return non-null expression for the given type. Null if no expression can
 	 *         be generated.

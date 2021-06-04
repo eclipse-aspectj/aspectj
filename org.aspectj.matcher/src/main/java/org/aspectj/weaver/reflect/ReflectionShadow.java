@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
@@ -29,7 +29,7 @@ import org.aspectj.weaver.tools.MatchingContext;
 
 /**
  * @author colyer
- * 
+ *
  */
 public class ReflectionShadow extends Shadow {
 
@@ -175,7 +175,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getIWorld()
 	 */
 	public World getIWorld() {
@@ -184,7 +184,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getThisVar()
 	 */
 	public Var getThisVar() {
@@ -196,7 +196,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getTargetVar()
 	 */
 	public Var getTargetVar() {
@@ -208,7 +208,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getEnclosingType()
 	 */
 	public UnresolvedType getEnclosingType() {
@@ -217,7 +217,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getArgVar(int)
 	 */
 	public Var getArgVar(int i) {
@@ -261,7 +261,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getWithinAnnotationVar(org.aspectj.weaver.UnresolvedType)
 	 */
 	public Var getWithinAnnotationVar(UnresolvedType forAnnotationType) {
@@ -275,7 +275,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getWithinCodeAnnotationVar(org.aspectj.weaver.UnresolvedType)
 	 */
 	public Var getWithinCodeAnnotationVar(UnresolvedType forAnnotationType) {
@@ -289,7 +289,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getThisAnnotationVar(org.aspectj.weaver.UnresolvedType)
 	 */
 	public Var getThisAnnotationVar(UnresolvedType forAnnotationType) {
@@ -301,7 +301,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getTargetAnnotationVar(org.aspectj.weaver.UnresolvedType)
 	 */
 	public Var getTargetAnnotationVar(UnresolvedType forAnnotationType) {
@@ -313,7 +313,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int, org.aspectj.weaver.UnresolvedType)
 	 */
 	public Var getArgAnnotationVar(int i, UnresolvedType forAnnotationType) {
@@ -333,7 +333,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getEnclosingCodeSignature()
 	 */
 	public Member getEnclosingCodeSignature() {
@@ -353,7 +353,7 @@ public class ReflectionShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getSourceLocation()
 	 */
 	public ISourceLocation getSourceLocation() {

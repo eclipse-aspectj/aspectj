@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2006 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement     initial implementation
  * ******************************************************************/
 
 
@@ -33,27 +33,27 @@ public class ClassLoaderRepositoryTest extends TestCase {
 	private ZipFile zf;
 	private Enumeration entries;
 	private Map map;
-	
+
 	public void setUp() throws Exception {
     	f = new File("../lib/aspectj/lib/aspectjtools.jar");
 		assertTrue("Couldn't find aspectjtools to test.  Tried: "+f.getAbsolutePath(),f.exists());
-		zf = new ZipFile(f);		
+		zf = new ZipFile(f);
 		entries = zf.entries();
 //		ClassLoaderRepository.sharedCacheCompactFrequency = 16384;
 		map = getSharedMap();
 	}
-	
+
 	public void tearDown() {
 		 new ClassLoaderRepository((ClassLoader) null).reset();
 	}
-	
+
 	private ClassLoaderRepository setupRepository() throws Exception {
     	ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		ClassLoader res = new URLClassLoader(new URL[]{f.toURI().toURL()},cl);
 		ClassLoaderRepository rep = new ClassLoaderRepository(res);
 		return rep;
 	}
-	
+
 	 private void compareTwoRepositories() throws Exception {
 		ClassLoaderRepository rep1 = setupRepository();
 		ClassLoaderRepository rep2 = setupRepository();
@@ -63,12 +63,12 @@ public class ClassLoaderRepositoryTest extends TestCase {
 			String classfileName = zfe.getName();
 			if (classfileName.endsWith(".class")) {
 				String clazzname = classfileName.substring(0,classfileName.length()-6).replace('/','.');
-				
+
 				// twice by each
 				rep1.loadClass(clazzname);
 				rep1.loadClass(clazzname);
-				rep2.loadClass(clazzname);  
-				rep2.loadClass(clazzname);  
+				rep2.loadClass(clazzname);
+				rep2.loadClass(clazzname);
 				i++;
 			}
 		}
@@ -91,7 +91,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 //		}
 //	}
 
-	 public void testMultiThreaded() throws Throwable {		 
+	 public void testMultiThreaded() throws Throwable {
 		 ClassLoaderRepository.useSharedCache=true;
 //		 ClassLoaderRepository.sharedCacheCompactFrequency = 200;
 		 //loadOnce();
@@ -107,11 +107,11 @@ public class ClassLoaderRepositoryTest extends TestCase {
 			 }
 		 }
 	 }
-	 
+
 	 private class TestThread extends Thread {
 		 public Throwable failure = null;
 		 Enumeration entries;
-		 
+
 		 // ensure the threads are loading DIFFERENT shared classes at the same time...
 		 public TestThread(int skip) {
 			entries = zf.entries();
@@ -119,7 +119,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 				entries.nextElement();
 			}
 		 }
-		 
+
 		 public void run() {
 			 try {
 				ClassLoaderRepository rep = setupRepository();
@@ -133,7 +133,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 						rep.loadClass(clazzname);
 						i++;
 					}
-				}				 
+				}
 				System.err.println("Thread finished: "+rep.report());
 			 } catch (Throwable t) {
 				 failure = t;
@@ -143,29 +143,29 @@ public class ClassLoaderRepositoryTest extends TestCase {
 			return failure;
 		}
 	 }
-	 
+
 	 public void testNotSharedRepository() throws  Exception {
     	ClassLoaderRepository.useSharedCache=false;
     	compareTwoRepositories();
 	 }
-		 
+
 	 public void testSharedUrlRepository() throws  Exception {
 		ClassLoaderRepository.useSharedCache=true;
 		compareTwoRepositories();
 //		ClassLoaderRepository.compactSharedCache();
     }
-	 
-	public void testPurgeUrlRepository() throws  Exception {		
+
+	public void testPurgeUrlRepository() throws  Exception {
 		ClassLoaderRepository.useSharedCache = true;
 		ClassLoaderRepository rep = setupRepository();
 		Reference ref = null;
-		
+
 		while (ref==null && entries.hasMoreElements()) {
 			ZipEntry zfe = (ZipEntry)entries.nextElement();
 			String classfileName = zfe.getName();
 			if (classfileName.endsWith(".class")) {
 				String clazzname = classfileName.substring(0,classfileName.length()-6).replace('/','.');
-				
+
 				rep.loadClass(clazzname);
 				assertEquals("expected one entry in shared URL cache "+map.size()+": "+map, 1, map.size());
 				ref = (Reference)map.values().iterator().next();
@@ -176,20 +176,20 @@ public class ClassLoaderRepositoryTest extends TestCase {
 		}
 		assertEquals("expected empty shared URL cache "+map.size(), 0, map.size());
 	}
-	
-	public void testAutoPurgeUrlRepository() throws  Exception {		
+
+	public void testAutoPurgeUrlRepository() throws  Exception {
 		ClassLoaderRepository.useSharedCache = true;
 		assertEquals("expected empty shared URL cache "+map.size(), 0, map.size());
 		ClassLoaderRepository rep = setupRepository();
 		Reference ref = null;
 		int i = 0;
-		
+
 		while (i<3 && entries.hasMoreElements()) {
 			ZipEntry zfe = (ZipEntry)entries.nextElement();
 			String classfileName = zfe.getName();
 			if (classfileName.endsWith(".class")) {
 				String clazzname = classfileName.substring(0,classfileName.length()-6).replace('/','.');
-				
+
 				rep.loadClass(clazzname);
 				ref = (Reference)map.values().iterator().next();
 				ref.clear();
@@ -199,13 +199,13 @@ public class ClassLoaderRepositoryTest extends TestCase {
 		}
 		assertTrue("expected smaller shared URL cache "+map.size(), map.size()<3);
 	}
-	
+
 	private Field getSharedMapField() throws Exception {
 		Field field = ClassLoaderRepository.class.getDeclaredField("sharedCache");
 		field.setAccessible(true);
 		return field;
 	}
-	
+
 	private Map getSharedMap() throws Exception {
 		return (Map)getSharedMapField() .get(null);
 	}

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -32,18 +32,18 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 public class MakeDeclsPublicVisitor extends ASTVisitor {
 
 	public void endVisit(ConstructorDeclaration decl, ClassScope scope) {
-		if (decl.binding==null) return; 
+		if (decl.binding==null) return;
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
 	public void endVisit(FieldDeclaration decl, MethodScope scope) {
-		if (decl.binding==null) return; 
+		if (decl.binding==null) return;
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
 
 	public void endVisit(MethodDeclaration decl, ClassScope scope) {
-		if (decl.binding==null) return; 
+		if (decl.binding==null) return;
 		decl.binding.modifiers = AstUtil.makePublic(decl.binding.modifiers);
 	}
 
@@ -53,7 +53,7 @@ public class MakeDeclsPublicVisitor extends ASTVisitor {
 	public void endVisit(
 		TypeDeclaration localTypeDeclaration,
 		BlockScope scope) {
-		if (localTypeDeclaration.binding==null) return; 
+		if (localTypeDeclaration.binding==null) return;
 		localTypeDeclaration.binding.modifiers = AstUtil.makePublic(localTypeDeclaration.binding.modifiers);
 	}
 
@@ -63,7 +63,7 @@ public class MakeDeclsPublicVisitor extends ASTVisitor {
 	public void endVisit(
 		TypeDeclaration memberTypeDeclaration,
 		ClassScope scope) {
-		if (memberTypeDeclaration.binding==null) return; 
+		if (memberTypeDeclaration.binding==null) return;
 		memberTypeDeclaration.binding.modifiers = AstUtil.makePublic(memberTypeDeclaration.binding.modifiers);
 	}
 

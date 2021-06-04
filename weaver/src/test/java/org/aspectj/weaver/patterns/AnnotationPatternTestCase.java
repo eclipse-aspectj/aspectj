@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -58,7 +58,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	// assertEquals("Goo",UnresolvedType.forName("Goo"),((
 	// ExactAnnotationTypePattern)right).annotationType);
 	// }
-	//	
+	//
 	public void testParseNotAnnotationPattern() {
 		PatternParser p = new PatternParser("!@Foo");
 		AnnotationTypePattern notFoo = p.maybeParseAnnotationPattern();
@@ -102,7 +102,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	// assertTrue("Should be or pattern",andOr instanceof
 	// OrAnnotationTypePattern);
 	// }
-	//	
+	//
 	public void testParseBadPattern() {
 		PatternParser p = new PatternParser("@@Foo");
 		try {
@@ -294,7 +294,7 @@ public class AnnotationPatternTestCase extends TestCase {
 		assertTrue("does not match goo", ap.matches(ae).alwaysFalse());
 	}
 
-	//	
+	//
 	// public void testOrAnnotationPatternMatching() {
 	// PatternParser p = new PatternParser("@Foo || @Boo");
 	// AnnotationTypePattern ap = p.parseAnnotationTypePattern();
@@ -309,7 +309,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	// ae = new AnnotatedElementImpl(new String[] {"Goo"});
 	// assertTrue("does not match goo",ap.matches(ae).alwaysFalse());
 	// }
-	//	
+	//
 	public void testNotAnnotationPatternMatching() {
 		PatternParser p = new PatternParser("!@Foo");
 		AnnotationTypePattern ap = p.maybeParseAnnotationPattern();
@@ -356,7 +356,7 @@ public class AnnotationPatternTestCase extends TestCase {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.aspectj.weaver.AnnotatedElement#getAnnotationTypes()
 		 */
 		public ResolvedType[] getAnnotationTypes() {

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2010 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Andy Clement - SpringSource
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler;
@@ -603,7 +603,7 @@ public class CommonPrinter {
 			printIndent(indent);
 			IfStatement is = (IfStatement) statement;
 			printIndent(indent).append("if ("); //$NON-NLS-1$
-			printExpression(is.condition).append(")\n"); //$NON-NLS-1$ 
+			printExpression(is.condition).append(")\n"); //$NON-NLS-1$
 			printStatement(is.thenStatement, indent + 2);
 			if (is.elseStatement != null) {
 				output.append('\n');

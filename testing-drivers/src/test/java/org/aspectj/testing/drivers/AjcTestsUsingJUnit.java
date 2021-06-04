@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.drivers;
@@ -16,7 +16,7 @@ import junit.framework.*;
 
 /**
  * Run ajc tests as JUnit test suites.
- * This class is named to avoid automatic inclusion in 
+ * This class is named to avoid automatic inclusion in
  * most JUnit test runs.
  */
 public class AjcTestsUsingJUnit extends TestCase {
@@ -25,13 +25,13 @@ public class AjcTestsUsingJUnit extends TestCase {
          "../tests/ajcTests.xml"
         };
 
-    private static final String SKIPS = 
+    private static final String SKIPS =
         "-ajctestSkipKeywords=purejava,knownLimitation";
     private static final String[][] OPTIONS = new String[][]
         { new String[] { SKIPS },
           new String[] { SKIPS, "-emacssym" }
         };
-     
+
     /**
      * Create TestSuite with all SUITES running all OPTIONS.
      * @return Test with all TestSuites and TestCases
@@ -41,7 +41,7 @@ public class AjcTestsUsingJUnit extends TestCase {
         String name = AjcTestsUsingJUnit.class.getName();
         return HarnessJUnitUtil.suite(name, SUITES, OPTIONS);
     }
-        
+
 	public AjcTestsUsingJUnit(String name) {
 		super(name);
 	}

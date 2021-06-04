@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 2000-2001 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -45,7 +45,7 @@ public class Ajc10 extends MatchingTask {
 
     private static final List<String> VALID_XOPTIONS;
     static {
-        String[] xs = new String[] 
+        String[] xs = new String[]
             {   "lint", "serializableAspects", "targetNearSource", "OcodeSize",
                 "incrementalFile" };
         VALID_XOPTIONS = Collections.unmodifiableList(Arrays.asList(xs));
@@ -74,10 +74,10 @@ public class Ajc10 extends MatchingTask {
         reset();
     }
 
-    // ------------------------- options 
+    // ------------------------- options
     // find option types and whether ignored:
     //   sed -n '/void set/p' Ajc.java | sed 's/.*\/\/ //' | sort -u
-    //   sed -n '/ignoredOptions/d;/ignored/p' Ajc.java 
+    //   sed -n '/ignoredOptions/d;/ignored/p' Ajc.java
     // each option may be "ignored" and is one+ of:
     //   ajc-old             used to be an ajc option
     //   ajc-only            only an option for ajc, not javac
@@ -99,7 +99,7 @@ public class Ajc10 extends MatchingTask {
         }
         //this.version = version;
     }
-    
+
     public void setNocomments(boolean nocomments) { // ajc-only not-eajc docDone
         if (nocomments) {
             ignore("-nocomments");
@@ -108,14 +108,14 @@ public class Ajc10 extends MatchingTask {
     }
 
     public void setEmacssym(boolean input) {  // ajc-only  eajc-also docDone
-        setif(input, "-emacssym"); 
+        setif(input, "-emacssym");
     }
 
     public void setUsejavac(boolean input) {  // ajc-only not-eajc docDone
         if (input) {
             ignore("-usejavac");
         }
-        //setif(input, "-usejavac"); 
+        //setif(input, "-usejavac");
     }
 
     public void setPreprocess(boolean preprocess) { // ajc-only not-eajc docDone
@@ -137,7 +137,7 @@ public class Ajc10 extends MatchingTask {
     public void setOptimize(boolean optimize) { // javac-also ignored docDone
         setif(optimize, "-O");
     }
-   
+
 
     public void setClasspath(Path classpath) {  // javac-also eajc-also docDone
         if (this.classpath == null) {
@@ -151,12 +151,12 @@ public class Ajc10 extends MatchingTask {
             classpath = new Path(project);
         }
         return classpath.createPath();
-    }        
-    
+    }
+
     public void setClasspathref(Reference classpathref) {  // javac-also docDone
         createClasspath().setRefid(classpathref);
     }
-    
+
     public void setBootclasspath(Path bootclasspath) {  // javac-also not-eajc docDone
         ignore("bootclasspath"); // XXX may jury-rig
 //        if (this.bootclasspath == null) {
@@ -171,13 +171,13 @@ public class Ajc10 extends MatchingTask {
             bootclasspath = new Path(project);
         }
         return bootclasspath.createPath();
-    }    
-    
+    }
+
     public void setBootclasspathref(Reference bootclasspathref) {  // javac-also not-eajc docDone
         ignore("bootclasspath"); // XXX may jury-rig
 //        createBootclasspath().setRefid(bootclasspathref);
     }
-    
+
     public void setExtdirs(Path extdirs) {  // javac-also not-eajc docDone
         ignore("-extdirs");
 //        if (this.extdirs == null) {
@@ -193,7 +193,7 @@ public class Ajc10 extends MatchingTask {
             extdirs = new Path(project);
         }
         return extdirs.createPath();
-    }  
+    }
 
     public void setArgfile(File argfile) { // ajc-only eajc-also docDone
         if (argfiles == null) {
@@ -225,17 +225,17 @@ public class Ajc10 extends MatchingTask {
 
     public void setLenient(boolean input) {  // ajc-only not-eajc docDone
         ignore("-lenient");
-        //setif(input, "-lenient"); 
+        //setif(input, "-lenient");
     }
 
     public void setStrict(boolean input) {  // ajc-only not-eajc docDone
         ignore("-strict");
-        //setif(input, "-strict"); 
+        //setif(input, "-strict");
     }
 
     public void setPorting(boolean input) {  // ajc-only not-eajc docDone
         ignore("-porting");
-        //setif(input, "-porting"); 
+        //setif(input, "-porting");
     }
 
     public void setX(String input) {  // ajc-only eajc-also docDone
@@ -244,7 +244,7 @@ public class Ajc10 extends MatchingTask {
             String token = tokens.nextToken().trim();
             if (1 < token.length()) {
                 if (VALID_XOPTIONS.contains(token)) {
-                    setif(true, "-X" + token); 
+                    setif(true, "-X" + token);
                 } else {
                     ignore("-X" + token);
                 }
@@ -257,7 +257,7 @@ public class Ajc10 extends MatchingTask {
         ignore("-threads");
         //this.threads = threads;
     }
-    
+
     public void setDumpstack(boolean dumpstack) { // ajc-old
         ignore("-dumpstack");
         //setif(dumpstack, "-dumpstack");
@@ -277,8 +277,8 @@ public class Ajc10 extends MatchingTask {
             internalclasspath = new Path(project);
         }
         return internalclasspath.createPath();
-    }        
-    
+    }
+
     public void setInternalclasspathref(Reference internalclasspathref) { // ajc-taskdef only
         createInternalclasspath().setRefid(internalclasspathref);
     }
@@ -334,11 +334,11 @@ public class Ajc10 extends MatchingTask {
         ignore("-nosymbols");
         //setif(nosymbols, "-nosymbols");
     }
-    
+
     public void setDebug(boolean debug) { // javac-also eajc-also docDone
         setif(debug, "-g"); // todo: changed from -debug
     }
-    
+
     public void setDeprecation(boolean deprecation) { // javac-also eajc-also docDone
         setif(deprecation, "-deprecation"); // XXX eajc: also "warn:deprecation"
     }
@@ -358,7 +358,7 @@ public class Ajc10 extends MatchingTask {
     }
 
     // ------------------------- other state methods
-    
+
     protected final void ignore(String attribute) {
         ignoredOptions.add(attribute);
     }
@@ -368,7 +368,7 @@ public class Ajc10 extends MatchingTask {
             cmd.createArgument().setFile(file);
         }
     }
-    
+
     /** reset variables to permit gc */
     public void reset() {
         //version = false;
@@ -473,7 +473,7 @@ public class Ajc10 extends MatchingTask {
             }
         }
         log("Compiling " + numfiles + " source and " +
-            + numargfiles + " arg files" 
+            + numargfiles + " arg files"
             + (null == destdir ? "" : " to " + destdir.getPath()), Project.MSG_INFO);
 
          // here is the actual invocation
@@ -583,7 +583,7 @@ public class Ajc10 extends MatchingTask {
 	    	if (!verbose) {
 	  			handler.ignore(IMessage.INFO);
 	  		}
-	    	final IMessageHandler delegate 
+	    	final IMessageHandler delegate
 	    		= verbose ? MessagePrinter.VERBOSE: MessagePrinter.TERSE;
 			handler.setInterceptor(delegate);
 			holder = handler;
@@ -591,9 +591,9 @@ public class Ajc10 extends MatchingTask {
         try {
             String[] args = cmd.getCommandline();
             // XXX avoid rendering if not verbosely logging?
-            log("Running  in-process using " 
+            log("Running  in-process using "
                 + Ajc10.render(cmd.getCommandline()), Project.MSG_VERBOSE);
-        	
+
         	Main main = new Main();
         	main.run(args, holder);
         	int errs = holder.numMessages(IMessage.ERROR, true);
@@ -605,7 +605,7 @@ public class Ajc10 extends MatchingTask {
         } catch (Throwable t) {
             while (t instanceof AbortException) {
                 // check for "just quit -- message printed already"
-                if (((AbortException)t).isSilent()) { 
+                if (((AbortException)t).isSilent()) {
                     t = null;
                     break;
                 }
@@ -615,7 +615,7 @@ public class Ajc10 extends MatchingTask {
                 } else {
                     Throwable tt = m.getThrown();
                     if (null != tt) {
-                        t = tt;   
+                        t = tt;
                     } else {
                         break;
                     }
@@ -631,9 +631,9 @@ public class Ajc10 extends MatchingTask {
 //        	if (0 < holder.numMessages(level, true)) {
 //        		final String prefix = "";
 //        		final boolean printSummary = false;
-//        		MessageUtil.print(System.err, 
-//        			holder, 
-//        			prefix, 
+//        		MessageUtil.print(System.err,
+//        			holder,
+//        			prefix,
 //        			MessageUtil.MESSAGE_ALL,
 //        			(verbose ? MessageUtil.PICK_INFO_PLUS : MessageUtil.PICK_WARNING_PLUS),
 //        			printSummary);

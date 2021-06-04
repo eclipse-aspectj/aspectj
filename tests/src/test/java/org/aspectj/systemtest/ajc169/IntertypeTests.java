@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2010 Contributors 
+ * Copyright (c) 2010 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.systemtest.ajc169;
 
@@ -18,7 +18,7 @@ import junit.framework.Test;
 
 /**
  * Tests exploring intertype declared inner types and the new intertype syntax.
- * 
+ *
  * Some design notes.<br>
  * <p>
  * Supporting inner types is not quite as straightforward as for the other kinds of ITD like methods, fields and constructors. When
@@ -34,7 +34,7 @@ import junit.framework.Test;
  * Eclipse polices the names of inner types when loading binary type data. The name of the inner is actually maintained as the
  * aspect name (so an inner type of Foo in an aspect Bar will be called Bar$Foo). The compiler looks after 'attaching' the inner
  * type to the target type binding when required.
- * 
+ *
  * @author Andy Clement
  */
 public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
@@ -45,12 +45,12 @@ public class IntertypeTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	 * 1) we need an innerclass attribute on the target type <br>
 	 * 2) we need the name of the innerclass to match its target rather than the declaring aspect<br>
 	 * Line 277 in ClassScope:<br>
-	 * 
+	 *
 	 * memberTypeBindings[count++] = memberScope.buildType(sourceType, sourceType.fPackage, accessRestriction);<br>
 	 * which then: builds the name based on the containing aspect.
-	 * 
+	 *
 	 * TypeDeclaration.generateCode()
-	 * 
+	 *
 	 */
 	public void testSeparateCompilation() throws Exception {
 		runTest("separate compilation");

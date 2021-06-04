@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2008 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * Copyright (c) 2008 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Andy Clement          initial implementation
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
@@ -16,7 +16,7 @@ import org.aspectj.ajde.core.ICompilerConfiguration;
 
 /**
  * Testing the performance of incremental compilation as it would be in AJDT.
- * 
+ *
  * @author AndyClement
  */
 public class IncrementalPerformanceTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
@@ -28,7 +28,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 	 * <li>Second build is an incremental build with no changes at all.
 	 * <li>Third build is an incremental build with just a source file touched (not changed).
 	 * </ul>
-	 * 
+	 *
 	 * <p>
 	 * 162-dev, 28Aug08 times: Thinkpad T61p: 3203/3140/3234/3156 173/172/172/172 313/297/297/312
 	 */

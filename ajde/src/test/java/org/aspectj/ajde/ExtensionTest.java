@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
@@ -38,9 +38,9 @@ public class ExtensionTest extends AjcTestCase {
 
 	/**
 	 * Aim: Check that the ID of certain message kinds are correct
-	 * 
+	 *
 	 * ajc -warn:unusedImport UnusedImport.java
-	 * 
+	 *
 	 * Expected result is that id matches IProblem.UnusedImport
 	 */
 	public void testMessageID() {
@@ -121,9 +121,9 @@ public class ExtensionTest extends AjcTestCase {
 
 	/**
 	 * Aim: Check that the start/end of certain warnings are correct
-	 * 
+	 *
 	 * ajc -warn:unusedImport UnusedImport.java
-	 * 
+	 *
 	 * Expected result is first warning message has start=7 end=20
 	 */
 	public void testMessageSourceStartEnd() {

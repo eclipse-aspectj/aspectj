@@ -1,12 +1,12 @@
 /********************************************************************
  * Copyright (c) 2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *    Andy Clement     Initial version
  *    Helen Hawkins    Converted to new interface (bug 148190)
  * ******************************************************************/
@@ -21,21 +21,21 @@ import org.aspectj.ajde.core.TestCompilerConfiguration;
  * weaving phases - this testcase verifies a few cases, making sure the process
  * stops when expected. It can check the disk contents, but it doesn't right
  * now.
- * 
+ *
  * Two different .lst files are used during these tests: LoadsaCode.lst and
  * EvenMoreCode.lst which contain mixes of aspects and classes
- * 
+ *
  * Here are some things to think about that will help you understand what is on
  * the disk when we cancel the compiler.
- * 
+ *
  * There are 3 important phases worth remembering : - Compile all the types -
  * Weave all the aspects - Weave all the classes
- * 
+ *
  * Each of those steps goes through all the types. This means during the 'weave
  * all the aspects' step we are jumping over classes and during the 'weave all
  * the classes ' step we are jumping over aspects. Why is this important?
- * 
- * 
+ *
+ *
  * We only write bytes out during the 'weave all the classes ' phase and it is
  * even during that phase that we write out the bytes for aspects. This means if
  * you cancel during compilation or during the weaving of aspects - there will
@@ -204,10 +204,10 @@ public class BuildCancellingTest extends AjdeCoreTestCase {
 	 * After first weave class message, get it to cancel, there should be one
 	 * more warning message about cancelling the weave and their should be
 	 * nothing on the disk.
-	 * 
+	 *
 	 * EvenMoreCode.lst contains: A1.aj Cl1.java A2.aj Cl2.java HW.java A3.aj
 	 * Cl3.java A4.aj
-	 * 
+	 *
 	 */
 	public void testCancelFirstClassWeave() {
 		if (debugTests)
@@ -238,10 +238,10 @@ public class BuildCancellingTest extends AjdeCoreTestCase {
 	 * After first weave aspect message, get it to cancel, there should be one
 	 * more warning message about cancelling the weave and their should be
 	 * nothing on the disk.
-	 * 
+	 *
 	 * EvenMoreCode.lst contains: A1.aj Cl1.java A2.aj Cl2.java HW.java A3.aj
 	 * Cl3.java A4.aj
-	 * 
+	 *
 	 */
 	public void testCancelSecondClassWeave() {
 		if (debugTests)

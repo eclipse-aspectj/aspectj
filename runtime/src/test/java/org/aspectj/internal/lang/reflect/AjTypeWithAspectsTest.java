@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Adrian Colyer       initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
 import java.lang.reflect.Field;
@@ -43,7 +43,7 @@ import org.aspectj.lang.reflect.TypePatternBasedPerClause;
 public class AjTypeWithAspectsTest extends TestCase {
 
 	private AjType<SimpleAspect> sa;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		sa = AjTypeSystem.getAjType(SimpleAspect.class);
@@ -55,12 +55,12 @@ public class AjTypeWithAspectsTest extends TestCase {
 		AjType<PerCflowAspect> perCflowA = AjTypeSystem.getAjType(PerCflowAspect.class);
 		AjType<PerCflowbelowAspect> perCflowbelowA = AjTypeSystem.getAjType(PerCflowbelowAspect.class);
 		AjType<PerTypeWithin> perTypeWithinA = AjTypeSystem.getAjType(PerTypeWithin.class);
-		
+
 		PerClause pc = perThisA.getPerClause();
 		assertEquals(PerClauseKind.PERTHIS,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
 		assertEquals("perthis(pc())",pc.toString());
-		
+
 		pc= perTargetA.getPerClause();
 		assertEquals(PerClauseKind.PERTARGET,pc.getKind());
 		assertEquals("pc()",((PointcutBasedPerClause)pc).getPointcutExpression().asString());
@@ -82,7 +82,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals("pertypewithin(org.aspectj..*)",pc.toString());
 
 	}
-	
+
 	public void testGetDeclaredField() throws Exception{
 		Field f = sa.getDeclaredField("s");
 		try {
@@ -90,15 +90,15 @@ public class AjTypeWithAspectsTest extends TestCase {
 			fail("Expecting NoSuchFieldException");
 		} catch (NoSuchFieldException nsf) {}
 	}
-	
+
 	public void testGetField() throws Exception {
 		Field f = sa.getField("s");
 		try {
 			Field f2 = sa.getField("ajc$xyz$s");
 			fail("Expecting NoSuchFieldException");
-		} catch (NoSuchFieldException nsf) {}		
+		} catch (NoSuchFieldException nsf) {}
 	}
-	
+
 	public void testGetDeclaredFields() {
 		Field[] fields = sa.getDeclaredFields();
 		assertEquals(1,fields.length);
@@ -110,7 +110,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals(1,fields.length);
 		assertEquals("s",fields[0].getName());
 	}
-	
+
 	public void testGetDeclaredMethod() throws Exception {
 		Method m = sa.getDeclaredMethod("aMethod");
 		try {
@@ -122,7 +122,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 			fail("Expecting NoSuchMethodException");
 		} catch(NoSuchMethodException ex) {}
 	}
-	
+
 	public void testGetMethod() throws Exception {
 		Method m = sa.getMethod("aMethod");
 		try {
@@ -132,7 +132,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		try {
 			Method m3 = sa.getMethod("ajc$before$123");
 			fail("Expecting NoSuchMethodException");
-		} catch(NoSuchMethodException ex) {}		
+		} catch(NoSuchMethodException ex) {}
 	}
 
 	public void testGetDeclaredMethods() {
@@ -151,7 +151,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		}
 		assertTrue(match.contains("aMethod"));
 	}
-	
+
 	public void testGetDeclaredPointcut() throws Exception {
 		Pointcut p1 = sa.getDeclaredPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
@@ -169,11 +169,11 @@ public class AjTypeWithAspectsTest extends TestCase {
 		try {
 			Pointcut p3 = sa.getDeclaredPointcut("sausages");
 			fail("Expecting NoSuchPointcutExcetpion");
-		} catch (NoSuchPointcutException ex) { 
+		} catch (NoSuchPointcutException ex) {
 			assertEquals("sausages",ex.getName());
-		}		
+		}
 	}
-	
+
 	public void testGetPointcut() throws Exception {
 		Pointcut p1 = sa.getPointcut("simpleAspectMethodExecution");
 		assertEquals("simpleAspectMethodExecution",p1.getName());
@@ -190,11 +190,11 @@ public class AjTypeWithAspectsTest extends TestCase {
 		try {
 			Pointcut p3 = sa.getPointcut("sausages");
 			fail("Expecting NoSuchPointcutExcetpion");
-		} catch (NoSuchPointcutException ex) { 
+		} catch (NoSuchPointcutException ex) {
 			assertEquals("sausages",ex.getName());
-		}		
+		}
 	}
-	
+
 	public void testGetDeclaredPointcuts() {
 		Pointcut[] pcs = sa.getDeclaredPointcuts();
 		assertEquals(2,pcs.length);
@@ -203,13 +203,13 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertTrue(match.contains(pcs[0].getName()));
 		assertTrue(match.contains(pcs[1].getName()));
 	}
-	
+
 	public void testGetPointcuts() {
 		Pointcut[] pcs = sa.getPointcuts();
 		assertEquals(1,pcs.length);
 		assertEquals("simpleAspectMethodExecution",pcs[0].getName());
 	}
-	
+
 	public void testGetDeclaredAdvice() {
 		Advice[] advice = sa.getDeclaredAdvice();
 		assertEquals(10,advice.length);
@@ -244,7 +244,7 @@ public class AjTypeWithAspectsTest extends TestCase {
         assertEquals("",atwo.getName());
         assertEquals("before() : execution(* SimpleAspect.*(..))",atwo.toString());
 	}
-	
+
 	public void testGetAdvice() {
 		Advice[] advice = sa.getDeclaredAdvice();
 		assertEquals(10,advice.length);
@@ -259,9 +259,9 @@ public class AjTypeWithAspectsTest extends TestCase {
 		advice = sa.getDeclaredAdvice(AdviceKind.AROUND);
 		assertEquals(2,advice.length);
 		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE,AdviceKind.AFTER);
-		assertEquals(4,advice.length);		
+		assertEquals(4,advice.length);
 	}
-	
+
 	public void testGetNamedAdvice() throws Exception {
 		Advice a = sa.getAdvice("logItAll");
 		assertEquals("logItAll",a.getName());
@@ -282,7 +282,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 			;
 		}
 	}
-	
+
 	public void testGetNamedDeclaredAdvice() throws Exception {
 		Advice a = sa.getDeclaredAdvice("logItAll");
 		assertEquals("logItAll",a.getName());
@@ -303,22 +303,22 @@ public class AjTypeWithAspectsTest extends TestCase {
 			;
 		}
 	}
-	
+
 	public void testIsPrivileged() {
 		assertFalse(sa.isPrivileged());
-		assertTrue(AjTypeSystem.getAjType(SimplePrivilegedAspect.class).isPrivileged());		
+		assertTrue(AjTypeSystem.getAjType(SimplePrivilegedAspect.class).isPrivileged());
 	}
-	
+
 	public void testIsAspect() {
 		assertTrue(sa.isAspect());
 	}
-	
+
 	public void testIsMemberAspect() {
 		assertFalse(AjTypeSystem.getAjType(SimplePrivilegedAspect.class).isMemberAspect());
 		assertTrue(AjTypeSystem.getAjType(SimplePrivilegedAspect.MemberAspect.class).isMemberAspect());
 
 	}
-	
+
 	public void testGetDeclareEoWarnings() {
 		DeclareErrorOrWarning[] deows = sa.getDeclareErrorOrWarnings();
 		assertEquals(4,deows.length);
@@ -337,31 +337,31 @@ public class AjTypeWithAspectsTest extends TestCase {
 			} else {
 				if (deow.getMessage().equals("dont call this method code")) foundCodeWarning = true;
 				if (deow.getMessage().equals("dont call this method ann")) foundAnnWarning = true;
-				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression().toString());				
+				assertEquals("call(* DontDoIt.*(..))",deow.getPointcutExpression().toString());
 			}
 		}
 		assertTrue(foundCodeWarning && foundAnnWarning && foundCodeError && foundAnnError);
 	}
-	
+
 }
 
 
-@Aspect 
+@Aspect
 class SimpleAspect {
-	
+
   // regular field
   public String s;
-  
+
   // synthetic field
   public String ajc$xyz$s;
-  
+
   // regular method
   public void aMethod() {}
-  
+
   // advice method, annotation style
   @Before("execution(* SimpleAspect.*(..))")
   public void logEntry() {}
-	
+
   // advice method, code style
   @Before("execution(* SimpleAspect.*(..))")
   public void ajc$before$123() {}
@@ -369,7 +369,7 @@ class SimpleAspect {
   // advice method, annotation style
   @After("execution(* SimpleAspect.*(..))")
   public void logFinally() {}
-	
+
   // advice method, code style
   @After("execution(* SimpleAspect.*(..))")
   public void ajc$after$123() {}
@@ -377,7 +377,7 @@ class SimpleAspect {
   // advice method, annotation style
   @AfterReturning("execution(* SimpleAspect.*(..))")
   public void logExit() {}
-	
+
   // advice method, code style
   @AfterReturning("execution(* SimpleAspect.*(..))")
   public void ajc$afterReturning$123() {}
@@ -385,7 +385,7 @@ class SimpleAspect {
   // advice method, annotation style
   @AfterThrowing("execution(* SimpleAspect.*(..))")
   public void logException() {}
-	
+
   // advice method, code style
   @AfterThrowing("execution(* SimpleAspect.*(..))")
   public void ajc$afterThrowing$123() {}
@@ -393,7 +393,7 @@ class SimpleAspect {
   // advice method, annotation style
   @Around("execution(* SimpleAspect.*(..))")
   public void logItAll() {}
-	
+
   // advice method, code style
   @Around("execution(* SimpleAspect.*(..))")
   @AdviceName("whatGoesAround")
@@ -402,15 +402,15 @@ class SimpleAspect {
   // pointcut, annotation style
   @org.aspectj.lang.annotation.Pointcut("execution(* SimpleAspect.*(..))")
   public void simpleAspectMethodExecution() {};
-  
+
   // pointcut, code style
   @org.aspectj.lang.annotation.Pointcut("call(* SimpleAspect.*(..))")
   private void ajc$pointcut$$simpleAspectCall$123(SimpleAspect target) {};
-  
+
   // decw, ann style
   @DeclareWarning("call(* DontDoIt.*(..))")
   public static final String dontDoIt = "dont call this method ann";
-  
+
   // decw, code style
   @ajcDeclareEoW(pointcut="call(* DontDoIt.*(..))",message="dont call this method code",isError=false)
   private void ajc$declare_eow$123() {}
@@ -418,7 +418,7 @@ class SimpleAspect {
   // dec., ann style
   @DeclareError("call(* DontDoIt.*(..))")
   public static final String dontDoItISaid = "dont call this method ann";
-  
+
   // decw, code style
   @ajcDeclareEoW(pointcut="call(* DontDoIt.*(..))",message="dont call this method code",isError=true)
   private void ajc$declare_eow$124() {}
@@ -427,10 +427,10 @@ class SimpleAspect {
 @Aspect
 @ajcPrivileged
 class SimplePrivilegedAspect {
-	
+
 	@Aspect
 	static class MemberAspect {}
-	
+
 }
 
 @Aspect("perthis(pc())")
@@ -445,5 +445,5 @@ class PerCflowAspect {}
 @Aspect("percflowbelow(pc())")
 class PerCflowbelowAspect {}
 
-@Aspect("pertypewithin(org.aspectj..*)") 
+@Aspect("pertypewithin(org.aspectj..*)")
 class PerTypeWithin {}

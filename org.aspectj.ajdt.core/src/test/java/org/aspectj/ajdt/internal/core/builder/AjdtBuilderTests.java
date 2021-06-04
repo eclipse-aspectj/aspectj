@@ -1,14 +1,14 @@
 ///* *******************************************************************
-// * Copyright (c) 1999-2001 Xerox Corporation, 
+// * Copyright (c) 1999-2001 Xerox Corporation,
 // *               2002 Palo Alto Research Center, Incorporated (PARC).
-// * All rights reserved. 
-// * This program and the accompanying materials are made available 
-// * under the terms of the Eclipse Public License v1.0 
-// * which accompanies this distribution and is available at 
-// * http://www.eclipse.org/legal/epl-v10.html 
-// *  
-// * Contributors: 
-// *     PARC     initial implementation 
+// * All rights reserved.
+// * This program and the accompanying materials are made available
+// * under the terms of the Eclipse Public License v 2.0
+// * which accompanies this distribution and is available at
+// * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+// *
+// * Contributors:
+// *     PARC     initial implementation
 // * ******************************************************************/
 //
 //
@@ -20,12 +20,12 @@
 //
 //public class AjdtBuilderTests extends TestCase {
 //
-//    public static Test suite() { 
+//    public static Test suite() {
 //        TestSuite suite = new TestSuite(AjdtBuilderTests.class.getName());
 //        //$JUnit-BEGIN$
-//        suite.addTestSuite(AjBuildManagerTest.class); 
-//        suite.addTestSuite(AjBuildConfigTest.class); 
-//		suite.addTestSuite(AsmBuilderTest.class); 
+//        suite.addTestSuite(AjBuildManagerTest.class);
+//        suite.addTestSuite(AjBuildConfigTest.class);
+//		suite.addTestSuite(AsmBuilderTest.class);
 //		suite.addTestSuite(AjCompilerOptionsTest.class);
 //		suite.addTestSuite(AjStateTest.class);
 //		suite.addTestSuite(OutjarTest.class);
@@ -35,4 +35,4 @@
 //
 //    public AjdtBuilderTests(String name) { super(name); }
 //
-//}  
+//}

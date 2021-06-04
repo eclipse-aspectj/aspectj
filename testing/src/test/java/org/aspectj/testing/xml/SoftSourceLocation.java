@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC),
  *               2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2004 updates
  * ******************************************************************/
 
@@ -56,32 +56,32 @@ public class SoftSourceLocation implements ISourceLocation  {
     private int column;
     private int endLine;
     private String context;
-    
+
     public SoftSourceLocation() {
     }
-    
+
     public File getSourceFile() {
         return (null != sourceFile ? sourceFile : NONE);
     }
     public int getLine() {
         return line;
     }
-    
+
     public int getColumn() {
         return column;
     }
-    
+
     public int getEndLine() {
         return line;
     }
     public String getContext() {
         return context;
     }
-    
+
     public void setFile(String sourceFile) {
         this.sourceFile = new File(sourceFile);
     }
-    
+
     public void setLine(String line) {
         setLineAsString(line);
     }
@@ -95,19 +95,19 @@ public class SoftSourceLocation implements ISourceLocation  {
     public String getLineAsString() {
         return ""+line;
     }
-    
+
     public void setColumn(String column) {
         this.column = convert(column);
     }
-    
+
     public void setEndLine(String line) {
         this.endLine = convert(line);
     }
 
     public void setContext(String context) {
-        this.context = context;    
+        this.context = context;
     }
-    
+
     private int convert(String in) {
         return Integer.valueOf(in);
     }
@@ -115,15 +115,15 @@ public class SoftSourceLocation implements ISourceLocation  {
 	public String getLocationContext() {
 		return null;
 	}
-	
+
 	public int getOffset() {
 		return -1;
 	}
-    
+
     /** @return String : {context\n}file:line:column */
     public String toString() {
         return (null == context ? "" : context + LangUtil.EOL)
-            + getSourceFile().getPath() 
+            + getSourceFile().getPath()
             + ":" + getLine() ;
     }
 

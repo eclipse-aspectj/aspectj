@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg       initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg       initial implementation
  * ******************************************************************/
 
 // START-SAMPLE tracing-traceJoinPoints Trace join points executed to log
@@ -23,11 +23,11 @@ import java.io.*;
  * To use this, define the abstract pointcuts in a subaspect.
  * @author Jim Hugunin, Wes Isberg
  */
-public abstract aspect TraceJoinPoints 
+public abstract aspect TraceJoinPoints
     extends TraceJoinPointsBase {
 
     // abstract protected pointcut entry();
-    
+
     PrintStream out;
     int logs = 0;
     int depth = 0;
@@ -45,11 +45,11 @@ public abstract aspect TraceJoinPoints
     protected void startLog() {
         makeLogStream();
     }
-    
+
     protected void completeLog() {
         closeLogStream();
     }
-    
+
     protected void logEnter(JoinPoint.StaticPart jp) {
         if (terminal) out.println(">");
         indent(depth);
@@ -60,7 +60,7 @@ public abstract aspect TraceJoinPoints
         depth += 1;
         terminal = true;
     }
-    
+
     protected void logExit(JoinPoint.StaticPart jp) {
         depth -= 1;
         if (terminal) {
@@ -71,7 +71,7 @@ public abstract aspect TraceJoinPoints
         }
         terminal = false;
     }
-    
+
     protected PrintStream getOut() {
         if (null == out) {
             String m = "not in the control flow of entry()";
@@ -99,9 +99,9 @@ public abstract aspect TraceJoinPoints
 
     /** @return input String formatted for XML */
     protected String prepareMessage(String s) {  // XXX unimplemented
-        return s; 
-    } 
-    
+        return s;
+    }
+
     void message(String sink, String s) {
         if (null == sink) {
             message(s);
@@ -110,7 +110,7 @@ public abstract aspect TraceJoinPoints
                         + " >" + prepareMessage(s) + "</message>");
         }
     }
-    
+
     void writeSig(JoinPoint.StaticPart jp) {
         PrintStream out = getOut();
         out.print(" sig=");
@@ -137,6 +137,5 @@ public abstract aspect TraceJoinPoints
         while (i-- > 0) out.print("  ");
     }
 }
-// END-SAMPLE tracing-traceJoinPoints        
+// END-SAMPLE tracing-traceJoinPoints
 
-          

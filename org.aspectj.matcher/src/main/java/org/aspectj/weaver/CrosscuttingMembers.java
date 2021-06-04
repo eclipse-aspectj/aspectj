@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -36,12 +36,12 @@ import org.aspectj.weaver.patterns.PointcutRewriter;
 /**
  * This holds on to all members that have an invasive effect outside of there own compilation unit. These members need to be all
  * gathered up and in a world before any weaving can take place.
- * 
+ *
  * They are also important in the compilation process and need to be gathered up before the inter-type declaration weaving stage
  * (unsurprisingly).
- * 
+ *
  * All members are concrete.
- * 
+ *
  * @author Jim Hugunin
  */
 public class CrosscuttingMembers {
@@ -255,7 +255,7 @@ public class CrosscuttingMembers {
 	 * comparison with the existing list of shadowmungers would return that something has changed even though it might not have, so
 	 * in this first round we ignore the shadowMungers. The second time this is called is whilst we're preparing to weave. At this
 	 * point we know everything in the system and so we're able to compare the shadowMunger list. (see bug 129163)
-	 * 
+	 *
 	 * @param other
 	 * @param careAboutShadowMungers
 	 * @return true if something has changed since the last time this method was called, false otherwise

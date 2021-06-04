@@ -1,18 +1,18 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 package org.aspectj.util;
 
-/** 
+/**
  * This class implements boolean that include a "maybe"
  */
 public abstract class FuzzyBoolean {
@@ -20,11 +20,11 @@ public abstract class FuzzyBoolean {
     public abstract boolean alwaysFalse();
     public abstract boolean maybeTrue();
     public abstract boolean maybeFalse();
-    
+
     public abstract FuzzyBoolean and(FuzzyBoolean other);
     public abstract FuzzyBoolean or(FuzzyBoolean other);
     public abstract FuzzyBoolean not();
-    
+
     private static class YesFuzzyBoolean extends FuzzyBoolean {
         public boolean alwaysFalse() {
             return false;
@@ -41,7 +41,7 @@ public abstract class FuzzyBoolean {
         public boolean maybeTrue() {
             return true;
         }
-        
+
         public FuzzyBoolean and(FuzzyBoolean other) {
             return other;
         }
@@ -57,7 +57,7 @@ public abstract class FuzzyBoolean {
         public String toString() {
             return "YES";
         }
-    }    
+    }
     private static class NoFuzzyBoolean extends FuzzyBoolean {
         public boolean alwaysFalse() {
             return true;
@@ -75,7 +75,7 @@ public abstract class FuzzyBoolean {
         public boolean maybeTrue() {
             return false;
         }
-        
+
         public FuzzyBoolean and(FuzzyBoolean other) {
             return this;
         }
@@ -109,7 +109,7 @@ public abstract class FuzzyBoolean {
         public boolean maybeTrue() {
             return false;
         }
-        
+
         public FuzzyBoolean and(FuzzyBoolean other) {
             return this;
         }
@@ -126,7 +126,7 @@ public abstract class FuzzyBoolean {
             return "NEVER";
         }
     }
-    
+
     private static class MaybeFuzzyBoolean extends FuzzyBoolean {
         public boolean alwaysFalse() {
             return false;
@@ -144,7 +144,7 @@ public abstract class FuzzyBoolean {
         public boolean maybeTrue() {
             return true;
         }
-        
+
         public FuzzyBoolean and(FuzzyBoolean other) {
             return other.alwaysFalse() ? other : this;
         }
@@ -161,7 +161,7 @@ public abstract class FuzzyBoolean {
             return "MAYBE";
         }
     }
-    
+
     public static final FuzzyBoolean YES   = new YesFuzzyBoolean();
     public static final FuzzyBoolean NO    = new NoFuzzyBoolean();
     public static final FuzzyBoolean MAYBE = new MaybeFuzzyBoolean();

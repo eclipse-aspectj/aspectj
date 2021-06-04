@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2013 VMware
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *    Andy Clement     initial implementation 
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *    Andy Clement     initial implementation
  * ******************************************************************/
 package org.aspectj.apache.bcel.classfile.annotation;
 
@@ -21,7 +21,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 public class TypeAnnotationGen {
 	public static final TypeAnnotationGen[] NO_TYPE_ANNOTATIONS = new TypeAnnotationGen[0];
 	public static final int[] NO_TYPE_PATH = new int[0];
-	
+
 	private ConstantPool cpool;
 
 	private TypeAnnotationGen(ConstantPool cpool) {
@@ -34,20 +34,20 @@ public class TypeAnnotationGen {
 	private int info; // meaning varies depending on target type
 	private int info2; // meaning varies depending on target type
 	private int[] localVarTarget;
-	
+
 	// target type constants
 	public final static int CLASS_TYPE_PARAMETER = 0x00;
 	public final static int METHOD_TYPE_PARAMETER = 0x01;
-	
+
 	public final static int CLASS_EXTENDS = 0x10;
 	public final static int CLASS_TYPE_PARAMETER_BOUND = 0x11;
 	public final static int METHOD_TYPE_PARAMETER_BOUND = 0x12;
 	public final static int FIELD = 0x13;
-	public final static int METHOD_RETURN = 0x14;	
+	public final static int METHOD_RETURN = 0x14;
 	public final static int METHOD_RECEIVER = 0x15;
 	public final static int METHOD_FORMAL_PARAMETER = 0x16;
 	public final static int THROWS = 0x17;
-	
+
 	public final static int LOCAL_VARIABLE = 0x40;
 	public final static int RESOURCE_VARIABLE = 0x41;
 	public final static int EXCEPTION_PARAMETER = 0x42;
@@ -60,14 +60,14 @@ public class TypeAnnotationGen {
 	public final static int METHOD_INVOCATION_TYPE_ARGUMENT = 0x49;
 	public final static int CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT = 0x4A;
 	public final static int METHOD_REFERENCE_TYPE_ARGUMENT = 0x4B;
-	
+
 	// type path entry kinds
 	public final static int TYPE_PATH_ENTRY_KIND_ARRAY = 0;
 	public final static int TYPE_PATH_ENTRY_KIND_INNER_TYPE = 1;
 	public final static int TYPE_PATH_ENTRY_KIND_WILDCARD = 2;
 	public final static int TYPE_PATH_ENTRY_KIND_TYPE_ARGUMENT = 3;
 
-	
+
 	public static TypeAnnotationGen read(DataInputStream dis, ConstantPool cpool, boolean isVisible) throws IOException {
 		TypeAnnotationGen typeAnno = new TypeAnnotationGen(cpool);
 		typeAnno.targetType = dis.readUnsignedByte();
@@ -139,7 +139,7 @@ public class TypeAnnotationGen {
 		typeAnno.annotation = AnnotationGen.read(dis, cpool, isVisible);
 		return typeAnno;
 	}
-	
+
 	public static int[] readLocalVarTarget(DataInputStream dis) throws IOException {
 		int tableLength = dis.readUnsignedShort();
 		int[] table = new int[tableLength*3];
@@ -213,32 +213,32 @@ public class TypeAnnotationGen {
 		}
 		annotation.dump(dos);
 	}
-	
+
 	public int getSupertypeIndex() {
 		assert (targetType==CLASS_EXTENDS);
 		return info;
 	}
-	
+
 	public int getOffset() {
 		assert (targetType==INSTANCEOF || targetType==NEW || targetType==CONSTRUCTOR_REFERENCE || targetType==METHOD_REFERENCE ||
-				targetType==CAST || targetType==CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT || 
-				targetType==METHOD_INVOCATION_TYPE_ARGUMENT || targetType==CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT || 
+				targetType==CAST || targetType==CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT ||
+				targetType==METHOD_INVOCATION_TYPE_ARGUMENT || targetType==CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT ||
 				targetType==METHOD_REFERENCE_TYPE_ARGUMENT);
 		return info;
 	}
-	
+
 	public int getTypeParameterIndex() {
-		assert (targetType==CLASS_TYPE_PARAMETER || targetType==METHOD_TYPE_PARAMETER || 
+		assert (targetType==CLASS_TYPE_PARAMETER || targetType==METHOD_TYPE_PARAMETER ||
 				targetType==CLASS_TYPE_PARAMETER_BOUND || targetType==METHOD_TYPE_PARAMETER_BOUND);
 		return info;
 	}
-	
+
 	public int getTypeArgumentIndex() {
-		assert (targetType==CAST || targetType==CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT || 
+		assert (targetType==CAST || targetType==CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT ||
 				targetType==METHOD_INVOCATION_TYPE_ARGUMENT || targetType==CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT || targetType==METHOD_REFERENCE_TYPE_ARGUMENT);
 		return info2;
 	}
-	
+
 	public int getBoundIndex() {
 		assert (targetType==CLASS_TYPE_PARAMETER_BOUND || targetType==METHOD_TYPE_PARAMETER_BOUND);
 		return info2;
@@ -265,11 +265,11 @@ public class TypeAnnotationGen {
 	}
 
 
-	
+
 	public int getTargetType() {
 		return targetType;
 	}
-	
+
 	public AnnotationGen getAnnotation() {
 		return annotation;
 	}
@@ -332,7 +332,7 @@ public class TypeAnnotationGen {
 //		}
 //		return false;
 //	}
-	
+
 //	public TypeAnnotationGen(TypeAnnotationGen a, ConstantPool cpool, boolean copyPoolEntries) {
 //		this.cpool = cpool;
 //		if (copyPoolEntries) {
@@ -369,11 +369,11 @@ public class TypeAnnotationGen {
 	public int[] getTypePath() {
 		return typePath;
 	}
-	
+
 	public String getTypePathString() {
 		return toTypePathString(typePath);
 	}
-	
+
 	public static String toTypePathString(int[] typepath) {
 		StringBuilder sb = new StringBuilder();
 		int count = 0;
@@ -395,7 +395,7 @@ public class TypeAnnotationGen {
 				break;
 			case TYPE_PATH_ENTRY_KIND_TYPE_ARGUMENT:
 				sb.append("TYPE_ARGUMENT(").append(typepath[count++]).append(")");
-				break;				
+				break;
 			}
 		}
 		sb.append("]");

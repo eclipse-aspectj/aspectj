@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -29,32 +29,32 @@ import org.aspectj.util.LangUtil;
  * Run IRun, setting status and invoking listeners
  * for simple and nested runs.
  * <p>
- * This manages baseline IRun status reporting: 
+ * This manages baseline IRun status reporting:
  * any throwables are caught and reported, and
- * the status is started before running and 
+ * the status is started before running and
  * (if not already completed) completed after.
  * <p>
- * This runs any IRunListeners specified directly in the 
+ * This runs any IRunListeners specified directly in the
  * run*(..., IRunListener) methods
  * as well as any specified indirectly by registering listeners per-type
- * in {@link registerListener(Class, IRunListener)} 
+ * in {@link registerListener(Class, IRunListener)}
  * <p>
  * For correct handling of nested runs, this sets up
  * status parent/child relationships.
  * It uses the child result object supplied directly in the
  * runChild(..., IRunStatus childStatus,..) methods,
- * or (if that is null) one obtained from the child IRun itself, 
- * or (if that is null) a generic IRunStatus.  
+ * or (if that is null) one obtained from the child IRun itself,
+ * or (if that is null) a generic IRunStatus.
  * <p>
- * For IRunIterator, this uses IteratorWrapper to wrap the 
+ * For IRunIterator, this uses IteratorWrapper to wrap the
  * iterator as an IRun.  Runner and IteratorWrapper coordinate
  * to handle fast-fail (aborting further iteration when an IRun fails).
  * The IRunIterator itself may specify fast-fail by returning true
- * from {@link IRunIterator#abortOnFailure()}, or clients can 
+ * from {@link IRunIterator#abortOnFailure()}, or clients can
  * register IRunIterator by Object or type for fast-failure using
- * {@link registerFastFailIterator(IRunIterator)} or 
+ * {@link registerFastFailIterator(IRunIterator)} or
  * {@link registerFastFailIterator(Class)}.
- * This also ensures that 
+ * This also ensures that
  * {@link IRunIterator#iterationCompleted()} is
  * called after the iteration process has completed.
  */
@@ -65,25 +65,25 @@ public class Runner {
         = MessageUtil.fail("Null IRun parameter to Runner.run(IRun..)");
 //    private static final IMessage FAIL_NORUN_ITERATOR
 //        = MessageUtil.fail("Null IRunterator parameter to Runner.run(IRunterator...)");
-    
+
     public Runner() {
     }
-    
+
     /**
      * Do the run, setting run status, invoking
-     * listener, and aborting as necessary.  
+     * listener, and aborting as necessary.
      * If the run is null, the status is
-     * updated, but the listener is never run.  
+     * updated, but the listener is never run.
      * If the listener is null, then the runner does a lookup
      * for the listeners of this run type.
      * Any exceptions thrown by the listener(s) are added
-     * to the status messages and processing continues. 
+     * to the status messages and processing continues.
      * unless the status is aborted.
      * The status will be completed when this method completes.
      * @param run the IRun to run - if null, issue a FAIL message
      * to that effect in the result.
      * @throws IllegalArgumentException if status is null
-     * @return boolean result returned from IRun 
+     * @return boolean result returned from IRun
      * or false if IRun did not complete normally
      * or status.runResult() if aborted.
      */
@@ -92,46 +92,46 @@ public class Runner {
      * the run without a status.  It ignores exceptions
      * from the listeners, but does not catch any from the run.
      */
-    public boolean run(IRun run, IRunStatus status, 
+    public boolean run(IRun run, IRunStatus status,
                              IRunListener listener) {
         return run(run, status, listener, (Class) null);
-    }  
-                                                 
-    public boolean run(IRun run, IRunStatus status, 
-                             IRunListener listener, Class exceptionClass) {                                
+    }
+
+    public boolean run(IRun run, IRunStatus status,
+                             IRunListener listener, Class exceptionClass) {
         if (!precheck(run, status)) {
             return false;
         }
         RunListeners listeners = getListeners(run, listener);
         return runPrivate(run, status, listeners, exceptionClass);
-                             
+
     }
 
     /**
      * Run child of parent, handling interceptor registration, etc.
      * @throws IllegalArgumentException if parent or child status is null
      */
-    public boolean runChild(IRun child, 
-                                 IRunStatus parentStatus, 
+    public boolean runChild(IRun child,
+                                 IRunStatus parentStatus,
                                  IRunStatus childStatus,
                                  IRunListener listener) {
         return runChild(child, parentStatus, childStatus, listener, null);
     }
-    
+
     /**
      * Run child of parent, handling interceptor registration, etc.
      * If the child run is supposed to throw an exception, then pass
      * the exception class.
      * After this returns, the childStatus is guaranteed to be completed.
-     * If an unexpected exception is thrown, an ABORT message 
+     * If an unexpected exception is thrown, an ABORT message
      * is passed to childStatus.
      * @param parentStatus the IRunStatus for the parent - must not be null
      * @param childStatus the IRunStatus for the child - default will be created if null
      * @param exceptionClass the Class of any expected exception
      * @throws IllegalArgumentException if parent status is null
      */
-    public boolean runChild(IRun child, 
-                                 IRunStatus parentStatus, 
+    public boolean runChild(IRun child,
+                                 IRunStatus parentStatus,
                                  IRunStatus childStatus,
                                  IRunListener listener,
                                  Class exceptionClass) {
@@ -151,7 +151,7 @@ public class Runner {
                 listeners.addingChild(parentStatus, childStatus);
             } catch (Throwable t) {
                 String m = "RunListenerI.addingChild(..) exception " + listeners;
-                parentStatus.handleMessage(MessageUtil.abort(m, t)); // XXX                
+                parentStatus.handleMessage(MessageUtil.abort(m, t)); // XXX
             }
         }
         boolean result = false;
@@ -167,13 +167,13 @@ public class Runner {
         if (childResult != result) {
             childStatus.handleMessage(MessageUtil.info("childResult != result=" + result));
         }
-        return childResult;        
+        return childResult;
     }
 
     public IRunStatus makeChildStatus(IRun run, IRunStatus parent, IMessageHolder handler) {
         return installChildStatus(run, parent, new RunStatus(handler, this));
     }
-    
+
     /**
      * Setup the child status before running
      * @param run the IRun of the child process (not null)
@@ -192,19 +192,19 @@ public class Runner {
         parent.addChild(child);
         return child;
     }
-                  
+
     /**
      * Do a run by running all the subrunners provided by the iterator,
      * creating a new child status of status for each.
      * If the iterator is null, the result is
-     * updated, but the interceptor is never run.  
+     * updated, but the interceptor is never run.
      * @param iterator the IRunteratorI for all the IRun to run
      * - if null, abort (if not completed) or message to status.
      * @throws IllegalArgumentException if status is null
      */
     public boolean runIterator(IRunIterator iterator, IRunStatus status,
                              IRunListener listener) {
-        LangUtil.throwIaxIfNull(status, "status");                       
+        LangUtil.throwIaxIfNull(status, "status");
         if (status.aborted()) {
             return status.runResult();
         }
@@ -213,7 +213,7 @@ public class Runner {
                 status.abort(IRunStatus.ABORT_NORUN);
             } else {
                 status.handleMessage(FAIL_NORUN);
-            }                       
+            }
             return false;
         }
         IRun wrapped = wrap(iterator, listener);
@@ -232,7 +232,7 @@ public class Runner {
     }
 
 
-    /** 
+    /**
      * Tell Runner to stop iterating over IRun for an IRunIterator
      * if any IRun.run(IRunStatus) fails.
      * This overrides a false result from IRunIterator.abortOnFailure().
@@ -243,9 +243,9 @@ public class Runner {
         throw new UnsupportedOperationException("ignoring " + iterator);
     }
 
-    /** 
+    /**
      * Tell Runner to stop iterating over IRun for an IRunIterator
-     * if any IRun.run(IRunStatus) fails, 
+     * if any IRun.run(IRunStatus) fails,
      * if the IRunIterator is assignable to iteratorType.
      * This overrides a false result from IRunIterator.abortOnFailure().
      * @param iteratorType the IRunIterator Class to fast-fail
@@ -255,7 +255,7 @@ public class Runner {
     public void registerFastFailIteratorTypes(Class iteratorType) { // XXX unimplemented
         throw new UnsupportedOperationException("ignoring " + iteratorType);
     }
-    
+
     /**
      * Register a run listener for any run assignable to type.
      * @throws IllegalArgumentException if either is null
@@ -269,20 +269,20 @@ public class Runner {
         }
         ClassListeners.addListener(type, listener);
     }
-    
+
     /**
      * Wrap this IRunIterator.
-     * This wrapper takes care of calling 
+     * This wrapper takes care of calling
      * <code>iterator.iterationCompleted()</code> when done, so
-     * after running this, clients should not invoker IRunIterator 
+     * after running this, clients should not invoker IRunIterator
      * methods on this iterator.
      * @return the iterator wrapped as a single IRun
      */
     public IRun wrap(IRunIterator iterator, IRunListener listener) {
         LangUtil.throwIaxIfNull(iterator, "iterator");
         return new IteratorWrapper(this, iterator, listener);
-    }                             
-        
+    }
+
     /**
      * This gets any listeners registered for the run
      * based on the class of the run (or of the wrapped iterator,
@@ -290,7 +290,7 @@ public class Runner {
      * @return a listener with all registered listener and parm,
      * or null if parm is null and there are no listeners
      */
-    protected RunListeners getListeners(IRun run, IRunListener listener) {        
+    protected RunListeners getListeners(IRun run, IRunListener listener) {
         if (null == run) {
             throw new IllegalArgumentException("null run");
         }
@@ -309,7 +309,7 @@ public class Runner {
         return listeners; // XXX implement registration
     }
 
-    /** check status and run before running */    
+    /** check status and run before running */
     private boolean precheck(IRun run, IRunStatus status) {
         if (null == status) {
             throw new IllegalArgumentException("null status");
@@ -320,23 +320,23 @@ public class Runner {
         } else if (status.isCompleted()) {
             throw new IllegalStateException("status completed before starting");
         }
-        
+
         if (!status.started()) {
             status.start();
         }
         return true;
     }
-        
+
     /** This assumes precheck has happened and listeners have been obtained */
-    private boolean runPrivate(IRun run, IRunStatus status, 
+    private boolean runPrivate(IRun run, IRunStatus status,
                              RunListeners listeners, Class exceptionClass) {
-        IRunListener listener = listeners;                               
+        IRunListener listener = listeners;
         if (null != listener) {
             try {
                 listener.runStarting(status);
             } catch (Throwable t) {
                 String m = listener + " RunListenerI.runStarting(..) exception";
-                IMessage mssg = new Message(m, IMessage.WARNING, t, null); 
+                IMessage mssg = new Message(m, IMessage.WARNING, t, null);
                 // XXX need IMessage.EXCEPTION - WARNING is ambiguous
                 status.handleMessage(mssg);
             }
@@ -352,13 +352,13 @@ public class Runner {
                 status.handleMessage(MessageUtil.FAIL_INCOMPLETE);
             }
             return false;
-        } 
-        
+        }
+
         boolean result = false;
         try {
             result = run.run(status);
-            if (!status.isCompleted()) {                
-                status.finish(result?IRunStatus.PASS: IRunStatus.FAIL); 
+            if (!status.isCompleted()) {
+                status.finish(result?IRunStatus.PASS: IRunStatus.FAIL);
             }
         } catch (Throwable thrown) {
             if (!status.isCompleted()) {
@@ -377,8 +377,8 @@ public class Runner {
                 }
             }
         }
-        
-        
+
+
         try {
             if ((null != listener) && !status.aborted()) {
                 listener.runCompleted(status);
@@ -391,15 +391,15 @@ public class Runner {
     }
 
     //---------------------------------- nested classes
-    /** 
-     * Wrap an IRunIterator as a IRun, coordinating 
+    /**
+     * Wrap an IRunIterator as a IRun, coordinating
      * fast-fail IRunIterator and Runner
-     */ 
+     */
     public static class IteratorWrapper implements IRun {
         final Runner runner;
         public final IRunIterator iterator;
         final IRunListener listener;
-        
+
         public IteratorWrapper(Runner runner, IRunIterator iterator, IRunListener listener) {
             LangUtil.throwIaxIfNull(iterator, "iterator");
             LangUtil.throwIaxIfNull(runner, "runner");
@@ -409,10 +409,10 @@ public class Runner {
         }
 
         /** @return null */
-        public IRunStatus makeStatus() { 
-            return null; 
+        public IRunStatus makeStatus() {
+            return null;
         }
-        
+
         /** @return true unless one failed */
         public boolean run(IRunStatus status) {
             boolean result = true;
@@ -425,7 +425,7 @@ public class Runner {
                         MessageUtil.debug(status,  "null run " + i + " from " + iterator);
                         continue;
                     }
-    
+
                     int newMessages = status.numMessages(IMessage.FAIL, IMessageHolder.ORGREATER);
                     if (newMessages > numMessages) {
                         numMessages = newMessages;
@@ -439,7 +439,7 @@ public class Runner {
                         if (result) {
                             result = false;
                         }
-                        if (iterator.abortOnFailure() 
+                        if (iterator.abortOnFailure()
                             || runner.abortOnFailure(iterator, run)) {
                             break;
                         }
@@ -461,11 +461,11 @@ public class Runner {
             return s;
         }
     }
-    
+
     /** per-class collection of IRun */
-    static class ClassListeners extends RunListeners {        
+    static class ClassListeners extends RunListeners {
         private static final Hashtable known = new Hashtable();
-        
+
         static RunListeners getListeners(Class c) { // XXX costly and stupid
             Enumeration keys = known.keys();
             RunListeners many = new RunListeners();
@@ -477,7 +477,7 @@ public class Runner {
             }
             return many;
         }
-        
+
         private static RunListeners makeListeners(Class c) {
             RunListeners result = (ClassListeners) known.get(c);
             if (null == result) {
@@ -486,7 +486,7 @@ public class Runner {
             }
             return result;
         }
-        
+
         static void addListener(Class c, IRunListener listener) {
             if (null == listener) {
                 throw new IllegalArgumentException("null listener");
@@ -496,15 +496,15 @@ public class Runner {
             }
             makeListeners(c).addListener(listener);
         }
-        
+
         Class clazz;
-        
+
         ClassListeners(Class clazz) {
             this.clazz = clazz;
         }
-        
+
         public String toString() {
             return clazz.getName() + " ClassListeners: " + super.toString();
         }
-    }       
+    }
 }

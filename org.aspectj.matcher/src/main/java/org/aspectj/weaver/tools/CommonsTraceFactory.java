@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 public class CommonsTraceFactory extends TraceFactory {
 
 	private LogFactory logFactory = LogFactory.getFactory();
-	
+
 	public Trace getTrace(Class clazz) {
 		return new CommonsTrace(clazz);
 	}

@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *    Andy Clement     initial implementation 
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *    Andy Clement     initial implementation
  * 					   Copied from bits of original CFlowStack
  * ******************************************************************/
 package org.aspectj.runtime.internal.cflowstack;
@@ -22,11 +22,11 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 	private Hashtable counters = new Hashtable();
 	private Thread cached_thread;
 	private Counter cached_counter;
-	
+
 	private int change_count = 0;
 	private static final int COLLECT_AT = 20000;
-	private static final int MIN_COLLECT_AT = 100; 
-	
+	private static final int MIN_COLLECT_AT = 100;
+
 	static class Counter {
 		protected int value = 0;
 	}
@@ -71,7 +71,7 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 	}
 
 	public void removeThreadCounter() {
-		// TODO 
+		// TODO
 	}
 
 }

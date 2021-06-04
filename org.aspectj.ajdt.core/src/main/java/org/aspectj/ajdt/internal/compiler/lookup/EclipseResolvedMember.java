@@ -2,9 +2,9 @@
  * Copyright (c) 2006 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     Andy Clement                 initial implementation
@@ -313,7 +313,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	/**
 	 * Discover the (eclipse form) annotations on this resolved member. This is done by going to the type declaration, looking up
 	 * the member (field/method) then grabbing the annotations.
-	 * 
+	 *
 	 * @return an array of (eclipse form) annotations on this member
 	 */
 	private Annotation[] getEclipseAnnotations() {
@@ -430,7 +430,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 	/**
 	 * Return true if this is the default constructor. The default constructor is the one generated if there isn't one in the
 	 * source. Eclipse helpfully uses a bit to indicate the default constructor.
-	 * 
+	 *
 	 * @return true if this is the default constructor.
 	 */
 	public boolean isDefaultConstructor() {

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -21,7 +21,7 @@ import org.aspectj.weaver.UnresolvedType;
  * used when we pack the exception table into a method... the exception table should be sorted from high to low priority. Exceptions
  * we generate for advice is either high priority (higher than anything coming from the original method... most kinds of
  * non-execution advice) or low priority (lower than anything coming from the original method, for execution advice).
- * 
+ *
  * <p>
  * ??? This does not account for handler, or any other "statement-level" advice. When such statement level advice happens, we may
  * want to go to a float level, so we can set the priority of advice to be lower than anything it encloses, and higher than anything
@@ -41,7 +41,7 @@ public final class ExceptionRange extends Range {
 
 	/**
 	 * After this constructor is called, this range is not well situated unless {@link #associateWithTargets} is called
-	 * 
+	 *
 	 * XXX priority should be fixed
 	 */
 	public ExceptionRange(InstructionList body, UnresolvedType exceptionType, int priority) {

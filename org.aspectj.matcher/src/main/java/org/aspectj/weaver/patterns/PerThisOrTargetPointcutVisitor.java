@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -20,7 +20,7 @@ import org.aspectj.weaver.Shadow;
  * A visitor that turns a pointcut into a type pattern equivalent for a perthis or pertarget matching: - pertarget(target(Foo)) &rarr;
  * Foo+ (this one is a special case..) - pertarget(execution(* Foo.do()) &rarr; Foo - perthis(call(* Foo.do()) &rarr; * - perthis(!call(*
  * Foo.do()) &rarr; * (see how the ! has been absorbed here..)
- * 
+ *
  * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class PerThisOrTargetPointcutVisitor extends AbstractPatternNodeVisitor {
@@ -225,7 +225,7 @@ public class PerThisOrTargetPointcutVisitor extends AbstractPatternNodeVisitor {
 
 	/**
 	 * A MayBe type pattern that acts as ANY except that !MAYBE = MAYBE
-	 * 
+	 *
 	 * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
 	 */
 	private static class TypePatternMayBe extends AnyTypePattern {

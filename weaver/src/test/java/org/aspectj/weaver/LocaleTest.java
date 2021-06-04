@@ -1,12 +1,12 @@
 /* Copyright (c) 2002 Contributors.
- * 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ *
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  */
 package org.aspectj.weaver;
 
@@ -25,7 +25,7 @@ public class LocaleTest extends TestCase {
 	}
 
 	public void testNormalLocale() {
-		doBipush();		
+		doBipush();
 	}
 
 	public void testTurkishLocale() {
@@ -37,12 +37,12 @@ public class LocaleTest extends TestCase {
 			Locale.setDefault(def);
 		}
 	}
-	
+
 	private static void doBipush() {
 		try {
 			Instruction.readInstruction(
-						new ByteSequence(new byte[] { 
-							(byte)16, // bipush 
+						new ByteSequence(new byte[] {
+							(byte)16, // bipush
 							(byte) 3  // data for bipush
 							}));
 		} catch (IOException e) {

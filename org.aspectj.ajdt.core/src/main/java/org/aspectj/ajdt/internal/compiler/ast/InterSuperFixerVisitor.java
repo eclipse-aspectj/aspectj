@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -30,7 +30,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 
 /**
  * Walks the body of inter-type declarations and replaces SuperReference with InterSuperReference
- * 
+ *
  * @author Jim Hugunin
  */
 
@@ -40,7 +40,7 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 	TypeBinding superType;
 	private int depthCounter = 0; // Keeps track of whether we are inside any nested local type declarations
 
-	EclipseFactory world; 
+	EclipseFactory world;
 	public InterSuperFixerVisitor(InterTypeDeclaration dec, EclipseFactory world, Scope scope) {
 		this.dec = dec;
 		this.onType = dec.onTypeBinding;
@@ -66,8 +66,8 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 	public void endVisit(MessageSend send, BlockScope scope) {
 		send.receiver = fixReceiver(send.receiver, scope);
 	}
-	
-	
+
+
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
 		depthCounter++;
 		return super.visit(localTypeDeclaration, scope);
@@ -75,7 +75,7 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 
 	public void endVisit(TypeDeclaration localTypeDeclaration,BlockScope scope) {
 		depthCounter--;
-	}	
+	}
 
 	private Expression fixReceiver(Expression expression, BlockScope scope) {
 		if (depthCounter!=0) return expression; // Don't mess with super calls down in nested local type declarations (pr90143)
@@ -85,16 +85,16 @@ public class InterSuperFixerVisitor extends ASTVisitor {
 				ISourceLocation location =
 					new EclipseSourceLocation(scope.problemReporter().referenceContext.compilationResult(),
 										expression.sourceStart, expression.sourceEnd);
-				
+
 				world.showMessage(IMessage.ERROR, "multiple supertypes for this interface", location, null);
 				dec.ignoreFurtherInvestigation = true;
 			}
 			//FIXME ??? note error
-			expression = new InterSuperReference(superRef, superType);	
+			expression = new InterSuperReference(superRef, superType);
 		}
 		return expression;
 	}
-	
+
 
 
 }

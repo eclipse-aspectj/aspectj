@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -28,7 +28,7 @@ public class RunListeners extends RunListener implements IRunListener {
     public RunListeners() {
         listeners = new ArrayList();
     }
-    
+
     public void addListener(IRunListener listener) {
         if (null != listener) {
             listeners.add(listener);
@@ -40,7 +40,7 @@ public class RunListeners extends RunListener implements IRunListener {
             listeners.remove(listener);
         }
     }
-    
+
 
     /**
      * Run all listeners with the given status.
@@ -50,7 +50,7 @@ public class RunListeners extends RunListener implements IRunListener {
         if (null == status) {
             throw new IllegalArgumentException("null RunStatusI");
         }
-        Iterator iter = listeners.iterator(); 
+        Iterator iter = listeners.iterator();
         while(!status.aborted() && iter.hasNext()) {
             IRunListener element = (IRunListener) iter.next();
             element.runStarting(status);
@@ -65,7 +65,7 @@ public class RunListeners extends RunListener implements IRunListener {
         if (null == status) {
             throw new IllegalArgumentException("null RunStatusI");
         }
-        Iterator iter = listeners.iterator(); 
+        Iterator iter = listeners.iterator();
         while(!status.aborted() && iter.hasNext()) {
             IRunListener element = (IRunListener) iter.next();
             element.runCompleted(status);
@@ -81,7 +81,7 @@ public class RunListeners extends RunListener implements IRunListener {
         if (null == parent) {
             throw new IllegalArgumentException("null parent");
         }
-        Iterator iter = listeners.iterator(); 
+        Iterator iter = listeners.iterator();
         while(!parent.aborted() && ! child.aborted() && iter.hasNext()) {
             IRunListener element = (IRunListener) iter.next();
             element.addingChild(parent, child);

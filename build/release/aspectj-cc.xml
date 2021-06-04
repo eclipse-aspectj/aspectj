@@ -3,27 +3,27 @@
 <!-- Copyright (c) 2005 Contributors.                                          -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors: (See CVS checkins)                                          -->
 <!-- ========================================================================= -->
 <project name="aspectj-cc" basedir="." default="all">
-	
+
 	<target name="all" depends="init">
 		<antcall target="cvs-update"/>
 		<aspectj-build target="all"/>
 		<antcall target="cc-complete"/>
-	</target>	
-	
+	</target>
+
     <target name="cvs-update" depends="init"
 		description="update AspectJ source tree">
 		<cvs cvsroot="${cvs.root}"
 		          dest="${aspectj.modules.rdir}"
-		       package="${cvs.module}" 
-		         quiet="on" 
-		   failonerror="on" 
+		       package="${cvs.module}"
+		         quiet="on"
+		   failonerror="on"
 		       command="update -dP" />
 	</target>
 
@@ -31,7 +31,7 @@
 		description="post-process cruise control build">
 		<!-- see ${aj.build.dir}/failures.txt -->
 	</target>
-    	
+
 	<target name="create-cc-properties">
 		<propertyfile file="created-aspectj-cc.properties"
 			comment="Rename to aspectj-cc.properties, put with aspectj-cc script">
@@ -54,55 +54,55 @@
 	</target>
 
     <target name="init" depends="init-properties"/>
-    
+
 	<target name="init-properties">
 		<property file="${basedir}/aspectj-cc.properties" />
 		<property name="aspectj.build.dir"
-			location="${basedir}/${aspectj.modules.rdir}/build"/>		
+			location="${basedir}/${aspectj.modules.rdir}/build"/>
 		<property name="local.properties"
-			location="${aspectj.build.dir}/local.properties"/>		
+			location="${aspectj.build.dir}/local.properties"/>
 	</target>
-    
+
 	<target name="check-local-properties">
 		<condition property="local.properties.empty" value="true">
-			<length file="${local.properties}" 
+			<length file="${local.properties}"
 				when="equal" length="0"/>
 		</condition>
 		<antcall target="do-write-local-properties"/>
     </target>
-    
+
 	<target name="do-write-local-properties" depends="init"
 		if="local.properties.empty"
 		unless="do-write-local-properties.done">
 		<propertyfile file="${local.properties}">
-			<entry key="build.version" value="${build.version}"/> 
-			<entry key="build.version.base" value="${build.version.base}"/> 
-			<entry key="build.version.long" value="${build.version.long}"/> 
-			<entry key="build.version.short" value="${build.version.short}"/> 
-			<entry key="java.13" value="${java.13}"/> 
-			<entry key="java.14" value="${java.14}"/> 
-			<entry key="java.15" value="${java.15}"/> 
+			<entry key="build.version" value="${build.version}"/>
+			<entry key="build.version.base" value="${build.version.base}"/>
+			<entry key="build.version.long" value="${build.version.long}"/>
+			<entry key="build.version.short" value="${build.version.short}"/>
+			<entry key="java.13" value="${java.13}"/>
+			<entry key="java.14" value="${java.14}"/>
+			<entry key="java.15" value="${java.15}"/>
 		</propertyfile>
 		<property name="do-write-local-properties.done" value="true"/>
     </target>
-			
+
 	<macrodef name="aspectj-build">
 	    <attribute name="target"/>
 	    <sequential>
 			<antcall target="check-local-properties"/>
 			<fail message="did not find local.properties=${local.properties}">
 				<condition>
-					<length file="${local.properties}" 
+					<length file="${local.properties}"
 						when="equal" length="0"/>
 				</condition>
 			</fail>
 			<ant
 				antfile="release/build.xml"
 				target="@{target}"
-				dir="${basedir}/${aspectj.modules.rdir}/build" 
+				dir="${basedir}/${aspectj.modules.rdir}/build"
 				inheritAll="false"
 				/>
 	    </sequential>
     </macrodef>
-		    
+
 </project>

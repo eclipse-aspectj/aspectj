@@ -1,17 +1,17 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
- 
+
 package org.aspectj.internal.tools.ant.taskdefs;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class TestBuildModule {
 //    private static boolean REBUILD = false;
     private static final String SYNTAX = "java {classname} <[product|module]dir>";
     public static void main(String[] args) {
-        
+
         if ((null == args) || (1 > args.length)
             || !Util.canReadDir(new File(args[0]))) {
             System.err.println(SYNTAX);
@@ -42,7 +42,7 @@ public class TestBuildModule {
             System.err.println(SYNTAX);
         }
     }
-    
+
     static void createModule(String[] args) {
         File moduleDir = new File(args[0]);
         File baseDir = moduleDir.getParentFile();
@@ -51,10 +51,10 @@ public class TestBuildModule {
         }
         File jarDir = new File(baseDir, "aj-build-jars");
         if (!(Util.canReadDir(jarDir) || jarDir.mkdirs())) {
-            System.err.println("createModule unable to create " + jarDir); 
+            System.err.println("createModule unable to create " + jarDir);
             return;
         }
-        
+
         // set module dir or basedir plus module name
         BuildSpec buildSpec = new BuildSpec();
         buildSpec.moduleDir = moduleDir;
@@ -71,9 +71,9 @@ public class TestBuildModule {
         Builder builder = AntBuilder.getBuilder("", project, tempDir);
         builder.build(buildSpec);
     }
-    
+
     static void createProduct(String[] args) {
         throw new Error("unimplemented");
     }
-}        
+}
 

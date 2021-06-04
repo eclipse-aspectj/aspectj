@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
@@ -21,7 +21,7 @@ public class HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatte
 		extends AbstractPatternNodeVisitor {
 
 	boolean ohYesItHas = false;
-	
+
 	/**
 	 * Is the Exact type parameterized?
 	 * Generic is ok as that just means we resolved a simple type pattern to a generic type
@@ -43,7 +43,7 @@ public class HasThisTypePatternTriedToSneakInSomeGenericOrParameterizedTypePatte
 		if (node.getTypeParameters().size() != 0) ohYesItHas = true;
 		return data;
 	}
-	
+
 	public boolean wellHasItThen/*?*/() {
 		return ohYesItHas;
 	}

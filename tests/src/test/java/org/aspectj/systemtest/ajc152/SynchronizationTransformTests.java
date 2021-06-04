@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
@@ -37,13 +37,13 @@ import junit.framework.Test;
 
 /**
  * Method transformation, example:
- * 
+ *
  * public synchronized void m(); Code: Stack=2, Locals=1, Args_size=1 0: getstatic #2; //Field
  * java/lang/System.err:Ljava/io/PrintStream; 3: ldc #3; //String hello 5: invokevirtual #4; //Method
  * java/io/PrintStream.println:(Ljava/lang/String;)V 8: getstatic #2; //Field java/lang/System.err:Ljava/io/PrintStream; 11: ldc #5;
  * //String world 13: invokevirtual #4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V 16: return LineNumberTable: line
  * 4: 0 line 5: 8 line 6: 16
- * 
+ *
  * public void m2(); Code: Stack=2, Locals=3, Args_size=1 0: aload_0 1: dup 2: astore_1 3: monitorenter 4: getstatic #2; //Field
  * java/lang/System.err:Ljava/io/PrintStream; 7: ldc #3; //String hello 9: invokevirtual #4; //Method
  * java/io/PrintStream.println:(Ljava/lang/String;)V 12: getstatic #2; //Field java/lang/System.err:Ljava/io/PrintStream; 15: ldc

@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2081 IBM and contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.systemtest.ajc191;
 
@@ -15,7 +15,7 @@ import junit.framework.Test;
  * Some very trivial tests that help verify things are OK.
  * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -10 option
  * to check code generation and modification with that version specified.
- * 
+ *
  * @author Andy Clement
  */
 public class SanityTestsJava10 extends org.aspectj.testing.XMLBasedAjcTestCase {

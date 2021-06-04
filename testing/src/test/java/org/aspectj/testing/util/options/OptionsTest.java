@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util.options;
@@ -271,7 +271,7 @@ public class OptionsTest extends TestCase {
 
     public void testMissedMatches() throws InvalidInputException {
         checkMissedMatches(new int[0], Values.EMPTY);
-        checkMissedMatches(new int[] { 0 }, 
+        checkMissedMatches(new int[] { 0 },
             Values.wrapValues(new Option.Value[1])); // null in [0]
         checkMissedMatches(
             new int[] { 0, 1, 2 },
@@ -323,11 +323,11 @@ public class OptionsTest extends TestCase {
         checkMissedMatches(new int[] { 2 }, result);
 
     }
-    
+
     void checkMissedMatches(int[] expected, Values actual) {
         int[] result = actual.indexMissedMatches();
         boolean failed = (result.length != expected.length);
-        
+
         for (int i = 0; !failed && (i < result.length); i++) {
             failed = (result[i] != expected[i]);
         }

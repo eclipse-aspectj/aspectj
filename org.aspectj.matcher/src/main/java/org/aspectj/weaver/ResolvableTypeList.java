@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2009 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -16,7 +16,7 @@ package org.aspectj.weaver;
  * and a ResolvedType array is passed on. Depending on the situation there may not be a need to resolve all the entries so this can
  * perform better. Note: the array elements are resolved in place, so the caller should not be surprised if elements and resolved
  * after the type list has been used.
- * 
+ *
  * @author Andy Clement
  */
 public class ResolvableTypeList {

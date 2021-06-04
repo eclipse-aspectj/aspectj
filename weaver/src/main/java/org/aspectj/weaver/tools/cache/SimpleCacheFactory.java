@@ -2,9 +2,9 @@
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Abraham Nevado (lucierna) initial implementation
@@ -17,20 +17,20 @@ import java.io.File;
 import org.aspectj.weaver.Dump;
 
 public class SimpleCacheFactory {
-	
+
 	public static final String CACHE_ENABLED_PROPERTY = "aj.weaving.cache.enabled";
 	public static final String CACHE_DIR = "aj.weaving.cache.dir";
 	public static final String CACHE_IMPL = "aj.weaving.cache.impl";
-	
+
 	public static final String PATH_DEFAULT= "/tmp/"; // TODO windows default...?
-	public static final boolean BYDEFAULT= false;	
-		
-		
+	public static final boolean BYDEFAULT= false;
+
+
 	public static String path = PATH_DEFAULT;
 	public static Boolean enabled = false;
 	private static boolean determinedIfEnabled = false;
 	private static SimpleCache lacache=null;
-	
+
 	public static synchronized SimpleCache createSimpleCache(){
 		if (lacache==null){
 		 	if (!determinedIfEnabled) {
@@ -46,7 +46,7 @@ public class SimpleCacheFactory {
 				if (path == null){
 					path = PATH_DEFAULT;
 				}
-				
+
 			} catch (Throwable t) {
 				path=PATH_DEFAULT;
 				t.printStackTrace();
@@ -59,7 +59,7 @@ public class SimpleCacheFactory {
 			lacache= new SimpleCache(path, enabled);
 		}
 		return lacache;
-		
+
 	}
 
 	private static void determineIfEnabled() {
@@ -69,7 +69,7 @@ public class SimpleCacheFactory {
 				enabled = BYDEFAULT;
 			}
 			else if (property.equalsIgnoreCase("true")){
-				
+
 					String impl = System.getProperty(CACHE_IMPL);
 					if (SimpleCache.IMPL_NAME.equals(impl)){
 						enabled = true;
@@ -81,7 +81,7 @@ public class SimpleCacheFactory {
 			else{
 				enabled = BYDEFAULT;
 			}
-			
+
 		} catch (Throwable t) {
 			enabled=BYDEFAULT;
 			System.err.println("Error creating cache");
@@ -90,7 +90,7 @@ public class SimpleCacheFactory {
 		}
 		determinedIfEnabled = true;
 	}
-	
+
 	// Should behave ok with two threads going through here, well whoever gets there first will set determinedIfEnabled but only after
 	// it has set 'enabled' to the right value.
 	public static boolean isEnabled() {
@@ -98,7 +98,7 @@ public class SimpleCacheFactory {
 			determineIfEnabled();
 		}
 		return enabled;
-	} 
-	
+	}
+
 
 }

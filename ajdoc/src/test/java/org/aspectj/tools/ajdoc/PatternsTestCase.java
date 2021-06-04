@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ajdoc;
@@ -16,25 +16,25 @@ import java.io.File;
 
 /**
  * A long way to go until full coverage, but this is the place to add more.
- * 
+ *
  * @author Mik Kersten
  */
 public class PatternsTestCase extends AjdocTestCase {
-	
+
 	public void testSimpleExample() {
-		  
+
 //		System.err.println(new File("testdata.figures-demo").exists());
 //		File file1 = new File("testdata/patterns/allPatterns.lst");
 		File outdir = new File("testdata/patterns/doc");
 		File srcdir = new File("../../docs/sandbox/ubc-design-patterns/src");
-		
-		String[] args = { 
-//			"-XajdocDebug", 
+
+		String[] args = {
+//			"-XajdocDebug",
                 "-classpath",
                 AjdocTests.ASPECTJRT_PATH.getPath(),
-			"-d", 
+			"-d",
 			outdir.getAbsolutePath(),
-			"-sourcepath", 
+			"-sourcepath",
 			srcdir.getAbsolutePath(),
 			"ca.ubc.cs.spl.aspectPatterns.patternLibrary",
 			"ca.ubc.cs.spl.aspectPatterns.examples.abstractFactory.java",
@@ -84,8 +84,8 @@ public class PatternsTestCase extends AjdocTestCase {
 			"ca.ubc.cs.spl.aspectPatterns.examples.visitor.java",
 			"ca.ubc.cs.spl.aspectPatterns.examples.visitor.aspectj"
 		};
-		
+
 		org.aspectj.tools.ajdoc.Main.main(args);
 	}
-	
+
 }

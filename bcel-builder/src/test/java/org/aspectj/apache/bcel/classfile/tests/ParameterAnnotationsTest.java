@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v1.0 which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * materials are made available under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors: Andy Clement - initial implementation
  ******************************************************************************/
 
@@ -65,12 +65,12 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		ClassGen clg        = createClassGen("HelloWorld");
 		ConstantPool cpg = clg.getConstantPool();
 		InstructionList il  = new InstructionList();
-		
+
 		buildClassContentsWithAnnotatedMethods(clg,cpg,il,true);
-		
+
 		int i = clg.getMethods().length;
 		assertTrue("Class should have 2 methods but has "+i,i==2);
-		
+
 		Method mainMethod = clg.getMethods()[0];
 		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
@@ -79,9 +79,9 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		assertTrue("This annotation should contain the string 'fruit=Oranges' but it is "+annos[1].toString(),
 				annos[1].toString().contains("fruit=Oranges"));
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Check we can save and load a constructed class that contains parameter annotations
 	 */
@@ -89,18 +89,18 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		ClassGen clg        = createClassGen("HelloWorld");
 		ConstantPool cpg = clg.getConstantPool();
 		InstructionList il  = new InstructionList();
-		
+
 		buildClassContentsWithAnnotatedMethods(clg,cpg,il,true);
-		
+
 		dumpClass(clg,"temp5","HelloWorld.class");
-		
+
 		JavaClass jc = getClassFrom("temp5","HelloWorld");
-		
+
 		clg = new ClassGen(jc);
-		
+
 		int i = clg.getMethods().length;
 		assertTrue("Class should have 2 methods but has "+i,i==2);
-		
+
 		Method mainMethod = clg.getMethods()[0];
 		AnnotationGen[] annos = mainMethod.getAnnotationsOnParameter(0);
 		assertTrue("Should be two annotation on the 'argv' parameter to main() but there are "+annos.length,annos.length==2);
@@ -109,45 +109,45 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		assertTrue("This annotation should contain the string 'fruit=Oranges' but it is "+annos[1].toString(),
 				annos[1].toString().contains("fruit=Oranges"));
 		assertTrue(wipe("temp5","HelloWorld.class"));
-		
+
 	}
 
-	
-	
+
+
 	/*
 	 * Load an existing class, add new parameter annotations, save and then reload it
 	 */
 	public void testParameterAnnotations_loadedThenModifiedThenSavedAndLoadedOK() throws ClassNotFoundException {
 		JavaClass jc = getClassFrom("testcode.jar","AnnotatedParameters");
-		
+
 		ClassGen clg = new ClassGen(jc);
 		ConstantPool cpg = clg.getConstantPool();
-		
+
 		//
 		// Foo method looks like this:
 		//   public void foo(@SimpleAnnotation(id=2) int arg1,
         //                   @SimpleAnnotation(id=3) @AnnotationEnumElement(enumval=SimpleEnum.Red) String arg2)
 		Method m = findMethod(clg,"foo");
 		assertTrue("Should be able to find method foo but couldn't",m!=null);
-		
-		
+
+
 		/////////////////////// 1. Check the right number of annotations are there
 		int i = m.getAnnotationsOnParameter(1).length;
 		assertTrue("Should be two annotations on the second parameter but found: "+i,i==2);
-		
-		
+
+
 		/////////////////////// 2. Let's add a new parameter annotation, a visible one, to the first parameter.
 
 		// Build a modifiable version of the foo method
 		MethodGen mg = new MethodGen(m,clg.getClassName(),cpg);
-		
+
 		// Check the annotations survived that transform
 		i = mg.getAnnotationsOnParameter(1).size();
 		assertTrue("Should be two annotations on the second parameter but found: "+i,i==2);
-		
+
 		// That worked, so let's add a new parameter annotation
 		mg.addParameterAnnotation(0,createFruitAnnotation(cpg,"Banana",true));
-		
+
 		// Foo method should now look like this:
 		//   public void foo(@SimpleAnnotation(id=2) @SimpleStringAnnotation(fruit=Banana) int arg1,
         //                   @SimpleAnnotation(id=3) @AnnotationEnumElement(enumval=SimpleEnum.Red) String arg2)
@@ -160,17 +160,17 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		// delete the old method and add the new one
 		clg.removeMethod(m);
 		clg.addMethod(mg.getMethod());
-	
+
         /////////////////////// 3. Dump it to disk
 		dumpClass(clg,"temp2","AnnotatedParameters.class");
-		
+
         /////////////////////// 4. Load it back in and verify the annotations persisted
 		JavaClass jc2 = getClassFrom("temp2","AnnotatedParameters");
 
 		m = jc2.getMethods()[2];
 		AnnotationGen[] p1annotations = m.getAnnotationsOnParameter(0);
 		AnnotationGen[] p2annotations = m.getAnnotationsOnParameter(1);
-		
+
 		assertTrue("Expected two annotations on the first parameter but found "+p1annotations.length,p1annotations.length==2);
 		assertTrue("Expected two annotations on the second parameter but found "+p2annotations.length,p2annotations.length==2);
 		String expectedString = "[@SimpleAnnotation(id=2),@SimpleStringAnnotation(fruit=Banana)]";
@@ -179,44 +179,44 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=LSimpleEnum;Red)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p2annotations)+"'",
 				dumpAnnotations(p2annotations).equals(expectedString));
-		
+
 		assertTrue(wipe("temp2","AnnotatedParameters.class"));
 	}
-	
-	
+
+
 	/**
 	 * same as above test but attaching invisible runtime parameter annotations
-	 */ 
+	 */
 	public void testParameterAnnotations_loadedThenModifiedWithInvisibleAnnotationThenSavedAndLoadedOK() throws ClassNotFoundException {
 		JavaClass jc = getClassFrom("testcode.jar","AnnotatedParameters");
 		ClassGen clg = new ClassGen(jc);
 		ConstantPool cpg = clg.getConstantPool();
-		
+
 		//
 		// Foo method looks like this:
 		//   public void foo(@SimpleAnnotation(id=2) int arg1,
         //                   @SimpleAnnotation(id=3) @AnnotationEnumElement(enumval=SimpleEnum.Red) String arg2)
 		Method m = findMethod(clg,"foo");
 		assertTrue("Should be able to find method foo but couldn't",m!=null);
-		
-		
+
+
 		/////////////////////// 1. Check the right number of annotations are there
 		int i = m.getAnnotationsOnParameter(1).length;
 		assertTrue("Should be two annotations on the second parameter but found: "+i,i==2);
-		
-		
+
+
 		/////////////////////// 2. Let's add a new parameter annotation, a visible one, to the first parameter.
 
 		// Build a modifiable version of the foo method
 		MethodGen mg = new MethodGen(m,clg.getClassName(),cpg);
-		
+
 		// Check the annotations survived that transform
 		i = mg.getAnnotationsOnParameter(1).size();
 		assertTrue("Should be two annotations on the second parameter but found: "+i,i==2);
-		
+
 		// That worked, so let's add a new parameter annotation
 		mg.addParameterAnnotation(0,createFruitAnnotation(cpg,"Banana",false));
-		
+
 		// Foo method should now look like this:
 		//   public void foo(@SimpleAnnotation(id=2) @SimpleStringAnnotation(fruit=Banana) int arg1,
         //                   @SimpleAnnotation(id=3) @AnnotationEnumElement(enumval=SimpleEnum.Red) String arg2)
@@ -230,10 +230,10 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		// delete the old method and add the new one
 		clg.removeMethod(m);
 		clg.addMethod(mg.getMethod());
-	
+
         /////////////////////// 3. Dump it to disk
 		dumpClass(clg,"temp3","AnnotatedParameters.class");
-		
+
         /////////////////////// 4. Load it back in and verify the annotations persisted
 
 		JavaClass jc2 = getClassFrom("temp3","AnnotatedParameters");
@@ -241,7 +241,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		m = jc2.getMethods()[2];
 		AnnotationGen[] p1annotations = m.getAnnotationsOnParameter(0);
 		AnnotationGen[] p2annotations = m.getAnnotationsOnParameter(1);
-		
+
 		assertTrue("Expected two annotations on the first parameter but found "+p1annotations.length,p1annotations.length==2);
 		assertTrue("Expected two annotations on the second parameter but found "+p2annotations.length,p2annotations.length==2);
 		String expectedString = "[@SimpleAnnotation(id=2),@SimpleStringAnnotation(fruit=Banana)]";
@@ -250,12 +250,12 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		expectedString = "[@SimpleAnnotation(id=3),@AnnotationEnumElement(enumval=LSimpleEnum;Red)]";
 		assertTrue("Expected formatted short string of '"+expectedString+"' but it was '"+dumpAnnotations(p2annotations)+"'",
 				dumpAnnotations(p2annotations).equals(expectedString));
-		
+
 		assertTrue("Second annotation on first parameter should be runtime invisible?",
 				!p1annotations[1].isRuntimeVisible());
 		assertTrue(wipe("temp3","AnnotatedParameters.class"));
-		
-		
+
+
 		// 5. Verify that when annotations for parameters are unpacked from attributes, the
 		//    attributes vanish !
 		clg = new ClassGen(jc2);
@@ -265,18 +265,18 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		List<AnnotationGen> l = mg.getAnnotationsOnParameter(0);
 		assertTrue("Should be 2 annotations on first parameter but there is only "+l.size()+":"+l.toString(),
 				l.size()==2);
-		assertTrue("Should be 0 but there are "+mg.getAttributes().size(),mg.getAttributes().size()==0);		
+		assertTrue("Should be 0 but there are "+mg.getAttributes().size(),mg.getAttributes().size()==0);
 	}
 
-	
+
 	private Method findMethod(ClassGen c,String mname) {
 		Method[] ms = c.getMethods();
 		for (Method m : ms) {
 			if (m.getName().equals(mname)) return m;
 		}
 		return null;
-	}	
-	
+	}
+
 	private void dumpClass(ClassGen cg, String fname) {
 		try {
 			File f = createTestdataFile(fname);
@@ -285,7 +285,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 			System.err.println(e);
 		}
 	}
-	
+
 
 	private void dumpClass(ClassGen cg, String dir, String fname) {
 		dumpClass(cg,dir+File.separator+fname);
@@ -355,11 +355,11 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		LocalVariableGen var_ex = mg.addLocalVariable("ex",Type.getType("Ljava.io.IOException;"),null,null);
 		int var_ex_slot = var_ex.getIndex();
-		
+
 		InstructionHandle handler = il.append(InstructionFactory.createASTORE(var_ex_slot));
 		var_ex.setStart(handler);
 		var_ex.setEnd(il.append(InstructionConstants.RETURN));
-		
+
 		mg.addExceptionHandler(try_start, try_end, handler,
 				new ObjectType("java.io.IOException"));
 
@@ -396,7 +396,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		// would have to be computed on the fly and add a default constructor
 		// method to the class, which is empty in this case.
 
-		mg.addParameterAnnotation(0,createFruitAnnotation(cp,"Apples",true)); 
+		mg.addParameterAnnotation(0,createFruitAnnotation(cp,"Apples",true));
 		mg.addParameterAnnotation(0,createFruitAnnotation(cp,"Oranges",true));
 		mg.setMaxStack();
 		mg.setMaxLocals();
@@ -404,7 +404,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		il.dispose(); // Allow instruction handles to be reused
 		cg.addEmptyConstructor(Constants.ACC_PUBLIC);
 	}
-	
+
 	private void buildClassContents(ClassGen cg, ConstantPool cp, InstructionList il) {
 		// Create method 'public static void main(String[]argv)'
 		MethodGen mg = createMethodGen("main",il,cp);
@@ -468,11 +468,11 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 
 		LocalVariableGen var_ex = mg.addLocalVariable("ex",Type.getType("Ljava.io.IOException;"),null,null);
 		int var_ex_slot = var_ex.getIndex();
-		
+
 		InstructionHandle handler = il.append(InstructionFactory.createASTORE(var_ex_slot));
 		var_ex.setStart(handler);
 		var_ex.setEnd(il.append(InstructionConstants.RETURN));
-		
+
 		mg.addExceptionHandler(try_start, try_end, handler,
 				new ObjectType("java.io.IOException"));
 
@@ -520,18 +520,18 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		SyntheticRepository repos = createRepos(where);
 		return repos.loadClass(clazzname);
 	}
-	
-	
-	
+
+
+
 
 	// helper methods
-	
+
 
 	private ClassGen createClassGen(String classname) {
 		return new ClassGen(classname, "java.lang.Object",
 				"<generated>", Constants.ACC_PUBLIC | Constants.ACC_SUPER, null);
 	}
-	
+
 	private MethodGen createMethodGen(String methodname,InstructionList il,ConstantPool cp) {
 		return new MethodGen(
 				Constants.ACC_STATIC | Constants.ACC_PUBLIC,  // access flags
@@ -542,7 +542,7 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 				il, cp);
 	}
 
-	
+
 	public AnnotationGen createSimpleVisibleAnnotation(ConstantPool cp) {
 		SimpleElementValue evg = new SimpleElementValue(
 				ElementValue.PRIMITIVE_INT, cp, 4);
@@ -557,18 +557,18 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		AnnotationGen a = new AnnotationGen(t, elements,true, cp);
 		return a;
 	}
-		
+
 	public AnnotationGen createCombinedAnnotation(ConstantPool cp) {
 		// Create an annotation instance
 		AnnotationGen a = createSimpleVisibleAnnotation(cp);
 		ArrayElementValue array = new ArrayElementValue(cp);
-		array.addElement(new AnnotationElementValue(a,cp)); 
+		array.addElement(new AnnotationElementValue(a,cp));
 		NameValuePair nvp = new NameValuePair("value",array,cp);
 		List<NameValuePair> elements = new ArrayList<>();
 		elements.add(nvp);
 		return new AnnotationGen(new ObjectType("CombinedAnnotation"),elements,true,cp);
 	}
-	
+
 	public AnnotationGen createSimpleInvisibleAnnotation(ConstantPool cp) {
 		SimpleElementValue evg = new SimpleElementValue(
 				ElementValue.PRIMITIVE_INT, cp, 4);

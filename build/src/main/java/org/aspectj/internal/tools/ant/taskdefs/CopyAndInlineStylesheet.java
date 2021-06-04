@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.tools.ant.taskdefs;
@@ -35,7 +35,7 @@ public class CopyAndInlineStylesheet extends Task {
     public void setTodir(String todir) {
         this.todir = project.resolveFile(todir);
     }
-    
+
 
     public void execute() throws BuildException {
         try {
@@ -46,7 +46,7 @@ public class CopyAndInlineStylesheet extends Task {
                 throw new BuildException("must set 'file' attribute");
             }
             log("copying html from" + file + " to " + todir.getAbsolutePath());
-	    
+
             File toFile = new File(todir, file.getName());
 
             Mkdir mkdir = (Mkdir) project.createTask("mkdir");
@@ -71,7 +71,7 @@ public class CopyAndInlineStylesheet extends Task {
                     out.println(line);
                 }
             }
-            
+
             in.close();
             out.close();
         } catch (IOException e) {
@@ -90,7 +90,7 @@ public class CopyAndInlineStylesheet extends Task {
 
         out.println("<style type=\"text/css\">");
         out.println("<!--");
-        
+
         BufferedReader inStyle = new BufferedReader(new FileReader(styleSheetFile));
 
         while (true) {
@@ -108,7 +108,7 @@ public class CopyAndInlineStylesheet extends Task {
     private static boolean isStyleSheet(String line) throws IOException {
         line = line.toLowerCase();
         int len = line.length();
-        int i = 0; 
+        int i = 0;
 
         while (true) {
             if (i == len) return false;

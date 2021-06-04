@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM 
+ * Copyright (c) 2004, 2017 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
@@ -16,7 +16,7 @@ import junit.framework.Test;
 /**
  * A copy of the 1.5.0 Annotations test but with compliance set to 1.9
  * The testdata is referenced in the 150 test folder but the XML file indicates compliance of 1.9.
- * 
+ *
  * @author Andy Clement
  */
 public class Annotations extends XMLBasedAjcTestCase {

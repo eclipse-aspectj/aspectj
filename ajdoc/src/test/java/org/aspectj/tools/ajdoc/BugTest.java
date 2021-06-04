@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.tools.ajdoc;
@@ -28,7 +28,7 @@ public class BugTest extends AjdocTestCase {
 		assertFalse("expected all decorating tags to be removed but found that they" +
 				" weren't",AjdocOutputChecker.containsString(html, Config.DECL_ID_STRING));
 	}
-	
+
 	/**
 	 * Passing the "-Xlint:error" option through to the compiler should
 	 * cause the ajc build to fail because the advice did not match
@@ -60,7 +60,7 @@ public class BugTest extends AjdocTestCase {
 				"advice defined in AdviceDidNotMatch has not been applied [Xlint:adviceDidNotMatch]",
 				Main.getErrors()[0].getMessage());
 	}
-	
+
 	/**
 	 * Passing the -aspectpath option though to the compiler should
 	 * result in relationships being displayed
@@ -76,12 +76,12 @@ public class BugTest extends AjdocTestCase {
 			fail("couldn't find " + getAbsolutePathOutdir() + File.separator + "C.html - were there javadoc/compilation errors?");
 		}
 		assertTrue("expected to find 'Advised by' in the html output but did " +
-				" not",AjdocOutputChecker.containsString(html, 
+				" not",AjdocOutputChecker.containsString(html,
 						HtmlDecorator.HtmlRelationshipKind.ADVISED_BY.getName()));
 	}
-	
+
 	/**
-	 * Passing an option starting with "-" that doesn't require a second entry 
+	 * Passing an option starting with "-" that doesn't require a second entry
 	 * should mean everything is correctly given to the compiler. For example:
 	 * '-outxml -aspectpath <file>" should mean both '-outxml' and the aspectpath
 	 * options are given correctly.
@@ -97,15 +97,15 @@ public class BugTest extends AjdocTestCase {
 			fail("couldn't find " + getAbsolutePathOutdir() + File.separator + "C.html - were there javadoc/compilation errors?");
 		}
 		assertTrue("expected to find 'Advised by' in the html output but did " +
-				" not",AjdocOutputChecker.containsString(html, 
+				" not",AjdocOutputChecker.containsString(html,
 						HtmlDecorator.HtmlRelationshipKind.ADVISED_BY.getName()));
-		File aopFile = new File(getAbsolutePathOutdir() + File.separator 
+		File aopFile = new File(getAbsolutePathOutdir() + File.separator
 				+ "META-INF" + File.separator + "aop-ajc.xml");
-		assertTrue("couldn't find " + getAbsolutePathOutdir() + File.separator 
-				+ "META-INF" + File.separator + "aop-ajc.xml" , 
+		assertTrue("couldn't find " + getAbsolutePathOutdir() + File.separator
+				+ "META-INF" + File.separator + "aop-ajc.xml" ,
 				aopFile.exists());
-	}	
-	
+	}
+
 	/**
 	 * Passing bogus option to ajc
 	 */
@@ -116,7 +116,7 @@ public class BugTest extends AjdocTestCase {
 		runAjdoc(files,"1.5",ajOptions);
 		assertTrue("expected build of project to abort",Main.hasAborted());
 	}
-	
+
 	/**
 	 * Not passing any files to ajdoc should result in both the ajdoc
 	 * and ajc usage messages
@@ -127,11 +127,11 @@ public class BugTest extends AjdocTestCase {
 		options.add("-verbose");
 		runAjdoc(options);
 		assertTrue("expected the ajdoc usage message to be reported",Main.hasShownAjdocUsageMessage());
-		assertTrue("expected build of project to abort",Main.hasAborted());		
+		assertTrue("expected build of project to abort",Main.hasAborted());
 	}
-	
+
 	/**
-	 * javadoc comments should still appear even if preceded by 
+	 * javadoc comments should still appear even if preceded by
 	 * 'normal' comments
 	 */
 	public void testPr164356() throws Exception {
@@ -140,7 +140,7 @@ public class BugTest extends AjdocTestCase {
 		runAjdoc(files);
 	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
 		if (!htmlFile.exists()) {
-			fail("couldn't find " + htmlFile.getAbsolutePath() + 
+			fail("couldn't find " + htmlFile.getAbsolutePath() +
 					" (ajc aborted: " + Main.hasAborted() + ")");
 		}
 		String foo = "description of foo";
@@ -148,19 +148,19 @@ public class BugTest extends AjdocTestCase {
 		String goo = "description of goo";
 		String bas = "description of bas";
 		assertTrue("expected method description 'description of foo' to appear" +
-				" in ajdoc output but it did not", 
+				" in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, foo));
 		assertTrue("expected method description 'description of bar' to " +
-				"appear in ajdoc output but it did not", 
+				"appear in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, bar));
 		assertFalse("didn't expect method description 'description of goo' to " +
-				"appear in ajdoc output but it did not", 
+				"appear in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, goo));
 		assertTrue("expected method description 'description of bas' to appear" +
-				" in ajdoc output but it did not", 
+				" in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, bas));
 	}
-	
+
 	/**
 	 * Comments for a constructor should be included in the ajdoc output
 	 */
@@ -170,16 +170,16 @@ public class BugTest extends AjdocTestCase {
 		runAjdoc(files);
 	    File htmlFile = new File(getAbsolutePathOutdir() + "/C.html");
 		if (!htmlFile.exists()) {
-			fail("couldn't find " + htmlFile.getAbsolutePath() + 
+			fail("couldn't find " + htmlFile.getAbsolutePath() +
 					" (ajc aborted: " + Main.hasAborted() + ")");
 		}
 		String methodDesc = "This is method foo";
 		String constDesc = "This is a constructor";
 		assertTrue("expected method description 'This is method foo' to appear" +
-				" in ajdoc output but it did not", 
+				" in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, methodDesc));
 		assertTrue("expected constructor description 'This is a constructor' to " +
-				"appear in ajdoc output but it did not", 
+				"appear in ajdoc output but it did not",
 				AjdocOutputChecker.containsString(htmlFile, constDesc));
 	}
 }

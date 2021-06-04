@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Helen Hawkins   - Converted to new interface (bug 148190)
@@ -27,7 +27,7 @@ public class JarManifestTest extends AjdeCoreTestCase {
 
 	private String[] weave = { "src" + File.separator + "Main.java",
 			"src" + File.separator + "Logging.aj" };
-	
+
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
 
@@ -44,7 +44,7 @@ public class JarManifestTest extends AjdeCoreTestCase {
 		handler = null;
 		compilerConfig = null;
 	}
-	
+
 	public void testWeave () {
 		File outjar = openFile(outjarName);
 		compilerConfig.setOutjar(outjar.getAbsolutePath());
@@ -54,7 +54,7 @@ public class JarManifestTest extends AjdeCoreTestCase {
 				+ handler.getMessages(), handler.getMessages().isEmpty());
 		checkManifest(outjar);
 	}
-	
+
 	public void testNoWeave () {
 		File outjar = openFile(outjarName);
 		compilerConfig.setOutjar(outjar.getAbsolutePath());
@@ -65,7 +65,7 @@ public class JarManifestTest extends AjdeCoreTestCase {
 				+ handler.getMessages(), handler.getMessages().isEmpty());
 		checkManifest(outjar);
 	}
-	
+
 	private void checkManifest (File outjarFile) {
 		Manifest manifest = null;
 

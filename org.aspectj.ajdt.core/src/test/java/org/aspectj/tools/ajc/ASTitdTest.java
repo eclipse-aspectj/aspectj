@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2005 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2005 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.tools.ajc;
@@ -40,11 +40,11 @@ public class ASTitdTest extends TestCase {
 	public void testAspectWithConstructorITD() {
 		checkNameAndModifiers("class A {}aspect B {public A.new(){}}","name = A_new, modifier = public");
 	}
-	
+
 	public void testAspectWithPublicFieldITD() {
 		checkNameAndModifiers("class A {}aspect B {public int A.a;}","name = a, modifier = public");
 	}
-	
+
 	private void checkNameAndModifiers(String source, String expectedOutput){
 		ASTParser parser = ASTParser.newParser(AST.JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
 		parser.setCompilerOptions(new HashMap());//JavaCore.getOptions());
@@ -57,29 +57,29 @@ public class ASTitdTest extends TestCase {
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
 	}
-	
+
 }
 
 class ITDTestVisitor extends AjASTVisitor {
 
 	StringBuffer b = new StringBuffer();
 	boolean visitDocTags;
-	
+
 	ITDTestVisitor() {
 		this(false);
 	}
-	
+
 	public String toString(){
 		return b.toString();
 	}
-	
+
 	ITDTestVisitor(boolean visitDocTags) {
 		super(visitDocTags);
 		this.visitDocTags = visitDocTags;
 	}
-	
+
 	public boolean visit(MethodDeclaration node) {
-		if (node instanceof InterTypeMethodDeclaration) 
+		if (node instanceof InterTypeMethodDeclaration)
 			return visit((InterTypeMethodDeclaration)node);
 		return true;
 	}
@@ -90,5 +90,5 @@ class ITDTestVisitor extends AjASTVisitor {
 	public boolean visit(InterTypeMethodDeclaration node) {
 		b.append("name = " + node.getName() + ", modifier = " + Modifier.toString(node.getModifiers()));
 		return true;
-	}	
+	}
 }

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier;
 
 import org.aspectj.testing.util.LangUtil;
 
-/** 
+/**
  * Wrapper to invoke class identified by setting VM argument.
  * Caller must set a system property "MainWrapper.classname"
  * to the fully-qualified name of the target class to invoke,
@@ -37,10 +37,10 @@ import org.aspectj.testing.util.LangUtil;
  */
 public class MainWrapper {
     /** MUST set the fully-qualified name of class to invoke using
-     * a VM property of this name 
+     * a VM property of this name
      * tracked in Ajctest.java */
     public static final String PROP_NAME = "MainWrapper.classname";
-    /** May set the path to a classes diretory, 
+    /** May set the path to a classes diretory,
      * to interpret class names and load classes.
      * Tracked in Ajctest.java */
     public static final String CLASSDIR_NAME = "MainWrapper.classdir";
@@ -51,23 +51,23 @@ public class MainWrapper {
     /** to disable returning via System.exit on first Throwable, set to boolean true value (todo: ignored) */
     public static final String FAIL_ON_EXCEPTION_NAME = "MainWrapper.failOnException";
 
-    /** quit on first exception */ // todo public class controls - yuck 
+    /** quit on first exception */ // todo public class controls - yuck
     public static boolean FAIL_ON_EXCEPTION = true;
 
-    /** signal number of exceptions with int return value */ 
+    /** signal number of exceptions with int return value */
     public static boolean SIGNAL_EXCEPTION = true;
 
-    /** redirect messages for exceptions; if null, none printed */ 
+    /** redirect messages for exceptions; if null, none printed */
     public static PrintStream OUT_STREAM = System.err;
 
-    /** result accumulated, possibly from multiple threads */ 
+    /** result accumulated, possibly from multiple threads */
     private static int result;
 
     /**
      * Run target class's main(args), doing a System.exit() with
-     * a value > 0 for the number of Throwable that 
+     * a value > 0 for the number of Throwable that
      *  the target class threw that
-     * makes it through to a top-level ThreadGroup. (This is 
+     * makes it through to a top-level ThreadGroup. (This is
      * strictly speaking not correct since applications can live
      * after their exceptions stop a thread.)
      * Exit with a value < 0 if there were exceptions in loading
@@ -78,7 +78,7 @@ public class MainWrapper {
         Method main = null;
         // setup: this try block is for loading main method - return -1 if fail
         try {
-            // access classname from jvm arg 
+            // access classname from jvm arg
             classname = System.getProperty(PROP_NAME);
             // this will fail if the class is not available from this classloader
             Class<?> cl = Class.forName(classname);
@@ -149,7 +149,7 @@ public class MainWrapper {
         }
     }
 
-    /** 
+    /**
      * Try to load all classes in a directory.
      * @throws Error if any failed
      */
@@ -159,7 +159,7 @@ public class MainWrapper {
             StringBuffer err = new StringBuffer();
             LangUtil.loadClasses(names, null, err);
             if (0 < err.length()) {
-                throw new Error("MainWrapper Errors loading classes: " 
+                throw new Error("MainWrapper Errors loading classes: "
                                  + err.toString());
             }
         }
@@ -168,7 +168,7 @@ public class MainWrapper {
     static void reportException(String context, Throwable t) {
         PrintStream outStream = OUT_STREAM;
         if (null != outStream) {
-            while ((null != t) && 
+            while ((null != t) &&
                    (InvocationTargetException.class.isAssignableFrom(t.getClass()))) {
                 t = ((InvocationTargetException) t).getTargetException();
             }

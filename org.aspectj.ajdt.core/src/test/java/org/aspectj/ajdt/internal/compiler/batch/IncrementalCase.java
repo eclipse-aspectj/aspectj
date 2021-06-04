@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.batch;
@@ -58,14 +58,14 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		System.err.println(sb.toString());
 	}
 
-	/** 
+	/**
 	 * Run an incremental compile case.
 	 * For each i=1..9, copy files srcDir/*{i=1..9}0.java
 	 * to the sandbox and compile.
 	 * This only expects the changed files to be recompiled, but
 	 * it also calls verifyCompile(..);
 	 * @param handler all non-functional feedback here.
-	 * Exceptions are logged as ABORT messages 
+	 * Exceptions are logged as ABORT messages
 	 */
 	public boolean run(File srcBase, IMessageHandler handler)
 		throws IOException {
@@ -105,7 +105,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		}
 		MessageHandler compilerMessages = new MessageHandler();
         StringBuffer commandLine = new StringBuffer();
-		for (int i = 1; result && (i < 10); i++) { 
+		for (int i = 1; result && (i < 10); i++) {
 			String fromSuffix = "." + i + "0.java";
 			// copy files, collecting as we go...
 			files.clear();
@@ -179,17 +179,17 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		log("verifyCompile -   messages ", compilerMessages, handler);
         StringBuffer failures = new StringBuffer();
         if (def.expectFail == result) {
-             failures.append("iteration " + iteration + 
+             failures.append("iteration " + iteration +
                 " expected to " + (def.expectFail ? "fail\n" : "pass"));
         }
         if (0 < failures.length()) {
-            fail(handler, 
+            fail(handler,
                 "\nFailures in iteration " + iteration
-                + "\n Command: " + commandLine 
-                + "\nMessages: " + compilerMessages 
+                + "\n Command: " + commandLine
+                + "\nMessages: " + compilerMessages
                 + "\n     Def: " + def
                 + "\nFailures: " + failures);
-            return false; 
+            return false;
         }
 		IMessage[] messages = compilerMessages.getMessages(IMessage.ERROR, IMessageHolder.EQUAL);
 		String[] expected =
@@ -210,7 +210,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 	}
 
 	// -------------------------------------- test case setup
-	/** 
+	/**
 	 * Get the sandbox (parent) directory.
 	 * This implementation uses the temporary directory
 	 */
@@ -220,7 +220,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		tempFile.delete();
 		return tempDir;
 	}
-	
+
 	//XXX hack
 	public File outputDir;
 
@@ -252,7 +252,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		}
 		return result;
 	}
-        
+
     // -------------------------------------- test case verification
 
 
@@ -274,12 +274,12 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
         List<String> result = new ArrayList<>();
         for (File file: list) {
 //        for (Iterator<?> iter = list.iterator(); iter.hasNext();) {
-			result.add(normalizeFilename(file.getPath()));			
+			result.add(normalizeFilename(file.getPath()));
 		}
         Collections.sort(result);
         return result;
     }
-    
+
     String normalizeFilename(String s) {        // XXX error-prone
         final String suffix = ".java";
         int loc = s.lastIndexOf(suffix);
@@ -290,7 +290,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
         loc = s.lastIndexOf("/");
         return (-1 == loc ? s : s.substring(loc+1));
     }
-    
+
 
 	/** XXX duplicate message checking */
 	boolean haveAll(

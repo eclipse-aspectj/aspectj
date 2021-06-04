@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2010 Contributors 
+ * Copyright (c) 2010 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - SpringSource
@@ -17,13 +17,13 @@ import org.aspectj.tools.ajc.AjcTestCase;
 /**
  * Support simple file system operations in a test spec. Example:<br>
  * &lt;file deletefile="foo.jar"/&gt; will delete the file foo.jar from the sandbox.
- * 
+ *
  * @author Andy Clement
  */
 public class FileSpec implements ITestStep {
 
 	private String toDelete;
-	
+
 	private String renameFrom;
 	private String renameTo;
 
@@ -36,11 +36,11 @@ public class FileSpec implements ITestStep {
 	public void setRenameFrom(String file) {
 		this.renameFrom = file;
 	}
-	
+
 	public void setRenameTo(String file) {
 		this.renameTo = file;
 	}
-	
+
 	public void setDeletefile(String file) {
 		this.toDelete = file;
 	}

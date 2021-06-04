@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2002,2010
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     PARC     initial implementation
  *     Adrian Colyer, IBM
  *     Andy Clement, IBM, SpringSource
@@ -97,7 +97,7 @@ public class PatternParser {
 		eat(")");
 		return new PerCflow(entry, isBelow);
 	}
-	
+
 	public boolean moreToParse() {
 		return tokenSource.hasMoreTokens();
 	}
@@ -302,7 +302,7 @@ public class PatternParser {
 
 	/**
 	 * Attempt to parse a pointcut, if that fails then try again for a type pattern.
-	 * 
+	 *
 	 * @param isError true if it is declare error rather than declare warning
 	 * @return the new declare
 	 */
@@ -334,7 +334,7 @@ public class PatternParser {
 		String message = parsePossibleStringSequence(true);
 		return new DeclareErrorOrWarning(isError, pointcut, message);
 	}
-	
+
 	public Pointcut parsePointcut(boolean shouldConsumeAllInput) {
 		Pointcut p = parsePointcut();
 		if (shouldConsumeAllInput && tokenSource.hasMoreTokens()) {
@@ -357,7 +357,7 @@ public class PatternParser {
 
 		return p;
 	}
-	
+
 	private Pointcut parseNotOrPointcut() {
 		Pointcut p = parseAtomicPointcut();
 		if (maybeEat("&&")) {
@@ -559,7 +559,7 @@ public class PatternParser {
 
 	/**
 	 * Method parseWithinPointcut.
-	 * 
+	 *
 	 * @return Pointcut
 	 */
 	private Pointcut parseWithinPointcut() {
@@ -572,7 +572,7 @@ public class PatternParser {
 
 	/**
 	 * Method parseThisOrTargetPointcut.
-	 * 
+	 *
 	 * @return Pointcut
 	 */
 	private Pointcut parseThisOrTargetPointcut(String kind) {
@@ -617,7 +617,7 @@ public class PatternParser {
 
 	/**
 	 * Method parseArgsPointcut.
-	 * 
+	 *
 	 * @return Pointcut
 	 */
 	private Pointcut parseArgsPointcut() {
@@ -1052,7 +1052,7 @@ public class PatternParser {
 	 * Attempt to parse a typeIs(&lt;category&gt;) construct. If it cannot be parsed we just return null and that should cause the caller
 	 * to reset their position and attempt to consume it in another way. This means we won't have problems here: execution(*
 	 * typeIs(..)) because someone has decided to call a method the same as our construct.
-	 * 
+	 *
 	 * @return a TypeIsTypePattern or null if could not be parsed
 	 */
 	public TypePattern parseIsTypePattern() {
@@ -1686,7 +1686,7 @@ public class PatternParser {
 	/**
 	 * Parse type variable declarations for a generic method or at the start of a signature pointcut to identify type variable names
 	 * in a generic type.
-	 * 
+	 *
 	 * @return
 	 */
 	public TypeVariablePatternList maybeParseTypeVariableList() {

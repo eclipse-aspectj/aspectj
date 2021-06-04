@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2012 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -24,20 +24,20 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testUnsupportedShouldBeNormalError_pr391384() {
 		runTest("unsupported should be normal error");
 	}
-	
+
 	// if the test is failing because the classes won't run, remove the run blocks from the ajc172.xml entry and re-run to check signatures.
 	public void testSignatures_pr394535() throws Exception {
 		runTest("signatures");
-		
+
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(),"Bug2$ClassA2"); // the working one
 		String sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T::LBug2$Interface12;:LBug2$Interface22;>Ljava/lang/Object;Ljava/io/Serializable;", sss);
-		
+
 		jc = getClassFrom(ajc.getSandboxDirectory(),"Bug$ClassA");
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T::LBug$Interface1;:LBug$Interface2;>Ljava/lang/Object;Ljava/io/Serializable;", sss);
 	}
-	
+
 	// extends
 	public void testPSignatures_pr399590() throws Exception {
 		runTest("p signatures 1");
@@ -48,7 +48,7 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<+LCage2<TT;>;>;>LBar2;Ljava/io/Serializable;", sss);
 	}
-	
+
 	// extends two classes
 	public void testPSignatures_pr399590_2() throws Exception {
 		runTest("p signatures 2");
@@ -59,7 +59,7 @@ public class Ajc172Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		sss = jc.getSignatureAttribute().getSignature();
 		assertEquals("<T:LAnimal2<+LCage2<TT;LIntf2;>;LIntf2;>;Q:Ljava/lang/Object;>LBar2;Ljava/io/Serializable;", sss);
 	}
-	
+
 	// super
 	public void testPSignatures_pr399590_3() throws Exception {
 		runTest("p signatures 3");

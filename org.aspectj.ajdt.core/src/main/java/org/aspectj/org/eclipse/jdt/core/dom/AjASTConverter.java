@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -418,7 +418,7 @@ public class AjASTConverter extends ASTConverter {
 			}
 			return methodDecl;
 		}
-	
+
 //		checkCanceled();
 //		if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) {
 //			return convert((org.aspectj.org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration) methodDeclaration);
@@ -686,7 +686,7 @@ public class AjASTConverter extends ASTConverter {
 						.setTypePattern((org.aspectj.org.eclipse.jdt.core.dom.TypePattern) pNode);
 			}
 		}
-		
+
 		if (declareDeclaration != null) {
 			declareDeclaration.setSourceRange(declareDecl.declarationSourceStart, declareDecl.declarationSourceEnd
 					- declareDecl.declarationSourceStart + 1);
@@ -940,7 +940,7 @@ public class AjASTConverter extends ASTConverter {
 	/**
 	 * Creates an ExactType, WildType, or BindingType, or null if none of the
 	 * three can be created
-	 * 
+	 *
 	 * @param weaverTypePattern
 	 *            to convert to a DOM equivalent
 	 * @return DOM node or null if it was not created
@@ -3585,7 +3585,7 @@ public class AjASTConverter extends ASTConverter {
 	/**
 	 * This method is used to retrieve the ending position for a type declaration when the dimension is right after the type name.
 	 * For example: int[] i; &rarr; return 5, but int i[] &rarr; return -1;
-	 * 
+	 *
 	 * @return int the dimension found
 	 */
 	protected int retrieveEndOfDimensionsPosition(int start, int end) {
@@ -3615,7 +3615,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the start and end position of a name or primitive type token.
-	 * 
+	 *
 	 * @return int[] a single dimensional array, with two elements, for the start and end positions of the name respectively
 	 */
 	protected int[] retrieveEndOfElementTypeNamePosition(int start, int end) {
@@ -3653,7 +3653,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the position after the right parenthesis.
-	 * 
+	 *
 	 * @return int the position found
 	 */
 	protected int retrieveEndOfRightParenthesisPosition(int start, int end) {
@@ -3675,7 +3675,7 @@ public class AjASTConverter extends ASTConverter {
 	/**
 	 * This method is used to retrieve the array dimension declared after the name of a local or a field declaration. For example:
 	 * int i, j[] = null, k[][] = {{}}; It should return 0 for i, 1 for j and 2 for k.
-	 * 
+	 *
 	 * @return int the dimension found
 	 */
 	protected int retrieveExtraDimension(int start, int end) {
@@ -3722,7 +3722,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the start position of the block.
-	 * 
+	 *
 	 * @return int the dimension found, -1 if none
 	 */
 	protected int retrieveIdentifierEndPosition(int start, int end) {
@@ -3743,7 +3743,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve position before the next comma or semi-colon.
-	 * 
+	 *
 	 * @return int the position found.
 	 */
 	protected int retrievePositionBeforeNextCommaOrSemiColon(int start, int end) {
@@ -3805,7 +3805,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve position before the next right brace or semi-colon.
-	 * 
+	 *
 	 * @return int the position found.
 	 */
 	protected int retrieveRightBraceOrSemiColonPosition(int start, int end) {
@@ -3828,7 +3828,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve position before the next right brace or semi-colon.
-	 * 
+	 *
 	 * @return int the position found.
 	 */
 	protected int retrieveRightBrace(int start, int end) {
@@ -3849,7 +3849,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the position of the right bracket.
-	 * 
+	 *
 	 * @return int the dimension found, -1 if none
 	 */
 	protected int retrieveRightBracketPosition(int start, int end) {
@@ -3914,7 +3914,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the start position of the block.
-	 * 
+	 *
 	 * @return int the dimension found, -1 if none
 	 */
 	protected int retrieveStartBlockPosition(int start, int end) {
@@ -3935,7 +3935,7 @@ public class AjASTConverter extends ASTConverter {
 
 	/**
 	 * This method is used to retrieve the starting position of the catch keyword.
-	 * 
+	 *
 	 * @return int the dimension found, -1 if none
 	 */
 	protected int retrieveStartingCatchPosition(int start, int end) {

@@ -1,16 +1,16 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
-// START-SAMPLE library-pointcutIdioms Standard pointcut idioms 
+// START-SAMPLE library-pointcutIdioms Standard pointcut idioms
 package langlib;
 
 import java.io.*;
@@ -18,7 +18,7 @@ import java.io.*;
 /**
  * Library of pointcut idioms to use in combination with
  * other pointcuts.
- * 
+ *
  * @author Wes Isberg
  */
 public class Pointcuts {
@@ -35,49 +35,49 @@ public class Pointcuts {
 
     public pointcut mainExecution() :
         execution(public static void main(String[]));
-        
+
     /** staticly-determinable to never match any join point */
-    public pointcut never() : if(false) 
+    public pointcut never() : if(false)
         && execution(ThreadDeath *(ThreadDeath, ThreadDeath));
-        
-    public pointcut anyMethodExecution() : 
+
+    public pointcut anyMethodExecution() :
         execution(* *(..));
 
-    public pointcut anyPublicMethodExecution() : 
+    public pointcut anyPublicMethodExecution() :
         execution(public * *(..));
 
-    public pointcut anyNonPrivateMethodExecution() : 
+    public pointcut anyNonPrivateMethodExecution() :
         execution(!private * *(..));
 
-    public pointcut anyConstructorExecution() : 
+    public pointcut anyConstructorExecution() :
         execution(new(..));
 
-    public pointcut anyPublicConstructorExecution() : 
+    public pointcut anyPublicConstructorExecution() :
         execution(public new(..));
 
     public pointcut anyNonPrivateConstructorExecution() :
         execution(!private new(..));
 
-    public pointcut anyPublicFieldGet() : 
+    public pointcut anyPublicFieldGet() :
         get(public * *);
 
-    public pointcut anyNonPrivateFieldGet() : 
+    public pointcut anyNonPrivateFieldGet() :
         get(!private * *);
 
-    public pointcut anyPublicFieldSet() : 
+    public pointcut anyPublicFieldSet() :
         set(public * *);
 
-    public pointcut anyNonPrivateFieldSet() : 
+    public pointcut anyNonPrivateFieldSet() :
         set(!private * *); // also !transient?
 
-    public pointcut withinSetter() : 
+    public pointcut withinSetter() :
         withincode(* set*(..));
 
-    public pointcut withinGetter() : 
+    public pointcut withinGetter() :
         withincode(Object+ get*(..));
-    
-    public pointcut anyNonPublicFieldSetOutsideConstructorOrSetter() : 
-        set(!public * *) && !withincode(new(..)) 
+
+    public pointcut anyNonPublicFieldSetOutsideConstructorOrSetter() :
+        set(!public * *) && !withincode(new(..))
         && !withinSetter();
 
     public pointcut anyRunnableImplementation() :
@@ -88,7 +88,7 @@ public class Pointcuts {
 
     public pointcut anySetSystemErrOut() :
         call(void System.setOut(..)) || call(void System.setErr(..));
-    
+
     public pointcut withinAnyJavaCode() :
         within(java..*) || within(javax..*);
 
@@ -102,15 +102,15 @@ public class Pointcuts {
     public pointcut anyThreadConstruction() :
         call(Thread+.new(..)) || execution(Thread+.new(..));
 
-    /** 
-     * Any calls to java.io classes 
+    /**
+     * Any calls to java.io classes
      * (but not methods declared only on their subclasses).
      */
     public pointcut anyJavaIOCalls() :
         call(* java.io..*.*(..)) || call(java.io..*.new(..));
 
-    /** 
-     * Any calls to java.awt or javax.swing classes 
+    /**
+     * Any calls to java.awt or javax.swing classes
      * (but not methods declared only on their subclasses).
      */
     public pointcut anyJavaAWTOrSwingCalls() :
@@ -119,10 +119,10 @@ public class Pointcuts {
 
     public pointcut cloneImplementationsInNonCloneable() :
         execution(Object !Cloneable+.clone());
-        
+
     public pointcut runImplementationsInNonRunnable() :
         execution(void !Runnable+.run());
-        
+
     /** any calls to java.lang.reflect or Class.get* (except getName()) */
     public pointcut anySystemReflectiveCalls() :
         call(* java.lang.reflect..*.*(..))
@@ -146,17 +146,17 @@ public class Pointcuts {
     public pointcut exceptionWrappingCalls() :
         (args(Throwable+,..) || args(.., Throwable+))
         && (set(Throwable+ Throwable+.*)
-            || (call(* Throwable+.*(..)) 
+            || (call(* Throwable+.*(..))
                 || call(Throwable+.new(..))));
 
     private Pointcuts() {}
-    
+
 }
 aspect A {
     private static aspect PointcutsOnly {
         /** require this library to only contain pointcuts */
         declare error : within(Pointcuts) &&
-            (Pointcuts.anyMethodExecution() 
+            (Pointcuts.anyMethodExecution()
                 || Pointcuts.anyNonPrivateConstructorExecution()
                 || set(* *)) : "only pointcuts permitted in Pointcuts";
              // does not pick out field definitions -- too costly

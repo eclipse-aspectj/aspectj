@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.taskdefs;
@@ -37,7 +37,7 @@ import org.aspectj.util.LangUtil;
  * but incremental compiles require running the compiler
  * in another thread using an incremental tag file.
  * This is imprecise because it assumes
- * incremental compiles are complete 
+ * incremental compiles are complete
  * when messages stop coming from the compiler.
  * Also, the client should call quit() when done compiling
  * to halt the process.
@@ -45,12 +45,12 @@ import org.aspectj.util.LangUtil;
  *     to avoid the kludge workarounds
  */
 public class AjcTaskCompileCommand implements ICommand {
-    /** 
-     * 20 seconds of quiet in message holder 
-     * before we assume incremental compile is done 
+    /**
+     * 20 seconds of quiet in message holder
+     * before we assume incremental compile is done
      */
     public static int COMPILE_SECONDS_WITHOUT_MESSAGES = 20;
-    
+
     /** 5 minutes maximum time to wait for a compile to complete */
     public static int COMPILE_MAX_SECONDS = 300;
 
@@ -67,7 +67,7 @@ public class AjcTaskCompileCommand implements ICommand {
      *   seconds => timeoutSeconds
      */
     static boolean waitUntilMessagesQuiet(
-            IMessageHolder holder, 
+            IMessageHolder holder,
             int seconds,
             int timeoutSeconds) {
         LangUtil.throwIaxIfNull(holder, "holder");
@@ -102,7 +102,7 @@ public class AjcTaskCompileCommand implements ICommand {
                 } catch (InterruptedException e) {
                     // ignore
                 }
-                curTime = System.currentTimeMillis();            
+                curTime = System.currentTimeMillis();
             }
             int newNumMessages = holder.numMessages(null, true);
             if (newNumMessages != numMessages) {
@@ -112,14 +112,14 @@ public class AjcTaskCompileCommand implements ICommand {
         }
         return (curTime >= (numMessagesTime + targetQuietTime));
     }
-    
+
     // single-threaded driver
     MessageHandler messages = new MessageHandler();
     AjcTask ajcTask;
     File incrementalFile;
     Thread incrementalCompileThread;
 
-    /** 
+    /**
      * Stop waiting for any further incremental compiles.
      * Safe to call in non-incremental modes.
      */
@@ -128,7 +128,7 @@ public class AjcTaskCompileCommand implements ICommand {
         if (null != task) {
             task.quit(); // signal task to quit, thread to die
             ajcTask = null; // XXX need for cleanup?
-        }        
+        }
         updateIncrementalFile(false, true);
         Thread thread = incrementalCompileThread;
         if (null != thread) {
@@ -146,10 +146,10 @@ public class AjcTaskCompileCommand implements ICommand {
             incrementalCompileThread = null;
         }
     }
-    
+
     // --------- ICommand interface
     public boolean runCommand(String[] args, IMessageHandler handler) {
-        return (makeAjcTask(args, handler) 
+        return (makeAjcTask(args, handler)
             && doCommand(handler, false));
     }
 
@@ -162,7 +162,7 @@ public class AjcTaskCompileCommand implements ICommand {
     public boolean repeatCommand(IMessageHandler handler) {
         return doCommand(handler, true);
     }
-    
+
     protected boolean doCommand(IMessageHandler handler, boolean repeat) {
         messages.clearMessages();
         if (null == ajcTask) {
@@ -208,7 +208,7 @@ public class AjcTaskCompileCommand implements ICommand {
         } finally {
             MessageUtil.handleAll(handler, messages, false);
         }
-       return (0 == messages.numMessages(IMessage.ERROR, true)); 
+       return (0 == messages.numMessages(IMessage.ERROR, true));
     }
 
 
@@ -240,9 +240,9 @@ public class AjcTaskCompileCommand implements ICommand {
             if (incremental) {
                 args = (String[]) newArgs.toArray(new String[0]);
             }
-                                
+
             result.readArguments(args);
-            
+
             if (incremental || result.isInIncrementalMode()) {
                 // these should be impossible...
                 if (result.isInIncrementalFileMode()) {
@@ -270,13 +270,13 @@ public class AjcTaskCompileCommand implements ICommand {
         }
         return (null != ajcTask);
     }
-    
+
     protected boolean updateIncrementalFile(boolean create, boolean delete) {
         File file = incrementalFile;
         if (delete) {
             try {
                 return (null == file)
-                    || !file.exists() 
+                    || !file.exists()
                     || file.delete();
             } finally {
                 incrementalFile = null;
@@ -295,6 +295,6 @@ public class AjcTaskCompileCommand implements ICommand {
             }
         }
     }
-    
+
 }
 

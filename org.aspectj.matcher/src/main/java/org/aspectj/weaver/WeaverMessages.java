@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2004-2019 Contributors
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
 package org.aspectj.weaver;
 
@@ -142,7 +142,7 @@ public class WeaverMessages {
 	public static final String CANT_DECP_TO_MAKE_ANNOTATION_SUPERTYPE = "cantDecpToMakeAnnotationSupertype";
 	public static final String REFERENCE_TO_NON_ANNOTATION_TYPE = "referenceToNonAnnotationType";
 	public static final String BINDING_NON_RUNTIME_RETENTION_ANNOTATION = "bindingNonRuntimeRetentionAnnotation";
-	
+
 	public static final String UNSUPPORTED_ANNOTATION_VALUE_TYPE = "unsupportedAnnotationValueType";
 
 	public static final String INCORRECT_TARGET_FOR_DECLARE_ANNOTATION = "incorrectTargetForDeclareAnnotation";
@@ -185,7 +185,7 @@ public class WeaverMessages {
 	public static final String HAS_MEMBER_NOT_ENABLED = "hasMemberNotEnabled";
 
 	public static final String MUST_KEEP_OVERWEAVING_ONCE_START = "mustKeepOverweavingOnceStart";
-	
+
 	// @AspectJ
 	public static final String RETURNING_FORMAL_NOT_DECLARED_IN_ADVICE = "returningFormalNotDeclaredInAdvice";
 	public static final String THROWN_FORMAL_NOT_DECLARED_IN_ADVICE = "thrownFormalNotDeclaredInAdvice";

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -28,21 +28,21 @@ public class CheckerTestCase extends WeaveTestCase {
 	public CheckerTestCase(String name) {
 		super(name);
 	}
-    
+
 
     public void testStaticTjp() throws IOException {
     	Checker checker = new Checker(
     		new DeclareErrorOrWarning(true, makePointcutPrintln(), "hey, we found a println"));
-    	
+
     	MessageHandler handler = new MessageHandler();
     	world.setMessageHandler(handler);
-    	
+
         weaveTest("HelloWorld", "IdHelloWorld", checker);
         assertEquals(1, handler.numMessages(IMessage.ERROR, false));
-        
+
         handler = new MessageHandler();
     	world.setMessageHandler(handler);
         weaveTest("FancyHelloWorld", "IdFancyHelloWorld", checker);
         assertEquals(3, handler.numMessages(IMessage.ERROR, false));
-    } 
+    }
 }

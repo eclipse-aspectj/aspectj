@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -42,19 +42,19 @@ public class ProceedVisitor extends ASTVisitor {
 	LocalVariableBinding thisJoinPointDec;
 	LocalVariableBinding thisJoinPointStaticPartDec;
 	LocalVariableBinding thisEnclosingJoinPointStaticPartDec;
-	
+
 	LocalVariableBinding thisJoinPointDecLocal;
 	LocalVariableBinding thisJoinPointStaticPartDecLocal;
 	LocalVariableBinding thisEnclosingJoinPointStaticPartDecLocal;
 
 	boolean replaceEffectivelyStaticRefs = false;
-	
+
 	AbstractMethodDeclaration method;
 
 	ProceedVisitor(AbstractMethodDeclaration method) {
 		this.method = method;
 		int index = method.arguments.length - 3;
-		
+
 		thisJoinPointStaticPartDecLocal = method.scope.locals[index];
 		thisJoinPointStaticPartDec = method.arguments[index++].binding;
 		thisJoinPointDecLocal = method.scope.locals[index];
@@ -176,30 +176,30 @@ public class ProceedVisitor extends ASTVisitor {
 
 	public int removeUnusedExtraArguments() {
 		int extraArgumentFlags = 0;
-		
+
 		this.computeJoinPointParams();
 		MethodBinding binding = method.binding;
-		
-		
+
+
 		int index = binding.parameters.length - 3;
 		if (needsStaticEnclosing) {
 			extraArgumentFlags |= Advice.ThisEnclosingJoinPointStaticPart;
 		} else {
 			removeParameter(index+2);
 		}
-		
+
 		if (needsDynamic) {
 			extraArgumentFlags |= Advice.ThisJoinPoint;
 		} else {
 			removeParameter(index+1);
 		}
-		
+
 		if (needsStatic) {
 			extraArgumentFlags |= Advice.ThisJoinPointStaticPart;
 		} else {
 			removeParameter(index+0);
 		}
-		
+
 		return extraArgumentFlags;
 	}
 
@@ -209,7 +209,7 @@ public class ProceedVisitor extends ASTVisitor {
 		method.binding.parameters = removeParameter(indexToRemove, method.binding.parameters);
 	}
 
-	
+
 	private static TypeBinding[] removeParameter(int index, TypeBinding[] bindings) {
 		int len = bindings.length;
 		TypeBinding[] ret = new TypeBinding[len-1];

@@ -2,9 +2,9 @@
  * Copyright (c) 2005 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   David Knibb         initial implementation
@@ -24,7 +24,7 @@ import org.aspectj.weaver.tools.WeavingAdaptor;
 
 /**
  * Use in non-OSGi environment
- * 
+ *
  * @author David Knibb
  */
 public class DefaultWeavingContext implements IWeavingContext {
@@ -36,7 +36,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 
 	/**
 	 * Construct a new WeavingContext to use the specified ClassLoader This is the constructor which should be used.
-	 * 
+	 *
 	 * @param loader
 	 */
 	public DefaultWeavingContext(ClassLoader loader) {
@@ -118,7 +118,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 
 	/**
 	 * Simply call weaving adaptor back to parse aop.xml
-	 * 
+	 *
 	 * @param adaptor
 	 * @param loader
 	 */

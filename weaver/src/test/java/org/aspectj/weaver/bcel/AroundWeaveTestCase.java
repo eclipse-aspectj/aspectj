@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -33,15 +33,15 @@ public class AroundWeaveTestCase extends WeaveTestCase {
 	public AroundWeaveTestCase(String name) {
 		super(name);
 	}
-	
+
 	public void testAround() throws IOException {
 		aroundTest("Around", true);
 	}
-	
+
 	public void testAroundAll() throws IOException {
 		aroundTest("AroundAll", false);
 	}
-	
+
     public void testAroundAndOthers() throws IOException {
     	aroundTestAndOthers("AroundAndOthers", true);
     }
@@ -59,9 +59,9 @@ public class AroundWeaveTestCase extends WeaveTestCase {
                 Modifier.STATIC,
                 "ajc_around",
                 "(Lorg/aspectj/runtime/internal/AroundClosure;)Ljava/lang/Object;");
-        
+
         return new BcelAdvice(
-        	AdviceKind.stringToKind("around"), 
+        	AdviceKind.stringToKind("around"),
         	matchOnlyPrintln ? makePointcutPrintln() : makePointcutAll(),
 	        sig, 0, -1, -1, null, UnresolvedType.forName("Aspect").resolve(world))
 	    {
@@ -70,15 +70,15 @@ public class AroundWeaveTestCase extends WeaveTestCase {
             	super.specializeOn(s);
                 ((BcelShadow) s).initializeForAroundClosure();
             }
-        };    
-    }  
+        };
+    }
 
 	private void aroundTest(String outName, final boolean matchOnlyPrintln) throws IOException {
 		weaveTest(getStandardTargets(), outName, makeAroundMunger(matchOnlyPrintln));
-	}  
+	}
 
     private void aroundTestAndOthers(String outName, final boolean matchOnlyPrintln)
-            throws IOException 
+            throws IOException
     {
 
 		// the afterReturning was taken out to avoid circular advice dependency
@@ -93,6 +93,6 @@ public class AroundWeaveTestCase extends WeaveTestCase {
 
         l.add(makeAroundMunger(matchOnlyPrintln));
         weaveTest(getStandardTargets(), outName, addLexicalOrder(l));
-    } 
+    }
 
 }

@@ -2,12 +2,12 @@
  * Copyright (c) 2007-2008 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
- *     Alexandre Vasseur    
+ *     Alexandre Vasseur
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -15,7 +15,7 @@ import org.aspectj.weaver.Member;
 
 /**
  * A sample toString like visitor that helps understanding the AST tree structure organization
- * 
+ *
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
  */
 public class DumpPointcutVisitor implements PatternNodeVisitor {
@@ -36,7 +36,7 @@ public class DumpPointcutVisitor implements PatternNodeVisitor {
 
 	/**
 	 * This method helps maintaining the API and raises warning when PatternNode subclasses do not implement the visitor pattern
-	 * 
+	 *
 	 * @param node
 	 * @param data
 	 * @return

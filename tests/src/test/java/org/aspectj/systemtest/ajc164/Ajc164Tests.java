@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -63,7 +63,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	 * was available as source. There are two compile steps in the xml for the test - commenting out the first will allow the source
 	 * handles to be seen, leaving it in will switch to binary. Effectively the only difference should be that in the binary case
 	 * the handles are prefixed 'binaries'.
-	 * 
+	 *
 	 * Change due to bug 274558: now AJDT wants (blah.class as the 'source file' for the ITD so that is another difference when
 	 * switching.
 	 */
@@ -357,7 +357,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals("Ljava/lang/Exception; e(3) start=29 len=4", stringify(l, 1));
 		assertEquals("LFoo2; this(0) start=0 len=34", stringify(l, 4));
 		assertEquals("Ljava/lang/String; s(2) start=15 len=19", stringify(l, 2));
-		// With the 1.8 compiler looks like len=7 and not len=10 here, the goto to jump to the return is no longer included 
+		// With the 1.8 compiler looks like len=7 and not len=10 here, the goto to jump to the return is no longer included
 		// in the variable range
 		assertEquals("Ljava/lang/String; s2(3) start=18 len=7", stringify(l, 3));
 	}

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.bridge;
@@ -22,17 +22,17 @@ import java.io.PrintWriter;
  * are rendered by overriding render(IMessage).
  */
 public class MessageWriter implements IMessageHandler {
-    
+
     protected PrintWriter writer;
     protected boolean abortOnFailure;
     public MessageWriter(PrintWriter writer, boolean abortOnFailure) {
         this.writer = (null != writer ? writer : new PrintWriter(System.out));
         this.abortOnFailure = abortOnFailure;
     }
-    
+
     /**
      * Handle message by printing and
-     * (if abortOnFailure) throwing an AbortException if 
+     * (if abortOnFailure) throwing an AbortException if
      * the messages is a failure or an abort (but not for errors).
 	 * @see org.aspectj.bridge.IMessageHandler#handleMessage(IMessage)
 	 */
@@ -50,11 +50,11 @@ public class MessageWriter implements IMessageHandler {
         }
 		return true;
 	}
-    
+
     /**
 	 * @see org.aspectj.bridge.IMessageHandler#isIgnoring(org.aspectj.bridge.IMessage.Kind)
 	 */
-	public boolean isIgnoring(IMessage.Kind kind) { 
+	public boolean isIgnoring(IMessage.Kind kind) {
         // XXX share MessageHandler implementation in superclass
 		return false;
 	}
@@ -65,7 +65,7 @@ public class MessageWriter implements IMessageHandler {
      * @param kind
      */
     public void dontIgnore(IMessage.Kind kind) {
-        
+
     }
 
     /**
@@ -78,7 +78,7 @@ public class MessageWriter implements IMessageHandler {
 
     /** @return null to not print, or message rendering (including newlines) */
     protected String render(IMessage message) {
-        return message.toString();    
+        return message.toString();
     }
 
 }

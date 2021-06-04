@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 2002-2014 Palo Alto Research Center, Incorporated (PARC) 
+ * Copyright (c) 2002-2014 Palo Alto Research Center, Incorporated (PARC)
  *               and Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     PARC     initial implementation
- *     IBM      ongoing maintenance 
+ *     IBM      ongoing maintenance
  * ******************************************************************/
 
 
@@ -30,18 +30,18 @@ import org.aspectj.weaver.AdviceKind;
 /**
  * Used to represent any method call to a method named <code>proceed</code>.  During
  * <code>resolvedType</code> it will be determined if this is actually in the body
- * of an <code>around</code> advice and has no receiver (must be a bare proceed call, 
+ * of an <code>around</code> advice and has no receiver (must be a bare proceed call,
  * see pr 53981), and if not this will be treated like any other
  * MessageSend.
- * 
+ *
  * @author Jim Hugunin
  */
 public class Proceed extends MessageSend {
 	public boolean inInner = false;
-	
+
 	public Proceed(MessageSend parent) {
 		super();
-		
+
 		this.receiver = parent.receiver;
 		this.selector  = parent.selector;
 		this.arguments  = parent.arguments;
@@ -53,11 +53,11 @@ public class Proceed extends MessageSend {
 		this.nameSourcePosition = parent.nameSourcePosition;
 		this.actualReceiverType = parent.actualReceiverType;
 		//this.qualifyingType = parent.qualifyingType;
-		
+
 		this.valueCast = parent.valueCast;
 		this.typeArguments = parent.typeArguments;
 		this.genericTypeArguments = parent.genericTypeArguments;
-		
+
 		this.sourceStart = parent.sourceStart;
 		this.sourceEnd = parent.sourceEnd;
 	}
@@ -66,16 +66,16 @@ public class Proceed extends MessageSend {
 		// find out if I'm really in an around body or not
 		//??? this could in theory be done by the parser, but that appears to be hard
 		AdviceDeclaration aroundDecl = findEnclosingAround(scope);
-		
+
 		if (aroundDecl == null) {
 			return super.resolveType(scope);
 		}
-		
+
 		constant = Constant.NotAConstant;
 		binding =/* codegenBinding = */aroundDecl.proceedMethodBinding;
-		
+
 		this.actualReceiverType = binding.declaringClass;
-		
+
 		int baseArgCount = 0;
 		if (arguments != null) {
 			baseArgCount = arguments.length;
@@ -85,19 +85,19 @@ public class Proceed extends MessageSend {
 		} else {
 			arguments = new Expression[1];
 		}
-		
+
 		arguments[baseArgCount] = AstUtil.makeLocalVariableReference(aroundDecl.extraArgument.binding);
-		
+
 		int declaredParameterCount = aroundDecl.getDeclaredParameterCount();
 		if (baseArgCount < declaredParameterCount) {
-			scope.problemReporter().signalError(this.sourceStart, this.sourceEnd, 
+			scope.problemReporter().signalError(this.sourceStart, this.sourceEnd,
 								"too few arguments to proceed, expected " + declaredParameterCount);
 			aroundDecl.ignoreFurtherInvestigation = true;
 			return null; //binding.returnType;
 		}
-		
+
 		if (baseArgCount > declaredParameterCount) {
-			scope.problemReporter().signalError(this.sourceStart, this.sourceEnd, 
+			scope.problemReporter().signalError(this.sourceStart, this.sourceEnd,
 								"too many arguments to proceed, expected " + declaredParameterCount);
 			aroundDecl.ignoreFurtherInvestigation = true;
 			return null; //binding.returnType;
@@ -110,7 +110,7 @@ public class Proceed extends MessageSend {
 		}
 //		TypeBinding[] argumentTypes = Binding.NO_PARAMETERS;
 //		if (this.arguments != null) {
-//			boolean argHasError = false; // typeChecks all arguments 
+//			boolean argHasError = false; // typeChecks all arguments
 //			int length = this.arguments.length;
 //			argumentTypes = new TypeBinding[length];
 //			for (int i = 0; i < length; i++){
@@ -129,7 +129,7 @@ public class Proceed extends MessageSend {
 //					TypeBinding[] pseudoArgs = new TypeBinding[length];
 //					for (int i = length; --i >= 0;)
 //						pseudoArgs[i] = argumentTypes[i] == null ? TypeBinding.NULL : argumentTypes[i]; // replace args with errors with null type
-//					this.binding = 
+//					this.binding =
 //						this.receiver.isImplicitThis()
 //							? scope.getImplicitMethod(this.selector, pseudoArgs, this)
 //							: scope.findMethod((ReferenceBinding) this.actualReceiverType, this.selector, pseudoArgs, this);
@@ -178,7 +178,7 @@ public class Proceed extends MessageSend {
 
 	private AdviceDeclaration findEnclosingAround(Scope scope) {
 		if (scope == null) return null;
-				
+
 		if (scope instanceof MethodScope) {
 			MethodScope methodScope = (MethodScope)scope;
 			ReferenceContext context = methodScope.referenceContext;
@@ -196,7 +196,7 @@ public class Proceed extends MessageSend {
 		} else if (scope instanceof ClassScope) {
 			inInner = true;
 		}
-		
+
 		return findEnclosingAround(scope.parent);
 	}
 }

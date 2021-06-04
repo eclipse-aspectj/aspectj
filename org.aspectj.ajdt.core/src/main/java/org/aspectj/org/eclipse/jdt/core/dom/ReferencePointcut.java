@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -20,15 +20,15 @@ import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
  * ReferencePointcut DOM AST node.
  * has:
  *   a name
- *   
+ *
  * note:
  *   should also have a parameter list like method invokations do?
  * @author ajh02
  */
-public class ReferencePointcut extends PointcutDesignator {	
-	
+public class ReferencePointcut extends PointcutDesignator {
+
 	private SimpleName pointcutName = null;
-	public static final ChildPropertyDescriptor NAME_PROPERTY = 
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
 		new ChildPropertyDescriptor(ReferencePointcut.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	public SimpleName getName() {
 		if (this.pointcutName == null) {
@@ -52,10 +52,10 @@ public class ReferencePointcut extends PointcutDesignator {
 		this.pointcutName = pointcutName;
 		postReplaceChild(oldChild, pointcutName, NAME_PROPERTY);
 	}
-	
-	
-	
-	
+
+
+
+
 	ReferencePointcut(AST ast) {
 		super(ast);
 	}

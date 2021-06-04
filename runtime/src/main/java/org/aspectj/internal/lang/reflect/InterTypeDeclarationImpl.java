@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
@@ -24,7 +24,7 @@ public class InterTypeDeclarationImpl implements InterTypeDeclaration {
 	protected String targetTypeName;
 	private AjType<?> targetType;
 	private int modifiers;
-	
+
 	public InterTypeDeclarationImpl(AjType<?> decType, String target, int mods) {
 		this.declaringType = decType;
 		this.targetTypeName = target;
@@ -35,7 +35,7 @@ public class InterTypeDeclarationImpl implements InterTypeDeclaration {
 			// we'll only report this later if the user asks for the target type.
 		}
 	}
-	
+
 	public InterTypeDeclarationImpl(AjType<?> decType, AjType<?> targetType, int mods) {
 		this.declaringType = decType;
 		this.targetType = targetType;

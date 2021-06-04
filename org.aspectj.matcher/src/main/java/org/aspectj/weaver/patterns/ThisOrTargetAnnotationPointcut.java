@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
 
@@ -34,7 +34,7 @@ import org.aspectj.weaver.ast.Var;
 
 /**
  * @author colyer
- * 
+ *
  *         TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code
  *         Templates
  */
@@ -65,7 +65,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public ThisOrTargetAnnotationPointcut(boolean isThis, ExactAnnotationTypePattern type) {
 		super();
@@ -103,7 +103,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#fastMatch(org.aspectj.weaver.patterns.FastMatchInfo)
 	 */
 	@Override
@@ -113,7 +113,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#match(org.aspectj.weaver.Shadow)
 	 */
 	@Override
@@ -137,7 +137,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#resolveBindings(org.aspectj.weaver.patterns.IScope,
 	 * org.aspectj.weaver.patterns.Bindings)
 	 */
@@ -173,7 +173,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#concretize1(org.aspectj.weaver.ResolvedType, org.aspectj.weaver.IntMap)
 	 */
 	@Override
@@ -198,7 +198,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.Pointcut#findResidue(org.aspectj.weaver.Shadow, org.aspectj.weaver.patterns.ExposedState)
 	 */
 	/**
@@ -242,7 +242,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingAnnotationTypePatterns()
 	 */
 	@Override
@@ -258,7 +258,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.NameBindingPointcut#getBindingTypePatterns()
 	 */
 	@Override
@@ -268,7 +268,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.PatternNode#write(java.io.DataOutputStream)
 	 */
 	@Override
@@ -289,7 +289,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -303,7 +303,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -313,7 +313,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	private void buildDeclarationText() {

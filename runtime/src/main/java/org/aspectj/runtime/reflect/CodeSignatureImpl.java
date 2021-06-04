@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -20,8 +20,8 @@ abstract class CodeSignatureImpl extends MemberSignatureImpl implements CodeSign
     Class[] parameterTypes;
     String[] parameterNames;
     Class[] exceptionTypes;
-    
-    CodeSignatureImpl(int modifiers, String name, Class declaringType, 
+
+    CodeSignatureImpl(int modifiers, String name, Class declaringType,
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes)
     {
         super(modifiers, name, declaringType);
@@ -32,7 +32,7 @@ abstract class CodeSignatureImpl extends MemberSignatureImpl implements CodeSign
     CodeSignatureImpl(String stringRep) {
         super(stringRep);
     }
-    
+
     public Class[] getParameterTypes() {
         if (parameterTypes == null) parameterTypes = extractTypes(3);
         return parameterTypes;

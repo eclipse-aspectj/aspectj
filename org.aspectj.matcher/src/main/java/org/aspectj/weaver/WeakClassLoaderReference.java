@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -28,8 +28,8 @@ import java.lang.ref.WeakReference;
  * WeakClassLoaderReference instances will not 'lose' their ClassLoader references until the top level ClassLoader reference is
  * null'd. This means there is no need to check for the null case on get() in this WeakReference logic below, because we shouldn't
  * be using this weaver if its associated ClassLoader has been collected. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=210470
- * 
- * 
+ *
+ *
  * @author Andy Clement, Abraham Nevado
  */
 public class WeakClassLoaderReference{
@@ -41,7 +41,7 @@ public class WeakClassLoaderReference{
 	public WeakClassLoaderReference(ClassLoader loader) {
 		loaderRef = new WeakReference(loader);
 		if(loader == null){
-			// Bug: 363962 
+			// Bug: 363962
 			// Check that ClassLoader is not null, for instance when loaded from BootStrapClassLoader
 			hashcode = System.identityHashCode(this);
 		}else{

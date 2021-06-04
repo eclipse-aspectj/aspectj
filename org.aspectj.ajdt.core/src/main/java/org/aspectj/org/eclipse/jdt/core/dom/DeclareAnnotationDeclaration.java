@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -13,38 +13,38 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 /**
  * Abstract class for the different declare annotation
  * declaration AST node types.
- * 
+ *
  * Has everything a DeclareDeclaration has plus:
  *   	a PatternNode called 'pattern'
  *      a SimpleName called 'annotationName'
- *      
- * Unsupported for JLS2.    
+ *
+ * Unsupported for JLS2.
  */
 public abstract class DeclareAnnotationDeclaration extends DeclareDeclaration {
-	
+
 	abstract ChildPropertyDescriptor internalPatternNodeProperty();
 	abstract ChildPropertyDescriptor internalAnnotationNameProperty();
-	
+
 	/**
 	 * Creates and returns a structural property descriptor for the
 	 * "annotationName" property declared on the given concrete node type.
-	 * 
+	 *
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalAnnotationNamePropertyFactory(Class nodeClass) {
 		return new ChildPropertyDescriptor(nodeClass, "annotationName", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
-	
+
 	/**
 	 * Creates and returns a structural property descriptor for the
 	 * "pattern" property declared on the given concrete node type.
-	 * 
+	 *
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalPatternNodePropertyFactory(Class nodeClass) {
 		return new ChildPropertyDescriptor(nodeClass, "pattern", PatternNode.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
-	
+
 	PatternNode pattern;
 	SimpleName name = null;
 
@@ -52,11 +52,11 @@ public abstract class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		super(ast);
 		unsupportedIn2();
 	}
-	
+
 	public PatternNode getPatternNode(){
 		return pattern;
 	}
-	
+
 	public void setPatternNode(PatternNode pattern) {
 		if (pattern == null) {
 			throw new IllegalArgumentException();
@@ -66,12 +66,12 @@ public abstract class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		this.pattern = pattern;
 		postReplaceChild(oldChild, pattern, internalPatternNodeProperty());
 	}
-	
+
 	/**
 	 * Returns the name of the annotation type member declared in this declaration.
-	 * 
+	 *
 	 * @return the name node
-	 */ 
+	 */
 	public SimpleName getAnnotationName() {
 		if (this.name == null) {
 			// lazy init must be thread-safe for readers
@@ -85,18 +85,18 @@ public abstract class DeclareAnnotationDeclaration extends DeclareDeclaration {
 		}
 		return this.name;
 	}
-	
+
 	/**
 	 * Sets the name of the annotation type member declared in this declaration to the
 	 * given name.
-	 * 
+	 *
 	 * @param name the new member name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
 	 * <li>the node already has a parent</li>
 	 * </ul>
-	 */ 
+	 */
 	public void setAnnotationName(SimpleName name) {
 		if (name == null) {
 			throw new IllegalArgumentException();

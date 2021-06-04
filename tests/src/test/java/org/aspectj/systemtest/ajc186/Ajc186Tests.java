@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2014 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -100,7 +100,7 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testLambdaBeans() throws Exception {
 		runTest("lambda beans");
-		
+
 		// Load the 1.8 compiled code
 		URLClassLoader ucl = new URLClassLoader(new URL[] {ajc.getSandboxDirectory().toURI().toURL()},this.getClass().getClassLoader());
 		Class<?> applicationClass = Class.forName("Application",false,ucl);
@@ -108,14 +108,14 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		Object instance = applicationClass.getDeclaredConstructor().newInstance();
 		Method works = applicationClass.getDeclaredMethod("fromInnerClass");
 		works.setAccessible(true);
-		Runnable r = (Runnable) works.invoke(instance);		
+		Runnable r = (Runnable) works.invoke(instance);
 		// r.getClass().getName() == Application$1
-		
+
 		Method fails = applicationClass.getDeclaredMethod("fromLambdaExpression");
 		fails.setAccessible(true);
-		Runnable r2 = (Runnable) fails.invoke(instance);		
+		Runnable r2 = (Runnable) fails.invoke(instance);
 		// r2.getClass().getName() == Application$$Lambda$1/1652149987
-		
+
 //		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Application");
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(ucl);
@@ -127,18 +127,18 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		context.addContextBinding("beanName", "myBean");
 		assertTrue(pc.couldMatchJoinPointsInType(r.getClass()));
-		
+
 		context.addContextBinding("beanName", "yourBean");
 		assertFalse(pc.couldMatchJoinPointsInType(r.getClass()));
 
 		context.addContextBinding("beanName", "myBean");
 		assertTrue(pc.couldMatchJoinPointsInType(r2.getClass()));
-		
+
 		context.addContextBinding("beanName", "yourBean");
 		assertFalse(pc.couldMatchJoinPointsInType(r2.getClass()));
 	}
-	
-	
+
+
 	public void testMissingExtends() throws Exception {
 		runTest("missing extends on generic target");
 	}

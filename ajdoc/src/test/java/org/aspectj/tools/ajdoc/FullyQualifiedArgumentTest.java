@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2005 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2005 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.tools.ajdoc;
@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.List;
 
 public class FullyQualifiedArgumentTest extends AjdocTestCase {
-    
+
 	/**
 	 * Test for pr58520
 	 */
@@ -24,7 +24,7 @@ public class FullyQualifiedArgumentTest extends AjdocTestCase {
     			new File(getAbsoluteProjectDir() + File.separatorChar +"src/pack/C.java"),
     			new File(getAbsoluteProjectDir() + File.separatorChar + "src/pack/A.aj")};
     	runAjdoc("private",files);
-        
+
 		// check the contents of A.html
 		File htmlA = new File(getAbsolutePathOutdir() + "/pack/A.html");
 		if (!htmlA.exists()) {
@@ -41,5 +41,5 @@ public class FullyQualifiedArgumentTest extends AjdocTestCase {
 		assertEquals("The fully qualified name should appear in the argument",
 				"C.html#method3(String)",missing.get(0));
     }
-        
+
 }

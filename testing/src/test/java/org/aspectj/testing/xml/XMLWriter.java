@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
@@ -19,7 +19,7 @@ import java.util.Stack;
 
 import org.aspectj.util.LangUtil;
 
-/** 
+/**
  * Manage print stream to an XML document.
  * This tracks start/end elements and signals on error,
  * and optionally lineates buffer by accumulating
@@ -30,7 +30,7 @@ import org.aspectj.util.LangUtil;
 public class XMLWriter {
     static final String SP = "  ";
     static final String TAB = SP + SP;
-    
+
     /** maximum value for maxWidth, when flowing buffer */
     public static final int MAX_WIDTH = 8000;
 
@@ -55,17 +55,17 @@ public class XMLWriter {
         input = input.replace('&', '=');
         return input;
     }
-    
+
     /** @return name="{attributeValue({value})" */
     public static String makeAttribute(String name, String value) {
         return (name + "=\"" + attributeValue(value) + "\"");
     }
-    
+
     /** same as flattenList, except also normalize \ -> / */
     public static String flattenFiles(String[] strings) {
         return flattenList(strings).replace('\\', '/');
     }
-    
+
     /** same as flattenList, except also normalize \ -> / */
     public static String flattenFiles(List paths) {
         return flattenList(paths).replace('\\', '/');
@@ -82,7 +82,7 @@ public class XMLWriter {
     public static String[] unflattenList(String input) {
         return (String[]) LangUtil.commaSplit(input).toArray(new String[0]);
     }
-    
+
     /** flatten input and add to list */
     public static void addFlattenedItems(List list, String input) {
         LangUtil.throwIaxIfNull(list, "list");
@@ -95,10 +95,10 @@ public class XMLWriter {
 					}
 				}
             }
-        }    
+        }
     }
-    
-	/** 
+
+	/**
      * Collapse list into a single comma-delimited value (e.g., for list buffer)
      * @param list List of items to print - null is silently ignored,
      *         so for empty items use ""
@@ -113,7 +113,7 @@ public class XMLWriter {
     }
 
 
-	/** 
+	/**
      * Collapse list into a single comma-delimited value (e.g., for list buffer)
      * @param list the String[] items to print - null is silently ignored,
      *         so for empty items use ""
@@ -141,23 +141,23 @@ public class XMLWriter {
         }
         return sb.toString();
     }
-    
+
     /** output sink */
     PrintWriter out;
-    
+
     /** stack of String element names */
-    Stack stack = new Stack(); 
-    
+    Stack stack = new Stack();
+
     /** false if doing attributes */
     boolean attributesDone = true;
-    
+
     /** current element prefix */
     String indent = "";
-    
+
     /** maximum width (in char) of indent and buffer when flowing */
     int maxWidth;
-    
-    /** 
+
+    /**
      * Current text being flowed.
      * length() is always less than maxWidth.
      */
@@ -170,10 +170,10 @@ public class XMLWriter {
         buffer = new StringBuffer();
         maxWidth = DEFAULT_WIDTH;
     }
-    
-    /** 
+
+    /**
      * Set maximum width (in chars) of buffer to accumulate.
-     * @param maxWidth int 0..MAX_WIDTH for maximum number of char to accumulate 
+     * @param maxWidth int 0..MAX_WIDTH for maximum number of char to accumulate
      */
     public void setMaxWidth(int maxWidth) {
         if (0 > maxWidth) {
@@ -184,7 +184,7 @@ public class XMLWriter {
             this.maxWidth = maxWidth;
         }
     }
-    
+
     /** shortcut for entire element */
     public void printElement(String name, String attributes) {
         if (!attributesDone) throw new IllegalStateException("finish attributes");
@@ -209,12 +209,12 @@ public class XMLWriter {
     public void startElement(String name, boolean closeTag) {
         startElement(name, "", closeTag);
     }
-    
-    /** 
+
+    /**
      * Start element with buffer on the same line.
      * This does not flow buffer.
      * @param name String tag for the element
-     * @param attr {name="value"}.. where value 
+     * @param attr {name="value"}.. where value
      *         is a product of attributeValue(String)
      */
     public void startElement(String name, String attr, boolean closeTag) {
@@ -232,7 +232,7 @@ public class XMLWriter {
         sb.append(indent);
         sb.append("<");
         sb.append(name);
-        
+
         if (!LangUtil.isEmpty(attr)) {
             sb.append(" ");
             sb.append(attr.trim());
@@ -254,8 +254,8 @@ public class XMLWriter {
         }
         stack.push(new StackElement(name));
     }
-    
-    /** 
+
+    /**
      * @param name should be the same as that given to start the element
      * @throws IllegalStateException if start element does not match
      */
@@ -290,7 +290,7 @@ public class XMLWriter {
             indent = indent.substring(0,  indent.length() - TAB.length());
         }
     }
-    
+
 
     /**
      * Print name=value if neither is null and name is not empty after trimming,
@@ -308,12 +308,12 @@ public class XMLWriter {
         if ((null == name) || (0 == name.trim().length())) {
             throw new IllegalArgumentException("no name=" + name + "=" + value);
         }
-        
+
         String newAttr = name + "=\"" + attributeValue(value) + "\"";
         int indentLen = indent.length();
         int bufferLen = buffer.length();
         int newAttrLen = (0 == bufferLen ? indentLen : 0) + newAttr.length();
-        
+
         if (maxWidth > (bufferLen + newAttrLen)) {
             buffer.append(" ");
             buffer.append(newAttr);
@@ -323,24 +323,24 @@ public class XMLWriter {
                 buffer.setLength(0);
             }
             buffer.append(indent + SP + newAttr);
-        } 
+        }
     }
 
     public void endAttributes() {
         if (attributesDone) throw new IllegalStateException("not in attributes");
         attributesDone = true;
     }
-    
+
     public void printComment(String comment) {
         if (!attributesDone) throw new IllegalStateException("in attributes");
         outPrintln(indent + "<!-- " + comment + "-->");
     }
-    
+
     public void close() {
         if (null != out) {
             out.close();
         }
-            
+
     }
 
 	public void println(String string) {
@@ -360,5 +360,5 @@ public class XMLWriter {
             this.name = name;
         }
     }
-    
+
 }

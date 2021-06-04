@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM Corporation
- * 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *    Andy Clement     initial implementation 
+ *
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *    Andy Clement     initial implementation
  *    Heavily based on LocalVariableTable
  * ******************************************************************/
 package org.aspectj.apache.bcel.classfile;
@@ -37,7 +37,7 @@ import org.aspectj.apache.bcel.Constants;
 //    u2 attribute_name_index;
 //    u4 attribute_length;
 //    u2 local_variable_type_table_length;
-//    { 
+//    {
 //      u2 start_pc;
 //      u2 length;
 //      u2 name_index;

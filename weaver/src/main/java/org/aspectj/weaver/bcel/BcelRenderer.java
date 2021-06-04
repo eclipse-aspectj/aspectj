@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -82,16 +82,16 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
 	/*
 	 * Get the instructions representing this test.
-	 * 
+	 *
 	 * @param e test to render
-	 * 
+	 *
 	 * @param sk instructionHandle to jump to if our rendered check succeeds (typically start of advice)
-	 * 
+	 *
 	 * @param fk instructionHandle to jump to if our rendered check fails (typically after end of advice)
-	 * 
+	 *
 	 * @param next instructionHandle that will follow this generated code. Passing in null will generate one unnecessary GOTO
 	 * instruction.
-	 * 
+	 *
 	 * @returns the instruction list representing this expression
 	 */
 	public static InstructionList renderTest(InstructionFactory fact, BcelWorld world, Test e, InstructionHandle sk,
@@ -170,7 +170,7 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.ast.ITestVisitor#visit(org.aspectj.weaver.internal.tools.MatchingContextBasedTest)
 	 */
 	public void visit(MatchingContextBasedTest matchingContextTest) {

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -45,32 +45,32 @@ import org.aspectj.weaver.World;
  * The PatternParser always creates WildTypePatterns for type patterns in pointcut expressions (apart from *, which is sometimes
  * directly turned into TypePattern.ANY). resolveBindings() tries to work out what we've really got and turn it into a type pattern
  * that we can use for matching. This will normally be either an ExactTypePattern or a WildTypePattern.
- * 
+ *
  * Here's how the process pans out for various generic and parameterized patterns: (see GenericsWildTypePatternResolvingTestCase)
- * 
+ *
  * Foo where Foo exists and is generic Parser creates WildTypePattern namePatterns={Foo} resolveBindings resolves Foo to RT(Foo -
  * raw) return ExactTypePattern(LFoo;)
- * 
+ *
  * Foo&lt;String&gt; where Foo exists and String meets the bounds Parser creates WildTypePattern namePatterns = {Foo},
  * typeParameters=WTP{String} resolveBindings resolves typeParameters to ExactTypePattern(String) resolves Foo to RT(Foo) returns
  * ExactTypePattern(PFoo&lt;String&gt;; - parameterized)
- * 
+ *
  * Foo&lt;Str*&gt; where Foo exists and takes one bound Parser creates WildTypePattern namePatterns = {Foo}, typeParameters=WTP{Str*}
  * resolveBindings resolves typeParameters to WTP{Str*} resolves Foo to RT(Foo) returns WildTypePattern(name = Foo, typeParameters =
  * WTP{Str*} isGeneric=false)
- * 
+ *
  * Fo*&lt;String&gt; Parser creates WildTypePattern namePatterns = {Fo*}, typeParameters=WTP{String} resolveBindings resolves
  * typeParameters to ETP{String} returns WildTypePattern(name = Fo*, typeParameters = ETP{String} isGeneric=false)
- * 
- * 
+ *
+ *
  * Foo&lt;?&gt;
- * 
+ *
  * Foo&lt;? extends Number&gt;
- * 
+ *
  * Foo&lt;? extends Number+&gt;
- * 
+ *
  * Foo&lt;? super Number&gt;
- * 
+ *
  */
 public class WildTypePattern extends TypePattern {
 	private static final String GENERIC_WILDCARD_CHARACTER = "?"; // signature of ? is *
@@ -166,7 +166,7 @@ public class WildTypePattern extends TypePattern {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.patterns.TypePattern#couldEverMatchSameTypesAs(org.aspectj.weaver.patterns.TypePattern)
 	 */
 	@Override
@@ -534,7 +534,7 @@ public class WildTypePattern extends TypePattern {
 
 	/**
 	 * Method maybeExtractName.
-	 * 
+	 *
 	 * @param string
 	 * @return boolean
 	 */
@@ -551,7 +551,7 @@ public class WildTypePattern extends TypePattern {
 
 	/**
 	 * If this type pattern has no '.' or '*' in it, then return a simple string
-	 * 
+	 *
 	 * otherwise, this will return null;
 	 */
 	public String maybeGetSimpleName() {
@@ -625,9 +625,9 @@ public class WildTypePattern extends TypePattern {
 
 	/**
 	 * Need to determine if I'm really a pattern or a reference to a formal
-	 * 
+	 *
 	 * We may wish to further optimize the case of pattern vs. non-pattern
-	 * 
+	 *
 	 * We will be replaced by what we return
 	 */
 	@Override
@@ -924,7 +924,7 @@ public class WildTypePattern extends TypePattern {
 	 * We resolved the type to a type variable declared in the pointcut designator. Now we have to create either an exact type
 	 * pattern or a wild type pattern for it, with upper and lower bounds set accordingly. XXX none of this stuff gets serialized
 	 * yet
-	 * 
+	 *
 	 * @param scope
 	 * @param tvrType
 	 * @return
@@ -994,7 +994,7 @@ public class WildTypePattern extends TypePattern {
 	 * parameters. Time to perform some basic checks: - can the base type be parameterized? (is it generic) - can the type parameter
 	 * pattern list match the number of parameters on the base type - do all parameter patterns meet the bounds of the respective
 	 * type variables If any of these checks fail, a warning message is issued and we return false.
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean verifyTypeParameters(ResolvedType baseType, IScope scope, boolean requireExactType) {
@@ -1117,7 +1117,7 @@ public class WildTypePattern extends TypePattern {
 	// if (ut.isTypeVariableReference()) {
 	// continueCheck = false;
 	// }
-	//				
+	//
 	// if (continueCheck &&
 	// !tvs[i].canBeBoundTo(ut.resolve(scope.getWorld()))) {
 	// // issue message that type parameter does not meet specification

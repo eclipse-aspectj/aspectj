@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -22,13 +22,13 @@ import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
  *   everything PointcutDesignators have
  *   a PointcutDesignator called 'left'
  *   a PointcutDesignator called 'right'
- *   
+ *
  * @author ajh02
  */
-public class OrPointcut extends PointcutDesignator {	
-	
+public class OrPointcut extends PointcutDesignator {
+
 	private PointcutDesignator left = null;
-	public static final ChildPropertyDescriptor LEFT_PROPERTY = 
+	public static final ChildPropertyDescriptor LEFT_PROPERTY =
 		new ChildPropertyDescriptor(OrPointcut.class, "left", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	public PointcutDesignator getLeft() {
 		return this.left;
@@ -42,9 +42,9 @@ public class OrPointcut extends PointcutDesignator {
 		this.left = left;
 		postReplaceChild(oldChild, left, LEFT_PROPERTY);
 	}
-	
+
 	private PointcutDesignator right = null;
-	public static final ChildPropertyDescriptor RIGHT_PROPERTY = 
+	public static final ChildPropertyDescriptor RIGHT_PROPERTY =
 		new ChildPropertyDescriptor(OrPointcut.class, "right", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 	public PointcutDesignator getRight() {
 		return this.right;
@@ -58,10 +58,10 @@ public class OrPointcut extends PointcutDesignator {
 		this.right = right;
 		postReplaceChild(oldChild, right, RIGHT_PROPERTY);
 	}
-	
-	
-	
-	
+
+
+
+
 	OrPointcut(AST ast) {
 		super(ast);
 	}

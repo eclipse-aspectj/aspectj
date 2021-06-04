@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.bridge;
@@ -25,11 +25,11 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * 
+ *
  */
 public class MessageTest extends TestCase {
 
-   private static final String ME 
+   private static final String ME
         = "org.aspectj.bridge.MessageTest"; // XXX
 
     /** @param args ignored */
@@ -44,7 +44,7 @@ public class MessageTest extends TestCase {
 	public MessageTest(String name) {
 		super(name);
 	}
-    
+
     <T> void checkListOrder(List<T> list, Comparator<T> c) { // XXX util
         assertNotNull(list);
         assertNotNull(c);
@@ -57,19 +57,19 @@ public class MessageTest extends TestCase {
                 int i = c.compare(last, current);
                 if (i > 0) {
                     assertTrue( last + " > " + current + " (" + i + ")", false);
-                }                
-            } 
+                }
+            }
             last = current;
         }
     }
-        
+
     public void testKindOrder() {
         // first briefly validate the checker
         checkListOrder(Arrays.asList(new String[] { "a", "b", "C" }),
             String.CASE_INSENSITIVE_ORDER);
         checkListOrder(IMessage.KINDS, IMessage.Kind.COMPARATOR);
     }
-    
+
     public void testKind_isSameOrLessThan() {
         IMessage.Kind last;
         IMessage.Kind next = null;
@@ -86,31 +86,31 @@ public class MessageTest extends TestCase {
 			assertTrue(label, next.isSameOrLessThan(next));
 		}
     }
-    
+
     public void testMessageHandler() {
         boolean handleMessageResult = true;
         checkEmptyMessageHolder(new MessageHandler(handleMessageResult), handleMessageResult);
         handleMessageResult = false;
         checkEmptyMessageHolder(new MessageHandler(handleMessageResult), handleMessageResult);
     }
-    
+
     public void checkEmptyMessageHolder(
-        IMessageHolder h, 
+        IMessageHolder h,
         final boolean handleMessageResult) {
-       //  { INFO, DEBUG, WARNING, ERROR, FAIL, ABORT }));  
+       //  { INFO, DEBUG, WARNING, ERROR, FAIL, ABORT }));
         assertNotNull(h);
         assertTrue(!h.hasAnyMessage(null, true));
         assertTrue(!h.hasAnyMessage(null, false));
         assertTrue(!h.hasAnyMessage(IMessage.INFO, true));
         assertTrue(!h.hasAnyMessage(IMessage.INFO, false));
-        
+
         assertTrue(handleMessageResult == h.handleMessage(make("error 1", IMessage.ERROR)));
         assertTrue(handleMessageResult == h.handleMessage(make("error 2", IMessage.ERROR)));
         assertTrue(handleMessageResult == h.handleMessage(make("fail 1", IMessage.FAIL)));
         assertTrue(handleMessageResult == h.handleMessage(make("fail 2", IMessage.FAIL)));
         assertTrue(handleMessageResult == h.handleMessage(make("debug 1", IMessage.DEBUG)));
         assertTrue(handleMessageResult == h.handleMessage(make("debug 2", IMessage.DEBUG)));
-        
+
         assertTrue(h.hasAnyMessage(null, true));
         assertTrue(h.hasAnyMessage(null, false));
         assertTrue(h.hasAnyMessage(IMessage.ERROR, true));
@@ -119,14 +119,14 @@ public class MessageTest extends TestCase {
         assertTrue(h.hasAnyMessage(IMessage.FAIL, false));
         assertTrue(h.hasAnyMessage(IMessage.DEBUG, true));
         assertTrue(h.hasAnyMessage(IMessage.DEBUG, false));
-        
+
         assertTrue(!h.hasAnyMessage(IMessage.INFO, IMessageHolder.EQUAL));
         assertTrue(!h.hasAnyMessage(IMessage.WARNING, IMessageHolder.EQUAL));
         assertTrue(!h.hasAnyMessage(IMessage.ABORT, IMessageHolder.EQUAL));
         assertTrue(h.hasAnyMessage(IMessage.INFO, IMessageHolder.ORGREATER));
         assertTrue(h.hasAnyMessage(IMessage.WARNING, IMessageHolder.ORGREATER));
         assertTrue(!h.hasAnyMessage(IMessage.ABORT, IMessageHolder.ORGREATER));
-        
+
         assertTrue(0 == h.numMessages(IMessage.INFO, IMessageHolder.EQUAL));
         assertTrue(0 == h.numMessages(IMessage.WARNING, IMessageHolder.EQUAL));
         assertTrue(0 == h.numMessages(IMessage.ABORT, IMessageHolder.EQUAL));
@@ -139,9 +139,9 @@ public class MessageTest extends TestCase {
         assertTrue(4 == h.numMessages(IMessage.ERROR, IMessageHolder.ORGREATER));
         assertTrue(2 == h.numMessages(IMessage.FAIL, IMessageHolder.ORGREATER));
         assertTrue(0 == h.numMessages(IMessage.ABORT, IMessageHolder.ORGREATER));
-        
-    } 
-    
+
+    }
+
     public void testMessage() {
         String input = "input";
         Throwable thrown = null;
@@ -183,16 +183,16 @@ public class MessageTest extends TestCase {
         roundTrip(input, kind, thrown, sl, descriptor, exClass);
         input = null;
         kind = IMessage.INFO;
-        roundTrip(input, kind, thrown, sl, descriptor, exClass);                        
+        roundTrip(input, kind, thrown, sl, descriptor, exClass);
     }
-    
+
     protected IMessage make(String message, IMessage.Kind kind) {
         return new Message(message, kind, null, null);
     }
 
     /** make a Message per descriptor and input */
     protected IMessage make(String input, IMessage.Kind kind,
-        Throwable thrown, ISourceLocation sourceLocation, 
+        Throwable thrown, ISourceLocation sourceLocation,
         String descriptor) { // XXX ignored for now
             return new Message(input, kind, thrown, sourceLocation);
     }
@@ -201,7 +201,7 @@ public class MessageTest extends TestCase {
      * Simple round-trip on the message
      */
     protected void roundTrip(String input, IMessage.Kind kind,
-        Throwable thrown, ISourceLocation sourceLocation, 
+        Throwable thrown, ISourceLocation sourceLocation,
         String descriptor, Class<?> exClass) {
         try {
             IMessage m = make(input, kind, thrown, sourceLocation, descriptor);
@@ -224,14 +224,14 @@ public class MessageTest extends TestCase {
             assertEquals(input, m.getMessage());
             assertTrue(""+kind, kind == m.getKind());
             assertTrue(""+thrown, equals(thrown, m.getThrown()));
-            assertTrue(""+sourceLocation, 
+            assertTrue(""+sourceLocation,
                 equals(sourceLocation, m.getSourceLocation()));
             String err = new KindTest().testKindSet(message, kind);
             if (null != err) {
                 assertTrue(err, false);
             }
     }
-    
+
     protected static boolean equals(Object one, Object two) {
         if (null == one) {
             return (null == two);
@@ -246,8 +246,8 @@ public class MessageTest extends TestCase {
 /** test correlation between message and enclosed kind */
 class KindTest {
     /** order tracked in checkKindMethods() */
-    static final IMessage.Kind[] KINDS = new IMessage.Kind[] 
-            {  IMessage.ABORT, IMessage.DEBUG, IMessage.ERROR, 
+    static final IMessage.Kind[] KINDS = new IMessage.Kind[]
+            {  IMessage.ABORT, IMessage.DEBUG, IMessage.ERROR,
                 IMessage.INFO, IMessage.WARNING, IMessage.FAIL };
 
     static final List<IMessage.Kind> KINDLIST = Arrays.asList(KINDS);
@@ -258,7 +258,7 @@ class KindTest {
 
     final BitSet expected = new BitSet(KINDS.length);
     IMessage.Kind kind = IMessage.INFO;
-    
+
     /** @return error if failed */
     public String testKindSet(IMessage m, IMessage.Kind newKind) {
         IMessage.Kind oldKind = this.kind;
@@ -271,7 +271,7 @@ class KindTest {
         }
         return (null != result? result : setKind(oldKind));
     }
-    
+
     /** @return error if failed */
     private String setKind(IMessage.Kind kind) {
         this.kind = kind;
@@ -283,7 +283,7 @@ class KindTest {
         expected.set(index);
         return null;
     }
-    
+
     /** @return error if failed */
     String checkExpectedKind(IMessage m) {
         StringBuffer result = new StringBuffer();
@@ -292,29 +292,29 @@ class KindTest {
                 String s = "expected " + expected.get(i)
                     + " for is{Method} for " + KINDS[i];
                 result.append(s + "\n");
-            } 
-		}  
-        return (0 < result.length() ? result.toString() : null); 
+            }
+		}
+        return (0 < result.length() ? result.toString() : null);
     }
-    
+
     String checkKindSet(IMessage m, IMessage.Kind kind) {
         if (kind != m.getKind()) {
             return "expected kind " + kind + " got " + m.getKind();
         }
         return null;
     }
-    
+
     /** @return true if index matches isFoo() reporting */
     boolean checkKindMethods(IMessage m, int index) {
         switch (index) {
-            case (0) : return m.isAbort(); 
-            case (1) : return m.isDebug(); 
-            case (2) : return m.isError(); 
-            case (3) : return m.isInfo(); 
-            case (4) : return m.isWarning(); 
-            case (5) : return m.isFailed(); 
+            case (0) : return m.isAbort();
+            case (1) : return m.isDebug();
+            case (2) : return m.isError();
+            case (3) : return m.isInfo();
+            case (4) : return m.isWarning();
+            case (5) : return m.isFailed();
             default : throw new IllegalArgumentException("index=" + index);
-                                
+
         }
     }
 }
