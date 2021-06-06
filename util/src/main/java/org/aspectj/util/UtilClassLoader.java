@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Isberg        initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Isberg        initial implementation
  * ******************************************************************/
 
 package org.aspectj.util;
@@ -34,31 +34,31 @@ public class UtilClassLoader extends URLClassLoader {
 
     /** save URL[] only for toString */
     private URL[] urlsForDebugString;
-    
+
     public UtilClassLoader(URL[] urls, File[] dirs) {
         super(urls);
         LangUtil.throwIaxIfNotAssignable(dirs, File.class, "dirs");
         this.urlsForDebugString = urls;
         List<File> dcopy = new ArrayList<>();
-        
+
         if (!LangUtil.isEmpty(dirs)) {
             dcopy.addAll(Arrays.asList(dirs));
         }
         this.dirs = Collections.unmodifiableList(dcopy);
     }
 
-    
+
     public URL getResource(String name) {
         return ClassLoader.getSystemResource(name);
     }
-    
+
     public InputStream getResourceAsStream(String name) {
         return ClassLoader.getSystemResourceAsStream(name);
-    } 
-    
+    }
+
     public synchronized Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException {
-        // search the cache, our dirs (if maybe test), 
+        // search the cache, our dirs (if maybe test),
         // the system, the superclass (URL[]),
         // and our dirs again (if not maybe test)
         ClassNotFoundException thrown = null;
@@ -66,10 +66,10 @@ public class UtilClassLoader extends URLClassLoader {
         if (null != result) {
             resolve = false;
         } else {
-            try { 
-                result = findSystemClass(name); 
-            } catch (ClassNotFoundException e) { 
-                thrown = e; 
+            try {
+                result = findSystemClass(name);
+            } catch (ClassNotFoundException e) {
+                thrown = e;
             }
         }
         if (null == result) {
@@ -79,16 +79,16 @@ public class UtilClassLoader extends URLClassLoader {
                 thrown = e;
             }
             if (null != result) { // resolved by superclass
-                return result; 
+                return result;
             }
         }
         if (null == result) {
             byte[] data = readClass(name);
             if (data != null) {
                 result = defineClass(name, data, 0, data.length);
-            } // handle ClassFormatError?            
+            } // handle ClassFormatError?
         }
-        
+
         if (null == result) {
             throw (null != thrown ? thrown : new ClassNotFoundException(name));
         }
@@ -97,7 +97,7 @@ public class UtilClassLoader extends URLClassLoader {
         }
         return result;
     }
-    
+
     /** @return null if class not found or byte[] of class otherwise */
     private byte[] readClass(String className) throws ClassNotFoundException {
         final String fileName = className.replace('.', '/')+".class";
@@ -107,9 +107,9 @@ public class UtilClassLoader extends URLClassLoader {
 				return getClassData(file);
 			}
 		}
-        return null; 
+        return null;
     }
-        
+
     private byte[] getClassData(File f) {
         try {
             FileInputStream stream= new FileInputStream(f);
@@ -126,10 +126,10 @@ public class UtilClassLoader extends URLClassLoader {
         }
         return null;
     }
-    
+
     /** @return String with debug info: urls and classes used */
     public String toString() {
-        return "UtilClassLoader(urls=" 
+        return "UtilClassLoader(urls="
             + Arrays.asList(urlsForDebugString)
             + ", dirs="
             + dirs

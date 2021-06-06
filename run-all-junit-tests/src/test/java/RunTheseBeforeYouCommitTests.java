@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2005-2019 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 import org.aspectj.ajde.AjdeModuleTests;
 import org.aspectj.ajde.core.AjdeCoreModuleTests;
@@ -53,16 +53,16 @@ public class RunTheseBeforeYouCommitTests {
 //		suite.addTest(AjbrowserModuleTests.suite()); // There are none so far...
 //		suite.addTest(LibModuleTests.suite()); // anyone using this?
 		suite.addTest(AjdtCoreModuleTests.suite());
-		
+
 		// Support modules
 		suite.addTest(TestingModuleTests.suite());
 		suite.addTest(TestingClientModuleTests.suite());
 		suite.addTest(TestingDriversModuleTests.suite());
 		suite.addTest(TestingUtilModuleTests.suite());
 		suite.addTest(BuildModuleTests.suite());
-		
+
 		// Compiler tests
-		suite.addTest(TestsModuleTests.suite()); 
+		suite.addTest(TestsModuleTests.suite());
 
 		return suite;
 	}

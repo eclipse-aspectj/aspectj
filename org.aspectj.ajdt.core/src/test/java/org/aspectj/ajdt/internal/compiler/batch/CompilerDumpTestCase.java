@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -45,9 +45,9 @@ public class CompilerDumpTestCase extends AjcTestCase {
 
 	/**
 	 * Aim: Dump after successful compile to ensure it contains the command line information.
-	 * 
+	 *
 	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj
-	 * 
+	 *
 	 * Expected result = Compile succeeds.
 	 */
 	public void testDump() {
@@ -61,9 +61,9 @@ public class CompilerDumpTestCase extends AjcTestCase {
 
 	/**
 	 * Aim: Dump after successful compile to ensure it contains warning messages.
-	 * 
+	 *
 	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj DeclareWarning.aj
-	 * 
+	 *
 	 * Expected result = Compile succeeds.
 	 */
 	public void testDumpWithWarnings() {
@@ -78,9 +78,9 @@ public class CompilerDumpTestCase extends AjcTestCase {
 
 	/**
 	 * Aim: Dump due to errors.
-	 * 
+	 *
 	 * Inputs to the compiler: HelloWorld.java Pointcuts.aj Aspect.aj DeclareError.aj
-	 * 
+	 *
 	 * Expected result = Compile fails and dump file created.
 	 */
 	public void testWithErrors() {

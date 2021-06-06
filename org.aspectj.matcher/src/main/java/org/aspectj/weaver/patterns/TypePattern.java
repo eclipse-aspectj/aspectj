@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002, 2010 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Nieraj Singh
  * ******************************************************************/
 
@@ -31,10 +31,10 @@ import org.aspectj.weaver.World;
 
 /**
  * On creation, type pattern only contains WildTypePattern nodes, not BindingType or ExactType.
- * 
+ *
  * <p>
  * Then we call resolveBindings() during compilation During concretization of enclosing pointcuts, we call remapAdviceFormals
- * 
+ *
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
@@ -231,7 +231,7 @@ public abstract class TypePattern extends PatternNode {
 
 	// public boolean assertExactType(IMessageHandler m) {
 	// if (this instanceof ExactTypePattern) return true;
-	//		
+	//
 	// //XXX should try harder to avoid multiple errors for one problem
 	// m.handleMessage(MessageUtil.error("exact type pattern required", getSourceLocation()));
 	// return false;
@@ -270,15 +270,15 @@ public abstract class TypePattern extends PatternNode {
 	 * This is called during concretization of pointcuts, it is used by BindingTypePattern to return a new BindingTypePattern with a
 	 * formal index appropiate for the advice, rather than for the lexical declaration, i.e. this handles transforamtions through
 	 * named pointcuts.
-	 * 
+	 *
 	 * <pre>
 	 * pointcut foo(String name): args(name);
 	 * --&gt; This makes a BindingTypePattern(0) pointing to the 0th formal
-	 * 
+	 *
 	 * before(Foo f, String n): this(f) &amp;&amp; foo(n) { ... }
 	 * --&gt; when resolveReferences is called on the args from the above, it
 	 *     will return a BindingTypePattern(1)
-	 * 
+	 *
 	 * before(Foo f): this(f) &amp;&amp; foo(*) { ... }
 	 * --&gt; when resolveReferences is called on the args from the above, it
 	 *     will return an ExactTypePattern(String)

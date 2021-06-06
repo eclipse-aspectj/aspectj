@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -24,7 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.util.Util;
 
 public class EclipseSourceLocation implements ISourceLocation {
     private static String NO_CONTEXT = "USE_NULL--NO_CONTEXT_AVAILABLE";
-	CompilationResult result;    
+	CompilationResult result;
 //	EclipseSourceContext eclipseContext;
 	int startPos, endPos;
 	String filename;
@@ -34,7 +34,7 @@ public class EclipseSourceLocation implements ISourceLocation {
     int endLine = -1;
     int column = -1;
     String context;
-	
+
 	public EclipseSourceLocation(CompilationResult result, int startPos, int endPos) {
 		super();
 		this.result = result;
@@ -42,19 +42,19 @@ public class EclipseSourceLocation implements ISourceLocation {
 		this.startPos = startPos;
 		this.endPos = endPos;
 	}
-	
+
 	public CompilationResult getCompilationResult() {
 		return result;
 	}
-	
+
 	public int getOffset() {
 		return startPos;
 	}
-	
+
 	public int getStartPos() {
 		return startPos;
 	}
-	
+
 	public int getEndPos() {
 		return endPos;
 	}
@@ -62,12 +62,12 @@ public class EclipseSourceLocation implements ISourceLocation {
 	public File getSourceFile() {
 		if (null == file) {
 			if (filename==null) {
-//            if ((null == result) 
+//            if ((null == result)
 //                || (null == result.fileName)
 //                || (0 == result.fileName.length)) {
                 file = ISourceLocation.NO_FILE;
             } else {
-                file = new File(filename);//new String(result.fileName)); 
+                file = new File(filename);//new String(result.fileName));
             }
         }
         return file;
@@ -87,7 +87,7 @@ public class EclipseSourceLocation implements ISourceLocation {
             if (0 < lineNumber && lineNumber < result.lineSeparatorPositions.length) {
                 int lineStart = result.lineSeparatorPositions[lineNumber];
                 int col = startPos - lineStart; // 1-based
-                if (0 <= col) { 
+                if (0 <= col) {
                     column = col;
                 } else {
                     column = 0;
@@ -105,7 +105,7 @@ public class EclipseSourceLocation implements ISourceLocation {
         }
         return endLine;
 	}
-    
+
     public String getContext() {
         if (null == context) {
             ICompilationUnit compilationUnit = result.compilationUnit;
@@ -119,12 +119,12 @@ public class EclipseSourceLocation implements ISourceLocation {
         }
         return (NO_CONTEXT == context ? null : context);
     }
-	
-    
+
+
     /** @return String {file:}line{:column} */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        
+
         if (getSourceFile() != ISourceLocation.NO_FILE) {
             sb.append(getSourceFile().getPath());
             sb.append(":");
@@ -136,7 +136,7 @@ public class EclipseSourceLocation implements ISourceLocation {
         if (getOffset()>=0) { sb.append("::").append(getOffset()); }
         return sb.toString();
     }
-    
+
 	private volatile int hashCode = -1;
     public int hashCode() {
     	  if (hashCode == -1) {
@@ -145,15 +145,15 @@ public class EclipseSourceLocation implements ISourceLocation {
             result = 37*result + getLine();
             result = 37*result + getOffset();
             result = 37*result + (filename==null?0:filename.hashCode());
-            hashCode = result;			
+            hashCode = result;
 		}
         return hashCode;
     }
-    
+
     public boolean equals(Object other) {
         if (! (other instanceof EclipseSourceLocation)) return super.equals(other);
         EclipseSourceLocation o = (EclipseSourceLocation) other;
-        return 
+        return
           getLine()==o.getLine() &&
           getOffset()==o.getOffset() &&
           ((filename==null)?(o.filename==null):o.filename.equals(filename));

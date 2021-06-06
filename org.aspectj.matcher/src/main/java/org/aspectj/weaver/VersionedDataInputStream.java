@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005-2010 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  * Andy Clement (IBM, SpringSource)
  * ******************************************************************/
 
@@ -21,7 +21,7 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 /**
  * Lightweight subclass of DataInputStream that knows what version of the weaver was used to construct the data in it. The input
  * stream has a constant pool reader attached which enables it to decode constant pool references found within the data being read.
- * 
+ *
  * @author Andy Clement
  */
 public class VersionedDataInputStream extends DataInputStream {

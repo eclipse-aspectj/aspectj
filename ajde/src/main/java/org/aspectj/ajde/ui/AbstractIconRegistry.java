@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -19,11 +19,11 @@ import org.aspectj.asm.IRelationship;
 
 /**
  * Uses the factory pattern.
- * 
+ *
  * @author Mik Kersten
  */
 public abstract class AbstractIconRegistry {
-	
+
 	protected final String RESOURCE_PATH = "org/aspectj/ajde/resources/";
 	protected final String STRUCTURE_PATH = RESOURCE_PATH + "structure/";
 
@@ -41,12 +41,12 @@ public abstract class AbstractIconRegistry {
 	protected final AbstractIcon DECLARE_SOFT = createIcon(STRUCTURE_PATH + "declareSoft.gif");
 	protected final AbstractIcon CODE = createIcon(STRUCTURE_PATH + "code.gif");
 	protected final AbstractIcon ERROR = createIcon(STRUCTURE_PATH + "error.gif");
-	
+
 	protected final AbstractIcon FILE = createIcon(STRUCTURE_PATH + "file.gif");
 	protected final AbstractIcon FILE_JAVA = createIcon(STRUCTURE_PATH + "file-java.gif");
 	protected final AbstractIcon FILE_ASPECTJ = createIcon(STRUCTURE_PATH + "file-aspectj.gif");
 	protected final AbstractIcon FILE_LST = createIcon(STRUCTURE_PATH + "file-lst.gif");
-	
+
 	protected final AbstractIcon METHOD = createIcon(STRUCTURE_PATH + "method.gif");
 	protected final AbstractIcon FIELD = createIcon(STRUCTURE_PATH + "field.gif");
 	protected final AbstractIcon ENUM_VALUE = createIcon(STRUCTURE_PATH + "field.gif"); // ??? should be enum value icon
@@ -78,13 +78,13 @@ public abstract class AbstractIconRegistry {
 	 * @return	null if the kind could not be resolved
 	 */
 	protected abstract AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility);
-	
+
 	/**
 	 * Assumes "public" visibility for the icon.
-	 * 
+	 *
 	 * @return	null if the kind could not be resolved
 	 */
-	public AbstractIcon getIcon(IProgramElement.Kind kind) { 
+	public AbstractIcon getIcon(IProgramElement.Kind kind) {
 		if (kind == IProgramElement.Kind.PROJECT) {
 			return PROJECT;
 		} else if (kind == IProgramElement.Kind.PACKAGE) {
@@ -148,10 +148,10 @@ public abstract class AbstractIconRegistry {
 			return null;
 		}
 	}
- 
+
  	/**
  	 * Implement to create platform-specific icons.
- 	 */ 
+ 	 */
 	protected abstract AbstractIcon createIcon(String path);
 }
 

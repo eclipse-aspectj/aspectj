@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 2000-2001 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -23,9 +23,9 @@ import java.io.File;
 /**
  * Partial implementation of CompilerAdapter for ajc task.
  * The Javac interface does not support argfiles which are
- * typically necessary to compile under ajc, so this 
+ * typically necessary to compile under ajc, so this
  * implementation is not documented, recommended, or supported.
- * See Apache request for enhancement 
+ * See Apache request for enhancement
  * <a href="http://nagoya.apache.org/bugzilla/show_bug.cgi?id=7542">
  * 7542</a>.
  * @see CompilerAdapter
@@ -40,7 +40,7 @@ public class AjcCompilerAdapter implements CompilerAdapter {
         if (null == javac) {
             throw new IllegalArgumentException("null javac");
         }
-        Object task = javac.getProject().createTask("ajc"); 
+        Object task = javac.getProject().createTask("ajc");
         String err = null;
         if (null == task) {
             err = "ajc not defined - put ajc taskdef library on classpath";
@@ -86,7 +86,7 @@ public class AjcCompilerAdapter implements CompilerAdapter {
         tempAjc.setDebug(javac.getDebug()); // XXX unsupported
         tempAjc.setOptimize(javac.getOptimize()); // XXX unsupported
         tempAjc.setDepend(javac.getDepend()?"on":"off"); // XXX unsupported
-        tempAjc.setVerbose(javac.getVerbose()); 
+        tempAjc.setVerbose(javac.getVerbose());
         String target = javac.getTarget();
         if (null != target) {
             tempAjc.setTarget(target);
@@ -101,9 +101,9 @@ public class AjcCompilerAdapter implements CompilerAdapter {
         ajc = tempAjc;
     }
 
-    /** 
+    /**
      * Run the compiler.
-     * @see CompilerAdapter#execute() 
+     * @see CompilerAdapter#execute()
      * @throws BuildException if setJavac(Javac) was not called before each call of this
      */
     public boolean execute() throws BuildException {

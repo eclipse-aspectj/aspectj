@@ -1,17 +1,17 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
- 
+
 package org.aspectj.testing.run;
 
 import java.io.PrintWriter;
@@ -22,7 +22,7 @@ import org.aspectj.bridge.MessageUtil;
 
 /**
  * A generic RunListener for easier partial implementations.
- * It can take a RunI selector (called on completion) 
+ * It can take a RunI selector (called on completion)
  * and/or a List to accumulate complete IRunStatus
  * (if the selector is null or returns true).
  * It can also take a PrintWriter and String to print traces of each event
@@ -33,11 +33,11 @@ public class RunListener implements IRunListener {
     protected final IRun selector;
     protected final PrintWriter writer;
     protected final String prefix;
-     
+
     protected RunListener() {
         this((List) null, (IRun) null, (PrintWriter) null, (String) null);
     }
-    
+
     /**
      * @param sink the List sink for any IRunStatus if the selector is null
      *              or returns true for run(IRunStatus) - ignored if null.
@@ -56,7 +56,7 @@ public class RunListener implements IRunListener {
     public RunListener(PrintWriter writer, String prefix) {
         this((List) null, (IRun) null, writer, prefix);
     }
-        
+
     /**
      * @param sink the List sink for any IRunStatus if the selector is null
      *              or returns true for run(IRunStatus) - ignored if null.
@@ -72,13 +72,13 @@ public class RunListener implements IRunListener {
         this.selector = selector;
         list = sink;
     }
-        
+
     /**
      * @see org.aspectj.testing.harness.run.IRunListener#addingChild(IRunStatus, IRunStatus)
      */
     public void addingChild(IRunStatus parent, IRunStatus child) {
         if (null != writer) {
-            writer.println(prefix + " addingChild(\"" + parent 
+            writer.println(prefix + " addingChild(\"" + parent
                 + "\", \"" + child + "\")");
         }
     }
@@ -91,7 +91,7 @@ public class RunListener implements IRunListener {
             writer.println(prefix + " runStarting(\"" + run + "\")");
         }
 	}
-    
+
     /**
      * Print to writer (if any), run selector (if any), and add to list
      * (if any and if selector is null or returns true).

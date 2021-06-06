@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -31,7 +31,7 @@ public class StreamSniffer extends FilterOutputStream {
     StringBuffer buffer;
     /** have to use delegate, not super, because super we will double-count input */
     final OutputStream delegate;
-    
+
     public StreamSniffer(OutputStream stream) {
         super(stream);
         delegate = stream;
@@ -42,11 +42,11 @@ public class StreamSniffer extends FilterOutputStream {
         buffer = sb;
     }
 
-    //---------------- FilterOutputStream 
+    //---------------- FilterOutputStream
     public void write(int b) throws IOException {
         StringBuffer sb = buffer;
         if (null != sb) {
-            if ((b > Character.MAX_VALUE) 
+            if ((b > Character.MAX_VALUE)
                 || (b < Character.MIN_VALUE)) {
                 throw new Error("don't know double-byte"); // XXX
             } else {
@@ -55,7 +55,7 @@ public class StreamSniffer extends FilterOutputStream {
         }
         delegate.write(b);
     }
-    
+
     public void write(byte[] b) throws IOException {
         StringBuffer sb = buffer;
         if (null != sb) {
@@ -64,7 +64,7 @@ public class StreamSniffer extends FilterOutputStream {
         }
         delegate.write(b);
     }
-    
+
     public void write(byte[] b, int offset, int length) throws IOException {
         StringBuffer sb = buffer;
         if (null != sb) {

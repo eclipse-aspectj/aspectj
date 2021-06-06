@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - iniital version
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
@@ -15,20 +15,20 @@ import java.util.List;
 
 /**
  * DeclareAtFieldDeclaration DOM AST node.
- * 
+ *
  * Has everything a DeclareDeclaration has.
- *      
- * Unsupported for JLS2.    
+ *
+ * Unsupported for JLS2.
  */
 public class DeclareAtFieldDeclaration extends DeclareAnnotationDeclaration {
 
-	public static final ChildPropertyDescriptor JAVADOC_PROPERTY = 
+	public static final ChildPropertyDescriptor JAVADOC_PROPERTY =
 		internalJavadocPropertyFactory(DeclareAtFieldDeclaration.class);
 
-	public static final ChildPropertyDescriptor PATTERN_PROPERTY = 
+	public static final ChildPropertyDescriptor PATTERN_PROPERTY =
 		internalPatternNodePropertyFactory(DeclareAtFieldDeclaration.class);
 
-	public static final ChildPropertyDescriptor ANNOTATION_NAME_PROPERTY = 
+	public static final ChildPropertyDescriptor ANNOTATION_NAME_PROPERTY =
 		internalAnnotationNamePropertyFactory(DeclareAtFieldDeclaration.class);
 
 	private static final List PROPERTY_DESCRIPTORS;
@@ -86,7 +86,7 @@ public class DeclareAtFieldDeclaration extends DeclareAnnotationDeclaration {
 
 	/*
 	 * (omit javadoc for this method) Method declared on BodyDeclaration.
-	 * 
+	 *
 	 * There are no modifiers declared for DeclareErrorDeclaration - therefore
 	 * we don't do anything with this
 	 */
@@ -96,7 +96,7 @@ public class DeclareAtFieldDeclaration extends DeclareAnnotationDeclaration {
 
 	/*
 	 * (omit javadoc for this method) Method declared on BodyDeclaration.
-	 * 
+	 *
 	 * There are no modifiers declared for DeclareErrorDeclaration - therefore
 	 * we don't do anything with this
 	 */
@@ -114,7 +114,7 @@ public class DeclareAtFieldDeclaration extends DeclareAnnotationDeclaration {
 	/**
 	 * Returns a list of structural property descriptors for this node type.
 	 * Clients must not modify the result.
-	 * 
+	 *
 	 * @param apiLevel
 	 *            the API level; one of the <code>AST.JLS&ast;</code>
 	 *            constants

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -65,7 +65,7 @@ public class WithinTestCase extends PatternsTestCase {
 
 	// public void testMatchJP() {
 	// Factory f = new Factory("WithinTestCase.java",WithinTestCase.class);
-	//		
+	//
 	// JoinPoint.StaticPart inString = f.makeSJP(JoinPoint.CONSTRUCTOR_EXECUTION,f.makeConstructorSig(0,String.class,new Class[]
 	// {String.class},new String[]{"s"},new Class[0]),1);
 	// JoinPoint.StaticPart inObject = f.makeSJP(JoinPoint.CONSTRUCTOR_EXECUTION,f.makeConstructorSig(0,Object.class,new Class[]
@@ -74,7 +74,7 @@ public class WithinTestCase extends PatternsTestCase {
 	// Pointcut withinString = new PatternParser("within(String)").parsePointcut().resolve();
 	// Pointcut withinObject = new PatternParser("within(Object)").parsePointcut().resolve();
 	// Pointcut withinObjectPlus = new PatternParser("within(Object+)").parsePointcut().resolve();
-	//		
+	//
 	// checkMatches(withinString,inString,FuzzyBoolean.YES);
 	// checkMatches(withinString,inObject,FuzzyBoolean.NO);
 	// checkMatches(withinObject,inString,FuzzyBoolean.NO);
@@ -82,11 +82,11 @@ public class WithinTestCase extends PatternsTestCase {
 	// checkMatches(withinObjectPlus,inString,FuzzyBoolean.YES);
 	// checkMatches(withinObjectPlus,inObject,FuzzyBoolean.YES);
 	// }
-	//	
+	//
 	// private void checkMatches(Pointcut p, JoinPoint.StaticPart jpsp, FuzzyBoolean expected) {
 	// assertEquals(expected,p.match(null,jpsp));
 	// }
-	//	
+	//
 	public Pointcut makePointcut(String pattern) {
 		Pointcut pointcut0 = Pointcut.fromString(pattern);
 

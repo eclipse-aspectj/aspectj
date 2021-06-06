@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -29,7 +29,7 @@ public class AnnotationPointcutsTests extends XMLBasedAjcTestCase {
 	  protected URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-	  
+
   // before(): call(@SimpleAnnotation * *(..)) { }
   public void test001_usingAnnotationsInPointcuts() {
   	runTest("annotation matching on call");
@@ -49,5 +49,5 @@ public class AnnotationPointcutsTests extends XMLBasedAjcTestCase {
 
   // TODO extra tests
   // 3) @annotation on the different join point kinds, matches with inherited annotation
-  
+
 }

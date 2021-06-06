@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -25,12 +25,12 @@ import junit.framework.TestResult;
 import junit.textui.TestRunner;
 
 /**
- * 
+ *
  * @author isberg
  */
 public class LangUtilTest extends TestCase {
 
-    private static final String ME 
+    private static final String ME
         = "org.aspectj.testing.util.LangUtilTest";
 
     /** @param args ignored */
@@ -45,7 +45,7 @@ public class LangUtilTest extends TestCase {
             System.err.println(r.errorCount() + "/" + r.failureCount());
         }
     }
-    
+
 	/**
 	 * Constructor for LangUtilTest.
 	 * @param name
@@ -63,37 +63,37 @@ public class LangUtilTest extends TestCase {
 		}
         assertTrue(l, !st.hasMoreTokens());
     }
-    
+
 
 	void checkUnflatten(FTest test) {
         String[] exp = test.unflattened;
         List result = LangUtil.unflatten(test.toUnflatten, test.spec);
         String label = test + " -> " + result;
         assertNotNull(label, result);
-        
-        assertEquals(label, exp.length, result.size()); 
+
+        assertEquals(label, exp.length, result.size());
         for (int i = 0; i < exp.length; i++) {
 			assertEquals(label, exp[i], result.get(i));
 		}
     }
-    
+
 
 	public void skiptestUnflatten() {
 //        LangUtil.FlattenSpec COMMA = LangUtil.FlattenSpec.COMMA;
         LangUtil.FlattenSpec LIST = LangUtil.FlattenSpec.LIST;
-            
+
         FTest[] tests = new FTest[]
         { new FTest("[]", new String[0], LIST)
         , new FTest("[1]", new String[] {"1"}, LIST)
         , new FTest("[1, 2]", new String[] {"1", "2"}, LIST)
         , new FTest("[1,2]", new String[] {"1,2"}, LIST)
-        , new FTest("[1, 2, 3]", new String[] {"1","2","3"}, LIST)        
+        , new FTest("[1, 2, 3]", new String[] {"1","2","3"}, LIST)
         };
 		for (FTest test : tests) {
 			checkUnflatten(test);
 		}
     }
-    
+
 
 	public void testArrayList() {
         List l = new ArrayList();
@@ -104,33 +104,33 @@ public class LangUtilTest extends TestCase {
         assertTrue(2 == l.size());
         assertEquals("[null, null]", "" + l);
     }
-    
+
     public void testCombineStrings() {
         String[] one = new String[]{};
         String[] two = new String[]{};
         String[] expect = new String[]{};
         checkCombineStrings(one, two, expect);
-        
+
         one = new String[]{null};
         two = new String[]{null};
         expect = new String[]{};
         checkCombineStrings(one, two, expect);
-        
+
         one = new String[]{"1"};
         two = new String[]{null};
         expect = new String[]{"1"};
         checkCombineStrings(one, two, expect);
-        
+
         one = new String[]{null};
         two = new String[]{"2"};
         expect = new String[]{"2"};
         checkCombineStrings(one, two, expect);
-        
+
         one = new String[]{"1"};
         two = new String[]{"2"};
         expect = new String[]{"1", "2"};
         checkCombineStrings(one, two, expect);
-        
+
         one = new String[]{null, null, "1", null, null};
         two = new String[]{null, "2", null};
         expect = new String[]{"1", "2"};
@@ -140,7 +140,7 @@ public class LangUtilTest extends TestCase {
         two = new String[]{"5", null, "6"};
         expect = new String[]{"1", "2", "3", "4", "5", "6"};
         checkCombineStrings(one, two, expect);
-        
+
     }
     void checkCombineStrings(String[] one, String[] two, String[] expected) {
         String[] actual = LangUtil.combine(one, two);
@@ -149,7 +149,7 @@ public class LangUtilTest extends TestCase {
         String both = "actual=\"" + aString + "\" expected=\"" + eString + "\"";
         assertTrue(both, aString.equals(eString));
     }
-    
+
     final String[] sABCDE     = new String[] {"A", "B", "C", "D", "E" };
     final String[] sABC       = new String[] {"A", "B", "C" };
     final String[] sDE        = new String[] {"D", "E" };
@@ -209,10 +209,10 @@ public class LangUtilTest extends TestCase {
         Collections.shuffle(rl79);
         Collections.shuffle(rl24);
         Collections.shuffle(rl0);
-        Collections.shuffle(rl068);        
+        Collections.shuffle(rl068);
     }
-       
-   
+
+
     public void testDiffsEmptyIdentities() {
         checkDiff(l02468, null, l02468, NONE);
         checkDiff(null, l02468, NONE, l02468);
@@ -243,14 +243,14 @@ public class LangUtilTest extends TestCase {
         checkDiff(l02468, l12345, l068, l135);
         checkDiff(rl02468, rl12345, rl068, rl135);
     }
-    
+
     public void testDiffsOdds() {
         checkDiff(l13579, l12345, l79, l24);
         checkDiff(rl13579, rl12345, rl79, rl24);
         checkDiff(l13579, rl12345, l79, rl24);
         checkDiff(rl13579, l12345, rl79, l24);
     }
-    
+
     public void testSoftDiffs() {
         checkDiffSoft(labcde, lABCDE, NONE, NONE);
         checkDiffSoft(lABC, labc, NONE, NONE);
@@ -273,7 +273,7 @@ public class LangUtilTest extends TestCase {
             return list;
         }
     }
-    
+
     /** check both hard and soft - assuming list contain String */
     void checkDiff(List expected, List actual, List missing, List extra) {
         List extraOut = new ArrayList();
@@ -283,13 +283,13 @@ public class LangUtilTest extends TestCase {
         checkSame(extra, extraOut);
         extraOut.clear();
         missingOut.clear();
-        
+
         LangUtil.makeSoftDiffs(expected, actual, missingOut, extraOut,
                             String.CASE_INSENSITIVE_ORDER);
         checkSame(missing, missingOut); // XXX does not detect bad order
-        checkSame(extra, extraOut);        
+        checkSame(extra, extraOut);
     }
-    
+
     void checkSame(Collection one, Collection two) { // just convert and string-compare?
         String label = one + "?=" + two;
         assertTrue(label, (null == one) == (null == two));
@@ -306,7 +306,7 @@ public class LangUtilTest extends TestCase {
         LangUtil.makeSoftDiffs(expected, actual, missingOut, extraOut,
                             String.CASE_INSENSITIVE_ORDER);
         checkSameSoft(missing, missingOut);
-        checkSameSoft(extra, extraOut);        
+        checkSameSoft(extra, extraOut);
     }
 
     /** @param one modifiable List of String
@@ -326,7 +326,7 @@ public class LangUtilTest extends TestCase {
             assertTrue(label, sone.equals(stwo));
         }
     }
-    
+
     static class FTest {
         String toUnflatten;
         String[] unflattened;
@@ -337,7 +337,7 @@ public class LangUtilTest extends TestCase {
             this.spec = spec;
         }
         public String toString() {
-            return "FTest(" 
+            return "FTest("
                 + "toUnflatten=" + toUnflatten
                 + ", unflattened=" + Arrays.asList(unflattened)
                 + ", spec=" + spec
@@ -345,5 +345,5 @@ public class LangUtilTest extends TestCase {
         }
     }
 
-    
+
 }

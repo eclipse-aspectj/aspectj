@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC),
  *               2005-2006 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     build tests
  * ******************************************************************/
 package org.aspectj.internal.build;
@@ -37,11 +37,11 @@ import org.aspectj.internal.tools.build.Util;
 import org.aspectj.internal.tools.build.Result.Kind;
 
 public class ModulesTest extends TestCase {
-	
+
     public static final List<String> MODULE_NAMES;
-    
+
     private static final File BASE_DIR = new File("..");
-    
+
     static {
         String[] names = {
         "ajbrowser", "ajde", "ajdoc", "asm",
@@ -72,7 +72,7 @@ public class ModulesTest extends TestCase {
     }
 
     List<File> tempFiles = new ArrayList<>();
-     
+
 	public ModulesTest(String name) {
 		super(name);
 	}
@@ -85,7 +85,7 @@ public class ModulesTest extends TestCase {
 			}
 		}
 	}
-	
+
     Modules getModules(Messager handler) {
         File jarDir = new File("../aj-build-test-jars");
         if (!jarDir.exists()) {
@@ -98,7 +98,7 @@ public class ModulesTest extends TestCase {
         }
         return new Modules(baseDir, jarDir, handler);
     }
-      
+
     public void testAllModulesCreation() {
         List<Module> badModules = new ArrayList<>();
         for (String name: MODULE_NAMES) {
@@ -124,7 +124,7 @@ public class ModulesTest extends TestCase {
             fail(sb.toString());
         }
     }
-    
+
     void checkModule(String s) {
         if ("docs".equals(s) || "lib".equals(s)) {
             return;
@@ -135,13 +135,13 @@ public class ModulesTest extends TestCase {
             assertTrue(module.toLongString(), false);
         }
     }
-    
+
     public void xtestClasspathCreation() {
         Modules modules = getModules(null);
-        
+
         Module ajdt = modules.getModule("org.aspectj.ajdt.core");
         assertTrue(ajdt.valid);
-        
+
         Project project = new Project();
         AntBuilder builder = getBuilder(project);
         Path classpath = new Path(project);
@@ -153,7 +153,7 @@ public class ModulesTest extends TestCase {
             assertTrue(classpath.toString(), false);
         }
     }
-    
+
     /**
      * This test requires two OSGI modules:
      * org.aspectj.util, which optionally depends on tempaspectjrt.
@@ -163,11 +163,11 @@ public class ModulesTest extends TestCase {
     public void skip_testOSGIModuleCreation() {
         final String MODULE = "org.aspectj.util";
         final String USES_MODULE = "tempaspectjrt";
-        
+
         Modules modules = getModules(null);
         Module newutil = modules.getModule(MODULE);
         assertTrue(newutil.valid);
-        
+
         Project project = new Project();
         AntBuilder builder = getBuilder(project);
         Path classpath = new Path(project);
@@ -188,10 +188,10 @@ public class ModulesTest extends TestCase {
         project.setBaseDir(new File("."));
         project.setName("testOSGIModuleCreation");
         File tempDir = new File(".");
-        return (AntBuilder) AntBuilder.getBuilder("", project, tempDir);        
+        return (AntBuilder) AntBuilder.getBuilder("", project, tempDir);
     }
-    
-    
+
+
     /*********************************************************************
      * The following tests/code enable you to run the entire build in JUnit
      * to debug directly from Eclipse.  To compile using Javac, you will
@@ -199,7 +199,7 @@ public class ModulesTest extends TestCase {
      */
     public void skip_testBuildingAspectJModule() {
         final String moduleName = "org.aspectj.lib";
-        
+
         File modulesDir = new File("..").getAbsoluteFile();
         File buildDir = new File(modulesDir, "aj-build");
         File distDir = new File(buildDir, "dist");
@@ -214,7 +214,7 @@ public class ModulesTest extends TestCase {
         Project project = new Project();
         project.setBaseDir(modulesDir);
         project.setName("testAspectjbuild");
-        
+
         BuildModule bm = new BuildModule();
         bm.setProject(project);
         bm.setAssembleall(true);
@@ -229,19 +229,19 @@ public class ModulesTest extends TestCase {
         bm.setVersion("1.2");
         bm.setVerbose(true);
         bm.setFailonerror(true);
-        
+
         bm.execute();
-        
+
         assertTrue(jar.canRead());
     }
-    
+
     public void skip_testBuildingProduct() {
         final String productName = "tools";
         File modulesDir = new File("..").getAbsoluteFile();
         File buildDir = new File(modulesDir, "aj-build");
         File distDir = new File(buildDir, "dist");
         File jarDir = new File(buildDir, "jars");
-        File productDir = new File(modulesDir, 
+        File productDir = new File(modulesDir,
                 Util.path(new String[] {"build", "products", productName}));
 
         jarDir.mkdirs();
@@ -251,7 +251,7 @@ public class ModulesTest extends TestCase {
         project.setBaseDir(modulesDir);
         project.setName("testAspectjToolsbuild");
         project.addBuildListener(new EventBuildListener(Project.MSG_WARN));
-        
+
         BuildModule bm = new BuildModule();
         bm.setProject(project);
         bm.setAssembleall(true);
@@ -265,7 +265,7 @@ public class ModulesTest extends TestCase {
         bm.setVersion("1.2");
         bm.setFailonerror(true);
         bm.execute();
-        
+
         File libDir = new File(distDir, "tools/lib");
         String[] jars = { "tools", "rt", "weaver", "lib"};
 		for (String s : jars) {
@@ -287,7 +287,7 @@ public class ModulesTest extends TestCase {
         }
         public void buildFinished(BuildEvent event) {}
         public void buildStarted(BuildEvent event) {  }
-        public void messageLogged(BuildEvent event) { 
+        public void messageLogged(BuildEvent event) {
             if (min <= event.getPriority()) {
                 Task t = event.getTask();
                 String src = (null == t ? "project" : t.getTaskName());
@@ -298,7 +298,7 @@ public class ModulesTest extends TestCase {
         public void targetStarted(BuildEvent event) { }
         public void taskFinished(BuildEvent event) { }
         public void taskStarted(BuildEvent event) { }
-        
-    }    
+
+    }
 
 }

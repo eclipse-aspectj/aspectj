@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -24,12 +24,12 @@ import junit.framework.TestCase;
 public class AjCompilerOptionsTest extends TestCase {
 
 	private AjCompilerOptions options;
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		options = new AjCompilerOptions();
 	}
-	
+
 	public void testDefaultValues() {
 		assertFalse(options.terminateAfterCompilation);
 		assertFalse(options.xSerializableAspects);
@@ -40,7 +40,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertFalse(options.generateJavaDocsInModel);
 		assertFalse(options.generateEmacsSymFiles);
 		assertFalse(options.noAtAspectJProcessing);
-		
+
 		Map<String,String> map = options.getMap();
 		assertEquals(CompilerOptions.WARNING,map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
 		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
@@ -52,7 +52,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField));
 		assertEquals(CompilerOptions.IGNORE,map.get(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion));
 	}
-	
+
 	public void testDirectSet() {
 		options.terminateAfterCompilation = true;
 		options.xSerializableAspects = true;
@@ -76,7 +76,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertEquals(CompilerOptions.ENABLED,map.get(AjCompilerOptions.OPTION_XDevNoAtAspectJProcessing));
 	}
 
-	
+
 	public void testMapSet() {
 		Map<String,String> map = new HashMap<>();
 		map.put(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName,CompilerOptions.ERROR);
@@ -88,7 +88,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		map.put(AjCompilerOptions.OPTION_ReportCannotImplementLazyTJP,CompilerOptions.ERROR);
 		map.put(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField,CompilerOptions.WARNING);
 		map.put(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion,CompilerOptions.ERROR);
-		
+
 		map.put(AjCompilerOptions.OPTION_TerminateAfterCompilation,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XSerializableAspects,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XLazyThisJoinPoint,CompilerOptions.ENABLED);
@@ -98,9 +98,9 @@ public class AjCompilerOptionsTest extends TestCase {
 		map.put(AjCompilerOptions.OPTION_GenerateJavaDocsInModel,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_Emacssym,CompilerOptions.ENABLED);
 		map.put(AjCompilerOptions.OPTION_XDevNoAtAspectJProcessing,CompilerOptions.ENABLED);
-		
+
 		options.set(map);
-		
+
 		assertTrue(options.terminateAfterCompilation);
 		assertTrue(options.xSerializableAspects);
 		assertTrue(options.xLazyThisJoinPoint);
@@ -110,7 +110,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertTrue(options.generateJavaDocsInModel);
 		assertTrue(options.generateEmacsSymFiles);
 		assertTrue(options.noAtAspectJProcessing);
-		
+
 		Map<String,String> newMap = options.getMap();
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
@@ -122,7 +122,7 @@ public class AjCompilerOptionsTest extends TestCase {
 		assertEquals(CompilerOptions.WARNING,newMap.get(AjCompilerOptions.OPTION_ReportNeedSerialVersionUIDField));
 		assertEquals(CompilerOptions.ERROR,newMap.get(AjCompilerOptions.OPTION_ReportIncompatibleSerialVersion));
 	}
-	
+
 	public void testToString() {
 		String s = options.toString();
 		assertTrue("Should have info on AspectJ options",s.indexOf("AspectJ Specific Options:") > 0);

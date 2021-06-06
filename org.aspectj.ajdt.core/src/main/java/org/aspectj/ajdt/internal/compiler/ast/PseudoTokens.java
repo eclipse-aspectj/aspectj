@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -35,7 +35,7 @@ public class PseudoTokens extends ASTNode {
 	BasicTokenSource tokenSource;
 	PseudoToken[] tokens;  //XXX this is redundant with the field above
 	String endToken;
-	
+
 
 	public PseudoTokens(PseudoToken[] tokens, ISourceContext sourceContext) {
 		super();
@@ -45,7 +45,7 @@ public class PseudoTokens extends ASTNode {
 		sourceStart = tokens[0].sourceStart;
 		sourceEnd = tokens[tokens.length-2].sourceEnd;
 	}
-	
+
 	public Pointcut parsePointcut(Parser parser) {
 		PatternParser patternParser = new PatternParser(tokenSource);
 		try {
@@ -69,7 +69,7 @@ public class PseudoTokens extends ASTNode {
 		}
 	}
 
-	
+
 	private void reportError(Parser parser, ParserException pe) {
 		IHasPosition tok = pe.getLocation();
 		int start, end;
@@ -84,15 +84,15 @@ public class PseudoTokens extends ASTNode {
 		if (tok instanceof IToken) {
 			found = ((IToken)tok).getString();
 		}
-		
+
 		parser.problemReporter().parseError(start, end,
 											TerminalTokens.TokenNameIdentifier,
 		                                    found.toCharArray(),
 		                                    found,
 		                                    new String[] {pe.getMessage()});
 	}
-	
-	
+
+
 	public TypePattern maybeParseDominatesPattern(Parser parser) {
 		PatternParser patternParser = new PatternParser(tokenSource);
 		try {
@@ -106,9 +106,9 @@ public class PseudoTokens extends ASTNode {
 			reportError(parser, pe);
 			return null;
 		}
-	}		
-	
-	
+	}
+
+
 	public PerClause parsePerClause(Parser parser) {
 		PatternParser patternParser = new PatternParser(tokenSource);
 		try {
@@ -120,13 +120,13 @@ public class PseudoTokens extends ASTNode {
 			reportError(parser, pe);
 			return new PerSingleton();
 		}
-		
+
 	}
-	
-	
+
+
 //	public TypePattern parseTypePattern(Parser parser) {
 //	}
-//	
+//
 	public Declare parseDeclare(Parser parser) {
 		PatternParser patternParser = new PatternParser(tokenSource);
 		try {
@@ -138,7 +138,7 @@ public class PseudoTokens extends ASTNode {
 			return null;
 		}
 	}
-	
+
 	public Declare parseAnnotationDeclare(Parser parser) {
 		PatternParser patternParser = new PatternParser(tokenSource);
 		try {
@@ -149,15 +149,15 @@ public class PseudoTokens extends ASTNode {
 			reportError(parser, pe);
 			return null;
 		}	}
-	
-	
+
+
 	public void postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec) {
 		int counter = 0; // Counter can be used by postParse as a value to compute uniqueness (if required)
 		for (PseudoToken token : tokens) {
 			counter += token.postParse(typeDec, enclosingDec, counter);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
 	 */

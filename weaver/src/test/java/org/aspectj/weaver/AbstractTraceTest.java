@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -48,7 +48,7 @@ public abstract class AbstractTraceTest extends TestCase {
 			public String toTraceString() {
 				return getClass().getName() + "[Traceable]";
 			}
-			
+
 		};
 		trace.enter(getName(),this,new Object[] { arg1 });
 	}
@@ -59,7 +59,7 @@ public abstract class AbstractTraceTest extends TestCase {
 			public String toString() {
 				throw new RuntimeException("toString() can throw an Exception");
 			}
-			
+
 		};
 		trace.enter(getName(),this,new Object[] { arg1 });
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractTraceTest extends TestCase {
 			public int hashCode() {
 				throw new RuntimeException("hashCode can throw an Exception");
 			}
-			
+
 		};
 		trace.enter(getName(),this,new Object[] { arg1 });
 	}
@@ -81,7 +81,7 @@ public abstract class AbstractTraceTest extends TestCase {
 			public String toString() {
 				throw new Error("Don't call ClassLoader.toString()");
 			}
-			
+
 		};
 		trace.enter(getName(),this,new Object[] { arg1 });
 	}

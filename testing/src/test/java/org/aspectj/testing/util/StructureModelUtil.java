@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -44,7 +44,7 @@ public class StructureModelUtil {
 	/**
 	 * Check the properties of the current model. The parameter string lists properties of the model that should be correct. If any
 	 * of the properties are incorrect, a ModelIncorrectException is thrown.
-	 * 
+	 *
 	 * @param toCheck comma separated list of name=value pairs that should be found in the ModelInfo object
 	 * @throws ModelIncorrectException thrown if any of the name=value pairs in toCheck are not found
 	 */
@@ -76,9 +76,9 @@ public class StructureModelUtil {
 	/**
 	 * This method returns a map from affected source lines in a class to a List of aspects affecting that line. Based on method of
 	 * same name by mik kirsten. To be replaced when StructureModelUtil corrects its implementation
-	 * 
+	 *
 	 * @param the full path of the source file to get a map for
-	 * 
+	 *
 	 * @return a Map from line numbers to a List of ProgramElementNodes.
 	 */
 	public static Map getLinesToAspectMap(String sourceFilePath) {
@@ -139,7 +139,7 @@ public class StructureModelUtil {
 
 	/**
 	 * This method is copied from StructureModelUtil inoder for it to use the working version of getLineToAspectMap()
-	 * 
+	 *
 	 * @return the set of aspects with advice that affects the specified package
 	 */
 	public static Set getAspectsAffectingPackage(IProgramElement packageNode) {
@@ -206,7 +206,7 @@ public class StructureModelUtil {
 	// SortArrayComparator comparator = new SortArrayComparator();
 	//
 	// Arrays.sort(temp, comparator);
-	//		
+	//
 	// List newElements = Arrays.asList(temp);
 	//
 	// return newElements;

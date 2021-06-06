@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Ron Bodkin		Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.ltw;
@@ -35,14 +35,14 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 /**
  * @author adrian
  * @author Ron Bodkin
- * 
+ *
  *         For use in LT weaving
- * 
+ *
  *         Backed by both a BcelWorld and a ReflectionWorld
- * 
+ *
  *         Needs a callback when a woven class is defined This is the trigger for us to ditch the class from Bcel and cache it in
  *         the reflective world instead.
- * 
+ *
  *         Create by passing in a classloader, message handler
  */
 public class LTWWorld extends BcelWorld implements IReflectionWorld {
@@ -156,7 +156,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	/**
 	 * Remove this class from the typeMap. Call back to be made from a publishing class loader The class loader should, ideally,
 	 * make this call on each not yet working
-	 * 
+	 *
 	 * @param clazz
 	 */
 	public void loadedClass(Class clazz) {
@@ -170,7 +170,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.reflect.IReflectionWorld#resolve(java.lang.Class)
 	 */
 	public ResolvedType resolve(Class aClass) {

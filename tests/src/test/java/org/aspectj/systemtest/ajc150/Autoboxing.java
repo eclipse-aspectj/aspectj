@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
@@ -27,11 +27,11 @@ public class Autoboxing extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-	
+
 	public void testSimpleBoxing() {
 		runTest("simple boxing test");
 	}
-	
+
 	public void testIntegerBoxing() {
 		runTest("integer boxing");
 	}
@@ -47,23 +47,23 @@ public class Autoboxing extends XMLBasedAjcTestCase {
 	public void testFloatBoxing() {
 		runTest("float boxing");
 	}
-	
+
 	public void testShortBoxing() {
 		runTest("short boxing");
 	}
-	
+
 	public void testLongBoxing() {
 		runTest("long boxing");
 	}
-	
+
 	public void testBooleanBoxing() {
 		runTest("boolean boxing");
 	}
-	
+
 	public void testByteBoxing() {
 		runTest("byte boxing");
 	}
-	
+
 	public void testBoxingAfterReturning() {
 		runTest("boxing in after returning");
 	}
@@ -73,9 +73,9 @@ public class Autoboxing extends XMLBasedAjcTestCase {
 //				getWeavingMessages(cR.getInfoMessages()).size()==6);
 //		RunResult rR = run("AspectAfterReturning");
 //		int lines = countLines(rR.getStdErr());
-//		assertTrue("Expected 6 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==6);	
+//		assertTrue("Expected 6 lines of output but got: #"+lines+":\n"+rR.getStdErr(),lines==6);
 //	}
-//		
+//
 //	public int countLines(String s) {
 //		int count = 0;
 //		while (s.indexOf("\n")!=-1) {
@@ -84,9 +84,9 @@ public class Autoboxing extends XMLBasedAjcTestCase {
 //		}
 //		return count;
 //	}
-//	
+//
 //	protected void verify(String output,String lookingFor) {
 //		assertTrue("Didn't find expected string '"+lookingFor+"' in:\n"+output,output.indexOf(lookingFor)!=-1);
 //	}
-//	
+//
 }

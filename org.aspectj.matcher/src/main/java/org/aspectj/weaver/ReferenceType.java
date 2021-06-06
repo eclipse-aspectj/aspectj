@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Andy Clement - June 2005 - separated out from ResolvedType
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -376,13 +376,13 @@ public class ReferenceType extends ResolvedType {
 		if (this.isFinal() || other.isFinal()) {
 			return false;
 		}
-		
+
 		// 20170927: What is the block of code for? It mentions jls5.5 which isn't on this topic (old version of jls?)
 		// Some possible references: http://docs.oracle.com/javase/specs/jls/se9/jls9.pdf  5.1.6 (narrowing reference conversion)
 		// On Java 9 the test GenericsTests.testAfterReturningWithWildcardVar will fail because this code below
 		// used to find Set and List were the same, but now finds they are not. (so it doesn't put out the unchecked
 		// conversion message). However the code "List l = (List)someSet;" still compiles on 9 - so is this code bogus?
-		
+
 		// ??? needs to be Methods, not just declared methods? JLS 5.5 unclear
 		ResolvedMember[] a = getDeclaredMethods();
 		ResolvedMember[] b = other.getDeclaredMethods();
@@ -1119,7 +1119,7 @@ public class ReferenceType extends ResolvedType {
 	/**
 	 * a parameterized signature starts with a "P" in place of the "L", see the
 	 * comment on signatures in UnresolvedType.
-	 * 
+	 *
 	 * @param aGenericType
 	 * @param someParameters
 	 * @return
@@ -1245,7 +1245,7 @@ public class ReferenceType extends ResolvedType {
 	 * avoid creating an unnecessary new (duplicate) with the same information
 	 * in it. This method also cleans up any reference entries that have been
 	 * null'd by a GC.
-	 * 
+	 *
 	 * @param typeParameters
 	 *            the type parameters to use when searching for the derivative
 	 *            type.

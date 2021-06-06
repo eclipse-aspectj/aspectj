@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
@@ -26,7 +26,7 @@ import org.aspectj.lang.reflect.PointcutExpression;
  *
  */
 public class AdviceImpl implements Advice {
-	
+
 	private static final String AJC_INTERNAL = "org.aspectj.runtime.internal";
 
 	private final AdviceKind kind;
@@ -36,22 +36,22 @@ public class AdviceImpl implements Advice {
 	private Type[] genericParameterTypes;
 	private AjType[] parameterTypes;
 	private AjType[] exceptionTypes;
-	
+
 	protected AdviceImpl(Method method, String pointcut, AdviceKind type) {
 		this.kind = type;
 		this.adviceMethod = method;
 		this.pointcutExpression = new PointcutExpressionImpl(pointcut);
 	}
-	
+
 	protected AdviceImpl(Method method, String pointcut, AdviceKind type, String extraParamName) {
 		this(method,pointcut,type);
 		this.hasExtraParam = true;
 	}
-	
+
 	public AjType getDeclaringType() {
 		return AjTypeSystem.getAjType(adviceMethod.getDeclaringClass());
 	}
-	
+
 	public Type[] getGenericParameterTypes() {
 		if (this.genericParameterTypes == null) {
 			Type[] genTypes = adviceMethod.getGenericParameterTypes();
@@ -72,7 +72,7 @@ public class AdviceImpl implements Advice {
 		}
 		return this.genericParameterTypes;
 	}
-	
+
 	public AjType<?>[] getParameterTypes() {
 		if (this.parameterTypes == null) {
 			Class<?>[] ptypes = adviceMethod.getParameterTypes();
@@ -87,7 +87,7 @@ public class AdviceImpl implements Advice {
 		}
 		return this.parameterTypes;
 	}
-	
+
 	public AjType<?>[] getExceptionTypes() {
 		if (this.exceptionTypes == null) {
 			Class<?>[] exTypes = adviceMethod.getExceptionTypes();
@@ -98,11 +98,11 @@ public class AdviceImpl implements Advice {
 		}
 		return this.exceptionTypes;
 	}
-	
+
 	public AdviceKind getKind() {
 		return kind;
 	}
-	
+
 	public String getName() {
 		String adviceName = adviceMethod.getName();
 		if (adviceName.startsWith("ajc$")) {
@@ -112,11 +112,11 @@ public class AdviceImpl implements Advice {
 		}
 		return adviceName;
 	}
-	
+
 	public PointcutExpression getPointcutExpression() {
 		return pointcutExpression;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		if (getName().length() > 0) {
@@ -183,5 +183,5 @@ public class AdviceImpl implements Advice {
 		sb.append(getPointcutExpression().asString());
 		return sb.toString();
 	}
-	
+
 }

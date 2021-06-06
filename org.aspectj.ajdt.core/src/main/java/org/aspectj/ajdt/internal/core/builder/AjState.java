@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Andy Clement     overhauled
  * ******************************************************************/
 
@@ -151,19 +151,19 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * Holds UnwovenClassFiles (byte[]s) originating from the given file source. This could be a jar file, a directory, or an
 	 * individual .class file. This is an *expensive* map. It is cleared immediately following a batch build, and the cheaper
 	 * inputClassFilesBySource map is kept for processing of any subsequent incremental builds.
-	 * 
+	 *
 	 * Populated during AjBuildManager.initBcelWorld().
-	 * 
+	 *
 	 * Passed into AjCompiler adapter as the set of binary input files to reweave if the weaver determines a full weave is required.
-	 * 
+	 *
 	 * Cleared during initBcelWorld prior to repopulation.
-	 * 
+	 *
 	 * Used when a file is deleted during incremental compilation to delete all of the class files in the output directory that
 	 * resulted from the weaving of File.
-	 * 
+	 *
 	 * Used during getBinaryFilesToCompile when compiling incrementally to determine which files should be recompiled if a given
 	 * input file has changed.
-	 * 
+	 *
 	 */
 	private Map<String, List<UnwovenClassFile>> binarySourceFiles = new HashMap<>();
 
@@ -188,9 +188,9 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Populated in noteResult to record the set of UnwovenClassFiles (intermediate results) that originated from compilation of the
 	 * class with the given fully-qualified name.
-	 * 
+	 *
 	 * Used in removeAllResultsOfLastBuild to remove .class files from output directory.
-	 * 
+	 *
 	 * Passed into StatefulNameEnvironment during incremental compilation to support findType lookups.
 	 */
 	private final Map<String, File> classesFromName = new HashMap<>();
@@ -349,7 +349,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * Checks if any of the files in the set passed in contains an aspect declaration. If one is found then we start the process of
 	 * batch building, i.e. we remove all the results of the last build, call any registered listener to tell them whats happened
 	 * and return false.
-	 * 
+	 *
 	 * @return false if we discovered an aspect declaration
 	 */
 	private boolean processDeletedFiles(Set<File> deletedFiles) {
@@ -434,7 +434,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * Analyse .class files in the directory specified, if they have changed since the last successful build then see if we can
 	 * determine which source files in our project depend on the change. If we can then we can still do an incremental build, if we
 	 * can't then we have to do a full build.
-	 * 
+	 *
 	 */
 	private int classFileChangedInDirSinceLastBuildRequiringFullBuild(File dir, int pathid) {
 
@@ -811,7 +811,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Determine if a file has changed since a given time, using the local information recorded in the structural changes data
 	 * structure.
-	 * 
+	 *
 	 * @param file the file we are wondering about
 	 * @param lastSuccessfulBuildTime the last build time for the state asking the question
 	 */
@@ -854,7 +854,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Determine if something has changed on the classpath/inpath/aspectpath and a full build is required rather than an incremental
 	 * one.
-	 * 
+	 *
 	 * @param previousConfig the previous configuration used
 	 * @param newConfig the new configuration being used
 	 * @return true if full build required
@@ -921,7 +921,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Return a list of the output locations - this includes any 'default' output location and then any known by a registered
 	 * CompilationResultDestinationManager.
-	 * 
+	 *
 	 * @param config the build configuration for which the output locations should be determined
 	 * @return a list of file objects
 	 */
@@ -967,7 +967,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * Check the old and new paths, if they vary by length or individual elements then that is considered a change. Or if the last
 	 * modified time of a path entry has changed (or last modified time of a classfile in that path entry has changed) then return
 	 * true. The outputlocations are supplied so they can be 'ignored' in the comparison.
-	 * 
+	 *
 	 * @param oldPath
 	 * @param newPath
 	 * @param checkClassFiles whether to examine individual class files within directories
@@ -1025,7 +1025,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * Check the old and new paths, if they vary by length or individual elements then that is considered a change. Or if the last
 	 * modified time of a path entry has changed (or last modified time of a classfile in that path entry has changed) then return
 	 * true. The outputlocations are supplied so they can be 'ignored' in the comparison.
-	 * 
+	 *
 	 * @param oldPath
 	 * @param newPath
 	 * @param checkClassFiles whether to examine individual class files within directories
@@ -1402,7 +1402,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 	/**
 	 * Record the fully-qualified names of the types that were declared in the given source file.
-	 * 
+	 *
 	 * @param sourceFile, the compilation unit
 	 * @param icr, the CompilationResult from compiling it
 	 */
@@ -1417,7 +1417,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 	/**
 	 * If this compilation unit defined an aspect, we need to know in case it is modified in a future increment.
-	 * 
+	 *
 	 * @param sourceFile
 	 * @param cr
 	 */
@@ -1548,12 +1548,12 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Compare the class structure of the new intermediate (unwoven) class with the existingResolvedType of the same class that we
 	 * have in the world, looking for any structural differences (and ignoring aj members resulting from weaving....)
-	 * 
+	 *
 	 * Some notes from Andy... lot of problems here, which I've eventually resolved by building the compactstructure based on a
 	 * classfilereader, rather than on a ResolvedType. There are accessors for inner types and funky fields that the compiler
 	 * creates to support the language - for non-static inner types it also mangles ctors to be prefixed with an instance of the
 	 * surrounding type.
-	 * 
+	 *
 	 * @param reader
 	 * @param existingType
 	 * @return
@@ -1807,7 +1807,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			getListener().recordDecision("StructuralAnalysis["+filename+"]: "+info);
 		}
 	}
-	
+
 	private boolean printStructuralChanges(String filename, ClassFileReader reader, CompactTypeStructureRepresentation existingType) {
 		logAnalysis(filename,"appears to have structurally changed, printing changes:");
 		if (existingType == null) {
@@ -2147,7 +2147,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 	/**
 	 * For two methods, discover if there has been a change in the exception types specified.
-	 * 
+	 *
 	 * @return true if the exception types have changed
 	 */
 	private boolean exceptionClausesDiffer(IBinaryMethod lastMethod, IBinaryMethod newMethod) {
@@ -2261,7 +2261,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	/**
 	 * Record that a particular type has been touched during a compilation run. Information is used to ensure any types depending
 	 * upon this one are also recompiled.
-	 * 
+	 *
 	 * @param typename (possibly qualified) type name
 	 */
 	protected void recordTypeChanged(String typename) {
@@ -2524,12 +2524,12 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	public void setFileSystem(FileSystem fileSystem) {
 		this.fileSystem = fileSystem;
 	}
-	
+
 	/**
 	 * Record an aspect that came in on the aspect path. When a .class file changes on the aspect path we can then recognize it as
 	 * an aspect and know to do more than just a tiny incremental build. <br>
 	 * TODO but this doesn't allow for a new aspect created on the aspectpath?
-	 * 
+	 *
 	 * @param aspectFile path to the file, eg. c:/temp/foo/Fred.class
 	 */
 	public void recordAspectClassFile(String aspectFile) {

@@ -2,9 +2,9 @@
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
@@ -78,7 +78,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
                           + " to read current data: " + e.getMessage(),
                             e);
             }
-            
+
             FileUtil.deleteContents(outFile);
             return;
         }
@@ -98,7 +98,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
                           + " to write updated data: " + e.getMessage(),
                             e);
             }
-            
+
             FileUtil.deleteContents(outFile);
         }
     }
@@ -116,7 +116,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
                           + " to read current data: " + e.getMessage(),
                             e);
             }
-            
+
             FileUtil.deleteContents(outFile);
             return;
         }
@@ -136,7 +136,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
                           + " to write updated data: " + e.getMessage(),
                             e);
             }
-            
+
             FileUtil.deleteContents(outFile);
         }
     }
@@ -293,7 +293,7 @@ public class ZippedFileCacheBacking extends AsynchronousFileCacheBacking {
 
         return result;
     }
-    
+
     public static final void writeZipClassBytes (File file, Map<String,byte[]> entriesMap) throws IOException {
         if (entriesMap.isEmpty()) {
             FileUtil.deleteContents(file);

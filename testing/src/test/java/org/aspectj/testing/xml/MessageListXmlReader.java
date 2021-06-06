@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
@@ -28,8 +28,8 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.xml.sax.SAXException;
 
-/** 
- * Read a list of messages in xml form. 
+/**
+ * Read a list of messages in xml form.
  * Input files should comply with DOCTYPE
  */
 public class MessageListXmlReader {
@@ -37,11 +37,11 @@ public class MessageListXmlReader {
     static {
         final String EOL = LangUtil.EOL;
         final StringBuffer r = new StringBuffer();
-        
+
         r.append("<!DOCTYPE ");
         r.append(MessageList.XMLNAME);
         r.append(" [");
-        r.append(EOL + "   <!ELEMENT " + MessageList.XMLNAME 
+        r.append(EOL + "   <!ELEMENT " + MessageList.XMLNAME
                     + " (" + SoftMessage.XMLNAME + "+) >");
         String name = SoftMessage.XMLNAME;
         r.append(EOL + "   <!ELEMENT " + name + " (" + SoftSourceLocation.XMLNAME + ")*>");
@@ -55,13 +55,13 @@ public class MessageListXmlReader {
         r.append(EOL + "   <!ATTLIST " + name + " sourceFile CDATA #IMPLIED >");
 
         r.append(EOL + "] >");
-        INLINE_DOCTYPE = r.toString();       
-    } 
+        INLINE_DOCTYPE = r.toString();
+    }
 
     private static final String[] LOG = new String[] {"info", "debug", "trace" };
-    
+
     private int logLevel;
-    
+
     /**
      * Print IMessage[] to the output file as XML.
      * @param output the File to write to - overwritten
@@ -82,7 +82,7 @@ public class MessageListXmlReader {
         writer.close();
         return null;
     }
-    
+
     /** @param level 0..2, info..trace */
     public void setLogLevel(int level) {
         if (level < 0) {
@@ -91,10 +91,10 @@ public class MessageListXmlReader {
         if (level > 2) {
             level = 2;
         }
-        logLevel = level;        
+        logLevel = level;
     }
-    
-    /** 
+
+    /**
      * Read the specifications for a list of IMessage from an XML file.
      * @param file the File must be readable, comply with DOCTYPE.
      * @return IMessage[] read from file
@@ -107,7 +107,7 @@ public class MessageListXmlReader {
 
         final Digester digester = new Digester();
         setupDigester(digester);
-        
+
         MessageListHolder holder = new MessageListHolder();
         digester.push(holder);
         FileInputStream input = new FileInputStream(file);
@@ -119,13 +119,13 @@ public class MessageListXmlReader {
             if (null != input) {
                 input.close();
                 input = null;
-            }            
+            }
         }
         return (null == holder.list
             ? new IMessage[0]
             : holder.list.getMessages());
     }
-   
+
     /** set up the mapping between the xml and Java. */
     private void setupDigester(Digester digester) {
         // XXX supply sax parser to ignore white space?
@@ -141,32 +141,32 @@ public class MessageListXmlReader {
         digester.addObjectCreate(messageListX,         MessageList.class.getName());
         digester.addObjectCreate(messageX,             SoftMessage.class.getName());
         digester.addObjectCreate(messageSrcLocX,       SoftSourceLocation.class.getName());
-        
+
         // ---- set bean properties for sub-elements created automatically
         // -- some remapped - warnings
         //   - if property exists, map will not be used
-        digester.addSetProperties(messageListX); 
+        digester.addSetProperties(messageListX);
         digester.addSetProperties(messageX);
         digester.addSetProperties(messageSrcLocX);
         digester.addSetProperties(messageX, "kind", "kindAsString");
         digester.addSetProperties(messageX, "line", "lineAsString");
 
-        // ---- when subelements are created, add to parent 
+        // ---- when subelements are created, add to parent
         digester.addSetNext(messageListX,         "addMessage", IMessage.class.getName());
         digester.addSetNext(messageX,             "setSourceLocation", ISourceLocation.class.getName());
-        
+
         // can set parent, but prefer to have "knows-about" flow down only...
     }
 
     // ------------------------------------------------------------ testing code
 
-    /** 
+    /**
      * This is only to do compile-time checking for the APIs impliedly
      * used in setupDigester(..).
      * The property setter checks are redundant with tests based on
      * expectedProperties().
      */
-//    private static void setupDigesterCompileTimeCheck() { 
+//    private static void setupDigesterCompileTimeCheck() {
 //        if (true) { throw new Error("never invoked"); }
 //
 //        MessageListHolder holder = new MessageListHolder();
@@ -179,16 +179,16 @@ public class MessageListXmlReader {
 //        m.setSourceLocation(sl);
 //        m.setText((String) null);
 //        m.setKindAsString((String) null);
-//        
-//        sl.setFile((String) null); 
-//        sl.setLine((String) null); 
-//        sl.setColumn((String) null); 
-//        sl.setEndLine((String) null); 
-//        
+//
+//        sl.setFile((String) null);
+//        sl.setLine((String) null);
+//        sl.setColumn((String) null);
+//        sl.setEndLine((String) null);
+//
 //        // add attribute setters to validate?
 //    }
 
-    // inner classes, to make public for bean utilities    
+    // inner classes, to make public for bean utilities
     /** a list of messages */
     public static class MessageList {
         public static final String XMLNAME = "message-list";
@@ -208,8 +208,8 @@ public class MessageListXmlReader {
             this.list = list;
         }
     }
-    
+
 }
- 
+
 
 

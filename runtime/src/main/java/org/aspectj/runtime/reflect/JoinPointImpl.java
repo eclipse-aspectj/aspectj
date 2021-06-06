@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.runtime.reflect;
@@ -139,7 +139,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	// To proceed we need a closure to proceed on. Generated code
 	// will either be using arc or arcs but not both. arcs being non-null
 	// indicates it is in use (even if an empty stack)
-	private AroundClosure arc = null;	
+	private AroundClosure arc = null;
 	private Stack<AroundClosure> arcs = null;
 
 	public void set$AroundClosure(AroundClosure arc) {
@@ -167,7 +167,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 				return arc.run(arc.getState());
 			}
 		} else {
-			return arcs.peek().run(arcs.peek().getState());			
+			return arcs.peek().run(arcs.peek().getState());
 		}
 	}
 
@@ -179,7 +179,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		} else {
 			ac = arcs.peek();
 		}
-		
+
 		if (ac == null) {
 			return null;
 		} else {
@@ -193,16 +193,16 @@ class JoinPointImpl implements ProceedingJoinPoint {
 			boolean bindsThis = (flags & 0x000100) != 0;
 			boolean hasTarget = (flags & 0x000010) != 0;
 			boolean bindsTarget = (flags & 0x000001) != 0;
-	
+
 			// state is always consistent with caller?,callee?,formals...,jp
 			Object[] state = ac.getState();
-	
+
 			// these next two numbers can differ because some join points have a this and
 			// target that are the same (eg. call) - and yet you can bind this and target
 			// separately.
-	
+
 			// In the state array, [0] may be this, [1] may be target
-	
+
 			int firstArgumentIndexIntoAdviceBindings = 0;
 			int firstArgumentIndexIntoState = 0;
 			firstArgumentIndexIntoState += (hasThis ? 1 : 0);
@@ -225,14 +225,14 @@ class JoinPointImpl implements ProceedingJoinPoint {
 					} else {
 						// need to replace the target, and it is different to this, whether
 						// that means replacing state[0] or state[1] depends on whether
-						// the join point has a this 
-						
+						// the join point has a this
+
 						// This previous variant doesn't seem to cope with only binding target at a joinpoint
 						// which has both this and target. It forces you to supply this even if you didn't bind
 						// it.
 	//						firstArgumentIndexIntoAdviceBindings = (hasThis ? 1 : 0) + 1;
 	//						state[hasThis ? 1 : 0] = adviceBindings[hasThis ? 1 : 0];
-						
+
 						int targetPositionInAdviceBindings = (hasThis && bindsThis) ? 1 : 0;
 						firstArgumentIndexIntoAdviceBindings = ((hasThis&&bindsThis)?1:0)+((hasTarget&&bindsTarget&&!thisTargetTheSame)?1:0);
 						state[hasThis ? 1 : 0] = adviceBindings[targetPositionInAdviceBindings];
@@ -241,12 +241,12 @@ class JoinPointImpl implements ProceedingJoinPoint {
 					// leave state[0]/state[1] alone, they are OK
 				}
 			}
-	
+
 			// copy the rest across
 			for (int i = firstArgumentIndexIntoAdviceBindings; i < adviceBindings.length; i++) {
 				state[firstArgumentIndexIntoState + (i - firstArgumentIndexIntoAdviceBindings)] = adviceBindings[i];
 			}
-	
+
 			// old code that did this, didnt allow this/target overriding
 			// for (int i = state.length-2; i >= 0; i--) {
 			// int formalIndex = (adviceBindings.length - 1) - (state.length-2) + i;

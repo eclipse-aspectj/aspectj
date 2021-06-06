@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2016 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -32,34 +32,34 @@ public class Ajc1811Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		ResolvedType outerType = world.resolve(UnresolvedType.forName("Outer"));
 		ResolvedMember m = findMethod(outerType,"m");
-		
+
 		UnresolvedType type = m.getReturnType();
 		assertEquals("LOuter$Inner;",type.getSignature());
-		
+
 		type = m.getGenericReturnType();
 		assertEquals("LOuter$Inner;",type.getSignature());
-		
+
 		ResolvedType resolvedType = world.resolve(type);
 		ResolvedType outerResolvedType = resolvedType.getOuterClass();
 		assertEquals("LOuter;",outerResolvedType.getSignature());
-		
+
 		ResolvedMember m2 = findMethod(outerType,"m2");
 		type = m2.getReturnType();
 		assertEquals("LOuter$Inner;",type.getSignature());
-		
+
 		type = m2.getGenericReturnType();
 		assertEquals("LOuter$Inner;",type.getSignature());
-		
+
 		// public Inner m() { ... }
 //		Method m = findMethod(jc,"m");
 //		System.out.println(m);
 //		System.out.println(">"+m.getReturnType());
 //		assertNotNull(returnType);
-		
+
 		// public Outer<String>.Inner m2() { ... }
 	}
-	
-//	
+
+//
 //	public void testMultiArgs_509235() {
 //		runTest("multiargs");
 //	}

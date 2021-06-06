@@ -2,9 +2,9 @@
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   John Kew (vmware)         	initial implementation
@@ -195,7 +195,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
     }
 
 	/**
-	 * The default index entry in the index file 
+	 * The default index entry in the index file
 	 */
 	public static class IndexEntry implements Serializable, Cloneable {
 		private static final long serialVersionUID = 756391290557029363L;
@@ -205,7 +205,7 @@ public abstract class AbstractIndexedFileCacheBacking extends AbstractFileCacheB
 		public boolean ignored;
 		public long crcClass;
 		public long crcWeaved;
-		
+
 		public IndexEntry () {
 			super();
 		}

@@ -1,16 +1,16 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
-// START-SAMPLE library-pointcutIdioms Standard pointcut idioms 
+// START-SAMPLE library-pointcutIdioms Standard pointcut idioms
 package org.aspectj.langlib;
 
 import java.io.*;
@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Library of pointcut idioms to use in combination with
  * other pointcuts.
- * 
+ *
  * @author Wes Isberg
  */
 public final class Pointcuts {
@@ -36,54 +36,54 @@ public final class Pointcuts {
 
     public pointcut mainExecution() :
         execution(public static void main(String[]));
-        
+
     /** staticly-determinable to never match any join point */
     public pointcut never();
        // if(false) && execution(ThreadDeath *(ThreadDeath, ThreadDeath));
-    
+
     public pointcut afterAdviceSupported() : !handler(*);
 
     public pointcut aroundAdviceSupported() : !handler(*)
         && !initialization(new(..)) && !preinitialization(new(..));
 
-    public pointcut anyMethodExecution() : 
+    public pointcut anyMethodExecution() :
         execution(* *(..));
 
-    public pointcut anyPublicMethodExecution() : 
+    public pointcut anyPublicMethodExecution() :
         execution(public * *(..));
 
-    public pointcut anyNonPrivateMethodExecution() : 
+    public pointcut anyNonPrivateMethodExecution() :
         execution(!private * *(..));
 
-    public pointcut anyConstructorExecution() : 
+    public pointcut anyConstructorExecution() :
         execution(new(..));
 
-    public pointcut anyPublicConstructorExecution() : 
+    public pointcut anyPublicConstructorExecution() :
         execution(public new(..));
 
     public pointcut anyNonPrivateConstructorExecution() :
         execution(!private new(..));
 
-    public pointcut anyPublicFieldGet() : 
+    public pointcut anyPublicFieldGet() :
         get(public * *);
 
-    public pointcut anyNonPrivateFieldGet() : 
+    public pointcut anyNonPrivateFieldGet() :
         get(!private * *);
 
-    public pointcut anyPublicFieldSet() : 
+    public pointcut anyPublicFieldSet() :
         set(public * *);
 
-    public pointcut anyNonPrivateFieldSet() : 
+    public pointcut anyNonPrivateFieldSet() :
         set(!private * *); // also !transient?
 
     public pointcut withinSetter() :  // require !static?
         withincode(void set*(*)); // use any return type? multiple parms?
 
-    public pointcut withinGetter() : 
+    public pointcut withinGetter() :
         withincode(!void get*()); // permit parms? require !static?
-    
-    public pointcut anyNonPublicFieldSetOutsideConstructorOrSetter() : 
-        set(!public * *) && !withincode(new(..)) 
+
+    public pointcut anyNonPublicFieldSetOutsideConstructorOrSetter() :
+        set(!public * *) && !withincode(new(..))
         && !withinSetter();
 
     public pointcut anyRunnableImplementation() :
@@ -94,7 +94,7 @@ public final class Pointcuts {
 
     public pointcut anySetSystemErrOut() :
         call(void System.setOut(..)) || call(void System.setErr(..));
-    
+
     public pointcut withinAnyJavaCode() :
         within(java..*) || within(javax..*);
 
@@ -108,15 +108,15 @@ public final class Pointcuts {
     public pointcut anyThreadConstruction() :
         call(Thread+.new(..)) || execution(Thread+.new(..));
 
-    /** 
-     * Any calls to java.io classes 
+    /**
+     * Any calls to java.io classes
      * (but not methods declared only on their subclasses).
      */
     public pointcut anyJavaIOCalls() :
         call(* java.io..*.*(..)) || call(java.io..*.new(..));
 
-    /** 
-     * Any calls to java.awt or javax.swing methods or constructors 
+    /**
+     * Any calls to java.awt or javax.swing methods or constructors
      * (but not methods declared only on their subclasses).
      */
     public pointcut anyJavaAWTOrSwingCalls() :
@@ -125,10 +125,10 @@ public final class Pointcuts {
 
     public pointcut cloneImplementationsInNonCloneable() :
         execution(Object !Cloneable+.clone());
-        
+
     public pointcut runImplementationsInNonRunnable() :
         execution(void !Runnable+.run());
-        
+
     /** any calls to java.lang.reflect or Class.get* (except getName()) */
     public pointcut anySystemReflectiveCalls() :
         call(* java.lang.reflect..*.*(..))
@@ -152,13 +152,13 @@ public final class Pointcuts {
      * an Iterator can remove elements.
      */
     public pointcut anyCollectionWriteCalls() :
-        call(boolean Collection+.add(Object)) 
-        || call(boolean Collection+.addAll(Collection)) 
+        call(boolean Collection+.add(Object))
+        || call(boolean Collection+.addAll(Collection))
         || call(void Collection+.clear())
         || call(boolean Collection+.remove(Object))
         || call(boolean Collection+.removeAll(Collection))
         || call(boolean Collection+.retainAll(Collection));
-        
+
     public pointcut mostThrowableReadCalls() :
         call(* Throwable+.get*(..))
         || call(* Throwable+.print*(..))
@@ -167,13 +167,13 @@ public final class Pointcuts {
     public pointcut exceptionWrappingCalls() :
         (args(Throwable+,..) || args(.., Throwable+))
         && (set(Throwable+ Throwable+.*)
-            || (call(* Throwable+.*(..)) 
+            || (call(* Throwable+.*(..))
                 || call(Throwable+.new(..))));
 
     public pointcut anyCodeThrowingException() :
         execution(* *(..) throws Exception+)
             || execution(new(..) throws Exception+);
-            
+
     private Pointcuts() {} // XXX avoid this? else pointcuts match it...
 }
 //END-SAMPLE library-pointcutIdioms

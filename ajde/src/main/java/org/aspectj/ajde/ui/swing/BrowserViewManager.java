@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -34,7 +34,7 @@ public class BrowserViewManager {
 //    private boolean globalMode = true;
 //    private boolean splitViewMode = false;
 //    private IconRegistry icons;
-//  
+//
 //    private Stack backHistory = new Stack();
 //    private Stack forwardHistory = new Stack();
 //    private IProgramElement currNode = null;
@@ -64,12 +64,12 @@ public class BrowserViewManager {
         pointcutWizard.setVisible(true);
         pointcutWizard.setLocation(Ajde.getDefault().getRootFrame().getX()+100, Ajde.getDefault().getRootFrame().getY()+100);
     }
-    
-    {   
+
+    {
     	DECLARATION_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.DECLARATION);
    		CROSSCUTTING_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.CROSSCUTTING);
-    	INHERITANCE_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.INHERITANCE);  
-    
+    	INHERITANCE_VIEW_PROPERTIES = new GlobalViewProperties(StructureViewProperties.Hierarchy.INHERITANCE);
+
 //        CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
 //		CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
 //		CROSSCUTTING_VIEW_PROPERTIES.addRelation(IRelationship.Kind.ADVICE);
@@ -83,7 +83,7 @@ public class BrowserViewManager {
 //        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.IMPLEMENTS_RELATION);
 //        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_MEMBERS_RELATION);
 //        INHERITANCE_VIEW_PROPERTIES.addRelation(InheritanceAssociation.INHERITS_RELATION);
-     	
+
      	DECLARATION_VIEW_PROPERTIES.setRelations(Ajde.getDefault().getStructureViewManager().getAvailableRelations());
 
         CROSSCUTTING_VIEW = Ajde.getDefault().getStructureViewManager().createGlobalView(CROSSCUTTING_VIEW_PROPERTIES);

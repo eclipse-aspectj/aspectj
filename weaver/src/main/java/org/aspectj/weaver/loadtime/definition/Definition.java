@@ -2,9 +2,9 @@
  * Copyright (c) 2005 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * A POJO that contains raw strings from the XML (sort of XMLBean for our simple LTW DTD)
- * 
+ *
  * @author Alexandre Vasseur (alex AT gnilux DOT com)
  */
 public class Definition {
@@ -156,16 +156,16 @@ public class Definition {
 	public enum AdviceKind {
 		Before, After, AfterReturning, AfterThrowing, Around;
 	}
-	
+
 	public enum DeclareAnnotationKind {
 		Method, Field, Type;
 	}
-	
+
 	public static class DeclareAnnotation {
 		public final DeclareAnnotationKind declareAnnotationKind;
 		public final String pattern;
 		public final String annotation;
-		
+
 		public DeclareAnnotation(DeclareAnnotationKind kind, String pattern, String annotation) {
 			this.declareAnnotationKind = kind;
 			this.pattern = pattern;

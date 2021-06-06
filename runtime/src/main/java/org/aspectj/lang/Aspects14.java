@@ -2,9 +2,9 @@
  * Copyright (c) 2006 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  * variant of Aspects in the aspectj5rt project - this one isn't Java5   - Andy Clement
@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * For users working on a level of Java prior to Java5, Aspects14 handles generic aspectOf methods when they 
+ * For users working on a level of Java prior to Java5, Aspects14 handles generic aspectOf methods when they
  * are not available in the aspects but added later on through load time weaving.  Users on Java5 should use
  * the class Aspects instead.
  * Aspects14.aspectOf(..) is doing reflective calls to the aspect aspectOf, so for better performance
@@ -152,7 +152,7 @@ public class Aspects14 {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
-            || !Modifier.isStatic(method.getModifiers())) {            
+            || !Modifier.isStatic(method.getModifiers())) {
             throw new NoSuchMethodException(aspectClass.getName() + ".aspectOf(..) is not accessible public static");
         }
         return method;

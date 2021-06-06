@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -26,17 +26,17 @@ package org.aspectj.tools.ajbrowser;
 // */
 //public class JemmyDriver implements Scenario {
 //
-//    public static final String CUT 
+//    public static final String CUT
 //        = "org.aspectj.tools.ajbrowser.Main";
-//    public static final String DRIVER 
+//    public static final String DRIVER
 //        = "org.aspectj.tools.ajbrowser.JemmyDriver";
-//    
+//
 //    // XXX need to fix literal path locations
-//    public static final String USERDIR 
+//    public static final String USERDIR
 //        = "j:/home/wes/dev/tools/aj/examples";
-//    public static final String FILENAME_RELATIVE 
+//    public static final String FILENAME_RELATIVE
 //        = USERDIR + "spacewar/debug.lst";
-//    public static final String FILENAME 
+//    public static final String FILENAME
 //        = USERDIR + "/" + FILENAME_RELATIVE;
 //
 //    public static void main(String[] argv) {
@@ -53,7 +53,7 @@ package org.aspectj.tools.ajbrowser;
 //            // grab parameter - pass in .lst file
 //            if (null != param) {
 //                Class c = param.getClass();
-//                if (c.isArray() && 
+//                if (c.isArray() &&
 //                    (String.class == c.getComponentType())) {
 //                    args = (String[]) param;
 //                    if (0 < args.length) {

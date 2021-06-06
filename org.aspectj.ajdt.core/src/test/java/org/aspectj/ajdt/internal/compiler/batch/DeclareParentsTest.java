@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
@@ -24,18 +24,18 @@ import org.aspectj.tools.ajc.CompilationResult;
  * the classes/aspects - we get some set of errors/warnings and weaving messages out from doing this. We then compile the source
  * files and aspects separately and binary weave them together - we should get the same set of weaving information messages. Where
  * possible we also execute one of the classes after the binary weave to check it passes the verifier and executes.
- * 
+ *
  * There are some notes about the implementation throughout these testcases and they are marked: 'IMPORTANT:'
- * 
- * 
+ *
+ *
  * Two things missing:
- * 
+ *
  * In the case where inherited methods can't be overridden to reduce visibility, we should cope with a subclass of the decp target
  * also trying to do it ? We need a way once we see a type to say 'hey, watch out for this guys kids...' - this will also help us
  * when working with abstract classes that don't provide method implementations where their children might.
- * 
+ *
  * Field inheritance? Is there something to worry about here?
- * 
+ *
  * Covariance on method overrides is supported but untested because we need a Java5 compiler (so we can write easy tests)
  */
 public class DeclareParentsTest extends AjcTestCase {
@@ -117,7 +117,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * If overriding an instance method, can't make it static. If overriding a static method, can't make it an instance method.
-	 * 
+	 *
 	 * Note: Error messages and locations for binary weaving are much better than their source counterparts !
 	 */
 	public void test_cantMakeInheritedInstanceMethodsStatic() {
@@ -135,7 +135,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * The Object class cannot be subject to declare parents extends
-	 * 
+	 *
 	 * This is tested when the aspect is compiled - so couldn't occur during binary weaving of decp.
 	 */
 
@@ -149,7 +149,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * if you inherit methods you cannot override them and reduce their visibility.
-	 * 
+	 *
 	 * test 2 in this set checks methods from a superclass of the named new parent.
 	 */
 	public void test_cantReduceVisibilityOfOverriddenMethods_2() {
@@ -167,7 +167,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * Testing: If you inherit abstract methods and you are not abstract you need to provide an implementation.
-	 * 
+	 *
 	 * Test 1 in this set is simple.
 	 */
 	public void test_inheritedAbstractMethodsMustBeImplemented_1() {
@@ -186,7 +186,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * Testing: If you inherit abstract methods and you are not abstract you need to provide an implementation.
-	 * 
+	 *
 	 * Test 2 in this set includes methods further up the hierarchy that must be implemented.
 	 */
 	public void test_inheritedAbstractMethodsMustBeImplemented_2() {
@@ -196,7 +196,7 @@ public class DeclareParentsTest extends AjcTestCase {
 
 	/**
 	 * Testing: If you inherit abstract methods and you are not abstract you need to provide an implementation.
-	 * 
+	 *
 	 * Test 3 in this set includes methods further up the hierarchy that must be implemented *and* the dependencies are satisfied by
 	 * ITDs from the aspect
 	 */

@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2014 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -26,7 +26,7 @@ public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testSuppressTypeNotFoundAbstract_436653_2() {
 		runTest("suppress type not found - abstract 2");
 	}
-	
+
 	public void testSuppressTypeNotFoundAbstract_436653_1() {
 		runTest("suppress type not found - abstract 1");
 	}
@@ -42,7 +42,7 @@ public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testSuppressTypeNotFound_436653_3() {
 		runTest("suppress type not found 3");
 	}
-	
+
 	public void testSuppressTypeNotFound_436653_4() {
 		runTest("suppress type not found 4");
 	}
@@ -58,11 +58,11 @@ public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testSuppressTypeNotFound_436653_7() {
 		runTest("suppress type not found 7");
 	}
-	
+
 	public void testSuppressTypeNotFound_436653_8() {
 		runTest("suppress type not found 8");
 	}
-	
+
 	public void testConstantPool_445395_0() {
 		runTest("constant pool 0");
 	}
@@ -70,15 +70,15 @@ public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testConstantPool_445395() {
 		runTest("constant pool");
 	}
-	
+
 	public void testAbstractAspectNPE_444398() {
 		runTest("abstract aspect npe");
 	}
-	
+
 	public void testVerifyError_443447() {
 		runTest("verifyerror");
 	}
-//	
+//
 //	public void testAnnoStyleDecp_442425() {
 //		runTest("anno style decp");
 //	}

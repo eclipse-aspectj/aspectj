@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -17,8 +17,8 @@ import junit.framework.Test;
 
 /**
  * Varargs, the rules/tests:
- * 
- * 1. cannot match on a varargs method by using 'Object[]' in your signature, 
+ *
+ * 1. cannot match on a varargs method by using 'Object[]' in your signature,
  *    this affects call/execution/initialization/withincode
  */
 public class VarargsTests extends XMLBasedAjcTestCase {
@@ -30,9 +30,9 @@ public class VarargsTests extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-	  
+
   // check when signature is from a call PCD
-  //   should get message: 
+  //   should get message:
   // "an array type as the last parameter in a signature does not match on the varargs declared method: <blah>"
   public void test001_cantMatchVarargsWithObjectArray_callPCD() {
   	runTest("varargs not matched by Object[] (call)");
@@ -45,7 +45,7 @@ public class VarargsTests extends XMLBasedAjcTestCase {
 
   // check when signature is from an initialization PCD
   public void test003_cantMatchVarargsWithObjectArray_initPCD() {
-  	runTest("varargs not matched by Object[] (init)");  	
+  	runTest("varargs not matched by Object[] (init)");
   }
 
   // check when signature is from an withincode PCD
@@ -62,15 +62,15 @@ public class VarargsTests extends XMLBasedAjcTestCase {
   public void test_usingVarargsInPointcuts2() {
   	runTest("call with varargs multi-signature");
   }
-  
+
   public void testAJDKExamples() {
 	  runTest("ajdk: varargs");
   }
-  
+
   public void testStarVarargs() {
 	  runTest("star varargs pattern");
   }
-  
+
   public void testVarargsWithDotDotInPointcut() {
 	  runTest("Varargs with .. in pointcut");
   }

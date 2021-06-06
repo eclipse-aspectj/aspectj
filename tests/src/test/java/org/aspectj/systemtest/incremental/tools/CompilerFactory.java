@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.systemtest.incremental.tools;
@@ -22,7 +22,7 @@ import org.aspectj.ajde.core.AjCompiler;
 public class CompilerFactory {
 
 	private static Map<String,AjCompiler> compilerMap = new Hashtable<>();
-	
+
 	/**
 	 * If an AjCompiler exists for the given projectDir then returns
 	 * that, otherwise creates a new one.
@@ -31,7 +31,7 @@ public class CompilerFactory {
 		if (compilerMap.containsKey(projectDir)) {
 			return (AjCompiler) compilerMap.get(projectDir);
 		}
-		
+
 		AjCompiler compiler = new AjCompiler(
 				projectDir,
 				new MultiProjTestCompilerConfiguration(projectDir),
@@ -40,9 +40,9 @@ public class CompilerFactory {
 		compilerMap.put(projectDir,compiler);
 		return compiler;
 	}
-	
+
 	/**
-	 * Clears the current map - before doing so clears the state of 
+	 * Clears the current map - before doing so clears the state of
 	 * each compiler (this ensures everything is cleaned up in the
 	 * IncrementalStateManager)
 	 */
@@ -53,5 +53,5 @@ public class CompilerFactory {
 		}
 		compilerMap.clear();
 	}
-	
+
 }

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -76,18 +76,18 @@ public class BasicTokenSource implements ITokenSource {
 		buf.append("]");
 		return buf.toString();
 	}
-	
-	
+
+
 	//////////////////////////////////////////////////////
 	// Convenience, maybe just for testing
 	public static ITokenSource makeTokenSource(String input, ISourceContext context) {
 		char[] chars = input.toCharArray();
-		
+
 		int i = 0;
 		List<BasicToken> tokens = new ArrayList<>();
-		
+
 		while (i < chars.length) {
-			char ch = chars[i++];			
+			char ch = chars[i++];
 			switch(ch) {
 				case ' ':
 				case '\t':
@@ -143,7 +143,7 @@ public class BasicTokenSource implements ITokenSource {
 				    	throw new RuntimeException("bad " + ch);
 				    }
 				    continue;
-				    
+
 				case '\"':
 				    int start0 = i-1;
 				    while (i < chars.length && !(chars[i]=='\"')) i++;
@@ -154,12 +154,12 @@ public class BasicTokenSource implements ITokenSource {
 				    int start = i-1;
 				    while (i < chars.length && Character.isJavaIdentifierPart(chars[i])) { i++; }
 				    tokens.add(BasicToken.makeIdentifier(new String(chars, start, i-start), start, i-1));
-				
+
 			}
 		}
 
 		//System.out.println(tokens);
-		
+
 		return new BasicTokenSource((IToken[])tokens.toArray(new IToken[0]), context);
 	}
 

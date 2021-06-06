@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.tools.ajbrowser.core;
@@ -27,13 +27,13 @@ import org.aspectj.tools.ajbrowser.ui.swing.TopFrame;
 public class BrowserBuildProgressMonitor extends Thread implements IBuildProgressMonitor {
 
 	public static final String PROGRESS_HEADING = "AspectJ Build";
-	
+
 	private BuildProgressPanel progressDialog = null;
 	private JDialog dialog = null;
 	private TopFrame topFrame;
-	
+
 	private BrowserMessageHandler handler;
-	
+
 	public BrowserBuildProgressMonitor(BrowserMessageHandler handler) {
 		this.handler = handler;
 		topFrame = (TopFrame) BrowserManager.getDefault().getRootFrame();
@@ -42,16 +42,16 @@ public class BrowserBuildProgressMonitor extends Thread implements IBuildProgres
         dialog.setContentPane(progressDialog);
         dialog.setSize(550, 120);
         try {
-	        dialog.setLocationRelativeTo(topFrame);	
+	        dialog.setLocationRelativeTo(topFrame);
 		} catch (NoSuchMethodError nsme) {
 			// running on 1.3
 		}
 	}
-	
+
 	public void finish(boolean wasFullBuild) {
 		Ajde.getDefault().getIdeUIAdapter().displayStatusInformation("build finished...");
 		progressDialog.finish();
-		dialog.dispose();    	
+		dialog.dispose();
 		if (handler.getMessages().isEmpty()) {
 			topFrame.hideMessagesPanel(handler);
 		} else {

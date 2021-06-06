@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -16,7 +16,7 @@ import junit.framework.Test;
 
 
 /**
- * Checks if we are obeying migration rules. 
+ * Checks if we are obeying migration rules.
  */
 public class MigrationTests extends XMLBasedAjcTestCase {
 
@@ -43,14 +43,14 @@ public class MigrationTests extends XMLBasedAjcTestCase {
 //    assertTrue("Missing class file",f.exists());
 //  	run("Program");
   }
-  
+
 //  /**
 //   * We cannot support all aspects built prior to AspectJ 1.2.1 - so we don't support any.
 //   * There are probably many reasons but the first one I've hit is:
 //   * - Changes for cflow optimizations (counters instead of stacks where we can) mean that an aspect
 //   *   compiled at AspectJ1.2.0 will contain stack cases but AspectJ1.5.0 will look for counter
 //   *   fields in some cases.
-//   * 
+//   *
 //   * This means we should get a reasonable failure message in this case.
 //   */
 //  public void testMigrationFrom120_pointcutsAndAdvice() {
@@ -58,5 +58,5 @@ public class MigrationTests extends XMLBasedAjcTestCase {
 //  	assertTrue("Should have failed",cR.getFailMessages().size()>0);
 //  	assertTrue("Should have produced nice message",cR.getFailMessages().get(0).toString().indexOf("Unable to continue")!=-1);
 //  }
- 
+
 }

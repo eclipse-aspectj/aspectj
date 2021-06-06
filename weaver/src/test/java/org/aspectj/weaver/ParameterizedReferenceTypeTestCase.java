@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -29,7 +29,7 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 
 	BcelWorld world;
 	ReferenceType listOfString;
-	
+
 	public void testDeclaredMethodWithParameter() {
 		ResolvedMember[] methods = listOfString.getDeclaredMethods();
 		ResolvedMember add = null;
@@ -45,7 +45,7 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		}
 		UnresolvedType parameterType = add.getParameterTypes()[0];
 		assertEquals("Ljava/lang/String;",parameterType.getSignature());
-		
+
 		ResolvedMember get = null;
 		for (ResolvedMember method : methods) {
 			if (method.getName().equals("get")) {
@@ -57,9 +57,9 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		}
 		UnresolvedType returnType = get.getReturnType();
 		assertEquals("Ljava/lang/String;",returnType.getSignature());
-		
+
 	}
-	
+
 	public void testDeclaredMethodWithParameterizedReturnType() {
 		ResolvedMember[] methods = listOfString.getDeclaredMethods();
 		ResolvedMember iterator = null;
@@ -71,9 +71,9 @@ public class ParameterizedReferenceTypeTestCase extends TestCase {
 		}
 		UnresolvedType returnType = iterator.getReturnType();
 		assertEquals("Pjava/util/Iterator<Ljava/lang/String;>;",returnType.getSignature());
-		
+
 	}
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		world = new BcelWorld();

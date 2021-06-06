@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -37,7 +37,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 
 
-/** 
+/**
  * misc lang utilities
  */
 public class LangUtil {
@@ -55,10 +55,10 @@ public class LangUtil {
     public static final String CLASSPATH_SEP;
 
     private static final String[] NONE = new String[0];
-    
+
     /** bad: hard-wired unix, windows, mac path separators */
     private static final char[] SEPS = new char[] { '/', '\\', ':' };
-    
+
     static {
         // XXX this has to be the wrong way to get system-dependent classpath separator
         String ps = ";";
@@ -80,8 +80,8 @@ public class LangUtil {
         } finally {
             CLASSPATH_SEP = ps;
         }
-    }  
-    
+    }
+
 	/**
      * @return input if any are empty or no target in input,
      *           or input with escape prefixing all original target
@@ -94,9 +94,9 @@ public class LangUtil {
         escape(input, target, escape, sink);
         return sink.toString();
     }
-    
- 
-	/** 
+
+
+	/**
      * Append escaped input to sink.
      * Cheap form of arbitrary escaping does not escape the escape String
      * itself, but unflatten treats it as significant only before the target.
@@ -120,16 +120,16 @@ public class LangUtil {
     }
 
 	/**
-     * Flatten a List to String by first converting to String[] 
+     * Flatten a List to String by first converting to String[]
      * (using toString() if the elements are not already String)
      * and calling flatten(String[]...).
      */
     public static void flatten(
-        List list, 
-        String prefix, 
-        String nullFlattened, 
+        List list,
+        String prefix,
+        String nullFlattened,
         String escape,
-        String delim, 
+        String delim,
         String suffix,
         StringBuffer sink) {
         throwIaxIfNull(list, "list");
@@ -157,7 +157,7 @@ public class LangUtil {
         final FlattenSpec s = spec;
         flatten(input, s.prefix, s.nullFlattened, s.escape, s.delim,s.suffix, sink);
     }
-    
+
 
 
 
@@ -180,11 +180,11 @@ public class LangUtil {
      * @return null if sink is not null (results added to sink) or rendering otherwise
      */
     public static void flatten(
-        String[] strings, 
-        String prefix, 
-        String nullFlattened, 
+        String[] strings,
+        String prefix,
+        String nullFlattened,
         String escape,
-        String delim, 
+        String delim,
         String suffix,
         StringBuffer sink) {
         throwIaxIfNull(strings, "strings");
@@ -212,7 +212,7 @@ public class LangUtil {
                 if (haveDelim && (i > 0)) {
                     sink.append(delim);
                 }
-                
+
                 if (escaping) {
                     escape(s, delim, escape, sink);
                 } else {
@@ -224,7 +224,7 @@ public class LangUtil {
             sink.append(suffix);
         }
     }
-	
+
     /**
      * Get indexes of any invalid entries in array.
      * @param ra the Object[] entries to check
@@ -232,7 +232,7 @@ public class LangUtil {
      * @param superType the Class, if any, to verify that
      *         any entries are assignable.
      * @return null if all entries are non-null, assignable to superType
-     * or comma-delimited error String, with components 
+     * or comma-delimited error String, with components
      *     <code>"[#] {null || not {superType}"</code>,
      * e.g., "[3] null, [5] not String"
      */
@@ -248,7 +248,7 @@ public class LangUtil {
         for (int i = 0; i < ra.length; i++) {
 			if (null == ra[i]) {
                 result.append(", [" + i + "] null");
-            } else if ((null != superType) 
+            } else if ((null != superType)
                 && !superType.isAssignableFrom(ra[i].getClass())) {
                 result.append(", [" + i + "] not " + cname);
             }
@@ -259,7 +259,7 @@ public class LangUtil {
             return result.toString().substring(2);
         }
     }
-	
+
     /** @return ((null == ra) || (0 == ra.length)) */
     public static boolean isEmpty(Object[] ra) {
         return ((null == ra) || (0 == ra.length));
@@ -270,17 +270,17 @@ public class LangUtil {
         return ((null == s) || (0 == s.length()));
     }
 
-     
+
     /**
      * Throw IllegalArgumentException if any component in input array
      * is null or (if superType is not null) not assignable to superType.
-     * The exception message takes the form 
+     * The exception message takes the form
      * <code>{name} invalid entries: {invalidEntriesResult}</code>
      * @throws IllegalArgumentException if any components bad
      * @see #invalidComponents(Object[], Class)
      */
     public static final void throwIaxIfComponentsBad(
-        final Object[] input, 
+        final Object[] input,
         final String name,
         final Class superType) {
         String errs = invalidComponents(input, superType);
@@ -298,10 +298,10 @@ public class LangUtil {
             throw new IllegalArgumentException(message);
         }
     }
-    
+
 	/**
      * Shorthand for "if null, throw IllegalArgumentException"
-     * @throws IllegalArgumentException "null {name}" if o is null 
+     * @throws IllegalArgumentException "null {name}" if o is null
      */
     public static final void throwIaxIfNull(final Object o, final String name) {
         if (null == o) {
@@ -321,9 +321,9 @@ public class LangUtil {
      * handling prefixes, suffixes, escapes, etc.
      * Any prefix or suffix is stripped from the input
      * (or, if not found, an IllegalArgumentException is thrown).
-     * If delim is null or empty or input contains no delim, 
+     * If delim is null or empty or input contains no delim,
      * then return new String[] {stripped input}.
-     * 
+     *
      * XXX fix comments
      * prefixing with leader (if not null),
      * using nullRendering for null entries (skipped if null),
@@ -345,11 +345,11 @@ public class LangUtil {
      *          or if any suffix does not end the input
      */
     public static ArrayList unflatten(
-        String input, 
-        String prefix, 
-        String nullFlattened, 
+        String input,
+        String prefix,
+        String nullFlattened,
         String escape,
-        String delim, 
+        String delim,
         String suffix,
         String emptyUnflattened) {
         throwIaxIfNull(input, "input");
@@ -381,7 +381,7 @@ public class LangUtil {
             result.add(input);
             return result;
         }
-        
+
         StringTokenizer st = new StringTokenizer(input, delim, true);
 //        StringBuffer cur = new StringBuffer();
 //        boolean lastEndedWithEscape = false;
@@ -396,8 +396,8 @@ public class LangUtil {
         }
         return result;
     }
-      
-    /** combine two string arrays, removing null and duplicates 
+
+    /** combine two string arrays, removing null and duplicates
      * @return concatenation of both arrays, less null in either or dups in two
      * @see Util#combine(Object[], Object[])
      */
@@ -420,7 +420,7 @@ public class LangUtil {
 		}
         return (String[]) result.toArray(NONE);
     }
-    
+
     public static Properties combine(Properties dest, Properties add, boolean respectExisting)  { // XXX
         if (null == add) return dest;
         if (null == dest) return add;
@@ -443,7 +443,7 @@ public class LangUtil {
     public static List arrayAsList(Object[] ra) {
         return org.aspectj.util.LangUtil.arrayAsList(ra);
     }
-    
+
     /**
      * return the fully-qualified class names
      * inferred from the file names in dir
@@ -464,12 +464,12 @@ public class LangUtil {
         for (int i = 0; i < result.length; i++) {
             if (!it.hasNext()) {
                 throw new Error("unexpected end of list at " + i);
-            } 
+            }
             result[i] = fileToClassname((File) it.next(), dirPrefix);
-        } 
+        }
         return result;
     }
-    
+
     /**
      * Convert String[] to String by using conventions for
      * split.  Will ignore any entries containing SPLIT_DELIM
@@ -477,7 +477,7 @@ public class LangUtil {
      * @param input the String[] to convert
      * @param errs the StringBuffer for error messages (if any)
      */
-    public static String unsplit(String[] input, StringBuffer errs) {     
+    public static String unsplit(String[] input, StringBuffer errs) {
         StringBuffer sb = new StringBuffer();
         sb.append(SPLIT_START);
         for (int i = 0; i < input.length; i++) {
@@ -495,9 +495,9 @@ public class LangUtil {
         }
         sb.append(SPLIT_END);
         return sb.toString();
-        
+
     }
-    
+
     /**
      * Split input into substrings on the assumption that it is
      * either only one string or it was generated using List.toString(),
@@ -526,7 +526,7 @@ public class LangUtil {
         result.add(s.substring(start));
         return (String[]) result.toArray(new String[0]);
     }
- 
+
     public static String[] strip(String[] src, String[] toStrip) {
         if (null == toStrip) {
             return strip(src, NONE);
@@ -536,13 +536,13 @@ public class LangUtil {
         List slist = org.aspectj.util.LangUtil.arrayAsList(src);
         List tlist = org.aspectj.util.LangUtil.arrayAsList(toStrip);
         slist.removeAll(tlist);
-        return (String[]) slist.toArray(NONE);        
+        return (String[]) slist.toArray(NONE);
     }
-    
+
     /**
      * Load all classes specified by args, logging success to out
      * and fail to err.
-     */    
+     */
     public static void loadClasses(String[] args, StringBuffer out,
                                    StringBuffer err) {
         if (null != args) {
@@ -562,13 +562,13 @@ public class LangUtil {
 					}
 				}
 			}
-            
+
         }
-    } 
-    
+    }
+
     private static String fileToClassname(File f, String prefix) {
         // this can safely assume file exists, starts at base, ends with .class
-        // this WILL FAIL if full path with drive letter on windows 
+        // this WILL FAIL if full path with drive letter on windows
         String path = f.getPath();
         if (!path.startsWith(prefix)) {
             String err = "!\"" + path + "\".startsWith(\"" + prefix + "\")";
@@ -581,7 +581,7 @@ public class LangUtil {
 		}
         return path;
     }
-    
+
     public static void main (String[] args) { // todo remove as testing
         StringBuffer err = new StringBuffer();
         StringBuffer out = new StringBuffer();
@@ -596,7 +596,7 @@ public class LangUtil {
         if (0 < out.length()) {
             System.out.println(out.toString());
         }
-    } 
+    }
 
     public static String render (String[] args) { // todo move as testing
         if ((null == args) || (1 > args.length)) {
@@ -609,12 +609,12 @@ public class LangUtil {
         for (int i = 0; i < args.length; i++) {
             if (0 < i) sb.append(sep);
             sb.append(args[i]);
-        } 
+        }
         sb.append(longFormat ? "\n" : "]");
         return sb.toString();
-    } 
-    
-   
+    }
+
+
     /**
      * @param thrown the Throwable to render
      */
@@ -633,8 +633,8 @@ public class LangUtil {
         PrintWriter writer = new PrintWriter(buf);
         writer.println(thrown.getMessage());
         thrown.printStackTrace(writer);
-        try { buf.close(); } 
-        catch (IOException ioe) {} 
+        try { buf.close(); }
+        catch (IOException ioe) {}
         return buf.toString();
     }
 
@@ -645,7 +645,7 @@ public class LangUtil {
     public static String debugStr(Object o) {
         return debugStr(o, false);
     }
-    
+
     /**
      * Render standard debug string for an object in normal, default form.
      * @param source the Object to render
@@ -713,7 +713,7 @@ public class LangUtil {
             names[i] = field.getName();
             // collapse to String
             Object value = privilegedGetField(field,o);
-            if (null == value) { 
+            if (null == value) {
                 values[i] = "null";
             } else if (rendering.contains(value)) {
                 values[i] = "<recursion>";
@@ -739,9 +739,9 @@ public class LangUtil {
             });
         } catch (PrivilegedActionException e) {
             return "<IllegalAccessException>";
-        }               
+        }
     }
-    
+
     private static Field[] nonStaticFields(Field[] fields) {
         if (null == fields) {
             return new Field[0];
@@ -767,7 +767,7 @@ public class LangUtil {
         return fields;
     }
 
-    /** <code> debugStr(source, names, items, null, null, null, null)<code> */ 
+    /** <code> debugStr(source, names, items, null, null, null, null)<code> */
     public static String debugStr(Class source, String[] names, Object[] items) {
         return debugStr(source, null, names, null, items, null, null);
     }
@@ -793,7 +793,7 @@ public class LangUtil {
      * @param suffix the String to delimit the end of the name/value instances
      *         used only if classname exists
      */
-    public static String debugStr(Class source, String prefix, String[] names, 
+    public static String debugStr(Class source, String prefix, String[] names,
         String infix, Object[] items, String delimiter,  String suffix) {
 
         if (null == delimiter) {
@@ -819,7 +819,7 @@ public class LangUtil {
         if (null == items) {
             items = NONE;
         }
-        final int MAX 
+        final int MAX
             = (names.length > items.length ? names.length : items.length);
         for (int i = 0; i < MAX; i++) {
 			if (i > 0) {
@@ -833,20 +833,20 @@ public class LangUtil {
                     sb.append(infix);
                 }
                 sb.append(items[i] + "");
-            }            
+            }
 		}
         sb.append(suffix);
         return sb.toString();
     }
 
-    /** 
+    /**
      * @return a String with the unqualified class name of the object (or "null")
      */
     public static String unqualifiedClassName(Object o) {
         return unqualifiedClassName(null == o ? null : o.getClass());
     }
 
-    /** 
+    /**
      * @return a String with the unqualified class name of the class (or "null")
      */
     public static String unqualifiedClassName(Class c) {
@@ -859,8 +859,8 @@ public class LangUtil {
             name = name.substring(1 + loc);
         return name;
     }
-    
-    /** 
+
+    /**
      * Calculate exact diffs and report missing and extra items.
      * This assumes the input List are not modified concurrently.
      * @param expectedListIn the List of expected results - treated as empty if null
@@ -905,8 +905,8 @@ public class LangUtil {
 		}
 	}
     // XXX unit test for makeSoftDiffs
-    /** 
-     * Calculate potentially "soft" diffs using 
+    /**
+     * Calculate potentially "soft" diffs using
      * Comparator.compare(expected, actual).
      * This shallow-copies and sorts the input Lists.
      * @param expectedListIn the List of expected results - treated as empty if null
@@ -943,16 +943,16 @@ public class LangUtil {
 
 		List actual = new ArrayList(actualListIn);
         actual.sort(comparator);
-        Iterator actualIter = actual.iterator();        
+        Iterator actualIter = actual.iterator();
         Object act = null;
-        
+
         if (missingListOut != null) {
         	missingListOut.addAll(expectedListIn);
         }
         if (extraListOut != null) {
         	extraListOut.addAll(actualListIn);
         }
-        
+
         // AMC: less efficient, but simplified implementation. Needed since messages can
         // now match on text content too, and the old algorithm did not cope with two expected
         // messages on the same line, but with different text content.
@@ -971,7 +971,7 @@ public class LangUtil {
 				}
 			}
         }
-        
+
 //        while (((null != act) || actualIter.hasNext())
 //             && ((null != exp) || expectedIter.hasNext())) {
 //            if (null == act) {
@@ -1019,31 +1019,31 @@ public class LangUtil {
 //                 extraListOut.add(actualIter.next());
 //            }
 //        }
-    }    
+    }
     public static class FlattenSpec {
-        /** 
+        /**
          * This tells unflatten(..) to throw IllegalArgumentException
          * if it finds two contiguous delimiters.
          */
-        public static final String UNFLATTEN_EMPTY_ERROR 
+        public static final String UNFLATTEN_EMPTY_ERROR
             = "empty items not permitted when unflattening";
-        /** 
+        /**
          * This tells unflatten(..) to skip empty items when unflattening
          * (since null means "use null")
          */
-        public static final String UNFLATTEN_EMPTY_AS_NULL 
+        public static final String UNFLATTEN_EMPTY_AS_NULL
             = "unflatten empty items as null";
-            
-        /** 
+
+        /**
          * This tells unflatten(..) to skip empty items when unflattening
          * (since null means "use null")
          */
         public static final String SKIP_EMPTY_IN_UNFLATTEN
             = "skip empty items when unflattening";
-        
-        /** 
+
+        /**
          * For Ant-style attributes: "item,item" (with escaped commas).
-         * There is no way when unflattening to distinguish 
+         * There is no way when unflattening to distinguish
          * values which were empty from those which were null,
          * so all are unflattened as empty.
          */
@@ -1051,13 +1051,13 @@ public class LangUtil {
             = new FlattenSpec(null, "", "\\", ",", null, "") {
                 public String toString() { return "FlattenSpec.COMMA"; }
             };
-            
+
         /** this attempts to mimic ((List)l).toString() */
         public static final FlattenSpec LIST
             = new FlattenSpec("[", "", null, ", ", "]", UNFLATTEN_EMPTY_ERROR) {
                 public String toString() { return "FlattenSpec.LIST"; }
             };
-            
+
         /** how toString renders null values */
         public static final String NULL = "<null>";
         private static String r(String s) {
@@ -1070,13 +1070,13 @@ public class LangUtil {
         public final String delim;
         public final String suffix;
         public final String emptyUnflattened;
-        private transient String toString; 
+        private transient String toString;
 
         public FlattenSpec(
-            String prefix, 
-            String nullRendering, 
+            String prefix,
+            String nullRendering,
             String escape,
-            String delim, 
+            String delim,
             String suffix,
             String emptyUnflattened) {
             this.prefix = prefix;
@@ -1087,7 +1087,7 @@ public class LangUtil {
             this.emptyUnflattened = emptyUnflattened;
             throwIaxIfNull(emptyUnflattened, "use UNFLATTEN_EMPTY_AS_NULL");
         }
-        
+
         public String toString() {
             if (null == toString) {
                 toString = "FlattenSpec("
@@ -1107,7 +1107,7 @@ public class LangUtil {
 //  --------- java runs using Ant
 //	/**
 //	 * Run a Java command separately.
-//	 * @param className the fully-qualified String name of the class 
+//	 * @param className the fully-qualified String name of the class
 //     *         with the main method to run
 //	 * @param classpathFiles the File to put on the classpath
 //	 * @param args to the main method of the class
@@ -1123,15 +1123,15 @@ public class LangUtil {
 //        Path classpath = new Path(project, classpathFiles[0].getAbsolutePath());
 //        for (int i = 1; i < classpathFiles.length; i++) {
 //			classpath.addExisting(new Path(project, classpathFiles[i].getAbsolutePath()));
-//		}        
+//		}
 //
 //        Commandline cmds = new Commandline();
 //        cmds.addArguments(new String[] {className});
-//        cmds.addArguments(args);      
+//        cmds.addArguments(args);
 //
 //        ExecuteJava runner = new ExecuteJava();
 //        runner.setClasspath(classpath);
-//        runner.setJavaCommand(cmds);        
+//        runner.setJavaCommand(cmds);
 //        if (null != outSink) {
 //            runner.setOutput(outSink); // XXX todo
 //        }
@@ -1145,14 +1145,14 @@ public class LangUtil {
 //        String[] args,
 //        PrintStream outSink) {
 //        StringBuffer sb = new StringBuffer();
-//        
+//
 //        sb.append("c:/apps/jdk1.3.1/bin/java.exe -classpath \"");
 //        for (int i = 0; i < classpathFiles.length; i++) {
 //            if (i < 0) {
 //                sb.append(";");
 //            }
-//            sb.append(classpathFiles[i].getAbsolutePath());            
-//        }        
+//            sb.append(classpathFiles[i].getAbsolutePath());
+//        }
 //        sb.append("\" -verbose " + className);
 //        for (int i = 0; i < args.length; i++) {
 //            sb.append(" " + args[i]);
@@ -1173,14 +1173,14 @@ public class LangUtil {
 //        String[] args,
 //        PrintStream outSink) throws Throwable {
 //        StringBuffer sb = new StringBuffer();
-//        
+//
 //        sb.append("c:\\apps\\jdk1.3.1\\bin\\java.exe -classpath \"");
 //        for (int i = 0; i < classpathFiles.length; i++) {
 //            if (i > 0) {
 //                sb.append(";");
 //            }
-//            sb.append(classpathFiles[i].getAbsolutePath());            
-//        }        
+//            sb.append(classpathFiles[i].getAbsolutePath());
+//        }
 //        sb.append("\" -verbose " + className);
 //        for (int i = 0; i < args.length; i++) {
 //            sb.append(" " + args[i]);
@@ -1189,8 +1189,8 @@ public class LangUtil {
 //        System.err.println("launching process: " + command);
 //        Process process = Runtime.getRuntime().exec(command);
 //        // huh? err/out
-//        InputStream errStream = null; 
-//        InputStream outStream = null; 
+//        InputStream errStream = null;
+//        InputStream outStream = null;
 //        Throwable toThrow = null;
 //        int result = -1;
 //        try {

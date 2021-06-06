@@ -2,9 +2,9 @@
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
@@ -106,9 +106,9 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
 				throw new IllegalStateException("Unable to create cache dir",e);
 			}
 
-			
+
 //    			if ((targetFolder=detectTargetFolder(getClass())) == null) {
-//    				
+//
 ////    				throw new IllegalStateException("Failed to detect target folder");
 //    			}
     		}
@@ -143,7 +143,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
     public static final File detectTargetFolder (Class<?> anchor) {
     	return detectTargetFolder(getClassContainerLocationFile(anchor));
     }
-    
+
     /**
      * @param anchorFile An anchor {@link File) we want to use
      * as the starting point for the &quot;target&quot; folder lookup up the
@@ -155,7 +155,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
     		if (!file.isDirectory()) {
     			continue;
     		}
-    		
+
     		String	name=file.getName();
     		if ("target".equals(name) || "bin".equals(name) || "src".equals(name)) {
     			File	parent=file.getParentFile();
@@ -174,7 +174,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
      * @throws IllegalArgumentException If location is not a valid
      * {@link File} location
      * @see #getClassContainerLocationURI(Class)
-     * @see File#File(URI) 
+     * @see File#File(URI)
      */
     public static File getClassContainerLocationFile (Class<?> clazz)
             throws IllegalArgumentException {
@@ -215,7 +215,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
         	if ((url=cl.getResource(className)) == null) {
         		return null;
         	}
-        	
+
         	String	srcForm=getURLSource(url);
         	if (LangUtil.isEmpty(srcForm)) {
         		return null;
@@ -242,13 +242,13 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
      *      If a non-<code>null</code> loader is returned from the
      *      {@link Thread#getContextClassLoader()} call then use it.
      *      </LI>
-     *      
+     *
      *      <LI>
      *      Otherwise, use the same loader that was used to load the anchor class.
      *      </LI>
      * </UL>
      * @throws IllegalArgumentException if no anchor class provided (regardless of
-     * whether it is used or not) 
+     * whether it is used or not)
      */
     public static ClassLoader getDefaultClassLoader(Class<?> anchor) {
         if (anchor == null) {
@@ -267,7 +267,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
         }
 
         return cl;
-        
+
     }
     public static final String getURLSource (File file) {
     	return getURLSource((file == null) ? null : file.toURI());
@@ -286,7 +286,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
     public static final String getURLSource (URL url) {
     	return getURLSource((url == null) ? null : url.toExternalForm());
     }
-    
+
     /**
      * @param externalForm The {@link URL#toExternalForm()} string - ignored if
      * <code>null</code>/empty
@@ -303,7 +303,7 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
     	if (LangUtil.isEmpty(url)){
     		return url;
     	}
-    	
+
     	int	sepPos=url.indexOf(RESOURCE_SUBPATH_SEPARATOR);
     	if (sepPos < 0) {
     		return adjustURLPathValue(url);
@@ -338,8 +338,8 @@ public abstract class AbstractCacheBackingTestSupport extends TestCase {
 
     	if (url.startsWith(JAR_URL_PREFIX)) {
     		return url.substring(JAR_URL_PREFIX.length());
-    	}    	
-    	
+    	}
+
     	return url;
 	}
 

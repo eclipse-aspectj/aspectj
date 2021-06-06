@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v1.0 which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * materials are made available under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors: Andy Clement - initial implementation
  ******************************************************************************/
 
@@ -40,7 +40,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  * The program that some of the tests generate looks like this: public class HelloWorld { public static void main(String[] argv) {
  * BufferedReader in = new BufferedReader(new InputStreamReader(System.in)); String name = null; try { name = "Andy"; }
  * catch(IOException e) { return; } System.out.println("Hello, " + name); } }
- * 
+ *
  */
 public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 

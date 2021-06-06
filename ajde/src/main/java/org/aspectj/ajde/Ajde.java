@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190) 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  *******************************************************************/
 
 package org.aspectj.ajde;
@@ -46,9 +46,9 @@ import org.aspectj.util.Reflection;
  * Singleton class used to initialize the Ajde ui as well as the properties required to run the compiler. Users must call
  * "Ajde.init(...)" before doing anything else. There are getter methods for the various properties that are set in the
  * initialization.
- * 
+ *
  * This also defines the factory for getting new AjCompiler instances.
- * 
+ *
  * @author Mik Kersten
  * @author Andy Clement
  */
@@ -159,7 +159,7 @@ public class Ajde {
 	/**
 	 * Utility to run the project main class from the project properties in the same VM using a class loader populated with the
 	 * classpath and output path or jar. Errors are logged to the ErrorHandler.
-	 * 
+	 *
 	 * @return Thread running with process, or null if unable to start
 	 */
 	public Thread runInSameVM() {
@@ -184,7 +184,7 @@ public class Ajde {
 
 	/**
 	 * Utility to run the project main class from the project properties in a new VM. Errors are logged to the ErrorHandler.
-	 * 
+	 *
 	 * @return LangUtil.ProcessController running with process, or null if unable to start
 	 */
 	public LangUtil.ProcessController runInNewVM() {
@@ -286,7 +286,7 @@ public class Ajde {
 
 	/**
 	 * Set the build off in the same thread
-	 * 
+	 *
 	 * @param configFile
 	 * @param buildFresh - true if want to do a full build, false otherwise
 	 */
@@ -304,7 +304,7 @@ public class Ajde {
 	/**
 	 * Set the build off in a different thread. Would need to set the build off in a different thread if using a swing application
 	 * to display the build progress.
-	 * 
+	 *
 	 * @param configFile
 	 * @param buildFresh - true if want to do a full build, false otherwise
 	 */
@@ -447,7 +447,7 @@ public class Ajde {
 	/**
 	 * If the provided configFile is the same as the id for the last compiler then returns that, otherwise clears the state for the
 	 * saved compiler and creates a new one for the provided configFile
-	 * 
+	 *
 	 * @param configFile
 	 * @return the AjCompiler with the id of the given configFile
 	 */

@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
- *     Mik Kersten	2004-07-26 extended to allow overloading of 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
+ *     Mik Kersten	2004-07-26 extended to allow overloading of
  * 					hierarchy builder
  * ******************************************************************/
 
@@ -142,7 +142,7 @@ public class EclipseFactory {
 		if (binding == null) {
 			return ResolvedType.MISSING;
 		}
-		// ??? this seems terribly inefficient 
+		// ??? this seems terribly inefficient
 		// System.err.println("resolving: " + binding.getClass() + ", name = " + getName(binding));
 		ResolvedType ret = getWorld().resolve(fromBinding(binding));
 		// System.err.println("      got: " + ret);
@@ -195,7 +195,7 @@ public class EclipseFactory {
 
 	/**
 	 * Some generics notes:
-	 * 
+	 *
 	 * Andy 6-May-05 We were having trouble with parameterized types in a couple of places - due to TypeVariableBindings. When we
 	 * see a TypeVariableBinding now we default to either the firstBound if it is specified or java.lang.Object. Not sure when/if
 	 * this gets us unstuck? It does mean we forget that it is a type variable when going back the other way from the UnresolvedType
@@ -280,7 +280,7 @@ public class EclipseFactory {
 //					baseTypeSignature = ttt.getSignature();
 //					baseTypeSignature= baseTypeSignature.substring(0,baseTypeSignature.length()-1);
 //					baseTypeSignature = baseTypeSignature + "."+new String(ptb.sourceName)+";";
-//				} else {			
+//				} else {
 					baseTypeSignature = baseType.getErasureSignature();
 //				}
 			} else {
@@ -936,14 +936,14 @@ public class EclipseFactory {
 
 		// If there are aliases, place them in the map
 		if (aliases != null && aliases.size() != 0
-				
+
 				// Not sure what this check is trying to check for?
 				// In latest JDT (2-Feb-2018) there seem to be some code (in LookupEnvironment ~860 and
 				// TypeSystem ~340) related to avoiding raw'ifying the enclosing type if the type to
 				// be rawed is static.  These changes cause these checks to fail and the sophisticated
 				// test variant V fails.  It checks declaring type typevariables and then
 				// uses aliasTargetType ... I'm switching it to check aliasTargetType
-				
+
 //				&& declaringType.typeVariables() != null
 //				&& declaringType.typeVariables().length != 0
 				&& aliasTargetType != null
@@ -1104,7 +1104,7 @@ public class EclipseFactory {
 		UnresolvedType ut = fromBinding(binding);
 		typexToBinding.put(ut, binding);
 		ReferenceType rt = world.lookupOrCreateName(ut);
-		// Ensure a delegate is set (#558995) 
+		// Ensure a delegate is set (#558995)
 		// TODO the delegate is perhaps not 100% ideal as the decl is the aspect?
 		TypeDeclaration decl = binding.scope.referenceContext;
 		CompilationUnitDeclaration referenceCompilationUnit = binding.scope.referenceCompilationUnit();

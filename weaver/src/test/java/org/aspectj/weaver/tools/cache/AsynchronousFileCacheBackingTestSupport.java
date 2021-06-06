@@ -2,9 +2,9 @@
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Lyor Goldstein (vmware)	add support for weaved class being re-defined
@@ -46,7 +46,7 @@ public abstract class AsynchronousFileCacheBackingTestSupport
     public void setUp () throws Exception {
     	super.setUp();
     	cleanupCache();
-    	
+
         random.nextBytes(bytes);
     }
 
@@ -55,7 +55,7 @@ public abstract class AsynchronousFileCacheBackingTestSupport
     	cleanupCache();
     	super.tearDown();
     }
-   
+
     protected void cleanupCache() {
     	if (indexFile != null) {
     		if (FileUtil.deleteContents(indexFile) > 0) {
@@ -89,7 +89,7 @@ public abstract class AsynchronousFileCacheBackingTestSupport
     		File	targetDir=detectTargetFolder();
     		cacheDir = new File(targetDir, "dir-" + String.valueOf(Math.random()));
     	}
-    	
+
     	return ensureFolderExists(cacheDir);
     }
 
@@ -110,9 +110,9 @@ public abstract class AsynchronousFileCacheBackingTestSupport
         assertEquals("Mismatched index size", 0, indexMap.size());
 
         // no data files were created
-        Map<String, byte[]> bytesMap=cache.getBytesMap(); 
+        Map<String, byte[]> bytesMap=cache.getBytesMap();
         assertEquals("Mismatched bytes size", 0, bytesMap.size());
-        
+
         writeIndex(cache.getIndexFile(), cache.getIndexEntries());
 
         assertFalse("Index file still available: " + cacheIndex, cacheIndex.canRead());
@@ -163,12 +163,12 @@ public abstract class AsynchronousFileCacheBackingTestSupport
         if (LangUtil.isEmpty(dataBytes)) {
             return null;
         }
-        
+
         File    		parent=getCacheDir(), file=new File(parent, key);
         OutputStream    out=new FileOutputStream(file);
         try {
             out.write(dataBytes);
-        } finally { 
+        } finally {
             out.close();
         }
 
@@ -190,7 +190,7 @@ public abstract class AsynchronousFileCacheBackingTestSupport
         	entry.crcClass = AbstractCacheBacking.crc(originalBytes);
             entry.crcWeaved = AbstractCacheBacking.crc(bytes);
         }
-        
+
         return entry;
     }
 }

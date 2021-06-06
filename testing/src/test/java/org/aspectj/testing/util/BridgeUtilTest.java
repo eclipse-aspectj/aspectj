@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -22,7 +22,7 @@ import org.aspectj.testing.run.Runner;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class BridgeUtilTest extends TestCase {
 
@@ -50,7 +50,7 @@ public class BridgeUtilTest extends TestCase {
         checkChildString(id, 0, 0, 1, 3, expect);
         expect  = "PASS " + id + " 1 tests (1 passed)";
         checkChildString(id, 0, 0, 0, 1, expect);
-        
+
         // "incomplete" variants
         expect  = "PASS " + id + " 5 tests (5 incomplete)";
         checkChildString(id, 0, 5, 0, 0, expect);
@@ -69,8 +69,8 @@ public class BridgeUtilTest extends TestCase {
         expect  = "PASS " + id + " 6 tests (5 incomplete, 1 passed)";
         checkChildString(id, 0, 5, 0, 1, expect);
     }
-    
-    void checkChildString(String id, int numSkips, int numIncomplete, int numFails, int numPasses, 
+
+    void checkChildString(String id, int numSkips, int numIncomplete, int numFails, int numPasses,
                         String expected) {
         Runner runner = new Runner();
         MessageHandler holder = new MessageHandler();
@@ -86,10 +86,10 @@ public class BridgeUtilTest extends TestCase {
         };
         final Object result = (numFails > 0 ? IRunStatus.FAIL : IRunStatus.PASS);
         while (numFails-- > 0) {
-            runner.runChild(failer,status, null, null);         
+            runner.runChild(failer,status, null, null);
         }
         while (numPasses-- > 0) {
-            runner.runChild(passer,status, null, null);         
+            runner.runChild(passer,status, null, null);
         }
         status.finish(result);
         String actual = BridgeUtil.childString(status, numSkips, numIncomplete);

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -19,19 +19,19 @@ public class Jdk14Trace extends AbstractTrace {
 
 	private Logger logger;
 	private String name;
-	
+
 	public Jdk14Trace (Class clazz) {
 		super(clazz);
 		this.name = clazz.getName();
 		this.logger = Logger.getLogger(name);
 	}
-	
+
 	public void enter(String methodName, Object thiz, Object[] args) {
 		if (logger.isLoggable(Level.FINE)) {
 			logger.entering(name,methodName,formatObj(thiz));
 			if (args != null && logger.isLoggable(Level.FINER)) {
 				logger.entering(name,methodName,formatObjects(args));
-			}			
+			}
 		}
 	}
 
@@ -62,7 +62,7 @@ public class Jdk14Trace extends AbstractTrace {
 			logger.logp(Level.FINER,name,methodName,"EVENT",formatObj(thiz));
 			if (args != null && logger.isLoggable(Level.FINER)) {
 				logger.logp(Level.FINER,name,methodName,"EVENT",formatObjects(args));
-			}			
+			}
 		}
 	}
 
@@ -122,5 +122,5 @@ public class Jdk14Trace extends AbstractTrace {
 			logger.log(Level.SEVERE,message,th);
 		}
 	}
-	
+
 }

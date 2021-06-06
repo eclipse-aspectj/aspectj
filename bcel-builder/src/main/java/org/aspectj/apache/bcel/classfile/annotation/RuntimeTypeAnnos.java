@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2013 VMware
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Andy Clement -     initial implementation {date}
  * ******************************************************************/
 package org.aspectj.apache.bcel.classfile.annotation;
@@ -20,10 +20,10 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 public abstract class RuntimeTypeAnnos extends Attribute {
-	
+
 	private boolean visible;
 	private TypeAnnotationGen[] typeAnnotations; // null until inflated
-	
+
 	// Keep just a byte stream of the data until someone actually asks for the information within
 	private byte[] annotation_data;
 
@@ -40,10 +40,10 @@ public abstract class RuntimeTypeAnnos extends Attribute {
 	public final void dump(DataOutputStream dos) throws IOException {
 	  super.dump(dos);
 	  writeTypeAnnotations(dos);
-	}	  
+	}
 
 	protected void writeTypeAnnotations(DataOutputStream dos) throws IOException {
-		if (typeAnnotations == null) {			
+		if (typeAnnotations == null) {
 			dos.write(annotation_data,0,length);
 		} else {
 			dos.writeShort(typeAnnotations.length);
@@ -68,8 +68,8 @@ public abstract class RuntimeTypeAnnos extends Attribute {
 		ensureInflated();
 		return typeAnnotations;
 	}
-	
-	
+
+
 	public boolean areVisible() {
 		return visible;
 	}

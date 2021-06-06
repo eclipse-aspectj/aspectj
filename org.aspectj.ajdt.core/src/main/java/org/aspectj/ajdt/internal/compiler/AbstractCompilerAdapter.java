@@ -2,9 +2,9 @@
  * Copyright (c) 2006 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     Andy Clement                 initial implementation
@@ -18,14 +18,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclarat
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
 /**
- * 
+ *
  * @author AndyClement
  *
  */
 public abstract class AbstractCompilerAdapter implements ICompilerAdapter {
-	
+
 	public abstract List /*InterimResult*/ getResultsPendingWeave();
-	
+
 	public abstract void acceptResult(CompilationResult result);
 
 	public abstract void afterAnalysing(CompilationUnitDeclaration unit);
@@ -43,7 +43,7 @@ public abstract class AbstractCompilerAdapter implements ICompilerAdapter {
 	public abstract void beforeAnalysing(CompilationUnitDeclaration unit);
 
 	public abstract void beforeCompiling(ICompilationUnit[] sourceUnits);
-	
+
 	public abstract void beforeGenerating(CompilationUnitDeclaration unit);
 
 	public abstract void beforeProcessing(CompilationUnitDeclaration unit);

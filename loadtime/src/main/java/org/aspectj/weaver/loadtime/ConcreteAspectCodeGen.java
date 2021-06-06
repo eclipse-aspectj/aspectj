@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *******************************************************************************/
@@ -68,7 +68,7 @@ import org.aspectj.weaver.patterns.TypePattern;
  * The concrete aspect is generated annotation style aspect (so traditional Java constructs annotated with our AspectJ annotations).
  * As it is built during aop.xml definitions registration we perform the type munging for perclause, ie. aspectOf() artifact
  * directly, instead of waiting for it to go thru the weaver (that we are in the middle of configuring).
- * 
+ *
  * @author Alexandre Vasseur
  * @author Andy Clement
  */
@@ -109,7 +109,7 @@ public class ConcreteAspectCodeGen {
 
 	/**
 	 * Create a new generator for a concrete aspect
-	 * 
+	 *
 	 * @param concreteAspect the aspect definition
 	 * @param world the related world (for type resolution, etc)
 	 */
@@ -120,7 +120,7 @@ public class ConcreteAspectCodeGen {
 
 	/**
 	 * Checks that concrete aspect is valid.
-	 * 
+	 *
 	 * @return true if ok, false otherwise
 	 */
 	public boolean validate() {
@@ -142,7 +142,7 @@ public class ConcreteAspectCodeGen {
 			isValid = true;
 			return true;
 		}
-		
+
 		if (concreteAspect.declareAnnotations.size()!=0) {
 			isValid = true;
 			return true;
@@ -317,7 +317,7 @@ public class ConcreteAspectCodeGen {
 
 	/**
 	 * Rebuild the XML snip that defines this concrete aspect, for log error purpose
-	 * 
+	 *
 	 * @return string repr.
 	 */
 	private String stringify() {
@@ -359,7 +359,7 @@ public class ConcreteAspectCodeGen {
 		if (bytes != null) {
 			return bytes;
 		}
-		PerClause.Kind perclauseKind = PerClause.SINGLETON;		
+		PerClause.Kind perclauseKind = PerClause.SINGLETON;
 		PerClause parentPerClause = (parent != null ? parent.getPerClause() : null);
 		if (parentPerClause != null) {
 			perclauseKind = parentPerClause.getKind();
@@ -479,7 +479,7 @@ public class ConcreteAspectCodeGen {
 				adviceCounter++;
 			}
 		}
-		
+
 		if (concreteAspect.declareAnnotations.size()>0) {
 			int decCounter = 1;
 			for (Definition.DeclareAnnotation da: concreteAspect.declareAnnotations) {
@@ -507,30 +507,30 @@ public class ConcreteAspectCodeGen {
 	}
 
 	/**
-	 * The DeclareAnnotation object encapsulates an method/field/type descriptor and an annotation. This uses a DeclareAnnotation object 
-	 * captured from the XML (something like '<declare-annotation field="* field1(..)" annotation="@Annot(a='a',fred=false,'abc')"/>') 
+	 * The DeclareAnnotation object encapsulates an method/field/type descriptor and an annotation. This uses a DeclareAnnotation object
+	 * captured from the XML (something like '<declare-annotation field="* field1(..)" annotation="@Annot(a='a',fred=false,'abc')"/>')
 	 * and builds the same construct that would have existed if the code style variant was used.  This involves creating a member upon
 	 * which to hang the real annotation and then creating a classfile level attribute indicating a declare annotation is present
 	 * (that includes the signature pattern and a pointer to the real member holding the annotation).
-	 * 
+	 *
 	 */
 	private void generateDeclareAnnotation(Definition.DeclareAnnotation da, int decCounter, LazyClassGen cg) {
-		
+
 		// Here is an example member from a code style declare annotation:
 		//void ajc$declare_at_method_1();
 		//  RuntimeInvisibleAnnotations: length = 0x6
-		//   00 01 00 1B 00 00 
+		//   00 01 00 1B 00 00
 		//  RuntimeVisibleAnnotations: length = 0x15
 		//   00 01 00 1D 00 03 00 1E 73 00 1F 00 20 73 00 21
-		//   00 22 73 00 23 
+		//   00 22 73 00 23
 		//  org.aspectj.weaver.MethodDeclarationLineNumber: length = 0x8
-		//   00 00 00 02 00 00 00 16 
+		//   00 00 00 02 00 00 00 16
 		//  org.aspectj.weaver.AjSynthetic: length = 0x
-		//   
+		//
 		//  Code:
 		//   Stack=0, Locals=1, Args_size=1
 		//   0:	return
-		
+
 		// and at the class level a Declare attribute:
 		//		  org.aspectj.weaver.Declare: length = 0x51
 		//		   05 00 00 00 03 01 00 05 40 41 6E 6E 6F 01 00 17
@@ -538,15 +538,15 @@ public class ConcreteAspectCodeGen {
 		//		   65 74 68 6F 64 5F 31 01 01 00 00 00 00 05 05 00
 		//		   08 73 61 79 48 65 6C 6C 6F 00 01 04 00 00 00 00
 		//		   07 00 00 00 27 00 00 00 34 00 00 00 16 00 00 00
-		//		   3C 
-		
+		//		   3C
+
 		AnnotationAJ constructedAnnotation = buildDeclareAnnotation_actualAnnotation(cg, da);
 		if (constructedAnnotation==null) {
 			return; // error occurred (and was reported), do not continue
 		}
 
-		String nameComponent = da.declareAnnotationKind.name().toLowerCase();		
-		String declareName = new StringBuilder("ajc$declare_at_").append(nameComponent).append("_").append(decCounter).toString();			
+		String nameComponent = da.declareAnnotationKind.name().toLowerCase();
+		String declareName = new StringBuilder("ajc$declare_at_").append(nameComponent).append("_").append(decCounter).toString();
 		LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, Type.NO_ARGS, EMPTY_STRINGS, cg);
 		InstructionList declareMethodBody = declareMethod.getBody();
 		declareMethodBody.append(InstructionFactory.RETURN);
@@ -556,14 +556,14 @@ public class ConcreteAspectCodeGen {
 		ITokenSource tokenSource = BasicTokenSource.makeTokenSource(da.pattern,null);
 		PatternParser pp = new PatternParser(tokenSource);
 
-		if (da.declareAnnotationKind==DeclareAnnotationKind.Method || da.declareAnnotationKind==DeclareAnnotationKind.Field) {	
+		if (da.declareAnnotationKind==DeclareAnnotationKind.Method || da.declareAnnotationKind==DeclareAnnotationKind.Field) {
 			ISignaturePattern isp = (da.declareAnnotationKind==DeclareAnnotationKind.Method?pp.parseCompoundMethodOrConstructorSignaturePattern(true):pp.parseCompoundFieldSignaturePattern());
 			deca = new DeclareAnnotation(da.declareAnnotationKind==DeclareAnnotationKind.Method?DeclareAnnotation.AT_METHOD:DeclareAnnotation.AT_FIELD, isp);
-		} else if (da.declareAnnotationKind==DeclareAnnotationKind.Type) {			
+		} else if (da.declareAnnotationKind==DeclareAnnotationKind.Type) {
 			TypePattern tp = pp.parseTypePattern();
 			deca = new DeclareAnnotation(DeclareAnnotation.AT_TYPE,tp);
 		}
-		
+
 		deca.setAnnotationMethod(declareName);
 		deca.setAnnotationString(da.annotation);
 		AjAttribute attribute = new AjAttribute.DeclareAttribute(deca);
@@ -583,7 +583,7 @@ public class ConcreteAspectCodeGen {
 			return bcelAnnotation;
 		}
 	}
-	
+
 	// TODO support array values
 	// TODO support annotation values
 	/**
@@ -760,7 +760,7 @@ public class ConcreteAspectCodeGen {
 			return aaj;
 		}
 	}
-	
+
 	private AnnotationGen buildBaseAnnotationType(ConstantPool cp,World world, String typename) {
 		String annoname = typename;
 		if (annoname.startsWith("@")) {
@@ -778,11 +778,11 @@ public class ConcreteAspectCodeGen {
 		List<NameValuePair> elems = new ArrayList<>();
 		return new AnnotationGen(new ObjectType(annoname), elems, true, cp);
 	}
-	
+
 	/**
-	 * Construct the annotation that indicates this is a declare 
+	 * Construct the annotation that indicates this is a declare
 	 */
-	
+
 	/**
 	 * The PointcutAndAdvice object encapsulates an advice kind, a pointcut and names a Java method in a particular class. Generate
 	 * an annotation style advice that has that pointcut whose implementation delegates to the Java method.
@@ -976,7 +976,7 @@ public class ConcreteAspectCodeGen {
 
 	/**
 	 * Error reporting
-	 * 
+	 *
 	 * @param message
 	 */
 	private void reportError(String message) {

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Wes Isberg     initial implementation
  * ******************************************************************/
 
@@ -40,17 +40,17 @@ public class CompilerRunTest extends TestCase {
     private static void dummyRunning(String[] args) {
         dummyReports.add("run: " + Arrays.asList(args));
     }
-    
+
 //    private static void dummyRepeating(String[] args) {
 //        dummyReports.add("repeat: " + Arrays.asList(args));
 //    }
 
     private File testBaseDir;
-        
+
     public CompilerRunTest(String name) {
         super(name);
     }
-    
+
     public void setUp() {
         testBaseDir = new File("../testing/temp-CompilerRunTest");
         File f = new File(testBaseDir, "one");
@@ -65,24 +65,24 @@ public class CompilerRunTest extends TestCase {
         assertTrue(err, null == err);
         assertTrue(f.canRead());
     }
-    
+
     public void tearDown() {
         FileUtil.deleteContents(testBaseDir);
         testBaseDir.delete();
         testBaseDir = null;
     }
-    
+
     public void testExtDirs() {
 //        String[] globals = null;
         CompilerRun.Spec spec = new CompilerRun.Spec();
-        spec.setExtdirs("one,two"); 
+        spec.setExtdirs("one,two");
         spec.setFiles("Foo.java");
         checkCommandLine(testBaseDir, spec, null, "-extdirs");
     }
 
-    void checkCommandLine(        
+    void checkCommandLine(
         File testBaseDir,
-        CompilerRun.Spec spec, 
+        CompilerRun.Spec spec,
         String[] globals,
         String expectedInCommand) {
         assertTrue(0 == dummyReports.size());
@@ -90,12 +90,12 @@ public class CompilerRunTest extends TestCase {
         assertTrue(dummyReports.toString(), 1 == dummyReports.size());
         String command = (String) dummyReports.remove(0);
         assertTrue(0 == dummyReports.size());
-        if ((null == command) 
+        if ((null == command)
             || (!command.contains(expectedInCommand))) {
-            assertTrue("expected " 
-                + expectedInCommand 
+            assertTrue("expected "
+                + expectedInCommand
                 + "got "
-                + command, 
+                + command,
                 false);
         }
     }
@@ -103,7 +103,7 @@ public class CompilerRunTest extends TestCase {
     /** run with dummy compiler */
     boolean checkCompilerRun(
         File testBaseDir,
-        CompilerRun.Spec spec, 
+        CompilerRun.Spec spec,
         String[] globals,
         MessageHandler handler) {
         LangUtil.throwIaxIfNull(spec, "spec");
@@ -135,7 +135,7 @@ public class CompilerRunTest extends TestCase {
         }
         return run(testBaseDir, spec);
     }
-    
+
     /** Run the compiler run specified by the spec */
     protected boolean run(File testBaseDir, CompilerRun.Spec spec) {
 
@@ -164,14 +164,14 @@ public class CompilerRunTest extends TestCase {
             validator.deleteTempFiles(true);
         }
     }
- 
-    
+
+
     public static class DummyCompiler implements ICommand {
         private String[] command;
-        
+
         public DummyCompiler() {
         }
-        
+
         public boolean runCommand(
             String[] args,
             IMessageHandler handler) {
@@ -179,7 +179,7 @@ public class CompilerRunTest extends TestCase {
             CompilerRunTest.dummyRunning(command);
             return true;
         }
-        
+
         public boolean repeatCommand(IMessageHandler handler) {
             CompilerRunTest.dummyRunning(command);
             return true;

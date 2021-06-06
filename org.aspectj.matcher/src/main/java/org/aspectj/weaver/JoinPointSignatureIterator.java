@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -109,7 +109,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 			return;
 		}
 
-		firstDefiningMember = (signaturesOfMember instanceof ResolvedMember ? 
+		firstDefiningMember = (signaturesOfMember instanceof ResolvedMember ?
 		    (ResolvedMember) signaturesOfMember: signaturesOfMember.resolve(world));
 
 		if (firstDefiningMember == null) {
@@ -244,7 +244,7 @@ public class JoinPointSignatureIterator implements Iterator<JoinPointSignature> 
 	/**
 	 * Returns true if the parent member is visible to the child member In the same declaring type this is always true, otherwise if
 	 * parent is private it is false.
-	 * 
+	 *
 	 * @param childMember
 	 * @param parentMember
 	 * @return

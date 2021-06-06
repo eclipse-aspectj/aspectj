@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
@@ -30,7 +30,7 @@ public class DeclareAnnotationImpl implements DeclareAnnotation {
 	private DeclareAnnotation.Kind kind;
 	private TypePattern typePattern;
 	private SignaturePattern signaturePattern;
-	
+
 	public DeclareAnnotationImpl(AjType<?> declaring, String kindString, String pattern, Annotation ann, String annText) {
 		this.declaringType = declaring;
 		if (kindString.equals("at_type")) this.kind = DeclareAnnotation.Kind.Type;
@@ -66,11 +66,11 @@ public class DeclareAnnotationImpl implements DeclareAnnotation {
 	public Annotation getAnnotation() {
 		return this.theAnnotation;
 	}
-	
+
 	public String getAnnotationAsText() {
 		return this.annText;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("declare @");
@@ -79,16 +79,16 @@ public class DeclareAnnotationImpl implements DeclareAnnotation {
 			sb.append("type : ");
 			sb.append(getTypePattern().asString());
 			break;
-		case Method: 
-			sb.append("method : "); 
+		case Method:
+			sb.append("method : ");
 			sb.append(getSignaturePattern().asString());
 			break;
-		case Field: 
-			sb.append("field : "); 
+		case Field:
+			sb.append("field : ");
 			sb.append(getSignaturePattern().asString());
 			break;
-		case Constructor: 
-			sb.append("constructor : "); 
+		case Constructor:
+			sb.append("constructor : ");
 			sb.append(getSignaturePattern().asString());
 			break;
 		}

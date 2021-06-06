@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.internal.lang.reflect;
@@ -24,20 +24,20 @@ import org.aspectj.lang.reflect.AjTypeSystem;
  */
 public class StringToType {
 
-	public static Type[] commaSeparatedListToTypeArray(String typeNames, Class classScope) 
+	public static Type[] commaSeparatedListToTypeArray(String typeNames, Class classScope)
 	throws ClassNotFoundException {
 		StringTokenizer strTok = new StringTokenizer(typeNames,",");
 		Type[] ret = new Type[strTok.countTokens()];
 		int index = 0;
-		//outer: 
+		//outer:
 			while (strTok.hasMoreTokens()) {
 			String typeName = strTok.nextToken().trim();
 			ret[index++] = stringToType(typeName, classScope);
 		}
 		return ret;
 	}
-	
-	public static Type stringToType(String typeName, Class classScope) 
+
+	public static Type stringToType(String typeName, Class classScope)
 	throws ClassNotFoundException {
 		try {
 			if (!typeName.contains("<")) {
@@ -56,8 +56,8 @@ public class StringToType {
 			throw new ClassNotFoundException(typeName);
 		}
 	}
-	
-	private static Type makeParameterizedType(String typeName, Class classScope) 
+
+	private static Type makeParameterizedType(String typeName, Class classScope)
 	throws ClassNotFoundException {
 		int paramStart = typeName.indexOf('<');
 		String baseName = typeName.substring(0, paramStart);
@@ -77,7 +77,7 @@ public class StringToType {
 
 			public Type getOwnerType() {
 				return baseClass.getEnclosingClass();
-			}			
+			}
 		};
 	}
 }

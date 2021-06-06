@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -16,8 +16,8 @@ package org.aspectj.testing.util;
 import java.util.Iterator;
 import java.util.List;
 
-/** 
- * This iterates in order through the permutations of Lists. 
+/**
+ * This iterates in order through the permutations of Lists.
  * Order and numericity depend on the underlying list iterators
  * and the order in which the lists are supplied to the constructor.
  * @author isberg
@@ -26,26 +26,26 @@ public class IteratorWrapper implements Iterator {
 
     final List[] lists;
     final Iterator[] iterators;
-    final Object[] current;  
+    final Object[] current;
     Object[] next;
-    
+
     /** number of elements in each array */
     final int maxDepth;
 
-    /** 
+    /**
      * Current level being iterated.
      * Set to 0 whenever depth is incremented.
      * Incremented when iterator for the level has no more elements.
      */
-    int currentLevel; 
-    
-    /** 
+    int currentLevel;
+
+    /**
      * Maximum depth iterated-to thus far.
      * Set to 0 on initialization.
      * Incremented when incrementing currentLevel brings it past depth.
      * Run completes when depth = maxDepth or any new iterator has no elements
      */
-    int depth; 
+    int depth;
 
 
     /** @throws IllegalArgumentException if lists or any element null */
@@ -68,7 +68,7 @@ public class IteratorWrapper implements Iterator {
         iterators = new Iterator[maxDepth];
         reset();
     }
-    
+
     /** Reset to the initial state of the iterator */
     public void reset() {
         next = null;
@@ -95,7 +95,7 @@ public class IteratorWrapper implements Iterator {
 		return (null != next);
 	}
 
-    /** 
+    /**
      * @return Object[] with each element from the iterator of the
      * corresponding list which was passed to the constructor for this.
      */
@@ -110,7 +110,7 @@ public class IteratorWrapper implements Iterator {
         System.arraycopy(current, 0, result, 0, maxDepth);
         return result;
     }
-    
+
     private Object[] getNext() {
         int initialLevel = currentLevel;
         while (depth < maxDepth) {
@@ -120,7 +120,7 @@ public class IteratorWrapper implements Iterator {
                     currentLevel = 0;
                 }
                 return getCurrent();
-            } else { // pop 
+            } else { // pop
                 // reset this level
                 iterators[currentLevel] = lists[currentLevel].iterator();
                 if (!iterators[currentLevel].hasNext()) { // empty iterator - quit
@@ -128,7 +128,7 @@ public class IteratorWrapper implements Iterator {
                     return null;
                 }
                 current[currentLevel] = iterators[currentLevel].next();
-    
+
                 // do the next level
                 currentLevel++;
                 if (currentLevel > depth) {
@@ -143,5 +143,5 @@ public class IteratorWrapper implements Iterator {
         return "IteratorWrapper(currentLevel=" + currentLevel
             + ", maxLevel=" + depth
             + ", size=" + maxDepth + ")";
-    }    
+    }
 }

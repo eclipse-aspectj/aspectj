@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -138,17 +138,17 @@ public class MemberImpl implements Member {
 	 * returns an Object[] pair of UnresolvedType, UnresolvedType[] representing return type, argument types parsed from the JVM
 	 * bytecode signature of a method. Yes, this should actually return a nice statically-typed pair object, but we don't have one
 	 * of those.
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 *   UnresolvedType.signatureToTypes(&quot;()[Z&quot;)[0].equals(Type.forSignature(&quot;[Z&quot;))
 	 *   UnresolvedType.signatureToTypes(&quot;(JJ)I&quot;)[1]
 	 *      .equals(UnresolvedType.forSignatures(new String[] {&quot;J&quot;, &quot;J&quot;}))
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * @param erasedSignature the JVM bytecode method signature string we want to break apart
 	 * @return a pair of UnresolvedType, UnresolvedType[] representing the return types and parameter types.
 	 */

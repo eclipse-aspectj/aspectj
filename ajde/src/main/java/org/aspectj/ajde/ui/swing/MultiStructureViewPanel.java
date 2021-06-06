@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -28,7 +28,7 @@ import org.aspectj.bridge.Message;
  * @author  Mik Kersten
  */
 public class MultiStructureViewPanel extends JPanel {
- 
+
 	private static final long serialVersionUID = -4409192026967597082L;
 	JSplitPane views_splitPane;
     BorderLayout borderLayout1 = new BorderLayout();
@@ -37,7 +37,7 @@ public class MultiStructureViewPanel extends JPanel {
     	super();
         try {
         	views_splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, bottomPanel);
-            jbInit(); 
+            jbInit();
         } catch(Exception e) {
         	Message msg = new Message("Could not initialize GUI.",IMessage.ERROR,e,null);
         	Ajde.getDefault().getMessageHandler().handleMessage(msg);

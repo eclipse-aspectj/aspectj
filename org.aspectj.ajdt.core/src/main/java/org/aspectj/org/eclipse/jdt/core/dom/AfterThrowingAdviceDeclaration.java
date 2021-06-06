@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -19,7 +19,7 @@ import java.util.List;
  * has:
  *   everything an AfterAdviceDeclaration has,
  *   an optional throwing property
- *   
+ *
  * It inherits property descriptors from AdviceDeclaration,
  * but needs to add one for its throwing property,
  * but I can't mix descripters from two different classes in a property list,
@@ -30,29 +30,29 @@ import java.util.List;
  *
  */
 public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
-	
-	public static final ChildPropertyDescriptor throwingJAVADOC_PROPERTY = 
+
+	public static final ChildPropertyDescriptor throwingJAVADOC_PROPERTY =
 		internalJavadocPropertyFactory(AfterThrowingAdviceDeclaration.class);
 
-	public static final ChildListPropertyDescriptor throwingPARAMETERS_PROPERTY = 
+	public static final ChildListPropertyDescriptor throwingPARAMETERS_PROPERTY =
 		new ChildListPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "parameters", SingleVariableDeclaration.class, CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildPropertyDescriptor throwingPOINTCUT_PROPERTY = 
+
+	public static final ChildPropertyDescriptor throwingPOINTCUT_PROPERTY =
 		new ChildPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "pointcut", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-		
-	public static final ChildListPropertyDescriptor throwingTHROWN_EXCEPTIONS_PROPERTY = 
+
+	public static final ChildListPropertyDescriptor throwingTHROWN_EXCEPTIONS_PROPERTY =
 		new ChildListPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "thrownExceptions", Name.class, NO_CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildPropertyDescriptor throwingBODY_PROPERTY = 
+
+	public static final ChildPropertyDescriptor throwingBODY_PROPERTY =
 		new ChildPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	protected static List throwingPROPERTY_DESCRIPTORS_2_0;
-	
+
 	protected static List throwingPROPERTY_DESCRIPTORS_3_0;
-	
-	public static final ChildPropertyDescriptor throwingTHROWING_PROPERTY = 
+
+	public static final ChildPropertyDescriptor throwingTHROWING_PROPERTY =
 		new ChildPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "throwing", SingleVariableDeclaration.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+
 	public static List propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return throwingPROPERTY_DESCRIPTORS_2_0;
@@ -60,7 +60,7 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 			return throwingPROPERTY_DESCRIPTORS_3_0;
 		}
 	}
-	
+
 	static {
 		List propertyList = new ArrayList(6);
 		createPropertyList(AfterThrowingAdviceDeclaration.class, propertyList);
@@ -71,7 +71,7 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 		addProperty(throwingTHROWING_PROPERTY, propertyList);
 		addProperty(throwingBODY_PROPERTY, propertyList);
 		throwingPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
-		
+
 		propertyList = new ArrayList(6);
 		createPropertyList(AfterThrowingAdviceDeclaration.class, propertyList);
 		addProperty(throwingJAVADOC_PROPERTY, propertyList);
@@ -79,16 +79,16 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 		addProperty(throwingTHROWN_EXCEPTIONS_PROPERTY, propertyList);
 		addProperty(throwingPOINTCUT_PROPERTY, propertyList);
 		addProperty(throwingTHROWING_PROPERTY, propertyList);
-		addProperty(throwingBODY_PROPERTY, propertyList);		
+		addProperty(throwingBODY_PROPERTY, propertyList);
 		throwingPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
-	
+
 	private SingleVariableDeclaration throwing = null;
-	
+
 	AfterThrowingAdviceDeclaration(AST ast) {
 		super(ast);
 	}
-	
+
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == throwingTHROWING_PROPERTY) {
 			if (get) {
@@ -100,15 +100,15 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 		}
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	public SingleVariableDeclaration getThrowing() {
 		return throwing;
 	}
-	
+
 	public void setThrowing(SingleVariableDeclaration throwing) {
 		this.throwing = throwing;
 	}
-	
+
 	ASTNode clone0(AST target) {
 		AfterThrowingAdviceDeclaration result = new AfterThrowingAdviceDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
@@ -124,13 +124,13 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 			(Block) ASTNode.copySubtree(target, getBody()));
 		return result;
 	}
-	
+
 	int treeSize() {
 		return
 			super.treeSize()
 			+ (this.throwing == null ? 0 : this.throwing.treeSize());
 	}
-	
+
 	void accept0(ASTVisitor visitor) {
 		if (visitor instanceof AjASTVisitor) {
 			boolean visitChildren = ((AjASTVisitor)visitor).visit(this);

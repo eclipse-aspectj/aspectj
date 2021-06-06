@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -107,10 +107,10 @@ public class TypePatternList extends PatternNode {
 	// XXX shares much code with WildTypePattern and with NamePattern
 	/**
 	 * When called with TypePattern.STATIC this will always return either FuzzyBoolean.YES or FuzzyBoolean.NO.
-	 * 
+	 *
 	 * When called with TypePattern.DYNAMIC this could return MAYBE if at runtime it would be possible for arguments of the given
 	 * static types to dynamically match this, but it is not known for certain.
-	 * 
+	 *
 	 * This method will never return FuzzyBoolean.NEVER
 	 */
 	public FuzzyBoolean matches(ResolvedType[] types, TypePattern.MatchKind kind, ResolvedType[][] parameterAnnotations) {
@@ -420,7 +420,7 @@ public class TypePatternList extends PatternNode {
 	/**
 	 * Return a version of this type pattern list in which all type variable references are replaced by their corresponding entry in
 	 * the map
-	 * 
+	 *
 	 * @param typeVariableMap
 	 * @return
 	 */

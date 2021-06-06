@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.problem;
@@ -78,7 +78,7 @@ import org.aspectj.weaver.patterns.TypePattern;
  * Extends problem reporter to support compiler-side implementation of declare soft. Also overrides error reporting for the need to
  * implement abstract methods to account for inter-type declarations and pointcut declarations. This second job might be better done
  * directly in the SourceTypeBinding/ClassScope classes.
- * 
+ *
  * @author Jim Hugunin
  */
 public class AjProblemReporter extends ProblemReporter {
@@ -144,7 +144,7 @@ public class AjProblemReporter extends ProblemReporter {
 
 		super.unhandledException(exceptionType, location);
 	}
-	
+
 	public void unhandledExceptionFromAutoClose(TypeBinding exceptionType, ASTNode location) {
 		if (!factory.getWorld().getDeclareSoft().isEmpty()) {
 			Shadow callSite = factory.makeShadow(location, referenceContext);
@@ -312,7 +312,7 @@ public class AjProblemReporter extends ProblemReporter {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter#disallowedTargetForAnnotation(org.aspectj.org.eclipse
 	 * .jdt.internal.compiler.ast.Annotation)
@@ -364,7 +364,7 @@ public class AjProblemReporter extends ProblemReporter {
 		if (severity != ProblemSeverities.Ignore && DUMP_STACK) {
 			Thread.dumpStack();
 		}
-		super.handle(problemId, problemArguments, 
+		super.handle(problemId, problemArguments,
 				0, // no message elaboration
 				messageArguments, severity, problemStartPosition, problemEndPosition,
 				referenceContext, unitResult);
@@ -506,7 +506,7 @@ public class AjProblemReporter extends ProblemReporter {
 		}
 		super.unusedPrivateType(typeDecl);
 	}
-	
+
 	private final static char[] thisJoinPointName = "thisJoinPoint".toCharArray();
 	private final static char[] thisJoinPointStaticPartName = "thisJoinPointStaticPart".toCharArray();
 	private final static char[] thisEnclosingJoinPointStaticPartName = "thisEnclosingJoinPointStaticPart".toCharArray();
@@ -516,22 +516,22 @@ public class AjProblemReporter extends ProblemReporter {
 	public void uninitializedLocalVariable(LocalVariableBinding binding, ASTNode location, Scope scope) {
 		if (CharOperation.equals(binding.name, thisJoinPointName) ||
 			CharOperation.equals(binding.name, thisJoinPointStaticPartName) ||
-			CharOperation.equals(binding.name, thisAspectInstanceName) || 
+			CharOperation.equals(binding.name, thisAspectInstanceName) ||
 			CharOperation.equals(binding.name, thisEnclosingJoinPointStaticPartName)) {
 			// If in advice, this is not a problem
 			if (binding.declaringScope!=null && (binding.declaringScope.referenceContext() instanceof AdviceDeclaration ||
 												 binding.declaringScope.referenceContext() instanceof IfMethodDeclaration)) {
 				return;
 			}
-		}			
+		}
 		super.uninitializedLocalVariable(binding, location, scope);
 	}
-	
+
 	public void abstractMethodInConcreteClass(SourceTypeBinding type) {
 		if (type.scope!=null && type.scope.referenceContext instanceof AspectDeclaration) {
 			// TODO could put out an Aspect specific message here
 			return;
-		} 
+		}
 		super.abstractMethodInConcreteClass(type);
 	}
 

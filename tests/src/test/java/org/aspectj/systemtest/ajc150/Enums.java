@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -17,16 +17,16 @@ import junit.framework.Test;
 
 /**
  * Enums, the rules/tests:
- * 
+ *
  * 1. cannot make ITDC on an enum
  * 2. cannot make ITDM or ITDF on an enum
  * 3. cannot use declare parents to change the super type of an enum
  * 4. cannot use decp to make an enum type implement an interface
  * 5. cannot use decp to dec java.lang.Enum as the parent of any type
  * 6. cannot extend set of values in an enum via an ITD like construct
- * 7. Compilation error if you explicitly identify an Enum type.  
+ * 7. Compilation error if you explicitly identify an Enum type.
  * 8. Lint warning if a non-explicit type pattern would match an enum type.
- * 
+ *
  */
 public class Enums extends XMLBasedAjcTestCase {
 
@@ -37,7 +37,7 @@ public class Enums extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-	  
+
   // Cannot make ITDC on an enum
   public void test001_itdcsOnEnumNotAllowed() {
   	runTest("cant itd constructor on enum");

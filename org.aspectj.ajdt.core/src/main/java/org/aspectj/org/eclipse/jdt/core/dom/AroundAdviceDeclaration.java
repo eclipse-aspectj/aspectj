@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -19,7 +19,7 @@ import java.util.List;
  * has:
  *   everything an AdviceDeclaration has,
  *   a return type (or return type Mark2)
- *   
+ *
  * It inherits property descriptors from AdviceDeclaration,
  * but needs to add one for its return type,
  * but I can't mix descripters from two different classes in a property list,
@@ -31,34 +31,34 @@ import java.util.List;
  */
 
 public class AroundAdviceDeclaration extends AdviceDeclaration {
-	
-	public static final ChildPropertyDescriptor aroundRETURN_TYPE_PROPERTY = 
+
+	public static final ChildPropertyDescriptor aroundRETURN_TYPE_PROPERTY =
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "returnType", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
-	public static final ChildPropertyDescriptor aroundRETURN_TYPE2_PROPERTY = 
+	public static final ChildPropertyDescriptor aroundRETURN_TYPE2_PROPERTY =
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "returnType2", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildListPropertyDescriptor aroundTYPE_PARAMETERS_PROPERTY = 
+
+	public static final ChildListPropertyDescriptor aroundTYPE_PARAMETERS_PROPERTY =
 		new ChildListPropertyDescriptor(AroundAdviceDeclaration.class, "typeParameters", TypeParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildPropertyDescriptor aroundJAVADOC_PROPERTY = 
+
+	public static final ChildPropertyDescriptor aroundJAVADOC_PROPERTY =
 		internalJavadocPropertyFactory(AroundAdviceDeclaration.class);
 
-	public static final ChildListPropertyDescriptor aroundPARAMETERS_PROPERTY = 
+	public static final ChildListPropertyDescriptor aroundPARAMETERS_PROPERTY =
 		new ChildListPropertyDescriptor(AroundAdviceDeclaration.class, "parameters", SingleVariableDeclaration.class, CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildPropertyDescriptor aroundPOINTCUT_PROPERTY = 
+
+	public static final ChildPropertyDescriptor aroundPOINTCUT_PROPERTY =
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "pointcut", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-		
-	public static final ChildListPropertyDescriptor aroundTHROWN_EXCEPTIONS_PROPERTY = 
+
+	public static final ChildListPropertyDescriptor aroundTHROWN_EXCEPTIONS_PROPERTY =
 		new ChildListPropertyDescriptor(AroundAdviceDeclaration.class, "thrownExceptions", Name.class, NO_CYCLE_RISK); //$NON-NLS-1$
-	
-	public static final ChildPropertyDescriptor aroundBODY_PROPERTY = 
+
+	public static final ChildPropertyDescriptor aroundBODY_PROPERTY =
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	protected static List aroundPROPERTY_DESCRIPTORS_2_0;
 	protected static List aroundPROPERTY_DESCRIPTORS_3_0;
-	
+
 	static {
 		List propertyList = new ArrayList(6);
 		createPropertyList(AroundAdviceDeclaration.class, propertyList);
@@ -69,7 +69,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		addProperty(aroundPOINTCUT_PROPERTY, propertyList);
 		addProperty(aroundBODY_PROPERTY, propertyList);
 		aroundPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
-		
+
 		propertyList = new ArrayList(7);
 		createPropertyList(AroundAdviceDeclaration.class, propertyList);
 		addProperty(aroundJAVADOC_PROPERTY, propertyList);
@@ -81,8 +81,8 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		addProperty(aroundBODY_PROPERTY, propertyList);
 		aroundPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
-	
-	
+
+
 	public static List propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return aroundPROPERTY_DESCRIPTORS_2_0;
@@ -90,7 +90,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 			return aroundPROPERTY_DESCRIPTORS_3_0;
 		}
 	}
-	
+
 	private Type returnType = null;
 	/**
 	 * Indicated whether the return type has been initialized.
@@ -98,14 +98,14 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 	 */
 	private boolean returnType2Initialized = false;
 	private ASTNode.NodeList typeParameters = null;
-	
+
 	AroundAdviceDeclaration(AST ast) {
 		super(ast);
 		if (ast.apiLevel >= AST.JLS3) { // ajh02: move to aroundAdvice
 			this.typeParameters = new ASTNode.NodeList(aroundTYPE_PARAMETERS_PROPERTY);
 		}
 	}
-	
+
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == aroundRETURN_TYPE_PROPERTY) {
 			if (get) {
@@ -125,14 +125,14 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		}
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == aroundTYPE_PARAMETERS_PROPERTY) {
 			return typeParameters();
 		}
 		return super.internalGetChildListProperty(property);
 	}
-	
+
 	public List typeParameters() {
 		// more efficient than just calling unsupportedIn2() to check
 		if (this.typeParameters == null) {
@@ -140,11 +140,11 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		}
 		return this.typeParameters;
 	}
-	
+
 	public Type getReturnType() {
 		return internalGetReturnType();
 	}
-	
+
 	/**
 	 * Internal synonym for deprecated method. Used to avoid
 	 * deprecation warnings.
@@ -164,11 +164,11 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		}
 		return this.returnType;
 	}
-	
+
 	public void setReturnType(Type type) {
 		internalSetReturnType(type);
 	}
-	
+
 	/*package*/ void internalSetReturnType(Type type) {
 	    supportedOnlyIn2();
 		if (type == null) {
@@ -179,7 +179,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		this.returnType = type;
 		postReplaceChild(oldChild, type, aroundRETURN_TYPE_PROPERTY);
 	}
-	
+
 	public Type getReturnType2() {
 	    unsupportedIn2();
 		if (this.returnType == null && !this.returnType2Initialized) {
@@ -195,7 +195,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		}
 		return this.returnType;
 	}
-	
+
 	public void setReturnType2(Type type) {
 	    unsupportedIn2();
 		this.returnType2Initialized = true;
@@ -204,7 +204,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		this.returnType = type;
 		postReplaceChild(oldChild, type, aroundRETURN_TYPE2_PROPERTY);
 	}
-	
+
 	ASTNode clone0(AST target) {
 		AroundAdviceDeclaration result = new AroundAdviceDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
@@ -219,7 +219,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 			(Block) ASTNode.copySubtree(target, getBody()));
 		return result;
 	}
-	
+
 	int treeSize() {
 		return
 			super.treeSize()
@@ -234,7 +234,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		// dispatch to correct overloaded match method
 		return ((AjASTMatcher)matcher).match(this, other);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -249,7 +249,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 				} else {
 					acceptChild(visitor, getReturnType2());
 				}
-				
+
 				acceptChildren(visitor, this.parameters);
 				acceptChild(visitor, getPointcut());
 				acceptChildren(visitor, this.thrownExceptions);

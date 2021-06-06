@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2002-2010 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -24,7 +24,7 @@ import org.aspectj.bridge.ISourceLocation;
 /**
  * Represent a resolved member. Components of it are expected to exist. This member will correspond to a real member *unless* it is
  * being used to represent the effect of an ITD.
- * 
+ *
  * @author PARC
  * @author Andy Clement
  */
@@ -88,13 +88,13 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	 * in the hierarchy. A shadowMember can be created with a target type (declaring type) that does not actually define the member.
 	 * This is ok as long as the member is inherited in the declaring type. Each declaring type in the line to the actual declaring
 	 * type is added as an additional signature. For example:
-	 * 
+	 *
 	 * class A { void foo(); } class B extends A {}
-	 * 
+	 *
 	 * shadowMember : void B.foo()
-	 * 
+	 *
 	 * gives { void B.foo(), void A.foo() }
-	 * 
+	 *
 	 * @param joinPointSignature
 	 * @param inAWorld
 	 */
@@ -213,7 +213,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	/**
 	 * Returns true if the parent member is visible to the child member In the same declaring type this is always true, otherwise if
 	 * parent is private it is false.
-	 * 
+	 *
 	 * @param childMember
 	 * @param parentMember
 	 * @return
@@ -273,7 +273,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	 * Check if this member has an annotation of the specified type. If the member has a backing generic member then this member
 	 * represents a parameterization of a member in a generic type and the annotations available on the backing generic member
 	 * should be used.
-	 * 
+	 *
 	 * @param ofType the type of the annotation being searched for
 	 * @return true if the annotation is found on this member or its backing generic member
 	 */
@@ -340,7 +340,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 		}
 		throw new UnsupportedOperationException("You should resolve this member and call getAnnotationOfType() on the result...");
 	}
-	
+
 	public void setAnnotations(AnnotationAJ[] annotations) {
 		this.annotations = annotations;
 	}
@@ -464,7 +464,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	/**
 	 * Return the member generic signature that would be suitable for inclusion in a class file Signature attribute. For: &lt;T&gt;
 	 * List&lt;String&gt; getThem(T t) {} we would create: &lt;T:Ljava/lang/Object;&gt;(TT;)Ljava/util/List&lt;Ljava/lang/String;&gt;;;
-	 * 
+	 *
 	 * @return the generic signature for the member that could be inserted into a class file
 	 */
 	public String getSignatureForAttribute() {

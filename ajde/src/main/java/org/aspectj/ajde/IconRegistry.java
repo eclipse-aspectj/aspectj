@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -33,7 +33,7 @@ public class IconRegistry extends AbstractIconRegistry {
 
     //public static IconRegistry INSTANCE = null;
     protected String RESOURCE_PATH = "org/aspectj/ajde/resources/";
-    
+
     private final Icon START_AJDE = makeIcon("actions/startAjde.gif");
     private final Icon STOP_AJDE = makeIcon("actions/stopAjde.gif");
     private final Icon BUILD = makeIcon("actions/build.gif");
@@ -41,28 +41,28 @@ public class IconRegistry extends AbstractIconRegistry {
     private final Icon EXECUTE = makeIcon("actions/execute.gif");
     private final Icon AJBROWSER = makeIcon("structure/advice.gif");
 	private final Icon AJBROWSER_ENABLED = makeIcon("actions/browserEnabled.gif");
-	private final Icon AJBROWSER_DISABLED = makeIcon("actions/browserDisabled.gif");   
-	private final Icon STRUCTURE_VIEW = makeIcon("actions/structureView.gif"); 
+	private final Icon AJBROWSER_DISABLED = makeIcon("actions/browserDisabled.gif");
+	private final Icon STRUCTURE_VIEW = makeIcon("actions/structureView.gif");
 
-	private final Icon HIDE_ASSOCIATIONS = makeIcon("actions/hideAssociations.gif"); 
-	private final Icon HIDE_NON_AJ = makeIcon("actions/hideNonAJ.gif"); 
-	private final Icon GRANULARITY = makeIcon("actions/granularity.gif"); 
-	private final Icon AJDE_SMALL = makeIcon("actions/ajdeSmall.gif"); 
+	private final Icon HIDE_ASSOCIATIONS = makeIcon("actions/hideAssociations.gif");
+	private final Icon HIDE_NON_AJ = makeIcon("actions/hideNonAJ.gif");
+	private final Icon GRANULARITY = makeIcon("actions/granularity.gif");
+	private final Icon AJDE_SMALL = makeIcon("actions/ajdeSmall.gif");
 
 	private final Icon ERROR = makeIcon("structure/error.gif");
 	private final Icon WARNING = makeIcon("structure/warning.gif");
-	private final Icon INFO = makeIcon("structure/info.gif");  
+	private final Icon INFO = makeIcon("structure/info.gif");
 
 	private final Icon POPUP = makeIcon("actions/popup.gif");
 	private final Icon FILTER = makeIcon("actions/filter.gif");
 	private final Icon RELATIONS = makeIcon("actions/relations.gif");
 	private final Icon ORDER = makeIcon("actions/order.gif");
-	
+
     private final Icon ZOOM_STRUCTURE_TO_FILE_MODE = makeIcon("actions/zoomStructureToFileMode.gif");
     private final Icon ZOOM_STRUCTURE_TO_GLOBAL_MODE = makeIcon("actions/zoomStructureToGlobalMode.gif");
     private final Icon SPLIT_STRUCTURE_VIEW = makeIcon("actions/splitStructureView.gif");
     private final Icon MERGE_STRUCTURE_VIEW = makeIcon("actions/mergeStructureView.gif");
-	 
+
     private final Icon BACK = makeIcon("actions/back.gif");
     private final Icon FORWARD = makeIcon("actions/forward.gif");
     private final Icon SEARCH = makeIcon("actions/search.gif");
@@ -71,7 +71,7 @@ public class IconRegistry extends AbstractIconRegistry {
     private final Icon SAVE = makeIcon("actions/save.gif");
     private final Icon SAVE_ALL = makeIcon("actions/saveAll.gif");
     private final Icon BROWSER_OPTIONS = makeIcon("actions/browseroptions.gif");
-   
+
     private final Icon ACCESSIBILITY_PUBLIC = makeIcon("structure/accessibility-public.gif");
     private final Icon ACCESSIBILITY_PACKAGE = makeIcon("structure/accessibility-package.gif");
     private final Icon ACCESSIBILITY_PROTECTED = makeIcon("structure/accessibility-protected.gif");
@@ -113,17 +113,17 @@ public class IconRegistry extends AbstractIconRegistry {
 	public Icon getStructureViewIcon() { return STRUCTURE_VIEW; }
 
     public Icon getAssociationSwingIcon(IRelationship.Kind relation) {
-		return convertToSwingIcon(getIcon(relation));	
+		return convertToSwingIcon(getIcon(relation));
     }
-    
+
 	public AbstractIcon getStructureIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
-		return getIcon(kind);	
+		return getIcon(kind);
 	}
-    
-    public Icon getStructureSwingIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) { 
-		return convertToSwingIcon(getStructureIcon(kind, accessibility));    	
+
+    public Icon getStructureSwingIcon(IProgramElement.Kind kind, IProgramElement.Accessibility accessibility) {
+		return convertToSwingIcon(getStructureIcon(kind, accessibility));
     }
-	
+
 	public Icon getStructureSwingIcon(IProgramElement.Kind kind) {
 		return convertToSwingIcon(getIcon(kind));
 	}
@@ -149,7 +149,7 @@ public class IconRegistry extends AbstractIconRegistry {
 			return (Icon)iconAdapter.getIconResource();
 		} else {
 			return null;
-		}		
+		}
 	}
 
 	protected AbstractIcon createIcon(String path) {
@@ -157,8 +157,8 @@ public class IconRegistry extends AbstractIconRegistry {
 		if (resource == null) {
 			throw new IllegalStateException("Unable to find icon resource: "+path);
 		}
-		return new AbstractIcon(new ImageIcon(resource));		
-//		return new AbstractIcon(new ImageIcon(ClassLoader.getSystemResource(path)));		
+		return new AbstractIcon(new ImageIcon(resource));
+//		return new AbstractIcon(new ImageIcon(ClassLoader.getSystemResource(path)));
 	}
 
     protected Icon makeIcon(String iconPath) {

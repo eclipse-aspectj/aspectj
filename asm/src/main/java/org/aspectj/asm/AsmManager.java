@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  *    Andy Clement     incremental support and switch on/off state
  * ******************************************************************/
 
@@ -46,7 +46,7 @@ import org.aspectj.util.IStructureModel;
  * The Abstract Structure Model (ASM) represents the containment hierarchy and crosscutting structure map for AspectJ programs. It
  * is used by IDE views such as the document outline, and by other tools such as ajdoc to show both AspectJ declarations and
  * crosscutting links, such as which advice affects which join point shadows.
- * 
+ *
  * @author Mik Kersten
  * @author Andy Clement
  */
@@ -287,7 +287,7 @@ public class AsmManager implements IStructureModel {
 	public String getCanonicalFilePath(File f) {
 		return canonicalFilePathMap.get(f);
 	}
-	
+
 	public CanonicalFilePathMap getCanonicalFilePathMap() {
 		return canonicalFilePathMap;
 	}
@@ -657,15 +657,15 @@ public class AsmManager implements IStructureModel {
 
 	/**
 	 * two kinds of relationships
-	 * 
+	 *
 	 * A affects B B affectedBy A
-	 * 
+	 *
 	 * Both of these relationships are added when 'B' is modified. Concrete examples are 'advises/advisedby' or
 	 * 'annotates/annotatedby'.
-	 * 
+	 *
 	 * What we need to do is when 'B' is going to be woven, remove all relationships that may reoccur when it is woven. So - remove
 	 * 'affects' relationships where the target is 'B', remove all 'affectedBy' relationships where the source is 'B'.
-	 * 
+	 *
 	 */
 	public void removeRelationshipsTargettingThisType(String typename) {
 		boolean debug = false;

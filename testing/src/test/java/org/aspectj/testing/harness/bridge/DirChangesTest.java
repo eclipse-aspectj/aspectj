@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -34,10 +34,10 @@ import junit.framework.TestCase;
  */
 public class DirChangesTest extends TestCase {
     private static final boolean PRINTING = false;
-    
+
     /** name of file in srcBaseDir with any expected messages */
 	public static final String EXPECTED_NAME = "expectedMessages.xml";
-    
+
 	public DirChangesTest(String name) {
 		super(name);
 	}
@@ -46,14 +46,14 @@ public class DirChangesTest extends TestCase {
      * then just iterate over directories in dirChangesTestDir
      */
 
-    /** 
-     * Uses testdata/dirChangesTestDir/same 
+    /**
+     * Uses testdata/dirChangesTestDir/same
      */
     public void skip_testSameExpDir() {
         doCheck("same");
     }
     public void testNothingForAntJUnit() {}
-    /** 
+    /**
      * Uses testdata/dirChangesTestDir/diff
      */
     public void skip_testDiffExpDir() {
@@ -63,25 +63,25 @@ public class DirChangesTest extends TestCase {
     public void skip_testWriteEmpty() {
         DirChanges.Spec spec = new DirChanges.Spec();
         String expected = "";
-        checkWrite(spec, expected);                
+        checkWrite(spec, expected);
     }
 
     public void skip_testWriteExpDir() {
         DirChanges.Spec spec = new DirChanges.Spec();
         spec.setExpDir("expected directory");
-        String expected = 
-            "<dir-changes expDir=\"expected directory\"/>" 
+        String expected =
+            "<dir-changes expDir=\"expected directory\"/>"
             + LangUtil.EOL;
-        checkWrite(spec, expected);                
+        checkWrite(spec, expected);
     }
 
     public void skip_testWriteAdded() {
         DirChanges.Spec spec = new DirChanges.Spec();
         spec.setAdded("one,two,three");
-        String expected = 
-            "<dir-changes added=\"one,two,three\"/>" 
+        String expected =
+            "<dir-changes added=\"one,two,three\"/>"
             + LangUtil.EOL;
-        checkWrite(spec, expected);                
+        checkWrite(spec, expected);
     }
 
     /** write spec to XML and compare with expected */
@@ -91,7 +91,7 @@ public class DirChangesTest extends TestCase {
         spec.writeXml(writer);
         assertEquals(expected, actual.toString());
     }
-    
+
     private void doCheck(String dir) {
         DirChanges.Spec spec = new DirChanges.Spec();
         File srcBaseDir = new File("testdata/dirChangesTestDir/" + dir);
@@ -114,7 +114,7 @@ public class DirChangesTest extends TestCase {
 
     // XXX WEAK upgrade to read expected-diffs from file in directory
     private void checkDirChanges(
-        DirChanges.Spec spec, 
+        DirChanges.Spec spec,
         File baseDir,
         File srcBaseDir,
         Runnable dirChanger,
@@ -207,7 +207,7 @@ public class DirChangesTest extends TestCase {
      * Find message in array, comparing by contents
      * but ignoring exceptions thrown and source location XXX.
 	 * @param message the IMessage to find
-	 * @param expected the 
+	 * @param expected the
 	 * @return int
 	 */
 	private int find(IMessage message, IMessage[] expected) {

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     RonBodkin/AndyClement optimizations for memory consumption/speed
  * ******************************************************************/
 
@@ -132,7 +132,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	/*
 	 * Notes: note(1): in some cases (perclause inheritance) we encounter unpacked state when calling getPerClause
-	 * 
+	 *
 	 * note(2): A BcelObjectType is 'damaged' if it has been modified from what was original constructed from the bytecode. This
 	 * currently happens if the parents are modified or an annotation is added - ideally BcelObjectType should be immutable but
 	 * that's a bigger piece of work. XXX
@@ -356,7 +356,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	/**
 	 * Check if the type is an @AJ aspect (no matter if used from an LTW point of view). Such aspects are annotated with @Aspect
-	 * 
+	 *
 	 * @return true for @AJ aspect
 	 */
 	public boolean isAnnotationStyleAspect() {
@@ -588,7 +588,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		ensureAnnotationsUnpacked();
 		return annotations;
 	}
-	
+
 	public boolean hasAnnotations() {
 		ensureAnnotationsUnpacked();
 		return annotations.length != 0;

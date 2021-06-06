@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -52,34 +52,34 @@ public class PseudoToken extends ASTNode implements IToken {
 	public boolean isIdentifier() {
 		return isIdentifier;
 	}
-	
+
 	/**
 	 * returns null if this isn't a literal
 	 */
 	public String getLiteralKind() {
 		return literalKind;
 	}
-	
+
 	public Pointcut maybeGetParsedPointcut() {
 		return null;
 	}
-	
-	
+
+
 	public int getStart() {
 		return sourceStart;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public int getEnd() {
 		return sourceEnd;
 	}
-	
+
 	public String getFileName() {
 		return "unknown";
 	}
-	
+
 	public int postParse(TypeDeclaration typeDec, MethodDeclaration enclosingDec, int tokenNumber) {
 		// nothing to do typically
 		return 0;

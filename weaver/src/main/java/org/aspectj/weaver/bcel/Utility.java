@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -201,7 +201,7 @@ public class Utility {
 		if (m.getEnclosingClass().isInterface()) {
 			if (m.isStatic()) {
 				// For static methods on interfaces
-				kind = Constants.INVOKESTATIC;				
+				kind = Constants.INVOKESTATIC;
 			} else {
 				kind = Constants.INVOKEINTERFACE;
 			}
@@ -218,7 +218,7 @@ public class Utility {
 
 	/**
 	 * Create an invoke instruction
-	 * 
+	 *
 	 * @param fact
 	 * @param kind INVOKEINTERFACE, INVOKEVIRTUAL..
 	 * @param member
@@ -478,7 +478,7 @@ public class Utility {
 
 	/**
 	 * replace an instruction handle with another instruction, in this case, a branch instruction.
-	 * 
+	 *
 	 * @param ih the instruction handle to replace.
 	 * @param replacementInstructions the branch instruction to replace ih with
 	 * @param enclosingMethod where to find ih's instruction list.
@@ -493,7 +493,7 @@ public class Utility {
 	/**
 	 * delete an instruction handle and retarget all targeters of the deleted instruction to the next instruction. Obviously, this
 	 * should not be used to delete a control transfer instruction unless you know what you're doing.
-	 * 
+	 *
 	 * @param ih the instruction handle to delete.
 	 * @param enclosingMethod where to find ih's instruction list.
 	 */
@@ -503,7 +503,7 @@ public class Utility {
 
 	/**
 	 * delete an instruction handle and retarget all targeters of the deleted instruction to the provided target.
-	 * 
+	 *
 	 * @param ih the instruction handle to delete
 	 * @param retargetTo the instruction handle to retarget targeters of ih to.
 	 * @param enclosingMethod where to find ih's instruction list.
@@ -523,11 +523,11 @@ public class Utility {
 
 	/**
 	 * Fix for Bugzilla #39479, #40109 patch contributed by Andy Clement
-	 * 
+	 *
 	 * Need to manually copy Select instructions - if we rely on the the 'fresh' object created by copy(), the InstructionHandle
 	 * array 'targets' inside the Select object will not have been deep copied, so modifying targets in fresh will modify the
 	 * original Select - not what we want ! (It is a bug in BCEL to do with cloning Select objects).
-	 * 
+	 *
 	 * <pre>
 	 * declare error:
 	 *     call(* Instruction.copy()) &amp;&amp; within(org.aspectj.weaver)

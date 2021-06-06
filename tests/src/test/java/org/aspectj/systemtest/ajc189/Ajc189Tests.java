@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2016 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -23,7 +23,7 @@ public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testJarWeaving_433351() {
 		runTest("jar weaving");
 	}
-	
+
 	public void testJarWeaving_433351_4() {
 		runTest("jar weaving 4");
 	}
@@ -35,11 +35,11 @@ public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testJarWeaving_433351_2() {
 		runTest("jar weaving 2");
 	}
-	
+
 	public void testNPEAtAspectJ() throws Exception {
 		runTest("NPE at aspectj");
 	}
-	
+
 	public void testLostBounds() throws Exception {
 		runTest("lost bounds");
 		// This type has I added via declare parents
@@ -48,15 +48,15 @@ public class Ajc189Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		jc = getClassFrom(ajc.getSandboxDirectory(), "D");
 		assertEquals("<T::LSomeInterface;:LSomeOtherInterface;>Ljava/lang/Object;LI;",jc.getGenericSignature());
 	}
-	
+
 	public void testWhileNPE_486203() throws Exception {
 		runTest("while npe");
 	}
-	
+
 //	public void testOverweaving_352389() throws Exception {
 //		runTest("overweaving");
 //	}
-	
+
 	// ---
 
 	public static Test suite() {

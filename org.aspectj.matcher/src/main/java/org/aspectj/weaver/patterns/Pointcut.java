@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -36,37 +36,37 @@ import org.aspectj.weaver.ast.Test;
 
 /**
  * The lifecycle of Pointcuts is modeled by Pointcut.State. It has three things:
- * 
+ *
  * <p>
  * Creation -- SYMBOLIC -- then resolve(IScope) -- RESOLVED -- concretize(...) -- CONCRETE
- * 
+ *
  * @author Erik Hilsdale
  * @author Jim Hugunin
- * 
+ *
  *         A day in the life of a pointcut.... - AMC. ==========================================
- * 
+ *
  *         Pointcuts are created by the PatternParser, which is called by ajdt to parse a pointcut from the PseudoTokens AST node
  *         (which in turn are part of a PointcutDesignator AST node).
- * 
+ *
  *         Pointcuts are resolved by ajdt when an AdviceDeclaration or a PointcutDeclaration has its statements resolved. This
  *         happens as part of completeTypeBindings in the AjLookupEnvironment which is called after the diet parse phase of the
  *         compiler. Named pointcuts, and references to named pointcuts are instances of ReferencePointcut.
- * 
+ *
  *         At the end of the compilation process, the pointcuts are serialized (write method) into attributes in the class file.
- * 
+ *
  *         When the weaver loads the class files, it unpacks the attributes and deserializes the pointcuts (read). All aspects are
  *         added to the world, by calling addOrReplaceAspect on the crosscutting members set of the world. When aspects are added or
  *         replaced, the crosscutting members in the aspect are extracted as ShadowMungers (each holding a pointcut). The
  *         ShadowMungers are concretized, which concretizes the pointcuts. At this stage ReferencePointcuts are replaced by their
  *         declared content.
- * 
+ *
  *         During weaving, the weaver processes type by type. It first culls potentially matching ShadowMungers by calling the
  *         fastMatch method on their pointcuts. Only those that might match make it through to the next phase. At the next phase,
  *         all of the shadows within the type are created and passed to the pointcut for matching (match).
- * 
+ *
  *         When the actual munging happens, matched pointcuts are asked for their residue (findResidue) - the runtime test if any.
  *         Because of negation, findResidue may be called on pointcuts that could never match the shadow.
- * 
+ *
  */
 public abstract class Pointcut extends PatternNode {
 	public static final class State extends TypeSafeEnum {
@@ -242,10 +242,10 @@ public abstract class Pointcut extends PatternNode {
 
 	/**
 	 * Resolves and removes ReferencePointcuts, replacing with basic ones
-	 * 
+	 *
 	 * @param inAspect the aspect to resolve relative to
 	 * @param bindings a Map from formal index in the current lexical context &rarr; formal index in the concrete advice that will run
-	 * 
+	 *
 	 *        This must always return a new Pointcut object (even if the concretized Pointcut is identical to the resolved one).
 	 *        That behavior is assumed in many places. XXX fix implementors to handle state
 	 */

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2006 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer          Initial implementation
  * ******************************************************************/
 
@@ -21,9 +21,9 @@ import org.aspectj.weaver.UnresolvedType;
  * algorithm proceeds in two phases, first we create and store instances of this class in the pointcuts array, and once that is
  * done, we come back round and resolve the actual pointcut expression. This means that if we recurse doing resolution, we will find
  * the named pointcut we are looking for!
- * 
+ *
  * @author adrian colyer
- * 
+ *
  */
 public class DeferredResolvedPointcutDefinition extends ResolvedPointcutDefinition {
 

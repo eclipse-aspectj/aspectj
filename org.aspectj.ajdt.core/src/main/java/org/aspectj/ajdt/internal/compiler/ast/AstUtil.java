@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -253,7 +253,7 @@ public class AstUtil {
 		System.arraycopy(rest, 0, ret, 1, len);
 		return ret;
 	}
-	
+
 	public static TypeParameter[] insert(TypeParameter first, TypeParameter[] rest) {
 		if (rest == null) {
 			return new TypeParameter[]{first};
@@ -264,7 +264,7 @@ public class AstUtil {
 		System.arraycopy(rest, 0, ret, 1, len);
 		return ret;
 	}
-	
+
 	public static TypeVariableBinding[] insert(TypeVariableBinding first, TypeVariableBinding[] rest) {
 		if (rest == null) {
 			return new TypeVariableBinding[]{first};
@@ -275,7 +275,7 @@ public class AstUtil {
 		System.arraycopy(rest, 0, ret, 1, len);
 		return ret;
 	}
-	
+
 	public static TypeVariableBinding[] insert(TypeVariableBinding[] first, TypeVariableBinding[] rest) {
 		if (rest == null) {
 			TypeVariableBinding[] ret = new TypeVariableBinding[first.length];

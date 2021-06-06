@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *     Sian January
@@ -22,9 +22,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.CodeSignature;
 
 /**
- * This simple abstract aspect is enabled by default and traces method 
- * signatures as well as arguments to stderr. An abstract scoping pointcut 
- * is provided for concrete, user-supplied sub-aspect to determine which 
+ * This simple abstract aspect is enabled by default and traces method
+ * signatures as well as arguments to stderr. An abstract scoping pointcut
+ * is provided for concrete, user-supplied sub-aspect to determine which
  * classes should be traced.
  */
 public abstract aspect SimpleTracing extends Tracing {
@@ -35,16 +35,16 @@ public abstract aspect SimpleTracing extends Tracing {
 	protected abstract pointcut tracingScope ();
 
 	private static SimpleDateFormat timeFormat;
-	
+
 	/**
 	 * Enabled or disable tracing
-	 * 
-	 * @param enabled 
+	 *
+	 * @param enabled
 	 */
 	public static void setEnabled (boolean enabled) {
 		tracingEnabled = enabled;
 	}
-	
+
 	public static boolean getEnabled () {
 		return tracingEnabled;
 	}
@@ -56,7 +56,7 @@ public abstract aspect SimpleTracing extends Tracing {
 	 */
 	protected pointcut shouldTrace () :
 		if(tracingEnabled) && tracingScope();
-		
+
 	private static boolean tracingEnabled = getBoolean("org.aspectj.lib.tracing",true);
 
 	private static boolean getBoolean (String name, boolean def) {
@@ -73,31 +73,31 @@ public abstract aspect SimpleTracing extends Tracing {
 		println(signature.getDeclaringType(),formatMessage(">",signature.getDeclaringTypeName(),signature.getName(),obj,jp.getArgs()));
 //		println("> " + signature.toShortString() + " " + formatParam("obj",obj) + " " + formatArgs(signature.getParameterNames(),jp.getArgs()));
 	}
-	
+
 	protected void enter (JoinPoint jp) {
 		CodeSignature signature = (CodeSignature)jp.getSignature();
 		println(signature.getDeclaringType(),formatMessage(">",signature.getDeclaringTypeName(),signature.getName(),null,jp.getArgs()));
 //		println("> " + jp.getSignature().toShortString() + " " + formatArgs(signature.getParameterNames(),jp.getArgs()));
 	}
-	
+
 	protected void exit (JoinPoint.StaticPart sjp, Object ret) {
 		CodeSignature signature = (CodeSignature)sjp.getSignature();
 		println(signature.getDeclaringType(),formatMessage("<",signature.getDeclaringTypeName(),signature.getName(),ret,null));
 //		println("< " + sjp.getSignature().toShortString() + " " + formatParam("ret",ret));
 	}
-	
+
 	protected void exit (JoinPoint.StaticPart sjp) {
 		CodeSignature signature = (CodeSignature)sjp.getSignature();
 		println(signature.getDeclaringType(),formatMessage("<",signature.getDeclaringTypeName(),signature.getName(),null,null));
 //		println("< " + sjp.getSignature().toShortString());
 	}
-	
+
 	protected void exception (JoinPoint.StaticPart sjp, Throwable th) {
 		CodeSignature signature = (CodeSignature)sjp.getSignature();
 		println(signature.getDeclaringType(),formatMessage("E",signature.getName(),th));
 //		println("E " + sjp.getSignature().toShortString() + " " + th.toString());
 	}
-	
+
 	/*
 	 * Formatting
 	 */
@@ -113,7 +113,7 @@ public abstract aspect SimpleTracing extends Tracing {
 		if (args != null) message.append(" ").append(formatArgs(args));
 		return message.toString();
 	}
-	
+
 	protected String formatMessage(String kind, String text, Throwable th) {
 		StringBuffer message = new StringBuffer();
 		Date now = new Date();
@@ -125,33 +125,33 @@ public abstract aspect SimpleTracing extends Tracing {
 		return message.toString();
 	}
 
-	/** 
+	/**
 	 * Format arguments into a comma separated list
-	 * 
+	 *
 	 * @param names array of argument names
 	 * @param args array of arguments
 	 * @return the formated list
 	 */
 	protected String formatArgs(Object[] args) {
 		StringBuffer sb = new StringBuffer();
-		
+
 		for (int i = 0; i < args.length; i++) {
 			sb.append(formatObj(args[i]));
 			if (i < args.length-1) sb.append(", ");
 		}
-		
+
 		return sb.toString();
 	}
 
 	/**
 	 * Format objects safely avoiding toString which can cause recursion,
 	 * NullPointerExceptions or highly verbose results.
-	 *  
+	 *
 	 * @param obj parameter to be formatted
 	 * @return the formated parameter
 	 */
 	protected Object formatObj(Object obj) {
-		
+
 		/* These classes have a safe implementation of toString() */
 		if (obj == null
 				|| obj instanceof String
@@ -171,35 +171,35 @@ public abstract aspect SimpleTracing extends Tracing {
 			return formatCollection((Collection)obj);
 		}
 		else try {
-			
+
 			/* Use classname@hashcode */
 			return obj.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(obj));
-		
-		/* Object.hashCode() can be override and may thow an exception */	
+
+		/* Object.hashCode() can be override and may thow an exception */
 		} catch (Exception ex) {
 			return obj.getClass().getName() + "@FFFFFFFF";
 		}
 	}
-	
+
 	protected String formatArray (Object obj) {
-		return obj.getClass().getComponentType().getName() + "[" + Array.getLength(obj) + "]"; 
+		return obj.getClass().getComponentType().getName() + "[" + Array.getLength(obj) + "]";
 	}
-	
+
 	protected String formatCollection (Collection c) {
-		return c.getClass().getName() + "(" + c.size() + ")"; 
+		return c.getClass().getName() + "(" + c.size() + ")";
 	}
-	
+
 	private static String formatDate (Date date) {
 		if (timeFormat == null) {
 			timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
 		}
-		
+
 		return timeFormat.format(date);
 	}
 
 	/**
 	 * Template method that allows choice of destination for output
-	 * 
+	 *
 	 * @param s message to be traced
 	 */
 	protected void println (Class clazz, String s) {

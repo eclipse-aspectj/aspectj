@@ -2,10 +2,10 @@
  * Copyright (c) 2004 IBM Corporation
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.systemtest.incremental;
 
@@ -32,12 +32,12 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		super.setUp();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = true;
 	}
-	
+
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AjState.FORCE_INCREMENTAL_DURING_TESTING = false;
 	}
-  
+
   public void test001() throws Exception {
     runTest("expect class added in initial incremental tests");
     nextIncrement(false);
@@ -97,7 +97,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     deleteFileAndDoIncrementalBuild("src/Target.java",messageSpec);
     nextIncrement(false);
     copyFileAndDoIncrementalBuild("changes/Main.50.java","src/Main.java");
-    run("Main");    
+    run("Main");
   }
 
   public void test007() throws Exception {
@@ -113,7 +113,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     copyFileAndDoIncrementalBuild("changes/Main.20.java","src/app/Main.java");
     run("app.Main");
   }
-  
+
   /**
    * See bug report 85297.  We plugged a hole so that we check whether the contents of
    * directories on the classpath have changed when deciding whether we can do an
@@ -175,7 +175,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     copyFileAndDoIncrementalBuild("changes/Aspect.20.java","src/Aspect.java",messageSpec);
     run("Main");
   }
-  
+
   public void testIncrementalResourceAdditionToInPath() throws Exception {
       runTest("incremental with addition of resource to inpath directory");
       RunResult result = run("Hello");
@@ -186,14 +186,14 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       // resources are *NOT* copied from inpath directories
       assertFalse("Resource file should not exist yet",new File(ajc.getSandboxDirectory(),"AResourceFile.txt").exists());
   }
-  
+
   public void testAdditionOfResourceToInJar() throws Exception {
       runTest("incremental with addition of resource to inpath jar");
       nextIncrement(true);
       assertFalse("Resource file should not exist yet",new File(ajc.getSandboxDirectory(),"AResourceFile.txt").exists());
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
       // resources *are* copied from inpath jars
-      assertAdded("AResourceFile.txt");      
+      assertAdded("AResourceFile.txt");
   }
 
   public void testRemovalOfResourceFromInJar() throws Exception {
@@ -202,15 +202,15 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       assertAdded("AResourceFile.txt");
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
       // resources *are* copied from inpath jars
-      assertDeleted("AResourceFile.txt");      
+      assertDeleted("AResourceFile.txt");
   }
-  
+
   public void testAdditionOfClassToInPathJar() throws Exception {
       runTest("incremental with addition of class to inpath jar");
       nextIncrement(true);
       assertFalse("Hello2.class should not exist yet",new File(ajc.getSandboxDirectory(),"Hello2.class").exists());
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
-      assertAdded("Hello2.class");      
+      assertAdded("Hello2.class");
   }
 
   public void testRemovalOfClassFromInPathJar() throws Exception {
@@ -218,15 +218,15 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       nextIncrement(true);
       assertAdded("Hello2.class");
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
-      assertDeleted("Hello2.class");      
+      assertDeleted("Hello2.class");
   }
-  
+
   public void testAdditionOfClassToInJarJar() throws Exception {
       runTest("incremental with addition of class to injar jar");
       nextIncrement(true);
       assertFalse("Hello2.class should not exist yet",new File(ajc.getSandboxDirectory(),"Hello2.class").exists());
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
-      assertAdded("Hello2.class");      
+      assertAdded("Hello2.class");
   }
 
   public void testRemovalOfClassFromInJarJar() throws Exception {
@@ -234,15 +234,15 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       nextIncrement(true);
       assertAdded("Hello2.class");
       copyFileAndDoIncrementalBuild("changes/MyJar.20.jar", "MyJar.jar");
-      assertDeleted("Hello2.class");      
+      assertDeleted("Hello2.class");
   }
-  
+
   public void testAdditionOfClassToInPathDir() throws Exception {
       runTest("incremental with addition of class to inpath dir");
       nextIncrement(true);
       assertFalse("Hello2.class should not exist yet",new File(ajc.getSandboxDirectory(),"Hello2.class").exists());
       copyFileAndDoIncrementalBuild("changes/Hello2.20.class", "indir/Hello2.class");
-      assertAdded("Hello2.class");      
+      assertAdded("Hello2.class");
   }
 
   public void testRemovalOfClassFromInPathDir() throws Exception {
@@ -250,9 +250,9 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       nextIncrement(true);
       assertAdded("Hello2.class");
       deleteFileAndDoIncrementalBuild("indir/Hello2.class");
-      assertDeleted("Hello2.class");      
+      assertDeleted("Hello2.class");
   }
-   
+
   public void testUpdateOfClassInInPathDir() throws Exception {
       runTest("incremental with update of class in inpath dir");
       nextIncrement(true);
@@ -262,20 +262,20 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
       RunResult after = run("Hello");
       assertTrue("Should say updated hello",after.getStdOut().startsWith("updated hello"));
   }
-  
+
   public void testUsesPointcutRelsWhenReferringToPCTIn2ndFile_pr90806() throws Exception {
 	    runTest("NPE in genHandleIdentifier");
 	    nextIncrement(true);
 	    copyFileAndDoIncrementalBuild("changes/X.20.aj","src/X.aj");
   }
-  
+
   public void testPersistingDeow_pr84033() throws Exception {
 	  runTest("incremental declare error persists after fix");
 	  copyFileAndDoIncrementalBuild("changes/Aspect.20.java", "src/pack/Aspect.java");
       nextIncrement(true);
 	  RunResult before = run("pack.Main");
   }
-  
+
   public void testIncrementalUpdateOfBodyInAroundAdvice_pr154054() throws Exception {
 	  runTest("incremental update of body in around advice");
 	  nextIncrement(true);
@@ -288,7 +288,7 @@ public class IncrementalTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	  assertTrue("value should be 14 but was " + after.getStdOut(),
 			  after.getStdOut().startsWith("14"));
   }
-  
+
   public void testIncrementalUpdateOfBodyInAroundAdviceWithString_pr154054() throws Exception {
 	  runTest("incremental update of body in around advice with string");
 	  nextIncrement(true);

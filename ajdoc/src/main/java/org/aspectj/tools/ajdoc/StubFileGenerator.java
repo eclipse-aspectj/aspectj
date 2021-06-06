@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Mik Kersten	  port to AspectJ 1.1+ code base
  * ******************************************************************/
 
@@ -48,7 +48,7 @@ class StubFileGenerator {
 			   FileUtil.copyFile(inputFile, signatureFile);
 			   return;
 			}
-			
+
 			String path = StructureUtil.translateAjPathName(signatureFile.getCanonicalPath());
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(path)));
 
@@ -190,7 +190,7 @@ class StubFileGenerator {
 
 	/**
 	 * We want to go: just before the first period just before the first @ just before the end of the comment
-	 * 
+	 *
 	 * Adds a place holder for the period ('#') if one will need to be replaced.
 	 */
 	static String addToFormal(String formalComment, String string) {

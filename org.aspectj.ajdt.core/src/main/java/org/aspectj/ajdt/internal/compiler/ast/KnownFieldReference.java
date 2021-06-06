@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -28,18 +28,18 @@ public class KnownFieldReference extends QualifiedNameReference {
 		this.binding = /*this.codegenBinding = */binding;
 		this.constant = Constant.NotAConstant;
 		this.actualReceiverType = binding.declaringClass;
-		
+
 		this.bits = Binding.FIELD;
 		//this.receiver = AstUtil.makeTypeReference(binding.declaringClass);
 	}
-	
+
 	//XXX handle source locations
 	public KnownFieldReference(FieldBinding binding, long pos) {
 		super(new char[][] {binding.name},new long[1],  0, 0);
 		this.binding = /*this.codegenBinding = */binding;
 		this.constant = Constant.NotAConstant;
 		this.actualReceiverType = binding.declaringClass;
-		
+
 		this.bits = Binding.FIELD;
 		//this.receiver = AstUtil.makeTypeReference(binding.declaringClass);
 	}

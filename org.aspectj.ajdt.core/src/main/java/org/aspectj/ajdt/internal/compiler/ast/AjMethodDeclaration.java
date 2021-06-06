@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
- *     IBM Corporation 
+ *     IBM Corporation
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler.ast;
 
@@ -28,7 +28,7 @@ import org.aspectj.weaver.AjAttribute;
 public class AjMethodDeclaration extends MethodDeclaration {
 
 	private List attributes = null;
-	
+
 	/**
 	 * @param compilationResult
 	 */
@@ -42,7 +42,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		if (attributes==null) attributes = new ArrayList();
 		attributes.add(eaa);
 	}
-	
+
 	/**
 	 * Overridden to add extra AJ stuff, also adds synthetic if boolean is true.
 	 */
@@ -55,22 +55,22 @@ public class AjMethodDeclaration extends MethodDeclaration {
 		}
 		return classFile.generateMethodInfoAttributes(binding,extras);
 	}
-	
+
 	@Override
 	protected int generateInfoAttributes(ClassFile classFile) {
 	    return generateInfoAttributes(classFile,false);
-	} 
-	
+	}
+
 	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
 		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;
-		
+
 		int[] separators = compilationResult().lineSeparatorPositions;
 		int declarationStartLine = 1;
 		for (int separator : separators) {
 			if (sourceStart < separator) break;
 			declarationStartLine++;
 		}
-		
+
 		extraAttributeList.add(
 				new EclipseAttributeAdapter(new AjAttribute.MethodDeclarationLineNumberAttribute(declarationStartLine, this.sourceStart())));
 	}

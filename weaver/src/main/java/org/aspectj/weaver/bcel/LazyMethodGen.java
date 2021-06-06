@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -67,12 +67,12 @@ import org.aspectj.weaver.tools.Traceable;
 /**
  * A LazyMethodGen should be treated as a MethodGen. It's our way of abstracting over the low-level Method objects. It converts
  * through {@link MethodGen} to create and to serialize, but that's it.
- * 
+ *
  * <p>
  * At any rate, there are two ways to create LazyMethodGens. One is from a method, which does work through MethodGen to do the
  * correct thing. The other is the creation of a completely empty LazyMethodGen, and it is used when we're constructing code from
  * scratch.
- * 
+ *
  * <p>
  * We stay away from targeters for rangey things like Shadows and Exceptions.
  */
@@ -97,7 +97,7 @@ public final class LazyMethodGen implements Traceable {
 	int highestLineNumber = 0;
 	boolean wasPackedOptimally = false;
 	private Method savedMethod = null;
-	
+
 	// Some tools that may post process the output bytecode do not long local variable tables
 	// to be generated as one reason the tables may be missing in the first place is because
 	// the bytecode is odd. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=470658
@@ -105,14 +105,14 @@ public final class LazyMethodGen implements Traceable {
 
 	/*
 	 * We use LineNumberTags and not Gens.
-	 * 
+	 *
 	 * This option specifies whether we let the BCEL classes create LineNumberGens and LocalVariableGens or if we make it create
 	 * LineNumberTags and LocalVariableTags. Up until 1.5.1 we always created Gens - then on return from the MethodGen ctor we took
 	 * them apart, reprocessed them all and created Tags. (see unpackLocals/unpackLineNumbers). As we have our own copy of Bcel, why
 	 * not create the right thing straightaway? So setting this to true will call the MethodGen ctor() in such a way that it creates
 	 * Tags - removing the need for unpackLocals/unpackLineNumbers - HOWEVER see the ensureAllLineNumberSetup() method for some
 	 * other relevant info.
-	 * 
+	 *
 	 * Whats the difference between a Tag and a Gen? A Tag is more lightweight, it doesn't know which instructions it targets, it
 	 * relies on the instructions targettingit - this reduces the amount of targeter manipulation we have to do.
 	 */
@@ -129,14 +129,14 @@ public final class LazyMethodGen implements Traceable {
 	List<BcelShadow> matchedShadows;
 	// Used for interface introduction - this is the type of the interface the method is technically on
 	public ResolvedType definingType = null;
-	
+
 	static class LightweightBcelMethod extends BcelMethod {
 
 		LightweightBcelMethod(BcelObjectType declaringType, Method method) {
 			super(declaringType, method);
 			// TODO Auto-generated constructor stub
 		}
-		
+
 	}
 
 	public LazyMethodGen(int modifiers, Type returnType, String name, Type[] paramTypes, String[] declaredExceptions,
@@ -319,7 +319,7 @@ public final class LazyMethodGen implements Traceable {
 			memberView.addParameterAnnotation(parameterNumber, anno);
 		}
 	}
-	
+
 	public ResolvedType[] getAnnotationTypes() {
 		initialize();
 		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
@@ -332,7 +332,7 @@ public final class LazyMethodGen implements Traceable {
 		}
 		return null;
 	}
-	
+
 	public AnnotationAJ[] getAnnotations() {
 		initialize();
 		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
@@ -1019,15 +1019,15 @@ public final class LazyMethodGen implements Traceable {
 			} else {
 				packBody(gen);
 			}
-			
-			gen.setMaxLocals(true); 
+
+			gen.setMaxLocals(true);
 			gen.setMaxStack();
 		} else {
 			gen.setInstructionList(null);
 		}
 		return gen;
 	}
-	
+
 	private boolean hasAttribute(String attributeName) {
 		for (Attribute attr: attributes) {
 			if (attr.getName().equals(attributeName)) {
@@ -1584,7 +1584,7 @@ public final class LazyMethodGen implements Traceable {
 
 	/**
 	 * A good body is a body with the following properties:
-	 * 
+	 *
 	 * <ul>
 	 * <li>For each branch instruction S in body, target T of S is in body.
 	 * <li>For each branch instruction S in body, target T of S has S as a targeter.
@@ -1597,7 +1597,7 @@ public final class LazyMethodGen implements Traceable {
 	 * <li>For each exception range R in body, let T := R.handler. T is in body, and R is one of T's targeters
 	 * <li>All ranges are properly nested: For all ranges Q and R, if Q.start preceeds R.start, then R.end preceeds Q.end.
 	 * </ul>
-	 * 
+	 *
 	 * Where the shorthand "R is in body" means "R.start is in body, R.end is in body, and any InstructionHandle stored in a field
 	 * of R (such as an exception handle) is in body".
 	 */

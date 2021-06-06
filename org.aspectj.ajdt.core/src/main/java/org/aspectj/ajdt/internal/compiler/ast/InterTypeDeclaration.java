@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -57,22 +57,22 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	protected ResolvedTypeMunger munger;
 	public int declaredModifiers; // so others can see (these differ from the modifiers in the superclass)
 	protected char[] declaredSelector;
-	
-	/** 
+
+	/**
 	 * If targetting a generic type and wanting to use its type variables, an ITD can use an alternative name for
 	 *  them.  This is a list of strings representing the alternative names - the position in the list is used to
 	 *  match it to the real type variable in the target generic type.
 	 */
-	protected List<String> typeVariableAliases; 
-	
+	protected List<String> typeVariableAliases;
+
 	protected InterTypeScope interTypeScope;
-	
+
 	/**
 	 * When set to true, the scope hierarchy for the field/method declaration has been correctly modified to
 	 * include an intertypescope which resolves things relative to the targetted type.
 	 */
     private boolean scopeSetup = false;
-	
+
 	// XXXAJ5 - When the compiler is changed, these will exist somewhere in it...
 	private final static short ACC_ANNOTATION   = 0x2000;
 	private final static short ACC_ENUM         = 0x4000;
@@ -88,21 +88,21 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		this.onType = onType;
 		determineTypeVariableAliases();
 	}
-	
+
 	public void setDeclaredModifiers(int modifiers) {
 		this.declaredModifiers = modifiers;
 	}
-	
+
 	public void setSelector(char[] selector) {
 		declaredSelector = selector;
 		this.selector = CharOperation.concat(selector, Integer.toHexString(sourceStart).toCharArray());
 		this.selector = CharOperation.concat(getPrefix(),this.selector);
 	}
-	
+
 	// return the selector prefix for this itd that is to be used before resolution replaces it with a "proper" name
 	protected abstract char[] getPrefix();
-	
-	
+
+
 	public void addAtAspectJAnnotations() {
 		if (munger == null) return;
 		Annotation ann = AtAspectJAnnotationFactory.createITDAnnotation(
@@ -117,7 +117,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	 * kind is 'constructor', 'field', 'method'
 	 */
 	public boolean isTargetAnnotation(ClassScope classScope,String kind) {
-		if ((onTypeBinding.getAccessFlags() & ACC_ANNOTATION)!=0) { 
+		if ((onTypeBinding.getAccessFlags() & ACC_ANNOTATION)!=0) {
 			classScope.problemReporter().signalError(sourceStart,sourceEnd,
 			  "can't make inter-type "+kind+" declarations on annotation types.");
 			ignoreFurtherInvestigation = true;
@@ -125,13 +125,13 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks that the target for the ITD is not an enum.  If it is, an error message
 	 * is signaled.  We return true if it is enum so the caller knows to stop processing.
 	 */
 	public boolean isTargetEnum(ClassScope classScope,String kind) {
-		if ((onTypeBinding.getAccessFlags() & ACC_ENUM)!=0) { 
+		if ((onTypeBinding.getAccessFlags() & ACC_ENUM)!=0) {
 			classScope.problemReporter().signalError(sourceStart,sourceEnd,
 			  "can't make inter-type "+kind+" declarations on enum types.");
 			ignoreFurtherInvestigation = true;
@@ -139,11 +139,11 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void resolve(ClassScope upperScope) {
 		if (ignoreFurtherInvestigation) return;
-		
+
 		if (!scopeSetup) {
 		  interTypeScope = new InterTypeScope(upperScope, onTypeBinding,typeVariableAliases);
 		  scope.parent = interTypeScope;
@@ -152,7 +152,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		}
 		fixSuperCallsForInterfaceContext(upperScope);
 		if (ignoreFurtherInvestigation) return;
-		
+
 		super.resolve((ClassScope)scope.parent);//newParent);
 		fixSuperCallsInBody();
 	}
@@ -161,7 +161,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		if (onTypeBinding.isInterface()) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.FIXING_SUPER_CALLS, selector);
 			InterSuperFixerVisitor v =
-				new InterSuperFixerVisitor(this, 
+				new InterSuperFixerVisitor(this,
 						EclipseFactory.fromScopeLookupEnvironment(scope), scope);
 			this.traverse(v, scope);
 			CompilationAndWeavingContext.leavingPhase(tok);
@@ -183,9 +183,9 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	protected void resolveOnType(ClassScope classScope) {
 		checkSpec();
-		
+
 		if (onType==null) return; // error reported elsewhere.
-		
+
 		// If they did supply a parameterized single type reference, we need to do
 		// some extra checks...
 		if (onType instanceof ParameterizedSingleTypeReference  || onType instanceof ParameterizedQualifiedTypeReference) {
@@ -209,7 +209,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	}
 
     /**
-     * Transform the parameterized type binding (e.g. SomeType<A,B,C>) to a 
+     * Transform the parameterized type binding (e.g. SomeType<A,B,C>) to a
      * real type (e.g. SomeType).  The only kind of parameterization allowed
      * is with type variables and those are references to type variables on
      * the target type.  Once we have worked out the base generic type intended
@@ -226,22 +226,22 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) onType;
 			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
 			onType = new QualifiedTypeReference(pref.tokens,new long[]{pos});
-			
+
 		}
-		
-		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);		
+
+		onTypeBinding = (ReferenceBinding)onType.getTypeBindingPublic(classScope);
 		if (!onTypeBinding.isValidBinding()) {
 			classScope.problemReporter().invalidType(onType, onTypeBinding);
 			ignoreFurtherInvestigation = true;
 		}
 
- 		
+
 		if (onTypeBinding.isRawType()) {
 			onTypeBinding = ((RawTypeBinding)onTypeBinding).type;
 		}
-		
+
 		int aliasCount = (typeVariableAliases==null?0:typeVariableAliases.size());
-		
+
 		// Cannot specify a parameterized target type for the ITD if the target
 		// type is not generic.
 		if (aliasCount!=0 && !onTypeBinding.isGenericType()) {
@@ -250,7 +250,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			ignoreFurtherInvestigation = true;
 			return;
 		}
-		
+
 		// Check they have supplied the right number of type parameters on the ITD target type
 		if (aliasCount>0) {
 			if (onTypeBinding.typeVariables().length != aliasCount) { // typeParameters.length) {   phantom contains the fake ones from the ontype, typeparameters will also include extra things if it is a generic method
@@ -261,7 +261,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				return;
 			}
 		}
-		
+
 		// check if they used stupid names for type variables
 		if (aliasCount>0) {
 			for (int i = 0; i < aliasCount; i++) {
@@ -274,7 +274,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 							array_element+"' cannot be used as a type parameter, since it refers to a real type.");
 					ignoreFurtherInvestigation = true;
 					return;
-					
+
 				}
 			}
 		}
@@ -284,12 +284,12 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 //    	if (targs!=null) {
 //    		for (int i = 0; i < targs.length; i++) {
 //    			TypeReference tref = targs[i];
-//    			typeVariableAliases.add(CharOperation.toString(tref.getTypeName()));//tVarsInGenericType[i]); 
+//    			typeVariableAliases.add(CharOperation.toString(tref.getTypeName()));//tVarsInGenericType[i]);
 //    		}
 //		}
 	}
-	
-	
+
+
 	protected void checkSpec() {
 		if (Modifier.isProtected(declaredModifiers)) {
 			scope.problemReporter().signalError(sourceStart, sourceEnd,
@@ -297,7 +297,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			ignoreFurtherInvestigation = true;
 		}
 	}
-	
+
 	protected List makeEffectiveSignatureAttribute(
 		ResolvedMember sig,
 		Shadow.Kind kind,
@@ -308,13 +308,13 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				new AjAttribute.EffectiveSignatureAttribute(sig, kind, weaveBody)));
 		return l;
 	}
-	
+
 	protected void setMunger(ResolvedTypeMunger munger) {
 		munger.getSignature().setPosition(sourceStart, sourceEnd);
 		munger.getSignature().setSourceContext(new EclipseSourceContext(compilationResult));
 		this.munger = munger;
 	}
-	
+
 	@Override
 	protected int generateInfoAttributes(ClassFile classFile) {
 		List l;
@@ -330,22 +330,22 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	}
 
 	protected abstract Shadow.Kind getShadowKindForBody();
-	
-	public ResolvedMember getSignature() { 
+
+	public ResolvedMember getSignature() {
 		if (munger==null) return null; // Can be null in an erroneous program I think
-		return munger.getSignature(); 
+		return munger.getSignature();
 	}
 
 	public char[] getDeclaredSelector() {
 		return declaredSelector;
 	}
-	
+
 	public TypeReference getOnType() {
 		return onType;
 	}
-	
 
-	/** 
+
+	/**
 	 * Create the list of aliases based on what was supplied as parameters for the ontype.
 	 * For example, if the declaration is 'List&lt;N&gt;  SomeType&lt;N&gt;.foo' then the alias list
 	 * will simply contain 'N' and 'N' will mean 'the first type variable declared for
@@ -372,7 +372,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 				}
 			}
 		}
-	}  
+	}
 
 	/**
 	 * Called just before the compiler is going to start resolving elements of a declaration, this method
@@ -384,10 +384,10 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 	public void ensureScopeSetup() {
 		if (scopeSetup) return; // don't do it again
 		MethodScope scope = this.scope;
-		
+
 		TypeReference ot = onType;
 		ReferenceBinding rb = null;
-		
+
 		if (ot instanceof ParameterizedQualifiedTypeReference) { // pr132349
 			ParameterizedQualifiedTypeReference pref = (ParameterizedQualifiedTypeReference) ot;
 			if (pref.typeArguments!=null && pref.typeArguments.length!=0) {
@@ -400,7 +400,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 						if (!tb.isTypeVariable() && !(tb instanceof ProblemReferenceBinding)) {
 							usingNonTypeVariableInITD = true;
 						}
-						
+
 					}
 				}
 				if (usingNonTypeVariableInITD) {
@@ -409,14 +409,14 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 					// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
 					this.arguments=null;
 					this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
-					
+
 					this.ignoreFurtherInvestigation=true;
 					ReferenceBinding closestMatch = null;
-					rb = new ProblemReferenceBinding(ot.getParameterizedTypeName(),closestMatch,0);		
+					rb = new ProblemReferenceBinding(ot.getParameterizedTypeName(),closestMatch,0);
 					onType=null;
 				}
 			}
-		
+
 		}
 
 		// Work out the real base type
@@ -429,25 +429,25 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			long pos = (((long)pref.sourceStart) << 32) | pref.sourceEnd;
 			ot = new QualifiedTypeReference(pref.tokens,new long[]{pos});//SingleTypeReference(pref.Quatoken,pos);
 		}
-		
+
 		// resolve it
 		if (rb==null) {
 		  rb = (ReferenceBinding)ot.getTypeBindingPublic(scope.parent);
 		}
-		
+
 		// pr203646 - if we have ended up with the raw type, get back to the underlying generic one.
 		if (rb.isRawType() && rb.isMemberType()) {
 			// if the real target type used a type variable alias then we can do this OK, but need to switch things around, we want the generic type
 			rb = ((RawTypeBinding)rb).type;
 		}
-		
+
 		if (rb instanceof TypeVariableBinding) {
 			scope.problemReporter().signalError(sourceStart,sourceEnd,
 					  "Cannot make inter-type declarations on type variables, use an interface and declare parents");
 			// to prevent disgusting cascading errors after this problem - lets null out what leads to them (pr105038)
 			this.arguments=null;
 			this.returnType=new SingleTypeReference(TypeReference.VOID,0L);
-			
+
 			this.ignoreFurtherInvestigation=true;
 			ReferenceBinding closestMatch = null;
 			if (((TypeVariableBinding)rb).firstBound!=null) {
@@ -456,15 +456,15 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			rb = new ProblemReferenceBinding(rb.compoundName,closestMatch,0);
 		}
 
-		
+
 		// if resolution failed, give up - someone else is going to report an error
 		if (rb instanceof ProblemReferenceBinding) return;
-		
+
 		interTypeScope = new InterTypeScope(scope.parent, rb, typeVariableAliases);
 		// FIXME asc verify the choice of lines here...
-		// Two versions of this next line.  
+		// Two versions of this next line.
 		// First one tricks the JDT variable processing code so that it won't complain if
-		// you refer to a type variable from a static ITD - it *is* a problem and it *will* be caught, but later and 
+		// you refer to a type variable from a static ITD - it *is* a problem and it *will* be caught, but later and
 		// by the AJDT code so we can put out a much nicer message.
 		scope.isStatic = (typeVariableAliases!=null?false:Modifier.isStatic(declaredModifiers));
 		// this is the original version in case tricking the JDT causes grief (if you reinstate this variant, you

@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC),
  *               2005-2006 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.internal.build;
@@ -40,7 +40,7 @@ import org.aspectj.internal.tools.build.Util;
  *   will run;
  * (2) build.config takes the same form as it does for the
  *   builder task, e.g., "useEclipseCompiles" will avoid
- *   recompiling with Javac and adopt classes in the 
+ *   recompiling with Javac and adopt classes in the
  *   {module}/bin directories.
  */
 public class BuildModuleTest extends TestCase {
@@ -49,18 +49,18 @@ public class BuildModuleTest extends TestCase {
     private static boolean printedMessage;
     private static final boolean REMOVE_JARS_AFTER_DEBUGGING = true;
     // to just build one module verbosely
-    private static final String[] DEBUGS  
+    private static final String[] DEBUGS
         = {};
 
     // skip those requiring ajdoc, which requires tools.jar
     // also skip those requiring java5 unless manually set up
     // also skip big ones to avoid slowing the build too much
-    private static final String[] SKIPS 
+    private static final String[] SKIPS
         //= {};
        = {"aspectjtools", "ajdoc", "aspectj5rt", "run-all-junit-tests",
         "ajbrowser", "testing", "testing-drivers", "org.aspectj.ajdt.core", "weaver"};
 
-    private static final String SKIP_MESSAGE = 
+    private static final String SKIP_MESSAGE =
         "BuildModuleTest: Define \"run.build.tests\" as a system "
         + "property to run tests to build ";
     private static final String BUILD_CONFIG;
@@ -76,12 +76,12 @@ public class BuildModuleTest extends TestCase {
             System.out.println("BuildModuleTest build.config: " + config);
         }
     }
-        
+
     List<File> tempFiles = new ArrayList<>();
     private File jarDir;
     private boolean deleteJars;
     boolean building;  // must be enabled for tests to run
-    
+
 	public BuildModuleTest(String name) {
 		super(name);
         building = Boolean.getBoolean("run.build.tests");
@@ -101,7 +101,7 @@ public class BuildModuleTest extends TestCase {
         }
         deleteTempFiles();
 	}
-    
+
     protected void deleteTempFiles() {
 		for (File file : tempFiles) {
 			if (!Util.delete(file)) {
@@ -127,12 +127,12 @@ public class BuildModuleTest extends TestCase {
     }
 
 	public void testBuild() {
-        checkBuild("build", 
-            Checklics.class.getName(), 
+        checkBuild("build",
+            Checklics.class.getName(),
             new String[0], // help message
             true); // ant needed
     }
-    
+
     public void testUtil() {
         checkBuild("util");
     }
@@ -140,16 +140,16 @@ public class BuildModuleTest extends TestCase {
     public void testAsm() {
         checkBuild("asm");
     }
-    
+
     public void testRuntime() {
         checkBuild("runtime");
     }
 
     public void testAspectj5rt() {
-        checkBuild("aspectj5rt"); 
+        checkBuild("aspectj5rt");
     }
-   
-//    public void testLocalOutOfDate() { 
+
+//    public void testLocalOutOfDate() {
 //        Messager handler = new Messager();
 //        File jarDir = new File("c:/home/ws/head/aj-build/jars");
 //        File baseDir = new File("c:/home/ws/head");
@@ -159,7 +159,7 @@ public class BuildModuleTest extends TestCase {
 //        r.outOfDate();
 //    }
 //    public void testAspectj5rtRequired() {
-//        File baseDir = new File("..");        
+//        File baseDir = new File("..");
 //        Modules modules = new Modules(baseDir, getJarDir(), new Messager());
 //        Module module = modules.getModule("aspectj5rt");
 //        Result result = module.getResult(Result.kind(true, true));
@@ -185,33 +185,33 @@ public class BuildModuleTest extends TestCase {
         }
     }
     public void testAjbrowser() {
-        checkBuild("ajbrowser", 
+        checkBuild("ajbrowser",
             "org.aspectj.tools.ajbrowser.Main",
             new String[] {"-noExit", "-version"}); // compiler version
     }
     public void testTestingUtils() {
-        checkBuild("testing-util"); 
+        checkBuild("testing-util");
     }
 
     public void testAjdt() {
-        checkBuild("org.aspectj.ajdt.core", 
+        checkBuild("org.aspectj.ajdt.core",
            "org.aspectj.tools.ajc.Main",
             new String[] { "-noExit", "-version" });
     }//
     public void testTesting() {
-        checkBuild("testing", 
-            "org.aspectj.testing.util.LangUtilTest", 
+        checkBuild("testing",
+            "org.aspectj.testing.util.LangUtilTest",
             new String[] {"ignored"});
     }
     public void testTestingDrivers() {
-        checkBuild("testing-drivers", 
-            "org.aspectj.testing.drivers.Harness", 
+        checkBuild("testing-drivers",
+            "org.aspectj.testing.drivers.Harness",
             new String[] {"-help"});
     }
     public void testWeaver() {
-        checkBuild("weaver"); 
+        checkBuild("weaver");
     }
-    
+
     // ajdoc relies on tools.jar
     public void testAspectjtools() {
         if (!shouldBuild("aspectjtools")) {
@@ -261,7 +261,7 @@ public class BuildModuleTest extends TestCase {
     File getJUnitJar() {
         return new File("../lib/junit/junit.jar");
     }
-    
+
     File getJarDir() {
         if (null == jarDir) {
             File baseDir = new File("../aj-build/");
@@ -276,7 +276,7 @@ public class BuildModuleTest extends TestCase {
         }
         return jarDir;
     }
-    
+
     BuildModule getTask(String module) {
         BuildModule task = new BuildModule();
         Project project = new Project();
@@ -294,13 +294,13 @@ public class BuildModuleTest extends TestCase {
         }
         return task;
     }
-    
-    void checkBuild(String module) { 
+
+    void checkBuild(String module) {
         checkBuild(module, null, null, false);
     }
-    
-    void checkBuild(String module, 
-        String classname, 
+
+    void checkBuild(String module,
+        String classname,
         String[] args) {
         checkBuild(module, classname, args, true);
     }
@@ -364,7 +364,7 @@ public class BuildModuleTest extends TestCase {
         }
         return null;
     }
-    
+
     private static String name(String module, boolean trimTesting, boolean assemble) {
         return module + (trimTesting?"":"-test") + (assemble?"-all":"");
     }
@@ -378,15 +378,15 @@ public class BuildModuleTest extends TestCase {
         if (jar.exists()) {
             try {
                 Thread.sleep(5000);
-            } catch (Throwable t) {                
+            } catch (Throwable t) {
             }
         }
         if (jar.exists()) {
             assertTrue("cannot delete " + jar, jar.delete());
         }
     }
-    void checkBuild(String module, 
-        String classname, 
+    void checkBuild(String module,
+        String classname,
         String[] args,
         boolean addAnt) {
         if (!shouldBuild(module)) {
@@ -427,7 +427,7 @@ public class BuildModuleTest extends TestCase {
                 assertTrue("BuildException running " + classname, false);
             }
         }
-        deleteJar(jar);        
+        deleteJar(jar);
     }
     void doTask(String module, boolean trimTesting, boolean assembleAll) {
         doTask(module, trimTesting, assembleAll, false);

@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -18,7 +18,7 @@ import junit.framework.Test;
  * <h4>Design and test coverage</h4><br>
  * In many ways the design is similar to DeclareParents now - so we have to plug in at the same points, but the code generation for
  * generating the delegate object and the choice of which interfaces (and methods within those) to mixin is different.
- * 
+ *
  * <h4>Tested:</h4><br>
  * <ul>
  * <li>Factory method with void or primitive return value
@@ -26,7 +26,7 @@ import junit.framework.Test;
  * <li>incremental compilation
  * <li>error message if mixin target instance not compatible with factory method parameter
  * </ul>
- * 
+ *
  * <h4>Still to test/explore:</h4><br>
  * <ul>
  * <li>model relationships
@@ -36,7 +36,7 @@ import junit.framework.Test;
  * <li>Clashing with existing methods
  * <li>varying parameter type on the factory method
  * </ul>
- * 
+ *
  * @author Andy Clement
  */
 public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {

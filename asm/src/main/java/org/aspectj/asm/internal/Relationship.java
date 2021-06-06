@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003,2010 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 package org.aspectj.asm.internal;
@@ -76,7 +76,7 @@ public class Relationship implements IRelationship {
 	/**
 	 * Return the direction of the relationship. It might be affects or affected-by. The direction enables the incremental model
 	 * repair code to do the right thing.
-	 * 
+	 *
 	 * @return true if is an affects relationship: advises/declareson/softens/matchedby/declaredon/annotates
 	 */
 	public boolean isAffects() {

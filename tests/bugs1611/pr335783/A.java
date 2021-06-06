@@ -8,31 +8,31 @@
 /*******************************************************************************
  * Copyright (c) 2010 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - Repro test case
- *    Abraham Nevado 
+ *    Abraham Nevado
  *******************************************************************************/
 
 
 	public class A implements java.io.Serializable{
-		    
-		  public A()  
-		  {  
-		  }  
-		  public void doSomething() throws Exception  
-		  {  
+
+		  public A()
+		  {
+		  }
+		  public void doSomething() throws Exception
+		  {
 
 
-		 }  
-		 public static void main(String[] args) throws Exception {  
-			 A lc = new A();  
-			 lc.doSomething();  
-		  
-		   }  
+		 }
+		 public static void main(String[] args) throws Exception {
+			 A lc = new A();
+			 lc.doSomething();
+
+		   }
 	}
-	
+
 

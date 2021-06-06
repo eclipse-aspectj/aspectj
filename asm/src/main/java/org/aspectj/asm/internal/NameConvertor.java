@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2006 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2006 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version
  *******************************************************************/
 package org.aspectj.asm.internal;
@@ -100,7 +100,7 @@ public class NameConvertor {
 	/**
 	 * Given a char array, returns the type name for this. For example 'I' returns 'int', 'Ljava/lang/String' returns
 	 * 'java.lang.String' and '[Ljava/lang/String' returns 'java.lang.String[]'
-	 * 
+	 *
 	 * NOTE: Doesn't go any deaper so given 'Ljava/lang/String;<Ljava/lang/String;>' it would return
 	 * 'java.lang.String;<Ljava.lang.String;>', however, only called with something like 'Ljava/lang/String'
 	 */
@@ -220,7 +220,7 @@ public class NameConvertor {
 	 * Convert a typename into its handle form. There are various cases to consider here - many are discussed in pr249216. The flag
 	 * allreadyFQd indicates if we've already included a fq'd name in what we are creating - if we have then further references
 	 * should not be fq'd and can be the short name (so java.util.Set becomes just Set).
-	 * 
+	 *
 	 */
 
 	/**

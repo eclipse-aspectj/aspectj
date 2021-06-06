@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -21,17 +21,17 @@ import org.aspectj.asm.IProgramElement;
  */
 public abstract class StructureView {
 
-	private IStructureViewNode rootNode = null; 
-	private IStructureViewNode activeNode = null; 
+	private IStructureViewNode rootNode = null;
+	private IStructureViewNode activeNode = null;
 	protected StructureViewProperties viewProperties = null;
 	protected StructureViewRenderer renderer = null;
-	
+
 	public StructureViewProperties getViewProperties() {
-		return viewProperties;	
-	}  
-	
+		return viewProperties;
+	}
+
 	public IStructureViewNode getRootNode() {
-		return rootNode; 
+		return rootNode;
 	}
 
 	public void setRootNode(IStructureViewNode rootNode) {
@@ -54,7 +54,7 @@ public abstract class StructureView {
 	 * @return		the view node corresponding to the active ProgramElementNode or null
 	 */
 	public IStructureViewNode getActiveNode() {
-		if (activeNode != null 
+		if (activeNode != null
 			&& activeNode.getStructureNode()!=null) {
 			return activeNode;
 		} else {
@@ -64,40 +64,40 @@ public abstract class StructureView {
 
 	/**
 	 * Searches from the root node of the view down in order to find matches.
-	 * 
+	 *
 	 * @return		the first match
 	 */
 	public IStructureViewNode findCorrespondingViewNode(IProgramElement node) {
 		return findCorrespondingViewNodeHelper(rootNode, node);
 	}
 
-	private IStructureViewNode findCorrespondingViewNodeHelper(IStructureViewNode node, IProgramElement pNode) {		
+	private IStructureViewNode findCorrespondingViewNodeHelper(IStructureViewNode node, IProgramElement pNode) {
 		if (node != null
-			&& node.getStructureNode() != null 
+			&& node.getStructureNode() != null
 			&& node.getStructureNode().equals(pNode)
-			&& node.getKind() == IStructureViewNode.Kind.DECLARATION) {	
-				
-			return node;	  
-		} 
-		
+			&& node.getKind() == IStructureViewNode.Kind.DECLARATION) {
+
+			return node;
+		}
+
 		if (node != null && node.getChildren() != null) {
 			for (Object o : node.getChildren()) {
 				IStructureViewNode foundNode = findCorrespondingViewNodeHelper((IStructureViewNode) o, pNode);
 				if (foundNode != null) return foundNode;
 			}
 		}
-		
+
 		return null;
-	}	
+	}
 
 	public void setActiveNode(IStructureViewNode activeNode) {
 		this.activeNode = activeNode;
 		if (renderer != null) renderer.setActiveNode(activeNode);
 	}
-	
+
 	public void setActiveNode(IStructureViewNode activeNode, int sourceLine) {
 		this.activeNode = activeNode;
 		if (renderer != null) renderer.setActiveNode(activeNode, sourceLine);
 	}
 }
- 
+

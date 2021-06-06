@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  *     Alexandre Vasseur    @AspectJ ITDs
  * ******************************************************************/
 
@@ -230,7 +230,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * <li>recur into superclass, all the way up, not touching interfaces</li>
 	 * <li>recur into all superinterfaces, in some unspecified order (but those 'closest' to this type are first)</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param wantGenerics is true if the caller would like all generics information, otherwise those methods are collapsed to their
 	 *        erasure
 	 */
@@ -403,7 +403,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Return a list of the types in the hierarchy of this type, starting with this type. The order in the list is the superclasses
 	 * followed by the super interfaces.
-	 * 
+	 *
 	 * @param genericsAware should the list include parameterized/generic types (if not, they will be collapsed to raw)?
 	 * @return list of resolvedtypes in this types hierarchy, including this type first
 	 */
@@ -551,7 +551,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * described in JVM spec 2ed 5.4.3.3. Doesnt check ITDs.
-	 * 
+	 *
 	 * <p>
 	 * Check the current type for the method. If it is not found, check the super class and any super interfaces. Taking care not to
 	 * process interfaces multiple times.
@@ -635,7 +635,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			toSearch = getMethodsIncludingIntertypeDeclarations(!eraseGenerics, true);
 		} else if (aMember.getKind()==Member.ADVICE) {
 			return null;
-		} else { 
+		} else {
 			assert aMember.getKind() == Member.FIELD;
 			toSearch = getFields();
 		}
@@ -950,7 +950,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	public AnnotationAJ[] getAnnotations() {
 		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
-	
+
 	public boolean hasAnnotations() {
 		throw new RuntimeException("ResolvedType.getAnnotations() should never be called");
 	}
@@ -1122,7 +1122,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		public final int getSize() {
 			return size;
 		}
-		
+
 		@Override
 		public final int getModifiers() {
 			return Modifier.PUBLIC | Modifier.FINAL;
@@ -1358,7 +1358,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * as lookupMemberNoSupers, but does not include ITDs
-	 * 
+	 *
 	 * @param member
 	 * @return
 	 */
@@ -1377,7 +1377,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * This lookup has specialized behaviour - a null result tells the EclipseTypeMunger that it should make a default
 	 * implementation of a method on this type.
-	 * 
+	 *
 	 * @param member
 	 * @return
 	 */
@@ -1527,7 +1527,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * See PR70794. This method checks that if an abstract inter-type method declaration is made on an interface then it must also
 	 * be public. This is a compiler limitation that could be made to work in the future (if someone provides a worthwhile usecase)
-	 * 
+	 *
 	 * @return indicates if the munger failed the check
 	 */
 	private boolean checkAbstractDeclaration(ConcreteTypeMunger munger) {
@@ -1565,7 +1565,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * given in JLS 13.1, where it guarantees that if you call getDeclaringType() repeatedly, you will eventually get the top-level
 	 * class, but it does not say anything about classes in between.
 	 * </p>
-	 * 
+	 *
 	 * @return the declaring type, or null if it is not an nested type.
 	 */
 	public ResolvedType getDeclaringType() {
@@ -1623,7 +1623,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Look up the actual occurence of a particular type in the hierarchy for 'this' type. The input is going to be a generic type,
 	 * and the caller wants to know if it was used in its RAW or a PARAMETERIZED form in this hierarchy.
-	 * 
+	 *
 	 * returns null if it can't be found.
 	 */
 	public ResolvedType discoverActualOccurrenceOfTypeInHierarchy(ResolvedType lookingFor) {
@@ -1867,7 +1867,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Compare the type transformer with the existing members. A clash may not be an error (the ITD may be the 'default
 	 * implementation') so returning false is not always a sign of an error.
-	 * 
+	 *
 	 * @return true if there is a clash
 	 */
 	private boolean clashesWithExistingMember(ConcreteTypeMunger typeTransformer, Iterator<ResolvedMember> existingMembers) {
@@ -1924,7 +1924,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 								if (Modifier.isPrivate(typeTransformerSignature.getModifiers()) &&
 									Modifier.isPublic(existingMember.getModifiers())) {
 									world.getMessageHandler().handleMessage(new Message("private intertype declaration '"+typeTransformerSignature.toString()+"' clashes with public member '"+existingMember.toString()+"'",existingMember.getSourceLocation(),true));
-								}	
+								}
 							}
 						}
 						// existingMember dominates munger
@@ -2095,7 +2095,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		} else {
 			ResolvedType rtParentReturnType = parent.resolve(world).getGenericReturnType().resolve(world);
 			ResolvedType rtChildReturnType = child.resolve(world).getGenericReturnType().resolve(world);
-			
+
 			incompatibleReturnTypes = !rtParentReturnType.equals(rtChildReturnType);
 		}
 
@@ -2495,7 +2495,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * Overridden by ReferenceType to return a sensible answer for parameterized and raw types.
-	 * 
+	 *
 	 * @return
 	 */
 	public ReferenceType getGenericType() {
@@ -2517,7 +2517,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	}
 
 	/**
-	 * Iff I am a parameterized type, and any of my parameters are type variable references (or nested parameterized types), 
+	 * Iff I am a parameterized type, and any of my parameters are type variable references (or nested parameterized types),
 	 * return a version with those type parameters replaced in accordance with the passed bindings.
 	 */
 	@Override
@@ -2574,7 +2574,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * Similar to the above method, but accumulates the super types
-	 * 
+	 *
 	 * @return
 	 */
 	// public ResolvedType[] getParameterizedSuperTypes() {
@@ -2625,7 +2625,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * from all types. A primitive type is convertable from X iff it's assignable from X. A reference type is convertable from X iff
 	 * it's coerceable from X. In other words, X isConvertableFrom Y iff the compiler thinks that _some_ value of Y could be
 	 * assignable to a variable of type X without loss of precision.
-	 * 
+	 *
 	 * @param other the other type
 	 * @return true iff variables of this type could be assigned values of other with possible conversion
 	 */
@@ -2662,7 +2662,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	/**
 	 * Determines if the variables of this type could be assigned values of another type without casting. This still allows for
 	 * assignment conversion as per JLS 2ed 5.2. For object types, this means supertypeOrEqual(THIS, OTHER).
-	 * 
+	 *
 	 * @param other the other type
 	 * @return true iff variables of this type could be assigned values of other without casting
 	 * @throws NullPointerException if other is null
@@ -2678,13 +2678,13 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 	 * This method should be commutative, i.e., for all UnresolvedType a, b and all World w:
 	 * </p>
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * a.isCoerceableFrom(b, w) == b.isCoerceableFrom(a, w)
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
-	 * 
+	 *
 	 * @param other the other type
 	 * @return true iff values of other could possibly be cast to this type.
 	 * @throws NullPointerException if other is null.
@@ -2876,7 +2876,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 
 	/**
 	 * return the weaver version used to build this type - defaults to the most recent version unless discovered otherwise.
-	 * 
+	 *
 	 * @return the (major) version, {@link WeaverVersionInfo}
 	 */
 	public int getCompilerVersion() {
@@ -2913,7 +2913,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		}
 		return (bits & IsGroovyObject) != 0;
 	}
-	
+
 	public boolean isPrivilegedAspect() {
 		if ((bits & IsPrivilegedBitInitialized) == 0) {
 			AnnotationAJ privilegedAnnotation = getAnnotationOfType(UnresolvedType.AJC_PRIVILEGED);

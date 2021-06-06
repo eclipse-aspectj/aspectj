@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.bridge.context;
@@ -24,13 +24,13 @@ import org.aspectj.bridge.IMessage.Kind;
 /**
  * @author colyer
  * Facade for an IMessageHandler
- * Extends message with details of exactly what the compiler / weaver was doing at the 
+ * Extends message with details of exactly what the compiler / weaver was doing at the
  * time. Use the -Xdev:Pinpoint option to turn this facility on.
  */
 public class PinpointingMessageHandler implements IMessageHandler {
 
 	private IMessageHandler delegate;
-	
+
 	public PinpointingMessageHandler(IMessageHandler delegate) {
 		this.delegate = delegate;
 	}
@@ -75,17 +75,17 @@ public class PinpointingMessageHandler implements IMessageHandler {
 	public void ignore(Kind kind) {
 		delegate.ignore(kind);
 	}
-	
+
 	private static class PinpointedMessage implements IMessage {
 
 		private IMessage delegate;
 		private String message;
-		
+
 		public PinpointedMessage(IMessage delegate, String pinpoint) {
 			this.delegate = delegate;
 			this.message = delegate.getMessage() + "\n" + pinpoint;
 		}
-		
+
 		public String getMessage() { return this.message; }
 		public Kind getKind() { return delegate.getKind();}
 		public boolean isError() { return delegate.isError(); }

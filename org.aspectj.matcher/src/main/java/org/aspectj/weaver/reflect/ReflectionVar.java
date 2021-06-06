@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
@@ -30,9 +30,9 @@ public final class ReflectionVar extends Var {
 	static final int AT_WITHIN_VAR = 6;
 	static final int AT_WITHINCODE_VAR = 7;
 	static final int AT_ANNOTATION_VAR = 8;
-	
+
 	private AnnotationFinder annotationFinder = null;
-	
+
 //	static {
 //		try {
 //			Class java15AnnotationFinder = Class.forName("org.aspectj.weaver.reflect.Java15AnnotationFinder");
@@ -46,54 +46,54 @@ public final class ReflectionVar extends Var {
 //			throw new RuntimeException("AspectJ internal error",ex);
 //		}
 //	}
-	
+
 	private int argsIndex = 0;
 	private int varType;
-	
+
 	public static ReflectionVar createThisVar(ResolvedType type,AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = THIS_VAR;
 		return ret;
 	}
-	
+
 	public static ReflectionVar createTargetVar(ResolvedType type, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = TARGET_VAR;
-		return ret;		
+		return ret;
 	}
-	
+
 	public static ReflectionVar createArgsVar(ResolvedType type, int index, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = ARGS_VAR;
 		ret.argsIndex = index;
-		return ret;		
+		return ret;
 	}
-	
+
 	public static ReflectionVar createThisAnnotationVar(ResolvedType type, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_THIS_VAR;
 		return ret;
 	}
-	
+
 	public static ReflectionVar createTargetAnnotationVar(ResolvedType type, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_TARGET_VAR;
-		return ret;		
+		return ret;
 	}
-	
+
 	public static ReflectionVar createArgsAnnotationVar(ResolvedType type, int index, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(type,finder);
 		ret.varType = AT_ARGS_VAR;
 		ret.argsIndex = index;
-		return ret;		
+		return ret;
 	}
-	
+
 	public static ReflectionVar createWithinAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(annType,finder);
 		ret.varType = AT_WITHIN_VAR;
 		return ret;
 	}
-	
+
 	public static ReflectionVar createWithinCodeAnnotationVar(ResolvedType annType, AnnotationFinder finder) {
 		ReflectionVar ret = new ReflectionVar(annType,finder);
 		ret.varType = AT_WITHINCODE_VAR;
@@ -110,8 +110,8 @@ public final class ReflectionVar extends Var {
 		super(type);
 		this.annotationFinder = finder;
 	}
-			
-	
+
+
 	public Object getBindingAtJoinPoint(Object thisObject, Object targetObject, Object[] args) {
 		return getBindingAtJoinPoint(thisObject,targetObject,args,null,null,null);
 	}
@@ -124,8 +124,8 @@ public final class ReflectionVar extends Var {
 	 * @return
 	 */
 	public Object getBindingAtJoinPoint(
-			Object thisObject, 
-			Object targetObject, 
+			Object thisObject,
+			Object targetObject,
 			Object[] args,
 			Member subject,
 			Member withinCode,
@@ -162,7 +162,7 @@ public final class ReflectionVar extends Var {
 				return annotationFinder.getAnnotationFromMember(getType(), subject);
 			} else return null;
 		}
-			
+
 		return null;
 	}
 

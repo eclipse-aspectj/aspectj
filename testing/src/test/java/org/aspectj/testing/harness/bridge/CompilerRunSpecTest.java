@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC),
  *               2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  *     Wes Isberg     2003 modifications
  * ******************************************************************/
 
@@ -28,7 +28,7 @@ import org.aspectj.util.LangUtil;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class CompilerRunSpecTest extends TestCase {
 
@@ -265,7 +265,7 @@ public class CompilerRunSpecTest extends TestCase {
         OptionChecker optionChecker = new OptionChecker(options);
         // known failures: extdirs, aspectpath, Xlintfile <file>
         // progress, time, noExit, repeat <n>,
-        // help, 
+        // help,
         String[][] input =
             new String[][] {
                 new String[] { "-verbose" },
@@ -351,7 +351,7 @@ public class CompilerRunSpecTest extends TestCase {
                 resultContains,
                 messagesContain);
     }
-    
+
     /**
      * Drive option-setting for CompilerRun.Spec, including
      * expected errors.
@@ -558,7 +558,7 @@ public class CompilerRunSpecTest extends TestCase {
             assertTrue(result, ("[]").equals(result));
 
             // undefined whether global set overrides local set
-            // for different sibling options 
+            // for different sibling options
         } finally {
             if (PRINTING && (0 < handler.numMessages(null, true))) {
                 MessageUtil.print(System.err, handler, "checkSetupArgs: ");

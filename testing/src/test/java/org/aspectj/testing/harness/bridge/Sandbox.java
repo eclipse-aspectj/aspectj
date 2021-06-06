@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.harness.bridge;
@@ -32,9 +32,9 @@ import org.aspectj.util.LangUtil;
  * setup/cleanup operations (todo XXX).
  * <p>
  * AjcTest creates the Sandbox and initializes the final fields.
- * To coordinate with each other, run components may set and get values, 
- * with the sources running first and the sinks second.  
- * To make the interactions clear 
+ * To coordinate with each other, run components may set and get values,
+ * with the sources running first and the sinks second.
+ * To make the interactions clear
  * (and to avoid accidentally violating these semantics),
  * setters/getters for a coordinated property are constrained two ways:
  * <li>Both have an extra (typed) "caller" parameter which must not
@@ -46,10 +46,10 @@ import org.aspectj.util.LangUtil;
 public class Sandbox {
     /** classes directory token for DirChanges.Spec */
     public static final String RUN_DIR = "run";
-    
+
     /** run directory token for DirChanges.Spec */
     public static final String CLASSES_DIR = "classes";
-    
+
     private static boolean canRead(File dir) {
         return ((null != dir) && dir.isDirectory() && dir.canRead());
     }
@@ -69,20 +69,20 @@ public class Sandbox {
             throw new IllegalArgumentException(label + " - " + dir);
         }
     }
-    
+
     /** @throws IllegalStateException(message) if test */
     private static void assertState(boolean test, String message) {
         if (!test) {
             throw new IllegalStateException(message);
         }
     }
-    
-    /** 
+
+    /**
      * The (read-only) base of the test sources (which may or may not
      * be the base of the java sources)
      */
     public final File testBaseDir;
-    
+
     /** the parent of a temporary workspace, probably includes some others */
     public final File sandboxDir;
 
@@ -94,17 +94,17 @@ public class Sandbox {
 
     /** a run dir (which will be ignored in non-forking runs) */
     public final File runDir;
-    
+
     /** staging directory for IAjcRun requiring files be copied, deleted, etc. */
     public final File stagingDir;
-    
-    /** 
+
+    /**
      * This manages creation and deletion of temporary directories.
-     * We hold a reference so that our clients can signal whether 
+     * We hold a reference so that our clients can signal whether
      * this should be deleted.
      */
-    private final Validator validator; // XXX required after completing tests? 
-    
+    private final Validator validator; // XXX required after completing tests?
+
     /** original base of the original java sources, set by CompileRun.setup(..) */
     private File testBaseSrcDir;
 
@@ -112,24 +112,24 @@ public class Sandbox {
     private File[] compileClasspath;
 
     private String bootClasspath;
-    
+
     /** aspectpath entries, set by CompileRun.setup(..)  */
     private File[] aspectpath;
 
     /** track whether classpath getter ran */
     private boolean gotClasspath;
-        
+
     /** command shared between runs using sandbox - i.e., compiler */
     private ICommand command;
 
     /** track whether command getter ran */
     private boolean gotCommand;
-        
+
     /** cache results of rendering final fields */
     private transient String toStringLeader;
-    
+
     private transient boolean compilerRunInit;
-    
+
     /** @throws IllegalArgumentException unless validator validates
      *           testBaseDir as readable
      */
@@ -148,65 +148,65 @@ public class Sandbox {
         Sandbox.iaxWrite(sandboxDir, "sandboxDir"); // XXX not really iax
 
         workingDir = FileUtil.makeNewChildDir(sandboxDir, "workingDir");
-        Sandbox.iaxWrite(workingDir, "workingDir");             
+        Sandbox.iaxWrite(workingDir, "workingDir");
 
         classesDir = FileUtil.makeNewChildDir(sandboxDir, "classes");
-        Sandbox.iaxWrite(classesDir, "classesDir");             
+        Sandbox.iaxWrite(classesDir, "classesDir");
 
         runDir = FileUtil.makeNewChildDir(sandboxDir, "run");
-        Sandbox.iaxWrite(runDir, "runDir"); 
+        Sandbox.iaxWrite(runDir, "runDir");
 
         stagingDir = FileUtil.makeNewChildDir(sandboxDir, "staging");
-        Sandbox.iaxWrite(stagingDir, "stagingDir"); 
+        Sandbox.iaxWrite(stagingDir, "stagingDir");
 
-        validator.registerSandbox(this);        
+        validator.registerSandbox(this);
     }
 
     private String getToStringLeader() {
         if (null == toStringLeader) {
-            toStringLeader = "Sandbox(" + sandboxDir.getName() 
-                + ", " + testBaseSrcDir.getName(); 
+            toStringLeader = "Sandbox(" + sandboxDir.getName()
+                + ", " + testBaseSrcDir.getName();
         }
         return toStringLeader;
     }
-    
+
     /** @return "Sandbox(sandbox, src, classes)" with names only */
     public String toString() {
         return getToStringLeader() + ", " + classesDir.getName() + ")";
     }
-    
+
     /** @return "Sandbox(sandbox, src, classes)" with paths */
     public String toLongString() {
         return getToStringLeader() + ", " + classesDir.getPath()
             + (null == command ? ", (null command)" : ", " + command) + ")";
     }
-    
+
     void setCommand(ICommand command, CompilerRun caller) {
-        LangUtil.throwIaxIfNull(caller, "caller"); 
-        LangUtil.throwIaxIfNull(command, "command"); 
-        LangUtil.throwIaxIfFalse(!gotCommand, "no command"); 
+        LangUtil.throwIaxIfNull(caller, "caller");
+        LangUtil.throwIaxIfNull(command, "command");
+        LangUtil.throwIaxIfFalse(!gotCommand, "no command");
         this.command = command;
     }
-    
+
     /** When test is completed, clear the compiler to avoid memory leaks */
     void clearCommand(AjcTest caller) {
-        LangUtil.throwIaxIfNull(caller, "caller"); 
+        LangUtil.throwIaxIfNull(caller, "caller");
         if (null != command) { // need to add ICommand.quit()
             if (command instanceof AjcTaskCompileCommand) { // XXX urk!
                 ((AjcTaskCompileCommand) command).quit();
             }
             command = null;
         }
-        // also try to clear sandbox/filesystem.  
+        // also try to clear sandbox/filesystem.
         // If locked by suite, we can't.
         if (null != validator) {
             validator.deleteTempFiles(true);
         }
     }
-    
-//    /** 
+
+//    /**
 //     * Populate the staging directory by copying any files in the
-//     * source directory ending with fromSuffix 
+//     * source directory ending with fromSuffix
 //     * to the staging directory, after renaming them with toSuffix.
 //     * If the source file name starts with "delete", then the
 //     * corresponding file in the staging directory is deleting.
@@ -234,7 +234,7 @@ public class Sandbox {
 //        }
 //        MessageHandler compilerMessages = new MessageHandler();
 //        StringBuffer commandLine = new StringBuffer();
-//        for (int i = 1; result && (i < 10); i++) { 
+//        for (int i = 1; result && (i < 10); i++) {
 //            String fromSuffix = "." + i + "0.java";
 //            // copy files, collecting as we go...
 //            files.clear();
@@ -242,24 +242,24 @@ public class Sandbox {
 //                break;
 //            }
 //
-//        
-//        return (String[]) result.toArray(new String[0]);        
+//
+//        return (String[]) result.toArray(new String[0]);
 //    }
-        
+
     // XXX move to more general in FileUtil
     void reportClassDiffs(
-        final IMessageHandler handler, 
+        final IMessageHandler handler,
         IncCompilerRun caller,
         long classesDirStartTime,
         String[] expectedSources) {
         LangUtil.throwIaxIfFalse(0 < classesDirStartTime, "0 >= " + classesDirStartTime);
         boolean acceptPrefixes = true;
         Diffs diffs = org.aspectj.testing.util.FileUtil.dirDiffs(
-            "classes", 
-            classesDir, 
-            classesDirStartTime, 
-            ".class", 
-            expectedSources, 
+            "classes",
+            classesDir,
+            classesDirStartTime,
+            ".class",
+            expectedSources,
             acceptPrefixes);
         diffs.report(handler, IMessage.ERROR);
     }
@@ -285,7 +285,7 @@ public class Sandbox {
 //                }
 //			}
 //        }
-//        
+//
 //        // gather, normalize paths changed
 //        final ArrayList changed = new ArrayList();
 //        FileFilter touchedCollector = new FileFilter() {
@@ -301,28 +301,28 @@ public class Sandbox {
 //                            sources.remove(classPath);
 //                        } else {
 //                            changed.add(classPath);
-//                        }                      
+//                        }
 //                    }
 //                }
 //                return false;
 //			}
-//        };      
+//        };
 //        classesDir.listFiles(touchedCollector);
-//        
+//
 //        // report any unexpected changes
 //        Diffs diffs = new Diffs("classes", sources, changed, String.CASE_INSENSITIVE_ORDER);
 //        diffs.report(handler, IMessage.ERROR);
 //    }
-    
+
     ICommand getCommand(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != command, "command never set"); 
+        assertState(null != command, "command never set");
         return command;
     }
 
     ICommand getCommand(IncCompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
-        assertState(null != command, "command never set"); 
+        assertState(null != command, "command never set");
         return command;
     }
 
@@ -330,7 +330,7 @@ public class Sandbox {
         LangUtil.throwIaxIfNull(caller, "caller");
         return testBaseSrcDir;
     }
-    
+
     /**
      * Get the files with names (case-sensitive)
      * under the staging or test base directories.
@@ -353,7 +353,7 @@ public class Sandbox {
         LangUtil.throwIaxIfNull(caller, "caller");
         return testBaseSrcDir;
     }
-    
+
     void defaultTestBaseSrcDir(JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         if (null != testBaseSrcDir) {
@@ -361,7 +361,7 @@ public class Sandbox {
         }
         testBaseSrcDir = testBaseDir;
     }
-    
+
     static boolean readableDir(File dir) {
         return ((null != dir) && dir.isDirectory() && dir.canRead());
     }
@@ -380,7 +380,7 @@ public class Sandbox {
         if ((null != classPath) && (0 < classPath.length)) {
             setClasspath(classPath, classpathReadable, caller);
         }
-        
+
         setBootclasspath(bootclassPath, caller);
         compilerRunInit = true;
     }
@@ -388,8 +388,8 @@ public class Sandbox {
         if (!compilerRunInit) {
             testBaseSrcDir = testBaseDir;
             // default to aspectjrt.jar?
-            compileClasspath = new File[0]; 
-            
+            compileClasspath = new File[0];
+
         }
     }
 
@@ -401,10 +401,10 @@ public class Sandbox {
         }
         testBaseSrcDir = dir;
     }
-    
-    /** 
+
+    /**
      * Set aspectpath.
-     * @param readable if true, then throw IllegalArgumentException if not readable 
+     * @param readable if true, then throw IllegalArgumentException if not readable
      */
     private void setAspectpath(File[] files, boolean readable, CompilerRun caller) {
         LangUtil.throwIaxIfNull(files, "files");
@@ -429,10 +429,10 @@ public class Sandbox {
     private void setBootclasspath(String bootClasspath, CompilerRun caller) {
         this.bootClasspath = bootClasspath;
     }
-    
-    /** 
+
+    /**
      * Set compile classpath.
-     * @param readable if true, then throw IllegalArgumentException if not readable 
+     * @param readable if true, then throw IllegalArgumentException if not readable
      */
     private void setClasspath(File[] files, boolean readable, CompilerRun caller) {
         LangUtil.throwIaxIfNull(files, "files");
@@ -449,7 +449,7 @@ public class Sandbox {
     }
 
 //    /**
-//     * Get run classpath 
+//     * Get run classpath
 //     * @param caller unused except to restrict usage to non-null JavaRun.
 //     * @throws IllegalStateException if compileClasspath was not set.
 //     * @throws IllegalArgumentException if caller is null
@@ -466,16 +466,16 @@ public class Sandbox {
 //        }
 //        return result;
 //    }
-    
-    /** 
+
+    /**
      * Get directories for the run classpath by selecting them
      * from the compile classpath.
      * This ignores aspectpath since it may contain only jar files.
-     * @param readable if true, omit non-readable directories 
+     * @param readable if true, omit non-readable directories
      */
     File[] getClasspathDirectories(
-        boolean readable, 
-        JavaRun caller, 
+        boolean readable,
+        JavaRun caller,
         boolean includeOutput) {
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null != compileClasspath, "classpath not set");
@@ -486,17 +486,17 @@ public class Sandbox {
 				result.add(f);
 			}
 		}
-        if (includeOutput && (null != classesDir) 
+        if (includeOutput && (null != classesDir)
             && (!readable || classesDir.canRead())) {
-            result.add(classesDir);                
+            result.add(classesDir);
         }
         return (File[]) result.toArray(new File[0]);
     }
 
-    /** 
+    /**
      * Get the jars belonging on the run classpath, including classpath
      * and aspectpath entries.
-     * @param readable if true, omit non-readable directories 
+     * @param readable if true, omit non-readable directories
      */
     File[] getClasspathJars(boolean readable, JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
@@ -514,37 +514,37 @@ public class Sandbox {
 		}
         return (File[]) result.toArray(new File[0]);
     }
-    
+
     /**
-     * Get the list of aspect jars as a String. 
-     * @return String of classpath entries delimited internally by File.pathSeparator 
+     * Get the list of aspect jars as a String.
+     * @return String of classpath entries delimited internally by File.pathSeparator
      */
     String aspectpathToString(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         return FileUtil.flatten(aspectpath, File.pathSeparator);
     }
-    
-    /** 
+
+    /**
      * Get the compile classpath as a String.
-     * @return String of classpath entries delimited internally by File.pathSeparator 
+     * @return String of classpath entries delimited internally by File.pathSeparator
      */
     String classpathToString(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         return FileUtil.flatten(compileClasspath, File.pathSeparator);
     }
-        
-    /** 
+
+    /**
      * Get the bootClasspath as a String.
-     * @return String of bootclasspath entries delimited internally by File.pathSeparator 
+     * @return String of bootclasspath entries delimited internally by File.pathSeparator
      */
     String getBootclasspath(CompilerRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         return bootClasspath;
     }
 
-    /** 
+    /**
      * Get the bootClasspath as a String.
-     * @return String of bootclasspath entries delimited internally by File.pathSeparator 
+     * @return String of bootclasspath entries delimited internally by File.pathSeparator
      */
     String getBootclasspath(JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");

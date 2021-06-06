@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -33,7 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-/** 
+/**
  * misc file utilities
  */
 public class FileUtil {
@@ -42,7 +42,7 @@ public class FileUtil {
     public static final String DEFAULT_URL_FILENAME = "index.html";
 
     /**
-     * @param args the String[] 
+     * @param args the String[]
      *   <code>{ "-copy", "-srcFile" | "-srcUrl", {src}, "-destFile", {destFile} }</code>
      */
     public static void main (String[] args) {
@@ -74,34 +74,34 @@ public class FileUtil {
                     if (0 < errs.length()) {
                         System.err.println("Error copying " + src + " to " + destFile);
                         System.err.println(errs.toString());
-                            
+
                     }
                 }
             } // ("-copy".equals(args[i])){
-        } 
+        }
     } // end of main ()
-    
+
     /**
-     * Generate a list of missing and extra files by comparison to a 
+     * Generate a list of missing and extra files by comparison to a
      * timestamp, optionally excluding certain files.
      * This is a call to select all files after a given time:
-     * 
-     * <pre>Diffs d = dirDiffs(dir, givenTime, null, null, null);</pre> 
-     * 
+     *
+     * <pre>Diffs d = dirDiffs(dir, givenTime, null, null, null);</pre>
+     *
      * Given files
      * <pre>classes/Foo.class
      * classes/bar/Bash.class
      * classes/Old.class
      * classes/one/Unexpected.class
      * classes/start.gif</pre>
-     * where only Old.class predated startTime, this is a call that 
+     * where only Old.class predated startTime, this is a call that
      * reports "one/Unexpected.class" as unexpected and "Foo"
      * as missing:
      * <pre>String requireSuffix = ".class";
      * String[] expectedPaths = new String[] { "Foo", "bar/Bas" };
      * File file = new File("classes");
-     * Diffs d = dirDiffs(dir, startTime, requireSuffix,expectedPaths, true);</pre> 
-     * 
+     * Diffs d = dirDiffs(dir, startTime, requireSuffix,expectedPaths, true);</pre>
+     *
      * @param label the String to use for the Diffs label
      * @param dir the File for the dir to search
      * @param startTime collect files modified after this time
@@ -116,15 +116,15 @@ public class FileUtil {
      */
     public static Diffs dirDiffs( // XXX too complicated, weak prefix checking
         final String label,
-        final File dir, 
-        final long startTime, 
-        final String requiredSuffix, 
-        final String[] expectedPaths, 
+        final File dir,
+        final long startTime,
+        final String requiredSuffix,
+        final String[] expectedPaths,
         final boolean acceptFilePrefix) {
-        
+
         LangUtil.throwIaxIfNull(dir, "dir");
         final boolean checkExpected = !LangUtil.isEmpty(expectedPaths);
-        
+
         // normalize sources to ignore
         final List expected = (!checkExpected ? null : new ArrayList());
         if (checkExpected) {
@@ -134,22 +134,22 @@ public class FileUtil {
 				}
 			}
         }
-        
+
         // gather, normalize paths changed
         FileFilter touchedCollector = new FileFilter() {
-            /** 
+            /**
              * For files complying with time and suffix rules,
-             * return true (accumulate - unexpected) 
+             * return true (accumulate - unexpected)
              * unless they match expected files,
              * (deleting any matches from sources
              * so the remainder is missing).
              * @return true for unexpected files after date */
             public boolean accept(File file) {
                 if (file.isFile()
-                    && ((0 > startTime) 
+                    && ((0 > startTime)
                         || (startTime < file.lastModified()))) {
                     String path = file.getPath();
-                    if ((null == requiredSuffix) || path.endsWith(requiredSuffix)) {                        
+                    if ((null == requiredSuffix) || path.endsWith(requiredSuffix)) {
                         path = org.aspectj.util.FileUtil.weakNormalize(path);
                         if (checkExpected) {
                             if (!acceptFilePrefix) {
@@ -157,8 +157,8 @@ public class FileUtil {
                                 if (expected.contains(path)) {
                                     expected.remove(path);
                                     // found - do not add to unexpected
-                                    return false; 
-                                }                      
+                                    return false;
+                                }
                             } else {
 								for (Object o : expected) {
 									String exp = (String) o;
@@ -182,7 +182,7 @@ public class FileUtil {
             }
         };
 		List unexp = new ArrayList(Arrays.asList(dir.listFiles(touchedCollector)));
-        
+
         // report any unexpected changes
         return Diffs.makeDiffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);
     }
@@ -196,13 +196,13 @@ public class FileUtil {
     public static void visitZipEntries(ZipFile zipfile, StringVisitor visitor) {
         visitZipEntries(zipfile, visitor, (StringBuffer) null);
     }
-        
+
     /**
      * Visit the entries in a zip file, halting when visitor balks.
      * Errors are reported in errs, if not null.
      * @throws IllegalArgumentException if zipfile or visitor is null
      */
-    public static void visitZipEntries(ZipFile zipfile, StringVisitor visitor, 
+    public static void visitZipEntries(ZipFile zipfile, StringVisitor visitor,
                                        StringBuffer errs) {
         if (null == zipfile) throw new IllegalArgumentException("null zipfile");
         if (null == visitor) throw new IllegalArgumentException("null visitor");
@@ -216,9 +216,9 @@ public class FileUtil {
                     break;
                 }
             }
-        } catch (Throwable e) {  
+        } catch (Throwable e) {
             if (null != errs) {
-                errs.append("FileUtil.visitZipEntries error accessing entry " + index 
+                errs.append("FileUtil.visitZipEntries error accessing entry " + index
                          + ": " + e.getMessage());
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
@@ -226,7 +226,7 @@ public class FileUtil {
             }
         } finally {
             if (null != zipfile) {
-                try { zipfile.close(); } 
+                try { zipfile.close(); }
                 catch (IOException x) {} // ignore
             }
         }
@@ -260,7 +260,7 @@ public class FileUtil {
      *     }}, false);</code></pre>
      * To list files/dir from root using user recursion:
      * <code><pre>descendFileTree(new File("/"), new FileFilter() {
-     *     public boolean run(File f){ 
+     *     public boolean run(File f){
      *        System.out.println(f.getAbsolutePath());
      *        if (f.isDirectory() && (-1 == f.getName().indexOf("CVS")))
      *           return descendFileTree(f, this, true);
@@ -272,16 +272,16 @@ public class FileUtil {
      * @return false if any fileFilter.accept(File) did.
      * @throws IllegalArgumentException if file or fileFilter is null
      */
-    public static boolean descendFileTree(File file, FileFilter fileFilter, 
+    public static boolean descendFileTree(File file, FileFilter fileFilter,
                                           boolean userRecursion) {
         if (null == file) {throw new IllegalArgumentException("parm File"); }
         if (null == fileFilter){throw new IllegalArgumentException("parm FileFilter");}
 
         if (!file.isDirectory()) {
             return fileFilter.accept(file);
-        } else if (file.canRead()) { 
+        } else if (file.canRead()) {
             // go through files first
-            File[] files = file.listFiles(ValidFileFilter.FILE_EXISTS); 
+            File[] files = file.listFiles(ValidFileFilter.FILE_EXISTS);
             if (null != files) {
 				for (File value : files) {
 					if (!fileFilter.accept(value)) {
@@ -304,7 +304,7 @@ public class FileUtil {
 					}
 				}
             }
-        } // readable directory (ignore unreadable ones) 
+        } // readable directory (ignore unreadable ones)
         return true;
     } // descendFiles
 
@@ -317,7 +317,7 @@ public class FileUtil {
      * There are no guarantees about ordering.
      * @param dir the File to list for
      * @param results the Collection to use for the results (may be null)
-     * @throws IllegalArgumentException if null == dir 
+     * @throws IllegalArgumentException if null == dir
      * @return a Collection of String of paths, including paths inside jars
      */
     public static Collection<String> directoryToString(File dir, Collection results) {
@@ -349,7 +349,7 @@ public class FileUtil {
      * applying policies for whitespace, etc.
      * @param file the File to enumerate ZipEntry for
      * @param results the Colection to use to return the FileLine - may be null
-     * @return FileLines with string as text and 
+     * @return FileLines with string as text and
      *        canonical as string modified by any canonicalizing policies.
      */
     public static Collection zipFileToString(final File zipfile, Collection results) {
@@ -386,7 +386,7 @@ public class FileUtil {
         if ((null == f)  || (null == (s = f.getPath()))) {
             return false;
         } else {
-            return (f.canRead() && !f.isDirectory() 
+            return (f.canRead() && !f.isDirectory()
                     && (s.endsWith(".zip")
                         || (s.endsWith(".jar"))));
         }
@@ -403,7 +403,7 @@ public class FileUtil {
 
     /**
      * Write all files in directory out to jarFile
-     * @param jarFile the File to create and write to 
+     * @param jarFile the File to create and write to
      * @param directory the File representing the directory to read
      * @param mainClass the value of the main class attribute - may be null
      */
@@ -412,7 +412,7 @@ public class FileUtil {
         String label = "createJarFile("+jarFile
             +","+directory +","+mainClass +","+filter + "): ";
         Log.signal(label + " start");
-        if (null == directory) 
+        if (null == directory)
             throw new IllegalArgumentException("null directory");
         Manifest manifest = createManifest(mainClass);
         Log.signal(label + " manifest=" + manifest);
@@ -422,7 +422,7 @@ public class FileUtil {
             if (null == jarFileDir) {
                 Log.signal(label + " null jarFileDir");
             } else if (!jarFileDir.exists() && !jarFileDir.mkdirs()) { // XXX convert to Error
-                Log.signal(label + " unable to create jarFileDir: " + jarFileDir); 
+                Log.signal(label + " unable to create jarFileDir: " + jarFileDir);
             }
             OutputStream os = new FileOutputStream(jarFile);
             out = (null == manifest ? new JarOutputStream(os)
@@ -441,9 +441,9 @@ public class FileUtil {
                 catch (IOException e) {} // todo ignored
             }
         }
-                                   
+
         return false;
-    }    
+    }
 
     protected static Manifest createManifest(String mainClass) {
         final String mainKey = "Main-Class";
@@ -459,7 +459,7 @@ public class FileUtil {
                     attributes.putValue(mainKey, mainClass);
                     main = attributes.getValue(mainKey);
                     if (null == main) {
-                        Log.signal("createManifest unable to set main " 
+                        Log.signal("createManifest unable to set main "
                                    + mainClass);
                     }
                 }
@@ -473,7 +473,7 @@ public class FileUtil {
 
     /** read a file out to the zip stream */
     protected static void addFileToZip(File in, File parent,
-                                       ZipOutputStream out) 
+                                       ZipOutputStream out)
         throws IOException {
         String path = in.getCanonicalPath();
         String parentPath = parent.getCanonicalPath();
@@ -498,9 +498,9 @@ public class FileUtil {
                 out.write(buf, 0, count);
             }
         } finally {
-            if (null != input) input.close(); 
+            if (null != input) input.close();
         }
-    }    
+    }
 
 
     public static void returnTempDir(File dir) {
@@ -529,7 +529,7 @@ public class FileUtil {
         err.append(sw.toString());
     }
 
-    private static boolean report(StringBuffer err, String context, String status, 
+    private static boolean report(StringBuffer err, String context, String status,
                                   Throwable throwable) {
         boolean failed = ((null != status) || (null != throwable));
         if ((null != err) && (failed)) {
@@ -546,7 +546,7 @@ public class FileUtil {
         return failed;
     }
 
-    /** 
+    /**
      * Copy file.
      * @param src the File to copy - must exist
      * @param dest the File for the target file or directory (will not create directories)
@@ -565,7 +565,7 @@ public class FileUtil {
                 }
                 if (ValidFileFilter.FILE_EXISTS.accept(dest)) {
                     label = "dest file exists";
-                } 
+                }
                 boolean closeWhenDone = true;
                 result = copy(new FileInputStream(src),
                               new FileOutputStream(dest),
@@ -575,12 +575,12 @@ public class FileUtil {
         } catch (Throwable t) {
             throwable = t;
         }
-        String context = "FileUtil.copyFile(src, dest, err)"; 
-        boolean report = report(err, context, label, throwable); 
+        String context = "FileUtil.copyFile(src, dest, err)";
+        boolean report = report(err, context, label, throwable);
         return (result && !report);
     }
 
-    /** 
+    /**
      * Copy URL to file.
      * @param src the URL to copy - must exist
      * @param dest the File for the target file or directory (will not create directories)
@@ -600,7 +600,7 @@ public class FileUtil {
             }
             if (ValidFileFilter.FILE_EXISTS.accept(dest)) {
                 label = "dest file exists";
-            } 
+            }
             boolean closeWhenDone = true;
             result = copy(url.openConnection().getInputStream(),
                           new FileOutputStream(dest),
@@ -610,18 +610,18 @@ public class FileUtil {
             throwable = t;
         }
         String context = "FileUtil.copyURL(src, dest, err)"; // add actual parm to labels?
-        boolean report = report(err, context, label, throwable); 
+        boolean report = report(err, context, label, throwable);
         return (result && report);
     }
 
-     /** 
+     /**
      * Copy input to output - does not close either
      * @param src the InputStream to copy - must exist
-     * @param dest the OutputStream for the target 
+     * @param dest the OutputStream for the target
      * @param close if true, close when done
      */
-    public static boolean copy(InputStream src, OutputStream dest, 
-                               boolean close) 
+    public static boolean copy(InputStream src, OutputStream dest,
+                               boolean close)
         throws IOException {
         boolean result = false;
         IOException throwable = null;
@@ -636,11 +636,11 @@ public class FileUtil {
             throwable = t;
         } finally {
             if (close) {
-                try { if (null != src) src.close(); } 
+                try { if (null != src) src.close(); }
                 catch (IOException e) {
                     if (null == throwable) { throwable = e; }
                 }
-                try { if (null != dest) dest.close(); } 
+                try { if (null != dest) dest.close(); }
                 catch (IOException i) {
                     if (null == throwable) { throwable = i; }
                 }
@@ -654,7 +654,7 @@ public class FileUtil {
      * @return true if dir was an existing directory that is now deleted
      */
     protected static boolean deleteDirectory(File dir) {
-        return ((null != dir) 
+        return ((null != dir)
                 && dir.exists()
                 && dir.isDirectory()
                 && FileUtil.descendFileTree(dir, DELETE_FILES, false)
@@ -670,7 +670,7 @@ public class FileUtil {
         return result;
     }
 
-    //-------- first-order, input and visible interface  
+    //-------- first-order, input and visible interface
 
     protected static final FileFilter DELETE_DIRS = new FileFilter() {
             public boolean accept(File file) {
@@ -687,8 +687,8 @@ public class FileUtil {
 
 } // class FileUtil
 
-/** 
- * Localize FileUtil log/signals for now 
+/**
+ * Localize FileUtil log/signals for now
  * ordinary signals are ignored,
  * but exceptions are printed to err
  * and errors are thrown as Error

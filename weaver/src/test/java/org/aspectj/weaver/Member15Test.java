@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -37,7 +37,7 @@ public class Member15Test extends TestCase {
 	    		assertFalse(getAnnotations.canBeParameterized());
 	    	}
 	    }
-	    
+
 	    public void testCanBeParameterizedGenericMethod() {
 	    	BcelWorld world = new BcelWorld();
 	    	world.setBehaveInJava5Way(true);
@@ -55,9 +55,9 @@ public class Member15Test extends TestCase {
 	    	if (asSubclass != null) { // so can run on non-Java 5
 //	    		System.out.println("got it");
 	    		assertTrue(asSubclass.canBeParameterized());
-	    	}    	
+	    	}
 	    }
-	    
+
 	    public void testCanBeParameterizedMethodInGenericType() {
 	       	BcelWorld world = new BcelWorld();
 	       	world.setBehaveInJava5Way(true);
@@ -75,7 +75,7 @@ public class Member15Test extends TestCase {
 	    	if (add != null) { // so can run on non-Java 5
 //	    		System.out.println("got it");
 	    		assertTrue(add.canBeParameterized());
-	    	}    	    	
+	    	}
 	    }
 	    /*
 	    public void testGenericReferenceTypeCreation() {
@@ -83,7 +83,7 @@ public class Member15Test extends TestCase {
 	    	assertEquals("Porg/aspectj/weaver/MemberTestCase15$One<TT;>;",genericType.getSignature());
 	    	assertEquals("Lorg/aspectj/weaver/MemberTestCase15$One;",genericType.getErasureSignature());
 	    }
-	    
+
 	    public void testMemberSignatureCreation() {
 			World world = new BcelWorld("../weaver5/bin/");
 	    	//new ReflectionWorld(false, getClass().getClassLoader());
@@ -91,9 +91,9 @@ public class Member15Test extends TestCase {
 	       	ResolvedType one = world.resolve("org.aspectj.weaver.MemberTestCase15$One<java.lang.String>");
 	       	assertNotNull(one);
 	       	assertFalse(one.isMissing());
-	       	
+
 	       	// Look at the methods on the parameterized type One<String>
-	       	ResolvedMember member = findMethod("getter",one);      	
+	       	ResolvedMember member = findMethod("getter",one);
 	       	String erasedSignature = MemberImpl.typesToSignature(member.getReturnType(),member.getParameterTypes(),true);
 	       	assertEquals("()Ljava/lang/String;",erasedSignature);
 	       	String nonErasedSignature = MemberImpl.typesToSignature(member.getReturnType(),member.getParameterTypes(),false);
@@ -112,7 +112,7 @@ public class Member15Test extends TestCase {
 	       	assertEquals("()Ljava/util/List;",nonErasedSignature);
 	       	nonErasedSignature = MemberImpl.typesToSignature(member.getGenericReturnType(),member.getGenericParameterTypes(),false);
 	       	assertEquals("()Pjava/util/List<Ljava/lang/String;>;",nonErasedSignature);
-	       	
+
 	       	// Grab the generic type backing the parameterized type
 	       	ResolvedType oneGeneric = one.getGenericType();
 	       	assertTrue(oneGeneric.isGenericType());
@@ -125,12 +125,12 @@ public class Member15Test extends TestCase {
 	       	assertEquals("()Pjava/util/List<TT;>;",nonErasedSignature);
 	       	nonErasedSignature = MemberImpl.typesToSignature(member.getGenericReturnType(),member.getGenericParameterTypes(),false);
 	       	assertEquals("()Ljava/util/List;",nonErasedSignature);
-	       	
-	       	
+
+
 	       	ResolvedType oneRaw = oneGeneric.getRawType();
 	       	member = findMethod("getterTwo",oneRaw);
 	    }
-	    
+
 	    private ResolvedMember findMethod(String name, ResolvedType type) {
 	       	ResolvedMember[] members = type.getDeclaredMethods();
 	       	for (ResolvedMember member: members) {
@@ -140,7 +140,7 @@ public class Member15Test extends TestCase {
 	       	}
 	       	return null;
 	    }
-	    
+
 	    // testcode
 	    class One<T> {
 	    	T t;

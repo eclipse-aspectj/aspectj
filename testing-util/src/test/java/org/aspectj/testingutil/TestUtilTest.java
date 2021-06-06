@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testingutil;
@@ -24,20 +24,20 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.testing.util.TestUtil;
 
 /**
- * 
+ *
  */
 public class TestUtilTest extends TestCase {
 
 	public TestUtilTest(String name) {
 		super(name);
 	}
-    
+
     public void testFileCompareNonClass() throws IOException {
         MessageHandler holder = new MessageHandler();
         File thisFile = new File(UtilTests.TESTING_UTIL_PATH + "/src/test/java/org/aspectj/testingutil/TestUtilTest.java");
         //File thisFile = new File("src/testing-util.lst");
         assertTrue(TestUtil.sameFiles(holder, thisFile, thisFile));
-        
+
         File tempFile = File.createTempFile("TestUtilTest", ".tmp");
         FileUtil.copyFile(thisFile, tempFile);
         long len = tempFile.length();
@@ -47,7 +47,7 @@ public class TestUtilTest extends TestCase {
         assertTrue(TestUtil.sameFiles(holder, tempFile, thisFile));
         try {
             String path = thisFile.getName();
-            File basedir = tempFile.getParentFile();        
+            File basedir = tempFile.getParentFile();
             File renamed = new File(basedir, path);
             if (!tempFile.renameTo(renamed)) {
                 MessageUtil.warn(holder, "unable to rename " + tempFile + " to " + renamed);
@@ -123,7 +123,7 @@ public class TestUtilTest extends TestCase {
                 fail = true;
             }
         }
-        
+
     }
 
     public void testFileCompareClass() throws IOException {
@@ -135,7 +135,7 @@ public class TestUtilTest extends TestCase {
         File classBase = new File(UtilTests.TESTING_UTIL_PATH + "/testdata/testCompareClassFiles");
         String path = "org/aspectj/testingutil/TestCompareClassFile.class";
         File classFile = new File(classBase, path);
-        
+
         try {
             assertTrue(TestUtil.sameFiles(holder, classFile, classFile));
             assertTrue(TestUtil.sameFiles(holder, classBase, classBase, path));
@@ -145,5 +145,5 @@ public class TestUtilTest extends TestCase {
             }
         }
     }
-    
+
 }

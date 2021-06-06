@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.bcel;
@@ -47,7 +47,7 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 		checkPointcut("execution(public * *(..))", publicHello, publicFancyHello);
 	}
 
-	//	
+	//
 	// public void testPrintln() throws IOException {
 	// String[] callPrintlnHello = new String[] {
 	// "method-call(void java.io.PrintStream.println(java.lang.String))",
@@ -59,27 +59,27 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 	// };
 	// checkPointcut("call(* println(*))", callPrintlnHello, callPrintlnFancyHello);
 	// }
-	//	
+	//
 	// public void testMumble() throws IOException {
 	// checkPointcut("call(* mumble(*))", none, none);
 	// }
-	//	
+	//
 	// public void testFooBar() throws IOException {
 	// checkPointcut("call(FooBar *(..))", none, none);
 	// }
-	//	
+	//
 	// public void testGetOut() throws IOException {
 	// String[] getOutHello = new String[] {
 	// "field-get(java.io.PrintStream java.lang.System.out)",
 	// };
-	//		
+	//
 	// checkPointcut("get(* java.lang.System.out)", getOutHello, getOutHello);
 	// }
-	//	
+	//
 	// // private Pointcut makePointcut(String s) {
 	// // return new PatternParser(s).parsePointcut();
 	// // }
-	//		
+	//
 	private void checkPointcut(String pointcutSource, String[] expectedHelloShadows, String[] expectedFancyShadows)
 			throws IOException {
 		Pointcut sp = Pointcut.fromString(pointcutSource);

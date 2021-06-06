@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.ajde.core;
@@ -24,7 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
  * The class to be used by tools to drive a build. An AjCompiler is created with a unique id (for example the absolute pathname of a
  * project or .lst file) along with implementations of ICompilerConfiguration, IBuildProgressMonitor and IBuildMessageHandler. Tools
  * then call build() or buildFresh() on this AjCompiler.
- * 
+ *
  * <p>
  * An AjCompiler is associated with one id, therefore a new one needs to be created for a new id (project, .lst file etc.). It is
  * the responsibility of the tools to manage the lifecycle of the AjCompiler's.
@@ -40,7 +40,7 @@ public class AjCompiler {
 	/**
 	 * Creates a new AjCompiler for the given id, ICompilerConfiguration, IBuildProgressMonitor and IBuildMessageHandler. None of
 	 * the arguments can be null.
-	 * 
+	 *
 	 * @param compilerId - Unique String used to identify this AjCompiler
 	 * @param compilerConfig - ICompilerConfiguration implementation
 	 * @param buildProgressMonitor - IBuildProgressMonitor implementation
@@ -138,10 +138,10 @@ public class AjCompiler {
 
 	/**
 	 * Set a CustomMungerFactory to the compiler's weaver
-	 * 
+	 *
 	 * The type of factory should be org.aspectj.weaver.CustomMungerFactory but due to dependency problem of project ajde.core, it
 	 * is Object for now.
-	 * 
+	 *
 	 * @param factory
 	 */
 	public void setCustomMungerFactory(Object factory) {
@@ -150,7 +150,7 @@ public class AjCompiler {
 
 	/**
 	 * @return the CustomMungerFactory from the compiler's weaver
-	 * 
+	 *
 	 *         The return type should be org.aspectj.weaver.CustomMungerFactory but due to dependency problem of project ajde.core,
 	 *         it is Object for now.
 	 */

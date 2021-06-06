@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -39,11 +39,11 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
 	public ArgsWeaveTestCase(String name) {
 		super(name);
 	}
-    
+
 
     public void testAfterReturningArgs() throws IOException {
         weaveTest("HelloWorld", "ArgsAfterReturningHelloWorld", makeArgsMunger("afterReturning"));
-    }  
+    }
 
 
     public void testFancyAfterReturningArgs() throws IOException {
@@ -52,52 +52,52 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
 
     public void testThrowing() throws IOException {
         weaveTest("HelloWorld", "ArgsAfterThrowingHelloWorld", makeArgsMunger("afterThrowing"));
-    }  
+    }
 
     public void testLots() throws IOException {
         List<ShadowMunger> l = new ArrayList<>();
-        
-        BcelAdvice p1 = 
+
+        BcelAdvice p1 =
             makeArgsMunger("before");
 
-        BcelAdvice p2 = 
+        BcelAdvice p2 =
             makeArgsMunger("afterThrowing");
-        
-        BcelAdvice p3 = 
+
+        BcelAdvice p3 =
             makeArgsMunger("afterReturning");
 
-        l.add(p1);        
+        l.add(p1);
         l.add(p2);
         l.add(p3);
 
-        weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));        
-    }    
+        weaveTest("HelloWorld", "ArgsBeforeAfterHelloWorld", addLexicalOrder(l));
+    }
 
 	/* private */ InstructionList getArgsAdviceTag(BcelShadow shadow, String where) {
 		String methodName =
 			"ajc_" + where + "_" + shadow.getKind().toLegalJavaIdentifier();
 		InstructionFactory fact = shadow.getFactory();
 		InstructionList il = new InstructionList();
-        
+
 
         il.append(
             BcelRenderer.renderExpr(
-                fact, 
-                new BcelWorld(), 
+                fact,
+                new BcelWorld(),
                 shadow.getArgVar(0),
                 Type.OBJECT));
-        
+
         il.append(
             fact.createInvoke(
-                "Aspect", 
-                methodName, 
-                Type.VOID, 
-                new Type[] { Type.OBJECT }, 
+                "Aspect",
+                methodName,
+                Type.VOID,
+                new Type[] { Type.OBJECT },
                 Constants.INVOKESTATIC));
-                
+
 		return il;
 	}
-    
+
     private BcelAdvice makeArgsMunger(final String kindx) {
     	ResolvedType rtx = world.resolve(UnresolvedType.forName("Aspect"),true);
     	assertTrue("Cant find required type Aspect",!rtx.isMissing());
@@ -113,7 +113,7 @@ public class ArgsWeaveTestCase extends WeaveTestCase {
 			public InstructionList getAdviceInstructions(BcelShadow shadow, BcelVar extraVar, InstructionHandle fk) {
                 return getArgsAdviceTag(shadow, kindx);
             }
-        };    	
-    } 
+        };
+    }
 
 }

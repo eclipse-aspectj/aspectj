@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2010 SpringSource, Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -16,7 +16,7 @@ import org.aspectj.bridge.ISourceLocation;
 /**
  * Weaver representation of an intertype declared member class. The munger captures the name of the type being declared and the
  * target.
- * 
+ *
  * @author Andy Clement
  * @since 1.6.9
  */

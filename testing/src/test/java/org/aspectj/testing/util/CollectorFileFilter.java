@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** 
- * Wrap FileFilter to collect any accepted 
+/**
+ * Wrap FileFilter to collect any accepted
  */
 public class CollectorFileFilter implements FileFilter {
     /** returned from getFiles() when there are no files to get */
-    public static final List EMPTY 
+    public static final List EMPTY
         = Collections.unmodifiableList(new ArrayList(0));
 
     /** used for collecting filters */
@@ -33,8 +33,8 @@ public class CollectorFileFilter implements FileFilter {
     /** filter delegate - may be null */
     protected final FileFilter filter;
 
-    /** return false from accept only when !alwaysTrue 
-     * and filter is null or fails 
+    /** return false from accept only when !alwaysTrue
+     * and filter is null or fails
      */
     protected final boolean alwaysTrue;
 
@@ -45,8 +45,8 @@ public class CollectorFileFilter implements FileFilter {
 
     /*
      * @param filter the FileFilter delegate - may be null
-    * @param alwaysTrue return false from accept only when !alwaysTrue 
-     * and filter is null or fails 
+    * @param alwaysTrue return false from accept only when !alwaysTrue
+     * and filter is null or fails
     */
     public CollectorFileFilter(FileFilter filter, boolean alwaysTrue){
         this.filter = filter;
@@ -54,8 +54,8 @@ public class CollectorFileFilter implements FileFilter {
     }
 
     /**
-     * Accept file into collection if filter is null or passes. 
-     * @return false only when !alwaysTrue and filter fails. 
+     * Accept file into collection if filter is null or passes.
+     * @return false only when !alwaysTrue and filter fails.
      */
     public boolean accept(File f) {
         if ((null == filter) || filter.accept(f)) {
@@ -75,8 +75,8 @@ public class CollectorFileFilter implements FileFilter {
         }
     }
 
-    /** 
-     * return clone of gathered-files 
+    /**
+     * return clone of gathered-files
      * @return EMPTY if no files or a clone of the collection otherwise
      */
     public synchronized List getFiles() {

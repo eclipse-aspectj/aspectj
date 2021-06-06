@@ -2,9 +2,9 @@
  * Copyright (c) 2005 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
@@ -21,7 +21,7 @@ import java.lang.instrument.Instrumentation;
  * @author Alexandre Vasseur
  * @author Alexander Kriegisch
  */
-public class Agent { 
+public class Agent {
 
     /**
      * The instrumentation instance
@@ -37,7 +37,7 @@ public class Agent {
      * JSR-163 preMain Agent entry method
      *
      * @param options
-     * @param instrumentation 
+     * @param instrumentation
      */
     public static void premain(String options, Instrumentation instrumentation) {
     	/* Handle duplicate agents */

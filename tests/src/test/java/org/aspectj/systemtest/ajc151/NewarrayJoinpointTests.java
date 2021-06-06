@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
@@ -21,22 +21,22 @@ import junit.framework.Test;
 
 /*
  * The design:
- * 
+ *
  * There are 3 instructions that create arrays:
- * 
+ *
  * - NEWARRAY for primitive arrays
  * - ANEWARRAY for object arrays
  * - MULTIANEWARRAY for multidimensional arrays
- * 
+ *
  * The changes to expose the new joinpoint are in:
  *   BcelClassWeaver.match(LazyMethodGen mg,InstructionHandle ih,BcelShadow enclosingShadow,List shadowAccumulator)
- *   
+ *
  * Determining the type of the array is easy.  Determining the size of the array is not easy statically, it is on the stack.
- * 
- * 
+ *
+ *
  * What still needs testing:
  * - structure model
- * 
+ *
  */
 
 public class NewarrayJoinpointTests extends XMLBasedAjcTestCase {

@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     AMC 2003         initial version
  *     Helen Hawkins    Converted to new interface (bug 148190)
  * ******************************************************************/
@@ -28,7 +28,7 @@ public class CompilerMessagesTest extends AjdeCoreTestCase {
 	private TestCompilerConfiguration compilerConfig;
 	private String[] files = { "apackage" + File.separator + "InitCatcher.java",
 			"apackage" + File.separator + "SomeClass.java" };
-	
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		initialiseProject("declare-warning");
@@ -43,7 +43,7 @@ public class CompilerMessagesTest extends AjdeCoreTestCase {
 		handler = null;
 		compilerConfig = null;
 	}
-	
+
 	public void testMessages() {
 		// bug 33474
 		// The build has happened, what messages did the compiler give, and do they
@@ -53,7 +53,7 @@ public class CompilerMessagesTest extends AjdeCoreTestCase {
             assertTrue("not two messages: " + msgs, false);
         }
 		assertEquals("Two warning messages should be produced",2,msgs.size());
-		TestMessageHandler.TestMessage msg = 
+		TestMessageHandler.TestMessage msg =
 			(TestMessageHandler.TestMessage) msgs.get(0);
 		assertEquals( 8, msg.getContainedMessage().getSourceLocation().getLine());
 		assertEquals( "Please don't call init methods", msg.getContainedMessage().getMessage());
@@ -62,13 +62,13 @@ public class CompilerMessagesTest extends AjdeCoreTestCase {
 			// this name has a tester specific prefix, followed by the location of the file.
 			// we can validate the ending.
 			fullyQualifiedFile = fullyQualifiedFile.replace('\\','/');  // ignore platform differences in slashes
-			assertTrue( "Fully-qualified source file location returned", 
+			assertTrue( "Fully-qualified source file location returned",
 				fullyQualifiedFile.endsWith("/declare-warning/apackage/SomeClass.java"));
 		} catch (IOException ex) {
 			assertTrue( "Unable to convert source file location: " + msg.getContainedMessage().getSourceLocation().getSourceFile(), false);
 		}
 	}
-	
+
 	public void testDeclareMessageContents() {
 		List<TestMessage> msgs = handler.getMessages();
 		IMessage msg = ((TestMessageHandler.TestMessage)msgs.get(1)).getContainedMessage();

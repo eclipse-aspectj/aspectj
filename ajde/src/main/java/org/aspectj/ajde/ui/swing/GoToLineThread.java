@@ -1,18 +1,18 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190)  
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
- 
+
 
 package org.aspectj.ajde.ui.swing;
 
@@ -26,12 +26,12 @@ import org.aspectj.bridge.Message;
 /**
  * Used to ensure that a source line has been seeked to.  Will repeatedly attempt
  * to seek to the line until this has succeeded.
- * 
+ *
  * @author	Mik Kersten
  */
 public class GoToLineThread extends Thread {
 	private EditorAdapter editorAdapter = null;
-	
+
     private int lineNumber = 0;
     private String fileToSeekTo = "";
     private boolean finished = false;
@@ -62,7 +62,7 @@ public class GoToLineThread extends Thread {
                             editorAdapter.showSourceLine(lineNumber, true);
                         }
                     });
-                    } catch (Exception e) { 
+                    } catch (Exception e) {
                     	Message msg = new Message("Could not seek to line.",IMessage.ERROR,e,null);
                     	Ajde.getDefault().getMessageHandler().handleMessage(msg);
                     }

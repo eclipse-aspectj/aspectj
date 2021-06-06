@@ -1,15 +1,15 @@
 package org.aspectj.runtime;
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 import java.io.*;
@@ -21,7 +21,7 @@ import junit.framework.*;
 public class RuntimeTest extends TestCase {
 
     public RuntimeTest(String name) { super(name); }
-    
+
     public void testNoAspectBoundException() {
         RuntimeException fun = new RuntimeException("fun");
         NoAspectBoundException nab = new NoAspectBoundException("Foo", fun);
@@ -30,7 +30,7 @@ public class RuntimeTest extends TestCase {
 
     public void testSoftExceptionPrintStackTrace() {
         // let's see
-//        Throwable t = new Error("xyz");       
+//        Throwable t = new Error("xyz");
 //        new SoftException(t).printStackTrace();
 
         // save to specified PrintStream
@@ -63,12 +63,12 @@ public class RuntimeTest extends TestCase {
             System.setErr(systemErr);
         }
     }
-   
-    
-    static void checkSoftExceptionString(String s) {        
+
+
+    static void checkSoftExceptionString(String s) {
         assertTrue(s.contains("SoftException"));
         assertTrue(s.contains("Caused by: java.lang.Error"));
         assertTrue(s.contains("xyz"));
         assertTrue(s.contains("testSoftExceptionPrintStackTrace"));
     }
-}  
+}

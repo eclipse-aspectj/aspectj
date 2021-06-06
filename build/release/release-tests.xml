@@ -2,25 +2,25 @@
 <!-- Copyright (c) 2005 Contributors.                                          -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Wes Isberg     initial implementation                                 -->
 <!-- ========================================================================= -->
 <project name="release-tests" default="product-tests">
-				
+
 	<target name="product-tests" unless="skip.test"
 		description="run product tests">
 		<do-vm-targets target="test-build-examples"/>
 	</target>
-			
+
 	<target name="init-postBuild-properties" depends="init-release-properties">
 		<require-available property="aspectj.jar"
-			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>			
+			path="${aj.dist.dir}/aspectj-${build.version}.jar"/>
     </target>
-	
+
 	<target name="init-sources-available" depends="init-release-properties"
 		unless="sources.available">
 		<available property="sources.available"
@@ -32,7 +32,7 @@
 		unless="aspectj.available">
 		<available property="aspectj.available"
 			file="${aj.install.dir}" type="dir"/>
-		<fail unless="aspectj.available" 
+		<fail unless="aspectj.available"
 			message="install first in ${aj.install.dir}"/>
 	</target>
 
@@ -41,11 +41,11 @@
 		<available property="harness.available"
 			classname="org.aspectj.testing.drivers.Harness"
 			classpath="${harness.jar}"/>
-		<fail unless="harness.available" 
+		<fail unless="harness.available"
 			message="harness not found - first build-testing"/>
 	</target>
-	
-	<target name="test-build-examples" 
+
+	<target name="test-build-examples"
 		depends="init-postBuild-properties,init-aspectj-available">
 		<run-example name="bean"/>
 		<run-example name="intro"/>
@@ -63,21 +63,21 @@
 		<run-example name="nonGui"/>
 		<echo message="TODO: setup and run compiler adapter example"/>
 	</target>
-	
+
 	<target name="do-run-harness" depends="init-postBuild-properties,init-harness-available">
 		<fail unless="suite.filename" message="define suite.filename"/>
 		<fail unless="harness.args" message="define harness.args"/>
 		<fail unless="harness.suffix" message="define harness.suffix"/>
-		
+
 		<property name="drho.default.options"
 			value="-release -logFail -killTemp"/>
-		
+
 		<property file="${java.home.file}"/>
 		<fail unless="build.java.home"
 			message="failed to read ${build.java.home} from ${java.home.file}"/>
 		<fail unless="build.java.version"
 			message="failed to read ${build.java.version} from ${java.home.file}"/>
-		
+
 		<property name="harness.output.file"
 			location="${aj.logs.dir}/test-${suite.filename}${harness.suffix}-${build.java.version}.txt"/>
 		<echo> do-run-harness ${suite.filename}.xml with options
@@ -91,18 +91,18 @@
 			<arg line="${drho.default.options} ${harness.args}"/>
 		</java>
 	</target>
-	
+
 	<macrodef name="run-example">
 		<attribute name="name"/>
 		<sequential>
-			
+
 		<antcall target="init"/>
 		<antcall target="do-run-ant">
-			<param name="ant.dir" 
+			<param name="ant.dir"
 				location="${aj.install.dir}/doc/examples"/>
 			<param name="run.ant.file" value="build.xml"/>
 			<param name="ant.target" value="@{name}"/>
-			<param name="ant.output" 
+			<param name="ant.output"
 				location="${aj.logs.dir}/test-example-@{name}"/>
 			<param name="ant.properties" value=""/>
 			<!-- XXX getting OOMemory - permit and investigate -->
@@ -110,20 +110,20 @@
 		</antcall>
 		</sequential>
 	</macrodef>
-	
-	<target name="test-ajc-aspectj" 
+
+	<target name="test-ajc-aspectj"
 		depends="init-postBuild-properties,init-aspectj-available,init-sources-available">
 		<antcall target="do-run-ant">
-			<param name="ant.dir" 
+			<param name="ant.dir"
 				location="${aspectj.modules.dir}/tests/product/build-aspectj"/>
 			<param name="run.ant.file" value="build.xml"/>
 			<param name="ant.target" value=""/>
-			<param name="ant.output" 
+			<param name="ant.output"
 				location="${aj.logs.dir}/test-ajc-aspectj"/>
 		</antcall>
 		<delete quiet="on" dir="${aspectj.modules.dir}/tests/product/build-aspectj/output"/>
 	</target>
-	
+
 	<!-- ====                                        source tests ==== -->
 	<target name="test-sources">
 		<do-vm-targets target="do-test-sources-sequence"/>
@@ -134,12 +134,12 @@
 		<antcall target="test-junit-modules"/>
 	</target>
 
-	<target name="test-doc-links" 
+	<target name="test-doc-links"
 		depends="init-aspectj-available,init-harness-available"
 		description="run link check against distribution">
 		<setup-vm vm="13"/>
 		<property file="${java.home.file}"/>
-		<fail unless="build.java.home" 
+		<fail unless="build.java.home"
 		     message="failed to read ${build.java.home} from ${java.home.file}"/>
 
 		<property name="doclink.output.file"
@@ -154,11 +154,11 @@
   - progguide/printable.html has harmless empty link to d0e26 (ajc-ref?)
 
 </echo>
-		<java 
+		<java
 			classname="org.aspectj.testing.util.LinkCheck"
 			fork="true"
 			dir="${aj.install.dir}"
-			classpath="${harness.jar}" 
+			classpath="${harness.jar}"
 			jvm="${build.java.command}"
 			output="${doclink.output.file}-out.txt">
 			<arg value="${doclink.start.file}"/>
@@ -169,7 +169,7 @@
 			<sysproperty key="http.proxyPort" value="${proxy.port}" />
 		</java>
 	</target>
-	
+
 	<target name="test-examples-11" depends="init-harness-available"
 		description="run examples under JDK 1.1">
 		<property name="j11.home"
@@ -182,7 +182,7 @@
 			<param name="suite.filename" value="ajcTestsExamples"/>
 			<param name="harness.args" value="-1.1"/>
 			<param name="harness.suffix" value="-run11"/>
-			<param name="harness.jvmline" 
+			<param name="harness.jvmline"
 				value="-Djavarun.fork=true -Djavarun.java=${java11.command} -Djavarun.java.home=${j11.home} -Djavarun.bootclasspath=${java11.classes.zip}"/>
 		</antcall>
 	</target>
@@ -194,10 +194,10 @@
         <build-aspectj vm="${max.vm}" target="build-testing-jars"/>
         <property name="build-testing.done" value="true"/>
 	</target>
-    
+
 	<target name="harness-tests" depends="build-testing">
 		<!-- we could use harness variants, e.g., "-emacssym-",
-		     but separating runs puts each variant in a different 
+		     but separating runs puts each variant in a different
 		     output file, which makes them easier to analyze.
 		-->
 		<antcall target="init-harness-available"/>
@@ -206,15 +206,15 @@
 			<param name="harness.args" value="-ajctestSkipKeywords=expect-fail"/>
 			<param name="harness.suffix" value="-pass"/>
 		</antcall>
-		
+
 		<antcall target="do-run-harness">
 			<param name="suite.filename" value="ajcTests"/>
 			<param name="harness.args" value=""/>
 			<param name="harness.suffix" value=""/>
 		</antcall>
 
-		<!-- 
-			skip variants for now 
+		<!--
+			skip variants for now
 		<antcall target="do-run-harness">
 			<param name="suite.filename" value="ajcTests"/>
 			<param name="harness.args" value="-emacssym"/>
@@ -248,5 +248,5 @@
 		</antcall>
 		-->
 	</target>
-				
+
 </project>

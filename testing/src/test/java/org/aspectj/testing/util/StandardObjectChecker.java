@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -34,7 +34,7 @@ public class StandardObjectChecker implements ObjectChecker {
     private final ObjectChecker delegate;
     private final List collector;
     private final boolean collectionResult;
-    
+
     /**
      * Create one with no delegate.
      * @param type the Class of the type required of the input
@@ -42,7 +42,7 @@ public class StandardObjectChecker implements ObjectChecker {
     public StandardObjectChecker(Class type) {
         this(type, ANY, (List) null, true);
     }
-    
+
     /**
      * @param type the Class of the type required of the input
      * @param delegate the ObjectChecker to delegate to after
@@ -60,7 +60,7 @@ public class StandardObjectChecker implements ObjectChecker {
     public StandardObjectChecker(Class type, List collector) {
         this(type, ANY, collector, true);
     }
-    
+
     /**
      * @param type the Class of the type required of the input
      * @param collector the list to collect valid entries
@@ -69,12 +69,12 @@ public class StandardObjectChecker implements ObjectChecker {
     public StandardObjectChecker(Class type, List collector, boolean collectionResult) {
         this(type, ANY, collector, collectionResult);
     }
-    
+
     /**
      * @param type the Class of the type required of the input
      * @param collector the list to collect valid entries
      */
-    public StandardObjectChecker(Class type, ObjectChecker delegate, 
+    public StandardObjectChecker(Class type, ObjectChecker delegate,
                                 List collector, boolean collectionResult) {
         if (null == type) throw new IllegalArgumentException("null type");
         this.type = type;
@@ -82,14 +82,14 @@ public class StandardObjectChecker implements ObjectChecker {
         this.collector = collector;
         this.collectionResult = collectionResult;
     }
-    
+
     /**
      * Check if object is valid by confirming is is non-null and of the
      * right type, then delegating to any delegate or calling doIsValid(),
      * then (if true) passing to any collector, and returning
      * false if the collector failed or the collection result otherwise.
      * @see ObjectChecker#isValid(Object)
-     * @return true unless input is null or wrong type 
+     * @return true unless input is null or wrong type
      *          or if one of subclass (doIsValid(..)) or delegates
      *          (list, collector) returns false.
      */
@@ -100,7 +100,7 @@ public class StandardObjectChecker implements ObjectChecker {
             if (!delegate.isValid(input)) {
                 return false;
             }
-        } 
+        }
         if (!doIsValid(input)) {
             return false;
         }
@@ -112,7 +112,7 @@ public class StandardObjectChecker implements ObjectChecker {
             return collectionResult;
         }
     }
-    
+
     /**
      * Delegate of isValid guarantees that the input
      * is not null as is assignable to the specified type.

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004 IBM
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement -     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement -     initial implementation
  * ******************************************************************/
 
 package org.aspectj.apache.bcel.classfile.tests;
@@ -24,7 +24,7 @@ public class AnnotationDefaultAttributeTest extends BcelTestCase {
 		super.setUp();
 	}
 
-	
+
 	/**
 	 * For values in an annotation that have default values, we should be able to
 	 * query the AnnotationDefault attribute against the method to discover the
@@ -32,7 +32,7 @@ public class AnnotationDefaultAttributeTest extends BcelTestCase {
 	 */
 	public void testMethodAnnotations() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("SimpleAnnotation");
-		
+
 		Method m = getMethod(clazz,"fruit");
 		AnnotationDefault a = (AnnotationDefault) findAttribute("AnnotationDefault",m.getAttributes());
 		SimpleElementValue val = (SimpleElementValue) a.getElementValue();
@@ -45,5 +45,5 @@ public class AnnotationDefaultAttributeTest extends BcelTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 }

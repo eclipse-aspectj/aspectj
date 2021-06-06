@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -21,9 +21,9 @@ public abstract class Test extends ASTNode {
     public Test() {
         super();
     }
-    
+
     public abstract void accept(ITestVisitor v);
-    
+
     public static Test makeAnd(Test a, Test b) {
 //    	if (a == Literal.NO_TEST) return b;
 //    	if (b == Literal.NO_TEST) return a;
@@ -39,9 +39,9 @@ public abstract class Test extends ASTNode {
             return Literal.FALSE;
         } else {
             return new And(a, b);
-        }   
+        }
     }
-    
+
     public static Test makeOr(Test a, Test b) {
 //    	if (a == Literal.NO_TEST) return a;
 //    	if (b == Literal.NO_TEST) return b;
@@ -53,9 +53,9 @@ public abstract class Test extends ASTNode {
             return Literal.TRUE;
         } else {
             return new Or(a, b);
-        }   
+        }
     }
-    
+
     public static Test makeNot(Test a) {
         if (a instanceof Not) {
             return ((Not) a).getBody();
@@ -69,27 +69,27 @@ public abstract class Test extends ASTNode {
             return new Not(a);
         }
     }
-    
+
     // uses our special rules that anything matches object
     public static Test makeInstanceof(Var v, ResolvedType ty) {
         if (ty.equals(ResolvedType.OBJECT)) return Literal.TRUE;
-        
+
         Test e;
         if (ty.isAssignableFrom(v.getType())) e = Literal.TRUE;
         else if (! ty.isCoerceableFrom(v.getType())) e = Literal.FALSE;
         else e = new Instanceof(v, ty);
         return e;
     }
-    
+
     public static Test makeHasAnnotation(Var v, ResolvedType annTy) {
         return new HasAnnotation(v,annTy);
     }
-    
+
     public static Test makeCall(Member m, Expr[] args) {
     	return new Call(m, args);
     }
     public static Test makeFieldGetCall(Member f, Member m, Expr[] args) {
     	return new FieldGetCall(f, m, args);
     }
-    
+
 }

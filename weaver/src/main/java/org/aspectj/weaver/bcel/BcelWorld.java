@@ -2,9 +2,9 @@
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     PARC     initial implementation
@@ -299,7 +299,7 @@ public class BcelWorld extends World implements Repository {
 
 	/**
 	 * Build a World from a ClassLoader, for LTW support
-	 * 
+	 *
 	 * @param loader
 	 * @param handler
 	 * @param xrefHandler
@@ -355,7 +355,7 @@ public class BcelWorld extends World implements Repository {
 		}
 		return ret;
 	}
-	
+
 	public static Type makeBcelType(String type) {
 		return Type.getType(type);
 	}
@@ -624,7 +624,7 @@ public class BcelWorld extends World implements Repository {
 		UnresolvedType declaringType = null;
 
 		String signature = ii.getSignature(cpg);
-		
+
 		// 307147
 		if (name.startsWith("ajc$privMethod$")) {
 			// The invoke is on a privileged accessor. These may be created for different
@@ -833,7 +833,7 @@ public class BcelWorld extends World implements Repository {
 		}
 		return didSomething;
 	}
-	
+
 	/**
 	 * Apply the specified declare @field construct to any matching fields in the specified type.
 	 * @param deca the declare annotation targeting fields
@@ -854,7 +854,7 @@ public class BcelWorld extends World implements Repository {
 		}
 		return changedType;
 	}
-	
+
 	/**
 	 * Checks for an @target() on the annotation and if found ensures it allows the annotation to be attached to the target type
 	 * that matched.
@@ -904,7 +904,7 @@ public class BcelWorld extends World implements Repository {
 				anAnnotationChangeOccurred = true;
 			}
 		}
-		
+
 		// apply declare @field
 		for (DeclareAnnotation deca: getCrosscuttingMembersSet().getDeclareAnnotationOnFields()) {
 			if (applyDeclareAtField(deca,onType)) {
@@ -928,7 +928,7 @@ public class BcelWorld extends World implements Repository {
 					anAnnotationChangeOccurred = true;
 				}
 			}
-			
+
 			for (DeclareAnnotation deca: getCrosscuttingMembersSet().getDeclareAnnotationOnFields()) {
 				if (applyDeclareAtField(deca, onType)) {
 					anAnnotationChangeOccurred = true;
@@ -936,7 +936,7 @@ public class BcelWorld extends World implements Repository {
 			}
 			decpToRepeat = decpToRepeatNextTime;
 		}
-		
+
 	}
 
 	@Override
@@ -979,7 +979,7 @@ public class BcelWorld extends World implements Repository {
 	/**
 	 * These are aop.xml files that can be used to alter the aspects that actually apply from those passed in - and also their scope
 	 * of application to other files in the system.
-	 * 
+	 *
 	 * @param xmlFiles list of File objects representing any aop.xml files passed in to configure the build process
 	 */
 	public void setXmlFiles(List<File> xmlFiles) {
@@ -1068,7 +1068,7 @@ public class BcelWorld extends World implements Repository {
 								// Record that it has an invalid type reference
 								aspectRequiredTypes.put(aspectName,requiredTypeName);
 							}
-						}				
+						}
 						if (anythingMissing) {
 							return true;
 						}
@@ -1127,7 +1127,7 @@ public class BcelWorld extends World implements Repository {
 	 * it will initialize and transform those definitions into an optimized set of values (eg. resolve type patterns and string
 	 * names to real entities). It can then answer questions quickly: (1) is this aspect included in the weaving? (2) Is there a
 	 * scope specified for this aspect and does it include type X?
-	 * 
+	 *
 	 */
 	static class WeavingXmlConfig {
 

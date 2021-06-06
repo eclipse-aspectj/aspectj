@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -78,7 +78,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import junit.framework.TestCase;
 
 public class ASTVisitorTest extends TestCase {
-	
+
 	public void testEnum_pr211201() {
 		check("public enum BasicEnum {"+
 	        "A = 1, B = 2, C = 3;"+
@@ -86,20 +86,20 @@ public class ASTVisitorTest extends TestCase {
 	        "       return 3;"+
 	        "}"+
 	        "}","(compilationUnit(enum(simpleName)(simpleName)(simpleName)(simpleName)(method(primitiveType)(simpleName)(block(numberLiteral)))))");
-		
+
 	}
-	
+
     // from bug 110465 - will currently break because of casts
 	public void testAspectWithITD() {
 		check("aspect A{ public void B.x(){} }",
 			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
 	}
-	
+
 	public void testAspectWithCommentThenITD() {
 		check("aspect A{ /** */ public void B.x(){} }",
 			  "(compilationUnit(aspect(simpleName)(methodITD(primitiveType)(simpleName)(block))))");
 	}
-	
+
 	public void testAspectWithCommentThenPointcut() {
 		check("aspect A{ /** */ pointcut x(); }","(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
 	}
@@ -166,7 +166,7 @@ public class ASTVisitorTest extends TestCase {
 		check("aspect A {pointcut a();pointcut b();pointcut c(): a() && b();}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(pointcut(simpleName))(pointcut(simpleName)(referencePointcut(simpleName))(referencePointcut(simpleName)))))");
 	}
-	
+
 	public void testCallPointcut(){
 		check("aspect A {pointcut a(): call(* *.*(..));}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
@@ -203,12 +203,12 @@ public class ASTVisitorTest extends TestCase {
 		check("aspect A {pointcut a(): adviceexecution();}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
 	}
-	
+
 	public void testPointcutWithoutArguments(){
 		check("aspect A {pointcut a(): adviceexecution();}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))))");
 	}
-		
+
 	public void testPointcutWithOnePrimitiveArgument(){
 		check("aspect A {pointcut a(int a): adviceexecution();}",
 		"(compilationUnit(aspect(simpleName)(pointcut(simpleName)(primitiveType)(simpleName))))");
@@ -248,7 +248,7 @@ public class ASTVisitorTest extends TestCase {
 		check("class A {}aspect B {A.new(){}}",
 				"(compilationUnit(class(simpleName))(aspect(simpleName)(constructorITD(primitiveType)(simpleName)(block))))");
 	}
-	
+
 	public void testInitializedField(){
 		check("class A{int a = 1;}",
 				"(compilationUnit(class(simpleName)(field(primitiveType)(simpleName)(numberLiteral))))");
@@ -265,7 +265,7 @@ public class ASTVisitorTest extends TestCase {
 		check("class A {}aspect B {int A.a = 1;}",
 				"(compilationUnit(class(simpleName))(aspect(simpleName)(fieldITD(primitiveType)(simpleName)(numberLiteral))))");
 	}
-	
+
 	public void testMethodBeingCalled(){
 		check("class A {void a(){}void b(){a();}}",
 				"(compilationUnit(class(simpleName)(method(primitiveType)(simpleName)(block))(method(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName)))))))");
@@ -290,13 +290,13 @@ public class ASTVisitorTest extends TestCase {
 		check("class A {void b(){A();}}aspect B {A.new(){}}",
 				"(compilationUnit(class(simpleName)(method(primitiveType)(simpleName)(block(expressionStatement(methodInvocation(simpleName))))))(aspect(simpleName)(constructorITD(primitiveType)(simpleName)(block))))");
 	}
-	
+
 	/*
-	 * 
+	 *
 	 * START: Test TypePattern nodes introduced in Bugzilla 329268.
-	 * 
+	 *
 	 */
-	
+
 	public void testDeclareParents() {
 		check("class A{}class B{}aspect C {declare parents : A extends B;}",
 				"(compilationUnit(class(simpleName))(class(simpleName))(aspect(simpleName)(declareParents(wildTypePattern)(wildTypePattern))))");
@@ -346,15 +346,15 @@ public class ASTVisitorTest extends TestCase {
 		check("class E{}aspect C {declare parents : (@AnnotationT *) extends E;}",
 				"(compilationUnit(class(simpleName))(aspect(simpleName)(declareParents(anyWithAnnotationTypePattern)(wildTypePattern))))");
 	}
-	
-	
+
+
 	/*
-	 * 
+	 *
 	 * END: Test TypePattern nodes introduced in Bugzilla 329268.
-	 * 
+	 *
 	 */
-	
-	
+
+
 	public void testDeclareWarning(){
 		check("aspect A {pointcut a();declare warning: a(): \"warning\";}",
 				"(compilationUnit(aspect(simpleName)(pointcut(simpleName))(declareWarning(referencePointcut(simpleName))(stringLiteral))))");
@@ -403,7 +403,7 @@ public class ASTVisitorTest extends TestCase {
 		check("aspect A percflowbelow(a()) {pointcut a();}",
 				"(compilationUnit(aspect(simpleName)(perCflow(referencePointcut(simpleName)))(pointcut(simpleName)))))");
 	}
-	
+
 	private void check(String source, String expectedOutput){
 		ASTParser parser = ASTParser.newParser(AST.JLS3);//JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
 		Map<String, String> options = new HashMap<>();
@@ -418,7 +418,7 @@ public class ASTVisitorTest extends TestCase {
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
 	}
-	
+
 	private void checkJLS3(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		Map<String,String> options = new HashMap<>();
@@ -432,14 +432,14 @@ public class ASTVisitorTest extends TestCase {
 		System.err.println("actual:\n" + result);
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
-		
+
 	}
-	
+
 	/** @deprecated using deprecated code */
 	@Deprecated
 	private static final int AST_INTERNAL_JLS2 = AST.JLS2;
-	
-	
+
+
 	/**
 	 * @deprecated (not really - just suppressing the warnings
 	 * that come from testing Javadoc.getComment())
@@ -451,12 +451,12 @@ public class ASTVisitorTest extends TestCase {
 		super.setUp();
 	}
 
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	protected CompilationUnit createAST(char[] source) {
 		ASTParser parser= ASTParser.newParser(AST_INTERNAL_JLS2);
 		parser.setSource(source);
@@ -466,26 +466,26 @@ public class ASTVisitorTest extends TestCase {
 }
 
 class TestVisitor extends AjASTVisitor {
-	
+
 	StringBuffer b = new StringBuffer();
 	boolean visitTheKids = true;
-	
+
 	boolean visitDocTags;
-	
+
 	TestVisitor() {
 		this(false);
 	}
-	
+
 	@Override
 	public String toString(){
 		return b.toString();
 	}
-	
+
 	TestVisitor(boolean visitDocTags) {
 		super(visitDocTags);
 		this.visitDocTags = visitDocTags;
 	}
-	
+
 	public boolean isVisitingChildren() {
 		return visitTheKids;
 	}
@@ -493,7 +493,7 @@ class TestVisitor extends AjASTVisitor {
 	public void setVisitingChildren(boolean visitChildren) {
 		visitTheKids = visitChildren;
 	}
-	
+
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (((AjTypeDeclaration)node).isAspect()) {
@@ -514,14 +514,14 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration node) {
-		if (((AjTypeDeclaration)node).isAspect()) 
-			if (((AspectDeclaration) node).isPrivileged() 
+		if (((AjTypeDeclaration)node).isAspect())
+			if (((AspectDeclaration) node).isPrivileged()
 					|| ((AspectDeclaration)node).getPerClause() != null) {
-				b.append(")");				
+				b.append(")");
 			}
 		b.append(")"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		b.append("(enum");
@@ -532,12 +532,12 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(EnumDeclaration node) {
 		b.append(")");
 	}
-	
+
 	@Override
 	public boolean visit(PointcutDeclaration node) {
 		b.append("(pointcut"); //$NON-NLS-1$
 		return isVisitingChildren();
-	}	
+	}
 	@Override
 	public void endVisit(PointcutDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
@@ -546,7 +546,7 @@ class TestVisitor extends AjASTVisitor {
 	public boolean visit(ReferencePointcut node) {
 		b.append("(referencePointcut"); //$NON-NLS-1$
 		return isVisitingChildren();
-	}	
+	}
 	@Override
 	public void endVisit(ReferencePointcut node) {
 		b.append(")"); //$NON-NLS-1$
@@ -576,7 +576,7 @@ class TestVisitor extends AjASTVisitor {
 		b.append("(afterReturningAdvice"); //$NON-NLS-1$
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public void endVisit(BeforeAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
@@ -597,7 +597,7 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(AfterReturningAdviceDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
-		
+
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (node instanceof InterTypeMethodDeclaration) return visit((InterTypeMethodDeclaration)node);
@@ -813,31 +813,31 @@ class TestVisitor extends AjASTVisitor {
 		b.append("(declareAtField");
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public boolean visit(DeclareErrorDeclaration node) {
 		b.append("(declareError");
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public boolean visit(DeclareParentsDeclaration node) {
 		b.append("(declareParents");
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public boolean visit(DeclarePrecedenceDeclaration node) {
 		b.append("(declarePrecedence");
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public boolean visit(DeclareSoftDeclaration node) {
 		b.append("(declareSoft");
 		return isVisitingChildren();
 	}
-	
+
 	@Override
 	public boolean visit(DeclareWarningDeclaration node) {
 		b.append("(declareWarning");
@@ -879,7 +879,7 @@ class TestVisitor extends AjASTVisitor {
 	public void endVisit(DeclareWarningDeclaration node) {
 		b.append(")"); //$NON-NLS-1$
 	}
-	
+
 	@Override
 	public boolean visit(AbstractBooleanTypePattern node) {
 		b.append("(");
@@ -891,7 +891,7 @@ class TestVisitor extends AjASTVisitor {
 		}
 		node.getRight().accept(this);
 		b.append(")");
-		
+
 		// Don't visit the children, as that is done above in order (left node first, boolean operator next, right node last
 		return false;
 	}
@@ -906,7 +906,7 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(AnyTypePattern node) {
-		b.append(")"); 
+		b.append(")");
 	}
 
 
@@ -919,7 +919,7 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(AnyWithAnnotationTypePattern node) {
-		b.append(")"); 
+		b.append(")");
 	}
 
 	@Override
@@ -937,7 +937,7 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(IdentifierTypePattern node) {
-		b.append(")"); 
+		b.append(")");
 	}
 
 
@@ -950,7 +950,7 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(NotTypePattern node) {
-		b.append(")"); 
+		b.append(")");
 	}
 
 
@@ -963,16 +963,16 @@ class TestVisitor extends AjASTVisitor {
 
 	@Override
 	public void endVisit(TypeCategoryTypePattern node) {
-		b.append(")"); 
+		b.append(")");
 	}
-	
-	
+
+
 	// End of TypePattern additions for Bugzilla 329268
 
 	@Override
 	public boolean visit(SignaturePattern node) {
 		b.append("(signaturePattern");
-		return isVisitingChildren();		
+		return isVisitingChildren();
 	}
 	@Override
 	public void endVisit(SignaturePattern node) {
@@ -981,17 +981,17 @@ class TestVisitor extends AjASTVisitor {
 	@Override
 	public boolean visit(PerObject node) {
 		b.append("(perObject");
-		return isVisitingChildren();		
+		return isVisitingChildren();
 	}
 	@Override
 	public boolean visit(PerCflow node) {
 		b.append("(perCflow");
-		return isVisitingChildren();		
+		return isVisitingChildren();
 	}
 	@Override
 	public boolean visit(PerTypeWithin node) {
 		b.append("(perTypeWithin");
-		return isVisitingChildren();		
+		return isVisitingChildren();
 	}
 	@Override
 	public void endVisit(PerObject node) {

@@ -1,11 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- * 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *   Alexandre Vasseur         initial implementation
  *   Adrian Colyer                refactoring for traversal and grouping by kind
@@ -31,8 +31,8 @@ public interface PatternNodeVisitor {
     Object visit(WildAnnotationTypePattern node, Object data);
     Object visit(AnnotationPatternList node, Object data);
 
-    // Regular type patterns	
-    Object visit(AndTypePattern node, Object data);	
+    // Regular type patterns
+    Object visit(AndTypePattern node, Object data);
     Object visit(AnyTypePattern node, Object data);
     Object visit(AnyWithAnnotationTypePattern node, Object data);
     Object visit(EllipsisTypePattern node, Object data);
@@ -44,7 +44,7 @@ public interface PatternNodeVisitor {
     Object visit(WildTypePattern node, Object data);
     Object visit(TypePatternList node, Object data);
     Object visit(HasMemberTypePattern node, Object data);
-    Object visit(TypeCategoryTypePattern node, Object data); 
+    Object visit(TypeCategoryTypePattern node, Object data);
 
     // Pointcuts
 	Object visit(AndPointcut node, Object data);
@@ -74,7 +74,7 @@ public interface PatternNodeVisitor {
     Object visit(PerSingleton node, Object data);
     Object visit(PerTypeWithin node, Object data);
 
-	
+
 	// Declares
     Object visit(DeclareAnnotation node, Object data);
     Object visit(DeclareErrorOrWarning node, Object data);

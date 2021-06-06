@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2003 Contributors. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * Copyright (c) 2003 Contributors.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -50,7 +50,7 @@ public class LinkCheck {
   * - https MalformedUrlExceptions on redirect
   * - Swing won't quit without System.exit
   * - single-threaded
-  */   
+  */
     static final URL COMMAND_LINE;
     static {
         URL commandLine = null;
@@ -63,8 +63,8 @@ public class LinkCheck {
 
     /** @param args file {-logFile {file} | -printInfo } */
     public static void main(String[] args) {
-        final String syntax = "java " 
-        + LinkCheck.class.getName() 
+        final String syntax = "java "
+        + LinkCheck.class.getName()
         + " file {-log <file> | -printInfo}..";
         if ((null == args) || (0 >= args.length)) {
             System.err.println(syntax);
@@ -80,7 +80,7 @@ public class LinkCheck {
                 printInfo = true;
             } else {
                 System.err.println(syntax);
-                System.exit(1);                
+                System.exit(1);
             }
         }
         final boolean useSystemOut = (null == logFile);
@@ -90,7 +90,7 @@ public class LinkCheck {
             mh = new MessageHandler();
             out = null;
         } else {
-        
+
             try {
                 out = new FileOutputStream(logFile);
             } catch (FileNotFoundException e) {
@@ -109,9 +109,9 @@ public class LinkCheck {
 
             };
         }
-        Link.Check exists 
+        Link.Check exists
             = Link.getProtocolChecker(new String[] {"file", "http"});
-        Link.Check contents 
+        Link.Check contents
             = Link.getProtocolChecker(new String[] {"file"});
         LinkCheck me = new LinkCheck(mh, exists, contents);
         me.addLinkToCheck(COMMAND_LINE, startingURL); // pwd as base?
@@ -141,7 +141,7 @@ public class LinkCheck {
             try {
                 if (null != out) {
                     out.flush();
-                } 
+                }
             } catch (IOException e) {
                 // ignore
             }
@@ -162,23 +162,23 @@ public class LinkCheck {
 //    private static boolean isCheckedFileType(URL url) {
 //        if (null == url) {
 //            return false;
-//        } 
+//        }
 //        String file = url.getFile();
 //        return !FileUtil.hasZipSuffix(file)
 //            && !file.endsWith(".pdf");
 //    }
-    
+
     private final Messages messages;
     private final HTMLEditorKit.Parser parser; // XXX untested - stateful
     private final List<Link> linksToCheck;
     private final List<String> checkedUrls;  // String (URL.toString)
     private final List<String> validRefs;  // String (URL.toString)
     private final List<String> refsToCheck;  // String (URL.toString)
-    
+
     private final Link.Check checkExists;
     private final Link.Check checkContents;
 
-    public LinkCheck(IMessageHandler handler, 
+    public LinkCheck(IMessageHandler handler,
         Link.Check checkExists,
         Link.Check checkContents) {
         LangUtil.throwIaxIfNull(handler, "handler");
@@ -277,7 +277,7 @@ public class LinkCheck {
         }
         URL url = link.url;
         InputStream input = null;
-        try {                        
+        try {
             URLConnection connection = url.openConnection();
             if (null == connection) {
                 messages.cantOpenConnection(url);
@@ -342,16 +342,16 @@ public class LinkCheck {
         } catch (MalformedURLException e) {
             messages.malformedUrl(doc, namedRef, e);
             return false;
-        }    
+        }
     }
-       
+
     private class Messages {
         private final IMessageHandler handler;
         private Messages(IMessageHandler handler) {
             LangUtil.throwIaxIfNull(handler, "handler");
             this.handler = handler;
         }
-        
+
         private void info(String label, Object more) {
             MessageUtil.info(handler, label + " " + more);
         }
@@ -404,15 +404,15 @@ public class LinkCheck {
         private void malformedUrl(URL doc, String link, MalformedURLException e) {
             fail("malformedUrl", "doc=" + doc + " link=" + link, e);
         }
-        
+
         private void cantOpenConnection(URL url) {
             fail("cantOpenConnection", url, null);
         }
-        
+
         private void exceptionReading(Link link, IOException e) {
             // only info if redirect from http to https
             String m = e.getMessage();
-            if ((m != null) 
+            if ((m != null)
                 && (m.contains("protocol"))
                 && (m.contains("https"))
                 && "http".equals(link.url.getProtocol())) {
@@ -421,11 +421,11 @@ public class LinkCheck {
             }
             fail("exceptionReading", link, e);
         }
-        
+
         private void nullLink(URL doc, Tag tag) {
             // ignore - many tags do not have links
         }
-        
+
         private void emptyLink(URL doc, Tag tag) {
             fail("emptyLink", "doc=" + doc + " tag=" + tag, null);
         }
@@ -458,7 +458,7 @@ public class LinkCheck {
             if (!addingLinks) {
                 return;
             }
-            Object key = HTML.Tag.FRAME == tag 
+            Object key = HTML.Tag.FRAME == tag
                 ? HTML.Attribute.SRC
                 : HTML.Attribute.HREF;
             String link = (String) attributes.getAttribute(key);
@@ -475,21 +475,21 @@ public class LinkCheck {
                 addLinkToCheck(doc, link);
             }
         }
-        
+
         private boolean registerIfNamedAnchor(
             HTML.Tag tag,
             MutableAttributeSet attributes) {
             if (HTML.Tag.A.equals(tag)) {
-                String name  
+                String name
                     = (String) attributes.getAttribute(HTML.Attribute.NAME);
                 if (null != name) {
                     addKnownNamedAnchor(doc, name);
                     return true;
-                }                
+                }
             }
             return false;
         }
-        
+
     }
 
     private static class Link {
@@ -498,7 +498,7 @@ public class LinkCheck {
             public boolean check(URL url) { return false; }
         };
         private static Check getProtocolChecker(String[] protocols) {
-            final String[] input 
+            final String[] input
                 = (String[]) LangUtil.safeCopy(protocols, protocols);
             if (0 == input.length) {
                 return FALSE_CHECKER;
@@ -522,7 +522,7 @@ public class LinkCheck {
         public boolean equals(Object o) {
             if (null == o) {
                 return false;
-            } 
+            }
             if (this == o) {
                 return true;
             }
@@ -533,12 +533,12 @@ public class LinkCheck {
             return doc.equals(other) && url.equals(other);
             //return toString().equals(o.toString());
         }
-        
+
         public int hashCode() { // XXX
             return doc.hashCode() + (url.hashCode() >> 4);
 //            return toString.hashCode();
         }
-        
+
         public String toString() {
             if (null == toString) {
                 toString = url + " linked from " + doc;

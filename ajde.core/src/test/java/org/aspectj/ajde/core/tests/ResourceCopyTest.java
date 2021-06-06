@@ -1,12 +1,12 @@
 /********************************************************************
- * Copyright (c) 2003 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten      initial implementation 
+ * Copyright (c) 2003 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten      initial implementation
  *     Helen Hawkins    Converted to new interface (bug 148190)
  *******************************************************************/
 package org.aspectj.ajde.core.tests;
@@ -283,7 +283,7 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 
 	/**
 	 * Look in the specified jar file for resources (anything not .class) and add it the resources Set.
-	 * 
+	 *
 	 * @param injarFile jar file to open up
 	 * @param resources the set where resources should be accumulated
 	 * @param wantDirectories should any directories found in the jar be included

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util.options;
@@ -37,7 +37,7 @@ public class ValuesTest extends TestCase {
         checkInvert(new int[] {1,2,5,6,9},10, new int[] {0,3,4,7,8}); // start, 2 middle run
         checkInvert(new int[] {0,1,2,5,6},10, new int[] {3,4,7,8,9}); // middle, end run
     }
-    
+
     void checkInvert(int[] missed, int length, int[] expected) {
         int[] actual = Values.invert(missed, length);
         assertTrue(null != actual);

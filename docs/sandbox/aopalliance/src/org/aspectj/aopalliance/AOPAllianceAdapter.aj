@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -15,14 +15,14 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.ConstructorInterceptor;
 
 public abstract aspect AOPAllianceAdapter {
-	
+
 	/**
 	 * Return the interceptor to use at method execution join points.
 	 * Must be overriden by subclasses.
 	 * @return MethodInterceptor, or null if no method advice required
 	 */
 	protected abstract MethodInterceptor getMethodInterceptor();
-	
+
 	/**
 	 * Return the interceptor to use at constructor execution join points.
 	 * May be overriden by subclasses.
@@ -31,12 +31,12 @@ public abstract aspect AOPAllianceAdapter {
 	protected ConstructorInterceptor getConstructorInterceptor() {
 	  return null;
 	}
-	
+
 	protected abstract pointcut targetJoinPoint();
-	
+
 	pointcut methodExecution() : execution(* *(..));
 	pointcut constructorExecution() : execution(new(..));
-	
+
 	Object around() : targetJoinPoint() && methodExecution() {
 		MethodInvocationClosure mic = new MethodInvocationClosure(thisJoinPoint) {
 			public Object execute() { return proceed();}
@@ -52,7 +52,7 @@ public abstract aspect AOPAllianceAdapter {
 			return proceed();
 		}
 	}
-	
+
 	Object around() : targetJoinPoint() && constructorExecution() {
 		ConstructorInvocationClosure cic = new ConstructorInvocationClosure(thisJoinPoint) {
 			public Object execute() { proceed(); return thisJoinPoint.getThis();}
@@ -68,5 +68,5 @@ public abstract aspect AOPAllianceAdapter {
 			return proceed();
 		}
 	}
-	
+
 }

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -28,25 +28,25 @@ import java.util.ArrayList;
 public class LineReader extends LineNumberReader {
     /** delimited multi-line output of readToBlankLine */
     public static final String RETURN= "\n\r";
-    
+
     private static final String[] NONE = new String[0];
     private static final String cSCRIPT = "#";
     private static final String cJAVA = "//";
     private static final String[] TESTER_LEAD = new String[] {cSCRIPT, cJAVA};
-    
-    /** 
+
+    /**
      * Convenience factory for tester suite files
      * @return null if IOException or IllegalArgumentException thrown
      */
     public static final LineReader createTester(File file) {
         return create(file, TESTER_LEAD, null);
     }
-    
-    /** 
-     * convenience factory 
+
+    /**
+     * convenience factory
      * @return null if IOException or IllegalArgumentException thrown
      */
-    public static final LineReader create(File file, 
+    public static final LineReader create(File file,
         String[] leadComments, String[] eolComments) {
         try {
             FileReader reader = new FileReader(file);
@@ -56,11 +56,11 @@ public class LineReader extends LineNumberReader {
         }
         return null;
     }
-    
+
     final private File file;
     final private String[] eolComments;
     final private String[] leadComments;
-    
+
     /**
      * @param file the File used to open the FileReader
      * @param leadComments the String[] to be taken as the start of
@@ -71,9 +71,9 @@ public class LineReader extends LineNumberReader {
      *@throws IllegalArgumentException if any String in
      * leadComments or eolComments is null.
      */
-    public LineReader(FileReader reader, File file, 
+    public LineReader(FileReader reader, File file,
         String[] leadComments, String[] eolComments) {
-        super(reader); 
+        super(reader);
         this.file = file;
         this.eolComments = normalize(eolComments);
         this.leadComments = normalize(leadComments);
@@ -81,12 +81,12 @@ public class LineReader extends LineNumberReader {
     public LineReader(FileReader reader, File file) {
         this(reader, file, null, null);
     }
-    
+
     /** @return file:line */
     public String toString() {
         return file.getPath() + ":" + getLineNumber();
     }
-    
+
     /** @return underlying file */
     public File getFile() { return file; }
 
@@ -96,9 +96,9 @@ public class LineReader extends LineNumberReader {
      * reader has not read past the first line and there are last lines
      * and there are no IOExceptions during reads.
      * @param first the first line to read - if negative, use 0
-     * @param last the last line to read (inclusive) 
+     * @param last the last line to read (inclusive)
      *         - if less than first, use first
-     * @return String[] of first..last (inclusive) lines read or 
+     * @return String[] of first..last (inclusive) lines read or
      */
     public String[] readLines(int first, int last) {
         if (0 > first) first = 0;
@@ -106,13 +106,13 @@ public class LineReader extends LineNumberReader {
         ArrayList list = new ArrayList();
         try {
             String line = null;
-            while (getLineNumber() < first) { 
+            while (getLineNumber() < first) {
                 line = readLine();
                 if (null == line) {
-                    break; 
+                    break;
                 }
             }
-            if (getLineNumber() > first) { 
+            if (getLineNumber() > first) {
                 // XXX warn? something else read past line
             }
             if ((null != line) && (first == getLineNumber())) {
@@ -130,8 +130,8 @@ public class LineReader extends LineNumberReader {
         }
         return (String[]) list.toArray(NONE);
     }
-    
-    /** Skip to next blank line 
+
+    /** Skip to next blank line
      * @return the String containing all lines skipped (delimited with RETURN)
      */
     public String readToBlankLine() throws IOException {

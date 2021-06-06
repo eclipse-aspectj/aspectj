@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -76,7 +76,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getKindedAnnotationVar()
 	 */
 	public Var getKindedAnnotationVar(UnresolvedType annotationType) {
@@ -85,7 +85,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getWithinAnnotationVar()
 	 */
 	public Var getWithinAnnotationVar(UnresolvedType annotationType) {
@@ -94,7 +94,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getWithinCodeAnnotationVar()
 	 */
 	public Var getWithinCodeAnnotationVar(UnresolvedType annotationType) {
@@ -103,7 +103,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getThisAnnotationVar()
 	 */
 	public Var getThisAnnotationVar(UnresolvedType annotationType) {
@@ -112,7 +112,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getTargetAnnotationVar()
 	 */
 	public Var getTargetAnnotationVar(UnresolvedType annotationType) {
@@ -121,7 +121,7 @@ public class TestShadow extends Shadow {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.aspectj.weaver.Shadow#getArgAnnotationVar(int)
 	 */
 	public Var getArgAnnotationVar(int i, UnresolvedType annotationType) {

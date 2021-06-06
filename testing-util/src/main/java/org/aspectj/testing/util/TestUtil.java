@@ -2,9 +2,9 @@
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     Xerox/PARC     initial implementation
@@ -540,7 +540,7 @@ public final class TestUtil {
 		File expectedFile = new File(expectedBaseDir, path);
 		return doSameFile(handler, expectedBaseDir, actualBaseDir, expectedFile, actualFile);
 	}
-	
+
 	public static String disassembleClass(File basedir, File file) {
 		String basedirPath = FileUtil.normalizedPath(basedir);
 		String name = FileUtil.fileToClassName(basedir, file);
@@ -555,7 +555,7 @@ public final class TestUtil {
 	    	throw new IllegalStateException(t);
 		}
 	}
-	
+
 	public static List<String> toLines(String inputString) {
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new StringReader(inputString))) {
@@ -568,11 +568,11 @@ public final class TestUtil {
 		}
 		return lines;
 	}
-	
+
 	public static String toString(List<String> lines) {
 		return String.join("\n", lines);
 	}
-	
+
 	private static int longestLine(List<String> lines) {
 		int longest = -1;
 		for (String line: lines) {

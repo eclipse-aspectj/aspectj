@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Andy Clement     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Andy Clement     initial implementation
  * ******************************************************************/
 package org.aspectj.weaver.bcel;
 
@@ -24,15 +24,15 @@ import org.aspectj.weaver.patterns.SimpleScope;
 public class BcelTestUtils {
 	/**
 	 * Moved from BcelWorld to here
-	 * 
+	 *
 	 * Parse a string into advice.
-	 * 
+	 *
 	 * <blockquote>
-	 * 
+	 *
 	 * <pre>
 	 * Kind ( Id , ... ) : Pointcut -&gt; MethodSignature
 	 * </pre>
-	 * 
+	 *
 	 * </blockquote>
 	 */
 	public static Advice shadowMunger(World w, String str, int extraFlag) {

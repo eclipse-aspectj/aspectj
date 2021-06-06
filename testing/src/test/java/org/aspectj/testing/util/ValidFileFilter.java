@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 1999-2000 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util;
@@ -17,7 +17,7 @@ import java.io.FileFilter;
 
 /**
  * FileFilter that accepts existing files
- * with static singleton variants 
+ * with static singleton variants
  * made from inner subclasses.
  */
 public class ValidFileFilter implements FileFilter {
@@ -31,7 +31,7 @@ public class ValidFileFilter implements FileFilter {
 
     //----------------------------- members
     protected final FileFilter delegate;
-    protected ValidFileFilter(){ 
+    protected ValidFileFilter(){
         this(null);
     }
     protected ValidFileFilter(FileFilter delegate){
@@ -39,7 +39,7 @@ public class ValidFileFilter implements FileFilter {
     }
 
     /**
-     * Implement <code>FileFilter.accept(File)</code> by checking 
+     * Implement <code>FileFilter.accept(File)</code> by checking
      * taht input is not null, exists, and is accepted by any delegate.
      */
     public boolean accept(File f) {
@@ -72,13 +72,13 @@ public class ValidFileFilter implements FileFilter {
         protected final boolean ignoreCase;
         /** true if one of the String specifiers is not null */
         protected final boolean haveSpecifier;
-        public StringFileFilter(String prefix, String substring, 
+        public StringFileFilter(String prefix, String substring,
                                 String suffix, boolean ignoreCase) {
             this.ignoreCase = ignoreCase;
             this.prefix     = preprocess(prefix);
             this.substring  = preprocess(substring);
             this.suffix     = preprocess(suffix);
-            haveSpecifier   = ((null != prefix) || (null != substring) 
+            haveSpecifier   = ((null != prefix) || (null != substring)
                                || (null != suffix));
         }
         private final String preprocess(String input) {
@@ -104,7 +104,7 @@ public class ValidFileFilter implements FileFilter {
                 if ((null != suffix) && (!(path.endsWith(suffix)))) {
                     return false;
                 }
-            } 
+            }
             return true;
         }
     } // class StringFileFilter

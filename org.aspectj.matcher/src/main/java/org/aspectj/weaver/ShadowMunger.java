@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -31,9 +31,9 @@ import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * For every shadow munger, nothing can be done with it until it is concretized. Then...
- * 
+ *
  * (Then we call fast match.)
- * 
+ *
  * For every shadow munger, for every shadow, first match is called, then (if match returned true) the shadow munger is specialized
  * for the shadow, which may modify state. Then implement is called.
  */
@@ -153,7 +153,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 	/**
 	 * Invoked when the shadow munger of a resolved type are processed.
-	 * 
+	 *
 	 * @param aType
 	 */
 	public void setDeclaringType(ResolvedType aType) {
@@ -252,7 +252,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 
 	/**
 	 * Implement this munger at the specified shadow, returning a boolean to indicate success.
-	 * 
+	 *
 	 * @param shadow the shadow where this munger should be applied
 	 * @return true if the implement was successful
 	 */
@@ -268,7 +268,7 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	/**
 	 * Does the munger have to check that its exception are accepted by the shadow ? It is not the case for annotation style around
 	 * advice, for example: that can throw Throwable, even if the advised method does not throw any exceptions.
-	 * 
+	 *
 	 * @return true if munger has to check that its exceptions can be thrown based on the shadow
 	 */
 	public abstract boolean mustCheckExceptions();
@@ -303,11 +303,11 @@ public abstract class ShadowMunger implements PartialOrder.PartialComparable, IH
 	// }
 	// newShadowMunger.binaryFile = null;
 	// }
-	
+
 	public boolean bindsProceedingJoinPoint() {
 		return false;
 	}
-	
+
 	public boolean isAroundAdvice() {
 		return false;
 	}

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.compiler.batch;
@@ -29,19 +29,19 @@ class Ignore {}
 //		regenerate = false;
 //		runTests = true;
 //	}
-//	
+//
 //	static final String outDirName = "out";
 //	static final String srcDir = "testdata" + File.separator + "src1"+ File.separator;
 //
 //	public VerifyWeaveTestCase(String name) {
 //		super(name);
 //	}
-//	
+//
 //	public void testCompile() throws IOException {
 //		buildTest("A", "Hello", outDirName);
 //	}
-//	
-//	
+//
+//
 //	public boolean doCompile(String fileToCompile, String specifiedOutDir) {
 //		List args = new ArrayList();
 //		if (specifiedOutDir != null) {
@@ -51,7 +51,7 @@ class Ignore {}
 //		args.add("-classpath");
 //		args.add("../runtime/bin");
 //		args.add(fileToCompile);
-//		
+//
 //
 //		ICommand command = new AjdtCommand();
 //		MessageHandler myHandler = new MessageHandler();
@@ -66,35 +66,35 @@ class Ignore {}
 //
 //	public void testBuildOutputDir() throws IOException {
 //		FileUtil.deleteContents(new File(outDirName));
-//		
+//
 //		doCompile(srcDir + "A.java", outDirName);
-//		assertTrue("default package, output dir specified", 
+//		assertTrue("default package, output dir specified",
 //			new File(outDirName + File.separator + "A.class").exists());
-//	
+//
 //		File testFile = new File(srcDir + "A.class");
 //		//XXX These test for javac compatible behavior with output dirs
 ////		testFile.delete();
 ////		doCompile(srcDir + "A.java", null);
-////		assertTrue("default package, no output dir specified", 
+////		assertTrue("default package, no output dir specified",
 ////			testFile.exists());
-////	
+////
 ////		doCompile(srcDir + "Ap.java", null);
-////		assertTrue("package named, no dir specified", 
+////		assertTrue("package named, no dir specified",
 ////			new File(srcDir + "Ap.class").exists());
-//	
+//
 //		doCompile(srcDir + "Ap.java", outDirName);
-//		File checkFile = 
+//		File checkFile =
 //			new File(outDirName + File.separator + "src1" + File.separator + "Ap.class");
-//		assertTrue("package named, dir specified: " + checkFile.getAbsolutePath(), 
+//		assertTrue("package named, dir specified: " + checkFile.getAbsolutePath(),
 //			checkFile.exists());
-//		
+//
 //	}
 //
 //	public void buildTest(String name, String outName, String specifiedOutDir) throws IOException {
 //        String classDir = "bin";
-//        
+//
 //        doCompile(srcDir  + name + ".java", specifiedOutDir);
-//        
+//
 //        LazyClassGen gen = new LazyClassGen(new BcelObjectType(new ClassParser(outDirName + File.separator + outName +".class").parse()));
 //
 //        try {

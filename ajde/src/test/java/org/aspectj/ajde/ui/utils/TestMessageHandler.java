@@ -1,11 +1,11 @@
 /********************************************************************
- * Copyright (c) 2007 Contributors. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: IBM Corporation - initial API and implementation 
+ * Copyright (c) 2007 Contributors. All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors: IBM Corporation - initial API and implementation
  * 				 Helen Hawkins   - initial version (bug 148190)
  *******************************************************************/
 package org.aspectj.ajde.ui.utils;
@@ -30,7 +30,7 @@ public class TestMessageHandler implements IUIBuildMessageHandler {
 	private List ignoring;
 	private List messages;
 	private List errors;
-	
+
 	public TestMessageHandler() {
 		ignoring = new ArrayList();
 		messages = new ArrayList();
@@ -40,7 +40,7 @@ public class TestMessageHandler implements IUIBuildMessageHandler {
 	}
 
 	public boolean handleMessage(IMessage message) throws AbortException {
-        IMessage.Kind kind = message.getKind(); 
+        IMessage.Kind kind = message.getKind();
         if (isIgnoring(kind)) {
             return true;
         }
@@ -66,32 +66,32 @@ public class TestMessageHandler implements IUIBuildMessageHandler {
 	public boolean isIgnoring(Kind kind) {
 		return ((null != kind) && (ignoring.contains(kind)));
 	}
-	
+
 	public void ignore(Kind kind) {
 	    if ((null != kind) && (!ignoring.contains(kind))) {
 	        ignoring.add(kind);
-	    }	
+	    }
 	}
 
 	public List getMessages() {
 		return messages;
 	}
-	
+
 	public List getErrors() {
 		return errors;
 	}
-	
+
 	public static class TestMessage {
 		IMessage message;
-		
+
 		public TestMessage(IMessage m) {
 			message = m;
 		}
-		
+
 		public IMessage getContainedMessage() {
 			return message;
 		}
-		
+
         public String toString() {
             String loc = "<no location>";
             if (null != message.getSourceLocation()) {

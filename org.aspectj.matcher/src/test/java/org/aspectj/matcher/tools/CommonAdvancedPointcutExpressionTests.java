@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Andy Clement
  *******************************************************************************/
@@ -22,9 +22,9 @@ import org.aspectj.weaver.tools.StandardPointcutParser;
  * Test the use of the pointcut parser and matching infrastructure. The org.aspectj.matcher.tools infrastructure used should not be
  * aware of what kind of World it is working with and only operate in terms of the type abstraction expressed in the
  * org.aspectj.matcher project (so Members, etc). These tests require some testdata types.
- * 
+ *
  * This is based on the Reflection oriented PointcutExpressionTest in the weaver project.
- * 
+ *
  * @author Andy Clement
  */
 public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {

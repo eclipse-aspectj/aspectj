@@ -1,27 +1,27 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  *  Contributors
- *  Andy Clement 
+ *  Andy Clement
  * ******************************************************************/
 package org.aspectj.systemtest.ajc160;
 
- 
+
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 import junit.framework.Test;
 
 /**
  * Parameter value matching
- * 
+ *
  */
 public class AnnotationValueMatchingTests extends XMLBasedAjcTestCase {
-	
+
 	public void testParsing() { runTest("parsing"); }
 	public void testBroken1() { runTest("broken - 1"); }
 	public void testParsingAllAnnotationValueKinds() { runTest("allkinds"); }

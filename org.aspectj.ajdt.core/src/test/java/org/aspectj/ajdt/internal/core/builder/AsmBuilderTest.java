@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -26,11 +26,11 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 public class AsmBuilderTest extends TestCase {
 
 	private AsmHierarchyBuilder builder = new AsmHierarchyBuilder();
-	
-    public static Test suite() { 
+
+    public static Test suite() {
         TestSuite suite = new TestSuite(AsmBuilderTest.class.getName());
         //$JUnit-BEGIN$
-        suite.addTestSuite(AsmBuilderTest.class); 
+        suite.addTestSuite(AsmBuilderTest.class);
         //$JUnit-END$
         return suite;
     }
@@ -38,7 +38,7 @@ public class AsmBuilderTest extends TestCase {
 	/**
 	 * Test for bug#39626
 	 */
-	public void testNullHandlingOfVisit() { 
+	public void testNullHandlingOfVisit() {
 		ICompilationUnit cu = new ICompilationUnit() {
 			public char[] getContents() {
 				return null;
@@ -51,31 +51,31 @@ public class AsmBuilderTest extends TestCase {
 			public char[][] getPackageName() {
 				return null;
 			}
-			
-			public char[] getFileName() { 
+
+			public char[] getFileName() {
 				return null;
 			}
 
 			public boolean ignoreOptionalProblems() {
 				return false;
 			}
-			
+
 		};
 		TypeDeclaration local = new TypeDeclaration(new CompilationResult(cu, 0, 0, 0));
 		local.name = new char[2];
 		BlockScope scope = null;
-		
-		try { 
+
+		try {
 //			builder.internalBuild(new CompilationResult(cu, 0, 0, 0), null);
 			builder.visit(local, scope);
-		} 
+		}
 		catch (Exception e) {
 			assertTrue(e instanceof NullPointerException);
-		} 
+		}
 // XXX put back?
 //		catch (Exception e) {
 //			assertTrue(e instanceof EmptyStackException);
 //		}
 	}
 
-}  
+}

@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190) 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -80,7 +80,7 @@ public class BasicEditor implements EditorAdapter {
     		Ajde.getDefault().getIdeUIAdapter().displayStatusInformation(" no corresponding source line to seek to");
     	}
     }
-    	
+
     public void showSourceLine(int lineNumber, boolean highlight) {
         showSourceLine(filePath, lineNumber, highlight);
     }
@@ -95,7 +95,7 @@ public class BasicEditor implements EditorAdapter {
 
     public void showSourceLine(String filePath, int lineNumber, boolean highlight) {
     	//AjdeUIManager.getDefault().getIdeUIAdapter().resetEditor();
-        
+
         this.filePath = filePath;
 //        if (oldPath != filePath && !Ajde.INSTANCE.BROWSER_MANAGER.isGlobalMode()) {
 //            Ajde.INSTANCE.BROWSER_MANAGER.updateView();
@@ -121,7 +121,7 @@ public class BasicEditor implements EditorAdapter {
     public void showSourcelineAnnotation(String filePath, int lineNumber, java.util.List items) { }
 
 	public void addEditorViewForSourceLine(String filePath, int lineNumber) {
-		
+
 	}
 
     public void saveContents() throws IOException {

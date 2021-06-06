@@ -26,9 +26,9 @@ import org.aspectj.weaver.tools.TraceFactory;
  * Copyright (c) 2012 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *   Abraham Nevado (lucierna) initial implementation
@@ -46,7 +46,7 @@ public class SimpleCache {
 	private Map<String, byte[]> generatedCache;
 	private static final String GENERATED_CACHE_SUBFOLDER = "panenka.cache";
 	private static final String GENERATED_CACHE_SEPARATOR = ";";
-	
+
 	public static final String IMPL_NAME = "shared";
 
 	protected SimpleCache(String folder, boolean enabled) {
@@ -115,32 +115,32 @@ public class SimpleCache {
 	private static class StoreableCachingMap extends HashMap {
 		private String folder;
 		private static final String CACHENAMEIDX = "cache.idx";
-		
+
 		private long lastStored = System.currentTimeMillis();
 		private static int DEF_STORING_TIMER = 60000; //ms
 		private int storingTimer;
-		
+
 		private transient Trace trace;
 		private void initTrace(){
 			trace = TraceFactory.getTraceFactory().getTrace(StoreableCachingMap.class);
 		}
-		
+
 //		private StoreableCachingMap(String folder) {
 //			this.folder = folder;
 //			initTrace();
 //		}
-		
+
 		private StoreableCachingMap(String folder, int storingTimer){
 			this.folder = folder;
 			initTrace();
 			this.storingTimer = storingTimer;
 		}
-		
+
 		public static StoreableCachingMap init(String folder) {
 			return init(folder,DEF_STORING_TIMER);
-			
+
 		}
-		
+
 		public static StoreableCachingMap init(String folder, int storingTimer) {
 			File file = new File(folder + File.separator + CACHENAMEIDX);
 			if (file.exists()) {
@@ -186,7 +186,7 @@ public class SimpleCache {
 			try {
 				String path = null;
 				byte[] valueBytes = (byte[]) value;
-				
+
 				if (Arrays.equals(valueBytes, SAME_BYTES)) {
 					path = SAME_BYTES_STRING;
 				} else {
@@ -201,8 +201,8 @@ public class SimpleCache {
 			}
 			return null;
 		}
-		
-		
+
+
 
 		public void storeMap() {
 			long now = System.currentTimeMillis();
@@ -270,7 +270,7 @@ public class SimpleCache {
 		for (String generatedClassName : generatedClassesNames) {
 
 			byte[] generatedBytes = get(generatedClassName, bytes);
-			
+
 			if (protectionDomain == null) {
 				defineClass(loader, generatedClassName, generatedBytes);
 			} else {

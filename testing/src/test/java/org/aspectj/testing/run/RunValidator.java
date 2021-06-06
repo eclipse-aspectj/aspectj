@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -24,7 +24,7 @@ import org.aspectj.testing.util.ObjectChecker;
  * <li>state: fail unless completed and not aborted</li>
  * <li>messages: fail if any of type ABORT, FAIL - permit ERROR, WARNING, DEBUG...
  *     (which permits expected compiler errors and warnings) </li>
- * <li>thrown: if type required, fail unless type thrown; 
+ * <li>thrown: if type required, fail unless type thrown;
  *             if type permitted, fail if wrong type thrown</li>
  * <li>result: fail unless no ObjectChecker or it validates
  *              and the result is not IRunStatus.FAIL.</li>
@@ -50,15 +50,15 @@ public class RunValidator implements IRunValidator {
             = new RunValidator(IntRange.ZERO);
 
     /** expect finished(IRunStatus.PASS) and no thrown, fail, etc. */
-    public static final IRunValidator PASS 
+    public static final IRunValidator PASS
             = new RunValidator(new ObjectChecker() {
                 public boolean isValid(Object o) {
                     return (o == IRunStatus.PASS);
                 }
             });
-            
+
     /** expect finished(IRunStatus.FAIL) */
-    public static final IRunValidator FAIL 
+    public static final IRunValidator FAIL
             = new RunValidator(new ObjectChecker() {
                 public boolean isValid(Object o) {
                     return (o == IRunStatus.FAIL);
@@ -67,25 +67,25 @@ public class RunValidator implements IRunValidator {
 
     /** range of status values required for passing */
     private ObjectChecker resultChecker;
-    
+
     // XXX replace two exc. classes with one, plus boolean for how to interpret?
     /** if non-null, passed() permits any thrown assignable to this class */
     private Class permittedExceptionsClass;
 
     /** if non-null, passed() requires some thrown assignable to this class */
     private Class requiredExceptionsClass;
-    
+
     /** Create result validator that expects a certain int status */
     public RunValidator(ObjectChecker resultChecker) {
        this(resultChecker, null, null);
-    }   
-     
-    /** 
+    }
+
+    /**
      * Create result validator that passes only when completed abruptly by
      * a Throwable assignable to the specified class.
      * @throws illegalArgumentException if requiredExceptionsClass is not Throwable
      */
-    public RunValidator(Class requiredExceptionsClass) { 
+    public RunValidator(Class requiredExceptionsClass) {
         this(null, null, requiredExceptionsClass);
     }
 
@@ -93,11 +93,11 @@ public class RunValidator implements IRunValidator {
      * Create a result handler than knows how to evaluate {@link #passed()}.
      * You cannot specify both permitted and required exception class,
      * and any exception class specified must be assignable to throwable.
-     * 
+     *
      * @param resultChecker  {@link #passed()} will return false if
      * the int status is not accepted by this int validator - if null,
      * any int status result is accepted.
-     * @param fastFailErrorClass an Error subclass with a (String) constructor to use to 
+     * @param fastFailErrorClass an Error subclass with a (String) constructor to use to
      *                            construct and throw Error from fail(String).  If null, then fail(String)
      *                            returns normally.
      * @param permittedExceptionsClass if not null and any exceptions thrown are
@@ -120,7 +120,7 @@ public class RunValidator implements IRunValidator {
         init(resultChecker, permittedExceptionsClass,
          requiredExceptionsClass);
     }
-    
+
     /** subclasses may use this to re-initialize this for re-use */
     protected void init(
         ObjectChecker resultChecker,
@@ -128,7 +128,7 @@ public class RunValidator implements IRunValidator {
         Class requiredExceptionsClass) {
         this.permittedExceptionsClass = permittedExceptionsClass;
         this.requiredExceptionsClass = requiredExceptionsClass;
-        
+
         if (null != resultChecker) {
             this.resultChecker = resultChecker;
         } else {
@@ -139,21 +139,21 @@ public class RunValidator implements IRunValidator {
            if (!Throwable.class.isAssignableFrom(permittedExceptionsClass)) {
                 String e = "permitted not throwable: " + permittedExceptionsClass;
                 throw new IllegalArgumentException(e);
-           } 
+           }
         }
         if (null != requiredExceptionsClass) {
            if (!Throwable.class.isAssignableFrom(requiredExceptionsClass)) {
                 String e = "required not throwable: " + requiredExceptionsClass;
                 throw new IllegalArgumentException(e);
-           } 
+           }
         }
-        if ((null != permittedExceptionsClass) 
+        if ((null != permittedExceptionsClass)
             && (null != requiredExceptionsClass) ) {
             String e = "define at most one of required or permitted exceptions";
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     /** @return true if this result passes per this validator */
     public final boolean runPassed(IRunStatus result) {
         if (null == result) {
@@ -198,7 +198,7 @@ public class RunValidator implements IRunValidator {
                 }
             } else {
                 return false;
-            }            
+            }
         }
         return dopassed();
     }

@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.xml;
@@ -52,8 +52,8 @@ public class SoftMessage implements IMessage {
 		return new SoftMessage(message, IMessage.FAIL, thrown, null);
 	}
 
-	/** 
-	 * Print messages. 
+	/**
+	 * Print messages.
 	 * @param messages List of IMessage
 	 */
 	public static void writeXml(XMLWriter out, IMessageHolder messages) {
@@ -68,9 +68,9 @@ public class SoftMessage implements IMessage {
 		}
 	}
 
-	/** 
-	 * Print messages. 
-	 * @param messages IMessage[] 
+	/**
+	 * Print messages.
+	 * @param messages IMessage[]
 	 */
 	public static void writeXml(XMLWriter out, IMessage[] messages) {
 		if ((null == out) || (null == messages)) {
@@ -81,7 +81,7 @@ public class SoftMessage implements IMessage {
 		}
 	}
 
-	/** print message as an element 
+	/** print message as an element
 	 * XXX has to sync with ajcTests.dtd
 	 * @throws IllegalArgumentException if message.getThrown() is not null
 	 */
@@ -212,13 +212,13 @@ public class SoftMessage implements IMessage {
 		return kind == IMessage.USAGE;
 	}
 
-	/** 
-	 * @return true if kind == IMessage.INFO  
+	/**
+	 * @return true if kind == IMessage.INFO
 	 */
 	public boolean isInfo() {
 		return kind == IMessage.INFO;
 	}
-	
+
 	public boolean isTaskTag() {
 		return kind == IMessage.TASKTAG;
 	}
@@ -228,13 +228,13 @@ public class SoftMessage implements IMessage {
 		return kind == IMessage.ABORT;
 	}
 
-	/** 
+	/**
 	 * @return true if kind == IMessage.FAIL
 	 */
 	public boolean isFailed() {
 		return kind == IMessage.FAIL;
 	}
-	
+
 	public boolean getDeclared() { return false; }
 
 	/** @return non-null String with simple message */
@@ -247,11 +247,11 @@ public class SoftMessage implements IMessage {
 		return thrown;
 	}
 
-	/** 
+	/**
 	 * This returns any ISourceLocation set or a mock-up
 	 * if file and/or line were set.
-	 * @return ISourceLocation associated with this message, 
-	 * a mock-up if file or line is available, or null if none 
+	 * @return ISourceLocation associated with this message,
+	 * a mock-up if file or line is available, or null if none
 	 */
 	final public ISourceLocation getSourceLocation() {
 		if ((null == sourceLocation)
@@ -290,7 +290,7 @@ public class SoftMessage implements IMessage {
 		this.sourceLocation = sourceLocation;
 	}
 
-	/** 
+	/**
 	 * Set the line for the underlying source location.
 	 * @throws IllegalStateException if source location was set directly
 	 *          or indirectly by calling getSourceLocation after setting
@@ -335,15 +335,15 @@ public class SoftMessage implements IMessage {
 	public void setDetails(String string) {
 		details = string;
 	}
-	
+
 	public int getID() {
 		return id;
 	}
-	
+
 	public void setID(int id) {
 		this.id = id;
 	}
-	
+
 	public int getSourceStart() {
 		return sourceStart;
 	}

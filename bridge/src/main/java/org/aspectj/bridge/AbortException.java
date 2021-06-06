@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.bridge;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * normally (e.g., a test failure causes the test to abort but the reporting and testing continues normally), use the static methods
  * to borrow and return a "porter" to avoid the expense of constructing a stack trace each time. A porter stack trace is invalid,
  * and it should only be used to convey a message. E.g., to print the stack of the AbortException and any contained message:
- * 
+ *
  * <pre>
  * catch (AbortException ae) {
  *     IMessage m = ae.getMessage();
@@ -32,7 +32,7 @@ import java.util.ArrayList;
  *     if (null != thrown) thrown.printStackTrace(System.err);
  * }
  * </pre>
- * 
+ *
  * @author PARC
  * @author Andy Clement
  */
@@ -124,7 +124,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 
 	/**
 	 * The stack trace of a porter is invalid; it is only used to carry a message (which may itself have a wrapped exception).
-	 * 
+	 *
 	 * @return true if this exception is only to carry exception
 	 */
 	public boolean isPorter() {
@@ -152,7 +152,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 	/**
 	 * Get message for this AbortException, either associated explicitly as message or implicitly as IMessage message or its thrown
 	 * message.
-	 * 
+	 *
 	 * @see java.lang.Throwable#getMessage()
 	 */
 	public String getMessage() {
@@ -184,7 +184,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 
 	/**
 	 * Print the stack trace of any enclosed thrown or this otherwise.
-	 * 
+	 *
 	 * @see java.lang.Throwable#printStackTrace(PrintStream)
 	 */
 	public void printStackTrace(PrintStream s) {
@@ -200,7 +200,7 @@ public class AbortException extends RuntimeException { // XXX move porters out, 
 
 	/**
 	 * Print the stack trace of any enclosed thrown or this otherwise.
-	 * 
+	 *
 	 * @see java.lang.Throwable#printStackTrace(PrintWriter)
 	 */
 	public void printStackTrace(PrintWriter s) {

@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2016 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -23,7 +23,7 @@ public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 	public void testParamAnnosNegative() {
 		runTest("param annos negative");
 	}
-	
+
 	public void testAnnotMethodHasMember_pr156962_1() { // From similar in Ajc153Tests
 		runTest("Test Annot Method Has Member 1");
 	}
@@ -31,11 +31,11 @@ public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
 	public void testAnnotMethodHasMember_pr156962_2() { // From similar in Ajc153Tests
 		runTest("Test Annot Method Has Member 1");
 	}
-	
+
 	public void testFunnySignature() {
 		runTest("funny signature with method reference");
 	}
-	
+
 	// Weave a module with code that isn't in a module
 	public void testWeaveModule() throws Exception {
 		runTest("weave module");

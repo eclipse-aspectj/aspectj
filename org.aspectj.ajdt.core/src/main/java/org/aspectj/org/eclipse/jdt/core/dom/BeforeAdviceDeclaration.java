@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -17,11 +17,11 @@ package org.aspectj.org.eclipse.jdt.core.dom;
  */
 
 public class BeforeAdviceDeclaration extends AdviceDeclaration {
-	
+
 	BeforeAdviceDeclaration(AST ast) {
 		super(ast);
 	}
-	
+
 	ASTNode clone0(AST target) {
 		BeforeAdviceDeclaration result = new BeforeAdviceDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
@@ -44,7 +44,7 @@ public class BeforeAdviceDeclaration extends AdviceDeclaration {
 		// dispatch to correct overloaded match method
 		return ((AjASTMatcher)matcher).match(this, other);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */

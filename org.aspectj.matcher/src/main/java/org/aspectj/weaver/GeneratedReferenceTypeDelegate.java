@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2008 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -17,7 +17,7 @@ import org.aspectj.weaver.patterns.PerClause;
 /**
  * A delegate that can sit in the ReferenceType instance created for an aspect generated from aop.xml. Only answers the minimal set
  * of information required as the type is processed.
- * 
+ *
  * @author Andy Clement
  */
 public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
@@ -91,7 +91,7 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	public AnnotationAJ[] getAnnotations() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
-	
+
 	public boolean hasAnnotations() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}

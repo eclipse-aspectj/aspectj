@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
@@ -26,7 +26,7 @@ import org.aspectj.weaver.World;
 
 /**
  * Handles the translation of java.lang.reflect.Type objects into AspectJ UnresolvedTypes.
- * 
+ *
  * @author Adrian Colyer
  */
 public class JavaLangTypeToResolvedTypeConverter {
@@ -49,14 +49,14 @@ public class JavaLangTypeToResolvedTypeConverter {
 			String name = clazz.getName();
 			/**
 			 * getName() can return:
-			 * 
-			 * 1. If this class object represents a reference type that is not an 
-			 * array type then the binary name of the class is returned 
+			 *
+			 * 1. If this class object represents a reference type that is not an
+			 * array type then the binary name of the class is returned
 			 * 2. If this class object represents a primitive type or void, then
 			 * the name returned is a String equal to the Java language keyword
-			 * corresponding to the primitive type or void. 
+			 * corresponding to the primitive type or void.
 			 * 3. If this class object represents a class of arrays, then the internal
-			 * form of the name consists of the name of the element type preceded by 
+			 * form of the name consists of the name of the element type preceded by
 			 * one or more '[' characters representing the depth of the array nesting.
 			 */
 			if (clazz.isArray()) {

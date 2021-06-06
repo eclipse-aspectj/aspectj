@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  converted to new interface (pr148190) 
+ *     Helen Hawkins  converted to new interface (pr148190)
  * ******************************************************************/
 
 
@@ -18,8 +18,8 @@ import org.aspectj.ajde.core.IBuildProgressMonitor;
 import org.aspectj.bridge.IProgressListener;
 
 /**
- * Enables the compiler/weaver progres to be related to the user via the 
- * IBuildProgressMonitor as well as relating whether or not the user has 
+ * Enables the compiler/weaver progres to be related to the user via the
+ * IBuildProgressMonitor as well as relating whether or not the user has
  * cancelled the build progress back to the compiler/weaver.
  */
 public class AjdeCoreBuildNotifierAdapter implements IProgressListener {

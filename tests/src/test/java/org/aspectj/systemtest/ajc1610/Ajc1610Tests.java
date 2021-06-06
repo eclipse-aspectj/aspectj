@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -16,11 +16,11 @@ import junit.framework.Test;
 
 public class Ajc1610Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	
+
 	public void testNPE_pr363962() {
 		runTest("pr363962");
 	}
-	
+
 	public void testOffset0_bug324932() {
 		runTest("pr324932");
 	}

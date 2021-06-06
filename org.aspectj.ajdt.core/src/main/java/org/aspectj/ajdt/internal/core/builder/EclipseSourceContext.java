@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 
@@ -28,23 +28,23 @@ import org.aspectj.weaver.Member;
 
 
 public class EclipseSourceContext implements IEclipseSourceContext {
-	
+
 	CompilationResult result;
 	int offset = 0;
 
 	public EclipseSourceContext(CompilationResult result) {
 		this.result = result;
 	}
-	
+
 	public EclipseSourceContext(CompilationResult result, int offset) {
 		this.result = result;
 		this.offset = offset;
 	}
-	
+
 	public int getOffset() {
 		return offset;
 	}
-	
+
 	private File getSourceFile() {
 		return new File(new String(result.fileName));
 	}
@@ -71,13 +71,13 @@ public class EclipseSourceContext implements IEclipseSourceContext {
         }
         return sl;
 	}
-    
+
     public void tidy() {
     	  result=null;
     }
 
 	public void removeUnnecessaryProblems(Member member, int problemLineNumber) {
-		if (result == null) return; 
+		if (result == null) return;
 		IProblem[] probs = result.getProblems();
 		if (probs!=null) {
 			for (IProblem problem : probs) {
@@ -94,7 +94,7 @@ public class EclipseSourceContext implements IEclipseSourceContext {
 		}
 	}
 
-	private class UnusedDeclaredThrownExceptionFilter implements ProblemsForRemovalFilter {	
+	private class UnusedDeclaredThrownExceptionFilter implements ProblemsForRemovalFilter {
 		private IProblem problemToRemove;
 
 		public UnusedDeclaredThrownExceptionFilter(IProblem p) {

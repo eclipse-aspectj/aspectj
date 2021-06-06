@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2018 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -25,7 +25,7 @@ public class Ajc192Tests extends XMLBasedAjcTestCase {
 	public void testITDLambdas() throws Exception {
 		runTest("itd lambdas");
 	}
-	
+
 	public void test11Flags() throws Exception {
 		runTest("11flags");
 	}
@@ -52,11 +52,11 @@ public class Ajc192Tests extends XMLBasedAjcTestCase {
 		NestHost nestHost = (NestHost) getAttributeStartsWith(inner.getAttributes(),"NestHost");
 		assertEquals("Outer2",nestHost.getHostClassName());
 	}
-	
+
 	public void testCflowFinal() {
 		runTest("no final on cflow elements");
 	}
-	
+
 	// TODO Still to be fixed, the workaround to not mix style is good enough for now...
 	public void xtestAroundAdvice_AnnoStyle() {
 		runTest("around advice");
@@ -73,7 +73,7 @@ public class Ajc192Tests extends XMLBasedAjcTestCase {
 	public void testPTW_nonPrivilegedSamePackage() {
 		runTest("ptw - same package");
 	}
-	
+
 	public void testPTW_privileged() {
 		runTest("ptw - privileged");
 	}

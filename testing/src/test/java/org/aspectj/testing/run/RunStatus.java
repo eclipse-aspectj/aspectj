@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.run;
@@ -25,7 +25,7 @@ import org.aspectj.util.LangUtil;
 
 /**
  * Default implementation of {@link IRunStatus}.
- * 
+ *
  * @author isberg
  */
 public class RunStatus implements IRunStatus {
@@ -83,7 +83,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Set identifier associated with this run, if any
-	 * 
+	 *
 	 * @throws IllegalArgumentException if id is null
 	 * @throws IllegalStateException if id has already been set
 	 */
@@ -98,7 +98,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Set the current validator.
-	 * 
+	 *
 	 * @param delegate the RunValidatorI to use when calculating runStatus
 	 * @throws IllegalArgumentException if delegate is null
 	 */
@@ -113,7 +113,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Call before any start() or after isCompleted() would return true to reset this to its pre-start state
-	 * 
+	 *
 	 * @throws IllegalStateException if start() has been called and isCompleted() is not true.
 	 */
 	public void reset() {
@@ -123,7 +123,7 @@ public class RunStatus implements IRunStatus {
 	/**
 	 * Call before any start() or after isCompleted() would return true to reset this to its pre-start state. Does not affect
 	 * validator.
-	 * 
+	 *
 	 * @param holder the IMessageHolder to use after resetting.
 	 * @throws IllegalStateException if start() has been called and isCompleted() is not true.
 	 */
@@ -151,7 +151,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Call only once to signal this run has started.
-	 * 
+	 *
 	 * @throws IllegalStateException if start() has been called
 	 */
 	public void start() {
@@ -165,7 +165,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Call this or thrown only once after start() to signal this run has ended. If this represents a void process, use VOID.
-	 * 
+	 *
 	 * @param result the Object returned by this run.
 	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
 	 *         called.
@@ -181,7 +181,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Call to signal this run is ending by request. If this represents a void process, use VOID. If there is no message, use ABORT.
-	 * 
+	 *
 	 * @param request the Object request to abort, or ABORT if none is available.
 	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
 	 *         called.
@@ -197,7 +197,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Call this or completed only once after start() to signal this run has ended.
-	 * 
+	 *
 	 * @throws IllegalStateException if start() was not called first or if either completed(Object) or thrown(Throwable) have been
 	 *         called.
 	 */
@@ -261,7 +261,7 @@ public class RunStatus implements IRunStatus {
 	// ------------------- process messages
 	/**
 	 * Call this any time before isCompleted() would return true to signal any messages.
-	 * 
+	 *
 	 * @throws IllegalStateException if isCompleted().
 	 */
 	public boolean handleMessage(IMessage message) {
@@ -372,7 +372,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Add a record for a child run and install self as parent.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if child is null
 	 */
 	public void addChild(IRunStatus child) {
@@ -387,7 +387,7 @@ public class RunStatus implements IRunStatus {
 
 	/**
 	 * Register this as the run parent. (Any run that does addChild(IRunStatus) should register as parent.)
-	 * 
+	 *
 	 * @throws IllegalArgumentException if parent is null
 	 * @throws IllegalStateException if parent exists already
 	 */

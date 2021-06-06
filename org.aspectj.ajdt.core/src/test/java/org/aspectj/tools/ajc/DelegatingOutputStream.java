@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     Matthew Webster - initial implementation
  *******************************************************************************/
@@ -20,12 +20,12 @@ public class DelegatingOutputStream extends OutputStream {
 	private boolean verbose = true;
 	private OutputStream target;
 	private List delegates;
-	
+
 	public DelegatingOutputStream (OutputStream os) {
 		this.target = os;
 		this.delegates = new LinkedList();
 	}
-	
+
 	public void close() throws IOException {
 		target.close();
 
@@ -70,11 +70,11 @@ public class DelegatingOutputStream extends OutputStream {
 			delegate.write(b);
 		}
 	}
-	
+
 	public boolean add (OutputStream delegate) {
 		return delegates.add(delegate);
 	}
-	
+
 	public boolean remove (OutputStream delegate) {
 		return delegates.remove(delegate);
 	}
@@ -86,5 +86,5 @@ public class DelegatingOutputStream extends OutputStream {
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
 	}
-	
+
 }

@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Wes Isberg     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Wes Isberg     initial implementation
  * ******************************************************************/
 
 package org.aspectj.testing.util.options;
@@ -26,21 +26,21 @@ import org.aspectj.util.LangUtil;
 /**
  * Immutable schema for an input (command-line) option.
  * The schema contains the expected name/label,
- * the family (for comparison purposes), 
+ * the family (for comparison purposes),
  * and permitted prefixes.
  * This has operations to accept input values and compare options.
- * Options cannot be created directly; for that, use an 
+ * Options cannot be created directly; for that, use an
  * <code>Option.Factory</code>, since it enforces uniqueness
  * within the families and options created by the factory.
  * <p>
  * Option is used with related nested classes to implement relations:
  * <ul>
  * <li>Option.Factory produces Option</li>
- * <li>An Option has a set of Option.Prefixes, 
- *     which are variants of Option.Prefix 
+ * <li>An Option has a set of Option.Prefixes,
+ *     which are variants of Option.Prefix
  *     valid for the option (e.g., on/set, force-off, and force-on)</li>
  * <li>Option evaluates input, produces Option.Value</li>
- * <li>Related instances of Option share an Option.Family, 
+ * <li>Related instances of Option share an Option.Family,
  *     which enforce option exclusion, etc.</li>
  * </ul>
  * The classes are nested as "friends" in order to hide private
@@ -77,9 +77,9 @@ public class Option implements Comparable {
     /** if true, then match on input that has extra suffix beyond prefix and name */
     private final boolean acceptSuffixedInput;
 
-    /** 
-     * If true, no collision if there are multiple values 
-     * that share the same family but not the same literal value 
+    /**
+     * If true, no collision if there are multiple values
+     * that share the same family but not the same literal value
      */
     private final boolean permitMultipleValues;
 
@@ -167,7 +167,7 @@ public class Option implements Comparable {
     /**
      * If this value String represents a valid input for this option,
      * then create and return the associated Value.
-     * 
+     *
      * @param value the Value created, or null if invalid
      * @return Value if this value is permitted by this option
      */
@@ -202,17 +202,17 @@ public class Option implements Comparable {
         return name;
     }
 
-    /** 
+    /**
      * Called when ignoreSuffix is off but we got value with suffix.
      */
     protected Value rejectingSuffixedInput(String value) {
         return null;
     }
 
-    /** 
+    /**
      * Verify that the input is permitted at this position.
      * @param input the String input to check for validity
-     * @param position the int proposed position (0-based) 
+     * @param position the int proposed position (0-based)
      *   for the input (position 0 is for first argument)
      * @return null if this input is valid at this position,
      *         or a String error message otherwise.
@@ -267,7 +267,7 @@ public class Option implements Comparable {
      * Option families may permit or avoid option collisions.
      * <p>
      * For subclasses to permit some collisions and not others,
-     * they should set permitMultipleFamilyValues to false 
+     * they should set permitMultipleFamilyValues to false
      * and implement <code>doCollision(Option, Option)</code>.
      * <p>
      * This relies on Factory to ensure that familyName is
@@ -334,11 +334,11 @@ public class Option implements Comparable {
 
         /**
          * Subclasses implement this to resolve collisions on
-         * a case-by-case basis.  Input are guaranteed to be 
+         * a case-by-case basis.  Input are guaranteed to be
          * non-null, different, and to share this family.
          * This implementation returns
          * <code>!permitMultipleFamilyValues</code>.
-         * 
+         *
          * @param lhs the Option to compare
          * @param rhs the other Option to compare
          * @return true if there is a collision.
@@ -348,7 +348,7 @@ public class Option implements Comparable {
         }
     }
 
-    /** 
+    /**
      * A factory enforces a namespace on options.
      * All options produced from a given factory are unique,
      * as are all families.
@@ -372,7 +372,7 @@ public class Option implements Comparable {
         }
 
         /**
-         * Ensure that the family with this name has the 
+         * Ensure that the family with this name has the
          * specified permission.  If the family does not exist,
          * it is created.  If it does, the permission is checked.
          * If this returns false, there is no way to change the
@@ -492,13 +492,13 @@ public class Option implements Comparable {
 
     /**
      * The actual input value for an option.
-     * When an option takes arguments, all the arguments 
+     * When an option takes arguments, all the arguments
      * are absorbed/flattened into its value.
      */
     public static class Value {
         private static final String FLATTEN_DELIM = "_";
 
-        private static final int NOTARGUMENT = -1;    
+        private static final int NOTARGUMENT = -1;
 
         private static String flatten(String prefix, String suffix) {
             return prefix + FLATTEN_DELIM + suffix;
@@ -570,8 +570,8 @@ public class Option implements Comparable {
                 this.argIndex);
         }
 
-        /** 
-         * 
+        /**
+         *
          * @param other
          * @return true if other == this for purposes of collisions
          */
@@ -655,7 +655,7 @@ public class Option implements Comparable {
             this.prefixLength = prefix.length();
         }
 
-        /** 
+        /**
          * Render a value for input if this is set.
          * @param value the String to render as an input value
          * @return null if value is null or option is not set,

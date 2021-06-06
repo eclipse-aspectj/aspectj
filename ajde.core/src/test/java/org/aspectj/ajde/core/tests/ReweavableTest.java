@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *    Andy Clement     Initial version
  *    Helen Hawkins    Converted to new interface (bug 148190)
  * ******************************************************************/
@@ -55,9 +55,9 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	/**
 	 * Aim: Check we haven't damaged 'normal compilation' when not supplying -Xreweavable. Also determines baseline sizes for the
 	 * compiled class files for later comparison.
-	 * 
+	 *
 	 * Inputs to the compiler: NonReweavable1.lst -> CalculatePI.java -> Logger.aj -> -verbose -> -noExit
-	 * 
+	 *
 	 * Expected result = Compile successful, the types will not be reweavable and the weaver should not report it is running in
 	 * reweavable mode.
 	 */
@@ -90,9 +90,9 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	/**
 	 * Aim: Basic call to -Xreweavable. Weaver should report it is in reweavable mode and the classes produced should be much larger
 	 * than normal classes (those produced in the first test).
-	 * 
+	 *
 	 * Inputs to the compiler: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
-	 * 
+	 *
 	 * Expected result = Compile successful, the types will be reweavable and the weaver should report it is running in reweavable
 	 * mode. The files produced should be larger than those created during the last test.
 	 */
@@ -137,10 +137,10 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	 * Aim: Use the optional ':compress' modifier on -Xreweavable. This causes some of the meta-data for use in reweaving to be
 	 * compressed. It should succeed and produce class files smaller than straight -Xreweavable but larger than without specifying
 	 * -Xreweavable.
-	 * 
+	 *
 	 * Inputs to the compiler: ReweavableCompress1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable:compress -> -verbose ->
 	 * -noExit
-	 * 
+	 *
 	 * Expected result = Compile successful, the types will be reweavable and the weaver should report it is running in reweavable
 	 * mode. The files created should have a size between the non-reweavable versions and the reweavable (without compression)
 	 * versions.
@@ -200,11 +200,11 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	 * Aim: The tests above have determined that reweaving appears to be behaving in terms of the .class files it is creating. Now
 	 * lets actually attempt a reweave. For this, we build two files as reweavable and then build a single file whilst specifying an
 	 * inpath that contains the .class files from the first compile. This should succeed.
-	 * 
+	 *
 	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
-	 * 
+	 *
 	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
-	 * 
+	 *
 	 * Expected result = Both compiles will succeed.
 	 */
 	public void testReweavableSimpleCompile() {
@@ -247,11 +247,11 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	/**
 	 * Aim: Based on the test above, if we delete Logger.class between the first and second compiles the second compile should fail
 	 * because there is not enough information to reweave CalculatePI
-	 * 
+	 *
 	 * Inputs to the first compile: Reweavable1.lst -> CalculatePI.java -> Logger.aj -> -Xreweavable -> -verbose -> -noExit
-	 * 
+	 *
 	 * Input to the second compile: Reweavable2.lst -> SecondAspect.aj -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
-	 * 
+	 *
 	 * Expected result = Second compile will fail - reporting that Logger is missing (it 'touched' in the first compile CalculatePI)
 	 */
 	public void testForReweavableSimpleErrorCompile() {
@@ -296,11 +296,11 @@ public class ReweavableTest extends AjdeCoreTestCase {
 	/**
 	 * Aim: Based on the test above, if we delete Logger.class between the first and second compiles the second compile should fail
 	 * because there is not enough information to reweave CalculatePI
-	 * 
+	 *
 	 * Inputs to the first compile: TJP1.lst -> tjp/Demo.java -> tjp/GetInfo.java -> -Xreweavable -> -verbose -> -noExit
-	 * 
+	 *
 	 * Now, delete bin\tjp\GetInfo.class and do a compile with: TJP2.lst -> -Xreweavable -> -verbose -> -noExit -inpath bin\.
-	 * 
+	 *
 	 * Expected result = Second compile will fail - reporting that tjp.GetInfo is missing (it 'touched' in the first compile
 	 * tjp.Demo)
 	 */

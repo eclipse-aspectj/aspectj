@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2005 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Adrian Colyer     initial implementation
  *      Andy Clement     got it working
  * ******************************************************************/
 package org.aspectj.weaver.patterns;
@@ -32,7 +32,7 @@ import org.aspectj.weaver.World;
 
 /**
  * Represents a declare annotation statement, one of atField, atMethod, atConstructor or atType.
- * 
+ *
  * @author Andy Clement
  */
 public class DeclareAnnotation extends Declare {

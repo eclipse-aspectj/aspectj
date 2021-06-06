@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver;
@@ -23,7 +23,7 @@ import org.aspectj.weaver.patterns.Pointcut;
 
 /**
  * Representation of a shadow munger for a declare error or warning declaration.
- * 
+ *
  * @author Andy Clement
  */
 public class Checker extends ShadowMunger {
@@ -38,7 +38,7 @@ public class Checker extends ShadowMunger {
 
 	/**
 	 * Create a Checker for a declare error or declare warning.
-	 * 
+	 *
 	 * @param deow the declare error or declare warning for which to create the checker munger
 	 */
 	public Checker(DeclareErrorOrWarning deow) {
@@ -77,7 +77,7 @@ public class Checker extends ShadowMunger {
 	/**
 	 * Determine if the Checker matches at a shadow. If it does then we can immediately report the message. Currently, there can
 	 * never be a non-statically determinable match.
-	 * 
+	 *
 	 * @param shadow the shadow which to match against
 	 * @param world the world through which to access message handlers
 	 */

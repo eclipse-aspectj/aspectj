@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Mik Kersten     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Mik Kersten     initial implementation
  *     Andy Clement    Extensions for better IDE representation
  * ******************************************************************/
 
@@ -114,7 +114,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	/**
 	 * Returns the first match
-	 * 
+	 *
 	 * @param parent
 	 * @param kind not null
 	 * @return null if not found
@@ -149,7 +149,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	/**
 	 * Find the entry in the model that represents a particular type.
-	 * 
+	 *
 	 * @param packageName the package in which the type is declared or null for the default package
 	 * @param typeName the name of the type
 	 * @return the IProgramElement representing the type, or null if not found
@@ -217,7 +217,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 	/**
 	 * Look for any package nodes matching the specified package name. There may be multiple in the case where the types within a
 	 * package are split across source folders.
-	 * 
+	 *
 	 * @param packagename the packagename being searched for
 	 * @return a list of package nodes that match that name
 	 */
@@ -356,7 +356,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	/**
 	 * Never returns null
-	 * 
+	 *
 	 * @param sourceFilePath canonicalized path for consistency
 	 * @param lineNumber if 0 or 1 the corresponding file node will be returned
 	 * @return a new structure node for the file if it was not found in the model
@@ -383,7 +383,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	/**
 	 * Discover the node representing a particular source file.
-	 * 
+	 *
 	 * @param node where in the model to start looking (usually the root on the initial call)
 	 * @param sourcefilePath the source file being searched for
 	 * @return the node representing that source file or null if it cannot be found
@@ -442,7 +442,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 
 	/**
 	 * For a specified node, check if any of the children more accurately represent the specified line.
-	 * 
+	 *
 	 * @param node where to start looking
 	 * @param lineno the line number
 	 * @return any closer match below 'node' or null if nothing is a more accurate match

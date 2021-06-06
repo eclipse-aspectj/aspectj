@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM 
+ * Copyright (c) 2004 IBM
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -23,12 +23,12 @@ public class SuppressedWarnings extends XMLBasedAjcTestCase {
   protected java.net.URL getSpecFile() {
     return getClassResource("ajc150.xml");
   }
-  
+
   // Check basic suppression
   public void testSuppression1() {
   	runTest("suppressing non-matching advice warnings");
   }
-  
+
   // Checks source contexts aren't put out incorrectly
   // NOTE: Source contexts only come out if the primary source location in a message
   // matches the file currently being dealt with.  Because advice not matching
@@ -40,11 +40,11 @@ public class SuppressedWarnings extends XMLBasedAjcTestCase {
   public void testSuppression2() {
   	runTest("suppressing non-matching advice warnings when multiple source files involved");
   }
-  
+
   public void testSuppressionWithCflow_pr93345() {
     runTest("XLint warning for advice not applied with cflow(execution)");
   }
-  
+
   public void testSuppressionOfMessagesIssuedDuringMatching() {
 	  runTest("SuppressAjWarnings raised during matching");
   }

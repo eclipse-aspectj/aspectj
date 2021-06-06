@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.ajdt.internal.compiler.ast;
@@ -29,14 +29,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
  * Creates @AspectJ annotations for use by AtAspectJVisitor
  */
 public class AtAspectJAnnotationFactory {
-	
+
 	static final char[] org = "org".toCharArray();
 	static final char[] aspectj = "aspectj".toCharArray();
 	static final char[] lang = "lang".toCharArray();
 	static final char[] internal = "internal".toCharArray();
 	static final char[] annotation = "annotation".toCharArray();
 	static final char[] value = "value".toCharArray();
-	
+
 	static final char[] aspect = "Aspect".toCharArray();
 	static final char[] privileged = "ajcPrivileged".toCharArray();
 	static final char[] before = "Before".toCharArray();
@@ -44,7 +44,7 @@ public class AtAspectJAnnotationFactory {
 	static final char[] afterReturning = "AfterReturning".toCharArray();
 	static final char[] afterThrowing = "AfterThrowing".toCharArray();
 	static final char[] around = "Around".toCharArray();
-    static final char[] pointcut = "Pointcut".toCharArray(); 
+    static final char[] pointcut = "Pointcut".toCharArray();
 	static final char[] declareErrorOrWarning = "ajcDeclareEoW".toCharArray();
 	static final char[] declareParents = "ajcDeclareParents".toCharArray();
 	static final char[] declareSoft = "ajcDeclareSoft".toCharArray();
@@ -70,7 +70,7 @@ public class AtAspectJAnnotationFactory {
 		}
 		return atAspectAnnotation;
 	}
-	
+
 	public static Annotation createPrivilegedAnnotation(int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,privileged};
 		long[] positions = new long[] {pos,pos,pos,pos,pos,pos};
@@ -164,7 +164,7 @@ public class AtAspectJAnnotationFactory {
 		Expression argExpr = new StringLiteral(argNames.toCharArray(),pos,pos,1);
 		mvps[1] = new MemberValuePair("argNames".toCharArray(),pos,pos,argExpr);
 		ann.memberValuePairs = mvps;
-		return ann;	
+		return ann;
 	}
 
 	public static Annotation createDeclareErrorOrWarningAnnotation(String pointcutExpression, String message, boolean isError, int pos) {
@@ -188,7 +188,7 @@ public class AtAspectJAnnotationFactory {
 		ann.memberValuePairs = mvps;
 		return ann;
 	}
-	
+
 	public static Annotation createDeclareParentsAnnotation(String childPattern, String parentPatterns, boolean isExtends, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareParents};
 		long[] positions = new long[typeName.length];
@@ -210,7 +210,7 @@ public class AtAspectJAnnotationFactory {
 		ann.memberValuePairs = mvps;
 		return ann;
 	}
-	
+
 	public static Annotation createDeclareSoftAnnotation(String pointcutExpression, String exceptionType, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareSoft};
 		long[] positions = new long[typeName.length];
@@ -225,7 +225,7 @@ public class AtAspectJAnnotationFactory {
 		ann.memberValuePairs = mvps;
 		return ann;
 	}
-	
+
 	public static Annotation createDeclareAnnAnnotation(String patternString, String annString, String kind, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declareAnnotation};
 		long[] positions = new long[typeName.length];
@@ -242,7 +242,7 @@ public class AtAspectJAnnotationFactory {
 		ann.memberValuePairs = mvps;
 		return ann;
 	}
-	
+
 	public static Annotation createITDAnnotation(char[] targetTypeName, int modifiers, char[] name, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,itdAnnotation};
 		long[] positions = new long[typeName.length];
@@ -257,15 +257,15 @@ public class AtAspectJAnnotationFactory {
 		mvps[1] = new MemberValuePair("name".toCharArray(),pos,pos,nameExpr);
 		mvps[2] = new MemberValuePair("modifiers".toCharArray(),pos,pos,modsExpr);
 		ann.memberValuePairs = mvps;
-		return ann;		
+		return ann;
 	}
-	
+
 	public static Annotation createDeclarePrecedenceAnnotation(String pointcutExpression, int pos) {
 		char[][] typeName = new char[][] {org,aspectj,internal,lang,annotation,declarePrecedence};
 		return makeSingleStringMemberAnnotation(typeName, pos, pointcutExpression);
 
 	}
-	
+
 	private static Annotation makeSingleStringMemberAnnotation(char[][] name, int pos, String annValue) {
 		long[] positions = new long[name.length];
 		for (int i = 0; i < positions.length; i++) positions[i] = pos;
@@ -275,7 +275,7 @@ public class AtAspectJAnnotationFactory {
 		MemberValuePair[] mvps = new MemberValuePair[1];
 		mvps[0] = new MemberValuePair(value,pos,pos,valueExpr);
 		ann.memberValuePairs = mvps;
-		return ann;		
+		return ann;
 	}
 
 	public static void addAnnotation(AjMethodDeclaration decl, Annotation annotation, BlockScope scope) {

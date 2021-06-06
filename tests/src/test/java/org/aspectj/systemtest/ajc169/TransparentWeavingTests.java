@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2008 Contributors 
+ * Copyright (c) 2008 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -23,28 +23,28 @@ import junit.framework.Test;
 /**
  * What would a completely transparent weave be? Is there a minimal subset that makes sense? What is the roadmap to get there? What
  * needs testing
- * 
+ *
  * --- 'Transparent' here is meaning that the resultant bytecode is more representative of the original declarations, so that it
  * looks like the intertype declaration and associated constructs have been seamless added to the affected targets.
- * 
- * 
+ *
+ *
  * Fully transparent weaving, what would we like to have: - ITDs appear exactly as declared: 'private int A.i' will create 'private
  * int i' in A
- * 
+ *
  * - What is the benefit? - although this isn't really in keeping with the AspectJ definition of what an ITD represents, having the
  * end result look like the declaration does make it easier for users simply looking at the resultant class file or attempting
  * reflection to access what they just ITD'd in place
- * 
- * 
+ *
+ *
  * testing For transparent weaving of ITD fields - annotations on new fields - AJDT model - AjType support - what happens to it? -
  * advice on within() how does that get affected? - visibility - accessors created when required? - handling clashes with existing
  * fields - handling clashes with other aspects - generic declarations - interface declarations - initializers - static and
  * non-static - accessibility from advice, for read and write
- * 
+ *
  * Design<br>
  * The intention will be 'new code' uses the new style whilst old code continues to cause the old code to be built. Whether the code
  * wants to use the old or new naming should be apparent from the
- * 
+ *
  * @author Andy Clement
  */
 public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTestCase {

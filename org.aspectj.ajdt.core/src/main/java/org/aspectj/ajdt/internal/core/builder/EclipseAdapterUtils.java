@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.ajdt.internal.core.builder;
@@ -108,8 +108,8 @@ public class EclipseAdapterUtils {
 
 	/**
 	 * Extract source location file, start and end lines, and context. Column is not extracted correctly.
-	 * @param progressListener 
-	 * 
+	 * @param progressListener
+	 *
 	 * @return ISourceLocation with correct file and lines but not column.
 	 */
 	public static ISourceLocation makeSourceLocation(ICompilationUnit unit, IProblem problem, IProgressListener progressListener) {
@@ -127,9 +127,9 @@ public class EclipseAdapterUtils {
 
 	/**
 	 * Extract message text and source location, including context.
-	 * 
+	 *
 	 * @param world
-	 * @param progressListener 
+	 * @param progressListener
 	 */
 	public static IMessage makeMessage(ICompilationUnit unit, IProblem problem, World world, IProgressListener progressListener) {
 		ISourceLocation sourceLocation = makeSourceLocation(unit, problem, progressListener);

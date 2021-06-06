@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -26,7 +26,7 @@ public class AnnotationRuntimeTests extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-    
+
 //    No longer a limitation ASC 31Jan05
 //    public void test001_BindingWithAtTargetAllowed() {
 //        CompilationResult cR = binaryWeave("TestingAnnotations.jar","BindingWithAtTarget.aj",0,0);
@@ -34,11 +34,11 @@ public class AnnotationRuntimeTests extends XMLBasedAjcTestCase {
 //        RunResult rR = run("TestingAnnotations");
 //        System.err.println(rR.getStdErr());
 //    }
-    
+
     public void test002_MustHaveRuntimeRetention() {
     	runTest("must have runtime retention");
     }
-    
+
     public void test003_InheritableOrNot() {
     	runTest("inheritable or not");
     }
@@ -46,7 +46,7 @@ public class AnnotationRuntimeTests extends XMLBasedAjcTestCase {
     public void test004_CantUseinDecEoW() {
     	runTest("use of @this/target in deow");
     }
-  
+
     public void test005_ArgsSuite() {
     	runTest("@args tests");
     }

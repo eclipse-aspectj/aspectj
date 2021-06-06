@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2005 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *   Adrian Colyer			Initial implementation
  * ******************************************************************/
 package org.aspectj.weaver;
@@ -22,17 +22,17 @@ import org.aspectj.weaver.AjAttribute.EffectiveSignatureAttribute;
 /**
  * @author colyer Instances of this class are created by ResolvedMember.getSignatures() when collating all of the signatures for a
  *         member. We need to create entries in the set for the "gaps" in the hierarchy. For example:
- * 
+ *
  *         class A { void foo(); }
- * 
+ *
  *         class B extends A {}
- * 
+ *
  *         Join Point : call(* B.foo())
- * 
+ *
  *         has signatures:
- * 
+ *
  *         B.foo() AND A.foo() B.foo() will be created as a ResolvedMemberWithSubstituteDeclaringType
- * 
+ *
  *         Oh for a JDK 1.4 dynamic proxy.... we have to run on 1.3 :(
  */
 public class JoinPointSignature implements ResolvedMember {
@@ -90,7 +90,7 @@ public class JoinPointSignature implements ResolvedMember {
 	public void setAnnotationTypes(ResolvedType[] annotationtypes) {
 		realMember.setAnnotationTypes(annotationtypes);
 	}
-	
+
 	public void setAnnotations(AnnotationAJ[] annotations) {
 		realMember.setAnnotations(annotations);
 	}

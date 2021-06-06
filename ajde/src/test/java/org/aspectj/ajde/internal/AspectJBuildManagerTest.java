@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Xerox/PARC     initial implementation
- *     Helen Hawkins  Converted to new interface (bug 148190) 
+ *     Helen Hawkins  Converted to new interface (bug 148190)
  * ******************************************************************/
 
 
@@ -28,7 +28,7 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
 
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite();
-		result.addTestSuite(AspectJBuildManagerTest.class);	
+		result.addTestSuite(AspectJBuildManagerTest.class);
 		return result;
 	}
 
@@ -50,15 +50,15 @@ public class AspectJBuildManagerTest extends AjdeTestCase {
             file.delete();
         } else {
             assertTrue("expected class " + file, false);
-		}			
-        
+		}
+
         // TODO-path
 		file = openFile("all.ajsym");
         if (file.exists()) {
             file.delete();
         } else {
             assertTrue("expected .ajsym: " + file, false);
-        }    
+        }
 		} finally {
 			AsmManager.dumpModelPostBuild=false;
 		}

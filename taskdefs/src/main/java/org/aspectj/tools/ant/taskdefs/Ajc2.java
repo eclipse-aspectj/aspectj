@@ -1,13 +1,13 @@
 /* *******************************************************************
- * Copyright (c) 2000-2001 Xerox Corporation. 
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * Copyright (c) 2000-2001 Xerox Corporation.
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ant.taskdefs;
@@ -43,7 +43,7 @@ public class Ajc2 extends Javac {
      * Attribute members
      * ----------------------------------------------------------------------
      */
-   
+
     /**
      * How many concurrent threads to use for compilation,
      * defaults to 0 -- multi-threading disabled.
@@ -113,7 +113,7 @@ public class Ajc2 extends Javac {
      * Attribute access methods
      * ----------------------------------------------------------------------
      */
-    
+
     /**
      * Sets the number of threads.
      *
@@ -169,7 +169,7 @@ public class Ajc2 extends Javac {
      *
      * @return <code>true</code> if the <code>-nosymbols</code> flag is on.
      * @see    Ajc2#nosymbols
-     */    
+     */
     public boolean getNosymbols() {
         return nosymbols;
     }
@@ -189,7 +189,7 @@ public class Ajc2 extends Javac {
      *
      * @return <code>true</code> if the <code>-preprocess</code> flag is on.
      * @see    Ajc2#preprocess
-     */      
+     */
     public boolean getPreprocess() {
         return preprocess;
     }
@@ -301,7 +301,7 @@ public class Ajc2 extends Javac {
      *
      * @return new PatternSet.NameEntry to be added to the exclude list.
      * @see    org.apache.tools.ant.taskdefs.Javac#createExclude()
-     */    
+     */
     public PatternSet.NameEntry createExclude() {
         haveExcludes = true;
         return super.createExclude();
@@ -325,7 +325,7 @@ public class Ajc2 extends Javac {
      *
      * @param excludes Comma-separated list of excludes.
      * @see   org.apache.tools.ant.taskdefs.Javac#setExcludes(java.lang.String)
-     */    
+     */
     public void setExcludes(String excludes) {
         haveExcludes = true;
         super.setExcludes(excludes);
@@ -334,7 +334,7 @@ public class Ajc2 extends Javac {
     public String getAdapterClass() {
         return ADAPTER_CLASS;
     }
-    
+
 
     public final void execute() throws BuildException {
         prepare();
@@ -347,9 +347,9 @@ public class Ajc2 extends Javac {
      *
      * @throws org.apache.tools.ant.BuildException
      * @see    org.apache.tools.ant.taskdefs.Javac#execute()
-     */    
+     */
     public void executeAfterPrepare() throws BuildException {
-        
+
         // Save the old build.compiler property
         String oldBuildCompiler = project.getProperty("build.compiler");
 
@@ -375,7 +375,7 @@ public class Ajc2 extends Javac {
         } catch (BuildException be) {
             caught = be;
         } finally {
-            
+
             // Reset to the old compiler
             if (oldBuildCompiler != null) {
                 project.setProperty("build.compiler", oldBuildCompiler);
@@ -460,7 +460,7 @@ public class Ajc2 extends Javac {
     private void expandArgfile(File argfile, List includes, List arguments) {
 
         log("argfile:" + argfile, Project.MSG_VERBOSE);
-        
+
         // All paths are relative to the parent
         File parent = argfile.getParentFile();
 

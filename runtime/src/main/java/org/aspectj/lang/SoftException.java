@@ -1,15 +1,15 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC),
  *               2004 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 
@@ -18,7 +18,7 @@ package org.aspectj.lang;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-/** 
+/**
  * Wrapper for checked exceptions matched by a 'declare soft'.
  * You can soften checked exceptions at join points by using
  * the form <code>declare soft: TypePattern: Pointcut</code>.
@@ -43,23 +43,23 @@ public class SoftException extends RuntimeException {
         HAVE_JAVA_14 = java14;
     }
 
-    // shouldn't field be private final, constructor default or private? 
+    // shouldn't field be private final, constructor default or private?
     // but either would be a binary incompatible change.
 
-    Throwable inner; 
+    Throwable inner;
 
     public SoftException(Throwable inner) {
         super();
         this.inner = inner;
     }
-    
+
     public Throwable getWrappedThrowable() { return inner; }
     public Throwable getCause() { return inner; }
-    
+
     public void printStackTrace() {
-        printStackTrace(System.err);                
+        printStackTrace(System.err);
     }
-    
+
     public void printStackTrace(PrintStream stream) {
         super.printStackTrace(stream);
         final Throwable _inner = this.inner;
@@ -68,7 +68,7 @@ public class SoftException extends RuntimeException {
             _inner.printStackTrace(stream);
         }
     }
-    
+
     public void printStackTrace(PrintWriter stream) {
         super.printStackTrace(stream);
         final Throwable _inner = this.inner;

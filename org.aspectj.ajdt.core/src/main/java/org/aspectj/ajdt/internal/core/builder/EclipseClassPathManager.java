@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -31,26 +31,26 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
  * the various eclipse paths into their external form.
  */
 public class EclipseClassPathManager extends ClassPathManager {
-	
+
 	private INameEnvironment nameEnv;
-	
+
 	public EclipseClassPathManager(INameEnvironment env) {
 		this.nameEnv = env;
 	}
-	
+
 	// class path manager will be used by weaver across multiple compiles,
 	// whereas a name environment may be constructed per-compile.
 	public void setNameEnvironment(INameEnvironment env) {
 		this.nameEnv = env;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.bcel.ClassPathManager#addPath(java.lang.String, org.aspectj.bridge.IMessageHandler)
 	 */
 	public void addPath(String name, IMessageHandler handler) {
 		throw new UnsupportedOperationException("Can't add paths to an *Eclipse*ClassPathManager.");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.bcel.ClassPathManager#find(org.aspectj.weaver.UnresolvedType)
 	 */
@@ -73,11 +73,11 @@ public class EclipseClassPathManager extends ClassPathManager {
 				cf = new ClassFileReaderBackedClassFile(cfr);
 			} else {
 				throw new IllegalArgumentException(
-						"I'm only geared up to handle ClassFileReaders, and you gave me a " + 
+						"I'm only geared up to handle ClassFileReaders, and you gave me a " +
 						binType.getClass().getName());
 			}
 			return cf;
-		} 
+		}
 	}
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.bcel.ClassPathManager#getAllClassFiles()
@@ -94,16 +94,16 @@ public class EclipseClassPathManager extends ClassPathManager {
 		buf.append(nameEnv.toString());
 		return buf.toString();
 	}
-	
+
 	private class ClassFileReaderBackedClassFile extends ClassPathManager.ClassFile {
 
 		private ClassFileReader source;
 		private InputStream is;
-		
+
 		public ClassFileReaderBackedClassFile(ClassFileReader cfr) {
 			source = cfr;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.bcel.ClassPathManager.ClassFile#getInputStream()
 		 */
@@ -111,7 +111,7 @@ public class EclipseClassPathManager extends ClassPathManager {
 			is = new ByteArrayInputStream(source.getReferenceBytes());
 			return is;
 		}
-		
+
 		public void close() {
 			try {
 				if (is!=null) is.close();
@@ -119,13 +119,13 @@ public class EclipseClassPathManager extends ClassPathManager {
 				// Should never happen !
 				e.printStackTrace();
 			}
-		} 
+		}
 
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.bcel.ClassPathManager.ClassFile#getPath()
 		 */
 		public String getPath() {
 			return new String(source.getFileName());
-		}		
+		}
 	}
 }

@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (c) 2014 Contributors
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *    Andy Clement - initial API and implementation
@@ -22,7 +22,7 @@ public class Ajc185Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testUnresolvableMember_456357() throws Exception {
 		runTest("unresolvable member");
 	}
-	
+
 	// Waiting on JDT fix. Second test is a 'variant' that is also causing me issues but not JDT it seems. Let's
 	// see what happens when we pick up the real fixes.
 //	public void testBadAnnos_455608() throws Exception {
@@ -33,7 +33,7 @@ public class Ajc185Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		// Will throw ClassFormatException if there is a problem
 //		new ClassFileReader(data, null);
 //	}
-//	
+//
 //	public void testBadAnnos_455608_2() throws Exception {
 //		runTest("bad annos 2");
 //		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Code3");
@@ -42,7 +42,7 @@ public class Ajc185Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //		// Will throw ClassFormatException if there is a problem
 //		new ClassFileReader(data, null);
 //	}
-	
+
 	public void testITDInterface_451966() throws Exception {
 		runTest("itd interface");
 	}

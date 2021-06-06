@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Eclipse Public License v1.0
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -20,7 +20,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.SourceFile;
  * Incremental builder used by IDE support (AJDT)
  */
 public class AjIncrementalImageBuilder extends IncrementalImageBuilder {
-	
+
 	public AjIncrementalImageBuilder(AspectJBuilder builder) {
 		super(builder);
 	}

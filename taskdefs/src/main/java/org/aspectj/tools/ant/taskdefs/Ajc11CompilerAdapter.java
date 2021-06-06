@@ -2,9 +2,9 @@
  * Copyright (c) 2003 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  *     Wes Isberg     initial implementation
@@ -34,7 +34,7 @@ import java.io.File;
  * set the global property CLEAN ("build.compiler.clean") to delete
  * all .class files in the destination directory before compiling.
  * </p>
- * 
+ *
  * <p><u>Warnings</u>:</p>
  * <ol>
  * <li>cleaning will not work if no destination directory
@@ -48,15 +48,15 @@ import java.io.File;
  *     and thus cannot gain control to clean out the destination dir.
  *     </li>
  * </ol>
- * 
+ *
  * @author Wes Isberg
  * @since AspectJ 1.1, Ant 1.5.1
  */
 public class Ajc11CompilerAdapter implements CompilerAdapter {
 
-    /** 
-     * Define this system/project property to signal that the 
-     * destination directory should be cleaned 
+    /**
+     * Define this system/project property to signal that the
+     * destination directory should be cleaned
      * and javac reinvoked
      * to get the complete list of files every time.
      */
@@ -104,7 +104,7 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
     }
 
     /**
-     * If destDir exists and property CLEAN is set, 
+     * If destDir exists and property CLEAN is set,
      * this cleans out the dest dir of any .class files,
      * and returns true to signal a recursive call.
      * @return true if destDir was cleaned.

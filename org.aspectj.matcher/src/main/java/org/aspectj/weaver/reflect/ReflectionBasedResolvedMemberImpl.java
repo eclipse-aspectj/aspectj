@@ -1,11 +1,11 @@
 /* *******************************************************************
  * Copyright (c) 2005, 2017 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
- *  
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
@@ -20,7 +20,7 @@ import org.aspectj.weaver.UnresolvedType;
 
 /**
  * Subtype of ResolvedMemberImpl used in reflection world. Knows how to get annotations from a java.lang.reflect.Member
- * 
+ *
  * @author Adrian Colyer
  * @author Andy Clement
  */
@@ -28,7 +28,7 @@ public class ReflectionBasedResolvedMemberImpl extends ResolvedMemberImpl {
 
 	private AnnotationFinder annotationFinder = null;
 	private GenericSignatureInformationProvider gsigInfoProvider = new Java14GenericSignatureInformationProvider();
-	
+
 	/**
 	 * If true then only runtime visible annotations have been resolved via reflection. If class retention
 	 * annotations are also required (later) then the cache will have to be rebuilt using a more detailed

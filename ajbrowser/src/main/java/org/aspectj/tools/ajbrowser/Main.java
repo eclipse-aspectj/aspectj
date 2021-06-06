@@ -1,14 +1,14 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation, 
+ * Copyright (c) 1999-2001 Xerox Corporation,
  *               2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Xerox/PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.tools.ajbrowser;
@@ -23,7 +23,7 @@ public class Main {
 
 	/**
 	 * Run ajbrowser if args contains only .lst files and ajc otherwise.
-	 * 
+	 *
 	 * @param args the String[] of args to interpret
 	 */
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class Main {
 
 	/**
 	 * Invoke the compiler if there are arguments and some are not .lst files.
-	 * 
+	 *
 	 * @return false if compiler was not invoked and the browser main should be
 	 */
 	static boolean compilerMain(String[] args) {

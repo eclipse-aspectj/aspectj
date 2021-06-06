@@ -1,16 +1,16 @@
 <!-- wrapped at 70 characters, long elements wrapped -->
-<!-- =========================================================================== 
+<!-- ===========================================================================
 
  Copyright (c) 2005 Contributors.
- All rights reserved. 
- This program and the accompanying materials are made available 
- under the terms of the Eclipse Public License v1.0 
- which accompanies this distribution and is available at 
- http://eclipse.org/legal/epl-v10.html 
+ All rights reserved.
+ This program and the accompanying materials are made available
+ under the terms of the Eclipse Public License v 2.0
+ which accompanies this distribution and is available at
+ https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
 
- Contributors: 
-     Wes Isberg       initial implementation 
-	
+ Contributors:
+     Wes Isberg       initial implementation
+
 ============================================================================ -->
 
 <project name="aspectj-library" default="aspectjlib" basedir=".">
@@ -18,7 +18,7 @@
     <target name="aspectjlib" depends="compile" />
     <target name="info">
         <echo>
-  This script builds the AspectJ library.  
+  This script builds the AspectJ library.
 
   Relevant targets:
      aspectjlib      build library
@@ -29,7 +29,7 @@
 
   Variants:
      - To define a variable, use the Ant -D option - e.g., on Windows:
-  
+
          ant -f build.xml -DJAVA_HOME=c:\jdk1.3.1 -Dnorun=skip
 
       </echo>
@@ -111,7 +111,7 @@
     </target>
 
     <target name="init.taskdefs"
-            depends="init.variables, 
+            depends="init.variables,
          aspectjtools.jar.available,
          aspectjrt.jar.available"
             unless="taskdefs.init"

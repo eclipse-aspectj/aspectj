@@ -2,9 +2,9 @@
  * Copyright (c) 2005 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0
+ * under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution and is available at
- * http://eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
  * initial implementation              Alexandre Vasseur
@@ -36,7 +36,7 @@ public class Aspects {
 
     /**
      * @param <T> the expected class of the aspect
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @return the singleton aspect or the percflow / percflowbelow associated with the current thread
      * @throws NoAspectBoundException if no such aspect
      */
@@ -53,7 +53,7 @@ public class Aspects {
 
     /**
      * @param <T> the expected class of the aspect
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @param perObject the this/target object for which to look for an aspect instance
      * @return the associated perthis / pertarget aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
@@ -71,7 +71,7 @@ public class Aspects {
 
     /**
      * @param <T> the expected class of the aspect
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @param perTypeWithin the class for which to search for an aspect instance
      * @return the associated aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
@@ -88,7 +88,7 @@ public class Aspects {
     }
 
     /**
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @return true if singleton aspect or percflow / percflowbelow aspect is bound
      * @throws NoAspectBoundException if not bound
      */
@@ -101,7 +101,7 @@ public class Aspects {
     }
 
     /**
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @param perObject the this/target object for which to look for an aspect instance
      * @return true if the perthis / pertarget aspect is bound
      * @throws NoAspectBoundException if not bound
@@ -115,7 +115,7 @@ public class Aspects {
     }
 
     /**
-     * @param aspectClass the aspect class 
+     * @param aspectClass the aspect class
      * @param perTypeWithin class
      * @return true if the pertypewithin aspect is bound
      * @throws NoAspectBoundException if not bound
@@ -149,7 +149,7 @@ public class Aspects {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
-            || !Modifier.isStatic(method.getModifiers())) {            
+            || !Modifier.isStatic(method.getModifiers())) {
             throw new NoSuchMethodException(aspectClass.getName() + ".aspectOf(..) is not accessible public static");
         }
         return method;

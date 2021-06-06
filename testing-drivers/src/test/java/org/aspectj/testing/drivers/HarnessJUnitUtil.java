@@ -1,12 +1,12 @@
 /* *******************************************************************
  * Copyright (c) 2003 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
  *     Wes Isberg     initial implementation
  * ******************************************************************/
 
@@ -82,10 +82,10 @@ public class HarnessJUnitUtil {
         PrintStream out = new PrintStream(outStream);
         printer.printRunStatus(out, status);
         out.flush();
-          
+
         return outStream.toString();
     }
-    
+
     /**
      * Dump results for Test from status into TestResult.
      * FAIL is a failure,
@@ -100,7 +100,7 @@ public class HarnessJUnitUtil {
      * @return 0 (ignored)
      */
     public static int reportResult(
-            TestResult result, 
+            TestResult result,
             IRunStatus status,
             Test test,
             int numIncomplete) {
@@ -126,7 +126,7 @@ public class HarnessJUnitUtil {
       }
       return 0; // XXX not doing incomplete
     }
-    
+
     /**
      * Report results as error, failure, or success (ignored),
      * differently if result is null
@@ -155,9 +155,9 @@ public class HarnessJUnitUtil {
         }
         return 0;
     }
-    
+
 //    public static int reportResultComplex(
-//        TestResult result, 
+//        TestResult result,
 //        IRunStatus status,
 //        Test test,
 //        int numIncomplete) {
@@ -171,7 +171,7 @@ public class HarnessJUnitUtil {
 //                }
 //            }
 //        }
-//            
+//
 //        Throwable thrown = status.getThrown();
 //        if (null != thrown) { // always report this? XXX what if expected?
 //            result.addError(test, thrown);
@@ -224,14 +224,14 @@ public class HarnessJUnitUtil {
             return "nullTest";
         }
     }
-    
+
     /**
      * Fix up test names for JUnit.
      * (i.e., workaround eclipse JUnit bugs)
      * @param name the String identifier for the test
      * @return the String permitted by (Eclipse) JUnit support
      */
-    public static String cleanTestName(String name) { 
+    public static String cleanTestName(String name) {
         name = name.replace(',', ' ');
         name = name.replace('[', ' ');
         name = name.replace(']', ' ');
@@ -248,7 +248,7 @@ public class HarnessJUnitUtil {
         }
         return result;
     }
-    
+
     /**
      * Get the test suite specifications from the suite file,
      * apply the options to all,
@@ -260,7 +260,7 @@ public class HarnessJUnitUtil {
      *   (non-null but empty if some error)
      */
     public static AjcTest.Suite.Spec getSuiteSpec(
-            String suitePath, 
+            String suitePath,
             String[] options,
             IMessageHolder holder) {
         if (null == suitePath) {
@@ -282,7 +282,7 @@ public class HarnessJUnitUtil {
                 options = new String[0];
             }
             runtime.setOptions(options);
-            boolean skip = !tempSpec.adoptParentValues(runtime, holder);                
+            boolean skip = !tempSpec.adoptParentValues(runtime, holder);
             if (skip) {
                 tempSpec = EmptySuite.ME;
             }
@@ -292,7 +292,7 @@ public class HarnessJUnitUtil {
             return EmptySuite.ME;
         }
     }
-    
+
     private static class EmptySuite extends AjcTest.Suite.Spec {
         static final EmptySuite ME = new EmptySuite();
         final ArrayList children;

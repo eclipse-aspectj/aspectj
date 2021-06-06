@@ -1,13 +1,13 @@
 ///* *******************************************************************
 // * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
-// * All rights reserved. 
-// * This program and the accompanying materials are made available 
-// * under the terms of the Eclipse Public License v1.0 
-// * which accompanies this distribution and is available at 
-// * http://www.eclipse.org/legal/epl-v10.html 
-// *  
-// * Contributors: 
-// *     PARC     initial implementation 
+// * All rights reserved.
+// * This program and the accompanying materials are made available
+// * under the terms of the Eclipse Public License v 2.0
+// * which accompanies this distribution and is available at
+// * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+// *
+// * Contributors:
+// *     PARC     initial implementation
 // * ******************************************************************/
 //
 //
@@ -53,7 +53,7 @@
 //
 //
 //public class AjCompiler extends Compiler {
-//	
+//
 //	private List /*InterimResult*/ resultsPendingWeave = new ArrayList();
 //	private BcelWorld bcelWorld;
 //	private BcelWeaver bcelWeaver;
@@ -65,15 +65,15 @@
 //	private WeaverMessageHandler wmHandler;
 //	private boolean isBatchCompile = false;
 //	private Collection /*InterimResult*/ resultSetForFullWeave = Collections.EMPTY_LIST;
-//	
+//
 //	public interface IIntermediateResultsRequestor {
 //		void acceptResult(InterimResult intRes);
 //	}
-//	
+//
 //	public interface IOutputClassFileNameProvider {
 //		String getOutputClassFileName(char[] eclipseClassFileName, CompilationResult result);
 //	}
-//	
+//
 //	public AjCompiler(
 //		INameEnvironment environment,
 //		IErrorHandlingPolicy policy,
@@ -98,8 +98,8 @@
 //			problemFactory,
 //			parseLiteralExpressionsAsConstants);
 //	}
-//	
-//		
+//
+//
 //	public void setWeaver(BcelWeaver weaver) {
 //		this.bcelWeaver = weaver;
 //	}
@@ -114,29 +114,29 @@
 //	public void prepareForBatchCompilation() {
 //		isBatchCompile = true;
 //	}
-//	
+//
 //	public void setIntermediateResultsRequestor(IIntermediateResultsRequestor intReq) {
 //		this.intermediateResultRequestor = intReq;
 //	}
-//	
+//
 //	public void setNoWeave(boolean noWeave) {
 //		skipTheWeavePhase = noWeave;
 //	}
-//	
+//
 //	public void setFullWeaveResults(Collection compilationResults) {
 //		resultSetForFullWeave = compilationResults;
 //	}
-//	
+//
 //	public void setOutputFileNameProvider(IOutputClassFileNameProvider p) {
 //		this.nameProvider = p;
 //	}
-//	
+//
 //	public void addBinarySourceFiles(Map binarySourceEntries) {
 //		// Map is fileName |-> List<UnwovenClassFile>
 //		for (Iterator binIter = binarySourceEntries.keySet().iterator(); binIter.hasNext();) {
 //			String sourceFileName = (String) binIter.next();
 //			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
-//			
+//
 //			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(),0,0,20);
 //			result.noSourceAvailable();
 //			InterimResult binarySource = new InterimResult(result,nameProvider);
@@ -147,33 +147,33 @@
 //				binarySource.unwovenClassFiles[index] = element;
 //				AjClassFile ajcf = new AjClassFile(element.getClassName().replace('.', '/').toCharArray(),
 //												   element.getBytes());
-//				result.record(ajcf.fileName(),ajcf); 
+//				result.record(ajcf.fileName(),ajcf);
 //				index++;
 //			}
 //			binarySources.add(binarySource);
 //		}
 //	}
-//	
-//	
+//
+//
 //	/**
-//	 * In addition to processing each compilation unit in the normal ways, 
+//	 * In addition to processing each compilation unit in the normal ways,
 //	 * we also need to do weaving for inter-type declarations.  This
 //	 * must be done before we use the signatures of these types to do any
 //	 * name binding.
 //	 */
 //	public void process(CompilationUnitDeclaration unit, int i) {
-//		EclipseFactory world = 
+//		EclipseFactory world =
 //			EclipseFactory.fromLookupEnvironment(lookupEnvironment);
 //		world.showMessage(IMessage.INFO, "compiling " + new String(unit.getFileName()), null, null);
 //		super.process(unit, i);
-//				
+//
 //		world.finishedCompilationUnit(unit);
 //	}
-//	
-//	
+//
+//
 //	/* (non-Javadoc)
 //	 * @see org.eclipse.jdt.internal.compiler.Compiler#compile(org.eclipse.jdt.internal.compiler.env.ICompilationUnit[])
-//	 * We override this method to defer handing of results to the caller until the weave phase has 
+//	 * We override this method to defer handing of results to the caller until the weave phase has
 //	 * completed too. That way the class files are in final form and all error messages relating to the
 //	 * compilation unit have been reported (which is the contract the JDT expects from this method).
 //	 */
@@ -198,8 +198,8 @@
 //			cleanup();
 //		}
 //	}
-//	
-//	
+//
+//
 //	/* (non-Javadoc)
 //	 * @see org.eclipse.jdt.internal.compiler.Compiler#registerCompilationResult(org.eclipse.jdt.internal.compiler.CompilationResult)
 //	 */
@@ -211,7 +211,7 @@
 //			intermediateResultRequestor.acceptResult(intRes);
 //		}
 //	}
-//	
+//
 //	/* (non-Javadoc)
 //	 * @see org.eclipse.jdt.internal.compiler.Compiler#reset()
 //	 * Super does this too early for us...
@@ -219,7 +219,7 @@
 //	public void reset() {
 //		// no-op, super calls this too early for us...
 //	}
-//	
+//
 //	/* (non-Javadoc)
 //	 * @see org.eclipse.jdt.internal.compiler.Compiler#resolve(org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration, org.eclipse.jdt.internal.compiler.env.ICompilationUnit, boolean, boolean, boolean)
 //	 */
@@ -230,8 +230,8 @@
 //		return super.resolve(unit, sourceUnit, verifyMethods, analyzeCode,
 //				generateCode);
 //	}
-//	
-//	
+//
+//
 //	// AspectJ helper methods, called from compile...
 //	private void weaveResults() throws IOException {
 //		// ensure weaver state is set up correctly
@@ -239,13 +239,13 @@
 //			InterimResult iresult = (InterimResult) iter.next();
 //			for (int i = 0; i < iresult.unwovenClassFiles.length; i++) {
 //				bcelWeaver.addClassFile(iresult.unwovenClassFiles[i]);
-//			}			
+//			}
 //		}
 //		Pause.pause("After adding class files to weaver");
 //		bcelWeaver.prepareForWeave();
 //		Pause.pause("After preparing for weave");
 //		if (isBatchCompile) {
-//			resultsPendingWeave.addAll(binarySources);  
+//			resultsPendingWeave.addAll(binarySources);
 //			// passed into the compiler, the set of classes in injars and inpath...
 //		} else if (bcelWeaver.needToReweaveWorld()) {
 //			addAllKnownClassesToWeaveList();
@@ -253,14 +253,14 @@
 //		Pause.pause("After adding binary sources to weaver");
 //		bcelWeaver.weave(new WeaverAdaptor(this));
 //	}
-//	
+//
 //	private void notifyRequestor() {
 //		for (Iterator iter = resultsPendingWeave.iterator(); iter.hasNext();) {
 //			InterimResult iresult = (InterimResult) iter.next();
 //			requestor.acceptResult(iresult.result.tagAsAccepted());
 //		}
 //	}
-//	
+//
 //	private void cleanup() {
 //		resultsPendingWeave = null;
 //		isBatchCompile = false;
@@ -269,7 +269,7 @@
 //		super.reset();
 //		Pause.pause("After notify and cleanup");
 //	}
-//	
+//
 //	private void addAllKnownClassesToWeaveList() {
 //		// results pending weave already has some results from this (incremental) compile
 //		// add in results from any other source
@@ -278,14 +278,14 @@
 //			if (!resultsPendingWeave.contains(ir)) {  // equality based on source file name...
 //				ir.result.hasBeenAccepted = false;  // it may have been accepted before, start again
 //				resultsPendingWeave.add(ir);
-//			}			
+//			}
 //		}
 //	}
-//	
+//
 //	// Helper class that feeds input to the weaver, and accepts results
 //	// =======================================================================================
 //	private static class WeaverAdaptor implements IClassFileProvider, IWeaveRequestor, Iterator {
-//		
+//
 //		private AjCompiler compiler;
 //		private Iterator resultIterator;
 //		private int classFileIndex = 0;
@@ -293,10 +293,10 @@
 //		private InterimResult lastReturnedResult;
 ////		private CompilationResult lastAcceptedResult;
 //		private boolean finalPhase = false;
-//		
-//		
+//
+//
 //		public WeaverAdaptor(AjCompiler forCompiler) { this.compiler = forCompiler; }
-//		
+//
 //		/* (non-Javadoc)
 //		 * @see org.aspectj.weaver.IClassFileProvider#getClassFileIterator()
 //		 */
@@ -330,7 +330,7 @@
 ////			}
 ////			lastAcceptedResult = lastReturnedResult.result;
 //		}
-//		
+//
 //		private void finishedWith(InterimResult result) {
 //			compiler.requestor.acceptResult(result.result.tagAsAccepted());
 //			for (int i = 0; i < compiler.unitsToProcess.length; i++) {
@@ -341,7 +341,7 @@
 //				}
 //			}
 //		}
-//		
+//
 //		/* (non-Javadoc)
 //		 * @see java.util.Iterator#hasNext()
 //		 */
@@ -364,7 +364,7 @@
 //				while (nowProcessing.unwovenClassFiles.length == 0 ) {
 //					if (!resultIterator.hasNext()) return false;
 //					nowProcessing = (InterimResult) resultIterator.next();
-//				} 
+//				}
 //			}
 //			return true;
 //		}
@@ -389,7 +389,7 @@
 //		public void remove() {
 //			throw new UnsupportedOperationException();
 //		}
-//		
+//
 //		public void processingReweavableState() {}
 //		public void addingTypeMungers() {}
 //		public void weavingAspects() {}
@@ -399,7 +399,7 @@
 //				finishedWith(lastReturnedResult);
 //			}
 //		}
-//		
+//
 //		private void removeFromHashtable(Hashtable table, char[] key) {
 //			// jdt uses char[] as a key in the hashtable, which is not very useful as equality is based on being
 //			// the same array, not having the same content.
@@ -417,7 +417,7 @@
 //			}
 //		}
 //}
-//	
+//
 //	// Holder for intermediate form (class files)
 //	// =======================================================================================
 //	public static class InterimResult {
@@ -433,11 +433,11 @@
 //	  	nameGen = np;
 //		unwovenClassFiles = ClassFileBasedByteCodeProvider.unwovenClassFilesFor(result,nameGen);
 //	  }
-//	  
+//
 //	  public String fileName() {
 //	  	return new String(result.fileName);
 //	  }
-//	  
+//
 //      public boolean equals(Object other) {
 //			if( other == null || !(other instanceof InterimResult)) {
 //				return false;
@@ -449,22 +449,22 @@
 //			return fileName().hashCode();
 //	  }
 //	};
-//	
-//	
-//	
+//
+//
+//
 //	// XXX lightweight subclass of ClassFile that only genuinely supports fileName and getBytes
 //	// operations.
 //	// =========================================================================================
 //	private static class AjClassFile extends ClassFile {
-//		
+//
 //		char[] filename;
 //		byte[] bytes;
-//	
+//
 //		public AjClassFile(char[] fileName, byte[] byteCodes) {
 //			this.filename = fileName;
 //			bytes = byteCodes;
 //		}
-//		
+//
 //		public char[] fileName() {
 //			return filename;
 //		}
@@ -473,24 +473,24 @@
 //			return bytes;
 //		}
 //	};
-//	
-//	
+//
+//
 //	// Adaptor for ClassFiles that lets them act as the bytecode repository
-//	// for UnwovenClassFiles (asking a ClassFile for its bytes causes a 
+//	// for UnwovenClassFiles (asking a ClassFile for its bytes causes a
 //	// copy to be made).
-//	private static class ClassFileBasedByteCodeProvider 
+//	private static class ClassFileBasedByteCodeProvider
 //	               implements UnwovenClassFileWithThirdPartyManagedBytecode.IByteCodeProvider {
 //		private ClassFile cf;
-//		
+//
 //		public ClassFileBasedByteCodeProvider(ClassFile cf) {
 //			this.cf = cf;
 //		}
-//		
+//
 //		public byte[] getBytes() {
 //			return cf.getBytes();
 //		}
-//		
-//		public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result, 
+//
+//		public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result,
 //											AjCompiler.IOutputClassFileNameProvider nameProvider) {
 //			ClassFile[] cfs = result.getClassFiles();
 //			UnwovenClassFile[] ret = new UnwovenClassFile[cfs.length];
@@ -501,20 +501,20 @@
 //			}
 //			return ret;
 //		}
-//		
+//
 //	}
-//	
+//
 //	// Inner class for handling messages produced by the weaver
 //	// ==========================================================
-//	
+//
 //	private class WeaverMessageHandler implements IMessageHandler {
 //		IMessageHandler sink;
 //		CompilationResult currentlyWeaving;
-//		
+//
 //		public WeaverMessageHandler(IMessageHandler handler) {
 //			this.sink = handler;
 //		}
-//		
+//
 //		public void setCurrentResult(CompilationResult result) {
 //			currentlyWeaving = result;
 //		}
@@ -559,7 +559,7 @@
 //									problemSource
 //									);
 //			IProblem[] seeAlso = buildSeeAlsoProblems(message.getExtraSourceLocations(),
-//													  problemSource,	
+//													  problemSource,
 //													  usedBinarySourceFileName);
 //			problem.setSeeAlsoProblems(seeAlso);
 //			if (message.getDetails() != null) {
@@ -568,7 +568,7 @@
 //			problemReporter.record(problem, problemSource, referenceContext);
 //			return true;
 ////			if (weavingPhase) {
-////				return sink.handleMessage(message); 
+////				return sink.handleMessage(message);
 ////			} else {
 ////				return true;  // message will be reported back in compilation result later...
 ////			}
@@ -577,7 +577,7 @@
 //		public boolean isIgnoring(Kind kind) {
 //			return sink.isIgnoring(kind);
 //		}
-//		
+//
 //		private int getStartPos(ISourceLocation sLoc,CompilationResult result) {
 //			int pos = 0;
 //			if (sLoc == null) return 0;
@@ -587,7 +587,7 @@
 //			} else {
 //				if (line <= 1) return 0;
 //				if (result != null) {
-//					if ((result.lineSeparatorPositions != null) && 
+//					if ((result.lineSeparatorPositions != null) &&
 //						(result.lineSeparatorPositions.length >= (line-1))) {
 //						pos = result.lineSeparatorPositions[line-2] + 1;
 //					}
@@ -605,7 +605,7 @@
 //				pos = ((EclipseSourceLocation)sLoc).getEndPos();
 //			} else {
 //				if (result != null) {
-//					if ((result.lineSeparatorPositions != null) && 
+//					if ((result.lineSeparatorPositions != null) &&
 //						(result.lineSeparatorPositions.length >= line)) {
 //						pos = result.lineSeparatorPositions[line -1] -1;
 //					}
@@ -613,7 +613,7 @@
 //			}
 //			return pos;
 //		}
-//	
+//
 //		private ReferenceContext findReferenceContextFor(CompilationResult result) {
 //			ReferenceContext context = null;
 //			if (unitsToProcess == null) return null;
@@ -622,11 +622,11 @@
 //				    (unitsToProcess[i].compilationResult == result)) {
 //					context = unitsToProcess[i];
 //					break;
-//				}				
+//				}
 //			}
 //			return context;
 //		}
-//		
+//
 //		private IProblem[] buildSeeAlsoProblems(List sourceLocations,
 //												CompilationResult problemSource,
 //												boolean usedBinarySourceFileName) {
@@ -652,5 +652,5 @@
 //			return ret;
 //		}
 //	}
-//	
+//
 //}

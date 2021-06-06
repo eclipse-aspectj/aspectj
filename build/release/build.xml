@@ -2,9 +2,9 @@
 <!-- Copyright (c) 2003-2005 Contributors.                                     -->
 <!-- All rights reserved.                                                      -->
 <!-- This program and the accompanying materials are made available            -->
-<!-- under the terms of the Eclipse Public License v1.0                        -->
+<!-- under the terms of the Eclipse Public License v 2.0                       -->
 <!-- which accompanies this distribution and is available at                   -->
-<!-- http://www.eclipse.org/legal/epl-v10.html                                 -->
+<!-- https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt                 -->
 <!--                                                                           -->
 <!-- Contributors:                                                             -->
 <!--     Wes Isberg     initial implementation                                 -->
@@ -13,23 +13,23 @@
 <project name="build" default="all" basedir="..">
 
     <property name="aspectj.modules.dir" location="${basedir}/.."/>
-    
+
     <import file="${aspectj.modules.dir}/build/build-properties.xml"/>
     <import file="${aspectj.modules.dir}/build/release/release-tests.xml"/>
 
 	<target name="info">
 	    <echo message="see build.readme.txt and readme.txt"/>
 	</target>
-	
+
     <target name="init" depends="init-release-properties">
 	</target>
-    
+
 	<target name="init-release-properties" depends="init-properties,init-directories">
 		<property name="do.cvs" value="false"/>
 	    <property name="run.${min.vm}" value="true"/>
 	    <property name="run.14" value="false"/>
 	    <property name="run.${max.vm}" value="true"/>
-		
+
 		<property name="aspectj.build.props" value=""/>
 		<property name="ant.verbose" value=""/>
 		<property name="failonerror" value="false"/>
@@ -42,7 +42,7 @@
 
 		<property name="harness.jar"
 			location="${aj.jar.dir}/testing-drivers-test-all.jar"/>
-		
+
 		<property name="java.home.file"
 			location="${aj.build.dir}/javahome.props.tmp"/>
 
@@ -51,13 +51,13 @@
 
 		<property name="java14.command"
 			location="${java14.home}/bin/java"/>
-		
+
 		<property name="java15.command"
 			location="${java15.home}/bin/java"/>
 
         <mkdir dir="${aj.logs.dir}"/>
 	</target>
-	
+
 	<target name="all" depends="init">
 	    <build-aspectj vm="${min.vm}" target="clean"/>
 	    <save-build-id id="min-vm-${min.vm}"/>
@@ -66,11 +66,11 @@
 	    <!-- ANDY removed... build-aspectj vm="${min.vm}" target="test-each-module"/-->
 		<build-aspectj vm="${max.vm}" target="junitreport"/>
 		<build-aspectj vm="${max.vm}" target="save-result"/>
-	    
+
 	    <build-aspectj vm="${max.vm}" target="clean-keep-results"/>
 	    <!-- can't use safety of build-aspectj since deleting output file -->
 		<antcall target="clean-default-results"/>
-		
+
 	    <save-build-id id="max-vm-${max.vm}"/>
 		<build-aspectj vm="${max.vm}" target="echo-properties"/>
 	    <build-aspectj vm="${max.vm}" target="all"/>
@@ -78,15 +78,15 @@
 		<build-aspectj vm="${max.vm}" target="junitreport"/>
 		<antcall target="install"/>
 		<antcall target="product-tests"/>
-		<!-- TODO re-enable antcall target="harness-tests"/ --> 
+		<!-- TODO re-enable antcall target="harness-tests"/ -->
 		<!-- Temporary removal to see if build will work... -->
 		<!--build-aspectj vm="13" target="compile-runtime-11"/-->
-			
+
 	    <build-aspectj vm="${max.vm}" target="save-result"/>
-	    
+
 		<antcall target="fail-if-allresults-allfailures"/>
 	</target>
-          
+
 	<target name="install" depends="init-release-properties"
 		description="install AspectJ distribution using Java min.vm=${min.vm}">
 	    <antcall target="init-postBuild-properties"/>
@@ -95,17 +95,17 @@
 		<clean-dir dir="${aj.install.dir}"/>
 		<setup-vm vm="${min.vm}"/>
 		<property file="${java.home.file}"/>
-		<fail unless="build.java.command" 
+		<fail unless="build.java.command"
 		     message="failed to read ${build.java.command} from ${java.home.file}"/>
-	    <java 
-		    fork="true" 
+	    <java
+		    fork="true"
 			jvm="${build.java.command}"
-			jar="${aspectj.jar}" 
+			jar="${aspectj.jar}"
 		    failonerror="true">
 			<arg line="-to ${aj.install.dir}"/>
 		</java>
 	</target>
-    
+
     <macrodef name="build-aspectj">
 	    <attribute name="target"/>
 	    <attribute name="vm"/>
@@ -114,20 +114,20 @@
 	        <condition property="do.ant.props" value=" ">
 	            <not><isset property="do.ant.props"/></not>
 	        </condition>
-	        	
+
 			<antcall target="do-run-ant">
 				<param name="verbose" value="true"/>
 				<param name="ant.dir" location="${aspectj.modules.build.dir}"/>
 				<param name="run.ant.file" value="build.xml"/>
 				<param name="ant.target" value="@{target}"/>
-				<param name="ant.output" 
+				<param name="ant.output"
 					location="${aj.logs.dir}/build-@{target}"/>
-				<param name="ant.properties" 
+				<param name="ant.properties"
 				    value="${do.ant.props} ${aspectj.build.props}"/>
 			</antcall>
 		</sequential>
     </macrodef>
-    
+
 	<target name="do-run-ant" depends="init-release-properties"
 	 description="the ant we use to build">
 		<!-- we could use normal ant, but we enforce using
@@ -139,17 +139,17 @@
 		<property name="ant.properties" value=""/>
 
 		<property file="${java.home.file}"/>
-		<fail unless="build.java.home" 
+		<fail unless="build.java.home"
 		     message="failed to read ${build.java.home} from ${java.home.file}"/>
-		<fail unless="build.java.version" 
+		<fail unless="build.java.version"
 		     message="failed to read ${build.java.version} from ${java.home.file}"/>
-		<available property="aspectjrt.path" 
+		<available property="aspectjrt.path"
 			value="${aj.install.dir}/lib/aspectjrt.jar"
 			file="${aj.install.dir}/lib/aspectjrt.jar"/>
 		<available property="aspectjrt.path"
-			value="${lib.test.aspectjrt.jar}" 
+			value="${lib.test.aspectjrt.jar}"
 			file="${lib.test.aspectjrt.jar}"/>
-		<property name="ant.output.file" 
+		<property name="ant.output.file"
 			location="${ant.output}-${build.java.version}.txt"/>
 		<echo>
   do-run-ant dir ${ant.dir}
@@ -160,7 +160,7 @@
   aspectjrt.path ${aspectjrt.path}
 </echo>
 
-		<java 
+		<java
 			fork="true"
 			resultproperty="do-run-ant.result"
 			failonerror="${failonerror}"
@@ -176,13 +176,13 @@
 					<include name="*.jar"/>
 				</fileset>
 				<pathelement location="${junit.jar}"/>
-				<pathelement location="${build.java.home}/lib/tools.jar"/> 
+				<pathelement location="${build.java.home}/lib/tools.jar"/>
 			</classpath>
 
 			<!-- urk - all properties for any client -->
 			<!-- for any build -->
 			<sysproperty key="JAVA_HOME" path="${build.java.home}"/>
-			<sysproperty key="ANT_HOME" 
+			<sysproperty key="ANT_HOME"
 				path="${aspectj.ant.home}"/>
 
 			<!-- for ajde -->
@@ -196,16 +196,16 @@
 			<arg line="-f ${run.ant.file} ${ant.target} ${ant.verbose} ${ant.properties}"/>
 		</java>
 		<condition property="do-run-ant.failed" value="true">
-			<not><equals arg1="0" arg2="${do-run-ant.result}"/></not>			
+			<not><equals arg1="0" arg2="${do-run-ant.result}"/></not>
 		</condition>
 		<echo message="dra: do-run-ant.failed=${do-run-ant.failed} do-run-ant.result=${do-run-ant.result}"/>
 		<report-if-failed property="do-run-ant.failed"
 			text="Build failed: ${ant.output.file}"/>
 	</target>
-    
+
     <macrodef name="do-vm-targets">
         <attribute name="target"/>
-        <sequential>            
+        <sequential>
 			<do-vm-target target="@{target}" vm="min" />
 			<do-vm-target target="@{target}" vm="14" />
 	 		<do-vm-target target="@{target}" vm="max" />
@@ -220,7 +220,7 @@
             </antcall>
 	    </sequential>
 	</macrodef>
-    
+
 	<target name="do-13-target"	if="run.13">
 		<setup-vm vm="13"/>
 		<antcall target="${do.target}"/>
@@ -235,7 +235,7 @@
 		<setup-vm vm="15"/>
 		<antcall target="${do.target}"/>
 	</target>
-	
+
 	<target name="do-min-target"	if="run.${min.vm}">
 		<setup-vm vm="${min.vm}"/>
 		<antcall target="${do.target}"/>
@@ -247,7 +247,7 @@
 	</target>
     <macrodef name="setup-vm">
         <attribute name="vm"/>
-        <sequential>            
+        <sequential>
 			<property name="wjf@{vm}.bjh" location="${java@{vm}.home}"/>
 			<property name="wjf@{vm}.cmd" location="${wjf@{vm}.bjh}/bin/java"/>
             <delete file="${java.home.file}"/>

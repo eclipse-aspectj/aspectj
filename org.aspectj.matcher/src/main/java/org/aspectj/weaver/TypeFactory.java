@@ -1,10 +1,10 @@
 /* *******************************************************************
  * Copyright (c) 2005-2010 Contributors.
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://eclipse.org/legal/epl-v10.html 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  * ******************************************************************/
 package org.aspectj.weaver;
 
@@ -19,7 +19,7 @@ public class TypeFactory {
 
 	/**
 	 * Create a parameterized version of a generic type.
-	 * 
+	 *
 	 * @param aBaseType
 	 * @param someTypeParameters note, in the case of an inner type of a parameterized type, this parameter may legitimately be null
 	 * @param inAWorld
@@ -39,11 +39,11 @@ public class TypeFactory {
 			} // else if someTypeParameters is null, then the base type is allowed to be non-generic, it's an inner
 		}
 		ResolvedType[] resolvedParameters = inAWorld.resolve(someTypeParameters);
-		
+
 		ReferenceType existingType = ((ReferenceType)baseType).findDerivativeType(resolvedParameters);
-		
+
 		ReferenceType pType = null;
-		
+
 		if (existingType!=null) {
 			pType = existingType;
 		} else {
@@ -313,7 +313,7 @@ public class TypeFactory {
 						} else {
 							char nextChar = remainingToProcess.charAt(nextCharPos);
 							if (!(nextChar=='+' || nextChar=='-')) {
-								// dont need to set endOfSig as the loop will increment 
+								// dont need to set endOfSig as the loop will increment
 								// it to the right place before it exits
 								sigFound=true;
 							}

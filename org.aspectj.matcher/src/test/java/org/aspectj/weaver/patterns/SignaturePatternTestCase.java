@@ -1,14 +1,14 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
  *               2005 Contributors
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -71,13 +71,13 @@ public class SignaturePatternTestCase extends PatternsTestCase {
 	 * signaturePattern.matches(objectToString, world, false); } long stime = System.currentTimeMillis(); for (int i = 0; i <
 	 * 2000000; i++) { boolean matches = signaturePattern.matches(objectToString, world, false); } long etime =
 	 * System.currentTimeMillis(); System.out.println("Took " + (etime - stime) + "ms for 2,000,000");// 4081
-	 * 
+	 *
 	 * signaturePattern = makeMethodPat("* *())"); signaturePattern = signaturePattern.resolveBindings(new TestScope(world, new
 	 * FormalBinding[0]), new Bindings(0)); for (int i = 0; i < 1000; i++) { boolean matches =
 	 * signaturePattern.matches(objectToString, world, false); } stime = System.currentTimeMillis(); for (int i = 0; i < 2000000;
 	 * i++) { boolean matches = signaturePattern.matches(objectToString, world, false); } etime = System.currentTimeMillis();
 	 * System.out.println("Took " + (etime - stime) + "ms for 2,000,000");// 4081 }
-	 * 
+	 *
 	 * public void testInstanceMethodMatchSpeed2() throws IOException { // Member objectToString =
 	 * TestUtils.methodFromString("java.lang.String java.lang.Object.toString()"); Member objectToString =
 	 * TestUtils.methodFromString(

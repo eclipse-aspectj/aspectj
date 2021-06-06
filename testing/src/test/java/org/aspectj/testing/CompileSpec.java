@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2004,2016 IBM Corporation
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     Adrian Colyer, 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     Adrian Colyer,
  * ******************************************************************/
 package org.aspectj.testing;
 
@@ -27,7 +27,7 @@ import org.aspectj.tools.ajc.CompilationResult;
 public class CompileSpec implements ITestStep {
 
 	private List<ExpectedMessageSpec> expected = new ArrayList<>();
-	
+
 	private String files;
 	private boolean includeClassesDir;
 	private String aspectpath;
@@ -42,10 +42,10 @@ public class CompileSpec implements ITestStep {
 	private String baseDir;
 	private String extdirs;
 	private AjcTest myTest;
-	
+
 	public CompileSpec() {
 	}
-	
+
 	public void execute(AjcTestCase inTestCase) {
 		File base = new File(baseDir);
 		String[] args = buildArgs();
@@ -63,18 +63,18 @@ public class CompileSpec implements ITestStep {
 	public void setBaseDir(String dir) {
 		this.baseDir = dir;
 	}
-	
+
 	protected String getBaseDir() { return baseDir; }
-		
+
 	public void setTest(AjcTest t) {
 		this.myTest = t;
 		if (options != null && (options.contains("-1.5"))) {
 		    myTest.setVm("1.5");
 		}
 	}
-	
+
 	protected AjcTest getTest() { return myTest; }
-	
+
 	/**
 	 * @return Returns the aspectpath.
 	 */
@@ -103,7 +103,7 @@ public class CompileSpec implements ITestStep {
 	public String getModulepath() {
 		return this.modulepath;
 	}
-	
+
 	public void setModulepath(String modulepath) {
 		this.modulepath = modulepath.replace('/', File.separatorChar).replace(',', File.pathSeparatorChar);
 	}
@@ -211,10 +211,10 @@ public class CompileSpec implements ITestStep {
 	public void setXlintfile(String xlintfile) {
 		this.xlintfile = xlintfile;
 	}
-	
+
 	public String getExtdirs() { return extdirs;}
 	public void setExtdirs(String extdirs) { this.extdirs = extdirs; }
-	
+
 	protected String[] buildArgs() {
 		StringBuffer args = new StringBuffer();
 		// add any set options, and then files to compile at the end
@@ -301,7 +301,7 @@ public class CompileSpec implements ITestStep {
 		}
 		return ret;
 	}
-	
+
 	private String rewrite(String path) {
 		path = path.replace("$runtimemodule", TestUtil.aspectjrtPath(true).toString());
 		path = path.replace("$runtime", TestUtil.aspectjrtPath().toString());
@@ -323,7 +323,7 @@ public class CompileSpec implements ITestStep {
 			} else if (kind.equals("warning")) {
 				warnings.add(exMsg.toMessage());
 			} else if (kind.equals("error")) {
-				errors.add(exMsg.toMessage());				
+				errors.add(exMsg.toMessage());
 			} else if (kind.equals("fail")) {
 				fails.add(exMsg.toMessage());
 			} else if (kind.equals("abort")) {

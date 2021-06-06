@@ -1,13 +1,13 @@
 /* *******************************************************************
  * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 
- * which accompanies this distribution and is available at 
- * http://www.eclipse.org/legal/epl-v10.html 
- *  
- * Contributors: 
- *     PARC     initial implementation 
+ * All rights reserved.
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * Contributors:
+ *     PARC     initial implementation
  * ******************************************************************/
 
 package org.aspectj.weaver.patterns;
@@ -36,7 +36,7 @@ import org.aspectj.weaver.ast.Test;
 
 /**
  * args(arguments)
- * 
+ *
  * @author Erik Hilsdale
  * @author Jim Hugunin
  */
@@ -238,7 +238,7 @@ public class ArgsPointcut extends NameBindingPointcut {
 	/**
 	 * We need to find out if someone has put the @SuppressAjWarnings{"uncheckedArgument"} annotation somewhere. That somewhere is
 	 * going to be an a piece of advice that uses this pointcut. But how do we find it???
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean isUncheckedArgumentWarningSuppressed() {
