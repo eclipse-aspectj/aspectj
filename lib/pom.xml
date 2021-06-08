@@ -58,6 +58,10 @@
             <groupId>com.googlecode.maven-download-plugin</groupId>
             <artifactId>download-maven-plugin</artifactId>
             <version>1.6.3</version>
+            <configuration>
+              <!-- Detect previously failed downloads by verifying checksums of existing files -> retry -->
+              <checkSignature>true</checkSignature>
+            </configuration>
             <executions>
               <execution>
                 <id>download-ant-binaries</id>
