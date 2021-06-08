@@ -138,7 +138,7 @@ mvn nexus-staging:rc-list
 
 # Use the ID of the corresponding CLOSED staging repository for releasing to
 # Maven Central
- mvn nexus-staging:rc-release -DstagingRepositoryId=orgaspectj-1106
+mvn nexus-staging:rc-release -DstagingRepositoryId=orgaspectj-1106
 ```
 
 Tadaa! We have performed an AspectJ release. In a few minutes, the artifacts should appear on Maven Central somewhere
