@@ -191,9 +191,6 @@
 				have to use Maven and get the test results reported within the IDE's JUnit user interface.
 			-->
 			<id>repeat-all-unit-tests</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>

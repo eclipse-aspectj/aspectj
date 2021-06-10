@@ -54,6 +54,8 @@
 		-->
 		<!-- By default, do not deploy artifacts - but deploy this public one -->
 		<!--<maven.deploy.skip>false</maven.deploy.skip>-->
+		<!-- By default, do not sign artifacts - but sign this public one -->
+		<!--<maven.gpg.skip>false</maven.gpg.skip>-->
 	</properties>
 
 	<dependencies>
