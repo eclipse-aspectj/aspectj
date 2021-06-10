@@ -265,8 +265,8 @@ public class Main implements Config {
 				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
 			}
 			if (LangUtil.is9VMOrGreater()) {
-			options = new Vector<>();
-			Collections.addAll(options, javadocargs);
+				options = new Vector<>();
+				Collections.addAll(options, javadocargs);
 			}
 		} else {
 			javadocargs = new String[options.size() + signatureFiles.length];
@@ -281,7 +281,7 @@ public class Main implements Config {
 			}
 		}
 		if (LangUtil.is9VMOrGreater()) {
-		JavadocRunner.callJavadocViaToolProvider(options, files);
+			JavadocRunner.callJavadocViaToolProvider(options, files);
 		} else {
 			JavadocRunner.callJavadoc(javadocargs);
 		}
