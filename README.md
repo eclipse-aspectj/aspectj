@@ -21,7 +21,11 @@ These are the artifacts published to Maven Central for each release. In addition
 
 In the root of a cloned AspectJ simply run:
 
-`./mvnw clean install`
+```shell
+./mvnw clean install
+```
+
+You can also use a reasonably recent (3.6.3+), locally installed Maven installation instead of the Maven wrapper script.
 
 This will build all the modules, run all the tests and install the key artifacts in your local repository.
 Once built, access the Maven dependencies from your local repository or run the installer to install AspectJ locally:
@@ -45,6 +49,7 @@ Ensure you run this with a JDK - the more recent the better since some tests wil
 
 * [How to contribute to AspectJ](CONTRIBUTING.md)
 * [How to release AspectJ](docs/developer/RELEASE.md)
+* [Maven build options (profiles, properties)](docs/developer/BUILD.md)
 
 ## Maven releases
 
