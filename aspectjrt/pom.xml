@@ -48,6 +48,8 @@
 	<properties>
 		<!-- By default, do not deploy artifacts - but deploy this public one -->
 		<maven.deploy.skip>false</maven.deploy.skip>
+		<!-- By default, do not sign artifacts - but sign this public one -->
+		<maven.gpg.skip>false</maven.gpg.skip>
 	</properties>
 
 	<build>
@@ -139,6 +141,7 @@
 						<configuration>
 							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
 							<appendAssemblyId>true</appendAssemblyId>
+							<skipAssembly>${maven.source.skip}</skipAssembly>
 							<archive>
 							</archive>
 							<descriptors>

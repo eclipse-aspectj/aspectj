@@ -14,7 +14,10 @@
     <profile>
       <id>create-docs</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>createDocs</name>
+          <value>true</value>
+        </property>
       </activation>
 
       <build>
