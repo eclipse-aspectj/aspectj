@@ -13,6 +13,20 @@ the simple case:
 
 ## Snapshot releases
 
+To publish a snapshot, set up your credentials in `.m2/settings.xml` something like:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <username>USERNAME</username>
+      <password>PASSWORD</password>
+    </server>
+  </servers>
+</settings>
+```
+
 Assuming that you are currently working on version 1.9.7-SNAPSHOT, you simply call:
 
 ```shell
@@ -35,6 +49,23 @@ This only deploys the main artifacts
 
 The AspectJ installer (`installer/target/aspectj-[VERSION].jar`) needs to be published separately, if you wish to make
 it available to the public for this snapshot.
+
+To consume a snapshot, use the ossrh repository:
+
+```xml
+<repository>
+  <id>ossrh</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+```
+
+```xml
+<pluginRepository>
+  <id>ossrh</id>
+  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+</pluginRepository>
+```
+
 
 ## Public releases (milestone, release candidate, final)
 
