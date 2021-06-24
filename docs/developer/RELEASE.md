@@ -106,6 +106,7 @@ export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.
 # Build and deploy the release to a Nexus staging repository.
 # The 'release' profile will activate
 #   - Maven GPG plugin for signing artifacts (stand by to enter your passpharase!),
+#     If there is a message 'Failed to execute goal org.apache.maven.plugins:maven-gpg-plugin:1.6:sign' try 'export GPG_TTY=$(tty)' before running the command,
 #   - Maven Javadoc plugin,
 #   - Nexus Staging Maven plugin.
 # Optionally, use '-DskipTests=true', if you ran all tests before.
