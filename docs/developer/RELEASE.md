@@ -13,7 +13,7 @@ the simple case:
 
 ## Snapshot releases
 
-To publish a snapshot, set up your credentials in `.m2/settings.xml` something like:
+To publish a snapshot, set up your credentials in `~/.m2/settings.xml` something like:
 
 ```xml
 <settings>
