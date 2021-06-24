@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.aspectj</groupId>
 		<artifactId>aspectj-parent</artifactId>
-		<version>1.9.7</version>
+		<version>1.9.8-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>runtime</artifactId>
