@@ -415,6 +415,10 @@ public class BuildArgParser extends Main {
 		return ret;
 	}
 
+	public FileSystem.Classpath[] getCheckedClasspaths() {
+		return checkedClasspaths;
+	}
+
 	private void addExtDirs(String extdirs, List classpathCollector) {
 		StringTokenizer tokenizer = new StringTokenizer(extdirs, File.pathSeparator);
 		while (tokenizer.hasMoreTokens()) {

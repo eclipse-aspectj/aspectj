@@ -19,6 +19,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJep247;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.Classpath;
@@ -930,7 +933,18 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 		// ArrayList<Classpath> allPaths = handleBootclasspath(bootclasspaths, customEncoding);
 		ArrayList<FileSystem.Classpath> allPaths = new ArrayList<>();
-	 	allPaths.addAll(processStringPath(bootclasspath, encoding));
+		if (
+			Arrays.stream(buildArgParser.getCheckedClasspaths())
+				.anyMatch(cp -> cp instanceof ClasspathJep247)
+		) {
+			allPaths.addAll(
+				Arrays.stream(buildArgParser.getCheckedClasspaths())
+					.filter(cp -> cp instanceof ClasspathJep247)
+					.collect(Collectors.toList())
+			);
+		}
+		else
+			allPaths.addAll(processStringPath(bootclasspath, encoding));
 		allPaths.addAll(processFilePath(inJars, encoding));
 	 	allPaths.addAll(processFilePath(inPath, encoding));
 	 	allPaths.addAll(processFilePath(aspectpath, encoding));
