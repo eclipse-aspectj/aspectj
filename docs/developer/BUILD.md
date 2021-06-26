@@ -197,4 +197,4 @@ to clean downloaded libraries in the `lib` module, here are a few more:
 In general, you should not combine profiles setting the same properties in contradictory ways. If you need a very
 specific build configuration, you might want to use a profile matching your needs most closely and override specific
 properties. However, I am not going to share examples for this approach, because generally it is not necessary and also
-both error-prone and sensitive to evan small changes in Maven POMs.  
+both error-prone and sensitive to even small changes in Maven POMs.  
