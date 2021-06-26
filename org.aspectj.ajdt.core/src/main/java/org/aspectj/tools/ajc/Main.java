@@ -98,7 +98,10 @@ public class Main {
 	 * @param usages the List sink, if any, for String usage messages
 	 * @return number of messages reported with level ERROR or above
 	 */
-	public static int bareMain(String[] args, boolean useSystemExit, List fails, List errors, List warnings, List infos, List usages) {
+	public static int bareMain(
+		String[] args, boolean useSystemExit,
+		List<String> fails, List<String> errors, List<String> warnings, List<String> infos, List<String> usages
+	) {
 		Main main = new Main();
 		MessageHandler holder = new MessageHandler();
 		main.setHolder(holder);
@@ -115,7 +118,7 @@ public class Main {
 	}
 
 	/** Read messages of a given kind into a List as String */
-	private static void readMessages(IMessageHolder holder, IMessage.Kind kind, boolean orGreater, List sink) {
+	private static void readMessages(IMessageHolder holder, IMessage.Kind kind, boolean orGreater, List<String> sink) {
 		if ((null == sink) || (null == holder)) {
 			return;
 		}
@@ -157,7 +160,7 @@ public class Main {
 		if (0 < sink.length()) {
 			sink.append(", ");
 		}
-		sink.append(numItems + " ");
+		sink.append(numItems).append(" ");
 		if (!LangUtil.isEmpty(label)) {
 			sink.append(label);
 		}
@@ -308,17 +311,16 @@ public class Main {
 	/**
 	 * Run without using System.exit(..), putting all messages in holder:
 	 * <ul>
-	 * <li>ERROR: compiler error</li>
-	 * <li>WARNING: compiler warning</li>
-	 * <li>FAIL: command error (bad arguments, exception thrown)</li>
+	 *   <li>ERROR: compiler error</li>
+	 *   <li>WARNING: compiler warning</li>
+	 *   <li>FAIL: command error (bad arguments, exception thrown)</li>
 	 * </ul>
 	 * This handles incremental behavior:
 	 * <ul>
-	 * <li>If args include "-incremental", repeat for every input char until 'q' is entered.
-	 * <li>
-	 * <li>If args include "-incrementalTagFile {file}", repeat every time we detect that {file} modification time has changed.</li>
-	 * <li>Either way, list files recompiled each time if args includes "-verbose".</li>
-	 * <li>Exit when the commmand/compiler throws any Throwable.</li>
+	 *   <li>If args include "-incremental", repeat for every input char until 'q' is entered.
+	 *   <li>If args include "-incrementalTagFile {file}", repeat every time we detect that {file} modification time has changed.</li>
+	 *   <li>Either way, list files recompiled each time if args includes "-verbose".</li>
+	 *   <li>Exit when the commmand/compiler throws any Throwable.</li>
 	 * </ul>
 	 * When complete, this contains all the messages of the final run of the command and/or any FAIL messages produced in running
 	 * the command, including any Throwable thrown by the command itself.
@@ -341,7 +343,7 @@ public class Main {
 				fail(holder, "Couldn't open log file: " + logFileName, e);
 			}
 			Date now = new Date();
-			logStream.println(now.toString());
+			logStream.println(now);
 			if (flagInArgs("-verbose", args)) {
 				ourHandler.setInterceptor(new LogModeMessagePrinter(true, logStream));
 			} else {
@@ -409,7 +411,6 @@ public class Main {
 		} finally {
 			if (logStream != null) {
 				logStream.close();
-				logStream = null;
 			}
 			if (fos != null) {
 				try {
@@ -417,7 +418,6 @@ public class Main {
 				} catch (IOException e) {
 					fail(holder, "unexpected exception", e);
 				}
-				fos = null;
 			}
 			command = null;
 		}
@@ -503,7 +503,7 @@ public class Main {
 			if (0 < sb.length()) {
 				PrintStream out = (0 < (lastErrors + lastFails) ? System.err : System.out);
 				out.println(""); // XXX "wrote class file" messages no eol?
-				out.println(sb.toString());
+				out.println(sb);
 			}
 		}
 		return result;
@@ -576,7 +576,7 @@ public class Main {
 						}
 						int col = loc.getColumn();
 						if (0 < col) {
-							sb.append(":" + col);
+							sb.append(":").append(col);
 						}
 						sb.append(" ");
 					}
@@ -697,8 +697,10 @@ public class Main {
 		public static long DEFAULT_DELAY = 1000 * 5;
 
 		/** @see init(String[]) */
-		private static String[][] OPTIONS = new String[][] { new String[] { INCREMENTAL_OPTION },
-				new String[] { TAG_FILE_OPTION, null } };
+		private static final String[][] OPTIONS = new String[][] {
+			new String[] { INCREMENTAL_OPTION },
+			new String[] { TAG_FILE_OPTION, null }
+		};
 
 		/** true between init(String[]) and doRepeatCommand() that returns false */
 		private boolean running;
