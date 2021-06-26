@@ -17,6 +17,7 @@ import org.aspectj.systemtest.ajc196.AllTestsAspectJ196;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.aspectj.systemtest.ajc197.AllTestsAspectJ197;
+import org.aspectj.systemtest.ajc198.AllTestsAspectJ198;
 
 /**
  * @author Andy Clement
@@ -34,6 +35,7 @@ public class AllTests19 {
 		suite.addTest(AllTestsAspectJ195.suite());
 		suite.addTest(AllTestsAspectJ196.suite());
 		suite.addTest(AllTestsAspectJ197.suite());
+		suite.addTest(AllTestsAspectJ198.suite());
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$
 		return suite;
