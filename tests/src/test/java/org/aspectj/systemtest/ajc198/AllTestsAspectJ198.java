@@ -18,6 +18,9 @@ public class AllTestsAspectJ198 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.8 tests");
+		if (LangUtil.is9VMOrGreater()) {
+			suite.addTest(org.aspectj.systemtest.ajc198.CompileWithReleaseTests.suite());
+		}
 		if (LangUtil.is17VMOrGreater()) {
 			suite.addTest(SanityTestsJava17.suite());
 			suite.addTest(Ajc198TestsJava.suite());

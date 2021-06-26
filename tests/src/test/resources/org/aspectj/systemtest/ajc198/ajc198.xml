@@ -32,4 +32,9 @@
 	</ajc-test>
 -->
 
+	<!-- Javac/ECJ 9+ compiler option, but belated implementation in AJC 1.9.7 -->
+	<ajc-test dir="features198/compiler_release" vm="9" title="compile to older JDK release">
+		<compile files="Buffers.java" options="--release 8"/>
+	</ajc-test>
+
 </suite>
