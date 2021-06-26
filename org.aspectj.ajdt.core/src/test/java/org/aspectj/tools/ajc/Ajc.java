@@ -311,9 +311,10 @@ public class Ajc {
 				if ((args[i].equals("-aspectpath") || args[i].equals("-inpath") || args[i].equals("-injars")
 						|| args[i].equals("-outjar") || args[i].equals("-classpath") || args[i].equals("-sourceroots")
 						|| args[i].equals("-Xlintfile") || args[i].equals("-extdirs") || args[i].equals("-d"))
-						&& args.length > (i + 1)) {
+						&& args.length > (i + 1))
+				{
 					newArgs[i] = args[i];
-					StringBuffer buff = new StringBuffer();
+					StringBuilder buff = new StringBuilder();
 					boolean copyThisTime = doCopy;
 					if (args[i].equals("-d")) {
 						copyThisTime = false;
