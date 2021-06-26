@@ -23,9 +23,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -957,12 +957,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 	// The classpath is done after modules to give precedence to modules that share the
 	 	// same paths as classpath elements (the upcoming normalize will remove later dups)
 	 	allPaths.addAll(processStringPath(classpath, encoding));
-	 	for (Iterator<FileSystem.Classpath> iter = allPaths.iterator();iter.hasNext();) {
-	 		Classpath next = iter.next();
-	 		if (next == null) {
-	 			iter.remove();
-	 		}
-	 	}
+    allPaths.removeIf(Objects::isNull);
 		allPaths = FileSystem.ClasspathNormalizer.normalize(allPaths);
 		this.checkedClasspaths = new FileSystem.Classpath[allPaths.size()];
 		allPaths.toArray(this.checkedClasspaths);
