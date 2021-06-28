@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * This class represents collection of local variables in a method. This attribute is contained in the <em>Code</em> attribute.
- * 
+ *
  * @version $Id: LocalVariableTable.java,v 1.8 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code
@@ -99,7 +99,7 @@ public class LocalVariableTable extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index in constant pool
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -117,7 +117,7 @@ public class LocalVariableTable extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -128,7 +128,7 @@ public class LocalVariableTable extends Attribute {
 
 	/**
 	 * Dump local variable table attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -189,6 +189,11 @@ public class LocalVariableTable extends Attribute {
 		return buf.toString();
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	/**
 	 * @return deep copy of this attribute
 	 */
@@ -223,7 +228,7 @@ public class LocalVariableTable extends Attribute {
 			dis.close();
 			data = null; // throw it away now
 		} catch (IOException e) {
-			throw new RuntimeException("Unpacking of LocalVariableTable attribute failed");
+			throw new RuntimeException("Unpacking of LocalVariableTable attribute failed", e);
 		}
 		isInPackedState = false;
 	}
