@@ -19,17 +19,20 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJep247;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.Classpath;
@@ -930,7 +933,18 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 		// ArrayList<Classpath> allPaths = handleBootclasspath(bootclasspaths, customEncoding);
 		ArrayList<FileSystem.Classpath> allPaths = new ArrayList<>();
-	 	allPaths.addAll(processStringPath(bootclasspath, encoding));
+		if (
+			Arrays.stream(buildArgParser.getCheckedClasspaths())
+				.anyMatch(cp -> cp instanceof ClasspathJep247)
+		) {
+			allPaths.addAll(
+				Arrays.stream(buildArgParser.getCheckedClasspaths())
+					.filter(cp -> cp instanceof ClasspathJep247)
+					.collect(Collectors.toList())
+			);
+		}
+		else
+			allPaths.addAll(processStringPath(bootclasspath, encoding));
 		allPaths.addAll(processFilePath(inJars, encoding));
 	 	allPaths.addAll(processFilePath(inPath, encoding));
 	 	allPaths.addAll(processFilePath(aspectpath, encoding));
@@ -943,12 +957,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 	 	// The classpath is done after modules to give precedence to modules that share the
 	 	// same paths as classpath elements (the upcoming normalize will remove later dups)
 	 	allPaths.addAll(processStringPath(classpath, encoding));
-	 	for (Iterator<FileSystem.Classpath> iter = allPaths.iterator();iter.hasNext();) {
-	 		Classpath next = iter.next();
-	 		if (next == null) {
-	 			iter.remove();
-	 		}
-	 	}
+    allPaths.removeIf(Objects::isNull);
 		allPaths = FileSystem.ClasspathNormalizer.normalize(allPaths);
 		this.checkedClasspaths = new FileSystem.Classpath[allPaths.size()];
 		allPaths.toArray(this.checkedClasspaths);
