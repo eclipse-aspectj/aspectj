@@ -1,0 +1,57 @@
+= MyEclipseIde
+
+_Last updated: 2003-07-08 by wisberg_
+
+MyEclipseIde (http://www.myeclipseide.com/[http://www.myeclipseide.com])
+aims to make it easy to develop J2EE applications using Eclipse. AJDT
+(http://eclipse.org/ajdt) is an Eclipse plug-in that supports AspectJ.
+
+== Getting started
+
+* To install AJDT with MyEclipseIDE, direct the Eclipse update manager
+to http://download.eclipse.org/technology/ajdt/dev/update, install the
+plug-in, and follow any post-install instructions.
+* To enable a project to use aspects, first select
+`Convert to AspectJ project` from the project's context menu (select
+project, right click). (XXX Bug: AJDT reverts perspective to Java; go
+back to MyEclipseIDE) Note that you must convert each project;
+converting the master J2EE project will not affect the child components
+(XXX RFE: option to convert child if parent).
+* To build, select the menu item `Project > Rebuild Project`. AJDT
+creates `default.lst` which lists all source files and compiles them.
+You can also recompile by clicking the AJDT build button. (XXX Bug: only
+available in the Java perspective)
+* To deploy, first add `aspectjrt.jar` to the project's library
+directory. For servlets and JSP's, that is in `{Web Root}/WEB-INF/lib`.
+For EJB's, it's XXX todo. Then deploy as usual for your application
+server.
+* If you are using AspectJ in more than one project, you might instead
+deploy `aspectjrt.jar` whereever shared libraries belong for your
+server.
+
+== Bugs in MyEclipseIDE
+
+. After refactoring to rename a servlet, have to manually update web.xml
+. Silent failure when unable to delete a duplicate resource during
+deployment.
+. Annoyingly modal UI for deployment. Use a view.
+. Need validation on saving Web.xml. E.g., servlet mapping names
+validated with declared servlet names.
+. Deployment dirty flag not working; not updated after editing web.xml
+or rebuilding project.
+. Apparantly false JSP error? using Sun page and template page, got:
+"Fatal error - The markup in the document preceding the root element
+must be well-formed." Error persisted even after replacing the entire
+contents of the file with the template which worked by default.
+. When using the exact template page, get no MyEclipseIDE error, but do
+get compile errors in Tomcat. Using Javac, get compile-failed stack
+trace with initial line number. Using ajc, just get stack trace. But
+precompiling using Ant seems to work.
+. Precompiling JSP's:
+* MyEclipseIDE has a command to compile all JSP's, but I don't see
+(where or how) the updated servlet mappings get into the deployed
+web.xml. It would be great to get this working with AJDT.
+* I adapted the Tomcat precompile script to use AspectJ's iajc. This
+works fine, but like all Jasper2 solutions required the generated
+servlet mappings be copied manually into the web.xml file. See
+xref:#j2ee-tomcat4-precompileJsp[the Ant build script]

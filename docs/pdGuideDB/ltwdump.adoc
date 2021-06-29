@@ -1,0 +1,63 @@
+[[ltwdump]]
+== Dumping classes during load-time weaving
+
+[[ltwdump-introduction]]
+=== Introduction
+
+Very rarely problems may be encountered with classes that have been
+load-time woven. Symptoms will include incorrect program function or a
+Java exception such as `java.lang.VerifyError`. In these situations it's
+most helpful to include the offending class in the bug report. When
+using load-time weaving the woven classes are in memory only so to save
+them to disk configure `META-INF/aop.xml` to dump the classes (by
+default to an `_ajdump` subdirectory of the current working directory).
+Also if the input class file is not available (e.g. it is a generated
+proxy or has already been instrumented by another agent) you can
+configure the weaver to dump the input classes as well.
+
+[[ltw-examples]]
+==== Configuring bytecode dumping in load-time weaving
+
+For details of how to configure byte-code dumping, see the AspectJ
+Development Environment Guide section on
+xref:../devguide/ltw-configuration.html#configuring-load-time-weaving-with-aopxml-files[Configuring
+Load-time Weaving]. Following is a simple example.
+
+[[ltwdump-examples]]
+==== LTW Dump Examples
+
+The following `META-INF/aop.xml` will weave classes in the `com.foo`
+package (and subpackages) but not CGLIB generated classes in the
+`com.foo.bar` package (and subpackages). It will also ensure all woven
+byte-code is dumped both before and after weaving.
+
+....
+<aspectj>
+    <aspects>
+        <aspect name="ataspectj.EmptyAspect"/>
+    </aspects>
+    <weaver options="-verbose -debug">
+        <dump within="com.foo.bar..*" beforeandafter="true"/>
+        <include within="com.foo..*"/>
+        <exclude within="com.foo.bar..*CGLIB*"/>
+    </weaver>
+</aspectj>
+....
+
+You should see messages similar to this:
+
+....
+[WeavingURLClassLoader] info AspectJ Weaver Version 1.5.3 built on Thursday Oct 26, 2006 at 17:22:31 GMT
+[WeavingURLClassLoader] info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader
+[WeavingURLClassLoader] info using configuration /C:/tempMETA-INF/aop.xml
+[WeavingURLClassLoader] info register aspect ataspectj.EmptyAspect
+[WeavingURLClassLoader] debug not weaving 'com.foo.bar.Test$$EnhancerByCGLIB$$12345'
+[WeavingURLClassLoader] debug weaving 'com.foo.bar.Test'
+....
+
+On disk you would find the following files:
+
+....
+_ajdump/_before/com/foo/bar/Test.class
+_ajdump/com/foo/bar/Test.class
+....

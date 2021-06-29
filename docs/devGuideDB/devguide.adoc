@@ -1,0 +1,33 @@
+= The AspectJ^TM^ Development Environment Guide
+
+:doctype: book
+
+_by the AspectJ Team_
+
+_Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2005 Contributors.
+All rights reserved._
+
+This guide describes how to build and deploy AspectJ programs using the AspectJ tools and facilities. See also the
+xref:../progGuideDB/progguide.adoc[AspectJ Programming Guide], the documentation available with the AspectJ support
+available for various integrated development environments (e.g. https://www.eclipse.org/ajdt/[Eclipse AJDT]), and the
+most-recent documentation available from the https://eclipse.org/aspectj[AspectJ project page].
+
+////
+ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
+table of contents (TOC) can be wrong and the first section of each document missing completely.
+////
+include::tools-intro.adoc[]
+
+include::ajc.adoc[]
+
+include::ajdoc.adoc[]
+
+include::aj.adoc[]
+
+include::ajbrowser.adoc[]
+
+include::antsupport.adoc[]
+
+include::ltw.adoc[]
+
+include::compatibility.adoc[]

@@ -1,0 +1,24 @@
+= AspectJ Design Overview
+:doctype: book
+
+Here are some sobering words:
+
+"Although it is essential to upgrade software to prevent aging, changing software can cause a different form of
+aging. The designer of a piece of software usually had a simple concept in mind when writing the program. If the
+program is large, understanding the concept allows one to find those sections of the program that must be altered
+when an update or correction is needed. Understanding that concept also implies understanding the interfaces used
+within the system and between the system and its environment.  Changes made by people who do not understand the
+original design concept almost always cause the structure of the program to degrade. Under those circumstances,
+changes will be inconsistent with the original concept; in fact, they will invalidate the original concept. Sometimes
+the damage is small, but often it is quite severe. After those changes, one must know both the original design rules
+and the newly introduced exceptions to the rules, to understand the product. After many such changes, the original
+designers no longer understand the product. Those who made the changes, never did. In other words, *nobody*
+understands the modified product." +
+ +
+Software that has been repeatedly modified (maintained) in this way becomes very expensive to update. Changes take
+longer and are more likely to introduce new 'bugs'."
+-- David Parnas on "Ignorant Surgery" in his paper on Software Aging
+
+include::compiler-weaver/index.adoc[Guide for Developers of the AspectJ Compiler and Weaver]
+include::modules.adoc[Module Structure]
+include::language.adoc[Language Design]

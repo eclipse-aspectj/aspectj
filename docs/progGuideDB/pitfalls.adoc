@@ -1,0 +1,86 @@
+== Pitfalls
+
+[[pitfalls-intro]]
+=== Introduction
+
+This chapter consists of a few AspectJ programs that may lead to
+surprising behavior and how to understand them.
+
+[[pitfalls-infiniteLoops]]
+=== Infinite loops
+
+Here is a Java program with peculiar behavior
+
+....
+public class Main {
+    public static void main(String[] args) {
+        foo();
+        System.out.println("done with call to foo");
+    }
+
+    static void foo() {
+        try {
+            foo();
+        } finally {
+            foo();
+        }
+    }
+}
+....
+
+This program will never reach the println call, but when it aborts may
+have no stack trace.
+
+This silence is caused by multiple StackOverflowExceptions. First the
+infinite loop in the body of the method generates one, which the finally
+clause tries to handle. But this finally clause also generates an
+infinite loop which the current JVMs can't handle gracefully leading to
+the completely silent abort.
+
+The following short aspect will also generate this behavior:
+
+....
+aspect A {
+    before(): call(* *(..)) { System.out.println("before"); }
+    after():  call(* *(..)) { System.out.println("after"); }
+}
+....
+
+Why? Because the call to println is also a call matched by the pointcut
+`call (* *(..))`. We get no output because we used simple after()
+advice. If the aspect were changed to
+
+....
+aspect A {
+    before(): call(* *(..)) { System.out.println("before"); }
+    after() returning:  call(* *(..)) { System.out.println("after"); }
+}
+....
+
+Then at least a StackOverflowException with a stack trace would be seen.
+In both cases, though, the overall problem is advice applying within its
+own body.
+
+There's a simple idiom to use if you ever have a worry that your advice
+might apply in this way. Just restrict the advice from occurring in join
+points caused within the aspect. So:
+
+....
+aspect A {
+    before(): call(* *(..)) && !within(A) { System.out.println("before"); }
+    after() returning:  call(* *(..)) && !within(A) { System.out.println("after"); }
+}
+....
+
+Other solutions might be to more closely restrict the pointcut in other
+ways, for example:
+
+....
+aspect A {
+    before(): call(* MyObject.*(..))  { System.out.println("before"); }
+    after() returning:  call(* MyObject.*(..))  { System.out.println("after"); }
+}
+....
+
+The moral of the story is that unrestricted generic pointcuts can pick
+out more join points than intended.

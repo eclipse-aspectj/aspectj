@@ -1,0 +1,10 @@
+[.small]#© Copyright 2011 Contributors. All rights reserved.#
+
+== AspectJ 1.7.3 Readme
+
+Available 13-Jun-2013
+
+The list of resolved issues in 1.7.3 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.3;[here]
+
+.

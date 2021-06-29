@@ -231,7 +231,7 @@ call(void Point.setX(int))
 
       <para>
         picks out each join point that is a call to a method that has the
-        signature <literal>void Point.setX(int)</literal> &mdash; that is,
+        signature <literal>void Point.setX(int)</literal> - that is,
         <classname>Point</classname>'s void <function>setX</function>
         method with a single <literal>int</literal> parameter.
       </para>
@@ -253,8 +253,8 @@ call(void Point.setY(int))
       </para>
 
       <para>
-        Pointcuts can identify join points from many different types
-        &mdash; in other words, they can crosscut types.  For example,
+        Pointcuts can identify join points from many different types -
+        in other words, they can crosscut types. For example,
       </para>
 
 <programlisting format="linespecific">
@@ -856,7 +856,7 @@ aspect PointBoundsChecking {
         includes the <function>setX</function> method, as well as half of
         the <function>setXY</function> method. In this sense the
         <function>setX</function> pointcut can be seen as involving very
-        fine-grained crosscutting &mdash; it names the the
+        fine-grained crosscutting - it names the the
         <function>setX</function> method and half of the
         <function>setXY</function> method.
       </para>

@@ -1,0 +1,66 @@
+[[miscellaneous]]
+== Other Changes in AspectJ 5
+
+[[pointcuts-change]]
+=== Pointcuts
+
+AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut
+expressions that bind context variables in more than one location. For
+example, AspectJ 1.2.1 does not allow:
+
+....
+pointcut foo(Foo foo) : (execution(* *(..)) && this(foo) ) ||
+                        (set(* *) && target(foo));
+....
+
+whereas this expression is permitted in AspectJ 5. Each context variable
+must be bound exactly once in each branch of a disjunction, and the
+disjunctive branches must be mutually exclusive. In the above example
+for instance, no join point can be both an execution join point and a
+set join point so the two branches are mutually exclusive.
+
+[[declare-soft-change]]
+=== Declare Soft
+
+The semantics of the `declare soft` statement have been refined in
+AspectJ 5 to only soften exceptions that are not already runtime
+exceptions. If the exception type specified in a declare soft statement
+is `RuntimeException` or a subtype of `RuntimeException` then a new
+XLint warning will be issued:
+
+....
+declare soft : SomeRuntimeException : execution(* *(..));
+
+>> "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
+....
+
+This XLint message can be controlled by setting the
+`runtimeExceptionNotSoftened` XLint parameter.
+
+If the exception type specified in a declare soft statement is a super
+type of `RuntimeException` (such as `Exception` for example) then any
+_checked_ exception thrown at a matched join point, where the exception
+is an instance of the softened exception, will be softened to an
+`org.aspectj.lang.SoftException`.
+
+....
+public aspect SoftenExample {
+  declare soft : Exception : execution(* Foo.*(..));
+}
+
+class Foo {
+  public static void main(String[] args) {
+    Foo foo = new Foo();
+    foo.foo();
+    foo.bar();
+  }
+
+  void foo() throws Exception {
+    throw new Exception();        // this will be converted to a SoftException
+  }
+
+  void bar() throws Exception {
+    throw new RuntimeException();  // this will remain a RuntimeException
+  }
+}
+....

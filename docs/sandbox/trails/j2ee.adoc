@@ -1,0 +1,58 @@
+= Using AspectJ in servlets
+
+_Last updated: 2003-09-27 by wisberg_
+
+This contains short notes on using AspectJ with various J2EE servers and
+deployment tools.
+
+== Generally
+
+AspectJ programs work if run in the same namespace and with
+aspectjrt.jar. Servlet runners and J2EE web containers should run
+AspectJ programs fine if the classes and required libraries are deployed
+as usual. As with any shared library, if more than one application is
+using AspectJ, then the aspectjrt.jar should be deployed where it will
+be loaded by a common classloader. The same is true of any shared
+aspects.
+
+== Running AspectJ servlets in Tomcat 4.x
+
+In Tomcat, you can deploy application servlets in WAR's or in exploded
+web directories and share code across applications.
+
+. Use `ajc` to compile the servlets, and deploy the classes as usual
+  into `{WebRoot}/WEB-INF/classes`.
+. If your web applications or aspects do not interact, deploy
+  `aspectjrt.jar` into `{WebRoot}/WEB-INF/lib`.
+. If your web applications or aspects might interact, deploy them to
+`${CATALINA_BASE}/shared/lib`.
+
+Tomcat 4.x uses the Jasper engine based on Ant to compile JSP's. To set
+up ajc as the compiler, do the following before starting Tomcat:
+
+. Put `aspectjtools.jar` in `${CATALINA_HOME}/common/lib` so that it can
+  be loaded by Jasper.
+
+. Update Jasper servlet parameters in `${CATALINA_HOME}/conf/web.xml` to
+  tell Ant to use `ajc` by setting the compiler property to the AspectJ
+  compiler adapter:
++
+....
+<servlet>
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+    ...
+    <init-param>
+        <param-name>compiler</param-name>
+        <param-value>org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter</param-value>
+    </init-param>
+....
+
+. The classpath is dynamically generated from the webapp deployment, so
+  `aspectjrt.jar` should be in `{webapp}/WEB-INF/lib` or some shared or
+  common directory supported by the server.
+
+. Alternatively, you can precompile JSP's using
+  xref:#j2ee-tomcat4-precompileJsp[this Ant script]. That involves
+  manually updating the `web.xml` file with the `Jasper`-generated servlet
+  mappings.

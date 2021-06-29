@@ -1,0 +1,60 @@
+== `ajdoc`, the AspectJ API documentation generator
+
+=== Name
+
+`ajdoc` - generate HTML API documentation, including crosscutting structure
+
+=== Synopsis
+
+[subs=+quotes]
+ ajdoc [ -bootclasspath _classpathlist_ ] [ -classpath _classpathlist_ ] [-d _path_] [-help] [-package] [-protected] [-private] [-public] [-overview _overviewFile_] [ -sourcepath _sourcepathlist_ ] [-verbose] [-version] [_sourcefiles_... | _packages_... | @_file_... | -argfile _file_...] [ _ajc options_ ]
+
+=== Description
+
+`ajdoc` renders HTML documentation for AspectJ constructs as well as the
+Java constructs that `javadoc` renders. In addition `ajdoc` displays the
+crosscutting nature in the form of links. That means, for example, that
+you can see everything affecting a method when reading the documentation
+for the method.
+
+To run `ajdoc`, use one of the scripts in the AspectJ `bin` directory.
+The `ajdoc` implementation builds on Sun's `javadoc` command line tool,
+and you use it in the same way with many of the same options (`javadoc`
+options are not documented here; for more information on `javadoc`
+usage, see the http://java.sun.com/j2se/javadoc/[Javadoc homepage].)
+
+As with `ajc` (but unlike `javadoc`), you pass `ajdoc` all your aspect
+source files and any files containing types affected by the aspects;
+it's often easiest to just pass all the `.java` and `.aj` files in your
+system. Unlike `ajc`, `ajdoc` will try to find package sources using the
+specified sourcepath if you list packages on the command line.
+
+To provide an argfile listing the source files, you can use use the same
+argfile (`@filename`) conventions as with `ajc`. For example, the
+following documents all the source files listed in `argfile.lst`,
+sending the output to the `docDir` output directory.
+
+....
+ajdoc -d docDir @argfile.lst
+....
+
+See the xref:#ajc[ajc documentation] for details on the text file
+format.
+
+`ajdoc` honours `ajc` options. See the xref:#ajc_options[ajc
+documentation] for details on these options.
+
+`ajdoc` currently requires the `tools.jar` from J2SE 1.3 to be on the
+classpath. Normally the scripts set this up, assuming that your
+`JAVA_HOME` variable points to an appropriate installation of Java. You
+may need to provide this jar when using a different version of Java or a
+JRE.
+
+=== Examples
+
+* Change into the `examples` directory.
+* Type `mkdir doc` to create the destination directory for the documentation.
+* Type `ajdoc -private -d doc spacewar coordination` to generate the documentation. (Use `-private` to get all members,
+  since many of the interesting ones in spacewar are not public.)
+* Type `ajdoc -private -d doc @spacewar/demo.lst` to use the argfile associated with Spacewar.
+* To view the documentation, open the file `index.html` in the `doc` directory using a web browser.

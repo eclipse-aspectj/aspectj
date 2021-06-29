@@ -1,0 +1,161 @@
+[[ajcore]]
+== AspectJ Core Files
+
+[[ajcore-introduction]]
+=== Introduction
+
+When the compiler terminates abnormally, either because a particular
+kind of message was issued or an exception was thrown, an AspectJ core
+file will be produced. You will find it the working directory of the
+compiler and it will have a name that contains the date and time that
+the file was produced e.g. `ajcore.20060810.173655.626.txt`. The file
+contains details of the problem such as the exception thrown as well as
+information about the environment such as operating system and Java
+version. When submitting a bug, include this file whenever it is
+available.
+
+[[configuration]]
+==== Configuring dump files
+
+By default AspectJ will only create an `ajcore` file when an unexpected
+exception is thrown by the weaver or an `abort` message is issued.
+However it is possible to disable this feature or enable files to be
+produced under different circumstances. The table below lists the System
+properties that can be used to configure `ajcore` files.
+
+[cols=",,",options="header",]
+|===
+|Property |Default |Description
+|`org.aspectj.weaver.Dump.exception` |`true` |Generate an `ajcore` files
+when an exception thrown.
+
+|`org.aspectj.weaver.Dump.condition` |`abort` |Message kind for which to
+generate `ajcore` e.g. `error`.
+
+|`org.aspectj.dump.directory` |`none` |The directory used for ajcore
+files.
+|===
+
+[[ajcore-examples]]
+==== AJCore File Examples
+
+Below is an extract from an `ajcore` file. You will see details of the
+dump configuration as well as the exception (with stack trace) that is
+the source of the problem and any messages issued by the compiler. Most
+importantly the exact version of AspectJ is included.
+
+....
+---- AspectJ Properties ---
+AspectJ Compiler DEVELOPMENT built on Tuesday Jul 25, 2006 at 13:00:09 GMT
+---- Dump Properties ---
+Dump file: ajcore.20060810.173655.626.txt
+Dump reason: java.lang.NoClassDefFoundError
+Dump on exception: true
+Dump at exit condition: abort
+---- Exception Information ---
+java.lang.NoClassDefFoundError: org/apache/commons/logging/LogFactory
+    at org.aspectj.weaver.tools.CommonsTraceFactory.<init>(CommonsTraceFactory.java:17)
+    at java.lang.Class.newInstance0(Native Method)
+    at java.lang.Class.newInstance(Class.java:232)
+    at org.aspectj.weaver.tools.TraceFactory.<clinit>(TraceFactory.java:35)
+    at org.aspectj.weaver.World.<clinit>(World.java:114)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.initBcelWorld(AjBuildManager.java:679)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild(AjBuildManager.java:224)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:164)
+    at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+    at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+    at org.aspectj.tools.ajc.Main.run(Main.java:367)
+    at org.aspectj.tools.ajc.Main.runMain(Main.java:246)
+    at org.aspectj.tools.ajc.Main.main(Main.java:86)
+---- System Properties ---
+java.runtime.name=Java(TM) 2 Runtime Environment, Standard Edition
+sun.boot.library.path=C:\jdk1.3.1_16\jre\bin
+java.vm.version=1.3.1_16-b06
+java.vm.vendor=Sun Microsystems Inc.
+java.vendor.url=http://java.sun.com/
+path.separator=;
+java.vm.name=Java HotSpot(TM) Client VM
+file.encoding.pkg=sun.io
+java.vm.specification.name=Java Virtual Machine Specification
+user.dir=C:\workspaces\org.aspectj\org.aspectj.ant.tests
+java.runtime.version=1.3.1_16-b06
+java.awt.graphicsenv=sun.awt.Win32GraphicsEnvironment
+os.arch=x86
+java.io.tmpdir=C:\DOCUME~1\IBM_user\LOCALS~1\Temp\
+line.separator=
+
+java.vm.specification.vendor=Sun Microsystems Inc.
+java.awt.fonts=
+os.name=Windows XP
+java.library.path=C:\jdk1.3.1_16\jre\bin;...
+java.specification.name=Java Platform API Specification
+java.class.version=47.0
+os.version=5.1
+user.home=C:\Documents and Settings\IBM_user
+user.timezone=Europe/London
+java.awt.printerjob=sun.awt.windows.WPrinterJob
+file.encoding=Cp1252
+java.specification.version=1.3
+java.class.path=C:\workspaces\org.aspectj\aj-build\dist\tools\lib\aspectjtools.jar
+user.name=IBM_user
+java.vm.specification.version=1.0
+java.home=C:\jdk1.3.1_16\jre
+user.language=en
+java.specification.vendor=Sun Microsystems Inc.
+awt.toolkit=sun.awt.windows.WToolkit
+java.vm.info=mixed mode
+java.version=1.3.1_16
+java.ext.dirs=C:\jdk1.3.1_16\jre\lib\ext
+sun.boot.class.path=C:\jdk1.3.1_16\jre\lib\rt.jar;...
+java.vendor=Sun Microsystems Inc.
+file.separator=\
+java.vendor.url.bug=http://java.sun.com/cgi-bin/bugreport.cgi
+sun.io.unicode.encoding=UnicodeLittle
+sun.cpu.endian=little
+user.region=GB
+sun.cpu.isalist=pentium i486 i386
+---- Command Line ---
+-d
+C:\workspaces\org.aspectj\org.aspectj.ant.tests\IncrementalAjcTaskTest-temp
+-g:none
+-deprecation
+-noExit
+-warn:-unusedImport
+-nowarn
+-XterminateAfterCompilation
+-preserveAllLocals
+-proceedOnError
+-referenceInfo
+-source
+1.3
+-target
+1.1
+-time
+-verbose
+-classpath
+C:\workspaces\org.aspectj\org.aspectj.ant.tests\..\lib\test\aspectjrt.jar
+-argfile
+C:\workspaces\org.aspectj\taskdefs\testdata\default.lst
+-messageHolder
+org.aspectj.bridge.MessageHandler
+---- Full Classpath ---
+Empty
+---- Compiler Messages ---
+abort ABORT -- (NoClassDefFoundError) org/apache/commons/logging/LogFactory
+org/apache/commons/logging/LogFactory
+java.lang.NoClassDefFoundError: org/apache/commons/logging/LogFactory
+    at org.aspectj.weaver.tools.CommonsTraceFactory.<init>(CommonsTraceFactory.java:17)
+    at java.lang.Class.newInstance0(Native Method)
+    at java.lang.Class.newInstance(Class.java:232)
+    at org.aspectj.weaver.tools.TraceFactory.<clinit>(TraceFactory.java:35)
+    at org.aspectj.weaver.World.<clinit>(World.java:114)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.initBcelWorld(AjBuildManager.java:679)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild(AjBuildManager.java:224)
+    at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:164)
+    at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+    at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+    at org.aspectj.tools.ajc.Main.run(Main.java:367)
+    at org.aspectj.tools.ajc.Main.runMain(Main.java:246)
+    at org.aspectj.tools.ajc.Main.main(Main.java:86)
+       
+....

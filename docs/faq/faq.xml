@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--<?xml version="1.0" encoding="ISO-8859-1"?>-->
 
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "../../lib/docbook/docbook-dtd/docbookx.dtd">
@@ -1983,9 +1983,9 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
                   other files might also need to be recompiled or re-woven.
               </para>
                 <para> Depending on what is modified, we may need to re-weave
-                    code.  If you change a pointcut and save it, we currently have
+                    code. Â If you change a pointcut and save it, we currently have
                     to check everywhere in case a new match is occurring or an old
-                    match is no longer correct.  However, if you simply change
+                    match is no longer correct. Â However, if you simply change
                     the body of an advice in an aspect, there is (usually) no need
                     to reweave as the affected classes call the advice and the
                     advice (by design) maintains its name in the recompiled

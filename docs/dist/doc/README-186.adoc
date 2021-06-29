@@ -1,0 +1,10 @@
+[.small]#© Copyright 2015 Contributors. All rights reserved.#
+
+== AspectJ 1.8.6 Readme
+
+The full list of resolved issues in 1.8.6 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.6;[here]
+
+.
+
+* 1.8.6 available 5-Jun-2015

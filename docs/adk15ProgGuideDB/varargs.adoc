@@ -1,0 +1,141 @@
+== Varargs
+
+[[varargs-inJava5]]
+=== Variable-length Argument Lists in Java 5
+
+Java 5 (and hence AspectJ 5) allows you to specify methods that take a
+variable number of arguments of a specified type. This is achieved using
+an ellipsis (...) in the method signature as shown:
+
+....
+public void foo(int i, String... strings) {
+}
+....
+
+A method or constructor may take at most one variable length argument,
+and this must always be the last declared argument in the signature.
+
+==== Calling Methods and Constructors with variable-length arguments
+
+A _varargs_ method may be called with zero or more arguments in the
+variable argument position. For example, given the definition of `foo`
+above, the following calls are all legal:
+
+....
+foo(5);
+foo(5,"One String");
+foo(7,"One String","Two Strings");
+foo(3,"One String","Two Strings","Three Strings");
+....
+
+A _varargs_ parameter is treated as an array within the defining member.
+So in the body of `foo` we could write for example:
+
+....
+public void foo(int i, String... strings) {
+  String[] someStrings = strings;
+  // rest of method body
+}
+....
+
+One consequence of this treatment of a varargs parameter as an array is
+that you can also call a varargs method with an array:
+
+....
+foo(7,new String[] {"One String","Two Strings"});
+....
+
+[[varargs-in-pcds]]
+=== Using Variable-length arguments in advice and pointcut expressions
+
+AspectJ 5 allows variable-length arguments to be used for methods
+declared within aspects, and for inter-type declared methods and
+constructors, in accordance with the rules outlined in the previous
+section.
+
+AspectJ 5 also allows variable length arguments to be matched by
+pointcut expressions and bound as formals in advice.
+
+==== Matching signatures based on variable length argument types
+
+Recall from the definition of signature patterns given in the chapter on
+annotations (xref:#signaturePatterns[???]), that `MethodPattern` and
+`ConstructorPattern` are extended to allow a `varargs` pattern in the
+last argument position of a method or constructor signature.
+
+....
+FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
+                  OptionalParensTypePattern (',' FormalsPattern)* |
+                  TypePattern '...'
+
+FormalsPatternAfterDotDot :=
+        OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
+        TypePattern '...'
+....
+
+Method and constructor patterns are used in the `call`, `execution`,
+`initialization`, `preinitialization`, and `withincode` pointcut
+designators. Some examples of usage follow:
+
+call(* org.xyz.*.*(int, String...))::
+  Matches a call join point for a call to a method defined in the
+  `org.xyz` package, taking an `int` and a `String vararg`.
+execution(* org.xyz.*.*(Integer...))::
+  Matches an execution join point for the execution of a method defined
+  in the `org.xyz` package, taking an `Integer vararg`.
+initialization(org.xyz.*.new((Foo || Goo)...))::
+  Matches the initialization join point for the construction of an
+  object in the `org.xyz` package via a constructor taking either a
+  variable number of `Foo` parameters or a variable number of `Goo`
+  parameters. (This example illustrating the use of a type pattern with
+  ...).
+
+A variable argument parameter and an array parameter are treated as
+distinct signature elements, so given the method definitions:
+
+....
+void foo(String...);
+void bar(String[]);
+....
+
+The pointcut `execution(* *.*(String...))` matches the execution join
+point for `foo`, but not `bar`. The pointcut
+`execution(* *.*(String[]))` matches the execution join point for `bar`
+but not `foo`.
+
+==== Exposing variable-length arguments as context in pointcuts and advice
+
+When a varargs parameter is used within the body of a method, it has an
+array type, as discussed in the introduction to this section. We follow
+the same convention when binding a varargs parameter via the `args`
+pointcut designator. Given a method
+
+....
+public void foo(int i, String... strings) {
+}
+....
+
+The call or execution join points for `foo` will be matched by the
+pointcut `args(int,String[])`. It is not permitted to use the varargs
+syntax within an args pointcut designator - so you _cannot_ write
+`args(int,String...)`.
+
+Binding of a varargs parameter in an advice statement is
+straightforward:
+
+....
+before(int i, String[] ss) : call(* foo(int,String...)) && args(i,ss) {
+  // varargs String... argument is accessible in advice body through ss
+  // ...
+}
+....
+
+Since you cannot use the varargs syntax in the `args` pointcut
+designator, you also cannot use the varargs syntax to declare advice
+parameters.
+
+Note: the proposal in this section does not allow you to distinguish
+between a join point with a signature (int, String...) and a join point
+with a signature (int, String[]) based _solely_ on the use of the `args`
+pointcut designator. If this distinction is required, `args` can always
+be coupled with `call` or `execution`.

@@ -1,0 +1,19 @@
+[[reflection]]
+== New Reflection Interfaces
+
+AspectJ 5 provides a full set of reflection APIs analogous to the
+`java.lang.reflect` package, but fully aware of the AspectJ type system.
+See the javadoc for the runtime and tools APIs for the full details. The
+reflection APIs are only supported when running under Java 5 and for
+code compiled by the AspectJ 5 compiler at target level 1.5.
+
+[[reflection_api]]
+=== Using AjTypeSystem
+
+The starting point for using the reflection apis is
+`org.aspectj.lang.reflect.AjTypeSystem` which provides the method
+`getAjType(Class)` which will return the `AjType` corresponding to a
+given Java class. The `AjType` interface corresponds to
+`java.lang.Class` and gives you access to all of the method, field,
+constructor, and also pointcut, advice, declare statement and inter-type
+declaration members in the type.
