@@ -1,0 +1,82 @@
+== Covariance
+
+[[covariance-inJava5]]
+=== Covariance in Java 5
+
+Java 5 (and hence AspectJ 5) allows you to narrow the return type in an
+overriding method. For example:
+
+....
+class A {
+  public A whoAreYou() {...}
+}
+
+class B extends A {
+  // override A.whoAreYou *and* narrow the return type.
+  public B whoAreYou() {...}
+}
+....
+
+[[covariance-and-join-point-matching]]
+=== Covariant methods and Join Point matching
+
+The join point matching rules for `call` and `execution` pointcut
+designators are extended to match against covariant methods.
+
+Given the classes `A` and `B` as defined in the previous section, and
+the program fragment
+
+....
+A a = new A();
+B b = new B();
+a.whoAreYou();
+b.whoAreYou();
+....
+
+The signatures for the call join point `a.whoAreYou()` are simply:
+
+....
+A A.whoAreYou()
+....
+
+The signatures for the call join point `b.whoAreYou()` are:
+
+....
+A A.whoAreYou()
+B B.whoAreYou()
+....
+
+Following the join point matching rules given in xref:#jpsigs[???],
+
+call(* whoAreYou())::
+  Matches both calls, (since each call join point has at least one
+  matching signature).
+call(* A.whoAreYou())::
+  Matches both calls, (since each call join point has at least one
+  matching signature).
+call(A whoAreYou())::
+  Matches both calls, (since each call join point has at least one
+  matching signature).
+call(A B.whoAreYou())::
+  Does not match anything - neither of the call join points has a
+  signature matched by this pattern. A lint warning is given for the
+  call `a.whoAreYou()` ("does not match because declaring type is A, if
+  match required use target(B)").
+call(A+ B.whoAreYou())::
+  Matches the call to `b.whoAreYou()` since the signature pattern
+  matches the signature `B B.whoAreYou()`. A lint warning is given for
+  the call `a.whoAreYou()` ("does not match because declaring type is A,
+  if match required use target(B)").
+call(B A.whoAreYou())::
+  Does not match anything since neither join point has a signature
+  matched by this pattern.
+call(B whoAreYou())::
+  Matches the call to `b.whoAreYou()` only.
+call(B B.whoAreYou())::
+  Matches the call to `b.whoAreYou()` only.
+
+The rule for signature matching at call and execution join points is
+unchanged from AspectJ 1.2: a call or execution pointcut matches if the
+signature pattern matches at least one of the signatures of the join
+point, and if the modifiers of the method or constructor are matched by
+any modifier pattern or annotation pattern that may be present.

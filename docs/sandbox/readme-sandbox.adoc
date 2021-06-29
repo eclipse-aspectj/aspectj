@@ -1,0 +1,163 @@
+= AspectJ sandbox for sample code and instructions
+
+This directory is a place to put scraps that might end up in the AspectJ
+documentation or on the web site:
+
+* sample code for AspectJ programs,
+* sample code for extensions to AspectJ tools and API's,
+* sample scripts for invoking AspectJ tools, and
+* documentation trails showing how to do given tasks using AspectJ,
+  AJDT or various IDE or deployment environments.
+
+== General
+
+In the past, we found it tedious to keep and verify sample code used in
+documentation because it involves copying the code from the
+documentation into a form that can be tested (or vice versa). Further,
+there are a lot of tips and sample code contributed on the mailing
+lists, but they can be difficult to find when needed. This aims to be a
+place where such contributions can be gathered, kept in good order, and
+extracted for use in docs, without too much overhead.
+
+Code in the sandbox is kept in a running state; it's tested by running
+the harness on the sandbox test suite file sandbox-test.xml or
+sandbox-api-test.xml. To extract the code for documentation, we use a
+tool that recognizes a sample within a source file if it has comments
+signalling the start and end of the sample. Keeping sample code in sync
+with the documentation and with the test suite specification only takes
+a bit of care with formatting and comments. The rest of this document
+tells how.
+
+== Documenting samples
+
+`org.aspectj.internal.tools.build.SampleGatherer` (in the build module)
+extracts samples of the following form from any "source" file (currently
+source, html, text, and shell scripts):
+
+....
+... some text, possibly including @author tags
+{comment} START-SAMPLE [anchorName] [anchor title] {end-comment}
+... sample code ...
+{comment} END-SAMPLE [anchorName] {end-comment}
+... more text ...
+....
+
+Each sample extracted consists of the code and associated attributes:
+the source location, the anchor name and title, any text flagged with
+XXX, and the author pulled from the closest-preceding `@author` tag. (If
+there is no author, the AspectJ team is presumed.) `SampleGatherer` can
+render the collected samples back out to HTML (todo: or DocBook) for
+inclusion in the FAQ, the online samples, the Programming Guide, etc. An
+editor might reorder or annotate the samples but the code should not be
+edited to avoid introducing mistakes.
+
+To help keep the sample code in sync with the docs...
+
+* Use comments in the sample to explain the code, rather than describing
+it in the documentation.
+* Preformat samples to be included without modification in docs:
+** Use 4 spaces rather than a tab for each indent.
+** Keep lines short - 60 characters or less.
+** In Java, code taken out of context of the defining type can be
+indented only once in the source code, even though they might normally
+be indented more.
+** In AspectJ, indent advice pointcuts beyond the block code:
++
+....
+before() : call(!public * com.company.library..*.*(String,..))
+       && within(Runnable+) { // indent once more than code
+    // code here
+}
+....
+
+Where you put the sample code depends on how big it is and what it's
+for. Any code intended as an extension to the AspectJ tools goes in the
+link:api-clients[api-clients/] directory. Most code will instead be
+samples of AspectJ programs. Subdirectories of this directory should be
+the base directories of different source sets. The link:common[common/]
+directory should work for most code snippets, but standalone,
+self-consistent code belongs in its own directory, as do sets pertaining
+to particular publications or tutorials. An example of this are the
+sources for the "Test Inoculated" article in the
+link:inoculated[inoculated/] directory. Finally, the
+link:testsrc[testsrc/] directory is reserved for code used to test the
+other code in the sandbox. There should be no samples under testsrc.
+
+== Testing samples
+
+We try to make sure that the samples we present to people actually work
+by testing each kind differently:
+
+* Most Java and AspectJ programs are tested using sandbox-test.xml.
+* API clients are tested using sandbox-api-test.xml, which requires
+building `aspectjtools.jar`.
+* Shell and Ant scripts should be run per instructions.
+* HTML and text files must be manually reviewed.
+
+When adding Java or AspectJ code, add a corresponding test case in
+sandbox-test.xml. This file has the same format as other harness test
+suites; for more information, see
+../../tests/readme-writing-compiler-tests.html. The test suite should
+run and pass after new code is added and before samples are extracted.
+
+To keep Java/AspectJ code in sync with the tests:
+
+* The test title should be prefixed with the anchor name and have any
+suffixes necessary for clarity and to make sure there are unique titles
+for each test. E.g., for a sample with the anchor
+"`language-initialization`",
++
+....
+<ajc-test
+    dir="common"
+    title="language-initialization constructor-call example">
+    ...
+</ajc-test>
+....
++
+(Someday we'll be able to compare the test titles with the anchor names
+to verify that the titles contain all the anchor names.)
+* Avoid mixing compiler-error tests with ordinary code, so others can
+reuse the target code in their samples. Most of the sample code should
+compile.
+* Any code that is supposed to trigger a compiler error should be tested
+by verifying that the error message is produced, checking either or both
+of the line number and the message text. E.g.,
++
+....
+<compile files="declares/Declares.java, {others}"
+    <message kind="error" line="15" text="Factory"/>
+</compile>
+....
++
+Where a test case refers to a line number, we have to keep the expected
+message and the target code in sync. You can help with this by adding a
+comment in the target code so people editing the code know not to fix or
+move the code. E.g.,
++
+....
+void spawn() {
+    new Thread(this, toString()).start(); // KEEP CE 15 declares-factory
+}
+....
++
+Any good comment could work, but here are some optional conventions:
+** Use "CE" or "CW" for compiler error or warning, respectively.
+** Specify the line number, if one is expected.
+** Specify the affected test title(s) or sample code anchor label to
+make it easier to find the test that will break if the code is modified.
+(The editor can also run the tests to find any broken ones.)
+
+If the code is broken (e.g., if it no longer works in the latest version
+of AspectJ), then prefix SAMPLE with BROKEN in the tag:
+
+....
+{comment} START-BROKEN-SAMPLE ...
+... sample code ...
+{comment} END-BROKEN-SAMPLE ...
+... more text ...
+....
+
+It will no longer be gathered, but can be fixed and reinstated.
+
+Happy coding!

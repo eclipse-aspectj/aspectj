@@ -1,0 +1,1538 @@
+[.small]#© Copyright 1998-2002 Palo Alto Research Center Incorporated
+2003-2008 Contributors. All rights reserved.#
+
+== Changes in AspectJ
+
+* xref:#1.6.0[1.6.0] (released 2008-04)
+* xref:#1.5.4[1.5.4] (released 2007-12)
+* xref:#1.5.3[1.5.3] (released 2006-11)
+* xref:#1.5.2[1.5.2] (released 2006-06)
+* xref:#1.5.1[1.5.1] (released 2006-04)
+* xref:#1.5.0[1.5.0] (released 2005-12)
+* xref:#1.2.1[1.2.1] (released 2004-10)
+* xref:#1.2[1.2] (released 2004-05)
+* xref:#1.1.1[1.1.1] (released 2003-09)
+* 1.1.0 (released 2003-06-06) See README-11.html
+* xref:#1.0.6[1.0.6] (released 2002-07-24)
+** xref:#1.0.6compiler[Compiler]
+** xref:#1.0.6ajde[AJDE]
+** xref:#1.0.6ajdoc[Ajdoc]
+* xref:#1.0.5[1.0.5] (released 2002-06-27)
+* xref:#1.0.4[1.0.4] (released 2002-04-17)
+* xref:#1.0.3[1.0.3] (released 2002-02-08)
+* xref:#1.0.2[1.0.2] (released 2002-02-06)
+* xref:#1.0.1[1.0.1] (released 2001-12-18)
+* xref:#1.0.0[1.0.0] (released 2001-11-30)
+* xref:#1.0rc3[1.0rc3] (released 2001-11-14)
+* xref:#1.0rc2[1.0rc2] (released 2001-10-12)
+* xref:#1.0rc1[1.0rc1] (released 2001-10-5)
+* xref:#1.0beta1[1.0beta1] (released 2001-08-29)
+* xref:#1.0alpha1[1.0alpha1] (released 2001-08-09)
+* xref:porting.adoc[Porting and Transition]
+
+'''''
+
+== [#1.6.0]#1.6.0#
+
+This release rebases AspectJ on the Eclipse Compiler version 785_R33X -
+making it Java6 compliant.
+
+A full list of bugs fixed and enhancements implemented can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0+RC1&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugzilla].
+
+== [#1.5.4]#1.5.4#
+
+This release contains around 40 bug fixes and enhancements since the
+1.5.3 release.
+
+A full list of bugs fixed and enhancements implemented can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&target_milestone=1.5.4&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED[]
+Bugzilla
+
+== [#1.5.3]#1.5.3#
+
+This release contains around 80 bug fixes and enhancements since the
+1.5.2 release.
+
+A full list of bugs fixed and enhancements implemented can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&target_milestone=1.5.3&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED[]
+Bugzilla
+
+== [#1.5.2]#1.5.2#
+
+This release contains around 60 bug fixes and enhancements since the
+1.5.1 release.
+
+A full list of bugs fixed and enhancements implemented can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&target_milestone=1.5.2&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED[]
+Bugzilla
+
+== [#1.5.1]#1.5.1#
+
+This release contains over 70 bug fixes and enhancements since the 1.5.0
+release.
+
+A full list of bugs fixed in AspectJ 5 can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&target_milestone=1.5.1&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED[]
+Bugzilla
+
+== [#1.5.0]#1.5.0#
+
+This release contains nearly 400 bug fixes and enhancements since the
+1.2.1 release. Major updates to the language are documented in the
+link:adk15notebook/index.html[AspectJ 5 Developer's Notebook]. There are
+also a number of enhancements to accompanying tools documented in the
+link:devguide/index.html[Developer's Guide]
+
+A full list of bugs fixed in AspectJ 5 can be found in
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&product=AspectJ&resolution=FIXED&chfieldfrom=2004-11-06&chfieldto=2005-12-20[bugzilla].
+
+== [#1.2.1]#1.2.1#
+
+All known P1 and P2 bugs have been fixed in this release. The
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2.1&bug_status=RESOLVED&resolution=FIXED[full
+list of fixes and enhancements] can be found on bugzilla. Some of the
+more significant bug fixes and enhancements include:
+
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=53981[53981] Any
+occurence of proceed(..) within the body of around advice is treated as
+the special proceed form (even if the aspect defines a method named
+proceed) unless a target other than the aspect instance is specified as
+the recipient of the call.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=48990[48990]
+Optimisations added for the special cases of if(true) and if(false) in
+pointcut expressions.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=69319[69319] The Eclipse
+JDT compiler inside AspectJ has been upgraded to the Eclipse 3.0 release
+version.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=61572[61572] AspectJ
+1.2.1 correctly detects an attempt to access instance variables of the
+declaring aspect of an inter-type declared method from within the body
+of that method.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=65319[65319] Error
+message now correctly produced when attempting to bind a pointcut formal
+in both a this() and a target() pointcut sub-expression.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=70619[70619] Conflicting
+declare precedence statements are now handled gracefully.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=42573[42573] Relative
+paths specified in .lst files are now resolved relative to the lst file
+location.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=57666[57666] Resource
+copying from jar files correctly handles duplicate manifests.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=61768[61768] Static
+inner types of an aspect can now be referenced within the body of
+inter-type declared methods in that aspect.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=62642[62642]
+after-throwing advice on a static initialization join point no longer
+swallows ExceptionInInitializer errors.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=67578[67578] AspectJ
+1.2.1 correctly handles privileged access to members defined in a
+different package to the privileged aspect.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=67592[67592] The
+Object[] given in response to a getArgs() call on a JoinPoint object is
+now a value copy.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=68991[68991]
+Initialisers of inter-type declared fields now have field-set join
+points.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=69459[69459] A static
+inter-type method declaration is not allowed to hide an instance method.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=70794[70794] An
+inter-type declaration of an abstract method on a target type which is
+an interface must be declared as public.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=71372[71372] Calls can
+be made to private static methods of enclosing types from the body of
+around advice in an inner aspect.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=71377[71377] Join points
+are now correctly detected for calls to private methods and set/get of
+private fields within the body of around advice.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=71723[71723] A
+non-privileged inter-type declared method cannot call protected methods
+defined in parent classes of the target type.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=74238[74238] Any
+privileged calls made by the AspectJ runtime library are now correctly
+wrapped in doPrivileged blocks, with fall-back implementations, allowing
+usage in restricted environments.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=74245[74245] Specifying
+the -proceedOnError flag will now cause the compiler to attempt weaving
+even in the face of errors.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=76030[76030] Runtime
+optimisations for cflow (in the case where there are no arguments bound
+in the cflow pointcut) have been implemented. This can dramatically
+speed-up some programs making heavy use of cflow. Thanks to the abc
+compiler team for detecting this performance related bug and for
+piloting the fix.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54421[54421] String
+concatentation (using "+") is now allowed for the message associated
+with a declare error or warning statement.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=69011[69011] ajdoc now
+correctly handles types in the default package.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=36747[36747] The 1.2.1
+compiler supports an additional option, -showWeaveInfo, which will
+produce informational messages concerning the activity of the weaver.
+For example:
++
+....
+        Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo'
+        (GetInfo.java:26) [RuntimeTest=true]
+
+....
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=44191[44191] AspectJ
+1.2.1 improves the error messages issued in many of the infamous "can't
+find type" scenarios.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=46298[46298] The code
+generated by ajc is now more easily digested by many decompilers (but
+you wouldn't want to do that anyway would you?? ;) ).
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=49743[49743] Performance
+optimisations in the AspectJ runtime library when using getSignature()
+and toString().
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=61374[61374] AspectJ now
+includes its own version of BCEL under the org.aspectj namespace which
+eliminates unwanted conflicts with BCEL versions inside JDKs or on
+classpaths in general.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=68494[68494] ajdoc now
+supports ".aj" files.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=72154[72154] The AspectJ
+1.2.1 compiler includes the ability to dump information about the
+current state of the compiler on failure. By default this only happens
+on an abort, but it can also be forced to dump on error by specifying
+the property: org.aspectj.weaver.Dump.condition=error
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=37020[37020] The line
+number locations for method execution and static initialization join
+points now give the first line of the method declaration (rather than
+the line number of the first line of code in the method body) when the
+source code is compiled by ajc.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=73369[73369] A new jar,
+aspectjweaver.jar is included in the lib directory, which contains the
+subset of aspectjtools.jar needed for weaving. The "aj" script is also
+moved into the bin directory.
+
+== [#1.2]#1.2#
+
+All known P1 and P2 bugs have been fixed in this release. The
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2[full
+list of fixes and enhancements] can be found on bugzilla. Some of the
+more significant bug fixes and enhancements include:
+
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=46347[46347] The ajc
+compiler now can read .class files from directories as well as zip files
+for bytecode weaving, via the new -inpath option.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=48080[48080] Error and
+warning messages emitted as a result of a declare error or declare
+warning statement now include context information that indicates the
+matched join point.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54819[54819] Error and
+warning messages coming from the weaving phase of compilation now show
+source context wherever it is available, and also indicate as the source
+location of the error either the class file or jar file from which the
+binary source unit came.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=36430[36430] A new
+-Xreweavable option has been added which allows class files to be woven
+more than once.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=49250[49250]
+SoftException now supports getCause().
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=51320[51320] AspectJ 1.2
+now gives a compilation error if one of the non-statically determinable
+pointcut forms is used in a declare statement.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=53012[53012] Declaring
+precedence on a class type (rather than an aspect type) is now an error
+unless subtypes are included.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=36069[36069] The source
+information for inlined advice is now correct (using JSR 45).
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=34206[34206] (See also
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=44587[44587]). Errors
+occuring during static initialisation of an aspect are now handled much
+more gracefully.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=41952[41952] A new Xlint
+warning warns users specifying declaring type patterns in call pointcut
+designators if the pointcut does not match at places they may expect it
+to.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=42574[42574] -extdirs
+opion now recognises .zip files as well as .jar.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=48091[48091] New option
+-XlazyTjp defers creation of JoinPoint objects until just before calling
+the advice body that requires them. This allows the cost of creating
+JoinPoint objects to be avoided using an if() pointcut test that returns
+false when the advice body is not required to be executed. Speed-ups of
+10-100X are obtained via this optimisation (as compared to putting the
+test inside the advice body).
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=45441[45441]
+IncompatibleClassChangeError at runtime when compiling with the -1.4
+option.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54625[54625] Incremental
+compilation did not support the -outjar option, but silently failed if
+it was specified. AspectJ 1.2 always performs a full build when the
+-outjar option is present.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54965[54965] Incremental
+compilation under AspectJ 1.2 is approximately twice as fast as under
+AspectJ 1.1.1.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=55134[55134] Incremental
+compilation now deletes any additional class files generated during the
+weave phase when the class file from whence they came is deleted.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54621[54621] Incremental
+compilation will now detect changes (add, delete, modify) to class files
+in directories on the inpath and will include them in incremental
+compilation.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54621[54621] Incremental
+compilation will now detect changes to jars on the inpath (and injars),
+and trigger a full build if a jar is modified.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54622[54622] Incremental
+compilation will now detect changes to resources on the inpath.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=54618[54618] Incremental
+compilation will now detect changes to any of the paths affecting
+compilation, and triggers a full build if there has been any change
+since the last build.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=50200[50200] The
+aspectjrt.jar manifest file now has the correct (upper) case.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=49457[49457] No error
+given when overloading pointcuts, unless variables are bound.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=50776[50776] Compilation
+failure when overriding an inter-type declared method with a different
+throws clause.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=51919[51919] Polymorphic
+inter-type declaration fails.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=52464[52464] Declare
+warning coupled with inter-type declaration causes compiler crash.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=41125[41125] Variable
+names in the local variable table (for debugging) are now correctly
+preserved in all cases.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=43792[43792] Improved
+support for non-US locales (and significantly boosted weaver performance
+at the same time).
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=35636[35636] AspectJ 1.2
+behaves much more gracefully when running out of memory. (It also
+requires less memory than 1.1.1 did in any case).
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=42711[42711] Super-types
+of parameters not recognised when calling priveleged methods.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=43972[43972] (See also
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=45676[45676]). Incorrectly
+adding synthetic attribute to generated methods.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=45184[45184] External
+pointcut references not resolved when a named pointcut is used by a
+declare statement.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=46750[46750] Declare
+soft does not work inside a nested aspect.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=47754[47754] No error
+signalled when attempting to declare a static method on an interface
+using an inter-type declaration.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=48522[48522] Declare
+soft softens all exceptions at matched join points, not just the
+exception declared to be soft.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=49295[49295] AspectJ 1.2
+no longer supports inter-type constructor declarations on interfaces.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=51929[51929] Call to a
+protected super-type method within a advice body causes
+java.lang.VerifyError.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=52928[52928] Private
+members introduced via an interface are incorrectly visible within
+implementing classes.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=47910[47910] An output
+jar file created by AspectJ when using the -outjar option does not
+contain a valid manifest file.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=59909[59909] Thread
+local storage used to manage cflow stacks when available - improves
+cflow performance when working with a multi-threaded application.
+
+== [#1.1.1]#1.1.1#
+
+All known P1 and P2 bugs have been fixed in this release. The
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.1.1[full
+list of bug fixes] (49 in all) can be found on bugzilla.
+
+Some of the more significant bug fixes and enhancements in this release
+include:
+
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=40943[40943] The ajc
+compiler now copies resource files from jars specified using the -injars
+option. When compiling with source directories, resources are _not_
+copied - mirroring the behaviour of javac so as to cause minimum
+disruption when switching between ajc and javac. (To copy resources from
+source directories, use the iajc Ant task sourceRootCopyFilter option.)
+Thanks to Matthew Webster for contributing many of the patches for this
+enhancement.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=39626[39626] ajc was
+erroneously putting aspectjtools.jar in the classpath of a compilation.
+This caused problems when attempting to compile projects using different
+versions of any of the classes in aspectjtools.jar. Thanks to George
+Harley and Igor Hjelmstrom Vinhas Ribeiro for their assistance in
+tracking this down.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=40257[40257] Relative
+paths are now supported in ".lst" files.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=40771[40771] The Ajde
+apis are no longer coupled to swing. This is of most significance to
+AJDT users on the Mac OS X platform, enabling AJDT to be used with Mac
+OS X.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=41254[41254] Of interest
+to those writing tools that need to interact with the structure model
+for AspectJ programs: the interface to the AspectJ structure model was
+significantly revised and enhanced in 1.1.1.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=39462[39462] A compiler
+exception was thrown when an abstract aspect in a library was extended
+by a concrete aspect using cflow. Thanks to Takao Naguchi for an easy to
+reproduce bug report.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=39479[39479] Compiler
+crashes when a constructor delegates to another constructor that uses a
+switch statement. Thanks to Andy Clement for both the easy to reproduce
+bug report and the patch.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=41175[41175] Declared
+exceptions were being lost on inter-type declarations made from binary
+aspects in an aspect library.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=41359[41359] Aspect
+per-clauses were not inherited by sub-aspects when using binary aspect
+libraries. Thanks to Chris Bozic for the easy to reproduce bug report.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=42539[42539] The "+"
+pattern was being ignored for type patterns used in throws clauses.
+Thanks to Keith Sader for the easy to reproduce bug report.
+* https://bugs.eclipse.org/bugs/show_bug.cgi?id=40807[40807] If you
+specify no output directory, the iajc Ant task now defaults to using the
+source directory, following ajc and javac. As a result, now you can use
+ajc to compile JSP's in Tomcat. Thanks to Ron Bodkin for investigating
+how to integrate ajc with Tomcat.
+
+== [#1.0.6]#1.0.6#
+
+This release contains mainly bug fixes for ajde and ajdoc.
+
+=== [#1.0.6compiler]#Compiler#
+
+We fixed a bug with switch statements, thanks largely to Jason Rimmer's
+diligence in helping us isolate the problem. Also, to help Log4J parse
+stack traces, we changed class file symbolic line references to use []
+instead of () for the virtual start lines of each file.
+
+=== [#1.0.6ajde]#AJDE#
+
+*AJDE Framework, AJBrowser, and AJDE for Forte/NetBeans*
+
+The memory use of the structure model has been streamlined in order to
+reduce footprint when working with large systems.  Error tolerance has
+also been improved for dealing with a structure model that is out of
+synch with resources on disk.
+
+==== AJDE for JBuilder
+
+JBuilder 7 is now supported.  All known bugs have been fixed including:
+
+* http://aspectj.org/bugs/resolved?id=787[787] AJDE for JBuilder throws
+exception given non-existent file
+* http://aspectj.org/bugs/resolved?id=788[788] Label too small in error
+message
+* http://aspectj.org/bugs/resolved?id=789[789] Index-out-of-bounds
+exception in JBuilder AJDE
+* http://aspectj.org/bugs/resolved?id=792[792] Required libraries
+disappear from JBuilder 6
+* http://aspectj.org/bugs/resolved?id=795[795] Unable to compile open
+tools
+* http://aspectj.org/bugs/resolved?id=802[802] AJDE loses current
+(cursor) position in file when switching files
+
+In addition, thanks to user feedback that indicated trouble building
+JBuilder OpenTools with AJDE/JBuilder, the OpenTool is now being built
+with itself.
+
+=== [#1.0.6ajdoc]#Ajdoc#
+
+* Fixed http://aspectj.org/bugs/resolved?id=790[790] aspect code
+comments suppressed by fix to bug 710
+* Known problems: http://aspectj.org/bugs/ajdoc
+
+'''''
+
+== [#1.0.5]#1.0.5#
+
+This release includes significant improvements to AspectJ Development
+Environment (AJDE) support. The entire user interface has been revised
+and streamlined. The AJDE features are more tightly integrated into
+JBuilder and NetBeans/Forte support. JBuilder support now includes
+graphical configuration file editing and an integrated AspectJ Browser
+tool.
+
+* xref:#1.0.5compiler[Compiler]
+* xref:#1.0.5ajde[AJDE]
+* xref:#1.0.5ajdoc[Ajdoc]
+* xref:#1.0.5anttasks[Ant tasks]
+
+=== [#1.0.5compiler]#Compiler#
+
+This was another compiler release primarily concerned with fixing corner
+cases in the language implementation. Our handling of nested classes,
+the assert statement, and cflow were the principal offenders this time.
+Thanks to Nicholas Alex Leidenfrost and Patrick Chan for their clear and
+concise bug reports on some of these issues.
+
+=== [#1.0.5ajde]#AJDE#
+
+==== This release includes significant improvements to AspectJ Development Environment (AJDE) support. All known bugs have been fixed, and the core framework quality has been significantly increased thanks to the adoption of a unit test suite. The following changes apply to all of the AJDE NetBeans/Forte, JBuilder, and the AspectJ Browser support. NetBeans/Forte and JBuilder-specific changes are listed below.
+
+* The entire user interface has been revised and streamlined.
+* The structure view and browser have a new UI, and offer both a
+file-based and global structure views. All views expose node ordering,
+node filtering, and association filtering functionality. The global
+views expose a package tree as well as the global inheritance and
+crosscutting structure.
+* Structure view navigation now has a history exposed by back/forward.
+* The is a new build configuration management UI.
+* The compiler preferences UI now includes access to all build options.
+* Error messages have been improved, and the structure views include
+annotations of nodes with errors and warnings.
+
+==== AJDE for JBuilder
+
+Integration into the JBuilder IDE is more streamlined. In addition:
+
+* The AspectJ Browser is included as a tool that replaces JBuilder's
+"Project View" and can be used to navigate the global structure of your
+system (including the crosscutting and inheritance structure).
+* Inline structure annotations in the editor's gutter can now expose all
+of the structure presented in the structure view, and can be used to
+navigate in a similar way. Note that there are preferences for toggling
+which of these appear.
+* Building is better integrated and the JBuilder build toolbar is
+removed when AJDE is enabled.
+* Build configurations can be selected from the build button's menu.
+* Execution is better integrated: instead of a separate "run" button
+JBuilder's run and debug can be used. Note that for new projects you
+will need to use the "AspectJ Runtime" library, which will be added to
+your preferences automatically.
+* A new graphical build configuration editor can be used by
+double-clicking ".lst" files that have been added to the project.
+* Error messages now match JBuilder's look-and-feel and behavior.
+Seeking to column numbers now works in addition to line numbers.
+
+==== AJDE for Forte/NetBeans
+
+Integration into the NetBeans IDE is more streamlined. In addition:
+
+* NetBeans 3.3.2 and SunONE Studio 4 are supported.
+* Multiple filesystems are supported.
+* Default project build configurations (all project files) are now
+supported.
+* Build configurations can be selected in the tool bar.
+* Regular NetBeans execution and debugging is supported. Note that you
+have to add netbeans/lib/ext/aspectjrt.jar file to your project
+configuration.
+* Class files are generated beside source files (NetBeans/javac
+default). There is currently no way to specify a target directory.
+
+==== AJBrowser
+
+* The browser now supports main class execution. Set the main class in
+the options dialog, and make sure that both the Java executable is on
+your path, and the class that you expect to execute on your classpath.
+* The error messages UI has been improved.
+
+=== [#1.0.5ajdoc]#Ajdoc#
+
+Bug fixes:
+
+* http://aspectj.org/bugs/resolved?id=710[710 - compiler-generated
+constructor shown with class comment]
+* http://aspectj.org/bugs/resolved?id=712[712 - comments lost in aspect
+docs for methods or constructors declared on other types.]
+* http://aspectj.org/bugs/resolved?id=719[719 - poor support for @link,
+@see tags]
+* http://aspectj.org/bugs/resolved?id=742[742 - crash with @see tag]
+* http://aspectj.org/bugs/resolved?id=751[751 - error loading doclet
+resource]
+
+=== [#1.0.5anttasks]#Ant tasks#
+
+Bug fixes:
+
+* http://aspectj.org/bugs/resolved?id=730[730 - document all supported
+ajc flags]
+
+'''''
+
+== [#1.0.4]#1.0.4#
+
+* xref:#1.0.4compiler[Compiler]
+* xref:#1.0.4ajde[AJDE]
+* xref:#1.0.4ajdoc[Ajdoc]
+* xref:#1.0.4taskdefs[Ant taskdefs]
+* xref:#1.0.4doc[Documentation]
+
+=== [#1.0.4compiler]#Compiler#
+
+* Over a dozen people independently reported a bug in error handling for
+the wrong number number of arguments to `proceed`. This has been turned
+into a nice error message. A number of other bug reports related to
+around advice and proceed have also been fixed, including the ability to
+change the bindings for `this` and `target` using proceed in around
+advice.
+* David Walend gets the _black thumb_ award for the most bug reports
+submitted by a new user. His bug report on the behavior of after
+returning advice led to some valuable clarifications of this part of the
+language spec.
+* A number of places where ajc didn't fully comply with the Java
+Language Spec have been fixed in this release. Thanks to Neal Gafter for
+reporting many of these.
+
+==== Incompatible changes
+
+Two potentially surprising incompatible changes have been made to ajc in
+order to bring the compiler into compliance with the 1.0 language
+design. These changes will be signalled by clear warning or error
+messages at compile-time and will not cause any run-time surprises. We
+expect most users to never notice these changes.
+
+* The obsolete class `org.aspectj.lang.MultipleAspectsBoundException`
+has been removed from aspectjrt.jar. This class had not been used since
+AspectJ-0.8 and should have been removed prior to the 1.0 release. It is
+not documented as part of the 1.0 language spec. This change will cause
+a compile-time type not found error in any code that refers to this
+exception.
+* The compiler was not correctly implementing the AspectJ-1.0 language
+design for some uses of after returning advice. This compiler behavior
+was fixed, and advice whose behavior might be changed by this bug fix
+will be highlighted with a compiler warning. More information about some
+of these changes can be found in the xref:porting.adoc#pre-1.0.4[porting
+notes].
+
+=== [#1.0.4ajde]#AJDE#
+
+This is the first release of AJDE support with significant external
+contribution. A big thanks goes out to Phil Sager for porting the AJDE
+for Forte/NetBeans support to NetBeans 3.3.1 and improving the
+integration into NetBeans.
+
+==== AJDE for JBuilder
+
+* Updates
+** This is a bug fix release only.
+
+==== AJDE for Forte/NetBeans
+
+* Updates
+** NetBeans 3.3.1 is now supported in addition to NetBeans 3.2 and Forte
+CE 3.
+** Native NetBeans main class execution can now be used. After doing a
+"Compile with AJC" browse to the main class in the "Filesystems"
+Explorer, right-click the class and select "Execute".
+** The debugger can now be used if the project main class is set
+("Project" menu -> "Set Project Main Class...").
+** Numerous bugs have been fixed.
+* Known limitations
+** Breakpoint setting does not work in the debugger.
+** In the "Filesystems" Explorer red Xs appear on files with AspectJ
+source code. The "AspectJ" Explorer understands the structure of AspectJ
+projects and should be used for navigating structure instead.
+
+==== AJDE for Emacs
+
+* This is a bug fix release only.
+
+=== [#1.0.4ajdoc]#Ajdoc#
+
+Ajdoc now runs under J2SE 1.4, but still requires the tools.jar from
+J2SE 1.3 be on the classpath.
+
+=== [#1.0.4taskdefs]#Ant tasks#
+
+* Repackaged to fit into the AspectJ product directory - e.g.,
+`aspectj-ant.jar` moved to `lib` as expected by `examples/build.xml`.
+* Fixed bugs, esp. http://aspectj.org/bugs/resolved?id=682[682]: Throw
+BuildException if failonerror and ajdoc detects misconfiguration.
+
+=== [#1.0.4doc]#Documentation#
+
+Added a 1-page quick reference guide. Improved javadoc documentation for
+the org.aspectj.lang package.
+
+'''''
+
+== [#1.0.3]#1.0.3#
+
+* xref:#1.0.3compiler[Compiler]
+* xref:#1.0.3taskdefs[Ant taskdefs]
+
+=== [#1.0.3compiler]#Compiler#
+
+This release fixes a single significant bug in 1.0.2 where ajc could
+generate unreachable code in `-usejavac` or `-preprocess` mode. This
+would happen when around advice was placed on void methods whose body
+consisted solely of a `while (true) {}` loop. We now properly handle the
+flow-analysis for this case and generate code that is acceptable to
+javac. Thanks to Rich Price for reporting this bug.
+
+=== [#1.0.3taskdefs]#Ant taskdefs#
+
+Added support to the Ajc taskdef for the -source 1.4 and -X options
+generally.
+
+'''''
+
+== [#1.0.2]#1.0.2#
+
+This release is mainly about keeping up with the Joneses. To keep up
+with SUN's release candidate for J2SE1.4, we now officially support the
+new 1.4 assertions and running on the 1.4 VM. In honor of the public
+review of JSR-45 Debugging Support for Other Languages we implement this
+spec for AspectJ. We support Borland's recent release of JBuilder 6, and
+since some of our users are starting to work on Mac OSX, AJDE now works
+nicely on this platform. We also fixed almost all of the bugs you
+reported in 1.0.1.
+
+* xref:#1.0.2compiler[Compiler]
+* xref:#1.0.2ajde[AJDE]
+* xref:#1.0.2ajdb[AJDB]
+
+=== [#1.0.2compiler]#Compiler#
+
+* Official support for `-source 1.4` option to compile new
+http://java.sun.com/j2se/1.4/docs/guide/lang/assert.html[1.4
+assertions]. This makes ajc completely compatible with j2se-1.4.
+* Implementation of http://jcp.org/jsr/detail/45.jsp[JSR-45 Debugging
+Support for Other Languages] so that debuggers which correctly implement
+this specification will be able to accurately debug any AspectJ program
+at a source code level. We are not currently aware of any debuggers that
+implement this so far, but expect that as j2se-1.4 becomes widely
+available this will change.
+* As proposed by Arno Schmidmeier and seconded by Nick Lesiecki, we now
+have an experimental `-Xlint` option that will provide warnings when
+type patterns used in pcds have no bindings. We are very interested in
+feedback on the usefulness and suggested improvements for this feature.
+* Several significant bugs in the implementation of around advice have
+been fixed. These include issues with
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=632[dynamic
+tests], with
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=620[complicated
+local types in an around body], and with
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=636[capturing
+proceed in a closure].
+* All but two
+(http://aspectj.org/jitterbug/aspectj-bugs/compiler?id=626[1],
+http://aspectj.org/jitterbug/aspectj-bugs/compiler?id=645[2]) verified
+bugs in 1.0.1 have been fixed. The two outstanding bugs have relatively
+easy work-arounds. Thanks as usual to everyone who submitted a bug
+report.
+* We no longer use the `SYNTHETIC` attribute to label declarations added
+by the aspectj compiler. We were using this attribute in compliance with
+http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#80128[the
+JVM Specification]; however, we've found that many tools expect this
+attribute to only be used for the narrow purpose of implementing Java's
+inner classes and that using it for other synthetic members can confuse
+them. This led to problems both
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=649[with javap]
+and http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=646[with
+javac].
+* Changes required adding runtime classes, so please compile and run
+using the latest `aspectjrt.jar`
+
+=== [#1.0.2ajde]#AJDE#
+
+This is a bug fix release only.
+
+* Thanks to Dave Yost and Matt Drance for submitting the AJDE patches
+for Mac OSX (context popup menus and keyboard shortcuts did not work).
+* Bugs in history navigation (back-forward buttons in the structure
+view) have been fixed.
+* "Declares" are now handled properly in the structure view.
+* Other GUI and usability improvements have been made the AspectJ
+Browser and core framework.
+
+==== AJDE for JBuilder
+
+* Support has been extended to JBuilder 6, and support for Enterprise
+version features has been improved.
+* Fixed bug causing inline source code annotations in the editor pane to
+not be updated after a recompile.
+* Keyboard shortcuts were fixed to work with Mac OSX.
+
+==== AJDE for Forte
+
+* Keyboard shortcuts were fixed to work with Mac OSX.
+
+==== [#1.0.2ajdb]#AJDB#
+
+Some minor bug fixes, but this is still early-access software. Please
+try using another JPDA-compliant debugger. If it uses JDI correctly,
+then it should navigate to line numbers when the classes are run under
+J2SE1.4, based on the new JSR-45 debugging support described above. We
+would appreciate any reports of success or failure.
+
+'''''
+
+== [#1.0.1]#1.0.1#
+
+* xref:#1.0.1compiler[Compiler]
+* xref:#1.0.1ajde[AJDE]
+* xref:#1.0.1ajdb[AJDB]
+
+=== [#1.0.1compiler]#Compiler#
+
+This release fixes a significant performance issue in the compiler,
+reported by Rich Price, that could lead to extremely long compiles in
+systems with many aspects and classes. Several other small bugs related
+to reporting compilation errors have also been fixed, see
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=610[this bug
+report] for an example.
+
+A new experimental flag has been added, `-XaddSafePrefix`, that will
+cause the prefix `aspectj$` to be inserted in front of all methods
+generated by ajc. This mode should be helpful when using aspectj with
+tools that do reflection based on method names, such as EJB tools.
+Thanks to Vincent Massol for pointing out the importance of this. It is
+expected that this prefix will either become the default compiler
+behavior in the future or a non-experimental flag will replace it.
+
+=== [#1.0.1ajde]#AJDE#
+
+Minor bug fixes, including: AJDE for JBuilder failed to preserve
+application parameters from project settings when executing the
+application.
+
+Source builds were cleaned up for JBuilder and Forte sources.
+
+=== [#1.0.1ajdb]#AJDB#
+
+Two bugs were reported and have been fixed in this release. (Note that
+ajdb is still considered early-access software.)
+
+* bug 611: NullPointerException dumping non-primitive values
+* bug 617: -X and -D options not passed to debug VM correctly
+
+== [#1.0.0]#1.0.0#
+
+* xref:#1.0.0language[Language]
+* xref:#1.0.0compiler[Compiler]
+* xref:#1.0.0ajde[AJDE]
+* xref:#1.0.0ajdoc[AJDoc]
+* xref:#1.0.0taskdefs[Ant taskdefs]
+
+== [#1.0.0language]#Language#
+
+There were no language changes for this release.
+
+== [#1.0.0compiler]#Compiler#
+
+Several minor bugs primarily in error handling were reported and have
+been fixed in this release. The two most serious bugs are described
+below:
+
+* Niall Smart and Stephan Schmidt reported related bugs (variants of
+which are also produced by other compilers) that caused verify errors
+when dealing with nested try-finally and synchronized statements. These
+are now fixed. More details are available
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=601[here] and
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=595[here]
+* Jan Hannemann submitted a
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=600[succint and
+clear bug report] for a difficult intermittant bug. The bug led to the
+compiler sometimes generating illegal code when introduced methods on a
+class overrode introduced methods on an interface implemented by that
+class. This is now fixed.
+
+== [#1.0.0ajde]#AJDE#
+
+Numerous user interface refinements were made to the browser and core
+AJDE functionality. Error handling and reporting has been improved. All
+of the AJDE tools now support the ".aj" file extension.
+
+=== AJDE for JBuilder
+
+* The AspectJ Browser now uses JBuilder's icons and distinguishes nodes
+by visibility.
+* Project-setting VM parameters are now supported by the "AJDE Run"
+button.
+
+=== AJDE for Forte
+
+* The AspectJ Browser now uses Forte's icons and distinguishes nodes by
+visibility
+
+=== AJBrowser
+
+* Documentation for the browser is now available at
+http://aspectj.org/docs
+
+=== Emacs Support: aspectj-mode and AJDEE
+
+* Improved updating of annotations during editing.
+* Pop-up jump menu now placed (with mouse pointer) near cursor.
+* [AJDEE only] Improved filtering of legal code completions.
+
+=== [#1.0.0ajdoc]#AJDoc#
+
+* Runs only in J2SE 1.3 - not 1.2 or 1.4. You can document 1.x-reliant
+programs by using the options to compile using 1.x libraries.
+* Disabled some non-functioning options, documented as `unsupported` in
+the syntax message.
+
+=== [#1.0.0taskdefs]#Ant taskdefs#
+
+* Fork is not supported in the AJDoc taskdef
+
+== [#1.0rc3]#1.0rc3#
+
+== [#1.0rc3language]#Language#
+
+There have been several minor clarifications/changes to the language.
+
+* Thanks to Robin Green for suggesting that we could relax the rules for
+inheriting multiple concrete members in order to allow those unambiguous
+cases where one member has already overridden the other.
+http://aspectj.org/pipermail/users/2001/001289.html[More details...]
+* Ron Bodkin encouraged us to examine the details of privileged aspects
+more closely. This led to several small improvements and clarifications
+to this language feature.
+http://aspectj.org/pipermail/users/2001/001258.html[More details...]
+
+== [#1.0rc3compiler]#Compiler#
+
+This release saw several changes to the compiler in order to work-around
+known bugs in different JVMs, or to otherwise mimic the behavior of
+javac rather than necessarily following the Java Language Specification.
+
+* Hanson Char reported a bug where ajc's correctly generated bytecodes
+for some references to interface fields result in verify errors on
+certain JVMs. While this is a known bug in those JVMs, we've modified
+ajc to be bug compatible with all the other Java compilers out there to
+work-around this JVM bug.
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=551[More
+details...]
+* Frank Hunleth discovered a similar bug where ajc's correct bytecodes
+could lead to essentially random method dispath due to a bad bug in the
+1.3.0 JVM from Sun. Even though this bug was fixed in the 1.3.1 and
+1.2.2 JVMs, we have introduced the appropriate work-around in ajc's code
+generation.
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=580[More
+details...]
+* Thomas Haug (as well as several other members of his group) reported a
+problem with name binding where ajc was behaving differently than javac.
+This problem was resolved to come from a class created by an obfuscator
+that conflicted with his package names. The JLS doesn't clearly specify
+which of these two behaviors is correct. Nevertheless, ajc has been
+changed to treat packages more like javac does in order to minimize this
+sort of problem in the future.
+http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=574[More
+details...]
+* Several "real" bugs in ajc were also reported and fixed. Toby Allsopp
+gets credit for reporting two of them. The most interesting of these
+bugs to me was his report that we just didn't support qualified
+anonymous inner constructors. This is a part of the Java language that
+ajc has never supported over its almost 3 year history. We'd just
+noticed this ourselves when running the jacks compiler test suite from
+the jikes group, and had added the feature days before getting our first
+bug report for it not being there.
+
+== [#1.0rc3ajde]#AJDE#
+
+* The structure view has been improved.
+* Multiple user-configurable views are supported.
+* Structure tree filtering and ordering has been added.
+* A split tree mode has been added to permit the navigation of multiple
+views on the same structure.
+* The view can also be toggled between a file-based and a system-based
+mode which determines whether the root of the structure tree is the
+current file or the project root.
+* The signatures of tree nodes have been improved and several new node
+associations are now navigable.
+* A depth slider for controlling tree-expansion has been added.
+
+=== AJDE for JBuilder
+
+* Changes:
+* Inline annotations support have been improved and made consistent with
+the structure tree (annotations only show up for intra-declaration
+structure).
+* The current structure view persists across IDE launches.
+* An enabled AJDE no longer slows down JBuilder shutdown.
+
+=== AJDE for Forte
+
+* Execution remembers main class.
+* The bug causing an error during a "Mode" and "Explorer" switch has
+been fixed.
+
+=== AJBrowser
+
+* AJBrowser is currently an undocumented demonstration application. To
+use it type: ajbrowser <lst file1> <lst file2> ...
+* Multiple source locations can be shown by selecting multiple nodes and
+right-clicking to select the "Display Sources" command.
+
+=== Emacs Support: aspectj-mode and AJDEE
+
+* Numerous jump-menu improvements, including operation of pop-ups.
+* For AJDEE, compatibility with JDEE 2.2.9beta4. Also, fixes in
+completion, ajdoc launch, and speedbar.
+
+=== [#1.0rc3ajdoc]#AJDoc#
+
+Some of the more obvious NullPointerException bugs in Ajdoc were fixed,
+but Ajdoc does not implement all the functionality of Javadoc and has
+some bugs:
+
+* Split indexes do not work correctly
+* Inner classes are not listed in indexes
+* Synthetic methods are documented
+* There is no package frame even when packages are specified on the
+command line
+* -group option is not implemented
+* -use targets are not all calculated correctly
+* Exception information may not be printed for the @throws tag
+* Verbose output should go to stderr, not stdout
+* Extra links are generated (should be unlinked text)
+
+Further, Ajdoc has not been testing on variants of the J2SE (it uses
+javadoc classes).
+
+=== [#1.0rc3taskdefs]#Ant taskdefs#
+
+The Ajc taskdef was updated to support the new compiler options and the
+.aj extension, and some NullPointerException bugs were fixed (thanks to
+Vincent Massol for a bug report listing the line number of the fix). The
+AJDoc cannot be run repeatedly in a single Ant run, and has trouble
+loading the doclet unless the libraries are installed in
+$\{ant.home}/lib.
+
+'''''
+
+== [#1.0rc2]#1.0rc2#
+
+* xref:#1.0rc2language[Language]
+* xref:#1.0rc2compiler[Compiler]
+* xref:#1.0rc2ajde[AJDE]
+
+== [#1.0rc2language]#Language#
+
+There are no language changes in this release. This is a bug fix release
+only.
+
+== [#1.0rc2compiler]#Compiler#
+
+A bug in handling inner type names that conflict with enclosing type
+names was fixed. Many error messages were improved.
+
+== [#1.0rc2ajde]#AJDE#
+
+* This is a bug fix release only.
+
+=== AJDE for JBuilder
+
+* Changes:
+** Fixed bug causing the output path to be ignored and .class files to
+be generated into the JBuilder install's "bin" directory.
+** Fixed bugs in Browser listener causing NullPointerExceptions to be
+thrown if no node editor was present.
+** Fixed bug permitting "-bcg" option to be passed to the compiler.
+** Fixed bug preventing ajc from compiling all of the project source
+files when automatic package discovery was on (JBuilder Proffessional
+and Enterprise editions).
+** If the "-preprocess" flag is used resulting source files will be
+placed in the project's "Working directory".
+* Limitations:
+** "Automatic package discovery" mode is not supported in this release.
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== AJDE for Forte
+
+* Changes:
+** Moved the "AspectJ" menu into the "Tools" menu in order to make it
+less intrusive.
+** Added a "ctrl-alt-shift-F9" keyboard compile shortcut.
+* Limitations:
+** Known bug: "Mode" switching is not supported in this version--you
+must do all of your AspectJ work in the "Editing" mode. If you switch
+modes the IDE has to be restarted for the AspectJ window to show again.
+Switching to a different tab in the ProjectExplorer has the same effect.
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== AJBrowser
+
+* Changes:
+** ...
+* Limitations:
+** AJBrowser is currently an undocumented demonstration application. To
+use it type: +
+> ajbrowser <lst file1> <lst file2> ...
+
+=== Emacs Support: aspectj-mode and AJDEE
+
+This release now properly displays annotations for call sites and
+introductions. Robustness has been improved in several dimensions,
+including performance at startup. The compile menu now recomputes
+properly when changing directories.
+
+'''''
+
+== [#1.0rc1]#1.0rc1#
+
+* xref:#1.0rc1language[Language]
+* xref:#1.0rc1compiler[Compiler]
+* xref:#1.0rc1ajde[AJDE]
+
+== [#1.0rc1language]#Language#
+
+Some of the details of the specification for perthis and pertarget have
+changed. These changes make these language constructs implementable on
+current JVMs without memory leaks (this wasn't true of the previous
+version). Most people will probably not notice these changes, but the
+correct semantics are described in link:progguide/semantics.html[the
+semantics section of the programming guide].
+
+In a related change, aspects are not allowed to implement either the
+`java.io.Serializable` or the `java.lang.Cloneable` interface. It is
+unclear what the correct behavior of a system should be when an aspect
+is serialized or cloned, and rather than make an arbitrary choice right
+now we've chosen to leave the most room to design them right in a future
+release.
+
+== [#1.0rc1compiler]#Compiler#
+
+ajc now directly generates .class files without using javac as a
+back-end. This should result in improved compiler performance, better
+error messages and better stack-traces and debugging info in those
+.class files. -preprocess mode is still available for those who want to
+generate legal Java source code and a new -usejavac mode is available if
+you have a requirement to continue to use javac as a back-end.
+
+ajc now officially supports source files with the .aj extension. We plan
+to extend this support to the rest of our tools as time permits.
+
+This release of ajc includes support for the "-source 1.4" option that
+enables the new 'assert' keyword in jdk1.4. This option only works
+correctly when compiling against the jdk1.4 libraries. In addition, this
+release of ajc will run under SUN's jdk1.4beta2. However, we still
+strongly recommend that most users use the non-beta jdk1.3.
+
+== [#1.0rc1ajde]#AJDE#
+
+* The structure view can now be configured (using the "Options" dialog)
+to display different kinds of associations between program elements that
+appear in the tree.
+* Structure view history navigation has been added.
+* When navigating links the structure view will stay synchronized with
+the editor.
+
+=== AJDE for JBuilder
+
+* Changes:
+** Inline structural navigation annotations appear in the gutter of the
+editor and can be used to navigate associations such as advice and
+introduction.
+* Limitations:
+** "Automatic package discovery" mode is not supported in this release.
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== AJDE for Forte
+
+* Changes:
+** Support for Forte 3 and Netbeans 3.2 has been added.
+** The module is now installed by default on the first use without
+having to go to the IDE options to enable it.
+* Limitations:
+** Known bug: "Mode" switching is not supported in this version--you
+must do all of your AspectJ work in the "Editing" mode. If you switch
+modes the IDE has to be restarted for the AspectJ window to show again.
+Switching to a different tab in the ProjectExplorer has the same effect.
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== AJBrowser
+
+* Changes:
+** Build configuration file editor added.
+* Limitations:
+** AJBrowser is currently an undocumented demonstration application. To
+use it type: +
+> ajbrowser <lst file1> <lst file2> ...
+
+=== Aspectj-mode and AJDEE: AspectJ support in Emacs
+
+This release of AspectJ support for Emacs includes corrections to the
+documentation and the appearance of annotations and jumps in the editing
+view. Also, advice are now shown on non-declarations, when appropriate,
+such as call advice. The internal event model has been revised to reduce
+computational overhead.
+
+'''''
+
+== [#1.0beta1]#1.0beta1#
+
+* xref:#1.0beta1language[Language]
+* xref:#1.0beta1compiler[Compiler]
+* xref:#1.0beta1ajbrowser[AJBrowser]
+* xref:#1.0beta1ajde[AJDE]
+
+== [#1.0beta1language]#Language#
+
+There is one language change since 1.0alpha1. The static modifier is no
+longer needed or allowed on pointcut declarations. Name binding for
+pointcut declarations works like class methods now. Thanks to Robin
+Green for encouraging us to look at this one last time.
+
+The current implementation of perthis/pertarget has the possibility of
+memory leaks (thanks to Arno Schmidmeier for pointing this out). The
+design of this part of the language will almost certainly see some
+changes in the next release to address issues of implementability on the
+JVM as well as related issues.
+
+== [#1.0beta1compiler]#Compiler#
+
+The ajc compiler should now catch all errors in source code and you
+should no longer see errors coming from files in 'ajworkingdir'. Please
+report any errors in 'ajworkingdir' as bugs.
+
+All reported bugs in 1.0alpha1 have been fixed. Thanks to everyone for
+your bug reports. Most notably, the 'if' pcd that was added in 1.0alpha1
+should work correctly in this release. Thanks to Morgan Deters for a
+very thorough bug report on this broken feature days after the 1.0alpha1
+release.
+
+== [#1.0beta1ajbrowser]#AJBrowser#
+
+* Support for executing classes has been added.
+* .lst can now be passed as arguments on the command line.
+* Compiler options can be set.
+* Know limitations:
+** In order to execute classes they must be available on the classpath
+that the browser is launched with.
+
+== [#1.0beta1ajde]#AJDE#
+
+* The performance and UI of the structure tree has been improved.
+* Compilation now runs in a separate thread and a progress monitor is
+updated during the compile.
+* The structure view now persists across IDE launches.
+* Limitations:
+** If an error occurs in the javac pass it will not display properly in
+the error messages pane. To view the error you have check the output of
+the console that the IDE was launched from. No more errors should be
+passed to javac, so please report this behavior and the corresponding
+error message as a bug.
+
+=== AJDE for JBuilder
+
+* Known bugs have been fixed.
+* Classpath separator character is no longer hardcoded.
+* Keyboard shortcuts for compilation (ctrl-F11) and execution (ctrl-F12)
+have been added.
+* Limitations:
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== AJDE for Forte
+
+* Known bugs have been fixed.
+* Limitations:
+** "Mode" switching is not supported in this version--you must do all of
+your AspectJ work in the "Editing" mode. If you switch modes the IDE has
+to be restarted for the AspectJ window to show again.
+** There are no keyboard compile/execute shortcuts.
+** The debugger has not seen much use and it's stability and performance
+is limited.
+
+=== Aspectj-mode and AJDEE: AspectJ support in Emacs
+
+AspectJ Development Environment for Emacs has been split into two
+pieces, aspectj-mode (an extension of java-mode), and AJDEE (an
+extension of JDE). Additionally, a switch, -emacssym, has been added to
+ajc that generates AspectJ declarations information directly, thus
+beanshell is no longer required for use of these modes.
+
+'''''
+
+== [#1.0alpha1]#1.0alpha1#
+
+This is the first alpha release of the 1.0 language and tools. There
+have been many changes in the language, and many improvements to the
+tools. We wish to thank our users for putting up with the high
+volatility of AspectJ in the push to 1.0.
+
+* xref:#1.0alpha1language[Language]
+* xref:#1.0alpha1compiler[Compiler]
+* xref:#1.0alpha1documentation[Documentation]
+* xref:#1.0alpha1ajdoc[AJDoc]
+* xref:#1.0alpha1ant[Ant]
+* xref:#1.0alpha1ajbrowser[AJBrowser]
+* xref:#1.0alpha1ajde[AJDE]
+
+=== [#1.0alpha1language]#Language#
+
+There have been many changes to make the 1.0 language both simpler and
+more powerful. User feedback has driven most of these design changes.
+Each email we've received either making a suggestion or just asking a
+question about a confusing part of the language has played a part in
+shaping this design. We'd like to thank all of our users for their
+contributions.
+
+While we don't have room to thank all of our users by name, we'd like to
+specifically mention a few people for their high-quality sustained
+contributions to the users@aspectj.org mailing list as well as through
+their feature requests and bug reports. Robin Green (who'll be very
+happy to see `declare error`), Stefan Hanenberg (who should appreciate
+the '+' wildcard in type patterns), and Rich Price (who suggested final
+pointcuts, more flexible dominates, and many other improvements).
+
+Note that entries into the xref:porting.adoc[porting notes] for this
+release are linked from the various language changes.
+
+==== Pointcuts
+
+Perhaps the least interesting -- but most pervasive -- change is that
+the names of the single-kinded pointcut designators (the ones that pick
+out only one kind of join point)
+
+____
+calls executions gets sets handlers initializations
+staticinitializations
+____
+
+have been xref:porting.adoc#1.0a1-plural-to-singular[changed] to be
+singular rather than plural nouns
+
+____
+call execution get set handler initialization staticinitialization
+____
+
+Although a side benefit is that the names are one character shorter, the
+real benefit is that their combination with the `&&` and `||` operators
+now reads much more naturally. No longer does "and" mean "or" and "or"
+mean "and".
+
+You'll notice that `receptions` doesn't appear on the table as being
+shortened to `reception`. That's because call and reception join points
+have been merged, and the `receptions` pointcut declaration has been
+xref:porting.adoc#1.0a1-remove-receptions[eliminated]. Now, `call` join
+points describe the action of making a call, including both the caller
+and callee. Eliminating reception join points makes AspectJ much simpler
+to understand (reception join points were a commonly misunderstood
+feature) without giving up expressive power.
+
+We have xref:porting.adoc#1.0a1-fixing-state-access[changed the
+mechanism for accessing state] at join points, which has the benefit of
+making our treatment of signatures
+xref:porting.adoc#1.0a1-no-subs-in-sigs[cleaner] and easier to read. As
+a part of this, the `instanceof` pointcut designator has now been
+xref:porting.adoc#1.0a1-fixing-instanceof[split into two different
+pointcut designators], `this` and `target`, corresponding to a join
+point's currently executing object and target object, respectively.
+
+The new `args` pointcut adds expressive power to the language by
+allowing you to capture join points based on the actual type of an
+argument, rather than the declared type of its formal. So even though
+the `HashSet.removeAll` method takes a `Collection` as an argument, you
+can write advice that only runs when it is actually passed a `HashSet`
+object.
+
+AspectJ's notion of object construction and initialization, a
+complicated process in Java, has been clarified. This affects some uses
+of the xref:porting.adoc#1.0a1-initializations[initializations pointcut]
+and xref:porting.adoc#1.0a1-constructor-calls[constructor calls]
+pointcut.
+
+The little-used pointcuts xref:porting.adoc#1.0a1-hasaspect[`hasaspect`]
+and xref:porting.adoc#1.0a1-withinall[`withinall`] have been removed.
+
+The `returns` keyword is xref:porting.adoc#1.0a1-user-defined-returns[no
+longer necessary] for user-defined pointcuts.
+
+Pointcuts may now be declared `static`, and
+xref:porting.adoc#1.0a1-static-pointcuts[only static pointcuts] may be
+declared in classes and referred to with qualified references (such as
+`MyAspect.move()`).
+
+Non-abstract pointcuts may now be declared `final`.
+
+We have finally added an extremely general pointcut,
+`if(BooleanExpression)`, that picks out join points programatically.
+
+==== Type patterns
+
+Our treatment of xref:porting.adoc#1.0a1-new-wildcards[* and ..] in type
+patterns is cleaner.
+
+Type patterns now have the ability to include array types, and there is
+a new wildcard, +, to pick out all subtypes of a given type. Previously,
+the subtypes operator was only allowed in introduction, and was
+xref:porting.adoc#1.0a1-subtypes-to-plus[spelled differently].
+
+==== Advice
+
+Around advice is treated much more like a method, with a
+xref:porting.adoc#1.0a1-around-returns[return value] and an optional
+xref:porting.adoc#1.0a1-around-throws[throws clause].
+
+The advice precedence rules have been
+xref:porting.adoc#1.0a1-advice-precedence[changed]. Now, for example, a
+piece of after advice that appears lexically later than another piece of
+after advice will run later, as well. Previously, the relationship was
+the other way around, which caused no small amount of confusion.
+
+After returning advice has lost a
+xref:porting.adoc#1.0a1-after-returning[useless set of parentheses] when
+not using the return value.
+
+The `thisStaticJoinPoint` reflective object has been
+xref:porting.adoc#1.0a1-this-static-join-point[renamed], and the
+`thisJoinPoint` object hierarchy has been
+xref:porting.adoc#1.0a1-this-join-point[simplified].
+
+==== Introduction and static crosscutting
+
+On the static side of the language, introduction hasn't changed, but
+there is now a new keyword, `declare`, that is used to declare various
+statically-crosscutting properties. One of these properties is
+subtyping, so we've
+xref:porting.adoc#1.0a1-plus-implements-extends[gotten rid of] the ugly
+keywords `+implements` and `+extends`.
+
+We have provided two new forms, `declare error` and `declare warning`,
+for the often-asked-for property of compile-time error detection based
+on crosscutting properties.
+
+AspectJ's interaction with checked exceptions is now firmly on the side
+of static crosscutting, since Java treats such exceptions at
+compile-time. A new form, `declare soft`, can be used to "soften"
+checked exceptions into an unchecked form. This may affect some uses of
+xref:porting.adoc#1.0a1-now-use-soft[around advice] that previously
+mucked with the exception checking system.
+
+==== Aspects
+
+The "of each" modifiers have been
+xref:porting.adoc#1.0a1-aspects[renamed]. Apart from the spelling, the
+main interesting difference is the splitting up of `of eachobject` into
+two different modifiers, parallel with the split of `instanceof` into
+`this` and `target`.
+
+The `dominates` keyword now takes a type pattern, rather than a type.
+This allows an aspect A, for example, to declare that its advice should
+dominate the advice of another aspect B as well as its subtypes, with
+the new + subtypes operator: `aspect A dominates B+`.
+
+=== [#1.0alpha1compiler]#Compiler#
+
+The most important change in the compiler is that it supports the new
+language. In addition, all reported bugs in the last release have been
+fixed. Thanks for your bug reports.
+
+The compiler also gets a new `-encoding` flag in this release for
+handling source files that are not in standard US-ASCII format. Thanks
+to Nakamura Tadashi for both suggesting this feature and for submitting
+a nice patch to implement it.
+
+==== Known Limitations
+
+The previous compiler's limitations regarding join points that occurred
+in anonymous classes have all been eliminated. Unfortunately,
+eliminating this restriction has resulted in preprocessed source code
+that is less readable than in previous releases. More care will be taken
+in the next release to mitigate this effect.
+
+Many semantic errors are not caught by ajc but fall through to javac.
+Moreover, some errors regarding the initialization of final fields might
+never show up when using ajc. This will be fixed shortly.
+
+=== [#1.0alpha1documentation]#Documentation#
+
+Although we spent much of our time this release cycle updating the
+documentation to the new language rather than improving its content, we
+did make some structural improvements. The old Primer has been split
+into a Programming Guide, covering the language, and a Development
+Environment Guide, covering the develompent tools. In addition,
+printable versions of both guides (in PDF) are finally included in the
+documentation package.
+
+=== [#1.0alpha1ajdoc]#Ajdoc#
+
+Ajdoc was rewritten to conform with the language changes and provide
+support for other AspectJ/Java compilers. Our doclet is used by default
+creating AspectJ-specific documentation, or Sun's standard doclet can be
+used by passing the '-standard' flag to Ajdoc to produce regular Javadoc
+documentation (excluding AspectJ-specifics).
+
+=== [#1.0alpha1ant]#Ant#
+
+An Ajdoc task is now available. The Ajc ant task was improved to be
+completely back-compatible with the Javac task.
+
+=== [#1.0alpha1ajbrowser]#AJBrowser#
+
+The "AspectJ Browser" is a new standalone source code browsing
+application. It will let you compile ".lst" files, view the structure
+for those files and navigate the corresponding source code.
+
+=== [#1.0alpha1ajde]#AJDE#
+
+==== AJDE for JBuilder
+
+===== Installation
+
+* Use the installer to place the "ajdeForJBuilder.jar" and
+"aspectjrt.jar" in to JBuilder's lib/ext directory.
+
+===== Key Improvements
+
+* The "AspectJ Structure View" replaces JBuilder's structure view
+instead of being launched in a separate window.
+* AJDE can be toggled on/off with the "AJ" button--when it is turned off
+all of the menus, resources, and event listeners that it uses will be
+removed.
+* Projects no longer require the manual adding of the "aspectjrt.jar"
+libarary.
+
+===== Known Bugs & Limitations
+
+* There is no compiler progress dialog--the way to tell if the compile
+is finished is to watch the "status" area of the main window.
+* There are no keyboard compile/execute shortcuts.
+* The structure view is not persistent between IDE launches--you must
+compile to view the structure for a program.
+* The debugger has not seen much use and it's stability and performance
+is limited.
+* There is no ajdoc tool support.
+* Linux testing has been very limited.
+
+==== AJDE for Forte
+
+===== Installation
+
+* Use the installer to place the "ajdeForForte.jar" in Forte's modules
+directory and "aspectjrt.jar" in to Forte's lib/ext directory.
+* In the "Tools" menu select "Global Options"
+* Right-click the "Modules" item and select "New Module from File..."
+* Find the ajdeForForte.jar in the directory that you installed into
+(e.g. c:\forte4j\modules) and select it.
+
+===== Key Improvements
+
+* AJDE can be toggled on/off with the "AJ" button--when it is turned off
+all of the menus, resources, and event listeners that it uses will be
+removed.
+* The AJDE functionality is now contained within it's own toolbar and
+menu.
+
+===== Known Bugs & Limitations
+
+* "Mode" switching is not supported in this version--you must do all of
+your AspectJ work in the "Editing" mode. If you switch modes the IDE has
+to be restarted for the AspectJ window to show again.
+* There is no compiler progress dialog--the way to tell if the compile
+is finished is to watch the "status" area of the main window.
+* There are no keyboard compile/execute shortcuts.
+* The structure view is not persistent between IDE launches--you must
+compile to view the structure for a program.
+* The debugger has not seen much use and it's stability and performance
+is limited.
+* There is no ajdoc tool support.
+* Linux testing has been very limited.
+
+==== AJDE for Emacs
+
+AspectJ-mode now includes a toggle in the AspectJ menu that disables its
+intrusive functions, enabling easy switching between Java and AspectJ
+projects. See the README and CHANGES files in the distribution for
+additional details.
+
+AJDEE is now compatible with JDEE 2.2.7.1, JDEE 2.2.8beta4, and speedbar
+0.14alpha. It a toggle in the AspectJ menu that disables its intrusive
+functions, enabling easy switching between Java and AspectJ projects.
+See the README and CHANGES files in the distribution for additional
+details.
+
+'''''

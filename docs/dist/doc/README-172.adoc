@@ -1,0 +1,25 @@
+[.small]#© Copyright 2011 Contributors. All rights reserved.#
+
+== AspectJ 1.7.2 Readme
+
+The full list of resolved issues in 1.7.2 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.2;[here]
+
+.
+
+* 1.7.2 available 13-Feb-2013
+
+=== Fixes:
+
+* Incorrect signature attributes generated into some class files for
+complex generics declarations.
+* Generics information incorrectly being placed in the stackmap
+verification attributes.
+* Problems with generic ITDs not being picked up correctly, resulting in
+'method must be implemented' errors.
+* Problems with multiple usages of 'requires' clause in aop.xml for
+conditional aspects.
+* Generated if() pointcut representations in class files change on only
+a source whitespace change.
+* Intermittent problem with generic ITDs due to weak references being
+collected too soon.

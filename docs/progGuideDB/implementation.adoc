@@ -1,0 +1,260 @@
+[[implementation]]
+== Implementation Notes
+
+=== Compiler Notes
+
+The initial implementations of AspectJ have all been compiler-based
+implementations. Certain elements of AspectJ's semantics are difficult
+to implement without making modifications to the virtual machine, which
+a compiler-based implementation cannot do. One way to deal with this
+problem would be to specify only the behavior that is easiest to
+implement. We have chosen a somewhat different approach, which is to
+specify an ideal language semantics, as well as a clearly defined way in
+which implementations are allowed to deviate from that semantics. This
+makes it possible to develop conforming AspectJ implementations today,
+while still making it clear what later, and presumably better,
+implementations should do tomorrow.
+
+According to the AspectJ language semantics, the declaration
+
+....
+before(): get(int Point.x) { System.out.println("got x"); }
+....
+
+should advise all accesses of a field of type int and name x from
+instances of type (or subtype of) Point. It should do this regardless of
+whether all the source code performing the access was available at the
+time the aspect containing this advice was compiled, whether changes
+were made later, etc.
+
+But AspectJ implementations are permitted to deviate from this in a
+well-defined way -- they are permitted to advise only accesses in _code
+the implementation controls_. Each implementation is free within certain
+bounds to provide its own definition of what it means to control code.
+
+In the current AspectJ compiler, ajc, control of the code means having
+bytecode for any aspects and all the code they should affect available
+during the compile. This means that if some class Client contains code
+with the expression `new
+    Point().x` (which results in a field get join point at runtime), the
+current AspectJ compiler will fail to advise that access unless
+Client.java or Client.class is compiled as well. It also means that join
+points associated with code in native methods (including their execution
+join points) cannot be advised.
+
+Different join points have different requirements. Method and
+constructor call join points can be advised only if ajc controls the
+bytecode for the caller. Field reference or assignment join points can
+be advised only if ajc controls the bytecode for the "caller", the code
+actually making the reference or assignment. Initialization join points
+can be advised only if ajc controls the bytecode of the type being
+initialized, and execution join points can be advised only if ajc
+controls the bytecode for the method or constructor body in question.
+The end of an exception handler is underdetermined in bytecode, so ajc
+will not implement after or around advice on handler join points.
+Similarly, ajc cannot implement around advice on initialization or
+preinitialization join points. In cases where ajc cannot implement
+advice, it will emit a compile-time error noting this as a compiler
+limitation.
+
+Aspects that are defined `perthis` or `pertarget` also have restrictions
+based on control of the code. In particular, at a join point where the
+bytecode for the currently executing object is not available, an aspect
+defined `perthis` of that join point will not be associated. So aspects
+defined `perthis(Object)` will not create aspect instances for every
+object unless `Object`is part of the compile. Similar restrictions apply
+to `pertarget` aspects.
+
+Inter-type declarations such as `declare parents` also have restrictions
+based on control of the code. If the bytecode for the target of an
+inter-type declaration is not available, then the inter-type declaration
+is not made on that target. So, `declare parents : String implements
+    MyInterface` will not work for `java.lang.String` unless
+`java.lang.String` is part of the compile.
+
+When declaring members on interfaces, the implementation must control
+both the interface and the top-level implementors of that interface (the
+classes that implement the interface but do not have a superclass that
+implements the interface). You may weave these separately, but be aware
+that you will get runtime exceptions if you run the affected top-level
+classes without the interface as produced by the same ajc
+implementation. Any intertype declaration of an abstract method on an
+interface must be specified as public, you will get a compile time error
+message indicating this is a compiler limitation if you do not specify
+public. A non-abstract method declared on an interface can use any
+access modifier except protected. Note that this is different to normal
+Java rules where all members declared in an interface are implicitly
+public. Finally, note that one cannot define static fields or methods on
+interfaces.
+
+When declaring methods on target types, only methods declared public are
+recognizable in the bytecode, so methods must be declared public to be
+overridden in any subtype or to be called from code in a later compile
+using the target type as a library.
+
+Other AspectJ implementations, indeed, future versions of ajc, may
+define _code the implementation controls_ more liberally or
+restrictively, so long as they comport with the Java language. For
+example, the `call` pointcut does not pick out reflective calls to a
+method implemented in
+`java.lang.reflect.Method.invoke(Object, Object[])`. Some suggest that
+the call "happens" and the call pointcut should pick it out, but the
+AspectJ language shouldn't anticipate what happens in code outside the
+control of the implementation, even when it is a a well-defined API in a
+Java standard library.
+
+The important thing to remember is that core concepts of AspectJ, such
+as the join point, are unchanged, regardless of which implementation is
+used. During your development, you will have to be aware of the
+limitations of the ajc compiler you're using, but these limitations
+should not drive the design of your aspects.
+
+=== Bytecode Notes
+
+[[the-class-expression-and-string]]
+==== The .class expression and String +
+
+The java language form `Foo.class` is implemented in bytecode with a
+call to `Class.forName` guarded by an exception handler catching a
+`ClassNotFoundException`.
+
+The java language + operator, when applied to String arguments, is
+implemented in bytecode by calls to `StringBuffer.append`.
+
+In both of these cases, the current AspectJ compiler operates on the
+bytecode implementation of these language features; in short, it
+operates on what is really happening rather than what was written in
+source code. This means that there may be call join points to
+`Class.forName` or `StringBuffer.append` from programs that do not, at
+first glance, appear to contain such calls:
+
+....
+class Test {
+    void main(String[] args) {
+        System.out.println(Test.class);        // calls Class.forName
+        System.out.println(args[0] + args[1]); // calls StringBuffer.append
+    }
+}
+....
+
+In short, the join point model of the current AspectJ compiler considers
+these as valid join points.
+
+==== The Handler join point
+
+The end of exception handlers cannot reliably be found in Java bytecode.
+Instead of removing the handler join point entirely, the current AspectJ
+compiler restricts what can be done with the handler join point:
+
+* After and around advice cannot apply to handler join points.
+* The control flow of a handler join point cannot be detected.
+
+The first of these is relatively straightforward. If any piece of after
+advice (returning, throwing, or "finally") would normally apply to a
+handler join point, it will not in code output by the current AspectJ
+compiler. A compiler warning is generated whenever this is detected to
+be the case. Before advice is allowed.
+
+The second is that the control flow of a handler join point is not
+picked out. For example, the following pointcut
+
+....
+cflow(call(void foo()) || handler(java.io.IOException))
+....
+
+will capture all join points in the control flow of a call to
+`void foo()`, but it will _not_ capture those in the control flow of an
+`IOException` handler. It is equivalent to `cflow(call(void foo()))`. In
+general, `cflow(handler(Type))` will not pick out any join points, the
+one exception to this is join points that occur during the execution of
+any before advice on the handler.
+
+This does not restrict programs from placing before advice on handlers
+inside _other_ control flows. This advice, for example, is perfectly
+fine:
+
+....
+before(): handler(java.io.IOException) && cflow(void parse()) {
+    System.out.println("about to handle an exception while parsing");
+}
+....
+
+A source-code implementation of AspectJ (such as AspectJ 1.0.6) is able
+to detect the endpoint of a handler join point, and as such will likely
+have fewer such restrictions.
+
+==== Initializers and Inter-type Constructors
+
+The code for Java initializers, such as the assignment to the field d in
+
+....
+class C {
+    double d = Math.sqrt(2);
+}
+....
+
+are considered part of constructors by the time AspectJ gets ahold of
+bytecode. That is, the assignment of d to the square root of two happens
+_inside_ the default constructor of C.
+
+Thus inter-type constructors will not necessarily run a target type's
+initialization code. In particular, if the inter-type constructor calls
+a super-constructor (as opposed to a `this` constructor), the target
+type's initialization code will _not_ be run when that inter-type
+constructor is called.
+
+....
+aspect A {
+    C.new(Object o) {} // implicitly calls super()
+
+    public static void main(String[] args) {
+       System.out.println((new C()    ).d);    // prints 1.414...
+       System.out.println((new C(null)).d);    // prints 0.0
+}
+....
+
+It is the job of an inter-type constructor to do all the required
+initialization, or to delegate to a `this` constructor if necessary.
+
+=== Annotation-style Notes
+
+Writing aspects in annotation-style is subject to the same bytecode
+limitations since the binary aspects take the same form and are woven in
+the same way. However, the implementation differences (e.g., the
+mechanism for implementing around advice) may be apparent at runtime.
+See the documentation on annotation-style for more information.
+
+=== Summary of implementation requirements
+
+This summarizes the requirements of our implementation of AspectJ. For
+more details, see the relevant sections of this guide.
+
+* The invoking code must be under the control of ajc for the following
+join points:
+** call join point
+** get join point
+** set join point
+* The declaring/target code must be under the control of ajc for the
+following join points and inter-type declarations:
+** execution join point
+** adviceexecution join point
+** handler join point
+** initialization join point
+** preinitialiaztion join point
+** staticinitialization join point
+** perthis aspect
+** pertarget aspect
+** declare parents
+** declare method or field (see interface caveats below)
+* Implementation Caveats
+** The initialization and preinitialization join points do not support
+around advice
+** The handler join point does not support...
+*** after advice
+*** around advice
+*** cflow(handler(..))
+** Declaring members on an interface in an aspect affects only the
+topmost implementing classes the implementation controls.
+** cflow and cflowbelow pointcuts work within a single thread.
+** Runtime `ClassCastException` may result from supplying a supertype of
+the actual type as an argument to proceed(..) in around advice.

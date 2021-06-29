@@ -1,0 +1,336 @@
+[[jpsigs]]
+== Join Point Signatures
+
+Many of the extensions to the AspectJ language to address the new
+features of Java 5 are derived from a simple set of principles for join
+point matching. In this section, we outline these principles as a
+foundation for understanding the matching rules in the presence of
+annotations, generics, covariance, varargs, and autoboxing.
+
+=== Join Point Matching
+
+AspectJ supports 11 different kinds of join points. These are the
+`method call, method execution, constructor call,
+        constructor execution, field get, field set, pre-initialization,
+        initialization, static initialization, handler,` and
+`advice execution` join points.
+
+The _kinded_ pointcut designators match based on the kind of a join
+point. These are the `call,
+        execution, get, set, preinitialization, initialization,
+        staticinitialization, handler,` and `adviceexecution`
+designators.
+
+A kinded pointcut is written using patterns, some of which match based
+on _signature_, and some of which match based on _modifiers_. For
+example, in the `call` pointcut designator:
+
+....
+call(ModifierPattern TypePattern TypePattern.IdPattern(TypePatternList) ThrowsPattern)
+....
+
+the modifiers matching patterns are `ModifierPattern` and
+`ThrowsPattern`, and the signature matching patterns are
+`TypePattern TypePattern.IdPattern(TypePatternList)`.
+
+A join point has potentially multiple signatures, but only one set of
+modifiers. _A kinded primitive pointcut matches a particular join point
+if and only if_:
+
+[arabic]
+. They are of the same kind
+. The signature pattern (exactly) matches at least one signature of the
+join point
+. The modifiers pattern matches the modifiers of the subject of the join
+point
+
+These rules make it very easily to quickly determine whether a given
+pointcut matches a given join point. In the next two sections, we
+describe what the signature(s) of a join point are, and what the
+subjects of join points are.
+
+[[join-point-signatures]]
+=== Join Point Signatures
+
+Call, execution, get, and set join points may potentially have multiple
+signatures. All other join points have exactly one signature. The
+following table summarizes the constituent parts of a join point
+signature for the different kinds of join point.
+
+[cols=",,,,,,",options="header",]
+|===
+|Join Point Kind |Return Type |Declaring Type |Id |Parameter Types
+|Field Type |Exception Type
+|Method call |+ |+ |+ |+ | |
+|Method execution |+ |+ |+ |+ | |
+|Constructor call | |+ | |+ | |
+|Constructor execution | |+ | |+ | |
+|Field get | |+ |+ | |+ |
+|Field set | |+ |+ | |+ |
+|Pre-initialization | |+ | |+ | |
+|Initialization | |+ | |+ | |
+|Static initialization | |+ | | | |
+|Handler | | | | | |+
+|Advice execution | |+ | |+ | |
+|===
+
+Note that whilst an advice execution join point has a signature
+comprising the declaring type of the advice and the advice parameter
+types, the `adviceexecution` pointcut designator does not support
+matching based on this signature.
+
+The signatures for most of the join point kinds should be
+self-explanatory, except for field get and set, and method call and
+execution join points, which can have multiple signatures. Each
+signature of a method call or execution join point has the same id and
+parameter types, but the declaring type and return type (with
+covariance) may vary. Each signature of a field get or set join point
+has the same id and field type, but the declaring type may vary.
+
+The following sections examine signatures for these join points in more
+detail.
+
+==== Method call join point signatures
+
+For a call join point where a call is made to a method
+`m(parameter_types)` on a target type `T` (where `T` is the static type
+of the target):
+
+....
+T t = new T();
+t.m("hello");  <= call join point occurs when this line is executed
+....
+
+Then the signature `R(T) T.m(parameter_types)` is a signature of the
+call join point, where `R(T)` is the return type of `m` in `T`, and
+`parameter_types` are the parameter types of `m`. If `T` itself does not
+declare a definition of `m(parameter_types)`, then `R(T)` is the return
+type in the definition of `m` that `T` inherits. Given the call above,
+and the definition of `T.m`:
+
+....
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  R m(String s) {...}
+}
+
+class S extends P {
+  R' m(String s) {...}
+}
+
+class T extends S {}
+....
+
+Then `R' T.m(String)` is a signature of the call join point for
+`t.m("hello")`.
+
+For each ancestor (super-type) `A` of `T`, if `m(parameter_types)` is
+defined for that super-type, then `R(A) A.m(parameter_types)` is a
+signature of the call join point, where `R(A)` is the return type of `
+            m(parameter_types)` as defined in `A`, or as inherited by
+`A` if `A` itself does not provide a definition of `m(parameter_types)`.
+
+Continuing the example from above,we can deduce that
+
+....
+R' S.m(String)
+R  P.m(String)
+R  Q.m(String)
+....
+
+are all additional signatures for the call join point arising from the
+call `t.m("hello")`. Thus this call join point has four signatures in
+total. Every signature has the same id and parameter types, and a
+different declaring type.
+
+==== Method execution join point signatures
+
+Join point signatures for execution join points are defined in a similar
+manner to signatures for call join points. Given the hierarchy:
+
+....
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  R m(String s) {...}
+}
+
+class S extends P {
+  R' m(String s) {...}
+}
+
+class T extends S { }
+
+class U extends T {
+  R' m(String s) {...}
+}
+....
+
+Then the execution join point signatures arising as a result of the call
+to `u.m("hello")` are:
+
+....
+R' U.m(String)
+R' S.m(String)
+R  P.m(String)
+R  Q.m(String)
+....
+
+Each signature has the same id and parameter types, and a different
+declaring type. There is one signature for each type that provides its
+own declaration of the method. Hence in this example there is no
+signature `R' T.m(String)` as `T` does not provide its own declaration
+of the method.
+
+==== Field get and set join point signatures
+
+For a field get join point where an access is made to a field `f` of
+type `F` on a object with declared type `T`, then `F T.f` is a signature
+of the get join point.
+
+If `T` does not directly declare a member `f`, then for each super type
+`S` of `T`, up to and including the most specific super type of `T` that
+does declare the member `f`, `F S.f` is a signature of the join point.
+For example, given the hierarchy:
+
+....
+class P  {
+  F f;
+}
+
+class S extends P {
+  F f;
+}
+
+class T extends S { }
+....
+
+Then the join point signatures for a field get join point of the field
+`f` on an object with declared type `T` are:
+
+....
+F S.f
+F T.f
+....
+
+The signatures for a field set join point are derived in an identical
+manner.
+
+=== Join Point Modifiers
+
+Every join point has a single set of modifiers - these include the
+standard Java modifiers such as `public, private,
+          static, abstract` etc., any annotations, and the throws
+clauses of methods and constructors. These modifiers are the modifiers
+of the _subject_ of the join point.
+
+The following table defines the join point subject for each kind of join
+point.
+
+[cols=",",options="header",]
+|===
+|Join Point Kind |Subject
+|Method call |The method picked out by Java as the static target of the
+method call.
+
+|Method execution |The method that is executing.
+
+|Constructor call |The constructor being called.
+
+|Constructor execution |The constructor executing.
+
+|Field get |The field being accessed.
+
+|Field set |The field being set.
+
+|Pre-initialization |The first constructor executing in this constructor
+chain.
+
+|Initialization |The first constructor executing in this constructor
+chain.
+
+|Static initialization |The type being initialized.
+
+|Handler |The declared type of the exception being handled.
+
+|Advice execution |The advice being executed.
+|===
+
+For example, given the following types
+
+....
+public class X {
+  @Foo
+  protected void doIt() {...}
+}
+
+public class Y extends X {
+  public void doIt() {...}
+}
+....
+
+Then the modifiers for a call to `(Y y) y.doIt()` are simply `{public}`.
+The modifiers for a call to `(X x) x.doIt()` are `{@Foo,protected}`.
+
+[[join-point-matching-summary]]
+=== Summary of Join Point Matching
+
+A join point has potentially multiple signatures, but only one set of
+modifiers. _A kinded primitive pointcut matches a particular join point
+if and only if_:
+
+[arabic]
+. They are of the same kind
+. The signature pattern (exactly) matches at least one signature of the
+join point
+. The modifiers pattern matches the modifiers of the subject of the join
+point
+
+Given the hierarchy
+
+....
+interface Q {
+  R m(String s);
+}
+
+class P implements Q {
+  @Foo
+  public R m(String s) {...}
+}
+
+class S extends P {
+  @Bar
+  public R' m(String s) {...}
+}
+
+class T extends S {}
+....
+
+and the program fragment:
+
+....
+P p = new P();
+S s = new S();
+T t = new T();
+...
+p.m("hello");
+s.m("hello");
+t.m("hello");
+....
+
+The the pointcut `call(@Foo R P.m(String))` matches the call
+`p.m("hello")` since both the signature and the modifiers match. It does
+not match the call `s.m("hello")` because even though the signature
+pattern matches one of the signatures of the join point, the modifiers
+pattern does not match the modifiers of the method m in S which is the
+static target of the call.
+
+The pointcut `call(R' m(String))` matches the calls `t.m("hello")` and
+`s.m("hello")`. It does not match the call `p.m("hello")` since the
+signature pattern does not match any signature for the call join point
+of m in P.

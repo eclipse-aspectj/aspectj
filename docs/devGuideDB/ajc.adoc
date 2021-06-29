@@ -1,0 +1,492 @@
+== `ajc`, the AspectJ compiler/weaver
+
+=== Name
+
+`ajc` - compiler and bytecode weaver for the AspectJ and Java languages
+
+=== Synopsis
+
+[subs=+quotes]
+ ajc [_option_...] [_file_... | @_file_... | -argfile _file_...]
+
+[[ajc]]
+=== Description
+
+The `ajc` command compiles and weaves AspectJ and Java source and .class
+files, producing .class files compliant with any Java VM (1.1 or later).
+It combines compilation and bytecode weaving and supports incremental
+builds; you can also weave bytecode at run-time using xref:#ltw[???].
+
+The arguments after the options specify the source file(s) to compile.
+To specify source classes, use `-inpath` (below). Files may be listed
+directly on the command line or in a file. The `-argfile file` and
+`@file` forms are equivalent, and are interpreted as meaning all the
+arguments listed in the specified file.
+
+`Note:` You must explicitly pass `ajc` all necessary sources. Be sure to
+include the source not only for the aspects or pointcuts but also for
+any affected types. Specifying all sources is necessary because, unlike
+javac, ajc does not search the sourcepath for classes. (For a discussion
+of what affected types might be required, see
+xref:../progguide/implementation.html[The AspectJ Programming Guide,
+Implementation Appendix].)
+
+To specify sources, you can list source files as arguments or use the
+options `-sourceroots` or `-inpath`. If there are multiple sources for
+any type, the result is undefined since ajc has no way to determine
+which source is correct. (This happens most often when users include the
+destination directory on the inpath and rebuild.)
+
+[[ajc_options]]
+==== Options
+
+-injars <JarList>::
+  deprecated: since 1.2, use -inpath, which also takes directories.
+-inpath <Path>::
+  Accept as source bytecode any .class files in the .jar files or
+  directories on Path. The output will include these classes, possibly
+  as woven with any applicable aspects. Path is a single argument
+  containing a list of paths to zip files or directories, delimited by
+  the platform-specific path delimiter.
+-aspectpath <Path>::
+  Weave binary aspects from jar files and directories on path into all
+  sources. The aspects should have been output by the same version of
+  the compiler. When running the output classes, the run classpath
+  should contain all aspectpath entries. Path, like classpath, is a
+  single argument containing a list of paths to jar files, delimited by
+  the platform- specific classpath delimiter.
+-argfile <File>::
+  The file contains a line-delimited list of arguments. Each line in the
+  file should contain one option, filename, or argument string (e.g., a
+  classpath or inpath). Arguments read from the file are inserted into
+  the argument list for the command. Relative paths in the file are
+  calculated from the directory containing the file (not the current
+  working directory). Comments, as in Java, start with `//` and extend
+  to the end of the line. Options specified in argument files may
+  override rather than extending existing option values, so avoid
+  specifying options like <-classpath> in argument files unlike the
+  argument file is the only build specification. The form <@file> is the
+  same as specifying <-argfile file>.
+-outjar <output.jar>::
+  Put output classes in zip file output.jar.
+-outxml::
+  Generate aop.xml file for load-time weaving with default name.
+-outxmlfile <custom/aop.xml>::
+  Generate aop.xml file for load-time weaving with custom name.
+-incremental::
+  Run the compiler continuously. After the initial compilation, the
+  compiler will wait to recompile until it reads a newline from the
+  standard input, and will quit when it reads a 'q'. It will only
+  recompile necessary components, so a recompile should be much faster
+  than doing a second compile. This requires -sourceroots.
+-sourceroots <DirPaths>::
+  Find and build all .java or .aj source files under any directory
+  listed in DirPaths. DirPaths, like classpath, is a single argument
+  containing a list of paths to directories, delimited by the platform-
+  specific classpath delimiter. Required by -incremental.
+-crossrefs::
+  Generate a build .ajsym file into the output directory. Used for
+  viewing crosscutting references by tools like the AspectJ Browser.
+-emacssym::
+  Generate .ajesym symbol files for emacs support (deprecated).
+-Xlint::
+  Same as -Xlint:warning (enabled by default)
+-Xlint:\{level}::
+  Set default level for messages about potential programming mistakes in
+  crosscutting code. \{level} may be ignore, warning, or error. This
+  overrides entries in org/aspectj/weaver/XlintDefault.properties from
+  aspectjtools.jar, but does not override levels set using the
+  -Xlintfile option.
+-Xlintfile <PropertyFile>::
+  Specify properties file to set levels for specific crosscutting
+  messages. PropertyFile is a path to a Java .properties file that takes
+  the same property names and values as
+  org/aspectj/weaver/XlintDefault.properties from aspectjtools.jar,
+  which it also overrides.
+-help::
+  Emit information on compiler options and usage
+-version::
+  Emit the version of the AspectJ compiler
+-classpath <Path>::
+  Specify where to find user class files. Path is a single argument
+  containing a list of paths to zip files or directories, delimited by
+  the platform-specific path delimiter.
+-bootclasspath <Path>::
+  Override location of VM's bootclasspath for purposes of evaluating
+  types when compiling. Path is a single argument containing a list of
+  paths to zip files or directories, delimited by the platform-specific
+  path delimiter.
+-extdirs <Path>::
+  Override location of VM's extension directories for purposes of
+  evaluating types when compiling. Path is a single argument containing
+  a list of paths to directories, delimited by the platform-specific
+  path delimiter.
+-d <Directory>::
+  Specify where to place generated .class files. If not specified,
+  <Directory> defaults to the current working dir.
+-target <[1.1 to 1.5]>::
+  Specify classfile target setting (1.1 to 1.5, default is 1.2)
+-1.3::
+  Set compliance level to 1.3 This implies -source 1.3 and -target 1.1.
+-1.4::
+  Set compliance level to 1.4 (default) This implies -source 1.4 and
+  -target 1.2.
+-1.5::
+  Set compliance level to 1.5. This implies -source 1.5 and -target 1.5.
+-source <[1.3|1.4|1.5]>::
+  Toggle assertions (1.3, 1.4, or 1.5 - default is 1.4). When using
+  -source 1.3, an assert() statement valid under Java 1.4 will result in
+  a compiler error. When using -source 1.4, treat `assert` as a keyword
+  and implement assertions according to the 1.4 language spec. When
+  using -source 1.5, Java 5 language features are permitted.
+-nowarn::
+  Emit no warnings (equivalent to '-warn:none') This does not suppress
+  messages generated by `declare warning` or `Xlint`.
+-warn: <items>::
+  Emit warnings for any instances of the comma-delimited list of
+  questionable code (eg '-warn:unusedLocals,deprecation'):
++
+....
+constructorName        method with constructor name
+packageDefaultMethod   attempt to override package-default method
+deprecation            usage of deprecated type or member
+maskedCatchBlocks      hidden catch block
+unusedLocals           local variable never read
+unusedArguments        method argument never read
+unusedImports          import statement not used by code in file
+none                   suppress all compiler warnings
+....
++
+`-warn:none` does not suppress messages generated by `declare warning`
+  or `Xlint`.
+-deprecation::
+  Same as -warn:deprecation
+-noImportError::
+  Emit no errors for unresolved imports
+-proceedOnError::
+  Keep compiling after error, dumping class files with problem methods
+-g<:[lines,vars,source]>::
+  debug attributes level, that may take three forms:
++
+....
+-g         all debug info ('-g:lines,vars,source')
+-g:none    no debug info
+-g:{items} debug info for any/all of [lines, vars, source], e.g.,
+           -g:lines,source
+....
+-preserveAllLocals::
+  Preserve all local variables during code generation (to facilitate
+  debugging).
+-referenceInfo::
+  Compute reference information.
+-encoding <format>::
+  Specify default source encoding format. Specify custom encoding on a
+  per file basis by suffixing each input source file/folder name with
+  '[encoding]'.
+-verbose::
+  Emit messages about accessed/processed compilation units
+-showWeaveInfo::
+  Emit messages about weaving
+-log <file>::
+  Specify a log file for compiler messages.
+-progress::
+  Show progress (requires -log mode).
+-time::
+  Display speed information.
+-noExit::
+  Do not call System.exit(n) at end of compilation (n=0 if no error)
+-repeat <N>::
+  Repeat compilation process N times (typically to do performance
+  analysis).
+-XterminateAfterCompilation::
+  Causes compiler to terminate before weaving
+-XaddSerialVersionUID::
+  Causes the compiler to calculate and add the SerialVersionUID field to
+  any type implementing Serializable that is affected by an aspect. The
+  field is calculated based on the class before weaving has taken place.
+-Xreweavable[:compress]::
+  (Experimental - deprecated as now default) Runs weaver in reweavable
+  mode which causes it to create woven classes that can be rewoven,
+  subject to the restriction that on attempting a reweave all the types
+  that advised the woven type must be accessible.
+-XnoInline::
+  (Experimental) do not inline around advice
+-XincrementalFile <file>::
+  (Experimental) This works like incremental mode, but using a file
+  rather than standard input to control the compiler. It will recompile
+  each time file is changed and and halt when file is deleted.
+-XserializableAspects::
+  (Experimental) Normally it is an error to declare aspects
+  Serializable. This option removes that restriction.
+-XnotReweavable::
+  (Experimental) Create class files that can't be subsequently rewoven
+  by AspectJ.
+-Xajruntimelevel:1.2, ajruntimelevel:1.5::
+  (Experimental) Allows code to be generated that targets a 1.2 or a 1.5
+  level AspectJ runtime (default 1.5)
+
+==== File names
+
+ajc accepts source files with either the `.java` extension or the `.aj`
+extension. We normally use `.java` for all of our files in an AspectJ
+system -- files that contain aspects as well as files that contain
+classes. However, if you have a need to mechanically distinguish files
+that use AspectJ's additional functionality from those that are pure
+Java we recommend using the `.aj` extension for those files.
+
+We'd like to discourage other means of mechanical distinction such as
+naming conventions or sub-packages in favor of the `.aj` extension.
+
+* Filename conventions are hard to enforce and lead to awkward names for
+your aspects. Instead of `TracingAspect.java` we recommend using
+`Tracing.aj` (or just `Tracing.java`) instead.
+* Sub-packages move aspects out of their natural place in a system and
+can create an artificial need for privileged aspects. Instead of adding
+a sub-package like `aspects` we recommend using the `.aj` extension and
+including these files in your existing packages instead.
+
+==== Compatibility
+
+AspectJ is a compatible extension to the Java programming language. The
+AspectJ compiler adheres to the
+http://java.sun.com/docs/books/jls/index.html[The Java Language
+Specification, Second Edition] and to the
+http://java.sun.com/docs/books/vmspec/index.html[The Java Virtual
+Machine Specification, Second Edition] and runs on any Java 2 compatible
+platform. The code it generates runs on any Java 1.1 or later compatible
+platform. For more information on compatibility with Java and with
+previous releases of AspectJ, see xref:#versionCompatibility[???].
+
+==== Examples
+
+Compile two files:
+
+....
+ajc HelloWorld.java Trace.java
+....
+
+To avoid specifying file names on the command line, list source files in
+a line-delimited text argfile. Source file paths may be absolute or
+relative to the argfile, and may include other argfiles by @-reference.
+The following file `sources.lst` contains absolute and relative files
+and @-references:
+
+....
+Gui.java
+/home/user/src/Library.java
+data/Repository.java
+data/Access.java
+@../../common/common.lst
+@/home/user/src/lib.lst
+view/body/ArrayView.java
+....
+
+Compile the files using either the -argfile or @ form:
+
+....
+ajc -argfile sources.lst
+ajc @sources.lst
+....
+
+Argfiles are also supported by jikes and javac, so you can use the files
+in hybrid builds. However, the support varies:
+
+* Only ajc accepts command-line options
+* Jikes and Javac do not accept internal @argfile references.
+* Jikes and Javac only accept the @file form on the command line.
+
+Bytecode weaving using -inpath: AspectJ 1.2 supports weaving .class
+files in input zip/jar files and directories. Using input jars is like
+compiling the corresponding source files, and all binaries are emitted
+to output. Although Java-compliant compilers may differ in their output,
+ajc should take as input any class files produced by javac, jikes,
+eclipse, and, of course, ajc. Aspects included in -inpath will be woven
+into like other .class files, and they will affect other types as usual.
+
+Aspect libraries using -aspectpath: AspectJ 1.1 supports weaving from
+read-only libraries containing aspects. Like input jars, they affect all
+input; unlike input jars, they themselves are not affected or emitted as
+output. Sources compiled with aspect libraries must be run with the same
+aspect libraries on their classpath.
+
+The following example builds the tracing example in a command-line
+environment; it creates a read-only aspect library, compiles some
+classes for use as input bytecode, and compiles the classes and other
+sources with the aspect library.
+
+The tracing example is in the AspectJ distribution
+(\{aspectj}/doc/examples/tracing). This uses the following files:
+
+....
+aspectj1.1/
+  bin/
+    ajc
+  lib/
+    aspectjrt.jar
+  examples/
+    tracing/
+      Circle.java
+      ExampleMain.java
+      lib/
+        AbstractTrace.java
+        TraceMyClasses.java
+      notrace.lst
+      Square.java
+      tracelib.lst
+      tracev3.lst
+      TwoDShape.java
+      version3/
+        Trace.java
+        TraceMyClasses.java
+....
+
+Below, the path separator is taken as ";", but file separators are "/".
+All commands are on one line. Adjust paths and commands to your
+environment as needed.
+
+Setup the path, classpath, and current directory:
+
+....
+cd examples
+export ajrt=../lib/aspectjrt.jar
+export CLASSPATH="$ajrt"
+export PATH="../bin:$PATH"
+....
+
+Build a read-only tracing library:
+
+....
+ajc -argfile tracing/tracelib.lst -outjar tracelib.jar
+....
+
+Build the application with tracing in one step:
+
+....
+ajc -aspectpath tracelib.jar -argfile tracing/notrace.lst -outjar tracedapp.jar
+....
+
+Run the application with tracing:
+
+....
+java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain
+....
+
+Build the application with tracing from binaries in two steps:
+
+* (a) Build the application classes (using javac for
+demonstration's sake):
++
+....
+mkdir classes
+javac -d classes tracing/*.java
+jar cfM app.jar -C classes .
+....
+* (b) Build the application with tracing:
++
+....
+ajc -inpath app.jar -aspectpath tracelib.jar -outjar tracedapp.jar
+....
+
+Run the application with tracing (same as above):
+
+....
+java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain
+....
+
+Run the application without tracing:
+
+....
+java -classpath "app.jar" tracing.ExampleMain
+....
+
+==== The AspectJ compiler API
+
+The AspectJ compiler is implemented completely in Java and can be called
+as a Java class. The only interface that should be considered public are
+the public methods in `org.aspectj.tools.ajc.Main`. E.g.,
+`main(String[] args)` takes the the standard `ajc` command line
+arguments. This means that an alternative way to run the compiler is
+
+[subs=+quotes]
+ java org.aspectj.tools.ajc.Main [_option_...] [_file_...]
+
+To access compiler messages programmatically, use the methods
+`setHolder(IMessageHolder holder)` and/or
+`run(String[] args, IMessageHolder holder)`. `ajc` reports each message
+to the holder using `IMessageHolder.handleMessage(..)`. If you just want
+to collect the messages, use `MessageHandler` as your `IMessageHolder`.
+For example, compile and run the following with `aspectjtools.jar` on
+the classpath:
+
+....
+import org.aspectj.bridge.*;
+import org.aspectj.tools.ajc.Main;
+import java.util.Arrays;
+
+public class WrapAjc {
+  public static void main(String[] args) {
+    Main compiler = new Main();
+    MessageHandler m = new MessageHandler();
+    compiler.run(args, m);
+    IMessage[] ms = m.getMessages(null, true);
+    System.out.println("messages: " + Arrays.asList(ms));
+  }
+}
+....
+
+==== Stack Traces and the SourceFile attribute
+
+Unlike traditional java compilers, the AspectJ compiler may in certain
+cases generate classfiles from multiple source files. Unfortunately, the
+original Java class file format does not support multiple SourceFile
+attributes. In order to make sure all source file information is
+available, the AspectJ compiler may in some cases encode multiple
+filenames in the SourceFile attribute. When the Java VM generates stack
+traces, it uses this attribute to specify the source file.
+
+(The AspectJ 1.0 compiler also supports the .class file extensions of
+JSR-45. These permit compliant debuggers (such as jdb in Java 1.4.1) to
+identify the right file and line even given many source files for a
+single class. JSR-45 support is planned for ajc in AspectJ 1.1, but is
+not in the initial release. To get fully debuggable .class files, use
+the -XnoInline option.)
+
+Probably the only time you may see this format is when you view stack
+traces, where you may encounter traces of the format
+
+....
+java.lang.NullPointerException
+  at Main.new$constructor_call37(Main.java;SynchAspect.java[1k]:1030)
+....
+
+where instead of the usual
+
+....
+File:LineNumber
+....
+
+format, you see
+
+....
+File0;File1[Number1];File2[Number2] ... :LineNumber
+....
+
+In this case, LineNumber is the usual offset in lines plus the "start
+line" of the actual source file. That means you use LineNumber both to
+identify the source file and to find the line at issue. The number in
+[brackets] after each file tells you the virtual "start line" for that
+file (the first file has a start of 0).
+
+In our example from the null pointer exception trace, the virtual start
+line is 1030. Since the file SynchAspect.java "starts" at line 1000
+[1k], the LineNumber points to line 30 of SynchAspect.java.
+
+So, when faced with such stack traces, the way to find the actual source
+location is to look through the list of "start line" numbers to find the
+one just under the shown line number. That is the file where the source
+location can actually be found. Then, subtract that "start line" from
+the shown line number to find the actual line number within that file.
+
+In a class file that comes from only a single source file, the AspectJ
+compiler generates SourceFile attributes consistent with traditional
+Java compilers.

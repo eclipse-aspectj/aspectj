@@ -1,0 +1,87 @@
+[[pertypewithin]]
+== The pertypewithin Aspect Instantiation Model
+
+AspectJ 5 defines a new per-clause type for aspect instantiation:
+`pertypewithin`. Unlike the other per-clauses, `pertypewithin` takes a
+type pattern:
+
+....
+PerTypeWithin := 'pertypewithin' '(' OptionalParensTypePattern ')'
+....
+
+When an aspect is declared using the `pertypewithin` instantiation
+model, one new aspect instance will be created for each type matched by
+the associated type pattern.
+
+Pertypewithin aspects have `aspectOf` and `hasAspect` methods with the
+following signatures:
+
+....
+/**
+ * return true if this aspect has an instance associated with
+ * the given type.
+ */
+public static boolean hasAspect(Class clazz)
+
+/**
+ * return the instance associated with the given type.
+ * Throws NoAspectBoundException if there is no such
+ * aspect.
+ */
+public static P aspectOf(Class clazz)
+....
+
+Where `P` is the type of the `pertypewithin` aspect.
+
+In addition, `pertypewithin` aspects have a `getWithinTypeName` method
+that can be called to return the package qualified name of the type for
+which the aspect instance has been created.
+
+....
+/**
+ * return the package qualified name (eg. com.foo.MyClass) of the type
+ * for which the aspect instance has been instantiated.
+ */
+public String getWithinTypeName()
+....
+
+In common with the other per-clause instantiation models, the execution
+of any advice declared within a `pertypewithin` aspect is conditional
+upon an implicit pointcut condition. In this case, that any join point
+be `within` the type that the executing aspect is an `aspectOf`. For
+example, given the aspect definition
+
+....
+import java.util.*;
+
+public aspect InstanceTracking pertypewithin(org.xyz..*) {
+
+  // use WeakHashMap for auto-garbage collection of keys
+  private Map<Object,Boolean> instances = new WeakHashMap<Object,Boolean>();
+
+  after(Object o) returning() : execution(new(..)) && this(o) {
+    instances.put(o,true);
+  }
+
+  public Set<?> getInstances() {
+    return instances.keySet();
+  }
+
+}
+....
+
+Then one aspect instance will be created for each type within
+`org.xyz..*`. For each aspect instance, the after returning advice will
+match only the execution of constructors within the matched
+per-type-within type. The net result is that the aspect tracks all known
+instances of each type within `org.xyz..*`. To get access to the
+instances, a programmer can simply write
+`InstanceTracking.aspectOf(org.xyz.SomeType.class).getInstances()`.
+
+The `pertypewithin` aspect instantiation model should be used when the
+implementation of a crosscutting concern requires that some state be
+maintained for each type in a set of types. To maintain state for a
+single type, it is easier to use a static inter-type declared field.
+Examples of usage include instance tracking, profiling, and the
+implementation of a common tracing idiom that uses one Logger per traced
+class.

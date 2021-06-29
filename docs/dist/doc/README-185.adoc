@@ -1,0 +1,16 @@
+[.small]#© Copyright 2015 Contributors. All rights reserved.#
+
+== AspectJ 1.8.5 Readme
+
+The full list of resolved issues in 1.8.5 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.5;[here]
+
+.
+
+* 1.8.5 available 28-Jan-2015
+
+=== Notable changes
+
+The most important fixes in 1.8.5 are JDT compiler fixes that it
+includes
+(https://bugs.eclipse.org/bugs/show_bug.cgi?id=455277[455277],https://bugs.eclipse.org/bugs/show_bug.cgi?id=458660[458660]).

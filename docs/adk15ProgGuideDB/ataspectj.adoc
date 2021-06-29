@@ -1,0 +1,868 @@
+[[ataspectj]]
+== An Annotation Based Development Style
+
+[[ataspectj-intro]]
+=== Introduction
+
+In addition to the familiar AspectJ code-based style of aspect
+declaration, AspectJ 5 also supports an annotation-based style of aspect
+declaration. We informally call the set of annotations that support this
+development style the "@AspectJ" annotations.
+
+AspectJ 5 allows aspects and their members to be specified using either
+the code style or the annotation style. Whichever style you use, the
+AspectJ weaver ensures that your program has exactly the same semantics.
+It is, to quote a famous advertising campaign, "a choice, not a
+compromise". The two styles can be mixed within a single application,
+and even within a single source file, though we doubt this latter mix
+will be recommended in practice.
+
+The use of the @AspectJ annotations means that there are large classes
+of AspectJ applications that can be compiled by a regular Java 5
+compiler, and subsequently woven by the AspectJ weaver (for example, as
+an additional build stage, or as late as class load-time). In this
+chapter we introduce the @AspectJ annotations and show how they can be
+used to declare aspects and aspect members.
+
+[[ataspectj-aspects]]
+=== Aspect Declarations
+
+Aspect declarations are supported by the
+`org.aspectj.lang.annotation.Aspect` annotation. The declaration:
+
+....
+@Aspect
+public class Foo {}
+....
+
+Is equivalent to:
+
+....
+public aspect Foo {}
+....
+
+To specify an aspect an aspect instantiation model (the default is
+singleton), provide the perclause as the `@Aspect` value. For example:
+
+....
+@Aspect("perthis(execution(* abc..*(..)))")
+public class Foo {}
+....
+
+is equivalent to...
+
+....
+public aspect Foo perthis(execution(* abc..*(..))) {}
+....
+
+==== Limitations
+
+Privileged aspects are not supported by the annotation style.
+
+[[ataspectj-pcadvice]]
+=== Pointcuts and Advice
+
+Pointcut and advice declarations can be made using the
+`Pointcut, Before, After, AfterReturning, AfterThrowing,` and `Around`
+annotations.
+
+==== Pointcuts
+
+Pointcuts are specified using the `org.aspectj.lang.annotation.Pointcut`
+annotation on a method declaration. The method should have a `void`
+return type. The parameters of the method correspond to the parameters
+of the pointcut. The modifiers of the method correspond to the modifiers
+of the pointcut.
+
+As a general rule, the `@Pointcut` annotated method must have an empty
+method body and must not have any `throws` clause. If formal are bound
+(using
+`args(), target(), this(), @args(), @target(), @this(), @annotation())`
+in the pointcut, then they must appear in the method signature.
+
+The `if()` pointcut is treated specially and is discussed in a later
+section.
+
+Here is a simple example of a pointcut declaration in both code and
+@AspectJ styles:
+
+....
+@Pointcut("call(* *.*(..))")
+void anyCall() {}
+....
+
+is equivalent to...
+
+....
+pointcut anyCall() : call(* *.*(..));
+....
+
+When binding arguments, simply declare the arguments as normal in the
+annotated method:
+
+....
+@Pointcut("call(* *.*(int)) && args(i) && target(callee)")
+void anyCall(int i, Foo callee) {}
+....
+
+is equivalent to...
+
+....
+pointcut anyCall(int i, Foo callee) : call(* *.*(int)) && args(i) && target(callee);
+....
+
+An example with modifiers (Remember that Java 5 annotations are not
+inherited, so the `@Pointcut` annotation must be present on the
+extending aspect's pointcut declaration too):
+
+....
+@Pointcut("")
+protected abstract void anyCall();
+....
+
+is equivalent to...
+
+....
+protected abstract pointcut anyCall();
+....
+
+===== Type references inside @AspectJ annotations
+
+Using the code style, types referenced in pointcut expressions are
+resolved with respect to the imported types in the compilation unit.
+When using the annotation style, types referenced in pointcut
+expressions are resolved in the absence of any imports and so have to be
+fully qualified if they are not by default visible to the declaring type
+(outside of the declaring package and `java.lang` ). This does not apply
+to type patterns with wildcards, which are always resolved in a global
+scope.
+
+Consider the following compilation unit:
+
+....
+package org.aspectprogrammer.examples;
+
+import java.util.List;
+
+public aspect Foo {
+  pointcut listOperation() : call(* List.*(..));
+  pointcut anyUtilityCall() : call(* java.util..*(..));
+}
+....
+
+Using the annotation style this would be written as:
+
+....
+package org.aspectprogrammer.examples;
+
+import java.util.List; // redundant but harmless
+
+@Aspect
+public class Foo {
+  @Pointcut("call(* java.util.List.*(..))") // must qualify
+  void listOperation() {}
+
+  @Pointcut("call(* java.util..*(..))")
+  void anyUtilityCall() {}
+}
+....
+
+===== if() pointcut expressions
+
+In code style, it is possible to use the `if(...)` poincut to define a
+conditional pointcut expression which will be evaluated at runtime for
+each candidate join point. The `if(...)` body can be any valid Java
+boolean expression, and can use any exposed formal, as well as the join
+point forms
+`thisJoinPoint, thisJoinPointStaticPart and thisJoinPointEnclosingStaticPart`
+.
+
+When using the annotation style, it is not possible to write a full Java
+expression within the annotation value so the syntax differs slightly,
+whilst providing the very same semantics and runtime behaviour. An
+`if()` pointcut expression can be declared in an `@Pointcut` , but must
+have either an empty body (`if()`, or be one of the expression forms
+`if(true)` or `if(false)` . The annotated method must be public, static,
+and return a boolean. The body of the method contains the condition to
+be evaluated. For example:
+
+....
+@Pointcut("call(* *.*(int)) && args(i) && if()")
+public static boolean someCallWithIfTest(int i) {
+    return i > 0;
+}
+....
+
+is equivalent to...
+
+....
+pointcut someCallWithIfTest(int i) : call(* *.*(int)) && args(i) && if(i > 0);
+....
+
+and the following is also a valid form:
+
+....
+static int COUNT = 0;
+
+@Pointcut("call(* *.*(int)) && args(i) && if()")
+public static boolean someCallWithIfTest(int i, JoinPoint jp, JoinPoint.EnclosingStaticPart esjp) {
+   // any legal Java expression...
+   return i > 0
+          && jp.getSignature().getName.startsWith("doo")
+          && esjp.getSignature().getName().startsWith("test")
+          && COUNT++ < 10;
+}
+
+@Before("someCallWithIfTest(anInt, jp, enc)")
+public void beforeAdviceWithRuntimeTest(int anInt, JoinPoint jp, JoinPoint.EnclosingStaticPart enc) {
+   //...
+}
+
+// Note that the following is NOT valid
+/*
+@Before("call(* *.*(int)) && args(i) && if()")
+public void advice(int i) {
+   // so you were writing an advice or an if body ?
+}
+*/
+....
+
+It is thus possible with the annotation style to use the `if()` pointcut
+only within an `@Pointcut` expression. The `if()` must not contain any
+body. The annotated `@Pointcut` method must then be of the form
+`public static boolean` and can use formal bindings as usual. Extra
+_implicit_ arguments of type JoinPoint, JoinPoint.StaticPart and
+JoinPoint.EnclosingStaticPart can also be used (this is not permitted
+for regular annotated pointcuts not using the `if()` form).
+
+The special forms `if(true)` and `if(false)` can be used in a more
+general way and don't imply that the pointcut method must have a body.
+You can thus write `@Before("somePoincut() && if(false)")` .
+
+==== Advice
+
+In this section we first discuss the use of annotations for simple
+advice declarations. Then we show how `thisJoinPoint` and its siblings
+are handled in the body of advice and discuss the treatment of `proceed`
+in around advice.
+
+Using the annotation style, an advice declaration is written as a
+regular Java method with one of the `Before, After, AfterReturning,
+                    AfterThrowing,` or `Around` annotations. Except in
+the case of around advice, the method should return void. The method
+should be declared public.
+
+A method that has an advice annotation is treated exactly as an advice
+declaration by AspectJ's weaver. This includes the join points that
+arise when the advice is executed (an adviceexecution join point, not a
+method execution join point).
+
+The following example shows a simple before advice declaration in both
+styles:
+
+....
+@Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
+public void callFromFoo() {
+  System.out.println("Call from Foo");
+}
+....
+
+is equivalent to...
+
+....
+before() : call(* org.aspectprogrammer..*(..)) && this(Foo) {
+  System.out.println("Call from Foo");
+}
+....
+
+If the advice body needs to know which particular `Foo` instance is
+making the call, just add a parameter to the advice declaration.
+
+....
+before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
+  System.out.println("Call from Foo: " + foo);
+}
+....
+
+can be written as:
+
+....
+@Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
+public void callFromFoo(Foo foo) {
+  System.out.println("Call from Foo: " + foo);
+}
+....
+
+If the advice body needs access to `thisJoinPoint` ,
+`thisJoinPointStaticPart` , `thisEnclosingJoinPointStaticPart` then
+these need to be declared as additional method parameters when using the
+annotation style.
+
+....
+@Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
+public void callFromFoo(JoinPoint thisJoinPoint, Foo foo) {
+  System.out.println("Call from Foo: " + foo + " at "
+                     + thisJoinPoint);
+}
+....
+
+is equivalent to...
+
+....
+before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
+  System.out.println("Call from Foo: " + foo + " at "
+                     + thisJoinPoint);
+}
+....
+
+Advice that needs all three variables would be declared:
+
+....
+@Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
+public void callFromFoo(JoinPoint thisJoinPoint,
+                        JoinPoint.StaticPart thisJoinPointStaticPart,
+                        JoinPoint.EnclosingStaticPart thisEnclosingJoinPointStaticPart) {
+    // ...
+}
+....
+
+`JoinPoint.EnclosingStaticPart` is a new (empty) sub-interface of
+`JoinPoint.StaticPart` which allows the AspectJ weaver to distinguish
+based on type which of `thisJoinPointStaticPart` and
+`thisEnclosingJoinPointStaticPart` should be passed in a given parameter
+position.
+
+`After` advice declarations take exactly the same form as `Before` , as
+do the forms of `AfterReturning` and `AfterThrowing` that do not expose
+the return type or thrown exception respectively.
+
+To expose a return value with after returning advice simply declare the
+returning parameter as a parameter in the method body and bind it with
+the "returning" attribute:
+
+....
+@AfterReturning("criticalOperation()")
+public void phew() {
+  System.out.println("phew");
+}
+
+@AfterReturning(pointcut="call(Foo+.new(..))",returning="f")
+public void itsAFoo(Foo f) {
+  System.out.println("It's a Foo: " + f);
+}
+....
+
+is equivalent to...
+
+....
+after() returning : criticalOperation() {
+  System.out.println("phew");
+}
+
+after() returning(Foo f) : call(Foo+.new(..)) {
+  System.out.println("It's a Foo: " + f);
+}
+....
+
+(Note the use of the "pointcut=" prefix in front of the pointcut
+expression in the returning case).
+
+After throwing advice works in a similar fashion, using the `throwing`
+attribute when needing to expose a thrown exception.
+
+For around advice, we have to tackle the problem of `proceed` . One of
+the design goals for the annotation style is that a large class of
+AspectJ applications should be compilable with a standard Java 5
+compiler. A straight call to `proceed` inside a method body:
+
+....
+@Around("call(* org.aspectprogrammer..*(..))")
+public Object doNothing() {
+  return proceed(); // CE on this line
+}
+....
+
+will result in a "No such method" compilation error. For this reason
+AspectJ 5 defines a new sub-interface of `JoinPoint` ,
+`ProceedingJoinPoint` .
+
+....
+public interface ProceedingJoinPoint extends JoinPoint {
+  public Object proceed(Object[] args);
+}
+....
+
+The around advice given above can now be written as:
+
+....
+@Around("call(* org.aspectprogrammer..*(..))")
+public Object doNothing(ProceedingJoinPoint thisJoinPoint) {
+  return thisJoinPoint.proceed();
+}
+....
+
+Here's an example that uses parameters for the proceed call:
+
+....
+@Aspect
+public class ProceedAspect {
+
+  @Pointcut("call(* setAge(..)) && args(i)")
+  void setAge(int i) {}
+
+  @Around("setAge(i)")
+  public Object twiceAsOld(ProceedingJoinPoint thisJoinPoint, int i) {
+    return thisJoinPoint.proceed(new Object[]{i*2}); //using Java 5 autoboxing
+  }
+
+}
+....
+
+is equivalent to:
+
+....
+public aspect ProceedAspect {
+  pointcut setAge(int i): call(* setAge(..)) && args(i);
+
+  Object around(int i): setAge(i) {
+    return proceed(i*2);
+  }
+}
+....
+
+Note that the ProceedingJoinPoint does not need to be passed to the
+proceed(..) arguments.
+
+In code style, the proceed method has the same signature as the advice,
+any reordering of actual arguments to the joinpoint that is done in the
+advice signature must be respected. Annotation style is different. The
+proceed(..) call takes, in this order:
+
+* If 'this()' was used in the pointcut
++
+for binding
++
+, it must be passed first in proceed(..).
+* If 'target()' was used in the pointcut
++
+for binding
++
+, it must be passed next in proceed(..) - it will be the first argument
+to proceed(..) if this() was not used for binding.
+* Finally come
++
+all
++
+the arguments expected at the join point, in the order they are supplied
+at the join point. Effectively the advice signature is ignored - it
+doesn't matter if a subset of arguments were bound or the ordering was
+changed in the advice signature, the proceed(..) calls takes all of them
+in the right order for the join point.
+
+Since proceed(..) in this case takes an Object array, AspectJ cannot do
+as much compile time checking as it can for code style. If the rules
+above aren't obeyed then it will unfortunately manifest as a runtime
+error.
+
+[[ataspectj-itds]]
+=== Inter-type Declarations
+
+Inter-type declarations are challenging to support using an annotation
+style. For code style aspects compiled with the ajc compiler, the entire
+type system can be made aware of inter-type declarations (new
+supertypes, new methods, new fields) and the completeness and
+correctness of it can be guaranteed. Achieving this with an annotation
+style is hard because the source code may simply be compiled with javac
+where the type system cannot be influenced and what is compiled must be
+'pure java'.
+
+AspectJ 1.5.0 introduced @DeclareParents, an attempt to offer something
+like that which is achievable with code style declare parents and the
+other intertype declarations (fields, methods, constructors). However,
+it has proved too challenging to get close to the expressiveness and
+capabilities of code style in this area and effectively @DeclareParents
+is offering just a mixin strategy. The definition of mixin I am using
+here is that when some interface I is mixed into some target type T then
+this means that all the methods from I are created in T and their
+implementations are simple forwarding methods that call a delegate which
+that provides an implementation of I.
+
+The next section covers @DeclareParents but AspectJ 1.6.4 introduces
+@DeclareMixin - an improved approach to defining a mixin and the choice
+of a different name for the annotation will hopefully alleviate some of
+the confusion about why @DeclareParents just doesn't offer the same
+semantics as the code style variant. Offering @DeclareMixin also gives
+code style developers a new tool for a simple mixin whereas previously
+they would have avoided @DeclareParents thinking what it could only do
+was already achievable with code style syntax.
+
+The defaultImpl attribute of @DeclareParents may become deprecated if
+@DeclareMixin proves popular, leaving @DeclareParents purely as a way to
+introduce a marker interface.
+
+[[atDeclareParents]]
+==== @DeclareParents
+
+Consider the following aspect:
+
+....
+public aspect MoodIndicator {
+
+   public interface Moody {};
+
+   private Mood Moody.mood = Mood.HAPPY;
+
+   public Mood Moody.getMood() {
+     return mood;
+   }
+
+   declare parents : org.xyz..* implements Moody;
+
+   before(Moody m) : execution(* *.*(..)) && this(m) {
+      System.out.println("I'm feeling " + m.getMood());
+   }
+}
+....
+
+This declares an interface `Moody` , and then makes two inter-type
+declarations on the interface - a field that is private to the aspect,
+and a method that returns the mood. Within the body of the inter-type
+declared method `getMoody` , the type of `this` is `Moody` (the target
+type of the inter-type declaration).
+
+Using the annotation style this aspect can be written:
+
+....
+@Aspect
+public class MoodIndicator {
+
+   // this interface can be outside of the aspect
+   public interface Moody {
+     Mood getMood();
+   };
+
+   // this implementation can be outside of the aspect
+   public static class MoodyImpl implements Moody {
+      private Mood mood = Mood.HAPPY;
+
+      public Mood getMood() {
+        return mood;
+      }
+   }
+
+   // the field type must be the introduced interface. It can't be a class.
+   @DeclareParents(value="org.xzy..*",defaultImpl=MoodyImpl.class)
+   private Moody implementedInterface;
+
+   @Before("execution(* *.*(..)) && this(m)")
+   void feelingMoody(Moody m) {
+      System.out.println("I'm feeling " + m.getMood());
+   }
+}
+....
+
+This is very similar to the mixin mechanism supported by AspectWerkz.
+The effect of the `@DeclareParents` annotation is equivalent to a
+declare parents statement that all types matching the type pattern
+implement the given interface (in this case Moody). Each method declared
+in the interface is treated as an inter-type declaration. Note how this
+scheme operates within the constraints of Java type checking and ensures
+that `this` has access to the exact same set of members as in the code
+style example.
+
+Note that it is illegal to use the @DeclareParents annotation on an
+aspect' field of a non-interface type. The interface type is the
+inter-type declaration contract that dictates which methods are declared
+on the target type.
+
+....
+// this type will be affected by the inter-type declaration as the type pattern matches
+package org.xyz;
+public class MoodTest {
+
+   public void test() {
+       // see here the cast to the introduced interface (required)
+       Mood mood = ((Moody)this).getMood();
+       ...
+   }
+}
+....
+
+The `@DeclareParents` annotation can also be used without specifying a
+`defaultImpl` value (for example, `@DeclareParents("org.xyz..*")`). This
+is equivalent to a `declare parents ... implements` clause, and does
+_not_ make any inter-type declarations for default implementation of the
+interface methods.
+
+Consider the following aspect:
+
+....
+public aspect SerializableMarker {
+   declare parents : org.xyz..* implements Serializable;
+}
+....
+
+Using the annotation style this aspect can be written:
+
+....
+@Aspect
+public class SerializableMarker {
+   @DeclareParents("org.xyz..*")
+   Serializable implementedInterface;
+}
+....
+
+If the interface defines one or more operations, and these are not
+implemented by the target type, an error will be issued during weaving.
+
+[[atDeclareMixin]]
+==== @DeclareMixin
+
+Consider the following aspect:
+
+....
+public aspect MoodIndicator {
+
+   public interface Moody {};
+
+   private Mood Moody.mood = Mood.HAPPY;
+
+   public Mood Moody.getMood() {
+     return mood;
+   }
+
+   declare parents : org.xyz..* implements Moody;
+
+   before(Moody m) : execution(* *.*(..)) && this(m) {
+      System.out.println("I'm feeling " + m.getMood());
+   }
+}
+....
+
+This declares an interface `Moody`, and then makes two inter-type
+declarations on the interface - a field that is private to the aspect,
+and a method that returns the mood. Within the body of the inter-type
+declared method `getMoody`, the type of `this` is `Moody` (the target
+type of the inter-type declaration).
+
+Using the annotation style this aspect can be written:
+
+....
+@Aspect
+public class MoodIndicator {
+
+   // this interface can be outside of the aspect
+   public interface Moody {
+     Mood getMood();
+   };
+
+   // this implementation can be outside of the aspect
+   public static class MoodyImpl implements Moody {
+      private Mood mood = Mood.HAPPY;
+
+      public Mood getMood() {
+        return mood;
+      }
+   }
+
+   // The DeclareMixin annotation is attached to a factory method that can return instances of the delegate
+   // which offers an implementation of the mixin interface.  The interface that is mixed in is the
+   // return type of the method.
+   @DeclareMixin("org.xyz..*")
+   public static Moody createMoodyImplementation() {
+     return new MoodyImpl();
+   }
+
+   @Before("execution(* *.*(..)) && this(m)")
+   void feelingMoody(Moody m) {
+      System.out.println("I'm feeling " + m.getMood());
+   }
+}
+....
+
+Basically, the `@DeclareMixin` annotation is attached to a factory
+method. The factory method specifies the interface to mixin as its
+return type, and calling the method should create an instance of a
+delegate that implements the interface. This is the interface which will
+be delegated to from any target matching the specified type pattern.
+
+Exploiting this syntax requires the user to obey the rules of pure Java.
+So references to any targeted type as if it were affected by the Mixin
+must be made through a cast, like this:
+
+....
+// this type will be affected by the inter-type declaration as the type pattern matches
+package org.xyz;
+public class MoodTest {
+
+   public void test() {
+       // see here the cast to the introduced interface (required)
+       Mood mood = ((Moody)this).getMood();
+       ...
+   }
+}
+....
+
+Sometimes the delegate instance may want to perform differently
+depending upon the type/instance for which it is behaving as a delegate.
+To support this it is possible for the factory method to specify a
+parameter. If it does, then when the factory method is called the
+parameter will be the object instance for which a delegate should be
+created:
+
+....
+@Aspect
+public class Foo {
+
+  @DeclareMixin("org.xyz..*")
+  public static SomeInterface createDelegate(Object instance) {
+    return new SomeImplementation(instance);
+  }
+}
+....
+
+It is also possible to make the factory method non-static - and in this
+case it can then exploit the local state in the surrounding aspect
+instance, but this is only supported for singleton aspects:
+
+....
+@Aspect
+public class Foo {
+  public int maxLimit=35;
+
+  @DeclareMixin("org.xyz..*")
+  public SomeInterface createDelegate(Object instance) {
+    return new SomeImplementation(instance,maxLimit);
+  }
+}
+....
+
+Although the interface type is usually determined purely from the return
+type of the factory method, it can be specified in the annotation if
+necessary. In this example the return type of the method extends
+multiple other interfaces and only a couple of them (I and J) should be
+mixed into any matching targets:
+
+....
+// interfaces is an array of interface classes that should be mixed in
+@DeclareMixin(value="org.xyz..*",interfaces={I.class,J.class})
+public static InterfaceExtendingLotsOfInterfaces createMoodyImplementation() {
+  return new MoodyImpl();
+}
+....
+
+There are clearly similarities between `@DeclareMixin` and
+`@DeclareParents` but `@DeclareMixin` is not pretending to offer more
+than a simple mixin strategy. The flexibility in being able to provide
+the factory method instead of requiring a no-arg constructor for the
+implementation also enables delegate instances to make decisions based
+upon the type for which they are the delegate.
+
+Any annotations defined on the interface methods are also put upon the
+delegate forwarding methods created in the matched target type.
+
+[[ataspectj-declare]]
+=== Declare statements
+
+The previous section on inter-type declarations covered the case of
+declare parents ... implements. The 1.5.0 release of AspectJ 5 does not
+support annotation style declarations for declare parents ... extends
+and declare soft (programs with these declarations would not in general
+be compilable by a regular Java 5 compiler, reducing the priority of
+their implementation). These may be supported in a future release.
+
+Declare annotation is also not supported in the 1.5.0 release of AspectJ
+5.
+
+Declare precedence _is_ supported. For declare precedence, use the
+`@DeclarePrecedence` annotation as in the following example:
+
+....
+public aspect SystemArchitecture {
+  declare precedence : Security*, TransactionSupport, Persistence;
+
+  // ...
+}
+....
+
+can be written as:
+
+....
+@Aspect
+@DeclarePrecedence("Security*,org.xyz.TransactionSupport,org.xyz.Persistence")
+public class SystemArchitecture {
+  // ...
+}
+....
+
+We also support annotation style declarations for declare warning and
+declare error - any corresponding warnings and errors will be emitted at
+weave time, not when the aspects containing the declarations are
+compiled. (This is the same behaviour as when using declare warning or
+error with the code style). Declare warning and error declarations are
+made by annotating a string constant whose value is the message to be
+issued.
+
+Note that the String must be a literal and not the result of the
+invocation of a static method for example.
+
+....
+declare warning : call(* javax.sql..*(..)) && !within(org.xyz.daos..*)
+                : "Only DAOs should be calling JDBC.";
+
+declare error : execution(* IFoo+.*(..)) && !within(org.foo..*)
+              : "Only foo types can implement IFoo";
+....
+
+can be written as...
+
+....
+@DeclareWarning("call(* javax.sql..*(..)) && !within(org.xyz.daos..*)")
+static final String aMessage = "Only DAOs should be calling JDBC.";
+
+@DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
+static final String badIFooImplementors = "Only foo types can implement IFoo";
+
+// the following is not valid since the message is not a String literal
+@DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
+static final String badIFooImplementorsCorrupted = getMessage();
+static String getMessage() {
+    return "Only foo types can implement IFoo " + System.currentTimeMillis();
+}
+....
+
+[[ataspectj-aspectof]]
+=== aspectOf() and hasAspect() methods
+
+A central part of AspectJ's programming model is that aspects written
+using the code style and compiled using ajc support `aspectOf` and
+`hasAspect` static methods. When developing an aspect using the
+annotation style and compiling using a regular Java 5 compiler, these
+methods will not be visible to the compiler and will result in a
+compilation error if another part of the program tries to call them.
+
+To provide equivalent support for AspectJ applications compiled with a
+standard Java 5 compiler, AspectJ 5 defines the `Aspects` utility class:
+
+....
+public class Aspects {
+
+  /* variation used for singleton, percflow, percflowbelow */
+  static<T> public static T aspectOf(T aspectType) {...}
+
+  /* variation used for perthis, pertarget */
+  static<T> public static T aspectOf(T aspectType, Object forObject) {...}
+
+  /* variation used for pertypewithin */
+  static<T> public static T aspectOf(T aspectType, Class forType) {...}
+
+  /* variation used for singleton, percflow, percflowbelow */
+  public static boolean hasAspect(Object anAspect) {...}
+
+  /* variation used for perthis, pertarget */
+  public static boolean hasAspect(Object anAspect, Object forObject) {...}
+
+  /* variation used for pertypewithin */
+  public static boolean hasAspect(Object anAspect, Class forType) {...}
+}
+....

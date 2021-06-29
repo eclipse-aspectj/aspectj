@@ -1,0 +1,65 @@
+[.small]#© Copyright 2009 Contributors. All rights reserved.#
+
+== AspectJ 1.6.6 Readme
+
+[#bugsfixed]##
+
+=== Bugs fixed
+
+The complete list of issues resolved for AspectJ 1.6.6 can be found with
+this bugzilla query:
+
+* https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.6&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugs
+resolved]
+
+'''''
+
+=== Changes
+
+*Java5*
+
+The features of Java5 (generics, autoboxing, covariance, etc) are being
+exploited in the AspectJ codebase. This does not in any way change the
+generated code or supported source code, or the dependencies that code
+has, but it *does* mean that AspectJ requires Java5 in order to run. The
+ability to use typed collections has already flushed out a few issues
+within the codebase, improving the quality of AspectJ.
+
+ +
+
+*Closing streams*
+
+Some routes through AspectJ were leaving inputstreams open and this has
+now been fixed. For example if supplying a user written configuration
+file for Lint options. Thanks to Michael Pradel for supplying patches to
+fix these issues.
+
+ +
+
+*Concurrency (281654)*
+
+Fix to address a problem seen when using the weaver in a highly
+concurrent environment. Thanks to Kristian Rosenvold for the patch.
+
+ +
+
+*Incremental compilation*
+
+A few fixes to problems seen only on incremental builds, problem areas
+included:
+
+* problems when fully qualifying the target type in an intertype
+declaration (269652)
+* problems when using annotation style pointcuts and reference pointcuts
+together (286341)
+
+ +
+
+*JavadocRunner in NetBeans*
+
+Fixed by a patch from Joseph A. Levin - thanks!
+
+ +
+
+*Various fixes/enhancements to the structure model to fix issues with
+feedback on weaving in AJDT*

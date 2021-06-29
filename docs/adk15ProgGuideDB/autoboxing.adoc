@@ -1,0 +1,78 @@
+[[autoboxing]]
+== Autoboxing and Unboxing
+
+[[boxing-inJava5]]
+=== Autoboxing and Unboxing in Java 5
+
+Java 5 (and hence AspectJ 1.5) supports automatic conversion of
+primitive types (int, float, double etc.) to their object equivalents
+(Integer, Float, Double,...) in assignments and method and constructor
+invocations. This conversion is know as autoboxing.
+
+Java 5 also supports automatic unboxing, where wrapper types are
+automatically converted into their primitive equivalents if needed for
+assignments or method or constructor invocations.
+
+For example:
+
+....
+int i = 0;
+i = new Integer(5); // auto-unboxing
+
+Integer i2 = 5;  // autoboxing
+....
+
+[[autoboxing-in-aspectj5]]
+=== Autoboxing and Join Point matching in AspectJ 5
+
+Most of the pointcut designators match based on signatures, and hence
+are unaffected by autoboxing. For example, a call to a method
+
+....
+public void foo(Integer i);
+....
+
+is _not_ matched by a pointcut `call(void foo(int))` since the signature
+declares a single `Integer` parameter, not an `int`.
+
+The `args` pointcut designator is affected by autoboxing since it
+matches based on the runtime type of the arguments. AspectJ 5 applies
+autoboxing and unboxing in determining argument matching. In other
+words, `args(Integer)` will match any join point at which there is a
+single argument of type `Integer` or of type `int`.
+
+* args(Integer) and args(int) are equivalent
+* args(Float) and args(float) are equivalent
+* args(Double) and args(double) are equivalent
+* args(Short) and args(short) are equivalent
+* args(Byte) and args(byte) are equivalent
+* args(Long) and args(long) are equivalent
+* args(Boolean) and args(boolean) are equivalent
+
+Autoboxing and unboxing are also applied when binding pointcut or advice
+parameters, for example:
+
+....
+pointcut foo(int i) : args(i);
+
+before(Integer i) : foo(i) {
+  ...
+}
+....
+
+[[autoboxing-and-method-dispatch]]
+=== Inter-type method declarations and method dispatch
+
+Autoboxing, unboxing, and also varargs all affect the method dispatch
+algorithm used in Java 5. In AspectJ 5, the target method of a call is
+selected according to the following algorithm:
+
+[arabic]
+. Attempt to locate a matching method or inter-type declared method
+without considering autoboxing, unboxing, or vararg invocations.
+. If no match is found, try again considering autoboxing and unboxing.
+. Finally try again considering both autoboxing, unboxing, and varargs.
+
+One consequence is that a directly matching inter-type declared method
+will take precedence over a method declared locally in the target class
+but that only matches via autoboxing.

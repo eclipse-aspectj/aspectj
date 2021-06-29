@@ -778,7 +778,7 @@ s1.toString(): Square side = 1.0 @ (1.0, 2.0)
 
     </sect3>
     <sect3>
-      <title>Tracing&mdash;Version 1</title>
+      <title>Tracing - Version 1</title>
 
       <para>
         In a first attempt to insert tracing in this application, we will
@@ -918,15 +918,15 @@ s1.toString(): Square side = 1.0 @ (1.0, 2.0)
     </sect3>
 
     <sect3>
-      <title>Tracing&mdash;Version 2</title>
+      <title>Tracing - Version 2</title>
 
       <para>
         Another way to accomplish the same thing would be to write a
         reusable tracing aspect that can be used not only for these
         application classes, but for any class. One way to do this is to
         merge the tracing functionality of
-        <literal>Trace&mdash;version1</literal> with the crosscutting
-        support of <literal>TraceMyClasses&mdash;version1</literal>. We end
+        <literal>Trace - version1</literal> with the crosscutting
+        support of <literal>TraceMyClasses - version1</literal>. We end
         up with a <literal>Trace</literal> aspect (found in
         <filename>version2/Trace.java</filename>) with the following public
         interface
@@ -2180,7 +2180,7 @@ java telecom.BillingSimulation
       </para>
 
       <sect3>
-        <title>Tracing&mdash;Version 3</title>
+        <title>Tracing - Version 3</title>
 
         <para>
           One advantage of not exposing the methods traceEntry and
@@ -2314,7 +2314,7 @@ abstract aspect Trace {
       <para>
         As you can see, we decided to apply the first design by preserving
         the interface of the methods <literal>traceEntry</literal> and
-        <literal>traceExit</literal>. But it doesn't matter&mdash;we could
+        <literal>traceExit</literal>. But it doesn't matter - we could
         as easily have applied the second design (the code in the directory
         <filename>examples/tracing/version3</filename> has the second
         design).  The point is that the effects of this change in the

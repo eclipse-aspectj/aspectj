@@ -1,0 +1,36 @@
+[.small]#© Copyright 2011 Contributors. All rights reserved.#
+
+== AspectJ 1.7.1 Readme
+
+The full list of resolved issues in 1.7.1 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.1;[here]
+
+.
+
+* 1.7.1 available 6-Sep-2012
+
+=== Changes
+
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=388971[388971] Double
+Synthetic attributes on some around advice members +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=387718[387718]
+RuntimeException when trying to compile broken code +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=387568[387568] Warning
+"Xlint:unresolvableMember" for enums +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=387444[387444] Softening
+exception in try-with-resources +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=386888[386888] spring-data
+hello-worlds sample fails to compile with 1.7.0 +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=386337[386337] Light AOP
+Parser does not support declare-annotation +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=386049[386049] Error "must
+implement abstract inter-type declaration" even though build is fine +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=384401[384401] NPE when no
+pointcut in afterthrowing annotation style advice +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=384398[384398] Type
+Mismatch error when using inner classes contained in generic types
+within ITDs +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=381906[381906] ASPECTJ
+Internal Compiler Error +
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=73507[73507] Public ITD of
+fields on interfaces creates mangled members +

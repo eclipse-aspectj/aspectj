@@ -1,0 +1,90 @@
+[.small]#© Copyright 2008 Contributors. All rights reserved.#
+
+== AspectJ 1.6.3 Readme
+
+* xref:#split[Split matching/weaving]
+* xref:#bugsfixed[Bugs fixed]
+* xref:#notable[Notable bug fixes]
+* xref:#whatsnext[What's next?]
+
+'''''
+
+[#split]##
+
+=== Split matching/weaving
+
+The main goal of AspectJ 1.6.3 was to make the line between matching and
+weaving more explicit and introduce the notion of a matcher artifact.
+This matcher would enable reuse of the semantics of AspectJ pointcut
+matching without including the unnecessary code that is the weaver. Why?
+In some environments, for example Spring AOP, the weaving may be done in
+an entirely different way and the default weaver included in
+aspectjweaver.jar is just unnecessary code. Some users also find they
+have trouble getting approval for using the 'aspectjweaver.jar' in their
+projects because it includes a bytecode modification library, even when
+they are not using that code.
+
+The result of this work is documented in
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=246125[bug 246125] and
+there is now a new jar file in the distribution called
+org.aspectj.matcher.jar that includes a first pass at the matching code.
+It is not quite as slimmed down as it could be but is a first pass that
+includes no bytecode modification toolkit.
+
+To use this matcher standalone it simply requires an abstraction of some
+type system to be plugged in. The matcher code can then be used to parse
+standard pointcuts and answer questions about whether they match against
+that type system. There is no documentation on how to do this yet, as we
+don't think many users will be contributing new type systems, but
+internally we are working on an Eclipse JDT type system abstraction that
+will enable us to show matches in AJDT without actually compiling code
+(currently the two type system abstractions we ship are bytecode based
+and reflection based - both of which require compilation).
+
+'''''
+
+[#bugsfixed]##
+
+=== Bugs fixed
+
+The complete list of issues resolved for AspectJ 1.6.3 (more than 50)
+can be found with this bugzilla query:
+
+* https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.3&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugs
+resolved]
+
+During 2008, there have been four AspectJ releases, fixing almost 200
+issues.
+
+'''''
+
+[#notable]##
+
+=== Notable bug fixes
+
+* More improvements to the way AspectJ/AJDT communicate (251277, 249216,
+258325)
+* More ajdoc improvements (256514)
+* Better support for non standard annotation style parameter ordering
+(164573, 219419)
+* Fixed long standing issue with extending Spring SecurityInterceptor
+(252722)
+* Ensure parameter annotations made on an ITD reach the target affected
+type (256669)
+
+'''''
+
+[#whatsnext]##
+
+=== What's next?
+
+The JDT World should be completed in the 1.6.4 timeframe and that will
+surface as benefits in AJDT, possibly leading to better LTW tooling.
+Some improved syntax for intertype declarations is a possible candidate
+feature (see discussion in
+http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg10208.html[this
+mailing list thread]). A possible introduction of a code style syntax
+for the mixin style that is @DeclareParents (and a renaming of
+@DeclareParents to perhaps DeclareMixin or DeclareDelegate).
+
+'''''

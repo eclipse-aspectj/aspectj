@@ -1,0 +1,39 @@
+[.small]#© Copyright 2016 Contributors. All rights reserved.#
+
+== AspectJ 1.8.10 Readme
+
+The full list of resolved issues in 1.8.10 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.10;[here]
+
+.
+
+* 1.8.10 available 9-Dec-2016
+
+=== Notable changes
+
+==== JDT Upgrade
+
+The JDT compiler inside AspectJ has been upgraded to the Eclipse Neon.2
+level (JDT commit #75dbfad0).
+
+==== Java8
+
+The Eclipse JDT compiler embedded inside AspectJ now requires Java 8, so
+that is the minimum required level to compile sources with AspectJ.
+However, if only doing weaving and no compilation then it is possible to
+use Java 7.
+
+==== Annotation style around advice and proceed (https://bugs.eclipse.org/bugs/show_bug.cgi?id=500035[Bug 500035])
+
+A long standing issue that has been lurking in the handling of arguments
+passed to proceed for annotation style aspects has been fixed. If, at a
+joinpoint where 'this'/'target' differ (for example at some call
+joinpoints), the pointcut bound either 'this' or 'target' (but not
+both), then the system would still expect the advice to pass both 'this'
+and 'target' into the proceed call. With the fix here you only need to
+pass what you bind. So if you bind only 'this' you don't need to pass
+'target' (and vice versa). This will affect users that have been working
+around this quirk by passing both 'this' and 'target'. That isn't
+necessary anymore. This fix is in aspectjrt.jar so you will need to be
+using the 1.8.10 version of aspectjrt.jar at runtime to pickup this
+change.

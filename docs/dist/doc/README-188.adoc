@@ -1,0 +1,19 @@
+[.small]#© Copyright 2016 Contributors. All rights reserved.#
+
+== AspectJ 1.8.8 Readme
+
+The full list of resolved issues in 1.8.8 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.8;[here]
+
+.
+
+* 1.8.8 available 7-Jan-2016
+
+=== Notable changes
+
+==== Around advice on default methods
+
+In previous releases attempting to apply around advice to default
+methods would create methods with rogue modifiers in the interface
+declaring the default method (loading these interfaces would then result
+in a verifier error). This has now been fixed.

@@ -1,0 +1,118 @@
+[.small]#© Copyright 2011 Contributors. All rights reserved.#
+
+== AspectJ 1.7.0 Readme
+
+The full list of resolved issues in 1.7.0 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.0;[here]
+
+.
+
+* 1.7.0 available 2-Jul-2012
+* 1.7.0.RC1 available 25-May-2012
+* 1.7.0.M1 available 16-Dec-2011
+
+=== Notable Changes
+
+==== Java 7 bytecode weaving
+
+The first milestone of 1.7.0 upgraded the compiler but this still left
+the weaver with some issues if it had to weave into bytecode containing
+some of the new features that were allowed by Java 1.7. In particular
+this meant any bytecode containing the INVOKEDYNAMIC (new instruction
+for 1.7) and the related new constant pool entry types that support it.
+RC1 now supports weaving into bytecode containing these features.
+However, the new INVOKEDYNAMIC instruction does not surface as a join
+point yet so you cannot write a pointcut to match on it. If you use
+execution() pointcuts as opposed to call() then you will still be able
+to advise what the invokedynamic actually calls.
+
+==== Bytecode caching for loadtime weaving
+
+Under https://bugs.eclipse.org/bugs/show_bug.cgi?id=367673[bug 367673]
+we have had a contribution (thanks John Kew!) that enables a bytecode
+cache for loadtime weaving. The details and some rudimentary benchmark
+numbers are in the bug. Basically it caches woven bytecode on first
+start of a system using LTW and then reuses that woven bytecode on
+subsequent starts - this saves weaving time and also memory consumption.
+To activate it, use the following system properties:
+
+....
+-Daj.weaving.cache.enabled=true
+-Daj.weaving.cache.dir=/tmp/aspectj-cache/
+....
+
+==== Upgrade to Java 7
+
+For AspectJ 1.7.0, AspectJ moved from Eclipse JDT Core 0.785_R33x
+(Eclipse 3.3) to Eclipse JDT Core 0.B79_R37x (Eclipse 3.7). This is a
+big change where AspectJ is picking up four years of change from the
+Eclipse compiler.
+
+It means that you can now use the new Java 7 language constructs in your
+programs:
+
+- Diamond operator in advice: ``
+
+....
+aspect Foo {
+  before(): execution(* *(..)) {
+    List ls = new ArrayList<>();
+  }
+}
+....
+
+- Diamond operator in ITD: ``
+
+....
+public List DiamondITD.ls = new ArrayList<>();
+....
+
+- Underscore literals and binary literals in advice: ``
+
+....
+  before(): execution(* *(..)) {
+    int onemill = 1_000_000;
+    int four =0b100;
+  }
+....
+
+- Multi-catch:``
+
+....
+before(): execution(* main(..)) {
+    try {
+      foo("abc");
+    } catch (ExceptionA | ExceptionB ex) {
+      bar(ex);
+    }
+}
+....
+
+- String switch:``
+
+....
+ before(String s): execution(* *(..)) && args(s) {
+   switch(s) {
+     case "quux":
+       foo();
+       break;
+     case "bar":
+       foo();
+       break;
+     default:
+       foo();
+       break;
+   }
+ }
+....
+
+- Try with resources:``
+
+....
+   try (
+     InputStream in = new FileInputStream(src);
+     OutputStream out = new FileOutputStream(dest))
+   {
+     // code
+   }
+....

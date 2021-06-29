@@ -1,0 +1,256 @@
+[.small]#© Copyright 2009 Contributors. All rights reserved.#
+
+== AspectJ 1.6.4 Readme
+
+* xref:#compilation[Compilation times]
+* xref:#language[Language enhancements]
+* xref:#bugsfixed[Bugs fixed]
+* xref:#whatsnext[What's next?]
+
+'''''
+
+[#compilation]##
+
+=== Compilation times
+
+In AspectJ 1.6.4 the goal was to improve the IDE experience, through a
+combination of improved compilation speed (both full builds and
+incremental builds), improved support for multiple-project
+configurations, and improved feedback in the editor. The following
+sections go into details on each of those topics.
+
+*Full Compilation*
+
+As an example project, all the measurements here are based on the
+modified JDT compiler that AspectJ uses internally. It is 1100 source
+files and includes aspects that affect around 850 join points. Here are
+the full build times in AJDT:
+
+AJDT 1.6.3 (uses AspectJ 1.6.3)
+
+``
+
+....
+21352ms
+21597ms
+21502ms
+....
+
+AJDT 1.6.5dev builds (use AspectJ 1.6.4)
+
+``
+
+....
+19811ms
+19802ms
+19504ms
+....
+
+About 1.5-2 seconds faster for this example.
+
+*Incremental Compilation and multi-project scenarios*
+
+In most common project configurations there are multiple eclipse
+projects in some kind of dependency hierarchy. Depending on what changes
+in a top level project, those downstream may need to be rebuilt. The
+analysis around this area has greatly improved in AspectJ 1.6.4, and
+this has resulted in much reduced incremental build times. The example
+timed here is around 20 AspectJ projects in a hierarchy, and a change is
+made to a source file in the top level project and build times are
+observed for the downstream projects.
+
+The timings reported here are accessible to anyone with AJDT installed -
+just open the 'AJDT Event Trace View' and it will report ongoing
+information about what the compiler/weaver and AJDT are up to. Be aware
+that data is only recorded in this view if it is open - so for optimal
+performance it should be shutdown, but it is useful for debugging
+scenarios or collecting basic benchmark numbers. Within the event trace
+view output, the time recorded for 'time spent in AJDE' represents the
+time spent in the compiler: analysing what has changed on the classpath,
+building code, weaving code.
+
+Initially this is using AJDT 1.6.2 (which embeds AspectJ 1.6.3):
+
+``
+
+....
+Type of change: adding a new method to a type
+Project build times (first one is the compile of our change, the rest are for downstream projects):
+462ms, 4ms, 145ms, 8ms, 9ms, 287ms, 471ms, 222ms, 1028ms, 143ms, 505ms, 199ms, 261ms, 1224ms,
+321ms, 704ms, 75ms, 233ms, 257ms
+Summary: Total time spent in the compiler for that change: 6558ms
+---
+Type of change: whitespace change (adding just a harmless space character)
+Project build times (first one is the compile of our change, the rest are for downstream projects):
+229ms, 5ms, 10ms, 9ms, 10ms, 79ms, 43ms, 62ms, 80ms, 37ms, 64ms, 32ms, 79ms,
+154ms, 94ms, 189ms, 72ms, 144ms, 205ms
+Summary: Total time spent in the compiler for that change: 1597ms
+....
+
+Now with AspectJ 1.6.5 dev builds (which embed AspectJ 1.6.4):
+
+``
+
+....
+Type of change: adding a new method to a type
+Project build times (first one is the compile of our change, the rest are for downstream projects):
+288ms, 3ms, 143ms, 2ms, 2ms, 162ms, 244ms, 89ms, 489ms, 113ms, 277ms, 108ms, 143ms, 626ms,
+135ms, 260ms, 2ms, 96ms, 6ms
+Summary: Total time spent in the compiler for that change: 3188ms down from 6558ms
+
+Type of change: whitespace change (adding just a harmless space character)
+Project build times (first one is the compile of our change, the rest are for downstream projects):
+101ms, 1ms, 1ms, 1ms, 0ms, 1ms, 1ms, 1ms, 1ms, 1ms, 0ms, 1ms, 1ms, 2ms, 0ms, 1ms, 0ms, 2ms, 2ms
+Summary: Total time spent in the compiler for that change: 118ms (down from 1597ms)
+....
+
+Improvements all round, and almost instant builds now for whitespace
+changes, even in large project setups.
+
+In addition the compilation times are also improved in situations where
+AspectJ projects depend upon Java projects and where aspectpath is used.
+AJDT 1.6.5 dev builds also include some changes that really speed up
+builds.
+
+=== Better editor feedback
+
+Under https://bugs.eclipse.org/bugs/show_bug.cgi?id=246393[bug 246393]
+the problem has been addressed where sometimes spurious errors would
+appear throughout the editor for a file in AJDT when just one single
+simple syntax errors exists. More detail on this problem can be found
+http://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.html[here].
+
+'''''
+
+[#language]##
+
+=== Language Enhancements
+
+*Optimizing support for maintaining per join point state*
+
+The traditional way to maintain state on a per join point basis involves
+using the JoinPoint.StaticPart as a key into a map: ``
+
+....
+aspect X pertypewithin(*) {
+  Map<JoinPoint.StaticPart,Timer> timerMap = ...
+
+  Object around(): execution(public * *(..)) {
+    Timer timerToUse = timerMap.get(thisJoinPointStaticPart);
+    timerToUse.start();
+    Object o =  proceed();
+    timerToUse.stop();
+    return o;
+  }
+}
+....
+
+These map lookups are slow. In AspectJ 1.6.4 there is a new getId()
+method on the JoinPoint.StaticPart object. The ids for all affected join
+points within a target type are unique (and start from 0) - they are
+ideal for array lookups. So using this the above aspect can be
+rewritten:
+
+``
+
+....
+aspect X pertypewithin(*) {
+  Timer[] timerArray = ...
+
+  Object around(): execution(public * *(..)) {
+    Timer timerToUse = timerArray[thisJoinPointStaticPart.getId()];
+    timerToUse.start();
+    Object o =  proceed();
+    timerToUse.stop();
+    return o;
+  }
+}
+....
+
+much faster. Just be aware that the ids are only unique within an
+affected target type - hence the use of pertypewithin in this example to
+ensure there is an aspect instance (and so a different array) for each
+advised type.
+
+See related https://bugs.eclipse.org/bugs/show_bug.cgi?id=89009[bug
+89009] for the full discussion
+
+=== @DeclareMixin
+
+The annotation style declare parents support (@DeclareParents) has been
+(rightly) criticized because it really does not offer an equivalent to
+what is possible with code style declare parents, it really offers a
+mixin strategy. It also has limitations such as the delegate instance
+used to satisfy any method invocations on an affected target cannot
+access the object instance for which it is acting as a delegate. To
+address these concerns a proper mixin notation has been introduced that
+makes it more clear that a mixin strategy is being employed and it
+addresses the problem of the mixin delegate accessing the affected
+target instance.
+
+The @DeclareMixin annotation is attached to a factory method which
+returns instances of the delegate. Here is a basic example:
+
+``
+
+....
+        // The factory method that can build the delegate instance is annotated with @DeclareMixin.
+        // The annotation value defines the type pattern for targets of the mixin.
+        // The parameter is the object for which a delegate is being constructed.
+        // The interface that will be mixed in is the return value of the factory method.
+        @DeclareMixin("org.xyz..*")
+        public static SomeInterface createDelegate(Object instance) {
+          return new SomeImplementation(instance);
+        }
+....
+
+More examples are
+http://www.eclipse.org/aspectj/doc/released/adk15notebook/ataspectj-itds.html[here
+in the online documentation].
+
+Going forward attempts will be made to try and make @DeclareParents
+behave more like code style - if this cannot be done it is likely to be
+deprecated.
+
+'''''
+
+[#bugsfixed]##
+
+=== Bugs fixed
+
+The complete list of issues resolved for AspectJ 1.6.4 (more than 70)
+can be found with this bugzilla query:
+
+* https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.4&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugs
+resolved]
+
+'''''
+
+[#whatsnext]##
+
+=== What's next?
+
+*More incremental build enhancements*
+
+A number of situations still exist where incremental compile speeds
+still needs optimizing, particular when capabilities like aspectpath or
+inpath are used.
+
+*Build state persistence*
+
+Between restarts of Eclipse the state of each project is not recorded -
+hence full builds are required upon restart. The state (and associated
+relationship model) should be persisted between restarts, but both of
+these need a review first to ensure they are not larger than they need
+to be.
+
+*Memory consumption*
+
+Both for source compilation and load-time weaving scenarios. The size of
+the model in the IDE needs reviewing, and also the type map within the
+weaver. Although the type map uses Weak/Soft references to try and
+better control how it uses memory, the JVM policies for managing these
+references vary wildly and so some work needs to be done to allow for
+these differences.
+
+'''''

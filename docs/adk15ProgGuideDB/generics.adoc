@@ -1,0 +1,1041 @@
+== Generics
+
+[[generics-inJava5]]
+=== Generics in Java 5
+
+This section provides the essential information about generics in Java 5
+needed to understand how generics are treated in AspectJ 5. For a full
+introduction to generics in Java, please see the documentation for the
+Java 5 SDK.
+
+==== Declaring Generic Types
+
+A generic type is declared with one or more type parameters following
+the type name. By convention formal type parameters are named using a
+single letter, though this is not required. A simple generic list type
+(that can contain elements of any type `E`) could be declared:
+
+....
+interface List<E> {
+   Iterator<E> iterator();
+   void add(E anItem);
+   E remove(E anItem);
+}
+....
+
+It is important to understand that unlike template mechanisms there will
+only be one type, and one class file, corresponding to the `List`
+interface, regardless of how many different instantiations of the `List`
+interface a program has (each potentially providing a different value
+for the type parameter `E`). A consequence of this is that you cannot
+refer to the type parameters of a type declaration in a static method or
+initializer, or in the declaration or initializer of a static variable.
+
+A _parameterized type_ is an invocation of a generic type with concrete
+values supplied for all of its type parameters (for example,
+`List<String>` or `List<Food>`).
+
+A generic type may be declared with multiple type parameters. In
+addition to simple type parameter names, type parameter declarations can
+also constrain the set of types allowed by using the `extends` keyword.
+Some examples follow:
+
+class Foo<T> \{...}::
+  A class `Foo` with one type parameter, `T`.
+class Foo<T,S> \{...}::
+  A class `Foo` with two type parameters, `T` and `S`.
+class Foo<T extends Number> \{...}::
+  A class `Foo` with one type parameter `T`, where `T` must be
+  instantiated as the type `Number` or a subtype of `Number`.
+class Foo<T, S extends T> \{...}::
+  A class `Foo` with two type parameters, `T` and `S`. `Foo` must be
+  instantiated with a type `S` that is a subtype of the type specified
+  for parameter `T`.
+class Foo<T extends Number & Comparable> \{...}::
+  A class `Foo` with one type parameter, `T`. `Foo` must be instantiated
+  with a type that is a subtype of `Number` and that implements
+  `Comparable`.
+
+==== Using Generic and Parameterized Types
+
+You declare a variable (or a method/constructor argument) of a
+parameterized type by specifying a concrete type specfication for each
+type parameter in the generic type. The following example declares a
+list of strings and a list of numbers:
+
+....
+List<String> strings;
+List<Number> numbers;
+....
+
+It is also possible to declare a variable of a generic type without
+specifying any values for the type parameters (a _raw_ type). For
+example, `List strings`. In this case, unchecked warnings may be issued
+by the compiler when the referenced object is passed as a parameter to a
+method expecting a parameterized type such as a `List<String>`. New code
+written in the Java 5 language would not be expected to use raw types.
+
+Parameterized types are instantiated by specifying type parameter values
+in the constructor call expression as in the following examples:
+
+....
+List<String> strings = new MyListImpl<String>();
+List<Number> numbers = new MyListImpl<Number>();
+....
+
+When declaring parameterized types, the `?` wildcard may be used, which
+stands for "some type". The `extends` and `super` keywords may be used
+in conjunction with the wildcard to provide upper and lower bounds on
+the types that may satisfy the type constraints. For example:
+
+List<?>::
+  A list containing elements of some type, the type of the elements in
+  the list is unknown.
+List<? extends Number>::
+  A list containing elements of some type that extends Number, the exact
+  type of the elements in the list is unknown.
+List<? super Double>::
+  A list containing elements of some type that is a super-type of
+  Double, the exact type of the elements in the list is unknown.
+
+A generic type may be extended as any other type. Given a generic type
+`Foo<T>` then a subtype `Goo` may be declared in one of the following
+ways:
+
+class Goo extends Foo::
+  Here `Foo` is used as a raw type, and the appropriate warning messages
+  will be issued by the compiler on attempting to invoke methods in
+  `Foo`.
+class Goo<E> extends Foo::
+  `Goo` is a generic type, but the super-type `Foo` is used as a raw
+  type and the appropriate warning messages will be issued by the
+  compiler on attempting to invoke methods defined by `Foo`.
+class Goo<E> extends Foo<E>::
+  This is the most usual form. `Goo` is a generic type with one
+  parameter that extends the generic type `Foo` with that same
+  parameter. So `Goo<String<` is a subclass of `Foo<String>`.
+class Goo<E,F> extends Foo<E>::
+  `Goo` is a generic type with two parameters that extends the generic
+  type `Foo` with the first type parameter of `Goo` being used to
+  parameterize `Foo`. So `Goo<String,Integer<` is a subclass of
+  `Foo<String>`.
+class Goo extends Foo<String>::
+  `Goo` is a type that extends the parameterized type `Foo<String>`.
+
+A generic type may implement one or more generic interfaces, following
+the type binding rules given above. A type may also implement one or
+more parameterized interfaces (for example,
+`class X implements List<String>`, however a type may not at the same
+time be a subtype of two interface types which are different
+parameterizations of the same interface.
+
+==== Subtypes, Supertypes, and Assignability
+
+The supertype of a generic type `C` is the type given in the extends
+clause of `C`, or `Object` if no extends clause is present. Given the
+type declaration
+
+....
+public interface List<E> extends Collection<E> {... }
+....
+
+then the supertype of `List<E>` is `Collection<E>`.
+
+The supertype of a parameterized type `P` is the type given in the
+extends clause of `P`, or `Object` if no extends clause is present. Any
+type parameters in the supertype are substituted in accordance with the
+parameterization of `P`. An example will make this much clearer: Given
+the type `List<Double>` and the definition of the `List` given above,
+the direct supertype is `Collection<Double>`. `List<Double>` is _not_
+considered to be a subtype of `List<Number>`.
+
+An instance of a parameterized type `P<T1,T2,...Tn>`may be assigned to a
+variable of the same type or a supertype without casting. In addition it
+may be assigned to a variable `R<S1,S2,...Sm>` where `R` is a supertype
+of `P` (the supertype relationship is reflexive), `m <= n`, and for all
+type parameters `S1..m`, `Tm` equals `Sm` _or_ `Sm` is a wildcard type
+specification and `Tm` falls within the bounds of the wildcard. For
+example, `List<String>` can be assigned to a variable of type
+`Collection<?>`, and `List<Double>` can be assigned to a variable of
+type `List<? extends Number>`.
+
+==== Generic Methods and Constructors
+
+A static method may be declared with one or more type parameters as in
+the following declaration:
+
+....
+static <T> T first(List<T> ts) { ... }
+....
+
+Such a definition can appear in any type, the type parameter `T` does
+not need to be declared as a type parameter of the enclosing type.
+
+Non-static methods may also be declared with one or more type parameters
+in a similar fashion:
+
+....
+<T extends Number> T max(T t1, T t2) { ... }
+....
+
+The same technique can be used to declare a generic constructor.
+
+==== Erasure
+
+Generics in Java are implemented using a technique called _erasure_. All
+type parameter information is erased from the run-time type system.
+Asking an object of a parameterized type for its class will return the
+class object for the raw type (eg. `List` for an object declared to be
+of type `List<String>`. A consequence of this is that you cannot at
+runtime ask if an object is an `instanceof` a parameterized type.
+
+[[generics-inAspectJ5]]
+=== Generics in AspectJ 5
+
+AspectJ 5 provides full support for all of the Java 5 language features,
+including generics. Any legal Java 5 program is a legal AspectJ 5
+progam. In addition, AspectJ 5 provides support for generic and
+parameterized types in pointcuts, inter-type declarations, and declare
+statements. Parameterized types may freely be used within aspect
+members, and support is also provided for generic _abstract_ aspects.
+
+==== Matching generic and parameterized types in pointcut expressions
+
+The simplest way to work with generic and parameterized types in
+pointcut expressions and type patterns is simply to use the raw type
+name. For example, the type pattern `List` will match the generic type
+`List<E>` and any parameterization of that type
+(`List<String>, List<?>, List<? extends Number>` and so on. This ensures
+that pointcuts written in existing code that is not generics-aware will
+continue to work as expected in AspectJ 5. It is also the recommended
+way to match against generic and parameterized types in AspectJ 5 unless
+you explicitly wish to narrow matches to certain parameterizations of a
+generic type.
+
+Generic methods and constructors, and members defined in generic types,
+may use type variables as part of their signature. For example:
+
+....
+public class Utils {
+
+  /** static generic method */
+  static <T> T first(List<T> ts) { ... }
+
+  /** instance generic method */
+  <T extends Number> T max(T t1, T t2) { ... }
+
+}
+
+public class G<T> {
+
+   // field with parameterized type
+   T myData;
+
+   // method with parameterized return type
+   public List<T> getAllDataItems() {...}
+
+}
+....
+
+AspectJ 5 does not allow the use of type variables in pointcut
+expressions and type patterns. Instead, members that use type parameters
+as part of their signature are matched by their _erasure_. Java 5
+defines the rules for determing the erasure of a type as follows.
+
+Let `|T|` represent the erasure of some type `T`. Then:
+
+The erasure of a parameterized type
+
+T<T1,...,Tn>
+
+is
+
+|T|
+
+. For example, the erasure of
+
+List<String>
+
+is
+
+List
+
+.
+
+The erasure of a nested type
+
+T.C
+
+is
+
+|T|.C
+
+. For example, the erasure of the nested type
+
+Foo<T>.Bar
+
+is
+
+Foo.Bar
+
+.
+
+The erasure of an array type
+
+T[]
+
+is
+
+|T|[]
+
+. For example, the erasure of
+
+List<String>[]
+
+is
+
+List[]
+
+.
+
+The erasure of a type variable is its leftmost bound. For example, the
+erasure of a type variable
+
+P
+
+is
+
+Object
+
+, and the erasure of a type variable
+
+N extends Number
+
+is
+
+Number
+
+.
+
+The erasure of every other type is the type itself
+
+Applying these rules to the earlier examples, we find that the methods
+defined in `Utils` can be matched by a signature pattern matching
+`static Object Utils.first(List)` and `Number Utils.max(Number, Number)`
+respectively. The members of the generic type `G` can be matched by a
+signature pattern matching `Object G.myData` and
+`public List G.getAllDataItems()` respectively.
+
+===== Restricting matching using parameterized types
+
+Pointcut matching can be further restricted to match only given
+parameterizations of parameter types (methods and constructors), return
+types (methods) and field types (fields). This is achieved by specifying
+a parameterized type pattern at the appropriate point in the signature
+pattern. For example, given the class `Foo`:
+
+....
+public class Foo {
+
+  List<String> myStrings;
+  List<Float>  myFloats;
+
+  public List<String> getStrings() { return myStrings; }
+  public List<Float> getFloats() { return myFloats; }
+
+  public void addStrings(List<String> evenMoreStrings) {
+     myStrings.addAll(evenMoreStrings);
+  }
+
+}
+....
+
+Then a `get` join point for the field `myStrings` can be matched by the
+pointcut `get(List Foo.myStrings)` and by the pointcut
+`get(List<String> Foo.myStrings)`, but _not_ by the pointcut
+`get(List<Number> *)`.
+
+A `get` join point for the field `myFloats` can be matched by the
+pointcut `get(List Foo.myFloats)`, the pointcut `get(List<Float> *)`,
+and the pointcut `get(List<Number+> *)`. This last example shows how
+AspectJ type patterns can be used to match type parameters types just
+like any other type. The pointcut `get(List<Double> *)` does _not_
+match.
+
+The execution of the methods `getStrings` and `getFloats` can be matched
+by the pointcut expression `execution(List get*(..))`, and the pointcut
+expression `execution(List<*> get*(..))`, but only `getStrings` is
+matched by `execution(List<String> get*(..))` and only `getFloats` is
+matched by `execution(List<Number+> get*(..))`
+
+A call to the method `addStrings` can be matched by the pointcut
+expression `call(* addStrings(List))` and by the expression
+`call(* addStrings(List<String>))`, but _not_ by the expression
+`call(* addStrings(List<Number>))`.
+
+Remember that any type variable reference in a generic member is
+_always_ matched by its erasure. Thus given the following example:
+
+....
+class G<T> {
+    List<T> foo(List<String> ls) { return null; }
+}
+....
+
+The execution of `foo` can be matched by `execution(List foo(List))`,
+`execution(List foo(List<String>>))`, and
+`execution(* foo(List<String<))`but _not_ by
+`execution(List<Object> foo(List<String>>)` since the erasure of
+`List<T>` is `List` and not `List<Object>`.
+
+===== Generic wildcards and signature matching
+
+When it comes to signature matching, a type parameterized using a
+generic wildcard is a distinct type. For example, `List<?>` is a very
+different type to `List<String>`, even though a variable of type
+`List<String>` can be assigned to a variable of type `List<?>`. Given
+the methods:
+
+....
+class C {
+  public void foo(List<? extends Number> listOfSomeNumberType) {}
+
+  public void bar(List<?> listOfSomeType) {}
+
+  public void goo(List<Double> listOfDoubles) {}
+}
+....
+
+execution(* C.*(List))::
+  Matches an execution join point for any of the three methods.
+execution(* C.*(List<? extends Number>))::
+  matches only the execution of `foo`, and _not_ the execution of `goo`
+  since `List<? extends Number>` and `List<Double>` are distinct types.
+execution(* C.*(List<?>))::
+  matches only the execution of `bar`.
+execution(* C.*(List<? extends Object+>))::
+  matches both the execution of `foo` and the execution of `bar` since
+  the upper bound of `List<?>` is implicitly `Object`.
+
+===== Treatment of bridge methods
+
+Under certain circumstances a Java 5 compiler is required to create
+_bridge methods_ that support the compilation of programs using raw
+types. Consider the types
+
+....
+class Generic<T> {
+  public T foo(T someObject) {
+    return someObject;
+  }
+}
+
+class SubGeneric<N extends Number> extends Generic<N> {
+  public N foo(N someNumber) {
+    return someNumber;
+  }
+}
+....
+
+The class `SubGeneric` extends `Generic` and overrides the method `foo`.
+Since the upper bound of the type variable `N` in `SubGeneric` is
+different to the upper bound of the type variable `T` in `Generic`, the
+method `foo` in `SubGeneric` has a different erasure to the method `foo`
+in `Generic`. This is an example of a case where a Java 5 compiler will
+create a _bridge method_ in `SubGeneric`. Although you never see it, the
+bridge method will look something like this:
+
+....
+public Object foo(Object arg) {
+  Number n = (Number) arg; // "bridge" to the signature defined in this type
+return foo(n);
+}
+....
+
+Bridge methods are synthetic artefacts generated as a result of a
+particular compilation strategy and have no execution join points in
+AspectJ 5. So the pointcut `execution(Object SubGeneric.foo(Object))`
+does not match anything. (The pointcut
+`execution(Object Generic.foo(Object))` matches the execution of `foo`
+in both `Generic` and `SubGeneric` since both are implementations of
+`Generic.foo`).
+
+It _is_ possible to _call_ a bridge method as the following short code
+snippet demonstrates. Such a call _does_ result in a call join point for
+the call to the method.
+
+....
+SubGeneric rawType = new SubGeneric();
+rawType.foo("hi");  // call to bridge method (will result in a runtime failure in this case)
+Object n = new Integer(5);
+rawType.foo(n);     // call to bridge method that would succeed at runtime
+....
+
+===== Runtime type matching with this(), target() and args()
+
+The `this()`, `target()`, and `args()` pointcut expressions all match
+based on the runtime type of their arguments. Because Java 5 implements
+generics using erasure, it is not possible to ask at runtime whether an
+object is an instance of a given parameterization of a type (only
+whether or not it is an instance of the erasure of that parameterized
+type). Therefore AspectJ 5 does not support the use of parameterized
+types with the `this()` and `target()` pointcuts. Parameterized types
+may however be used in conjunction with `args()`. Consider the following
+class
+
+....
+public class C {
+  public void foo(List<String> listOfStrings) {}
+
+  public void bar(List<Double> listOfDoubles) {}
+
+  public void goo(List<? extends Number> listOfSomeNumberType) {}
+}
+....
+
+args(List)::
+  will match an execution or call join point for any of these methods
+args(List<String>)::
+  will match an execution or call join point for `foo`.
+args(List<Double>)::
+  matches an execution or call join point for `bar`, and _may_ match at
+  an execution or call join point for `goo` since it is legitimate to
+  pass an object of type `List<Double>` to a method expecting a
+  `List<? extends Number>`.
+  +
+  In this situation a runtime test would normally be applied to
+  ascertain whether or not the argument was indeed an instance of the
+  required type. However, in the case of parameterized types such a test
+  is not possible and therefore AspectJ 5 considers this a match, but
+  issues an _unchecked_ warning. For example, compiling the aspect `A`
+  below with the class `C` produces the compilation warning: "unchecked
+  match of List<Double> with List<? extends Number> when argument is an
+  instance of List at join point method-execution(void C.goo(List<?
+  extends Number>)) [Xlint:uncheckedArgument]";
+
+....
+public aspect A {
+   before(List<Double> listOfDoubles) : execution(* C.*(..)) && args(listOfDoubles) {
+      for (Double d : listOfDoubles) {
+         // do something
+      }
+   }
+}
+....
+
+Like all Lint messages, the `uncheckedArgument` warning can be
+configured in severity from the default warning level to error or even
+ignore if preferred. In addition, AspectJ 5 offers the annotation
+`@SuppressAjWarnings` which is the AspectJ equivalent of Java's
+`@SuppressWarnings` annotation. If the advice is annotated with
+`@SuppressWarnings` then _all_ lint warnings issued during matching of
+pointcut associated with the advice will be suppressed. To suppress just
+an `uncheckedArgument` warning, use the annotation
+`@SuppressWarnings("uncheckedArgument")` as in the following examples:
+
+....
+import org.aspectj.lang.annotation.SuppressAjWarnings
+public aspect A {
+   @SuppressAjWarnings   // will not see *any* lint warnings for this advice
+   before(List<Double> listOfDoubles) : execution(* C.*(..)) && args(listOfDoubles) {
+      for (Double d : listOfDoubles) {
+         // do something
+      }
+   }
+
+   @SuppressAjWarnings("uncheckedArgument")   // will not see *any* lint warnings for this advice
+   before(List<Double> listOfDoubles) : execution(* C.*(..)) && args(listOfDoubles) {
+      for (Double d : listOfDoubles) {
+         // do something
+      }
+   }
+}
+....
+
+The safest way to deal with `uncheckedArgument` warnings however is to
+restrict the pointcut to match only at those join points where the
+argument is guaranteed to match. This is achieved by combining `args`
+with a `call` or `execution` signature matching pointcut. In the
+following example the advice will match the execution of `bar` but not
+of `goo` since the signature of `goo` is not matched by the execution
+pointcut expression.
+
+....
+public aspect A {
+   before(List<Double> listOfDoubles) : execution(* C.*(List<Double>)) && args(listOfDoubles) {
+      for (Double d : listOfDoubles) {
+         // do something
+      }
+   }
+}
+....
+
+Generic wildcards can be used in args type patterns, and matching
+follows regular Java 5 assignability rules. For example, `args(List<?>)`
+will match a list argument of any type, and
+`args(List<? extends Number>)` will match an argument of type
+`List<Number>, List<Double>, List<Float>` and so on. Where a match
+cannot be fully statically determined, the compiler will once more issue
+an `uncheckedArgument` warning.
+
+Consider the following program:
+
+....
+public class C {
+   public static void main(String[] args) {
+      C c = new C();
+      List<String> ls = new ArrayList<String>();
+      List<Double> ld = new ArrayList<Double>();
+      c.foo("hi");
+      c.foo(ls);
+      c.foo(ld);
+   }
+
+   public void foo(Object anObject) {}
+}
+
+aspect A {
+    before(List<? extends Number> aListOfSomeNumberType)
+      : call(* foo(..)) && args(aListOfSomeNumberType) {
+       // process list...
+    }
+}
+....
+
+From the signature of `foo` all we know is that the runtime argument
+will be an instance of `Object`.Compiling this program gives the
+unchecked argument warning: "unchecked match of List<? extends Number>
+with List when argument is an instance of List at join point
+method-execution(void C.foo(Object)) [Xlint:uncheckedArgument]". The
+advice will not execute at the call join point for `c.foo("hi")` since
+`String` is not an instance of `List`. The advice _will_ execute at the
+call join points for `c.foo(ls)` and `c.foo(ld)` since in both cases the
+argument is an instance of `List`.
+
+Combine a wildcard argument type with a signature pattern to avoid
+unchecked argument matches. In the example below we use the signature
+pattern `List<Number+>` to match a call to any method taking a
+`List<Number>, List<Double>, List<Float>` and so on. In addition the
+signature pattern `List<? extends Number+>` can be used to match a call
+to a method declared to take a `List<? extends Number>`,
+`List<? extends Double>` and so on. Taken together, these restrict
+matching to only those join points at which the argument is guaranteed
+to be an instance of `List<? extends Number>`.
+
+....
+aspect A {
+    before(List<? extends Number> aListOfSomeNumberType)
+      : (call(* foo(List<Number+>)) || call(* foo(List<? extends Number+>)))
+        && args(aListOfSomeNumberType) {
+        // process list...
+    }
+}
+....
+
+===== Binding return values in after returning advice
+
+After returning advice can be used to bind the return value from a
+matched join point. AspectJ 5 supports the use of a parameterized type
+in the returning clause, with matching following the same rules as
+described for args. For example, the following aspect matches the
+execution of any method returning a `List`, and makes the returned list
+available to the body of the advice.
+
+....
+public aspect A {
+  pointcut executionOfAnyMethodReturningAList() : execution(List *(..));
+
+  after() returning(List<?> listOfSomeType) : executionOfAnyMethodReturningAList() {
+    for (Object element : listOfSomeType) {
+       // process element...
+    }
+  }
+}
+....
+
+The pointcut uses the raw type pattern `List`, and hence it matches
+methods returning any kind of list (`List<String>, List<Double>`, and so
+on). We've chosen to bind the returned list as the parameterized type
+`List<?>` in the advice since Java's type checking will now ensure that
+we only perform safe operations on the list.
+
+Given the class
+
+....
+public class C {
+  public List<String> foo(List<String> listOfStrings) {...}
+
+  public List<Double> bar(List<Double> listOfDoubles) {...}
+
+  public List<? extends Number> goo(List<? extends Number> listOfSomeNumberType) {...}
+}
+....
+
+The advice in the aspect below will run after the execution of `bar` and
+bind the return value. It will also run after the execution of `goo` and
+bind the return value, but gives an `uncheckedArgument` warning during
+compilation. It does _not_ run after the execution of `foo`.
+
+....
+public aspect Returning {
+  after() returning(List<Double> listOfDoubles) : execution(* C.*(..)) {
+     for(Double d : listOfDoubles) {
+        // process double...
+     }
+  }
+}
+....
+
+As with `args` you can guarantee that after returning advice only
+executes on lists _statically determinable_ to be of the right type by
+specifying a return type pattern in the associated pointcut. The
+`@SuppressAjWarnings` annotation can also be used if desired.
+
+===== Declaring pointcuts inside generic types
+
+Pointcuts can be declared in both classes and aspects. A pointcut
+declared in a generic type may use the type variables of the type in
+which it is declared. All references to a pointcut declared in a generic
+type from outside of that type must be via a parameterized type
+reference, and not a raw type reference.
+
+Consider the generic type `Generic` with a pointcut `foo`:
+
+....
+public class Generic<T> {
+   /**
+    * matches the execution of any implementation of a method defined for T
+    */
+   public pointcut foo() : execution(* T.*(..));
+}
+....
+
+Such a pointcut must be refered to using a parameterized reference as
+shown below.
+
+....
+public aspect A {
+  // runs before the execution of any implementation of a method defined for MyClass
+  before() : Generic<MyClass>.foo() {
+     // ...
+  }
+
+  // runs before the execution of any implementation of a method defined for YourClass
+  before() : Generic<YourClass>.foo() {
+      // ...
+  }
+
+  // results in a compilation error - raw type reference
+  before() : Generic.foo() { }
+}
+....
+
+==== Inter-type Declarations
+
+AspectJ 5 supports the inter-type declaration of generic methods, and of
+members on generic types. For generic methods, the syntax is exactly as
+for a regular method declaration, with the addition of the target type
+specification:
+
+<T extends Number> T Utils.max(T first, T second) \{...}::
+  Declares a generic instance method `max` on the class `Util`. The
+  `max` method takes two arguments, `first` and `second` which must both
+  be of the same type (and that type must be Number or a subtype of
+  Number) and returns an instance of that type.
+static <E> E Utils.first(List<E> elements) \{...}::
+  Declares a static generic method `first` on the class `Util`. The
+  `first` method takes a list of elements of some type, and returns an
+  instance of that type.
+<T> Sorter.new(List<T> elements,Comparator<? super T> comparator)
+\{...}::
+  Declares a constructor on the class `Sorter`. The constructor takes a
+  list of elements of some type, and a comparator that can compare
+  instances of the element type.
+
+A generic type may be the target of an inter-type declaration, used
+either in its raw form or with type parameters specified. If type
+parameters are specified, then the number of type parameters given must
+match the number of type parameters in the generic type declaration.
+Type parameter _names_ do not have to match. For example, given the
+generic type `Foo<T,S extends Number>` then:
+
+String Foo.getName() \{...}::
+  Declares a `getName` method on behalf of the type `Foo`. It is not
+  possible to refer to the type parameters of Foo in such a declaration.
+public R Foo<Q, R>.getMagnitude() \{...}::
+  Declares a method `getMagnitude` on the generic class `Foo`. The
+  method returns an instance of the type substituted for the second type
+  parameter in an invocation of `Foo` If `Foo` is declared as
+  `Foo<T,N extends Number> {...}` then this inter-type declaration is
+  equivalent to the declaration of a method `public N getMagnitude()`
+  within the body of `Foo`.
+R Foo<Q, R extends Number>.getMagnitude() \{...}::
+  Results in a compilation error since a bounds specification is not
+  allowed in this form of an inter-type declaration (the bounds are
+  determined from the declaration of the target type).
+
+A parameterized type may not be the target of an inter-type declaration.
+This is because there is only one type (the generic type) regardless of
+how many different invocations (parameterizations) of that generic type
+are made in a program. Therefore it does not make sense to try and
+declare a member on behalf of (say) `Bar<String>`, you can only declare
+members on the generic type `Bar<T>`.
+
+[[declare-parents-java5]]
+==== Declare Parents
+
+Both generic and parameterized types can be used as the parent type in a
+`declare parents` statement (as long as the resulting type hierarchy
+would be well-formed in accordance with Java's sub-typing rules).
+Generic types may also be used as the target type of a `declare parents`
+statement.
+
+declare parents: Foo implements List<String>::
+  The `Foo` type implements the `List<String>` interface. If `Foo`
+  already implements some other parameterization of the `List` interface
+  (for example, `List<Integer>` then a compilation error will result
+  since a type cannot implement multiple parameterizations of the same
+  generic interface type.
+
+==== Declare Soft
+
+It is an error to use a generic or parameterized type as the softened
+exception type in a declare soft statement. Java 5 does not permit a
+generic class to be a direct or indirect subtype of `Throwable` (JLS
+8.1.2).
+
+==== Generic Aspects
+
+AspectJ 5 allows an _abstract_ aspect to be declared as a generic type.
+Any concrete aspect extending a generic abstract aspect must extend a
+parameterized version of the abstract aspect. Wildcards are not
+permitted in this parameterization.
+
+Given the aspect declaration:
+
+....
+public abstract aspect ParentChildRelationship<P,C> {
+    ...
+}
+....
+
+then
+
+public aspect FilesInFolders extends
+ParentChildRelationship<Folder,File> \{...::
+  declares a concrete sub-aspect, `FilesInFolders` which extends the
+  parameterized abstract aspect `ParentChildRelationship<Folder,File>`.
+public aspect FilesInFolders extends ParentChildRelationship \{...::
+  results in a compilation error since the `ParentChildRelationship`
+  aspect must be fully parameterized.
+public aspect ThingsInFolders<T> extends
+ParentChildRelationship<Folder,T>::
+  results in a compilation error since concrete aspects may not have
+  type parameters.
+public abstract aspect ThingsInFolders<T> extends
+ParentChildRelationship<Folder,T>::
+  declares a sub-aspect of `ParentChildRelationship` in which `Folder`
+  plays the role of parent (is bound to the type variable `P`).
+
+The type parameter variables from a generic aspect declaration may be
+used in place of a type within any member of the aspect, _except for
+within inter-type declarations_. For example, we can declare a
+`ParentChildRelationship` aspect to manage the bi-directional
+relationship between parent and child nodes as follows:
+
+....
+/**
+ * a generic aspect, we've used descriptive role names for the type variables
+ * (Parent and Child) but you could use anything of course
+ */
+public abstract aspect ParentChildRelationship<Parent,Child> {
+
+  /** generic interface implemented by parents */
+  interface ParentHasChildren<C extends ChildHasParent>{
+    List<C> getChildren();
+    void addChild(C child);
+    void removeChild(C child);
+  }
+
+  /** generic interface implemented by children */
+  interface ChildHasParent<P extends ParentHasChildren>{
+    P getParent();
+    void setParent(P parent);
+  }
+
+  /** ensure the parent type implements ParentHasChildren<child type> */
+  declare parents: Parent implements ParentHasChildren<Child>;
+
+  /** ensure the child type implements ChildHasParent<parent type> */
+  declare parents: Child implements ChildHasParent<Parent>;
+
+  // Inter-type declarations made on the *generic* interface types to provide
+  // default implementations.
+
+  /** list of children maintained by parent */
+  private List<C> ParentHasChildren<C>.children = new ArrayList<C>();
+
+  /** reference to parent maintained by child */
+  private P ChildHasParent<P>.parent;
+
+  /** Default implementation of getChildren for the generic type ParentHasChildren */
+  public List<C> ParentHasChildren<C>.getChildren() {
+        return Collections.unmodifiableList(children);
+  }
+
+  /** Default implementation of getParent for the generic type ChildHasParent */
+  public P ChildHasParent<P>.getParent() {
+       return parent;
+  }
+
+  /**
+    * Default implementation of addChild, ensures that parent of child is
+    * also updated.
+    */
+  public void ParentHasChildren<C>.addChild(C child) {
+       if (child.parent != null) {
+         child.parent.removeChild(child);
+       }
+       children.add(child);
+       child.parent = this;
+    }
+
+   /**
+     * Default implementation of removeChild, ensures that parent of
+     * child is also updated.
+     */
+   public void ParentHasChildren<C>.removeChild(C child) {
+       if (children.remove(child)) {
+         child.parent = null;
+       }
+    }
+
+    /**
+      * Default implementation of setParent for the generic type ChildHasParent.
+      * Ensures that this child is added to the children of the parent too.
+      */
+    public void ChildHasParent<P>.setParent(P parent) {
+       parent.addChild(this);
+    }
+
+    /**
+      * Matches at an addChild join point for the parent type P and child type C
+      */
+    public pointcut addingChild(Parent p, Child c) :
+      execution(* ParentHasChildren.addChild(ChildHasParent)) && this(p) && args(c);
+
+    /**
+      * Matches at a removeChild join point for the parent type P and child type C
+      */
+    public pointcut removingChild(Parent p, Child c) :
+      execution(* ParentHasChildren.removeChild(ChildHasParent)) && this(p) && args(c);
+
+}
+....
+
+The example aspect captures the protocol for managing a bi-directional
+parent-child relationship between any two types playing the role of
+parent and child. In a compiler implementation managing an abstract
+syntax tree (AST) in which AST nodes may contain other AST nodes we
+could declare the concrete aspect:
+
+....
+public aspect ASTNodeContainment extends ParentChildRelationship<ASTNode,ASTNode> {
+    before(ASTNode parent, ASTNode child) : addingChild(parent, child) {
+      ...
+    }
+}
+....
+
+As a result of this declaration, `ASTNode` gains members:
+
+List<ASTNode> children
+
+ASTNode parent
+
+List<ASTNode>getChildren()
+
+ASTNode getParent()
+
+void addChild(ASTNode child)
+
+void removeChild(ASTNode child)
+
+void setParent(ASTNode parent)
+
+In a system managing orders, we could declare the concrete aspect:
+
+....
+public aspect OrderItemsInOrders extends ParentChildRelationship<Order, OrderItem> {
+}
+....
+
+As a result of this declaration, `Order` gains members:
+
+List<OrderItem> children
+
+List<OrderItem> getChildren()
+
+void addChild(OrderItem child)
+
+void removeChild(OrderItem child)
+
+and `OrderItem` gains members:
+
+Order parent
+
+Order getParent()
+
+void setParent(Order parent)
+
+A second example of an abstract aspect, this time for handling
+exceptions in a uniform manner, is shown below:
+
+....
+abstract aspect ExceptionHandling<T extends Throwable> {
+
+  /**
+   * method to be implemented by sub-aspects to handle thrown exceptions
+   */
+  protected abstract void onException(T anException);
+
+  /**
+   * to be defined by sub-aspects to specify the scope of exception handling
+   */
+  protected abstract pointcut inExceptionHandlingScope();
+
+  /**
+   * soften T within the scope of the aspect
+   */
+  declare soft: T : inExceptionHandlingScope();
+
+  /**
+   * bind an exception thrown in scope and pass it to the handler
+   */
+  after() throwing (T anException) : inExceptionHandlingScope() {
+    onException(anException);
+  }
+
+}
+....
+
+Notice how the type variable `T extends Throwable` allows the components
+of the aspect to be designed to work together in a type-safe manner. The
+following concrete sub-aspect shows how the abstract aspect might be
+extended to handle `IOExceptions`.
+
+....
+public aspect IOExceptionHandling extends ExceptionHandling<IOException>{
+
+  protected pointcut inExceptionHandlingScope() :
+    call(* doIO*(..)) && within(org.xyz..*);
+
+  /**
+   * called whenever an IOException is thrown in scope.
+   */
+  protected void onException(IOException ex) {
+    System.err.println("handled exception: " + ex.getMessage());
+    throw new MyDomainException(ex);
+  }
+}
+....

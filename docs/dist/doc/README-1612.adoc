@@ -1,0 +1,241 @@
+[.small]#© Copyright 2010-2011 Contributors. All rights reserved.#
+
+== AspectJ 1.6.12 Readme
+
+The full list of resolved issues in 1.6.12 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.12;[here]
+
+.
+
+=== 1.6.12 released 18-Oct-2011
+
+=== 1.6.12.RC1 available 3-Oct-2011
+
+=== 1.6.12.M2 available 18-Aug-2011
+
+=== 1.6.12.M1 available 7-Jun-2011
+
+=== Notable Changes
+
+==== RC1 - annotation value matching and !=
+
+Prior to this change it was only possible to specify an annotation match
+like this: +
+ +
+get(@Anno(someValue=1) * *) || get(@Anno(someValue=3) * *) +
+
+Now it is possible to use != and write this: +
+ +
+get(@Anno(someValue!=2) * *) +
+
+This can enable a group of annotated elements to be more easily
+identified. +
+ +
+
+==== RC1 - More flexible pointcut/code wiring in aop.xml
+
+Prior to this version the wiring was quite limited. In order to wire a
+pointcut to a piece of code the user needed to write an abstract aspect
+that included an abstract pointcut and some advice attached to that
+abstract pointcut. Then compile this aspect and finally write the XML to
+concretize the abstract pointcut. With 1.6.12 more flexibility has been
+added and for some cases there can be no need for that abstract aspect.
+
+This is a work in progress but now you can write this in the aop.xml:
+
+....
+<concrete-aspect name="MyAspect">
+  <before pointcut="execution(* Hello.say2(..)) AND args(message)"
+   invokeClass="SomeRegularJavaClass" 
+   invokeMethod="someMethod(JoinPoint tjp, java.lang.String message)"/>
+  <after pointcut="execution(* Hello.say2(..)) AND args(message)"
+   invokeClass="SomeRegularJavaClass" 
+   invokeMethod="someOtherMethod(JoinPoint tjp, java.lang.String message)"/>
+</concrete-aspect>
+
+public class SomeRegularJavaClass {
+
+  public static void someMethod(org.aspectj.lang.JoinPoint tjp, String s) {
+    System.out.println("in advice4: s="+s+" at "+tjp);
+  }
+  
+  public static void someOtherMethod(org.aspectj.lang.JoinPoint tjp, String s) {
+    System.out.println("in advice5: s="+s+" at "+tjp);
+  }
+}
+....
+
+In this example there is a simple regular java class containing some
+static methods. In the XML these can be joined to pointcuts, kind as if
+they were advice. Notice in the XML it specifies:
+
+* The pointcut
+* The invokeClass - the fully qualified name of the class containing the
+Java method
+* The invokeMethod - the method, including signature in the specified
+class.
+
+Due to the method specification being in XML the parameter types must be
+fully specified. The only exception to this rule is that the AspectJ
+core types JoinPoint (and JoinPoint.StaticPart) do not have to be fully
+qualified (see the example above). *Important:* notice that in the case
+above which does argument binding, the names are bound according to the
+XML specification, not according to the parameter names in the Java
+code.
+
+Around advice is also supported (the return type of the method must
+match the joinpoint return type). The example shows after advice,
+currently there is no way to specify either after returning or after
+finally, there is only after.
+
+Expanding this further would enable support for all the code style
+features in the XML. Some of the language features like declare
+annotation cannot be done in annotation style aspects but the XML
+doesn't have the same kind of restrictions. If anyone wants to help out
+by fleshing this area of the weaver out, let me know and I'll help you
+get started!
+
+'''''
+
+==== M2 - thisAspectInstance (https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649[bug239649])
+
+There is now a new well known name that you can use in the if clauses in
+your aspects. thisAspectInstance provides access to the aspect instance.
+Here is an example: ``
+
+....
+aspect X {
+  boolean doit() {
+    System.out.println("In instance check method doit()");
+    return true;
+  }
+
+  before():execution(* m(..)) && if(thisAspectInstance.doit()){
+    System.out.println(thisJoinPoint);
+  }
+}
+....
+
+Now why not just use X.aspectOf() instead of thisAspectInstance? Well
+thisAspectInstance is quite useful when working with abstract/concrete
+aspects: ``
+
+....
+abstract aspect X {
+abstract pointcut p();
+
+boolean doit() {
+    return true;
+  }
+
+  before():p()  && if(thisAspectInstance.doit()){
+    System.out.println(thisJoinPoint);
+  }
+}
+
+aspect Y extends X {
+
+  pointcut p(): execution(* m(..));
+
+}
+....
+
+Now thisAspectInstance will be an instance of the Y, not X. It enables
+the aspect instance to be used in some kind of check/guard that will
+avoid the costly creation of a thisJoinPoint object if the advice isn't
+going to run. *Note:* right now this only works for singleton aspects.
+If you have need of it with other instantiation models, please comment
+on https://bugs.eclipse.org/bugs/show_bug.cgi?id=239649
+
+==== M2 - weaving groovy
+
+Although we have been successfully weaving groovy for a long time, it is
+becoming more popular and a few issues have been uncovered when using
+non-singleton aspects with groovy code. These have been fixed.
+
+==== M2 - AJDT memory
+
+The release notes for the last few versions of AspectJ have mentioned
+two options (minimalModel and typeDemotion) which can be switched on to
+reduce memory consumption. They have had enough field testing now and
+from 1.6.12.M2 onwards they are on by default. Users should see a
+reduction in memory consumed by AspectJ projects in AJDT. It won't
+affect load time weaving. It may also help command line (or Ant) compile
+time weaving. If these options cause a problem then please raise a
+bugzilla but in the interim you could work around the problem by
+actively turning them off by specifying
+-Xset:minimalModel=false,typeDemotion=false in the project properties
+for your AspectJ project.
+
+==== M2 - Java7 weaving support
+
+Some preliminary work has been done to support Java7. Java7 class files
+must contain the necessary extra verifier support attributes in order to
+load successfully on a Java7 VM - the attributes were only optional in
+Java6. It is possible to force loading of classes missing the attributes
+but that requires use of a -XX option. AspectJ 1.6.12.M2 should create
+these for you if you weave Java7 level class files. Nothing has been
+done yet to rebase AspectJ on a version of the Eclipse compiler that
+supports Java7 language constructs - that will happen after Eclipse
+3.7.1 is out.
+
+'''''
+
+==== M1 - synthetic is supported in pointcut modifiers https://bugs.eclipse.org/bugs/show_bug.cgi?id=327867[327867]
+
+It is now possible to specify synthetic in pointcuts:
+
+....
+pointcut p(): execution(!synthetic * *(..));
+....
+
+==== M1 - respect protection domain when generating types during weaving https://bugs.eclipse.org/bugs/show_bug.cgi?id=328099[328099]
+
+This enables us to weave signed jars correctly. AspectJ sometimes
+generates closure classes during weaving and these must be defined with
+the same protection domain as the jar that gave rise to them. In
+1.6.12.M1 this should now work correctly.
+
+==== M1 - Suppressions inline with the JDT compiler https://bugs.eclipse.org/bugs/show_bug.cgi?id=335810[335810]
+
+Starting with Eclipse 3.6, the Eclipse compiler no longer suppresses raw
+type warnings with @SuppressWarnings("unchecked"). You need to use
+@SuppressWarnings("rawtypes") for that. AspectJ has now been updated
+with this rule too.
+
+==== M1 - Optimized annotation value binding for ints https://bugs.eclipse.org/bugs/show_bug.cgi?id=347684[347684]
+
+The optimized annotation value binding now supports ints - this is for
+use when you want to match upon the existence of an annotation but you
+don't need the annotation, you just need a value from it. This code
+snippet shows an example:
+
+....
+@interface SomeAnnotation {
+  int i();
+}
+
+before(int i): execution(* *(..)) && @annotation(SomeAnnotation(i)) {
+....
+
+Binding values in this way will result in code that runs *much* faster
+than using pointcuts that bind the annotation itself then pull out the
+value.
+
+Under that same bug some changes were made to match values by name when
+binding too. Suppose the annotation had multiple int values, how would
+we select which int to bind? AspectJ will now use the name (if it can)
+to select the right value:
+
+....
+@interface SomeAnnotation {
+  int mods();
+  int flags();
+}
+
+before(int flags): execution(* *(..)) && @annotation(SomeAnnotation(flags)) {
+....
+
+Here the use of 'flags' as the name of the value being bound will ensure
+the 'flags' value from any SomeAnnotation is bound and not the 'mods'
+value.

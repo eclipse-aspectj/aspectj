@@ -1,0 +1,839 @@
+== Annotations
+
+[[annotations-inJava5]]
+=== Annotations in Java 5
+
+This section provides the essential information about annotations in
+Java 5 needed to understand how annotations are treated in AspectJ 5.
+For a full introduction to annotations in Java, please see the
+documentation for the Java 5 SDK.
+
+==== Using Annotations
+
+Java 5 introduces _annotation types_ which can be used to express
+metadata relating to program members in the form of _annotations_.
+Annotations in Java 5 can be applied to package and type declarations
+(classes, interfaces, enums, and annotations), constructors, methods,
+fields, parameters, and variables. Annotations are specified in the
+program source by using the `@` symbol. For example, the following piece
+of code uses the `@Deprecated` annotation to indicate that the
+`obsoleteMethod()` has been deprecated:
+
+....
+@Deprecated
+public void obsoleteMethod() { ... }
+ 
+....
+
+Annotations may be _marker annotations_, _single-valued annotations_, or
+_multi-valued annotations_. Annotation types with no members or that
+provide default values for all members may be used simply as marker
+annotations, as in the deprecation example above. Single-value
+annotation types have a single member, and the annotation may be written
+in one of two equivalent forms:
+
+....
+@SuppressWarnings({"unchecked"})
+public void someMethod() {...}
+ 
+....
+
+or
+
+....
+@SuppressWarnings(value={"unchecked"})
+public void someMethod() {...}
+ 
+....
+
+Multi-value annotations must use the `member-name=value
+            ` syntax to specify annotation values. For example:
+
+....
+@Authenticated(role="supervisor",clearanceLevel=5)
+public void someMethod() {...}
+ 
+....
+
+==== Retention Policies
+
+Annotations can have one of three retention policies:
+
+Source-file retention::
+  Annotations with source-file retention are read by the compiler during
+  the compilation process, but are not rendered in the generated
+  `.class` files.
+Class-file retention::
+  This is the default retention policy. Annotations with class-file
+  retention are read by the compiler and also retained in the generated
+  `
+                          .class` files.
+Runtime retention::
+  Annotations with runtime retention are read by the compiler, retained
+  in the generated `
+                          .class` files, and also made available at
+  runtime.
+
+Local variable annotations are not retained in class files (or at
+runtime) regardless of the retention policy set on the annotation type.
+See JLS 9.6.1.2.
+
+==== Accessing Annotations at Runtime
+
+Java 5 supports a new interface, `java.lang.reflect.AnnotatedElement`,
+that is implemented by the reflection classes in Java (`Class`,
+`Constructor`, `Field`, `Method`, and `Package`). This interface gives
+you access to annotations _that have runtime retention_ via the
+`getAnnotation`, `getAnnotations`, and `isAnnotationPresent`. Because
+annotation types are just regular Java classes, the annotations returned
+by these methods can be queried just like any regular Java object.
+
+==== Annotation Inheritance
+
+It is important to understand the rules relating to inheritance of
+annotations, as these have a bearing on join point matching based on the
+presence or absence of annotations.
+
+By default annotations are _not_ inherited. Given the following program
+
+....
+@MyAnnotation
+class Super {
+  @Oneway public void foo() {}
+}
+
+class Sub extends Super {
+  public void foo() {}
+}
+ 
+....
+
+Then `Sub` _does not_ have the `MyAnnotation` annotation, and
+`Sub.foo()` is not an `@Oneway` method, despite the fact that it
+overrides `Super.foo()` which is.
+
+If an annotation type has the meta-annotation `@Inherited` then an
+annotation of that type on a _class_ will cause the annotation to be
+inherited by sub-classes. So, in the example above, if the
+`MyAnnotation` type had the `@Inherited` attribute, then `Sub` would
+have the `MyAnnotation` annotation.
+
+`@Inherited` annotations are not inherited when used to annotate
+anything other than a type. A type that implements one or more
+interfaces never inherits any annotations from the interfaces it
+implements.
+
+[[annotations-aspectmembers]]
+=== Annotating Aspects
+
+AspectJ 5 supports annotations on aspects, and on method, field,
+constructor, advice, and inter-type declarations within aspects. Method
+and advice parameters may also be annotated. Annotations are not
+permitted on pointcut declarations or on `declare` statements.
+
+The following example illustrates the use of annotations in aspects:
+
+....
+@AspectAnnotation
+public abstract aspect ObserverProtocol {
+
+    @InterfaceAnnotation
+    interface Observer {}
+
+    @InterfaceAnnotation
+    interface Subject {}
+
+    @ITDFieldAnnotation
+    private List<Observer> Subject.observers;
+
+    @ITDMethodAnnotation
+    public void Subject.addObserver(Observer o) {
+      observers.add(o);
+    }
+
+    @ITDMethodAnnotation
+    public void Subject.removeObserver(Observer o) {
+      observers.remove(o);
+    }
+
+    @MethodAnnotation
+    private void notifyObservers(Subject subject) {
+      for(Observer o : subject.observers)
+        notifyObserver(o,subject);
+    }
+
+    /**
+     * Delegate to concrete sub-aspect the actual form of
+     * notification for a given type of Observer.
+     */
+    @MethodAnnotation
+    protected abstract void notifyObserver(Observer o, Subject s);
+
+    /* no annotations on pointcuts */
+    protected abstract pointcut observedEvent(Subject subject);
+
+    @AdviceAnnotation
+    after(Subject subject) returning : observedEvent(subject) {
+        notifyObservers(subject);
+    }
+}
+....
+
+An annotation on an aspect will be inherited by sub-aspects, iff it has
+the `@Inherited` meta-annotation.
+
+AspectJ 5 supports a new XLint warning, "the pointcut associated with
+this advice does not match any join points". The warning is enabled by
+default and will be emitted by the compiler if the pointcut expression
+associated with an advice statement can be statically determined to not
+match any join points. The warning can be suppressed for an individual
+advice statement by using the
+`@SuppressAjWarnings({"adviceDidNotMatch"})` annotation. This works in
+the same way as the Java 5 SuppressWarnings annotation (See JLS
+9.6.1.5), but has class file retention.
+
+....
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
+public aspect AnAspect {
+
+  pointcut anInterfaceOperation() : execution(* AnInterface.*(..));
+
+
+  @SuppressAjWarnings // may not match if there are no implementers of the interface...
+  before() : anInterfaceOperation() {
+     // do something...
+  }
+
+  @SuppressAjWarnings("adviceDidNotMatch") // alternate form
+  after() returning : anInterfaceOperation() {
+     // do something...
+  }
+}
+....
+
+[[annotations-pointcuts-and-advice]]
+=== Join Point Matching based on Annotations
+
+This section discusses changes to type pattern and signature pattern
+matching in AspectJ 5 that support matching join points based on the
+presence or absence of annotations. We then discuss means of exposing
+annotation values within the body of advice.
+
+==== Annotation Patterns
+
+For any kind of annotated element (type, method, constructor, package,
+etc.), an annotation pattern can be used to match against the set of
+annotations on the annotated element.An annotation pattern element has
+one of two basic forms:
+
+* @<qualified-name>, for example, @Foo, or @org.xyz.Foo.
+* @(<type-pattern>), for example, @(org.xyz..*), or @(Foo || Boo)
+
+These simple elements may be negated using `!`, and combined by simple
+concatentation. The pattern `@Foo @Boo` matches an annotated element
+that has both an annotation of type `Foo` and an annotation of type
+`Boo`.
+
+Some examples of annotation patterns follow:
+
+@Immutable::
+  Matches any annotated element which has an annotation of type
+  `Immutable`.
+!@Persistent::
+  Matches any annotated element which does not have an annotation of
+  type `Persistent`.
+@Foo @Goo::
+  Matches any annotated element which has both an annotation of type
+  `Foo` and an annotation of type `Goo`.
+@(Foo || Goo)::
+  Matches any annotated element which has either an annotation of a type
+  matching the type pattern `(Foo || Goo)`. In other words, an annotated
+  element with either an annotation of type `Foo` or an annotation of
+  type `Goo` (or both). (The parenthesis are required in this example).
+@(org.xyz..*)::
+  Matches any annotated element which has either an annotation of a type
+  matching the type pattern `(org.xyz..*)`. In other words, an annotated
+  element with an annotation that is declared in the org.xyz package or
+  a sub-package. (The parenthesis are required in this example).
+
+==== Type Patterns
+
+AspectJ 1.5 extends type patterns to allow an optional
+`AnnotationPattern` prefix.
+
+....
+TypePattern := SimpleTypePattern |
+               '!' TypePattern |
+               '(' AnnotationPattern? TypePattern ')'
+               TypePattern '&&' TypePattern |
+               TypePattern '||' TypePattern
+
+SimpleTypePattern := DottedNamePattern '+'? '[]'*
+
+DottedNamePattern := FullyQualifiedName RestOfNamePattern? |
+                     '*' NotStarNamePattern?
+
+RestOfNamePattern := '..' DottedNamePattern |
+                     '*' NotStarNamePattern?
+
+NotStarNamePattern := FullyQualifiedName RestOfNamePattern? |
+                      '..' DottedNamePattern
+
+FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*
+....
+
+Note that in most cases when annotations are used as part of a type
+pattern, the parenthesis are required (as in `(@Foo Hello+)`). In some
+cases (such as a type pattern used within a `within` or `handler`
+pointcut expression), the parenthesis are optional:
+
+....
+OptionalParensTypePattern := AnnotationPattern? TypePattern
+   
+....
+
+The following examples illustrate the use of annotations in type
+patterns:
+
+(@Immutable *)::
+  Matches any type with an `@Immutable` annotation.
+(!@Immutable *)::
+  Matches any type which does not have an `@Immutable` annotation.
+(@Immutable (org.xyz.* || org.abc.*))::
+  Matches any type in the `org.xyz` or `org.abc` packages with the
+  `@Immutable` annotation.
+((@Immutable Foo+) || Goo)::
+  Matches a type `Foo` or any of its subtypes, which have the
+  `@Immutable` annotation, or a type `Goo`.
+((@(Immutable || NonPersistent) org.xyz..*)::
+  Matches any type in a package beginning with the prefix `org.xyz`,
+  which has either the `@Immutable` annotation or the `@NonPersistent`
+  annotation.
+(@Immutable @NonPersistent org.xyz..*)::
+  Matches any type in a package beginning with the prefix `org.xyz`,
+  which has both an `@Immutable` annotation and an `@NonPersistent`
+  annotation.
+(@(@Inherited *) org.xyz..*)::
+  Matches any type in a package beginning with the prefix `org.xyz`,
+  which has an inheritable annotation. The annotation pattern
+  `@(@Inherited *)` matches any annotation of a type matching the type
+  pattern `@Inherited *`, which in turn matches any type with the
+  `@Inherited` annotation.
+
+[[signaturePatterns]]
+==== Signature Patterns
+
+[[fieldPatterns]]
+===== Field Patterns
+
+A `FieldPattern` can optionally specify an annotation-matching pattern
+as the first element:
+
+....
+FieldPattern :=
+    AnnotationPattern? FieldModifiersPattern?
+    TypePattern (TypePattern DotOrDotDot)? SimpleNamePattern
+
+FieldModifiersPattern := '!'? FieldModifier FieldModifiersPattern*
+
+FieldModifier := 'public' | 'private' | 'protected' | 'static' |
+                 'transient' | 'final'
+
+DotOrDotDot := '.' | '..'
+
+SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?
+....
+
+If present, the `AnnotationPattern` restricts matches to fields with
+annotations that match the pattern. For example:
+
+@SensitiveData * *::
+  Matches a field of any type and any name, that has an annotation of
+  type `@SensitiveData`
+@SensitiveData List org.xyz..*.*::
+  Matches a member field of a type in a package with prefix `org.xzy`,
+  where the field is of type `List`, and has an annotation of type
+  `@SensitiveData`
+(@SensitiveData *) org.xyz..*.*::
+  Matches a member field of a type in a package with prefix `org.xzy`,
+  where the field is of a type which has a `@SensitiveData` annotation.
+@Foo (@Goo *) (@Hoo *).*::
+  Matches a field with an annotation `@Foo`, of a type with an
+  annotation `@Goo`, declared in a type with annotation `@Hoo`.
+@Persisted @Classified * *::
+  Matches a field with an annotation `@Persisted` and an annotation
+  `@Classified`.
+
+[[methodPatterns]]
+===== Method and Constructor Patterns
+
+A `MethodPattern` can optionally specify an annotation-matching pattern
+as the first element.
+
+....
+MethodPattern :=
+    AnnotationPattern? MethodModifiersPattern? TypePattern
+                       (TypePattern DotOrDotDot)? SimpleNamePattern
+                       '(' FormalsPattern ')'ThrowsPattern?
+
+MethodModifiersPattern := '!'? MethodModifier MethodModifiersPattern*
+
+MethodModifier := 'public' | 'private' | 'protected' | 'static' |
+                  'synchronized' | 'final'
+
+FormalsPattern := '..' (',' FormalsPatternAfterDotDot)* |
+                  OptionalParensTypePattern (',' FormalsPattern)* |
+                  TypePattern '...'
+
+FormalsPatternAfterDotDot :=
+        OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
+        TypePattern '...'
+
+ThrowsPattern := 'throws' TypePatternList
+
+TypePatternList := TypePattern (',' TypePattern)*
+....
+
+A `ConstructorPattern` has the form
+
+....
+ConstructorPattern :=
+    AnnotationPattern? ConstructorModifiersPattern?
+                       (TypePattern DotOrDotDot)? 'new' '(' FormalsPattern ')'
+                       ThrowsPattern?
+
+ConstructorModifiersPattern := '!'? ConstructorModifier ConstructorModifiersPattern*
+
+ConstructorModifier := 'public' | 'private' | 'protected'
+....
+
+The optional `AnnotationPattern` at the beginning of a method or
+constructor pattern restricts matches to methods/constructors with
+annotations that match the pattern. For example:
+
+@Oneway * *(..)::
+  Matches a method with any return type and any name, that has an
+  annotation of type `@Oneway`.
+@Transaction * (@Persistent org.xyz..*).*(..)::
+  Matches a method with the `@Transaction` annotation, declared in a
+  type with the `@Persistent` annotation, and in a package beginning
+  with the `org.xyz` prefix.
+* *.*(@Immutable *,..)::
+  Matches any method taking at least one parameter, where the parameter
+  type has an annotation `@Immutable`.
+
+==== Example Pointcuts
+
+within(@Secure *)::
+  Matches any join point where the code executing is declared in a type
+  with an `@Secure` annotation. The format of the `within` pointcut
+  designator in AspectJ 5 is
+  `'within' '(' OptionalParensTypePattern ')'`.
+staticinitialization(@Persistent *)::
+  Matches the staticinitialization join point of any type with the
+  `@Persistent` annotation. The format of the `staticinitialization`
+  pointcut designator in AspectJ 5 is
+  `'staticinitialization' '(' OptionalParensTypePattern ')'`.
+call(@Oneway * *(..))::
+  Matches a call to a method with a `@Oneway` annotation.
+execution(public (@Immutable *) org.xyz..*.*(..))::
+  The execution of any public method in a package with prefix `org.xyz`,
+  where the method returns an immutable result.
+set(@Cachable * *)::
+  Matches the set of any cachable field.
+handler(!@Catastrophic *)::
+  Matches the handler join point for the handling of any exception that
+  is not `Catastrophic`. The format of the `handler` pointcut designator
+  in AspectJ 5 is `'handler' '(' OptionalParensTypePattern ')'`.
+
+==== Runtime type matching and context exposure
+
+AspectJ 5 supports a set of "@" pointcut designators which can be used
+both to match based on the presence of an annotation at runtime, and to
+expose the annotation value as context in a pointcut or advice
+definition. These designators are `@args, @this, @target,
+    @within, @withincode`, and `@annotation`
+
+It is a compilation error to attempt to match on an annotation type that
+does not have runtime retention using `@this, @target` or `@args`. It is
+a compilation error to attempt to use any of these designators to expose
+an annotation value that does not have runtime retention.
+
+The `this()`, `target()`, and `args()` pointcut designators allow
+matching based on the runtime type of an object, as opposed to the
+statically declared type. In AspectJ 5, these designators are
+supplemented with three new designators : `@this()` (read, "this
+annotation"), `@target()`, and `@args()`.
+
+Like their counterparts, these pointcut designators can be used both for
+join point matching, and to expose context. The format of these new
+designators is:
+
+....
+AtThis := '@this' '(' AnnotationOrIdentifer ')'
+
+AtTarget := '@target' '(' AnnotationOrIdentifier ')'
+
+AnnotationOrIdentifier := FullyQualifiedName | Identifier
+
+AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
+
+AnnotationsOrIdentifiersPattern :=
+                  '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
+                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
+                  '*' (',' AnnotationsOrIdentifiersPattern)*
+
+AnnotationsOrIdentifiersPatternAfterDotDot :=
+              AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPatternAfterDotDot)* |
+              '*' (',' AnnotationsOrIdentifiersPatternAfterDotDot)*
+....
+
+The forms of `@this()` and `@target()` that take a single annotation
+name are analogous to their counterparts that take a single type name.
+They match at join points where the object bound to `this` (or `target`,
+respectively) has an annotation of the specified type. For example:
+
+@this(Foo)::
+  Matches any join point where the object currently bound to 'this' has
+  an annotation of type `Foo`.
+call(* *(..)) && @target(Classified)::
+  Matches a call to any object where the target of the call has a
+  `@Classified` annotation.
+
+Annotations can be exposed as context in the body of advice by using the
+forms of `@this(), @target()` and `@args()` that use bound variables in
+the place of annotation names. For example:
+
+....
+pointcut callToClassifiedObject(Classified classificationInfo) :
+    call(* *(..)) && @target(classificationInfo);
+
+pointcut txRequiredMethod(Tx transactionAnnotation) :
+    execution(* *(..)) && @this(transactionAnnotation)
+    && if(transactionAnnotation.policy() == TxPolicy.REQUIRED);
+....
+
+The `@args` pointcut designator behaves as its `args` counterpart,
+matching join points based on number and position of arguments, and
+supporting the `*` wildcard and at most one `..` wildcard. An annotation
+at a given position in an `@args` expression indicates that the runtime
+type of the argument in that position at a join point must have an
+annotation of the indicated type. For example:
+
+....
+/**
+ * matches any join point with at least one argument, and where the
+ * type of the first argument has the @Classified annotation
+ */
+pointcut classifiedArgument() : @args(Classified,..);
+
+/**
+ * matches any join point with three arguments, where the third
+ * argument has an annotation of type @Untrusted.
+ */
+pointcut untrustedData(Untrusted untrustedDataSource) :
+    @args(*,*,untrustedDataSource);
+....
+
+In addition to accessing annotation information at runtime through
+context binding, access to `AnnotatedElement` information is also
+available reflectively with the body of advice through the
+`thisJoinPoint`, `thisJoinPointStaticPart`, and
+`thisEnclosingJoinPointStaticPart` variables. To access annotations on
+the arguments, or object bound to this or target at a join point you can
+use the following code fragments:
+
+....
+Annotation[] thisAnnotations = thisJoinPoint.getThis().getClass().getAnnotations();
+Annotation[] targetAnnotations = thisJoinPoint.getTarget().getClass().getAnnotations();
+Annotation[] firstParamAnnotations = thisJoinPoint.getArgs()[0].getClass().getAnnotations();
+....
+
+The `@within` and `@withincode` pointcut designators match any join
+point where the executing code is defined within a type (`@within`), or
+a method/constructor (`@withincode`) that has an annotation of the
+specified type. The form of these designators is:
+
+....
+AtWithin := '@within' '(' AnnotationOrIdentifier ')'
+AtWithinCode := '@withincode' '(' AnnotationOrIdentifier ')'
+....
+
+Some examples of using these designators follow:
+
+@within(Foo)::
+  Matches any join point where the executing code is defined within a
+  type which has an annotation of type `Foo`.
+pointcut insideCriticalMethod(Critical c) : @withincode(c);::
+  Matches any join point where the executing code is defined in a method
+  or constructor which has an annotation of type `@Critical`, and
+  exposes the value of the annotation in the parameter `c`.
+
+The `@annotation` pointcut designator matches any join point where the
+_subject_ of the join point has an annotation of the given type. Like
+the other @pcds, it can also be used for context exposure.
+
+....
+AtAnnotation := '@annotation' '(' AnnotationOrIdentifier ')'
+....
+
+The subject of a join point is defined in the table in chapter one of
+this guide.
+
+Access to annotation information on members at a matched join point is
+also available through the `getSignature` method of the `JoinPoint` and
+`JoinPoint.StaticPart` interfaces. The `Signature` interfaces are
+extended with additional operations that provide access to the
+`java.lang.reflect` `Method, Field` and `Constructor` objects on which
+annnotations can be queried. The following fragment illustrates an
+example use of this interface to access annotation information.
+
+....
+Signature sig = thisJoinPointStaticPart.getSignature();
+AnnotatedElement declaringTypeAnnotationInfo = sig.getDeclaringType();
+if (sig instanceof MethodSignature) {
+  // this must be a call or execution join point
+  Method method = ((MethodSignature)sig).getMethod();
+}
+....
+
+_Note again that it would be nicer to add the method getAnnotationInfo
+directly to MemberSignature, but this would once more couple the runtime
+library to Java 5._
+
+The `@this,@target` and `@args` pointcut designators can only be used to
+match against annotations that have runtime retention. The
+`@within, @withincode` and `@annotation` pointcut designators can only
+be used to match against annotations that have at least class-file
+retention, and if used in the binding form the annotation must have
+runtime retention.
+
+==== Package and Parameter Annotations
+
+_Matching on package annotations is not supported in AspectJ. Support
+for this capability may be considered in a future release._
+
+Parameter annotation matching is being added in AspectJ1.6. Initially
+only matching is supported but binding will be implemented at some
+point. Whether the annotation specified in a pointcut should be
+considered to be an annotation on the parameter type or an annotation on
+the parameter itself is determined through the use of parentheses around
+the parameter type. Consider the following:
+
+....
+@SomeAnnotation
+class AnnotatedType {}
+
+class C {
+  public void foo(AnnotatedType a) {}
+  public void goo(@SomeAnnotation String s) {}
+}
+....
+
+The method foo has a parameter of an annotated type, and can be matched
+by this pointcut:
+
+....
+pointcut p(): execution(* *(@SomeAnnotation *));
+....
+
+When there is a single annotation specified like this, it is considered
+to be part of the type pattern in the match against the parameter: 'a
+parameter of any type that has the annotation @SomeAnnotation'.
+
+To match the parameter annotation case, the method goo, this is the
+pointcut:
+
+....
+pointcut p(): execution(* *(@SomeAnnotation (*)));
+....
+
+The use of parentheses around the wildcard is effectively indicating
+that the annotation should be considered separately to the type pattern
+for the parameter type: 'a parameter of any type that has a parameter
+annotation of @SomeAnnotation'.
+
+To match when there is a parameter annotation and an annotation on the
+type as well:
+
+....
+pointcut p(): execution(* *(@SomeAnnotation (@SomeOtherAnnotation *)));
+....
+
+The parentheses are grouping @SomeOtherAnnotation with the * to form the
+type pattern for the parameter, then the type @SomeAnnotation will be
+treated as a parameter annotation pattern.
+
+==== Annotation Inheritance and pointcut matching
+
+According to the Java 5 specification, non-type annotations are not
+inherited, and annotations on types are only inherited if they have the
+`@Inherited` meta-annotation. Given the following program:
+
+....
+class C1 {
+  @SomeAnnotation
+  public void aMethod() {...}
+}
+
+class C2 extends C1 {
+  public void aMethod() {...}
+}
+
+class Main {
+  public static void main(String[] args) {
+    C1 c1 = new C1();
+    C2 c2 = new C2();
+    c1.aMethod();
+    c2.aMethod();
+  }
+}
+
+aspect X {
+  pointcut annotatedC2MethodCall() :
+    call(@SomeAnnotation * C2.aMethod());
+
+  pointcut annotatedMethodCall() :
+    call(@SomeAnnotation * aMethod());
+}
+....
+
+The pointcut `annotatedC2MethodCall` will not match anything since the
+definition of `aMethod` in `C2` does not have the annotation.
+
+The pointcut `annotatedMethodCall` matches `c1.aMethod()` but not
+`c2.aMethod()`. The call to `c2.aMethod` is not matched because join
+point matching for modifiers (the visibility modifiers, annotations, and
+throws clause) is based on the subject of the join point (the method
+actually being called).
+
+[[matchingOnAnnotationValues]]
+==== Matching based on annotation values
+
+The `if` pointcut designator can be used to write pointcuts that match
+based on the values annotation members. For example:
+
+....
+pointcut txRequiredMethod(Tx transactionAnnotation) :
+    execution(* *(..)) && @this(transactionAnnotation)
+    && if(transactionAnnotation.policy() == TxPolicy.REQUIRED);
+....
+
+[[annotations-decp]]
+=== Using Annotations with declare statements
+
+==== Declare error and declare warning
+
+Since pointcut expressions in AspectJ 5 support join point matching
+based on annotations, this facility can be exploited when writing
+`declare warning` and `declare error` statements. For example:
+
+....
+declare warning : withincode(@PerformanceCritical * *(..)) &&
+                  call(@ExpensiveOperation * *(..))
+                : "Expensive operation called from within performance critical section";
+....
+
+....
+declare error : call(* org.xyz.model.*.*(..)) &&
+                !@within(Trusted)
+                : "Untrusted code should not call the model classes directly";
+....
+
+==== declare parents
+
+The general form of a `declare parents` statement is:
+
+....
+declare parents : TypePattern extends Type;
+declare parents : TypePattern implements TypeList;
+....
+
+Since AspectJ 5 supports annotations as part of a type pattern
+specification, it is now possible to match types based on the presence
+of annotations _with either class-file or runtime retention_. For
+example:
+
+declare parents : (@Secured *) implements SecuredObject;::
+  All types with the `@Secured` annotation implement the `SecuredObject`
+  inteface.
+declare parents : (@Secured BankAccount+) implements SecuredObject;::
+  The subset of types drawn from the `BankAccount` type and any subtype
+  of `BankAccount`, where the `@Secured` annotation is present,
+  implement the `SecuredObject` interface.
+
+An annotation type may not be used as the target of a declare parents
+statement. If an annotation type is named explicitly as the target of a
+declare parents statement, a compilation error will result. If an
+annotation type is matched by a non-explicit type pattern used in a
+declare parents statement it will be ignored (and an XLint warning
+issued).
+
+==== declare precedence
+
+The general form of a declare precedence statement is:
+
+....
+declare precedence : TypePatList;
+....
+
+AspectJ 5 allows the type patterns in the list to include annotation
+information as part of the pattern specification. For example:
+
+declare precedence : (@Security *),*;::
+  All aspects with the `@Security` annotation take precedence over any
+  other aspects in the system. (Or, more informally, all
+  security-related aspects take precedence).
+
+[[annotations-declare]]
+=== Declare Annotation
+
+AspectJ 5 supports a new kind of declare statement,
+`declare annotation`. This takes different forms according to the
+recipient of the annotation: `declare @type` for types,
+`declare @method` for methods, `declare @constructor` for constructors,
+and `declare @field` for fields. `declare @package` may be supported in
+a future release.
+
+The general form is:
+
+....
+declare @<kind> : ElementPattern : Annotation ;
+....
+
+Where annotation is a regular annotation expression as defined in the
+Java 5 language. If the annotation has the `@Target` meta-annotation,
+then the elements matched by `ElementPattern` must be of the kind
+specified by the `@Target` annotation.
+
+`ElementPattern` is defined as follows:
+
+....
+ElementPattern := TypePattern |
+                  MethodPattern |
+                  ConstructorPattern |
+                  FieldPattern
+....
+
+The following examples illustrate the use of `declare annotation`.
+
+declare @type : org.xyz.model..* : @BusinessDomain ;::
+  All types defined in a package with the prefix `org.xyz.model` have
+  the `@BusinessDomain` annotation.
+declare @method : public * BankAccount+.*(..) :
+@Secured(role="supervisor")::
+  All public methods in `BankAccount` and its subtypes have the
+  annotation `@Secured(role="supervisor")`.
+declare @constructor : BankAccount+.new(..) :
+@Secured(role="supervisor")::
+  All constructors in `BankAccount` and its subtypes have the annotation
+  `@Secured(role="supervisor")`.
+declare @field : * DAO+.* : @Persisted;::
+  All fields defined in `DAO` or its subtypes have the `@Persisted`
+  annotation.
+
+[[annotations-itds]]
+=== Inter-type Declarations
+
+An annotation type may not be the target of an inter-type declaration.

@@ -1,0 +1,155 @@
+== AspectJ^TM^
+
+_Version @build.version.long@ released on @build.date@._
+
+=== 1 Contents of this Package
+
+* the link:bin[`<aspectj install dir>/bin`] directory has scripts for
+** `ajc`: the compiler for the AspectJ language
+** `ajbrowser`: a graphical editor for compiling programs with `ajc` and
+navigating the crosscutting structure of those programs
+* the directory link:lib[`<aspectj install dir>/lib`] has the AspectJ
+binaries,
+** `aspectjtools.jar`: libraries for `ajc`, `ajbrowser`, and the Ant
+tasks
+** `aspectjrt.jar`: runtime library for AspectJ programs
+* the directory link:doc[`<aspectj install dir>/doc`] has examples,
+programming and development environment guides, instructions for the Ant
+tasks, a README for 1.1 changes, and a quick reference, all linked from
+the link:doc/index.html[index] page.
+* this README-AspectJ.html, and
+* the LICENSE-AspectJ.html applying to this distribution.
+
+'''''
+
+=== 2 Install Procedure
+
+The AspectJ tools `ajc` and `ajbrowser` are Java programs that can be
+run indirectly from the scripts or directly from `aspectjtools.jar`. The
+`aspectjrt.jar` needs to be on the classpath when compiling or running
+programs compiled by `ajc`. This procedure shows ways to do that.
+
+After finishing automatic installation, we recommend that the following
+steps to complete your installation:
+
+*2.1 Add `<aspectj install dir>/lib/aspectjrt.jar` to your class path*
+
+____
+This small .jar file contains classes required to compile programs with
+the ajc compiler, and to run programs compiled with the ajc compiler.
+You must have these classes somewhere on your class path when running
+programs compiled with ajc. For detailed instructions please see the
+xref:#configInstructions[Configuration Instructions] at the bottom of
+this document.
+____
+
+*2.2 Put the AspectJ `bin` directory on your PATH*
+
+____
+Modify your PATH to include `<aspectj install   dir>/bin`. This will
+make it easier to run ajc. For detailed instructions please see the
+xref:#configInstructions[Configuration Instructions] at the bottom of
+this document.
+____
+
+*2.3 Review the documentation and examples*
+
+____
+Development and programming guides are available in
+link:doc/index.html[docs], and example programs and an Ant script are
+available in link:doc/examples/[examples].
+____
+
+If you did not use the automatic installation process, you may wish to
+create short launch scripts to start ajc easily (section 3).
+
+'''''
+
+=== 3. Running the Tools
+
+If you did not use the automatic installation process or the default
+launch scripts do not work on your system, you may wish to create short
+launch scripts to start ajc easily.
+
+You can also run the `aspectjtools.jar` directly using java's -jar
+option:
+
+____
+`C:\jdk1.3\bin\java.exe -jar D:\aspectj\lib\aspectjtools.jar %*`
+____
+
+With no arguments or only argument list (.lst) files, this will launch
+`ajbrowser`, the GUI structure browser; otherwise, it will run `ajc`,
+the AspectJ compiler. This means that if your browser is set up to run
+jar files, clicking a link to lib/aspectjtools.jar will launch
+`ajbrowser`.
+
+You can also create scripts like those created by the installer. These
+scripts use full paths that are system dependent so you will likely have
+to change these.
+
+Here's a sample launch script for WinNT and Win2K (note that this is
+single line in the .bat file):
+
+____
+`C:\jdk1.3\bin\java.exe -classpath D:\aspectj\lib\aspectjtools.jar -Xmx64M org.aspectj.tools.ajc.Main %*`
+____
+
+Here's a sample launch script for a Unix shell (on Linux using Sun's
+JDK1.3):
+
+____
+`/usr/java/jdk1.3/jre/bin/java -classpath /home/aspectj/lib/aspectjtools.jar -Xmx64M org.aspectj.tools.ajc.Main "$@"`
+____
+
+'''''
+
+=== [#configInstructions]#4. Configuration Instructions#
+
+==== 4.1 Adding `<aspectj install dir>/lib/aspectjrt.jar` to your classpath
+
+There are several ways to add this jar file to your classpath:
+
+* copy `aspectjrt.jar` to the `jdk/jre/lib/ext` directory
+* add `aspectjrt.jar` to your CLASSPATH environment variable (see the
+next section for details)
+* always use the "`-classpath aspectjrt.jar`" option when running
+programs compiled with ajc
+
+==== 4.2 [#6.1]#Setting the Environment Variables on Windows#
+
+The following instructions use the PATH variable as an example, but this
+process is identical for the CLASSPATH variable.
+
+You can do the variables permanently for all the shells that you will
+run or temporarily only for the current shell. To change the PATH only
+in the current shell, and assuming you've installed AspectJ in
+`C:\apps\aspectj`, type:
+
+____
+`> set PATH=%PATH%;C:\apps\aspectj\bin`
+____
+
+*Changing Environment Variables Permanently on WinNT and Win2000*
+
+* open the Environment Variables dialog
+** WinNT: in "Control Panels" double-click "System" and select the
+"Environment" tab
+** Win2K: in "Control Panels" double-click "System", select the
+"Advanced" tab and click the "Environment Variables..." button
+* select the environment variable for editing, or add it using the
+"New..." button if it does not exist
+* add the new entry separated from the others by a semi-colon (;) and
+close the dialog
+* note that the change will not affect shells that were already running
+
+*Changing Environment Variables Permanently on Win9x*
+
+* open the AUTOEXEC.BAT with an editor such as NotePad
+* edit the PATH statement to include the new entry and save the file,
+e.g. +
++
+____
+`PATH C:\WINDOWS;C:\WINDOWS\COMMAND;C:\;C:\DOS;C:\apps\aspectj\bin`
+____
+* note that the change will not affect shells that were already running

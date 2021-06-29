@@ -1,0 +1,23 @@
+== AspectJ Patterns
+
+_Last updated: 2004-03-31 by wisberg_
+
+This directory contains Java and AspectJ implementations of the patterns
+described in the "Design Patterns" book by the so-called gang-of-four
+(Gamma, Helm, Johnson, Vlissides). Jan Hannemann from UBC contributed
+the code under the Mozilla Public License 1.0. For more details, see
+xref:docs/readme.adoc[].
+
+Build options
+
+* To build the code manually with ajc, use the corresponding build.lst
+  files, creating the aspect library first (to create lib.jar).
+* Ajbrowser and the other IDE support does not support options like
+  sourceroots or -outjar in the .lst files, so you'll have to create new
+  .lst files if you want to build portions of the project in an IDE.
+* To build with eclipse, there are .project and .classpath files, but
+  you will need to adjust the `aspectjrt.jar` entry after importing the
+  project.
+* To build for testing, see patterns-test.xml.
+
+Enjoy!

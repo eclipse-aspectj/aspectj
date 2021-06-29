@@ -1,0 +1,59 @@
+[.small]#© Copyright 2019 Contributors. All rights reserved.#
+
+== AspectJ 1.9.5
+
+The full list of resolved issues in 1.9.5 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.5[here]
+
+.
+
+AspectJ 1.9.5 supports Java13. Java13 introduces text blocks, but you
+must activate support for that via an --enable-preview flag when using
+the compiler and attempting to run the resultant classes: Here is
+Code.java:
+
+....
+=======8<=========
+public class Code {
+  public static void main(String[] argv) {
+  }
+
+  static aspect X {
+    before(): execution(* Code.main(..)) {
+    System.out.println(
+"""
+This
+is
+on
+multiple
+lines
+"""
+);
+    }
+  }
+
+}
+=========8<=========
+....
+
+Compile it with:
+
+....
+$ ajc --enable-preview -13 Code.java
+....
+
+Now run it:
+
+....
+$ java --enable-preview Code
+This
+is
+on
+multiple
+lines
+....
+
+Available: 1.9.5 available 28-Nov-2019
+
+ +
+ +

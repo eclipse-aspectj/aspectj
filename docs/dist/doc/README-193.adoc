@@ -1,0 +1,77 @@
+[.small]#© Copyright 2018 Contributors. All rights reserved.#
+
+The full list of resolved issues in 1.9.3 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.3[here]
+
+.
+
+AspectJ 1.9.3 supports Java12. Java12 introduces the new switch
+expression syntax, but you must activate support for that via an
+--enable-preview flag when using the compiler and attempting to run the
+resultant classes: Here is Switch3.java:
+
+....
+=========8<=========
+public class Switch3 {
+    public static void main(String[] argv) {
+        System.out.println(one(Color.R));
+        System.out.println(one(Color.G));
+        System.out.println(one(Color.B));
+        System.out.println(one(Color.Y));
+    }
+
+    public static int one(Color color) {
+        int result = switch(color) {
+         case R -> foo(0);
+         case G -> foo(1);
+         case B -> foo(2);
+         default -> foo(3);
+        };
+        return result;
+    }
+    
+    public static final int foo(int i) {
+        return i+1;
+    }
+}
+
+enum Color {
+    R, G, B, Y;
+}
+
+aspect X {
+    int around(): call(* foo(..)) {
+        return proceed()*3;
+    }
+}
+=========8<=========
+....
+
+Compile it with:
+
+....
+$ ajc --enable-preview -showWeaveInfo -12 Switch3.java
+
+Join point 'method-call(int Switch3.foo(int))' in Type 'Switch3' (Switch3.java:12) advised by around advice from 'X' (Switch3.java:30)
+
+Join point 'method-call(int Switch3.foo(int))' in Type 'Switch3' (Switch3.java:13) advised by around advice from 'X' (Switch3.java:30)
+
+Join point 'method-call(int Switch3.foo(int))' in Type 'Switch3' (Switch3.java:14) advised by around advice from 'X' (Switch3.java:30)
+
+Join point 'method-call(int Switch3.foo(int))' in Type 'Switch3' (Switch3.java:15) advised by around advice from 'X' (Switch3.java:30)
+....
+
+Now run it:
+
+....
+$ java --enable-preview Switch3
+3
+6
+9
+12
+....
+
+Available: 1.9.3.RC1 available 7-Mar-2019
+
+ +
+ +

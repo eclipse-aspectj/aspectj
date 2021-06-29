@@ -1,0 +1,54 @@
+© Copyright 1997-2001 Xerox Corporation. All rights reserved.
+
+*Last updated*: January 10, 2001
+
+
+
+== [#5]#Exploring the Spacewar Example#
+
+The code in this directory is an implementation of the classic video
+game Spacewar.
+
+The Spacewar game is intended to provide a modest-sized example of a
+program that uses aspects. The code for this example is evolving, as we
+add new features to AspectJ and come up with a better understanding of
+how to use the features.
+
+In order to compile and run this example, make sure to have the latest
+version of AspectJ correctly installed. If you're not sure you do, try
+the helloworld example first by following the instructions in
+xref:../doc/primer/default.html[Primer] section Getting Started.
+
+=== [#5.1]#Compiling Spacewar#
+
+* Change to the `examples` directory.
+* Type `ajc -argfile spacewar/demo.lst` to compile the system.
+
+=== [#5.2]#Running Spacewar#
+
+* In the examples directory, type `java spacewar.Game`
+
+When the game starts up you will see two different displays. These are
+the two built-in display aspects of the game. In each you will see a
+single white ship and two red ships. The white ship is yours to control;
+the red ships are an enemy robots. Your ship is controlled with the four
+arrow keys to turn, thrust and stop; the spacebar fires. As you play,
+the game will be displayed in both windows.
+
+When running on a 1.4 or later VM, click in the main panel to give it
+focus so that your keystrokes are recognized.
+
+You can quit the game with ctl-Q.
+
+=== [#5.3]#Exploring the Code#
+
+There is one other built-in configurations for the Spacewar game. Try it
+by typing `ajc @spacewar\debug.lst`. This compiles in an elaborate
+debugging aspect for the game.
+
+We recommend you explore the Spacewar source code and look at the
+aspects that it uses. You will find several of them, of different scales
+and different degrees of cross-cutting. Remember that these represent
+our evolving understanding of how to use AspectJ to implement Spacewar.
+If you believe we should be doing something differently, then please let
+us know.

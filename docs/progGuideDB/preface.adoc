@@ -1,0 +1,35 @@
+== Preface
+
+This programming guide does three things. It
+
+* introduces the AspectJ language
+* defines each of AspectJ's constructs and their semantics, and
+* provides examples of their use.
+
+It includes appendices that give a reference to the syntax of AspectJ, a
+more formal description of AspectJ's semantics, and a description of
+notes about the AspectJ implementation.
+
+The first section, xref:gettingstarted.adoc[Getting Started with AspectJ], provides a gentle overview of
+writing AspectJ programs. It also shows how one can introduce AspectJ
+into an existing development effort in stages, reducing the associated
+risk. You should read this section if this is your first exposure to
+AspectJ and you want to get a sense of what AspectJ is all about.
+
+The second section, xref:language.adoc[The AspectJ Language], covers the features of the
+language in more detail, using code snippets as examples. All the basics
+of the language is covered, and after reading this section, you should
+be able to use the language correctly.
+
+The next section, xref:examples.adoc[Examples], comprises a set of complete
+programs that not only show the features being used, but also try to
+illustrate recommended practice. You should read this section after you
+are familiar with the elements of AspectJ.
+
+Finally, there are two short chapters, one on xref:idioms.adoc[Idioms] and one
+on xref:pitfalls.adoc[Pitfalls].
+
+The back matter contains several appendices that cover an
+xref:quickreference.adoc[AspectJ Quick Reference], a more in depth coverage of
+its xref:semantics.adoc[Language Semantics], and a description of the latitude enjoyed by
+its xref:implementation.adoc[Implementation Notes].

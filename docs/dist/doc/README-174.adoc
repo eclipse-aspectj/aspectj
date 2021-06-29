@@ -1,0 +1,34 @@
+[.small]#© Copyright 2013 Contributors. All rights reserved.#
+
+== AspectJ 1.7.4 Readme
+
+Available 24-Oct-2013
+
+The list of resolved issues in 1.7.4 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.4;[here]
+
+.
+
+*Notes*
+
+* This release includes an important fix for using loadtime weaving in a
+JVM where JMX is turned on
+(https://bugs.eclipse.org/bugs/show_bug.cgi?id=415266[415266])
+* There are some new message insert keys usable in declare error/warning
+(https://bugs.eclipse.org/bugs/show_bug.cgi?id=420210[420210]) The new
+keys are:
++
+....
+joinpoint.enclosingclass // Bar
+joinpoint.enclosingmember // void Bar.foo(String)
+joinpoint.enclosingmember.name // foo
+....
++
+All keys are case insensitive.
+* It is now possible to specify individual xlint settings without
+needing to supply a file
+(https://bugs.eclipse.org/bugs/show_bug.cgi?id=419279[419279])
++
+....
+ajc -Xlint:adviceDidNotMatch=error,noGuardForLazyTjp=ignore Foo.java
+....

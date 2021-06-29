@@ -1,0 +1,108 @@
+== AspectJ Modules
+
+There are a number of different structures [Parnas]: "the module structure, the uses structure, the runtime structure,
+..." This document overviews module structure and summarizes what is hidden by each. For detailed documentation refer to
+the individual module sources and docs available via CVS.
+
+=== Core Modules
+
+*CVS Location:* dev.eclipse.org:/cvsroot/technology/org.aspectj/modules
+
+To set up for building, one need only check out the module directories within the `modules/` directory. In Eclipse,
+check out each module into the workspace as a project. (Note: module dependencies may change at any time, so this
+documentation might be out of date. The Eclipse .classpath files specify the module dependencies, even when using Ant to
+build outside of Eclipse.)
+
+|===
+| *Module* | *Dependencies* | *Description*
+
+| ajbrowser | ajde, asm, bridge, util, taskdefs (pseudo, for build system) | This module contains the ajbrowser
+application. It depends on the ajde module for access to the aspectj compiler, and also for the swing user interface
+components that ajde provides.
+
+| ajde | asm, bridge, org.aspectj.ajdt.core, org.eclipse.jdt.core, util | Hides the details of accessing the AspectJ
+compiler and interpreting compilation results (error messages, structure model, etc.) from other applications (typically
+IDEs) that need to invoke it programmatically. Changing any public interface in ajde can break all the IDE integration
+projects and should be done with care. +
+ +
+It also contains a library of common swing user interface components that can be used by any swing based IDE. Ajbrowser
+and the non-eclipse IDE integration projects use this library (except for the emacs support).
+
+| asm | bridge | Contains the Abstract Structure Model, which represents the result of an aspectj compilation. Clients
+of ajde are returned an instance of the structure model which allows them to navigate and interpret the static structure
+of an aspectj program.
+
+| bridge | util | Contains an interface and implementation of classes realted to compiler messages including: source
+locations, handling, and formatting. Intended to minimize dependencies between testing, the compiler, and
+ajde.
+
+| org.aspectj.ajdt.core | asm, bridge, org.eclipse.jdt.core, runtime, testing-util, util, weaver | Front-end of the
+AspectJ compiler and extension of Eclipse's JDT compiler. Extends the JDT compiler's parsing and name resolution to
+understand AspectJ declarations.  Also extends incremental behavior with understanding of AspectJ dependencies.
+
+| org.eclipse.jdt.core | | The Eclipse JDT compiler, slightly patched for AspectJ and stored in binary form to avoid
+accidental changes. Sources are available in CVS at dev.eclipse.org:/cvsroot/technology/org.aspectj/shadows.
+
+| runtime | | Small runtime library required for building and running AspectJ programs
+
+| taskdefs | bridge, org.aspectj.ajdt.core, util | Ant taskdef for the AspectJ compiler/weaver, ajc.
+
+| util | | Common utility classes including data type, file, and stream manipulation
+
+| weaver | asm, bridge, runtime, testing-util, util | Back-end of the AspectJ compiler, built on top of the BCEL
+bytecode toolkit. All advice planning and weaving is done here. Takes an aspect bytecode format and other Java
+classfiles as input.
+|===
+ 
+=== Supporting Modules
+
+*CVS Location:* dev.eclipse.org:/cvsroot/technology/org.aspectj/modules
+
+|===
+| *Module* | *Description*
+| build | Ant files, scripts, taskdefs required for building the AspectJ distribution. Also contains the GUI installer.
+| docs | Programmer and developer documentation
+| lib | Libraries required for building AspectJ
+| testing | Test support classes
+| testing-client | Client used for running the harness and reporting results
+| testing-drivers | Testing harness drivers and support classes
+| testing-util | Common testing utility classes used by the unit test suites in the core modules
+| tests | AspectJ test suite, including all language tests, regression tests, and test system sources
+|===
+
+=== Eclipse AspectJ Development Tools (AJDT)
+
+*CVS Location:* dev.eclipse.org:/cvsroot/technology/org.eclipse.ajdt/plugins/org.eclipse.ajdt
+
+|===
+| *Plug-in* | *Dependencies* | *Description*
+| org.eclipse.ajdt.ui | org.aspectj.ajde | AspectJ IDE support for Eclipse
+| org.aspectj.ajde | ajde, asm, bridge | AspectJ libraries plug-in
+|===
+
+=== JBuilder Support
+
+*CVS Location:* cvs.aspectj4jbuildr.sourceforge.net:/cvsroot/aspectj4jbuildr
+
+|===
+| *OpenTool* | *Dependencies* | *Description*
+| jbuilder | ajde, asm, bridge | AspectJ IDE support for JBuilder
+|===
+
+=== NetBeans Support
+
+*CVS Location:* cvs.aspectj4netbean.sourceforge.net:/cvsroot/aspectj4netbean
+
+|===
+| *Module* | *Dependencies* | *Description*
+| netbeans | ajde, asm, bridge | AspectJ IDE support for NetBeans and SunONE Studio
+|===
+
+=== Emacs Support
+
+*CVS Location:* cvs.aspectj4emacs.sourceforge.net:/cvsroot/aspectj4emacs
+
+|===
+| *Module* | *Dependencies* | *Description*
+| emacs | ajde, asm, bridge | AspectJ support for Emacs and XEmacs
+|===

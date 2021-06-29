@@ -1,0 +1,37 @@
+= The AspectJ^TM^ Programming Guide
+
+:doctype: book
+
+_by the AspectJ Team_
+
+_Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2005 Contributors.
+All rights reserved._
+
+This programming guide describes the AspectJ language. A companion guide describes the tools which are part of the
+AspectJ development environment.
+
+* If you are completely new to AspectJ, please read the link:gettingstarted.adoc[getting started] chapter for a broad overview of AspectJ programming.
+* If you are already familiar with AspectJ, but want a deeper understanding, you can learn more about the link:language.adoc[AspectJ language] and look at the examples in the chapter.
+* If you want a more formal definition of AspectJ, please refer to the link:semantics.adoc[language semantics] section.
+
+////
+ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
+table of contents (TOC) can be wrong and the first section of each document missing completely.
+////
+include::preface.adoc[]
+
+include::gettingstarted.adoc[]
+
+include::language.adoc[]
+
+include::examples.adoc[]
+
+include::idioms.adoc[]
+
+include::pitfalls.adoc[]
+
+include::quickreference.adoc[]
+
+include::semantics.adoc[]
+
+include::implementation.adoc[]

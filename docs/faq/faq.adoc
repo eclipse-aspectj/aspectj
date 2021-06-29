@@ -1,0 +1,3455 @@
+= AspectJ FAQ
+
+_Copyright (c) 1997-2001 Xerox Corporation, 2002 Palo Alto Research
+Center, Incorporated, 2003-2006 Contributors. All rights reserved._
+
+_Last updated November 3, 2006_
+
+For a list of recently-updated FAQ entries, see #q:faqchanges[Q:What has
+changed since the last FAQ version?]
+
+== Overview
+
+*Q:* What is AspectJ?
+
+*A:* AspectJ(tm) is a simple and practical extension to the Java(tm)
+programming language that adds to Java aspect-oriented programming (AOP)
+capabilities. AOP allows developers to reap the benefits of modularity
+for concerns that cut across the natural units of modularity. In
+object-oriented programs like Java, the natural unit of modularity is
+the class. In AspectJ, aspects modularize concerns that affect more than
+one class.
+
+You compile your program using the AspectJ compiler (perhaps using the
+supported development environments) and then run it, supplying a small
+(< 100K) runtime library.
+
+The AspectJ technologies include a compiler (`ajc`), a debugger
+(`ajdb`), a documentation generator (`ajdoc`), a program structure
+browser (`ajbrowser`), and integration with Eclipse, Sun-ONE/Netbeans,
+GNU Emacs/XEmacs, JBuilder, and Ant.
+
+*Q:* What are the benefits of using AspectJ?
+
+*A:* AspectJ can be used to improve the modularity of software systems.
+
+Using ordinary Java, it can be difficult to modularize design concerns
+such as
+
+* system-wide error-handling
+* contract enforcement
+* distribution concerns
+* feature variations
+* context-sensitive behavior
+* persistence
+* testing
+
+The code for these concerns tends to be spread out across the system.
+Because these concerns won't stay inside of any one module boundary, we
+say that they _crosscut_ the system's modularity.
+
+AspectJ adds constructs to Java that enable the modular implementation
+of crosscutting concerns. This ability is particularly valuable because
+crosscutting concerns tend to be both complex and poorly localized,
+making them hard to deal with.
+
+*Q:* Can AspectJ work with any Java program?
+
+*A:* AspectJ has been designed as a _compatible_ extension to Java. By
+compatible, we mean
+
+[cols=",",]
+|===
+|_upward compatible_ |All legal Java programs are legal AspectJ
+programs.
+
+|_platform compatible_ |All legal AspectJ programs run on standard Java
+virtual machines.
+
+|_tool compatible_ |Existing tools can be extended to work with AspectJ.
+
+|_programmer compatible_ |Programming in AspectJ feels natural to Java
+programmers.
+|===
+
+The AspectJ tools run on any Java 2 Platform compatible platform. The
+AspectJ compiler produces classes that run on any Java 1.1 (or later)
+compatible platform.
+
+*Q:* How is AspectJ licensed?
+
+*A:* Since AspectJ 1.9.7, source code and documentation is available
+under the
+https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
+License v 2.0].
+
+AspectJ 1.5.2 through 1.9.6 source code and documentation is available
+under the http://www.eclipse.org/org/documents/epl-v10.php[Eclipse
+Public License v 1.0].
+
+AspectJ 1.1 through 1.5.1 source code and documentation is available
+under the http://eclipse.org/legal/cpl-v10.html[Common Public License
+1.0].
+
+The AspectJ 1.0 tools are open-source software available under the
+http://www.opensource.org/licenses/mozilla1.1[Mozilla Public License
+1.1]. That documentation is available under a separate license that
+precludes for-profit or commercial redistribution.
+
+The runtime jar aspectjrt.jar and its distribution are also covered by
+the https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse
+Public License].
+
+For answers to common licensing questions, see the
+http://www.eclipse.org/legal/eplfaq.php[Eclipse Public License FAQ].
+
+*Q:* What is the AspectJ Project?
+
+*A:* AspectJ is based on over ten years of research at
+http://www.parc.xerox.com[Xerox Palo Alto Research Center] as funded by
+Xerox, a U.S. Government grant (NISTATP), and a DARPA contract.
+
+It has evolved through open-source releases to a strong user community
+and now operates as an open source project at http://eclipse.org/aspectj
+The AspectJ team works closely with the community to ensure AspectJ
+continues to evolve as an effective aspect-oriented programming language
+and tool set.
+
+The latest release is 1.2 which can be downloaded from the
+http://eclipse.org/aspectj[AspectJ project page], including sources as
+described #q:buildingsource[Q:How do I get and compile the source code
+for AspectJ?]. Development is focused on supporting applications,
+improving quality and performance, enhancing integration with IDE's, and
+building the next generations of the language.
+
+[[quickstart]]
+== Quick Start
+
+*Q:* What Java versions does AspectJ require and support?
+
+*A:* The AspectJ compiler produces programs for any released version of
+the Java platform (jdk1.1 and later). When running, your program classes
+must be able to reach classes in the small (< 100K) runtime library
+(aspectjrt.jar) from the distribution. The tools themselves require J2SE
+1.3 or later to run, but the compiler can produce classes for any
+1.1-compliant version of the Java platform.
+
+*Q:* How do I download and install AspectJ?
+
+*A:* From AspectJ's http://eclipse.org/aspectj[web page] , download the
+AspectJ distribution. The `jar` file is installed by executing
+
+....
+java -jar jar file name
+
+....
+
+Do *not* try to extract the `jar` file contents and then attempt to
+execute `java org.aspectj.tools.Main`. (A `NoClassDefFoundError`
+exception will be thrown.) The AspectJ distribution is not designed to
+be installed this way. Use the `java -jar` form shown above.
+
+To uninstall, remove the files the installer wrote in your file system.
+In most cases, you can delete the top-level install directory (and all
+contained files), after you remove any new or updated files you want to
+keep. On Windows, no registry settings were added or changed, so nothing
+needs to be undone. Do not install over prior versions, which might have
+different files. Delete the prior version first.
+
+*Q:* How should I start using AspectJ?
+
+*A:* Many users adopt AspectJ in stages, first using it to understand
+and validate their systems (relying on it only in development) and then
+using it to implement crosscutting concerns in production systems.
+AspectJ has been designed to make each step discrete and beneficial.
+
+In order of increasing reliance, you may use AspectJ:
+
+* *In the development process* Use AspectJ to trace or log interesting
+information. You can do this by adding simple AspectJ code that performs
+logging or tracing. This kind of addition may be removed ("unplugged")
+for the final build since it does not implement a design requirement;
+the functionality of the system is unaffected by the aspect.
+* *As an ancillary part of your system* Use AspectJ to more completely
+and accurately test the system. Add sophisticated code that can check
+contracts, provide debugging support, or implement test strategies. Like
+pure development aspects, this code may also be unplugged from
+production builds. However, the same code can often be helpful in
+diagnosing failures in deployed production systems, so you may design
+the functionality to be deployed but disabled, and enable it when
+debugging.
+* *As an essential part of your system* Use AspectJ to modularize
+crosscutting concerns in your system by design. This uses AspectJ to
+implement logic integral to a system and is delivered in production
+builds.
+
+This adoption sequence works well in practice and has been followed by
+many projects.
+
+*Q:* How does AspectJ integrate with existing Java development tools?
+
+*A:* AspectJ products are designed to make it easy to integrate AspectJ
+into an existing development process. Each release includes Ant tasks
+for building programs, the AspectJ Development Environment (AJDE) for
+writing aspects inside popular IDE's, and command-line tools for
+compiling and documenting Java and AspectJ code.
+
+AspectJ provides replacements for standard Java tools:
+
+* `ajc`, the AspectJ compiler, runs on any Java 2 compatible platform,
+and produces classes that run on any Java 1.1 (or later) compatible
+platform.
+* `ajdoc` produces API documentation like javadoc, with additional
+crosscutting links. For example, it shows advice affecting a particular
+method or all code affected by a given aspect. At present, `ajdoc` is
+only supported in AspectJ 1.0.
+
+For debugging, AspectJ supports JSR-45, which provides a mechanism for
+debugging .class files that have multiple source files. Debugger clients
+and VM's are beginning to support this; see Sun's J2SE 1.4.1 VM and jdb
+debugger and recent versions of JBuilder.
+
+The AspectJ Development Environment (AJDE) enables programmers to view
+and navigate the crosscutting structures in their programs, integrated
+with existing support in popular Java IDE's for viewing and navigating
+object-oriented structures. For many programmers this provides a deeper
+understanding of how aspects work to modularize their concerns and
+permits them to extend some of their development practices without
+having to abandon their existing tools.
+
+AJDE is a set of API's providing the basis for the following development
+tool integrations:
+
+* Eclipse (version 2.0) in the Eclipse AspectJ Development Tools project
+http://eclipse.org/ajdt
+* Emacs (GNU version 20.3) and XEmacs (version 21.1 on Unix and 21.4 on
+Windows), in the SourceForge AspectJ for Emacs project
+http://aspectj4emacs.sourceforge.net
+* JBuilder (versions 4 through 7) from Borland in the SourceForge
+AspectJ for JBuilder project http://aspectj4jbuildr.sourceforge.net
+* Netbeans up to 3.4 (and Sun Microsystems' Forte for Java (versions 2
+and 3), Sun/One) in the SourceForge AspectJ for NetBeans project
+http://aspectj4netbean.sourceforge.net
+
+The common functionality of AJDE is also available in the stand-alone
+source code browser `ajbrowser`, included in the tools distribution.
+
+Finally, as mentioned above, AspectJ also supports building with Ant by
+providing task interfaces to the ajc and ajdoc tools.
+
+[[typicalprograms]]
+== Typical AspectJ programs
+
+*Q:* Are aspects always optional or non-functional parts of a program?
+
+*A:* No. Although AspectJ can be used in a way that allows AspectJ code
+to be removed for the final build, aspect-oriented code is not _always_
+optional or non-functional. Consider what AOP really does: it makes the
+modules in a program correspond to modules in the design. In any given
+design, some modules are optional, and some are not.
+
+The examples directory included in the AspectJ distribution contains
+some examples of the use aspects that are not optional. Without aspects,
+
+[cols=",",]
+|===
+|*bean* |Point objects would not be JavaBeans.
+|*introduction* |Point objects would not be cloneable, comparable or
+serializable.
+|*spacewar* |Nothing would be displayed.
+|*telecom* |No calls would be billed.
+|===
+
+*Q:* What is the difference between development and production aspects?
+
+*A:* Production aspects are delivered with the finished product, while
+development aspects are used during the development process. Often
+production aspects are also used during development.
+
+*Q:* What are some common development aspects?
+
+*A:* Aspects for logging, tracing, debugging, profiling or performance
+monitoring, or testing.
+
+*Q:* What are some common production aspects?
+
+*A:* Aspects for performance monitoring and diagnostic systems, display
+updating or notifications generally, security, context passing, and
+error handling.
+
+[[concepts]]
+== Basic AOP and AspectJ Concepts
+
+*Q:* What are scattering, tangling, and crosscutting?
+
+*A:* "Scattering" is when similar code is distributed throughout many
+program modules. This differs from a component being used by many other
+components since it involves the risk of misuse at each point and of
+inconsistencies across all points. Changes to the implementation may
+require finding and editing all affected code.
+
+"Tangling" is when two or more concerns are implemented in the same body
+of code or component, making it more difficult to understand. Changes to
+one implementation may cause unintended changes to other tangled
+concerns.
+
+"Crosscutting" is how to characterize a concern than spans multiple
+units of OO modularity - classes and objects. Crosscutting concerns
+resist modularization using normal OO constructs, but aspect-oriented
+programs can modularize crosscutting concerns.
+
+*Q:* What are join points?
+
+*A:* Join points are well-defined points in the execution of a program.
+Not every execution point is a join point: only those points that can be
+used in a disciplined and principled manner are. So, in AspectJ, the
+execution of a method call is a join point, but "the execution of the
+expression at line 37 in file Foo.java" is not.
+
+The rationale for restricting join points is similar to the rationale
+for restricting access to memory (pointers) or restricting control flow
+expressions (`goto`) in Java: programs are easier to understand,
+maintain and extend without the full power of the feature.
+
+AspectJ join points include reading or writing a field; calling or
+executing an exception handler, method or constructor.
+
+*Q:* What is a pointcut?
+
+*A:* A pointcut picks out #q:joinpoints[ join points ]. These join
+points are described by the pointcut declaration. Pointcuts can be
+defined in classes or in aspects, and can be named or be anonymous.
+
+*Q:* What is advice?
+
+*A:* Advice is code that executes at each #q:joinpoints[join point]
+picked out by a #q:pointcut[pointcut]. There are three kinds of advice:
+before advice, around advice and after advice. As their names suggest,
+before advice runs before the join point executes; around advice
+executes before and after the join point; and after advice executes
+after the join point. The power of advice comes from the advice being
+able to access values in the execution context of a pointcut.
+
+*Q:* What are inter-type declarations?
+
+*A:* AspectJ enables you to declare members and supertypes of another
+class in an aspect, subject to Java's type-safety and access rules.
+These are visible to other classes only if you declare them as
+accessible. You can also declare compile-time errors and warnings based
+on pointcuts.
+
+*Q:* What is an aspect?
+
+*A:* Aspects are a new class-like language element that has been added
+to Java by AspectJ. Aspects are how developers encapsulate concerns that
+cut across classes, the natural unit of modularity in Java.
+
+Aspects are similar to classes because...
+
+* aspects have type
+* aspects can extend classes and other aspects
+* aspects can be abstract or concrete
+* non-abstract aspects can be instantiated
+* aspects can have static and non-static state and behavior
+* aspects can have fields, methods, and types as members
+* the members of non-privileged aspects follow the same accessibility
+rules as those of classes
+
+Aspects are different than classes because...
+
+* aspects can additionally include as members pointcuts, advice, and
+inter-type declarations;
+* aspects can be qualified by specifying the context in which the
+non-static state is available
+* aspects can't be used interchangeably with classes
+* aspects don't have constructors or finalizers, and they cannot be
+created with the new operator; they are automatically available as
+needed.
+* privileged aspects can access private members of other types
+
+[[whyaop]]
+== Why AOP?
+
+*Q:* Are crosscutting concerns induced by flaws in parts of the system
+design, programming language, operating system, etc. Or is there
+something more fundamental going on?
+
+*A:* AOP's fundamental assumption is that in any sufficiently complex
+system, there will inherently be some crosscutting concerns.
+
+So, while there are some cases where you could re-factor a system to
+make a concern no longer be crosscutting, the AOP idea is that there are
+many cases where that is not possible, or where doing so would damage
+the code in other ways.
+
+*Q:* Does it really make sense to define aspects in terms of
+crosscutting?
+
+*A:* Yes.
+
+The short summary is that it is right to define AOP in terms of
+crosscutting, because well-written AOP programs have clear crosscutting
+structure. It would be a mistake to define AOP in terms of "cleaning up
+tangling and scattering", because that isn't particular to AOP, and past
+programming language innovations also do that, as will future
+developments.
+
+(Slides for a long talk on this topic were once available at
+http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip.)
+
+*Q:* Is AOP restricted to domain-specific applications?
+
+*A:* No. Some implementations of AOP are domain-specific, but AspectJ
+was specifically designed to be general-purpose.
+
+*Q:* Why do I need AOP if I can use interceptors (or JVMPI or ref
+lection)?
+
+*A:* There are many mechanisms people use now to implement some
+crosscutting concerns. But they don't have a way to express the actual
+structure of the program so you (and your tools) can reason about it.
+Using a language enables you to express the crosscutting in first-class
+constructs. You can not only avoid the maintenance problems and
+structural requirements of some other mechanisms, but also combine forms
+of crosscutting so that all the mechanisms for a particular concern are
+one piece of code.
+
+[[related]]
+== Related Technology
+
+*Q:* How does AspectJ compare to other new forms of programming?
+
+*A:* There are many recent proposals for programming languages that
+provide control over crosscutting concerns. Aspect-oriented programming
+is an overall framework into which many of these approaches fit. AspectJ
+is one particular instance of AOP, distinguished by the fact that it was
+designed from the ground up to be compatible with Java.
+
+For more alternatives for aspect-oriented programming, see
+http://aosd.net.
+
+*Q:* How do you compare the features of AspectJ with reflective systems?
+
+*A:* Reflective and aspect-oriented languages have an important
+similarity: both provide programming support for dealing with
+crosscutting concerns. In this sense reflective systems proved that
+independent programming of crosscutting concerns is possible.
+
+But the control that reflection provides tends to be low-level and
+extremely powerful. In contrast, AspectJ provides more carefully
+controlled power, drawing on the rules learned from object-oriented
+development to encourage a clean and understandable program structure.
+
+*Q:* How do AspectJ features compare with those of mixin-based
+inheritance?
+
+*A:* Some features of AspectJ, such as introduction, are related to
+_mixin-based inheritance_. But, in order to support crosscutting, a core
+goal for AspectJ, AspectJ goes beyond mixin-based inheritance.
+
+Firstly, an aspect imposes behavior on a class, rather than a class
+requesting behavior from an aspect. An aspect can modify a class without
+needing to edit that class. This property is sometimes called _reverse
+inheritance_.
+
+Secondly, a single aspect can affect multiple classes in different ways.
+A single paint aspect can add different paint methods to all the classes
+that know how to paint, unlike mixin classes.
+
+So mixin-based inheritance doesn't have the reverse inheritance
+property, and mixins affect every class that mixes them in the same. If
+I want to do something like SubjectObserverProtocol, I need two mixins,
+SubjectPartofSubjectObserverProtocol and ObserverPartof... In AspectJ,
+both halves of the protocol can be captured in a single aspect.
+
+*Q:* How does AspectJ compare with more dynamic AOP?
+
+*A:* Some AOP techniques are presented as "dynamic" because the weaving
+occurs when classes are loaded, because aspects can be configured in a
+separate XML file before launch, or because some advice depends on
+runtime reflection. They are said to be more flexible than AspectJ.
+
+This is a misconception. First, the AspectJ 1.1 weaver has always
+supported weaving at compile-time or class-load-time. Weaving at
+compile-time reduces application launch and running time, and it helps
+IDE's offer support for tracking down weaving errors and understanding
+the impact of aspects on a system. On the other hand, weaving at
+load-time simplifies build and deployment. Before AspectJ 1.2, the user
+had to write a class loader that used the weaver API to weave at load
+time; since 1.2, AspectJ comes with a command-line launcher to support
+weaving at class-load-time without any other changes to a build
+configuration. In AspectJ 5, we expect to get a similar level of support
+as AspectWerkz, and to exploit the class bytecode weaving hook available
+in Java 5 VM's.
+
+Second, AspectJ programs, like Java programs generally, can be written
+to support any level of XML configuration or to depend on runtime
+reflection. There are some benefits to using AspectJ; e.g., the
+proceed() form within around advice simplifies a lot of the work that
+otherwise would go into writing a generalized interceptor, without
+introducing many of the runtime errors that can result from
+interceptors. For AspectJ examples of configurable or
+reflection-dependent programs, see the sample code linked off the
+AspectJ documentation page or the examples discussed on the mailing
+list, e.g.,
+http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg02151.html[Incremental
+and runtime weaving support?].
+
+*Q:* What is the relationship between AOP and XP (extreme programming
+AKA agile methods)?
+
+*A:* From a question on the user list:
+
+....
+> Anyone know the connections between AOP and Extreme Programming?
+> I am really confused. It seems AOP is a programming paradigm, which
+> is the next level of abstraction of OOP. Extreme Programming, however,
+> this is a lightweight software development process. One of the common
+> motivations of AOP and XP is designed to adopt to the requirement
+> changes, so that it can save the cost of software development.
+
+....
+
+This is Raymond Lee's answer:
+
+You're not really that confused. AOP and XP are orthogonal concepts,
+although AOP can be used to help accomplish XP goals. One of the goals
+of XP is to respond to changing requirements. Another is to reduce the
+overall cost of development. These are not necessarily the same thing.
+
+One of the principles of XP that contribute to meeting those goals is to
+maintain clean, simple designs. One of the criteria for clean, simple
+designs is to factor out duplication from the code. Benefits of removing
+duplication include the code being easier to understand, better
+modularity of the design, lower costs of code changes, less chance of
+conflicting changes when practicing collective code ownership, etc.
+
+Different types of duplication lend themselves to being addressed by
+different design paradigms and language features. Duplicate snippets of
+code can be factored out into methods. Duplicate methods can be factored
+out to common classes, or pushed up to base classes. Duplicate patterns
+of methods and their use can be factored out to mechanisms of classes
+and methods (i.e. instantiations of design patterns).
+
+AOP addresses a type of duplication that is very difficult to handle in
+the other common paradigms, namely cross-cutting concerns. By factoring
+out duplicate cross-cutting code into aspects, the target code becomes
+simpler and cleaner, and the cross-cutting code becomes more centralized
+and modular.
+
+So, AOP as a paradigm, and the associated tools, gives an XPer, or
+anyone wanting to remove duplication from the code base, a powerful way
+to remove a form of duplication not easily addressed until now.
+
+*Q:* Will you support C#?
+
+*A:* Not at this time. Although the resemblances between C# and Java
+means it would probably be a fairly straightforward matter to take the
+AspectJ language design and produce AspectC#, our current focus is only
+on supporting effective uses of AspectJ.
+
+[[adoption]]
+== Deciding to adopt AspectJ
+
+*Q:* Is it safe to use AspectJ in my product plans?
+
+*A:* You may use AspectJ in your product or project with little risk.
+Several factors play a role in reducing the risk of adopting this new
+technology:
+
+* AspectJ is an _addition_ to Java, and can be introduced into a project
+in a way that limits risk. See #q:startUsingAJ[Q: How should I start
+using AspectJ?] for some suggestions on how to do this.
+* The AspectJ compiler accepts standard Java as input and produces
+standard Java bytecode as output. In 1.0, an optional mode produces
+standard Java source code which may then be compiled with any compliant
+Java compiler (e.g. Sun's `javac` compiler or IBM's `jikes` compiler).
+In 1.1, an optional mode accepts standard Java bytecode from any
+compliant Java compiler and weaves in the aspects to produce new
+bytecode.
+* AspectJ is available under a non-proprietary, open source license, the
+https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
+License v 2.0]. AspectJ will continue to evolve and be available,
+regardless of the fate of any particular organization involved with
+AspectJ.
+* Removing AspectJ from your program is not difficult, although you will
+lose the flexibility and economy that AspectJ provided.
+* A number of significant open-source projects and industry products use
+AspectJ successfully. One list is kept on
+http://www.aosd.net/wiki/index.php?title=FAQ[the AOSD FAQ], and more
+appear on the mailing lists (search for, e.g., "AspectJ in real world",
+as described in #q:searchingsite[Q:How can I search the email archives
+or the web site?]).
+
+*Q:* What is the effect of using AspectJ on the source code size of
+programs?
+
+*A:* Using aspects reduces, as a side effect, the number of source lines
+in a program. However, the major benefit of using aspects comes from
+_improving_ the modularity of a program, not because the program is
+smaller. Aspects gather into a module concerns that would otherwise be
+scattered across or duplicated in multiple classes.
+
+*Q:* Does AspectJ add any performance overhead?
+
+*A:* The issue of performance overhead is an important one. It is also
+quite subtle, since knowing what to measure is at least as important as
+knowing how to measure it, and neither is always apparent.
+
+We aim for the performance of our implementation of AspectJ to be on par
+with the same functionality hand-coded in Java. Anything significantly
+less should be considered a bug.
+
+There is currently no benchmark suite for AOP languages in general or
+for AspectJ in particular. It is probably too early to develop such a
+suite because AspectJ needs more maturation of the language and the
+coding styles first. Coding styles really drive the development of the
+benchmark suites since they suggest what is important to measure.
+
+Though we cannot show it without a benchmark suite, we believe that code
+generated by AspectJ has negligible performance overhead. Inter-type
+member and parent introductions should have very little overhead, and
+advice should only have some indirection which could be optimized away
+by modern VM's.
+
+The `ajc` compiler will use static typing information to only insert the
+advice and dynamic pointcut tests that are absolutely necessary. Unless
+you use 'thisJoinPoint' or 'if', the main dynamic checks will be
+'instanceof' checks which are generally quite fast. These checks will
+only be inserted when they can not be inferred from the static type
+information.
+
+When measuring performance, write AspectJ code fragments and compare
+them to the performance of the corresponding code written without
+AspectJ. For example, don't compare a method with before/after advice
+that grabs a lock to just the method. That would be comparing apples and
+oranges. Also be sure to watch out for JIT effects that come from empty
+method bodies and the like. Our experience is that they can be quite
+misleading in understanding what you've measured.
+
+*Q:* I've heard that AspectJ leads to modularity violations. Does it?
+
+*A:* Well I haven't yet seen a language in which you can't write bad
+code!
+
+But seriously, most AspectJ users find that just like when they learned
+OO, it takes a while to really get the hang of it. They tend to start in
+the usual way, by copying canonical examples and experimenting with
+variations on them.
+
+But users also find that rather than being dangerous, AspectJ helps them
+write code that is more clear and has better encapsulation -- once they
+understand the kind of modularity AspectJ supports. There are several
+good papers that talk about this (see below), but here's a basic point
+to keep in mind: when properly used, AspectJ makes it possible program
+in a modular way, something that would otherwise be spread throughout
+the code. Consider the following code, adapted from the AspectJ
+tutorial:
+
+....
+aspect PublicErrorLogging {
+    Log log = new Log();
+
+    pointcut publicInterface(Object o):
+        call(public * com.xerox.*.*(..)) && target(o);
+
+    after(Object o) throwing (Error e): publicInterface(o) {
+        log.write(o, e);
+    }
+}
+
+....
+
+The effect of this code is to ensure that whenever any public method of
+an interface or class in the `com.xerox` package throws an error, that
+error is logged before being thrown to its caller.
+
+Of course in the alternative implementation a large number of methods
+have a try/catch around their body.
+
+The AspectJ implementation of this crosscutting concern is clearly
+modular, whereas the other implementation is not. As a result, if you
+want to change it, its easier in the AspectJ implementation. For
+example, if you also want to pass the name of the method, or its
+arguments to `log.write`, you only have to edit one place in the AspectJ
+code.
+
+This is just a short example, but I hope it shows how what happens with
+AOP and AspectJ is that the usual benefits of modularity are achieved
+for crosscutting concerns, and that leads to better code, not more
+dangerous code.
+
+One paper someone else just reminded me of that talks some more about
+this is:
+http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf
+
+*Q:* Why does AspectJ permit aspects to access and add members of
+another type? Isn't that violating OO encapsulation?
+
+*A:* In the spirit of Smalltalk, we have decided to give more power to
+the language in order to let the user community experiment and discover
+what is right. To date this has proven to be a successful strategy
+because it has permitted the construction of many useful aspects that
+crosscut the internal state of an object, and as such need access the
+its private members. However, we are not discounting that some sort of
+restrictions are useful, rather, we are seeking input from the community
+in order to decide on what these restrictions should be.
+
+In that light, our position on encapsulation is :
+
+* we respect Java's visibility rules
+* we also provide open-classes, a mature OO technology
+* we provide "privileged" access if you really need it.
+
+Introducing parents or members to classes is a well-studied OO technique
+known as open classes.
+
+Open classes have been used in many languages prior to AspectJ,
+including CLOS, Python, Smalltalk, Objective-C, and others. Building
+from Java, introduction in AspectJ provides better name hygiene and
+access control than prior languages. Introduced code obeys all of Java's
+normal accessibility rules for its lexical location in the aspect that
+it is introduced from. Such code can not even see, much less access,
+private members of the class it is introduced into. Further,
+introductions can be declared private to the aspect, so they are not
+visible to other clients of the class.
+
+Privileged aspects do permit access to private members of another class.
+They are a response to the very few cases where developers genuinely
+need such access (typically for testing purposes where it access is
+necessary), but it would be more risky to open access by putting the
+aspect in the same package, adding test code, or changing access in the
+target class. We recommend using privileged aspects only as necessary,
+and believe that marking them "privileged" makes any potential misuse
+apparent.
+
+*Q:* Can I use AspectJ with J2EE?
+
+*A:* Consider the component types in J2EE:
+
+* Servlet: AspectJ works well within servlets
+* JSP: It is possible to use AspectJ to affect code in JSPs by
+precompiling them into Java sources and compiling these with ajc. This
+can be used, e.g., to customize displays by turning on and off custom
+JSP taglibs. The mapping from a given jsp source to java package and
+class name is not standardized, which means doing this imposes
+dependencies on specific container versions.
+* EJB: AspectJ supports a wide variety of aspects for EJBs. It can be
+used for logging, tracing, debugging, error handling by layers,
+correlated method-level interception (e.g., chargebacks), metering,
+fine-grained transactions, etc. Indeed, it can be used to enforce
+adherence to coding restrictions within an EJB (e.g., not using java.io,
+creating a class loader, or listening on sockets) using `declare error`.
+
+The basic limitations are that there is no built-in support for writing
+J2EE analogs for AspectJ extensions to Java, like distributed aspects,
+distributed cflow, or managing state between invocations. These don't
+prevent one from using AspectJ to do useful intra-container
+implementation, nor need they prevent one from building distributed
+support, state management, and inter-component implementations that
+leverage AspectJ. It just takes some work. In more detail:
+
+All AspectJ implementations may define "code the implementation
+controls". The AspectJ 1.0 implementation defines this as the files
+passed to the compiler (AspectJ 1.1 will also support bytecode weaving).
+
+Some advice on EJB operations will generate methods that confuse ejb
+compilers. To avoid this problem, you can use the -XaddSafePrefix flag
+when compiling with ajc.
+
+EJB components may be invoked remotely, and containers may passivate and
+pool EJB's. Servlets have similar limitations, and in both cases the
+lifespan of the defining class loader is implementation-dependent
+(though it must span the operation of a particular request).
+
+Being limited by lifecycle and namespace, the AspectJ 1.0 implementation
+supports aspects that operate through non-remote invocations during the
+lifetime of the namespace for a particular deployment unit compiled in
+its entirety by the ajc compiler. This means AspectJ supports common
+aspects only within a single local runtime namespace (usually
+implemented as a class loader hierarchy).
+
+Further, AspectJ recognizes language-level join points (object
+initialization, method calls, etc.), not their EJB analogs (ejb find or
+create methods...). These lead to the following consequences:
+
+* Issingleton aspects (the default) are limited to the lifetime of the
+defining class loader, which in some implementations may not span
+multiple invocations of the same application or EJB component.
+* EJB lifecycles are different from object lifecycles, so perthis and
+pertarget aspects will make little sense. They do not work in the
+current implementation, which uses synchronized methods to ensure a
+correct association in threaded environments (EJB's may not have
+synchronized methods).
+* Percflow or percflowbelow aspects are restricted to a chain of
+non-remote invocations. While EJB 2.0 permits declaring an interface
+local, this information is not available to the AspectJ compiler today.
+For same reasons as stated above fore perthis, these will not work even
+in the EJB container.
+* Evaluation of cflow or cflowbelow pointcuts will be valid only with
+respect to a chain of non-remote invocations.
+
+In addition, any AspectJ code should respect EJB operations:
+
+* The EJB container accesses EJB component fields directly, i.e., in
+code outside the control of the compiler. There is no join point for
+these accesses, and hence no way to write a pointcut to advise that
+access.
+* The EJB container may pool EJB components, so any initialization join
+points may run once per component constructed, not once per component
+initialized for purposes of a client call.
+* The EJB container is permitted to change class loaders, even between
+invocations of a particular EJB component (by passivating and activating
+with a new class loader). In this case, instances of singleton aspects
+will not operate over multiple invocations of the component, or that
+static initialization join point recur for a given class as it is
+re-loaded. This behavior depends on the container implementation.
+
+*Q:* Can I use AspectJ with Generic Java?
+
+*A:* We plan to support Generics when Java 1.5 is available.
+
+But at this time, unfortunately not. The two compilers are just not at
+all compatible. In an ideal world, there would be a wonderful Open
+Source extensible compiler framework for Java that both GJ and AspectJ
+would be built on top of, and they would seamlessly interoperate along
+with all other extensions to Java that you might be interested in, but
+that's not the case (yet?).
+
+However, on 09 October 2000, the Java Community Process approved a
+proposal to add generic types to Java that is largely based on GJ (JSR
+14). A draft specification was submitted for public review, which closed
+on 01 August 2001, and a prototype implementation has been released by
+Sun.
+
+We are committed to moving very rapidly to add support for generic types
+in AspectJ when generic types become part of the Java language
+specification. Everyone on the AspectJ team is looking forward to this,
+because we too would really like to be able to write code that includes
+both aspects and generic types.
+
+*Q:* Can I use AspectJ with J2ME?
+
+*A:* The J2ME platform has several different components. The diagram
+below shows how the different profiles build on top of the two
+configurations CDC (Connected Device Configuration) and CLDC (Connected
+Limited Device Configuration):
+
+....
+    --------------
+    |  Personal  |
+    --------------      --------
+    | Foundation |      | MIDP |
+  ------------------  ------------------
+  |      CDC       |  |      CLDC      |
+------------------------------------------
+|                 Java                   |
+------------------------------------------
+
+....
+
+Which configuration you have dictates the restrictions when running
+AspectJ compiled programs.
+
+If you're running with a profile which sits on top of CDC then there are
+not, as far as we are aware, any restrictions when running AspectJ
+compiled code on this flavour of J2ME.
+
+If you're running with a profile sitting on top of CLDC 1.1 you are
+currently unable to use the `thisJoinPoint,
+            thisJoinPointStaticPart` and `
+            thisEnclosingJoinPointStaticPart` variables, the `cflow` and
+`cflowbelow` pointcuts and the `percflow` and `
+            percflowbelow` perClauses.
+
+Finally, if you're running with a profile which sits on top of CLDC 1.0
+you have all the restrictions of CLDC 1.1. There may be further
+restrictions due to the lack of types corresponding to the primitive
+types (e.g. Integer.TYPE), however, at the time of writing we have been
+unable to do any extensive testing on this.
+
+Note that the aspectj runtime jar is now (as of AspectJ5) quite large
+but only a small subset is required for executing code in J2ME
+environments. We plan to ship a second aspectjrt.jar built for the J2ME
+environment at some point.
+
+For more discussion and to raise any issues you have with AspectJ and
+J2ME, refer to
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=92933[bugzilla entry
+92933].
+
+*Q:* Are you working to put AOP into Java? It seems that every AOP
+toolset currently uses proprietary mechanisms to describe point-cuts,
+etc.
+
+*A:* We are working on standardization, but it's a question of
+timing/ripeness (imagine going from thousands of users to millions).
+(See #q:standardization[Q:What are your plans to make AspectJ a general
+feature of Java supported by Sun and the other key-players in the Java
+Industry?].) We believe AspectJ addresses this question in the best way
+possible now:
+
+* It's open-source. Rather than being proprietary or controlled by a
+vendor, it's available for anybody to use and build upon, forever.
+* AspectJ is not a set of mechanisms, it's a language. It is currently
+implemented using certain techniques, but there's nothing that prevents
+it from being implemented with other techniques. That means users can
+adopt the language with confidence that implementations will get better.
+* There is no engineering need to change Java. The AspectJ language uses
+the join point model already in Java, so there is no need to extend the
+programming model. Our implementation produces valid Java bytecode,
+which runs in any compliant J2SE VM and supports standard debuggers for
+those VM's that support JSR-45 (debugging support for
+multi-language/multi-file sources). This is a huge benefit to Sun since
+Sun must be extremely cautious about extensions to the language or VM;
+before adopting AOP, Sun should demand the kind of actual-proof that
+AspectJ implementations offer.
+* On the issue of "proprietary mechanisms to describe pointcuts, etc.":
+Any AOP has to have some language to describe pointcuts and the like
+("pointcuts" of course being the AspectJ term). Users would like to have
+one language (to avoid having to learn or transform between many
+languages) and the choice of multiple implementations (tailored for a
+configuration, subject to competitive pressure, etc.). That's what
+AspectJ offers.
+* That said, we believe the AspectJ extensions to Java could form the
+basis for bringing AOP to Java; when that happens, there will be
+engineering opportunities to make the implementation and tool support
+better.
+
+*Q:* What kind of support is available?
+
+*A:* The mailing lists provide the primary support for everyone in the
+community (See #q:mailingLists[Q: What mailing lists are there?]). To
+request commercial support, tutorials, or presentations, use the
+developer mailing list, `aspectj-dev@eclipse.org`.
+
+To find out about known issues, see the
+link:progguide/implementation.html[AspectJ Programming Guide Appendix,
+"Implementation Notes"] and the AspectJ bugs in the database at
+http://bugs.eclipse.org/bugs (using the product `AspectJ`). Here are
+direct links to
+http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[view
+open compiler bugs],
+http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ[view all
+Aspectj bugs (open or closed)], or
+http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ[add new
+bugs].
+
+*Q:* What mailing lists are there?
+
+*A:* The AspectJ users mailing list (`aspectj-users@eclipse.org`)
+provides an informal network of AspectJ language users who can answer
+usage questions about AspectJ programs and the AspectJ tools. This is
+the place to ask how to code something in AspectJ or how to write Ant or
+shell scripts to invoke the tools.
+
+The AspectJ developers mailing list (`aspectj-dev@eclipse.org`) provides
+an informal network of AspectJ technology experts who aim to understand
+the technology behind AspectJ. The committers to the AspectJ project use
+this list for open technical and planning discussions. Developers can
+answer questions about what's possible and about integrating AspectJ
+technology with other technologies.
+
+For both mailing lists, only subscribed members may post messages. To
+subscribe, visit the http://eclipse.org/aspectj[AspectJ web site].
+
+There you can also subscribe to `aspectj-announce@eclipse.org`, a
+low-traffic list containing only announcements about significant AspectJ
+events and product releases. To get on a similar list for
+aspect-oriented software development generally, see http://aosd.net.
+
+[[compiler]]
+== Using the AspectJ compiler
+
+*Q:* Do I have to use the AspectJ compiler?
+
+*A:* The AspectJ compiler or weaver is required at some point, but many
+people can use AspectJ without changing their build or deployment
+process significantly. For aspects that are not required to compile, you
+can use the AspectJ binary weaver, run at build-time or class-load-time.
+You can write aspects using the original code style (which must be
+compiled with the AspectJ compiler) or using the annotation style new in
+AspectJ 5 (which may be compiled with Javac or the AspectJ compiler).
+
+For more information, see #q:codeversusannotationstyles[Q:Should I use
+code- or annotation-style aspects?].
+
+*Q:* What files do I need to include when compiling AspectJ programs?
+
+*A:* You need to specify to the compiler the files that contain your
+aspects and the files that contain the types affected by your aspects.
+See #q:knowWhenAspectsAffectClasses[Q: How do I know which aspects
+affect a class when looking at that class's source code?]. The AspectJ
+compiler will not search the source path for types that may be affected
+(unlike Javac and Jikes). In AspectJ 1.0, ajc requires all code to be in
+source form; in AspectJ 1.1, Java and AspectJ code may be in either
+source or binary form.
+
+In some cases you should compile your entire system all at once. If this
+is too slow, then you can try to make reasonable divisions between sets
+of source files whose aspects do not interact to achieve a shorter
+compile cycle (particularly for development aspects). If you have
+aspects that apply to different modules, you can try compiling them into
+a binary form and using them to weave each module. However, if you get
+any problems or if you wish to run tests or do a release, you should
+recompile the entire system.
+
+For more information, see the link:devguide/index.html[Development
+Environment Guide] link:devguide/ajc-ref.html[Reference for ajc].
+
+*Q:* I have to list many files in the command line to compile with
+`ajc`. Is there any other way to provide the file names to `ajc`?
+
+*A:* Yes, use the argfile option to ajc. List source files in a
+line-delimited text file and direct ajc to that file using `-argfile` or
+`@`:
+
+....
+ajc @sources.lst
+ajc -argfile sources.lst
+
+....
+
+Another way in AspectJ 1.1 is to use the `-sourceroots` options, which
+reads all source files in a given set of directories:
+
+....
+ajc -sourceroots "src;testsrc"
+
+....
+
+For more information, see the link:devguide/index.html[Development
+Environment Guide] link:devguide/ajc-ref.html[Reference for ajc].
+
+*Q:* What Java virtual machine (JVM) do I use to run the AspectJ
+compiler?
+
+*A:* Use the latest, greatest, fastest JVM you can get your hands on for
+your platform. The compiler's performance is dependent on the
+performance of the JVM it is running on, so the faster a JVM you can
+find to run it on, the shorter your compile times will be. At a minimum
+you need to use a Java 2 or later JVM to run the compiler (J2SE 1.3 for
+AspectJ 1.1). We realize that this constraint can be a problem for users
+who don't currently have a Java 2 JVM available. We're sorry for the
+inconvenience, but we had to make the hard decision that the advantages
+of being able to rely on Java 2 were worth the cost of losing a number
+of developers who are working on platforms without Java 2 support. Here
+is a list of starting places where you might find support for your
+system.
+
+* http://java.sun.com/j2se/[Java 2 Platform, Standard Edition]
+* http://www-106.ibm.com/developerworks/java/jdk/[developerWorks : Java
+technology : Tools and products - Developer kits]
+* http://www-124.ibm.com/developerworks/oss/jikes/[developerWorks : Open
+Source - Jikes Project]
+* http://java.sun.com/cgi-bin/java-ports.cgi[Java Platform Ports]
+
+The requirement of Java 2 support is only for _running_ the AspectJ
+compiler. The AspectJ compiler can be used to build programs that will
+run on Java 1.1 (or probably even on Java 1.0) systems. This means that
+it can build programs that will run on Macintosh, FreeBSD, and applets
+that will run in Internet Explorer and Netscape Navigator that are still
+not yet Java 2 compliant.
+
+*Q:* How can I use `ajc` to compile programs for a JVM that is different
+from the one used to run it?
+
+*A:* `ajc` can be used to develop programs that are targeted at the Java
+1.1 platform, even though the `ajc` compiler won't run on that platform.
+Here's an example of using `ajc` in this sort of cross-compilation mode
+(assuming a Windows platform with all the default installation
+directories):
+
+....
+ajc -target 1.1 -bootclasspath c:\jdk1.1.7\lib\classes.zip \
+   -classpath c:\aspectj1.0\lib\aspectjrt.jar -extdirs "" \
+   -argfile jdk11system.lst
+
+....
+
+This same technique can be used if you want to run `ajc` on a JDK 1.3
+JVM (highly recommended) but need to generate code for JDK 1.2. That
+would look something like:
+
+....
+ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
+   -classpath c:\aspectj1.0\lib\aspectjrt.jar \
+    -extdirs c:\jdk1.2\jre\lib\ext
+            -argfile jdk12system.lst
+
+....
+
+*Q:* Does the `ajc` compiler support the `assert` keyword in Java 1.4?
+
+*A:* Yes. As with `Javac`, use the `-source 1.4` option as described in
+the link:devguide/index.html[Development Environment Guide]
+link:devguide/ajc-ref.html[Reference for ajc].
+
+*Q:* Does the `ajc` compiler support generics and the other new language
+features of Java 5?
+
+*A:* Yes. As with `Javac`, use the `-1.5` option as described in the
+link:devguide/index.html[Development Environment Guide]
+link:devguide/ajc-ref.html[Reference for ajc].
+
+*Q:* Will aspects work with different versions of the compiler/weaver
+and runtime?
+
+*A:* Yes. Both `ajc` and `aspectjrt.jar` should work with versions of
+aspect code and libraries back to AspectJ 1.2.1. Any aspects should be
+deployed with the same version of `aspectjrt.jar` they were compiled
+with. For more information, see the link:devguide/index.html[Development
+Environment Guide] link:devguide/ajc-ref.html[Reference for ajc] and
+link:devguide/deployment.html[Deployment notes] section on
+link:devguide/versionCompatibility.html[Version compatibility].
+
+*Q:* Are there any issues using AspectJ with the Microsoft JVM?
+
+*A:* Since AspectJ requires Java 2 or later, it will not run on the
+Microsoft JVM, which does not support Java 2.
+
+*Q:* Does `ajc` rely on `javac` for generating Java bytecode (`.class`)
+files?
+
+*A:* No. Some previous versions of AspectJ had this requirement. In
+AspectJ 1.0, `javac` can still be used as `ajc` back end by using the
+`-usejavac` flag. You can also run `ajc` in preprocessor mode to
+generate Java source (`.java`) files to be compiled using `javac` or
+another java compiler. Neither option is supported in AspectJ 1.1.
+
+*Q:* I noticed the AspectJ compiler doesn't use a parser generator. Why
+is that?
+
+*A:* In AspectJ 1.0, the PARSER for ajc is written by hand. This choice
+was made with full awareness of the generator tools out there. (Jim had
+for example used the excellent javacc tool for building the parser for
+JPython (now Jython)). One of the reasons that AspectJ uses a
+hand-written parser is that using javacc taught Jim about the LL-k
+design for parsers (pioneered by antlr). As opposed to the state-machine
+parsers produced by yacc, these parsers are very readable and writable
+by humans.
+
+Antlr and javacc did not really suit the project:
+
+* Antlr's support for unicode in the lexer is still immature and this
+makes using it with Java challenging. This was an even bigger issue 3
+years ago when we started on the Java implementation of ajc.
+* While javacc is freely available, it is not Open Source. Depending on
+a closed-source tool to build an Open Source compiler would reduce some
+of the transparency and control of open-source.
+
+There were also several things that were easier to implement with a
+hand-written parser than with any of the exiting tools.
+
+* Semi-keywords -- it's important to us that "every legal Java program
+is also a legal AspectJ program." This wouldn't be true if we made
+'before' and 'call' full keywords in AspectJ. It is easier to support
+these sorts of semi-keywords with a hand-written parser. (Note:
+ajc-1.0.x handles 'aspect' and 'pointcut' slightly specially which can
+break a few unusual pure Java programs. This is a compiler limitation
+that will be fixed in a future release.)
+* Deprecated syntax warnings -- the syntax of AspectJ changed many times
+from version 0.2 to the 1.0 release. It was easier to provide helpful
+warning messages for these changes with our hand-written parser.
+* Grammar modularity -- We like being able to have AspectJParser extend
+JavaParser.
+* Part of the grammar for AspectJ is extremely hard for existing tools
+to capture. This is the type pattern syntax, i.e. "com.xerox..*.*(..)".
+The sort of case that gives standard parser generators fits is something
+like "*1.f(..)" which no one would ever write, but which must be
+supported for a consistent language.
++
+In AspectJ 1.1, the parser was written as it is for the underlying
+Eclipse compiler, with some hand-coding of the sort that avoids adding
+keywords to the language.
+
+*Q:* How does incremental mode work?
+
+*A:* In incremental mode, ajc minimizes the files that need to be
+recompiled after another file has changed. In Java, only the changed
+files need to be recompiled, but in AspectJ, other files might also need
+to be recompiled or re-woven.
+
+Depending on what is modified, we may need to re-weave code.  If you
+change a pointcut and save it, we currently have to check everywhere in
+case a new match is occurring or an old match is no longer correct.
+ However, if you simply change the body of an advice in an aspect, there
+is (usually) no need to reweave as the affected classes call the advice
+and the advice (by design) maintains its name in the recompiled aspect.
+
+If you make a change to a class (as opposed to an aspect) and save it,
+we usually can get away with merely having to compile that class then
+weave the existing aspects with it - rather than doing a full recompile
+of the entire system.
+
+There are a lot of possible optimizations to the algorithms we use, by
+performing more complete analysis of the change made to a file that will
+enable us to know more accurately whether we need to reweave and if we
+do then what we need to reweave - we just haven't gotten around to
+implementing them yet.
+
+[[devtools]]
+== Integrating AspectJ into your development environment
+
+*Q:* How do I know which aspects affect a class when looking at that
+class's source code?
+
+*A:* When you are working with the IDE support, you can get an
+understanding of which aspects affect any class. This enables AspectJ
+programmers to get the benefits of modularizing crosscutting concerns
+while still having immediate access to what aspects affect a class.
+
+For example, the link:devguide/index.html[Development Environment Guide]
+link:devguide/ajbrowser.html[ajbrowser section]. shows that you can list
+or navigate between method and advice affecting that method and between
+a type and declarations in an aspect on that type. (The IDE support may
+have more features than `ajbrowser`, depending on the IDE. See
+#q:integrateWithDevTools[Q: How well does AspectJ integrate with
+existing Java development tools?] for more information on which Java
+development environments are supported.)
+
+When you are looking at documentation for AspectJ 1.0 programs, `ajdoc`
+will provide links from aspects and advice to the affected code, but it
+provides less information than the IDE support because it only parses
+declarations.
+
+When you are compiling your program, pointcuts that are
+statically-determinable can be used in declare statements to identify
+the code picked out by the pointcut. (A pointcut is statically
+determinable if it only uses the pointcut designators `within`,
+`withincode`, `execution`, `call`, `get`, `set`, `initialiation`, and
+`staticinitialiation`.) The compiler will list the static code points
+which will be affected by any advice specifying the same pointcut. For
+example, the following will print a warning whereever some code in class
+Bar gets a field value from Foo:
+
+....
+declare warning: get(* Foo.*) && within(Bar)
+   : "reading Foo state from Bar";
+
+....
+
+When you are running your program, you can trace advice as it executes.
+This enables you to identify advice on join points picked out
+dynamically, which cannot be reflected precisely by IDE support. For a
+related tracing question, see #q:seeingjoinpoints[Q:I don't understand
+what join points exist. How can I see them?]
+
+*Q:* What kind of IDE support is available for developing AspectJ
+programs?
+
+*A:* See #q:integrateWithDevTools[Q: How well does AspectJ integrate
+with existing Java development tools?]
+
+*Q:* What plans are there to support my IDE?
+
+*A:* The AspectJ team directly provided components for JBuilder, Forte,
+and Emacs and supported the open-source AspectJ plugin project at
+http://eclipse.org/ajdt which uses the AJDE API support for IDE's.
+Supporting new IDE's is a matter of building on the AJDE API's, mostly
+likely adopting one of the existing open-source IDE extensions as a
+design template. Here are the IDE's where we know people have expressed
+interest, so interested developer may want to join with others in their
+developer communities to build the integration.
+
+* IDEA/IntelliJ has an enthusiastic community and the developers are
+working on an extensibility API - http://intellij.com
+* jEdit comes from a very active open-source community.
+* Oracle JDeveloper is supported at https://jdeveloperaop.dev.java.net/.
+* Some have suggested Codeguide from Omnicore
+http://www.omnicore.com[http://www.omnicore.com/]
+
+For questions on AJDE, join the developer's list
+`aspectj-dev@eclipse.org`. For questions on the current IDE
+integrations, contact those projects.
+
+*Q:* Can I port AJDE support to my development environment?
+
+*A:* Yes. The core AJDE API is extensible and the source code is
+available for download. Start by studying the sources for the existing
+IDE support linked off the AspectJ site http://eclipse.org/aspectj.
+
+*Q:* I want the aspects for development builds but remove them for
+production builds. How can I set up the build system so they are
+unpluggable? And so I use `javac` in my production build?
+
+*A:* If you are using development-time-only aspects - aspects that only
+exist when you are developing the code, not when you ship it - you can
+use implement a hybrid build process by listing the production source
+files into a javac-compliant argfile, and the development source files
+in another ajc argfiles:
+
+....
+-- file "production.lst":
+One.java
+two/Three.java
+...
+
+-- file "tracing.lst":
+trace/Library.java
+Trace.java
+
+-- file "development.lst":
+@production.lst
+@tracing.lst
+
+....
+
+Then your development build can use `ajc`:
+
+....
+ajc @development.lst
+
+....
+
+And your development build can use `ajc` or `javac` or `jikes`:
+
+....
+jikes @production.lst
+
+....
+
+*Q:* We compile module jars and then assemble them. Can we continue this
+with AspectJ?
+
+*A:* Aspects apply to everything in a namespace, as if everything is
+compiled together. Sometimes you can break the build down into separate
+steps without breaking this model, but we haven't stated exactly where
+it could break because it depends on the interactions between all types.
+You can try the approaches below, but remember to rebuild everything in
+one go if there are problems.
+
+The simplest scenario is when the aspects apply to all modules and the
+modules compile without the aspects. In that case, weaving in the
+aspects is just the final assembly step for the build.
+
+Next is the case where the aspects make changes to a common library that
+are visible to other clients, which themselves are otherwise unaffected
+by the aspects. In this case, the common library can be built using ajc,
+and used on the classpath for the module builds:
+
+....
+ajc -outjar common.jar -sourceroots "aspectj-src:src" ...
+cd ../otherProject
+javac -classpath "../common/common.jar:${aspectjrt.jar}" {src}
+....
+
+Combining these last two, there's the case where a common set of aspects
+should affect two or more modules that are in a dependency relationship
+to one another. It should work to reuse the aspects in binary form for
+each compile, in dependency order:
+
+....
+ajc -outjar common-aspects.jar
+    -sourceroots "aspectj-src" ...
+
+ajc -outjar common.jar
+    -sourceroots "src"
+    -aspectpath common-aspects.jar ...
+
+cd ../module1
+ajc -outjar module1.jar
+    -sourceroots "src"
+    -classpath common.jar
+    -aspectpath ../common-aspects.jar ...
+
+cd ../module2
+ajc -outjar module2.jar
+    -sourceroots "src"
+    -classpath "common.jar;../module1.jar"
+    -aspectpath ../common-aspects.jar ...
+....
+
+If two modules are visibly affected by aspects and mutually-dependent,
+the only thing to do is compile them together.
+
+It's safest to assume that all aspects can affect all types in a
+namespace; using build boundaries to effect crosscutting limits causes a
+dangerous dependency on the build process and might cause problems.
+
+*Q:* We use modules and would like to use incremental compilation. Is
+that possible?
+
+*A:* Just incrementally-compile the whole system. Specify to ajc the
+modules as multiple source roots (or input jars if you are weaving
+libraries).
+
+In Eclipse's AJDT, you can create a top-level project with symbolic
+links out to the sources:
+
+....
+app-assembly/
+{link common/aspects}
+{link common/src}
+{link module1/src}
+...
+....
+
+Then everything is part of one huge incremental compile. Also, you can
+close this master project and work the others using the Java compiler or
+AJDT.
+
+The links make incremental development possible without affecting the
+modularized Ant builds. (Our practice runs along those lines.)
+
+[[notes]]
+== Programming notes and tips
+
+*Q:* Is it possible to change methods by introducing keywords (like
+`synchronized`), adding parameters, or changing the "throws" clause?
+
+*A:* AspectJ does not enable you to change the signature of a method,
+but you can (by express declaration) work around some limits imposed by
+the signature. You can convert a checked exception to unchecked using
+`declare soft`, privileged aspects have access to private methods, and
+you can use a percflow aspect to ferry additional state to a callee
+without changing intervening signatures. For more details, see
+link:progguide/index.html[The AspectJ Programming Guide]. In the case of
+`synchronized`, we have what we consider a better solution that uses
+around advice instead of introduction. This solution is described in
+http://aspectj.org/pipermail/users/2000/000534.html[this thread (no
+longer available)] on the AspectJ users list, with some
+http://aspectj.org/pipermail/users/2000/000536.html[additional comments
+(no longer available)] .
+
+*Q:* I don't understand what join points exist. How can I see them?
+
+*A:* You can trace them using using an aspect. For example, you can
+start logging at a particular method call and see what join points occur
+after the call and before it returns.
+
+Here's some code Jim Hugunin wrote to trace join points and posted to
+the users list. To reuse the aspect, define a subaspect and implement
+the pointcuts, for example:
+
+....
+aspect JoinPointSampleAspect extends aj.TraceJoinPoints {
+    protected pointcut entry() :
+        execution(static void JoinPointSample.main(String[]));
+    protected pointcut exit() :
+        call(static void JoinPointSampleAspect.exit());
+
+    public static void main (String[] args) {
+        JoinPointSample.main(args);
+        JoinPointSampleAspect.exit();
+    }
+    public static void exit() {}
+}
+
+class JoinPointSample {
+    public static void main(String[] args) {}
+}
+
+....
+
+Here's the aspect:
+
+....
+/* TraceJoinPoints.java */
+
+package aj;
+
+import org.aspectj.lang.*;
+import org.aspectj.lang.reflect.*;
+import java.io.*;
+
+public abstract aspect TraceJoinPoints {
+    protected abstract pointcut entry();
+    protected pointcut exit(): call(* java..*.*(..));
+    // this line is for AspectJ 1.1; for 1.0, use "dominates"
+    declare precedence : TraceJoinPoints, *;
+    final pointcut start(): entry() && !cflowbelow(entry());
+
+    final pointcut trace():
+        cflow(entry()) && !cflowbelow(exit()) && !within(TraceJoinPoints+);
+
+    before(): start() { makeLogStream(); }
+
+    before(): trace() { logEnter(thisJoinPointStaticPart); }
+    after(): trace() { logExit(thisJoinPointStaticPart); }
+
+    after(): start() { closeLogStream(); }
+
+    //------------ added
+    /**
+     * Emit a message in the log, e.g.,
+     * <pre>TraceJoinPoints tjp = TraceJoinPoints.aspectOf();
+     * if (null != tjp) tjp.message("Hello, World!");</pre>
+     */
+    public void message(String s) {
+        out.println("<message>" + prepareMessage(s) + "</message>");
+    }
+    public void message(String sink, String s) {
+        if (null == sink) {
+            message(s);
+        } else {
+            out.println("<message sink=" + quoteXml(sink)
+                        + " >" + prepareMessage(s) + "</message>");
+        }
+    }
+    protected String prepareMessage(String s) { return s; } // XXX implement
+
+    //--------- end of added
+
+    PrintStream out;
+    int logs = 0;
+    protected void makeLogStream() {
+        try {
+            out = new PrintStream(new FileOutputStream("log" + logs++ + ".xml"));
+        } catch (IOException ioe) {
+            out = System.err;
+        }
+    }
+
+    protected void closeLogStream() {
+        out.close();
+    }
+
+
+    int depth = 0;
+    boolean terminal = false;
+    protected void logEnter(JoinPoint.StaticPart jp) {
+        if (terminal) out.println(">");
+        indent(depth);
+        out.print("<" + jp.getKind());
+        writeSig(jp);
+        writePos(jp);
+
+        depth += 1;
+        terminal = true;
+    }
+
+    void writeSig(JoinPoint.StaticPart jp) {
+        out.print(" sig=");
+        out.print(quoteXml(jp.getSignature().toShortString()));
+    }
+
+    void writePos(JoinPoint.StaticPart jp) {
+        SourceLocation loc = jp.getSourceLocation();
+        if (loc == null) return;
+
+        out.print(" pos=");
+        out.print(quoteXml(loc.getFileName() +
+                           ":" + loc.getLine() +
+                           ":" + loc.getColumn()));
+    }
+
+    String quoteXml(String s) {
+        return "\"" + s.replace('<', '_').replace('>', '_') + "\"";
+    }
+
+    protected void logExit(JoinPoint.StaticPart jp) {
+        depth -= 1;
+        if (terminal) {
+            out.println("/>");
+        } else {
+            indent(depth);
+            out.println("</" + jp.getKind() + ">");
+        }
+        terminal = false;
+    }
+
+    void indent(int i) {
+        while (i-- > 0) out.print("  ");
+    }
+}
+....
+
+Note that if you are using AspectJ 1.0, the line starting with
+`declare precedence` would be removed, and the aspect declaration would
+look like `aspect TraceMyJoinPoints dominates *`.
+
+*Q:* What is the difference between call and execution join points?
+
+*A:* Briefly, there are two interesting times when a constructor or
+method is run. Those times are when it is called, and when it actually
+executes.
+
+The main difference is that a call join point happens outside of the
+target object (for non-static methods) or class (for static methods and
+constructors), and that an execution join point happens inside the
+object or class. This means that the `within` and `withincode` pointcuts
+pick them out differently: A call join point is picked out within the
+caller, while an execution join point is picked out where it is actually
+defined.
+
+A call join point is the ``outermost'' join point for a particular call.
+Once a call join point proceeds, then a number of different things
+happen. For non-static methods, for example, method dispatch happens,
+which will cause one method execution join point -- perhaps more, if
+there are super calls. For constructors, the super constructor is
+called, and fields are initialized, and then various constructor
+execution join points will occur.
+
+A call join point matches only the ``external'' calls of a method or
+constructor, based on a signature, and it does not pick out calls made
+with `super`, or `this` constructor calls.
+
+Here's more detail:
+
+Consider method execution in Java as (1) the initial call from this
+object to some method on the target object with a particular signature;
+and (2) the execution of the actual code in the particular method
+dispatched in the target object. The call join point starts with the
+initial call and ends when control returns to the call (by return or
+perhaps thrown exception). The execution join point starts with the
+method body and ends when the body completes (again by return or
+throwing an exception), so the execution join point always happens
+within the bounds of the corresponding call join point. You can see this
+if you use the join-point tracing aspect in see #q:seeingjoinpoints[Q:I
+don't understand what join points exist. How can I see them?].
+
+As you would expect, the context differs in advice on pointcuts picking
+out execution and call join points; for call, `this` refers to the
+caller, whereas for execution `this` refers to the called (executing)
+object.
+
+There are some subtle interactions with other AspectJ semantics. First,
+the meaning of the signature in the `execution()` and `call()` pointcut
+designators (PCD's) differ: the call type depends upon the type of the
+reference making the call, while the execution type depends on the
+enclosing class. Second, you may choose one over another if you cannot
+bring all your sources within the code the compiler controls (described
+in the link:progguide/semantics.html[appendix] to the
+`Programming Guide`). For example, to trace calls into a method from
+classes which are outside the code the compiler controls at compile
+time, then using `execution()` will work while using `call()`may not.
+Finally, since `super` invocations are not considered method calls, to
+trace `super.foo()` would require using `execution`.
+
+Because of differences in the way AspectJ 1.0 and 1.1 are implemented,
+in 1.0 you should use the `call()` pointcut designator unless you have a
+good reason to use `execution()`; in AspectJ 1.1, the reverse is true.
+
+*Q:* What is the difference between cflow and cflowbelow?
+
+*A:* Both pick out all the join points in the control flow of the
+specified join points. They differ only in that the `cflowbelow()`
+pointcut designator does not pick out the join points specified, while
+`cflow()` does.
+
+*Q:* How do I say that I want the topmost entrypoint in a recursive
+call? How about the most-recent prior entrypoint?
+
+*A:* This is best seen by way of example. Given a recursive call to
+`int factorial(int)` you can print the arguments for (a) the current and
+most-recent recursive call or (b) the current and original recursive
+call:
+
+....
+aspect LogFactorial {
+    pointcut f(int i) : call(int factorial(int)) && args(i);
+
+    // most-recent
+    before(int i, final int j) : f(i) && cflowbelow(f(j)) {
+        System.err.println(i + "-" + j);
+    }
+
+    // original
+    before(int i, final int j) : f(i)
+        && cflowbelow(cflow(f(j)) && !cflowbelow(f(int))) {
+        System.err.println(i + "@" + j);
+    }
+}
+
+....
+
+*Q:* What is the difference between constructor call, constructor
+execution, initialization, and static initialization join points?
+
+*A:* Static initialization pertains to initialization of a class or
+interface type. Constructor call and execution are akin to method call,
+and initialization generalizes this and picks out the first constructor
+called.
+
+Their relations are best demonstrated by tracing the join points. Below
+is the class Test which implements an interface and extends a class
+along with a trace of the join points below and including the
+constructor call obtained using `TraceJointPoints.java` from
+#q:seeingjoinpoints[Q:I don't understand what join points exist. How can
+I see them?].
+
+....
+public class Init {
+    public static void main (String[] args) {
+        new Test();
+        end();
+    }
+    static void end() {}
+}
+class Super {}
+interface I {}
+class Test extends Super implements I {
+    Test() {}
+}
+....
+
+For a program compiled with AspectJ 1.0, the result is this:
+
+....
+<constructor-call sig="Test()" >
+  <staticinitialization sig="Super._init_" />
+  <staticinitialization sig="Test._init_" />
+  <initialization sig="Super()" >
+    <instanceinitializer-execution sig="Super._init_" />
+    <constructor-execution sig="Super()" />
+  </initialization>
+  <initialization sig="I()" >
+    <instanceinitializer-execution sig="I._init_" />
+    <constructor-execution sig="I()" />
+  </initialization>
+  <initialization sig="Test()" >
+    <instanceinitializer-execution sig="Test._init_" />
+    <constructor-execution sig="Test()" />
+  </initialization>
+</constructor-call>
+....
+
+Ordinarily, using a `call` pointcut designator is best because the call
+join point surrounds the others, but in the case of constructors there
+is no target object for the call (because it has not been constructed
+yet), so you might prefer to use the `initialization` pointcut
+designator.
+
+*Q:* How do I work with an object right when it is created?
+
+*A:* You can advise some form of constructor join point. Constructors
+are tricky in Java, and that's exposed in AspectJ. Here are some rules
+of thumb:
+
+* If you want the join point on the "outside" of object creation, use
+after returning from call to the constructor:
++
+....
+after() returning (Foo newlyCreatedObject): call(Foo.new(..)) { ... }
+
+....
++
+You might be tempted to use "this" or "target" to expose the new object,
+but remember that if you're on the "outside" of object creation, the
+object itself might not be created yet... it only exists "on the way
+out", when you return the object.
+* If you want the join point inside a particular constructor, use:
++
+....
+after(Foo newlyCreatedObject) returning: this(newlyCreatedObject) && execution(Foo.new(..)) { ... }
+
+....
++
+Remember, though, that if you use "before" advice here, the body of the
+constructor will not have run, and so the object may be somewhat
+uninitialized.
+* In the rare case that there are all sorts of constructors for the
+object that call each other with `this(...)` and you want exactly one
+join point for each initialization of `Foo`, regardless of the path of
+constructors it takes, then use:
++
+....
+after(Foo f) returning: this(f) && initialization(Foo.new(..)) { ... }
+
+....
+
+*Q:* I want advice to run at two join points, but it doesn't run at all.
+What gives?
+
+*A:* This usually reflects both a conceptual error and a programming
+mistake. Most likely you want to do something like "run the advice for
+all public and private calls," and the code looks something like this:
+
+....
+within(com.xerox.printing..*) && call(public * *(..)) && call(private * *(..))
+
+....
+
+But a pointcut is evaluated at *each* join point. The expression above
+would never pick out any call join point, because no method signature
+has both public and private access. In a pointcut, `pc1() && pc2()`
+means both must be true at a given join point for advice to run at that
+join point. The correct pointcut would use `||` as follows:
+
+....
+within(com.xerox.printing..*) && (call(public * *(..)) || call(private * *(..)))
+
+....
+
+Then the advice will run at the join point.
+
+*Q:* How do I refer to a static field when my advice crosscuts multiple
+classes?
+
+*A:* There is no way in advice to refer to the type of the code
+executing in a static context except by specification. This makes it
+impossible to refer to static members using runtime information.
+
+However, AspectJ can determine the class for something in the join point
+context, which you can use as a per-class key. Then you can actually
+declare an instance field to contain the per-class value (see the next
+question). This comes at the cost of an extra reference, but the field
+can be final.
+
+*Q:* I would like to reuse a type pattern, e.g., to write advice that is
+limited to a certain set of classes. Do I have to retype it each time?
+
+*A:* No. You can declare that all the types implement an interface you
+define, and then use the interface type in your program. For example:
+
+....
+/**
+ * Example of using an interface to represent a type pattern.
+ * sub-aspects use declare parents to add to traced types, e.g.,
+ *    declare parents: com.mycompany.whatever..* implements Marked;
+ */
+abstract aspect MarkerExample {
+  /** marker interface for types that we want to trace */
+  interface Marked {}
+
+  /** calls to an instance of Marked not from an instance of Marked */
+  pointcut dynamicCallsIn(): call(* *(..)) && target(Marked) && !this(Marked);
+
+  /** calls to methods defined by a subtype of Marked
+   *  that don't come from the body of a subtype of Marked
+   */
+  pointcut staticCallsIn(): call(* Marked+.*(..)) && !within(Marked+);
+
+  /** print dynamic calls */
+  before(): dynamicCallsIn() { System.out.println("before " + thisJoinPoint); }
+}
+
+aspect MyMarker extends MarkerExample {
+  declare parents: com.mycompany.whatever..* implements Marked;
+}
+
+....
+
+*Q:* Where do I find example programs and how-to's?
+
+*A:* There are a number of places to find sample code and instructions
+for using AspectJ with other programming tools.
+
+[arabic]
+. The AspectJ release includes examples in its `doc` directory.
+. There is a community repository of sample code and tutorials in the
+AspectJ CVS tree `docs` module `sandbox` directory. These are extracted
+and published (online only)
+http://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-code.html[here]
+.
+. The `teaching` directory of the `docs` module contains public
+materials the AspectJ committers use for presentations, some of which
+include example code. To access CVS, see #q:buildingsource[Q:How do I
+get and compile the source code for AspectJ?].
+. The archives for the user and developer mailing lists contain many
+good examples. To search the archives, see #q:searchingsite[Q:How can I
+search the email archives or the web site?].
+
+This code can vary in quality. Code that we publish or include with
+AspectJ is generally correct. However, code found in our CVS tree might
+not have been tested thoroughly, and code from the mailing lists might
+be untested or use older versions of the language.
+
+*Q:* Are aspect libraries available?
+
+*A:* Some libraries are distributed in the release under the examples
+folder in the distribution. These are "libraries" in the sense that they
+are reusable, but they are delivered in source form. Similarly, some of
+the sample code is reusable; for that, see #q:exampleprograms[Q:Where do
+I find example programs and how-to's?]. If you develop such a library
+and want to make it available to other users, feel to send it to the
+users mailing list `aspectj-users@eclipse.org`.
+
+In AspectJ 1.1, ajc supports binary aspects, so you can distribute
+aspect libraries without distributing the source. For more information,
+see the `-aspectpath` option in the link:devguide/ajc-ref.html[Reference
+for ajc].
+
+*Q:* How does `ajc` interact with the `serialVersionUID`?
+
+*A:* The current version of `ajc` can change the `serialVersionUID` of
+generated `.class` files as a result of weaving in advice. This is an
+important fact that developers using both aspects and serialization
+should be aware of. It is likely that a future version of the compiler
+will be better behaved regarding the `serialVersionUID`.
+
+However, changes to the `serialVersionUID` attribute are typically only
+important when using serialization for the long-term persistence of
+objects. Using standard Java serialization for long-term persistence has
+a number of drawbacks and many developers already use alternative
+solutions. For one possibly standard solution, see
+http://jcp.org/jsr/detail/057.jsp[Long-Term Persistence for JavaBeans
+Specification] .
+
+*Q:* How can I use AspectJ with applets?
+
+*A:* Just include the aspectjrt.jar as a required archive. For example,
+here is the HTML code for an HTML editor applet that contains some
+debugging aspects:
+
+....
+<APPLET
+   CODE='com.company.swing.applets.EditorApplet'
+  WIDTH='700'
+ HEIGHT='525'>
+    <PARAM NAME="CODE" VALUE="com.company.swing.applets.EditorApplet" >
+    <PARAM NAME="ARCHIVE"
+         VALUE ="../company-applets.jar,../aspectjrt.jar,../xmlrpc-applet.jar" >
+    <PARAM NAME="type" VALUE="application/x-java-applet;version=1.4">
+    <PARAM NAME="scriptable" VALUE="false">
+</APPLET>
+....
+
+The above markup has worked reliably with the Java Plugin (included in
+the JRE 1.4.x) in IE 6, Mozilla 1.1 (Win32), and Mozilla 1.0.1 (Red Hat
+Linux 8.0). The following link describes how to configure
+Mozilla/Netscape 6.x/7.x to use the Java Plugin from a JRE/SDK
+installation: http://java.sun.com/j2se/1.4.1/manual_install_linux.html.
+(Thanks to Chris Bartling for this answer.)
+
+*Q:* How can I specify types for advice that captures primitives, void,
+etc.?
+
+*A:* In some cases, AspectJ allows conversion from values of primitive
+types to Object, so that highly polymorphic advice may be written. This
+works if an advice parameter or the return type for around is typed to
+Object. So:
+
+....
+class Test {
+    static int i;
+    public static void main(String[] args) {
+        i = 37;
+    }
+}
+
+aspect TraceSet {
+    before(Object val): set(* Test.*) && args(val) {
+        System.err.println(val);
+        System.err.println(val.class);
+    }
+}
+
+....
+
+will print out
+
+....
+37
+java.lang.Integer
+
+....
+
+For more information, see the Programming Guide
+link:progguide/semantics-pointcuts.html[semantics section "Context
+Exposure"] .
+
+*Q:* How do I detect which version I am running?
+
+*A:* The `ajc` compiler emits the version when passed the `-version`
+flag as an argument.
+
+To programmatically detect the version of the AspectJ runtime while
+running under Java 1.4 or later, get the version from the package:
+
+....
+Package lang = org.aspectj.lang.JoinPoint.class.getPackage();
+String version = lang.getImplementationVersion();
+
+....
+
+When running under Java 1.3 or earlier, read the manifest directly. For
+example code, see the source for
+`AjBuildManager.checkRtJar(AjBuildConfig)` in the
+`org.aspectj.ajdt.internal.core.builder` package of the
+`org.aspectj.ajdt.core` module, available as described in
+#q:buildingsource[Q:How do I get and compile the source code for
+AspectJ?].
+
+Note that the version of AspectJ for the tools in `aspectjtools.jar` is
+in `org.aspectj.bridge.Version`.
+
+*Q:* How do I write synchronized advice?
+
+*A:* The only modifier advice can take is `strictfp`. However, you can
+enclose the body of the advice in a synchronized clause:
+
+....
+before() : pc() {
+  synchronized (this) {
+    // advice code here
+  }
+}
+
+....
+
+It should not be necessary to synchronize a percflow aspect, but you
+might do this for perthis, pertarget, or issingleton (default) aspects.
+To serialize advice in multiple aspects, synchronize on a lock object
+available (only) to the aspects.
+
+[[problems]]
+== Common Problems
+
+*Q:* When I run, I get a `StackOverflowError` (or a long stack trace or
+no output whatsoever)
+
+*A:* Most likely this is a case of infinite recursion, where advice is
+advising itself. It presents as a `StackOverflowError` or silence as the
+VM exhausts itself in the recursion.
+
+Of course, infinite recursion is possible in Java:
+
+....
+public class Main {
+    public static void main(String[] args) {
+        try {
+           main(args);
+        } finally {
+           main(args);
+        }
+    }
+}
+
+....
+
+If you compile and run this program, and it will fail silently, trying
+to process the finally clause even after throwing the
+StackOverflowError.
+
+Here's a similar AspectJ program where the recursion is not so obvious:
+
+....
+aspect A {
+    after():  call(* *(..)) { System.out.println("after " + thisJoinPoint); }
+}
+
+....
+
+This re-invokes itself because it advises any call. It invokes itself
+even after an exception is thrown, since `after` advice, like a finally
+clause, runs even after exceptions are thrown. You can fix this by
+following two practices:
+
+In AspectJ 1.1, the String concatenation operator (+) is advised in its
+StringBuffer form, so if your advise uses String + in a way that is
+picked out by your pointcut, you will get infinite recursion.
+
+{empty}(1) Use `after returning` to advise normal completions or
+`after throwing` to advise abrupt completions. If you use `after` or
+`after throwing`, write the advice with the same care you would a
+finally clause, understanding that it may run after some failure.
+
+{empty}(2) Avoid writing advice that advises itself. One simple way to
+do so is to exclude the code within the current aspect:
+
+....
+aspect A {
+    after() returning:  !within(A) && call(* *(..)) {
+        System.out.println("after " + thisJoinPoint);
+    }
+}
+
+....
+
+A better way is often to re-write the pointcut. If the advice is
+advising itself accidentally, that's a sign that the pointcut is not
+saying what you mean.
+
+....
+aspect A {
+    pointcut withinTargetClasses() : within(A+) || within(B+);
+    after() returning:  withinTargetClasses() && call(* *(..)) {
+        System.out.println("after " + thisJoinPoint);
+    }
+}
+
+....
+
+*Q:* I've declared a field on every class in my package; how do I use it
+in advice?
+
+....
+aspect A {
+    boolean com.xerox..*.dirtyFlag;
+    after (Object target) returning
+        : target(target) && call(* com.xerox..*.set*(..)) {
+        target.dirtyFlag = true; // compile fails here
+    }
+}
+
+....
+
+*A:* You need a type to refer to any member, field or method. It's
+generally better to introduce onto an interface and declare classes to
+implement the interface, which permits you to use the interface type in
+advice formals.
+
+....
+aspect A {
+    interface TrackingSets {}
+    boolean TrackingSets.dirtyFlag;
+    declare parents : com.xerox..* implements TrackingSets;
+
+    after (TrackingSets target) returning
+        : target(target) && call(* com.xerox..*.set*(..)) {
+        target.dirtyFlag = true;
+    }
+}
+
+....
+
+*Q:* The AspectJ compiler aborts with an OutOfMemoryError when compiling
+many classes. How can I fix this?
+
+*A:* `ajc` can use more memory than a javac compile of the corresponding
+pure-java sources when aspects are added to the mix. You'll need to
+increase the memory available.
+
+The command `ajc` is actually a script that launches a Java virtual
+machine with the correct classpath. You should make a copy of this
+script, rename it, and then edit it. Change the -Xmx option, size of
+memory allocation pool (heap). You might try `-Xmx128M` or even
+`-Xmx256M`.
+
+When running under Ant, give Ant more memory or use the `fork` option
+together with the `Xmaxmem` option.
+
+When running under an IDE, look to the documentation for the IDE to
+determine how to increase available memory.
+
+In either case, doing incremental compilations can hold on to more
+memory than a one-shot compile process, as the compiler trades space for
+time in recompiles.
+
+*Q:* Why do I get a message that my class is already defined?
+
+*A:* Most commonly, a source file was specified twice on the command
+line (e.g., directly and by a *.java entry in a .lst file). However,
+sometimes you have defined a class in two files in the same package, and
+you need to rename the class or change its scope. You should get this
+message from any Java compiler.
+
+*Q:* `ajc` recompiles all files every time. How can I make it recompile
+only the files that have changed?
+
+*A:* `ajc` 1.0 does not support incremental compilation, but since 1.1
+`ajc` does when passed the `-incremental` option. It may still recompile
+files that have not changed, if they could be affected by aspects in
+particular ways, but the files compiled should be fewer and result in
+faster compiles. Further, the 1.1 release supports binary weaving, so
+you need not recompile if you already have .class files.
+
+*Q:* `ajc` is using the wrong JVM. How do I fix it?
+
+*A:* The easiest way to fix this is to re-install `ajc` (using the same
+`.class` or `.exe` file that you originally downloaded) and this time
+make sure to tell it to use the desired JDK (typically the JDK versions
+1.2 or 1.3 from Sun).
+
+If you are familiar with DOS batch files or shell programming, you could
+also fix this by simply editing the `bin\ajc.bat` or `bin/ajc` script.
+
+*Q:* My IDE is trying to parse AspectJ files which makes my project
+unusable. What can I do?
+
+*A:* When working with an unsupported IDE that objects to the syntax of
+AspectJ source files (and, e.g., automatically gathers them in a source
+tree as Java files based on the .java extension), you can use the .aj
+extension for your AspectJ files. The ajc compiler accepts both .java
+and .aj files, and you can set up your build scripts to include the
+correct list of source files. (You will have to find another editor for
+editing AspectJ files; you can use the ajbrowser to view edit your
+AspectJ files and navigate the crosscutting structure.)
+
+*Q:* I used to be able to compile my program in my IDE, but when I use
+AJDE, I run out of memory (or it goes really slow).
+
+*A:* The ajc compiler does more analysis than (e.g.,) javac, and AJDE
+may in some IDE's hold a copy of the structure tree until the next tree
+is available from the compile process. Both mean that you may need extra
+memory to compile the same program. However, increasing available memory
+to the point that you are swapping to disk can slow the process
+considerably.
+
+If you are having problems and would like to find the optimal memory
+allocation, iteratively decrease the amount of memory available until
+AJDE or ajc signals out-of-memory errors, and then increase that amount
+by 5-10%.
+
+To increase memory for the ajc compiler, see #q:ajcoom[Q:The AspectJ
+compiler aborts with an OutOfMemoryError when compiling many classes.
+How can I fix this?]. For your IDE, do something similar or follow the
+provider's instructions. For example, to increase memory in JBuilder,
+edit the `jbuilderX/bin/jbuilder.config` file to have an entry like:
+
+....
+vmparam -Xmx384m
+....
+
+If it turns out that your project is too big to use with AJDE, your IDE
+may nonetheless support external commands or Ant build processes, which
+run outside the IDE memory space. For a JBuilder Ant plugin, some people
+have directed us to http://antrunner.sourceforge.net[].
+
+*Q:* When I run, I get a `NoAspectBoundException` or a ClassNotFound
+message for `NoAspectBoundException`.
+
+*A:* This happens when an aspect is not associated with an object that
+is being advised. We have seen this happen two ways:
+
+* You get a ClassNotFound message for `NoAspectBoundException` when
+loading a class affected by aspects if `aspectjrt.jar` classes are not
+on the runtime classpath. To fix this, put the classes on the classpath.
+* You can get a `NoAspectBoundException` when there is a cycle in aspect
+initialization or static initialization, most commonly when an aspect
+advises its own initializer. To fix this, first find the class that
+fails to load by running java in debug mode or looking at the
+`NoAspectBoundException` trace, and then fix the offending (probably
+unintended) dependency. Most often, it comes from a pointcut like
+`staticinitialization(com.company..*)` or `within(com.company..*)`,
+which can include any aspects in the same subpackages. You can avoid
+advising most join points associated with the aspect `TheAspect` by
+adding `&& !within(TheAspect)` to your pointcut.
+
+*Q:* My stack traces don't make sense. What gives?
+
+*A:* In 1.0, unless you are using the `ajdb` debugger, stack traces may
+have synthetic methods in the stack, and the line numbers may not track
+your source code. The link:devguide/index.html[Development Environment
+Guide] discusses how to interpret stack at the end of the
+link:devguide/ajc-ref.html[Reference for ajc].
+
+In 1.1, line numbers should work correctly. The only difference from a
+normal stack might be the addition of extra stack frames for call-backs.
+
+*Q:* My advice is not running (or running twice), and I don't know why.
+
+*A:* When advice is not running, there is probably a problem in the
+pointcut. Sometimes users specify pointcuts that do not mean what they
+intend - most often when they misspell a type name. Run the compiler in
+`-Xlint` mode, which will flag some likely mistakes, like the type name.
+If that does not work, and your pointcut is staticly-determinable, use a
+declare statement to identify affected code. (For more information, see
+#q:knowWhenAspectsAffectClasses[Q: How do I know which aspects affect a
+class when looking at that class's source code?].) If that does not work
+and your pointcut is dynamically determined, see if your join points are
+executing at all by using TraceJoinPoints.java from
+#q:seeingjoinpoints[Q:I don't understand what join points exist. How can
+I see them?].
+
+When advice is running more than it should, either (1) your advice is in
+an abstract aspect and the pointcut picks out the same join point for
+more than one concrete instantiation of the aspect, or (2) your pointcut
+picks out more join points than you intend.
+
+In the case of advice in abstract aspects, the advice will run once for
+each concrete instance of the aspect. If the pointcut for that advice
+picks out the same join point for two concrete aspects, then the correct
+behavior is for the advice to run the advice twice at that join point.
+
+To see if your pointcut picks out the join points you intend, you can
+use IDE support, logging, or declare-warnings. If you are using IDE
+support, you should be able to trace back from the pointcut or advice to
+the join points which can be statically determined to be affected.
+Without IDE support, you can write declare-warning statements to
+identify code affected by staticly- determinable pointcuts. To identify
+advised dynamic join points, you can try using `TraceJoinPoints.java` as
+above, or update the advice to print the source location of the join
+point. Doing any of these should show if the advice applies to code that
+you did not expect.
+
+If you've done this and convinced yourself it's not working, it may be a
+bug. See #q:bugreports[Q:How do I submit a bug report?].
+
+*Q:* My advice runs for each overridden method!
+
+*A:* Most likely you are advising the method execution join point and
+specifying the defining signature. Since all overriding methods share
+this signature, the advice runs for each method executed. (This happens,
+e.g., when one method invokes the same method in the superclass using
+`super.{method}(..)`). This is the correct behavior.
+
+To avoid this, use the `call(..)` pointcut designator, or use
+`!cflow(..)` to pick out only the initial method-execution.
+
+*Q:* I don't understand when thisEnclosingJoinPointStaticPart is
+available.
+
+*A:* `thisEnclosingJoinPointStaticPart` is a special variable available
+in the context of advice to refer to the join point, if any, lexically
+enclosing the current join point:
+
+.thisEnclosingJoinPointStaticPart
+[cols=",",]
+|===
+|One of these... |will be tEJSP for each of these:
+
+|constructor-execution, method-execution, advice execution,
+initialization, pre-initialization, static initialization
+|constructor-call, method-call, handler, field-set, field-get
+|===
+
+Expressions in the body of handlers have the same
+`thisEnclosingJoinPointStaticPart` as the handler itself.
+
+*Q:* I declared a member on a class with package access, but other
+classes in the package cannot see it.
+
+*A:* When declaring parents on other types from an aspect, package
+access only applies to code the implementation controls. For AspectJ
+1.0, that is the set of files passed to the compiler. That means other
+classes not compiled with the aspect will not be able to access the
+aspect-declared members even if they are in the same package. The only
+way for classes outside the control of the implementation to access
+aspect-declared members is to declare them public.
+
+*Q:* I declared a member on a interface, but javac does not see it.
+
+*A:* You have to compile all the top-level implementating classes of the
+interface using `ajc`. From an email by Jim Hugunin on the requirements
+for AspectJ 1.1 to implement members declared by an aspect on an
+interface:
+
+If you introduce non-static fields or non-abstract methods on an
+interface from an aspect, then all of the top-most implementors of that
+interface must be woven by that same aspect. (A class C is a top-most
+implementor of an interface I if C implements I and the superclass of C
+does not implement I.)
+
+*Q:* `ajc` 1.0 complains that it can't find `javac`. What's wrong?
+
+*A:* `ajc` 1.0 does not try to locate `javac` in your path: it uses the
+`javac` classes directly. In JDK 1.2 and 1.3 these classes are found in
+`tools.jar` (in the `lib` directory of the JDK distribution), which must
+be on your classpath to make `ajc` work with `javac`. Inspect the java
+command that launches ajc to make sure that `tools.jar` is on the
+classpath for ajc; the -classpath option only applies to the sources
+compiled.
+
+*Q:* I'm running under 1.4, but `ajdoc` asks for 1.3 (or throws
+IllegalAccessError for HtmlWriter.configuration)
+
+*A:* The 1.0 implementation of `ajdoc` uses specific javadoc classes in
+the J2SE 1.3 tools.jar. We are working on addressing this limitation,
+but in the interim it is best to run ajdoc under 1.3.
+
+When running from the command-line scripts, edit the scripts directly to
+put the 1.3 tools.jar first on the classpath. (The installer does not
+know about this limitation of ajdoc.)
+
+When running from Ant, users often have tools.jar in $\{ant.classpath}
+(to make javac, et al work). That makes it impossible to run the ajdoc
+taskdef (which does not currently support forking), so you'll need to
+run a separate ant process, either from the command-line or via Ant's
+exec task (the Ant task will propagate the classpath). If the wrong
+tools.jar is not on the ant classpath, then it should work to put the
+1.3 tools.jar in the taskdef classpath.
+
+*Q:* I set up different files to my compiles to change what the aspects
+see, but now I don't understand how the aspects are working.
+
+*A:* It is a bad practice to use the compilation unit to control
+crosscutting. Aspects and pointcuts especially should be written to
+specify crosscutting precisely. Aspects will behave the same when you
+add files if you initially included all files affected by your aspects.
+If you use the compilation unit, then your code will behave differently
+in AspectJ implementations that do not limit themselves to specified
+files.
+
+*Q:* I'm reading the code generated by `ajc` 1.0 in `-preprocess` mode,
+and it seems like it would not work (or "like it works this way").
+
+*A:* The generated code can be difficult for a human to read and
+understand. The compiler uses implementation techniques which might not
+be apparent. To determine if the code is behaving correctly, you should
+write and run a program that attempts to provoke the error you suspect.
+Similarly, you should not rely on invariants you infer from the
+generated code (especially naming conventions for generated members).
+Please rely only on the semantics stated in the appendix of the AspectJ
+link:progguide/index.html[Programming Guide].
+
+*Q:* I've heard AspectJ can generate or inject code into my code. Is
+this true?
+
+*A:* This is a misconception spawned from the early implementation.
+
+AspectJ does not "inject" or "generate" code. In AspectJ the pointcut
+constructs allow the programmer to identify join points, and the advice
+constructs define additional code to run at those join points.
+
+So the semantic model of advice is like the semantic model of a method
+-- it says "when any of these things happen, do this".
+
+People who worked with earlier versions of AspectJ, in which ajc was
+very explicitly a pre-processor, sometimes thought of AspectJ as
+injecting code. But that was an artifact of the implementation, not the
+underlying language semantics.
+
+This distinction is important for two reasons. One is that thinking
+about it this way will make more sense at the implementation continues
+to evolve towards load-time or runtime weaving. The other is that it
+makes it much easier to understand the semantics of advice on cflow
+pointcuts.
+
+*Q:* Why can't AspectJ pick out local variables (or array elements or
+...)?
+
+*A:* Users have sometimes wanted AspectJ to pick out many more join
+points, including
+
+* method-local field access
+* array-element access
+* loop iteration
+* method parameter evaluation
+
+Most of these have turned out not to make sense, for a variety of
+reasons:
+
+* it is not a commonly-understood unit for Java programmers
+* there are very few use-cases for advice on the join point
+* a seemingly-insignificant change to the underlying program causes a
+change in the join point
+* pointcuts can't really distinguish the join point in question
+* the join point would differ too much for different implementations of
+AspectJ, or would only be implementable in one way
+
+We prefer to be very conservative in the join point model for the
+language, so a new join point would have to be useful, sensible, and
+implementable. The most promising of the new join points proposed are
+for exception throws clauses and for synchronized blocks.
+
+*Q:* Why doesn't AspectJ pick out reflective calls? The pointcut
+`call(void run())` won't pick out a call using reflection, like
+`((Method)run).invoke(null, args)`.
+
+*A:* The pointcut `execution(void run())` will work. The call pointcut
+doesn't work because `Method.invoke(..)` is the Java method-call, and
+AspectJ cannot delve into the Java reflection library to implement call
+semantics. To advise a reflective call (e.g., because the compiler does
+not control the code for the method execution), test the context for
+`invoke(..)`. Here's a pointcut that tests only if the method name is
+correct:
+
+....
+aspect A {
+    pointcut runReflectiveCall(Method run) : target(run) &&
+         call(Object Method.invoke(..)) && if("run".equals(run.getName()));
+    before() : runReflectiveCall(Method) {
+        System.out.println("before reflective call " + thisJoinPoint);
+    }
+}
+
+....
+
+*Q:* What are the bugs now most affecting users?
+
+*A:* The bugs affecting the semantics of the language are marked with
+the "info" keyword. Find them with the query
+http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info
+
+*Q:* What extra memory is required at runtime?
+
+*A:* When running classes produced by the AspectJ weaver or compiler,
+there are no significant hidden uses of memory. As would be expected,
+each aspect is instantiated. The per-object aspects (like `pertarget` or
+`perthis`) in some implementations use a map to link aspects and the
+associated object. When using `cflow`-related pointcuts, a `ThreadLocal`
+is used to track control flow for each affected thread.
+
+Of course, the size and code in an aspect can require memory. Aside from
+normal Java practices, take care with join point references. When
+referencing the static part of a join point (e.g.,
+`thisJoinPointStaticPart`), only one object is created. However, if you
+reference the join point itself (e.g., `thisJoinPoint`), then one
+`JoinPoint` object will be created for each join point running advice.
+
+Aspect instances will be garbage collected just like regular objects
+after there are no more strong references to them. For the default
+aspect instantiation model, `issingleton`, the aspect class retains a
+reference to the singleton instance, in order to implement
+`static {AspectClass} aspectOf()`, so singleton instances will not be
+garbage collected until the class is. For long-running or
+memory-critical programs, consider using weak references in singleton
+aspects for state that should be garbage collected.
+
+Finally, when using load-time weaving, the weaver can require memory in
+its own right. Because the class loader never can know when it is done
+loading classes, the weaver can hold on to the aspects required to weave
+for some time. There are strategies for minimizing this (with different
+trade-off's), so the time and memory required for load-time weaving will
+vary as load-time weaving evolves.
+
+*Q:* I get a VerifyError when running CGLIB generated code that has been
+woven by AspectJ. Why is this?
+
+*A:* When weaving after advice into any piece of code, the AspectJ
+strategy is to make all exit points from that code jump to a single exit
+point that executes the advice before returning. There is a verifier
+rule in the JVM specification that specifies that all routes to a jump
+destination must have the same height stack when they get there,
+regardless of the route taken to get there through the bytecode. The
+CGLIB generated code has different stack heights at the various exit
+points. This is not a problem with the CGLIB generated code, it is
+perfectly valid - it is just unusual and the AspectJ weaving strategy
+causes the verify error to trigger when it makes all exits jump to a
+single destination.
+
+AspectJ could cope with this and instead implement after advice by
+calling the advice and returning at each exit point. However, it is
+unlikely that the user actually meant to weave the CGLIB generated code
+in the first place - and so usually the right thing to do is to exclude
+CGLIB generate code from the weaving process by appropriate use of the
+exclude element in the aop.xml. A typical clause in the aop.xml might
+look as follows:
+
+....
+<weaver>
+  <exclude within="*CGLIB*" />
+</weaver>
+
+....
+
+[[aj11]]
+== AspectJ 1.1 and eclipse.org
+
+*Q:* Why did the AspectJ project move to eclipse.org?
+
+*A:* From the message sent to users:
+
+AspectJ has come a long way -- the language has stabilized; there are a
+rapidly growing number of commercial users; the 1.1 release is imminent
+and will include byte-code weaving and incremental compilation; and the
+tool support is now well integrated with several major IDEs.
+
+This growth of the community and the technology means that the original
+research and prototype development of AspectJ is complete. As such it is
+time for ongoing development and support of AspectJ to move outside of
+PARC. This has already started to happen; the Eclipse AJDT plug-in and
+the several books in preparation are examples.
+
+To encourage the growth of the AspectJ technology and community, PARC is
+transferring AspectJ to an openly-developed eclipse.org project. This
+project will include documentation, web site, mailing lists, bug
+database, and sources for the compiler. The command-line AspectJ
+compiler is still the primary tool produced by this project, in addition
+to APIs that support integration with a variety of IDEs. The Eclipse
+plug-in will remain at eclipse.org, while the NetBeans, JBuilder and
+Emacs support will move to SourceForge.net projects. We look forward to
+your involvement with and contribution to those projects.
+
+We see Eclipse as an excellent new home for core AspectJ technology
+development -- it is an active community of Open Source development and
+innovation in the Java space. Once development moves to Eclipse.org,
+others will be able to contribute more easily.
+
+*Q:* Do I have to download Eclipse to use AspectJ?
+
+*A:* No. The AspectJ tools download is completely self-contained and
+does not require that you work in Eclipse. For information on IDE
+support, see #q:integrateWithDevTools[Q: How well does AspectJ integrate
+with existing Java development tools?].
+
+*Q:* What are the relationships between AspectJ, JDT, Eclipse, AJDT, and
+IDE support generally?
+
+*A:* Eclipse is a software platform.
+
+JDT is an eclipse project to support Java development. JDT has a Java
+compiler.
+
+AspectJ 1.1 is built on Eclipse/JDT's Java compiler but is distributed
+standalone and can run standalone. With the AspectJ distribution, you
+can compile and run AspectJ programs and use the AspectJ structure
+browser.
+
+AJDT is an eclipse project to integrate AspectJ into Eclipse/JDT so you
+can use Eclipse to develop AspectJ programs. AJDT aims to support the
+full Eclipse experience - searching, compiler-error tasks, etc. AJDT
+will use the AspectJ Development Environment (AJDE) API's for creating
+IDE integrations, as well as hooking in to the model underlying the Java
+compiler.
+
+Similarly, Sourceforge has projects integrating AspectJ into other
+development environments using the AJDE API's:
+http://aspectj4emacs.sourceforge.net[AspectJ for Emacs],
+http://aspectj4jbuildr.sourceforge.net[AspectJ for JBuilder], and
+http://aspectj4netbean.sourceforge.net[AspectJ for NetBeans].
+
+This is the right level of separation/integration. AspectJ is available
+standalone, leverages an existing open-source compliant Java compiler,
+and supports external projects doing IDE integrations in Eclipse, Emacs,
+JBuilder, and NetBeans through a common API, AJDE.
+
+[[AspectJ5]]
+== AspectJ 5 and Java 5
+
+*Q:* What are the new features of AspectJ 5?
+
+*A:* All the new features are documented in the
+link:adk15notebook/index.html[AspectJ 5 Developer's Notebook] and the
+link:devguide/index.html[AspectJ Development Environment Guide]. To
+summarize:
+
+* Java 5 support: as an extension to Java, AspectJ supports all the new
+language features of Java 5, including generics (parameterized types),
+autoboxing, covariant return types, enhanced for-loops, enums, varargs,
+and of course annotations.
+* Java 5 extensions: the AspectJ language has been extended to make use
+of Java 5 language features.
+** Generic aspects: an abstract aspect can be declared with a generic
+type parameter which can be used in pointcuts and when declaring members
+on the aspect (but not when declaring members on other types).
+** Annotations: pointcuts can now pick out join points based on the
+associated annotations, annotation values can be bound in the same way
+that other context variables are bound at the join point, and
+annotations may be declared on other types in an aspect.
+* Annotation-style aspects: AspectJ 5 integrates AspectWerkz-style
+aspects declared in annotations. This permits aspects to be written and
+compiled in pure-java code and woven using build-time or load-time
+weaving with the AspectJ weaver. (The original AspectJ language aspects
+are distinguished as "code-style" aspects.)
+* AspectWerkz load-time weaving: Load-time weaving is greatly improved
+for all versions of Java, and now supports an XML configuration file
+which can declare concrete aspects. This means developers can deploy
+binary abstract aspects that deployers configure using only XML.
+* pertypewithin instantiation model: aspects may now be instantiated on
+a per-class basis.
+* Reflection and runtime support: AspectJ 5 supports reflection on
+aspects using the Aspect class, and also support runtime evaluation of
+pointcuts using a pointcut parser.
+
+*Q:* Should I use code- or annotation-style aspects?
+
+*A:* To use AspectJ, you can use the original code-style aspects or the
+annotation-style aspects new in AspectJ 5.
+
+The original code-style is a small extension of the Java language
+designed to express crosscutting as clearly as possible in ways familiar
+to most Java programmers. To use the original code-style aspects,
+compile them with the AspectJ compiler or weave pre-compiled binary
+aspects using the AspectJ binary (.class) weaver, either at build-time
+or at class-load-time. Code-style aspects have excellent IDE support,
+allowing you to navigate to and from affected source code.
+
+Annotation-style aspects are written (not surprisingly) using
+annotations. They use the subset of the AspectJ language that works when
+aspects are woven after the code is compiled. The source files are
+compiled with Javac, which simply saves the annotations in the .class
+files. The resulting .class files must be woven using the AspectJ
+weaver, which reads the annotations from the .class file and uses them
+to define aspects. Annotation-style aspects have the benefit of being
+compilable by Javac, but you can't use the full AspectJ language, and
+you don't enjoy the same level of IDE support for viewing crosscutting
+structure.
+
+*Q:* What's new about the load-time weaving support in AspectJ 5?
+
+*A:* While the AspectJ weaver could be used at load-time in previous
+releases, the AspectJ 5 release supports much better integration with
+the Java 5 VM and the BEA JRocket JVM. It also supports an XML file for
+configuration that allows deployers to declare concrete aspects using
+only XML. This means aspect developers can write abstract aspects, and
+deployers need only configure `aop.xml` and run using the AspectJ weaver
+in Java 5. For example, to run Java 5 VM with load-time weaving,
+
+....
+java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
+....
+
+To declare a concrete aspect, add a a concrete-aspect XML entity to
+`META-INF/aop.xml`. This example extends a tracing aspect to apply to
+every type in the application:
+
+....
+<concrete-aspect
+    name="com.company.tracing.ConcreteTracing"
+    extends="tracing.AbstractTracing">
+    <pointcut
+        name="tracingScope"
+        expression="within(com.company.app..*)"/>
+</concrete-aspect>
+....
+
+For more information, see the link:devguide/index.html[AspectJ
+Development Environment Guide].
+
+[[Technology]]
+== Understanding AspectJ Technology
+
+*Q:* Do I need to know how the compiler or weaver works?
+
+*A:* Writing AspectJ programs only requires understanding the
+link:progguide/index.html[Programming Guide]. However, current
+implementations do not control everything in a system, so AspectJ
+program semantics may be limited to code the implementation controls.
+For our implementation, these limitations are stated in
+link:progguide/implementation.html[Programming Guide Appendix:
+Implementation Notes]. Aside from understanding the use and limitations
+of the implementation, there is no need to understand the underlying
+technology when writing AspectJ programs.
+
+The technology that implements AspectJ interests some academic
+researchers and some developers who want new features or new ways to
+weave. These extensions are not discussed in the documentation. Some are
+being developed already, others are on the drawing board (or perhaps
+were left off long ago), and still others haven't been considered. If
+you are interested in a certain extension, check the bug database for
+feature requests and the mailing list archives for any past discussions.
+Then email the list to see if it's been considered. For more
+information, see xref:#Developers[AspectJ Project Development].
+
+*Q:* How does the compiler/weaver work? Are there any white papers?
+
+*A:* There are currently no documents describing this process in detail.
+You can compile programs and inspect the generated source or bytecode,
+or view the source code (see xref:#Developers[AspectJ Project
+Development]). We hope to write papers on the bytecode weaving model
+used in AspectJ-1.1 if we can find the time. Erik Hilsdale and Jim
+Hugunin did draft a paper for AOSD 2004, now available on Jim's web
+site: http://hugunin.net/papers.html Jim summarized advice weaving in
+the AspectJ 1.1 implementation in the
+http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00519.html[following
+mailing-list reply]:
+
+Each piece of advice in an aspect is associated with a pointcut. This
+pointcut is stored in an attribute on the methods corresponding to each
+piece of advice. Before weaving, all of these pieces of advice are
+gathered into one large list.
+
+Each .class file is woven independently. A .class file is woven by the
+following steps:
+
+* Collect all of the joinpoint shadows in the .class file. For every
+dynamic joinpoint in the AspectJ language model, there is a
+corresponding static shadow of that joinpoint in the bytecode. For
+example, every method call joinpoint has an INVOKE bytecode as its
+static shadow. Some joinpoints (such as initialization) have much more
+complicated static shadows.
+* Each piece of advice is matched to each static shadow. There are three
+results possible from this match.
+** Never matches, in which case nothing is done to the shadow
+** Always matches, in which case the advice is woven into this joinpoint
+shadow
+** Sometimes matches, in which case the advice is woven into the shadow
+along with the minimal dynamic tests to determine if any particular
+joinpoint in the actual running program matches the advice. The simplest
+example of sometimes matches is when the pointcut uses if(test()).
+* If any advice matched any static shadows in the .class file, then the
+transformed .class file is written out, otherwise it is left unchanged.
+
+See `BcelClassWeaver` and `BcelShadow` in the `org.aspectj.weaver.bcel`
+package for the two primary classes involved in this process.
+
+Note: This explanation ignores the implementations of inter-type
+declarations completely. It also ignores performance optimizations such
+as fast-match or pipelining that speed up the process.
+
+*Q:* How do I get load-time weaving to work in my chosen application
+server?
+
+*A:* You have two choices based on how wide you want the weaving to take
+effect: application-server wide and application-specific weaving. You
+choose between the two by loading aspect artifacts--aspects, associated
+types, and aop.xml--through the right classloader. The aop.xml must be
+in the META-INF directory on the classpath for the chosen classloader.
+In either case, you modify the startup script to specify the
+-javaagent:path-to/aspectjweaver.jar option to the Java virtual machine.
+Note that it is not essential that all the artifacts be placed in a
+single jar.
+
+For application-server wide weaving, you make aspect artifacts
+accessible to the server's classloader. Typically, you achieve such
+access by putting these artifacts in the server's lib directory. For
+example, for Tomcat, you will place the aspect artifacts in the
+TOMCAT_HOME/lib directory.
+
+For application-specific weaving, you make aspect artifacts accessible
+to application classloader by bundling them along with application's
+classes. For example, for a web application, you will place the aspect
+artifacts in the MY_APP/WEB-INF/lib and/or MY_APP/WEB-INF/classes
+directory.
+
+We recommend that you start with application-specific weaving. Note that
+you have an additional option if your application is based on the Spring
+framework. If you deploy in one of the supported web servers or
+application servers, you can avoid modifications to the startup script.
+Please see
+http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring
+for more details.
+
+*Q:* Does AspectJ use reflection at runtime?
+
+*A:* The only time that reflection is used during run-time is when the
+special thisJoinPoint object is used to discover reflective information
+about the join point. If you don't use thisJoinPoint then no reflection
+will be used.
+
+*Q:* What about load-time weaving? Can I weave aspects at runtime?
+
+*A:* Since the 1.1 release, AspectJ can weave binary aspects into
+classes in bytecode form. Hooked up to a class loader, this can weave
+class bytecodes after they are read in, before the class is defined by
+the VM. (This means load-time weaving only works were aspects are not
+required to compile the pure-java classes. If the aspects are required,
+then the Java classes have to be compiled with the aspects using the
+AspectJ compiler.) The AspectJ 1.2 release had the
+WeavingURLClassLoader, and the 1.2.1 release introduced the aj.bat
+script for Java 1.4. The AspectJ 5 release introduces much better
+support for load-time weaving, including declaring concrete aspects in
+XML files and integrating with Java 5 and BEA JRocket JVM's. See
+#q:aspectj5ltw[Q:What's new about the load-time weaving support in
+AspectJ 5?].
+
+Some have asked about only weaving particular classes specified at
+run-time. Aspects should work across an entire namespace, and problems
+will likely result from weaving some classes but not others. Also, it's
+confusing to specify crosscutting both in the aspect and in the list of
+runtime classes; the crosscutting specification should be in the aspect
+itself, where it can be processed by tools.
+
+And just to state the obvious: do not use bytecode weaving, at load-time
+or otherwise, to modify .class files protected by license, without
+permission from the licensor.
+
+[[Developers]]
+== AspectJ Project Development
+
+*Q:* I'm interested in the code implementing AspectJ.
+
+*A:* Most people do not need to see the code for AspectJ; they can
+download the binary distribution for documentation and tools for writing
+AspectJ programs.
+
+For people who want to know how the AspectJ technology works, the source
+code is the best resource, until we write some proper white papers (see
+#q:implementation[Q:Do I need to know how the compiler works?]). To get
+and compile the Java source code for the AspectJ distribution, see
+#q:buildingsource[Q:How do I get and compile the source code for
+AspectJ?].
+
+Bear in mind when looking at the code that there are many ways to
+implement the AspectJ language, and the code inspected might be an
+initial version of a new architecture (e.g., bytecode weaving).
+
+*Q:* How can I get involved with developing the AspectJ project?
+
+*A:* For those who want to contribute to the project, here's a general
+list of ways to do so, in no particular order:
+
+* Participate effectively in the mailing lists. The quality of the
+mailing lists makes a huge difference in the ability of new and
+experienced AspectJ users to write good code. For guidance on effective
+participation, see #q:talktousers[Q:How do I communicate with other
+AspectJ users?] and #q:writingbugsandemails[Q:How should I write email
+queries?]. Also, the time that experienced users take in answering
+emails can directly translate to time developers can use (instead) for
+fixing bugs or adding features.
+* Write bugs. Good bugs, especially with test cases, are always
+appreciated. We especially like proposals for new `XLint` messages,
+since they are sometimes easy to implement and help users learn AspectJ,
+and for other implementable features grounded in a compelling use-case.
+* Write test cases for compiler bugs without test cases. Compiler bugs
+without test cases are much less likely to be fixed; until they are
+rendered in code, they might be user mistakes, and they might duplicate
+another bug or actually cover many bugs.
++
+Find them by searching open compiler bugs and picking out any which do
+not have test case attachments or a comment that a test case has been
+written. Here is a query for open compiler bugs:
+http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED
++
+For how to write test cases, see #q:harnesstestcases[Q:How should I
+submit test cases for bugs?].
+* Write patches to fix bugs. If you particularly need a bug to be fixed,
+or if you're interested in learning about the system, then get the
+source code and try to fix the bug. Most likely you'll want to email
+aspectj-dev@eclipse.org to declare your intentions and the approach you
+propose (based on having looked at the code). Mailing the list gives
+those experienced with the code a chance to guide you away from
+pitfalls. To submit the patch, attach it to the bug. (When creating
+patches, do so on a per-module basis; that means if fixing the bug
+involves changes to three modules, submit three patches.)
+* Write patches for other reasons. Often documentation needs to be
+fixed, or there may be a small new feature you'd like to see. You can
+just do it and then submit it as a patch to a bug you create. As with
+bugs, in some cases you might want to declare your intentions on the
+mailing list to avoid wasting time on something that's been fixed but
+not committed or on an approach that will be fruitless.
+
+*Q:* How do I get and compile the source code for AspectJ?
+
+*A:* AspectJ 1.0 source code is available in an archive available with
+the 1.0 downloads. It contains instructions for building from sources.
+
+AspectJ 1.1+ source code is available through CVS using the CVS Root
+`dev.eclipse.org:/cvsroot/technology`. For more information on accessing
+the CVS tree at eclipse.org, see the documentation from
+http://eclipse.org. Find specific instructions in the AspectJ tree at
+http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&content-type=text/html&cvsroot=Technology_Project[org.aspectj/modules/build/readme-build-and-test-aspectj.html].
+If you would like to use Ant to checkout the sources, build the
+distribution, and test everything, see
+http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&content-type=text/xml&cvsroot=Technology_Project[org.aspectj/modules/build/release/build.xml].
+
+To check out the source code in Eclipse go to
+(`File > new > Other > CVS > Checkout Projects from CVS`). You'll need
+about 125 MB of space for the source and build. Host: `dev.eclipse.org`,
+Repository Path: `/cvsroot/technology`, user name: `anonymous`,
+password: (your email address), connection type: `pserver`, default
+port. Then select the individual modules you want to check out (you
+probably want all of them bar aspectj-attic and java5) and click Next
+and choose to check out the modules you selected as Java projects. Once
+thats done each module you checked out should show up as a project in
+the package explorer. If you have problems after this point you can view
+the build instructions that come with AspectJ by going in the package
+explorer to: `build > readme-build-and-test-aspectj.html`.
+
+To get the modules to build you have to set some classpath variables
+(`Window > Preferences > Java > Build Path > Classpath Variables`):
+
+* Name: `JAVA_HOME`, Value: (wherever your Java JDK is installed)
+* Name: `JRE14_LIB`, Value: (wherever your Java 4 Runtime is
+installed)`\jre\lib\rt.jar`
+* Name: `JRE15_LIB`, Value: (wherever your Java 5 Runtime is
+installed)`\jre\lib\rt.jar`
+* Name: `ASPECTJRT_LIB`, Value: (wherever your workspace
+is)`\lib\aspectj\lib\aspectjrt.jar`. To find out where your workspace is
+go to `File > Switch Workspace`.
+
+The `org.aspectj.lib` project is an AspectJ project so you also have to
+have AJDT installed. For the latest AJDT release and download
+instructions visit the http://www.eclipse.org/ajdt/downloads/[AJDT
+Downloads] page.
+
+When you've added the variables click OK to do a full rebuild, then run
+the tests by going in the Package Explorer to:
+`run-all-junit-tests > testsrc > (default package) > RunTheseBeforeYouCommitTests.java`
+and running this as a JUnit test (right click and select
+`Run As > JUnit Test`). Don't worry about any errors that appear in the
+console output, just check that there are no failures in the JUnit view
+(`Window > Show View > Other > Java > JUnit`). If that finishes with no
+Failures and a full green bar you have the AspectJ compiler source and
+it's building and testing properly.
+
+Further details:
+
+You can check out the entire modules directory and build using the Ant
+build script `modules/build/build.xml`. All required libraries are
+included in `modules/lib/`, (including Ant 1.5.1 in `modules/lib/ant`).
+If you are using Eclipse, you can check out any `modules/` subdirectory
+as an eclipse Java project. Depending on what you are trying to build,
+you need not check out all modules; as of this writing, here are the
+modules to get for building the specific parts of AspectJ:
+
+* For any builds: build, lib
+* For the documentation: docs
+* For the compiler: bridge, util, testing-util, weaver, asm,
+org.eclipse.jdt.core, org.aspectj.ajdt.core, and runtime.
+* For ajbrowser: the compiler modules, plus ajbrowser, ajdoc, taskdefs,
+and ajde.
+* For the AspectJ distribution, the ajbrowser modules, plus aspectj5rt
+and org.aspectj.lib.
+* For the test harness (or to run the release build scripts and tests):
+the ajbrowser modules, plus testing, testing-client, and
+testing-drivers.
+* To run the test suite: the test harness modules, plus tests.
+
+Note that module interdependencies are recorded only in the eclipse
+`modules/{module}/.classpath
+          ` files and may change, so the list above may not be correct
+when you read it.
+
+*Q:* How do I build AspectJ and integrate it into AJDT?
+
+*A:* To build AspectJ, first get the source tree as described in
+#q:buildingsource[Q:How do I get and compile the source code for
+AspectJ?]. Once you have a development environment set up, copy the
+`build/sample-local.properties` file to `build/local.properties` and
+within this file point the `java14.home` and `java15.home` to the
+corresponding places on your machine.
+
+To build AspectJ on the command line:
+
+* Open a command prompt
+* Navigate to the `build` directory within your AspectJ workspace (to
+find out where your workspace is go to `File >
+            Switch Workspace` within Eclipse).
+* Run `ant clean` to remove the files from previously built AspectJ
+versions.
+* Run `ant` to build AspectJ. The built files are created in
+`your_eclipse_installation_directory/aspectj_development_workspace/aj-build`.
+
+To import a locally built AspectJ into AJDT first follow the
+instructions on http://www.eclipse.org/ajdt/faq.php#q:develop[How do I
+setup an AJDT development environment in Eclipse?] for setting up an
+AJDT development environment and running the correctness tests. Then:
+
+* Create a file `aspectjlib.properties` within the `org.aspectj.ajde`
+project and add the following two lines
++
+....
+aspectj.lib.dir=C:/eclipse/aspectj-workspace/aj-build/dist/tools/lib
+aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspectj.ajde.doc/doc
+
+....
++
+making sure to change the path to correspond to your set up.
+* Run the `build.xml` file in `org.aspectj.ajde` with the `plugin jars`
+target:
+** Right click on the `build.xml` file in the `org.aspectj.ajde` plugin
+** Select `Run As > Ant build...`
+** In the resultant dialog navigate to the `Targets` tab
+** Ensure `plugin jars` is the only selected target
+** Click `Run`
+* Refresh the `org.aspectj.ajde, org.aspectj.runtime` and
+`org.aspectj.weaver` plugins.
+
+*Q:* Where do I find developer documentation on building and testing
+AspectJ source code?
+
+*A:* Find the developer documentation in HTML files in the CVS tree,
+inside the `build` and `testing` modules (i.e., in
+`org.aspectj/modules/build/...`). Most pertinant:
+
+* `../build/readme-build-and-test-aspectj.html` describes how to build
+the AspectJ distribution in Eclipse and in Ant.
+* `../build/readme-docs-module.html` describes the AspectJ documentation
+sources and how to build the documentation using Ant.
+* `../build/readme-tests-module.html` describes the all the tests in the
+`tests` module.
+* `../build/readme-writing-compiler-tests.html` describes how to write
+compiler tests that can be run by the AspectJ test harness.
+* `../build/readme-testing-drivers-module.html` describes the test
+harness used to run the compiler tests in the `tests` module.
+* `../build/readme-testing-drivers-module.html` describes the test
+harness used to run the compiler tests in the `testing` module.
+
+*Q:* How should I submit test cases for bugs?
+
+*A:* You can attach files to a bug after it has been created. The code
+of course should replicate the actual behavior described in the bug when
+run on the target version. If you have a single source file, you can
+attach it directly, describing in the comments the expected result
+(e.g., error on line 14, or successful compile/run). The most helpful
+form for describing the test scenario and the expected results are the
+test definitions described next.
+
+For more complex bugs requiring many files, create a zip file of a
+directory containing all the files and an XML test definition file. The
+XML test definition file contains specifications for how to compile,
+recompile, or run the test sources. Complete documentation is available
+in the CVS tree at `tests/readme-writing-compiler-tests.html` but here
+is a sample file with some example definitions, preceded by comments
+showing the directory layout of the files referred to in the test
+definitions.
+
+....
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+<suite>
+
+<!-- Compile and run
+     using the following files:
+
+       {testDefinitions}.xml
+       one/
+         pack1/
+           Main.java
+         p2/
+           BeforeConstructor.java
+
+    Note the bug number goes in the pr attribute.
+    ("pr" stands for "problem report")
+ -->
+<ajc-test dir="one" pr="234" title="before constructor call">
+    <compile files="pack1/Main.java,p2/BeforeConstructor.java"/>
+    <run class="pack1.Main"/>
+</ajc-test>
+
+<!-- Check that compiler warning was emitted
+     using the following files:
+
+       {testDefinitions}.xml
+       two/
+         UsesDeprecated.java
+ -->
+<ajc-test dir="two" pr="244" title="deprecated, noImportError">
+    <compile options="-warn:deprecated,-noImportError"
+          files="UsesDeprecated.java">
+        <message kind="warning" line="20"/>
+    </compile>
+</ajc-test>
+
+<!-- Cooked example that uses all compiler attributes
+     and the following files:
+       {testDefinitions}.xml
+       testCaseDir/
+         jars/
+           injar.jar
+           required.jar
+           requiredAspects.jar
+         pack/
+           Main.java
+         providedClassesDir/
+           ClassInDefaultPackage.class
+           org/
+             foo/
+               AnotherRequired.class
+  -->
+<ajc-test dir="testCaseDir" title="attributes test">
+    <compile files="pack/Main.java,jars/injar.jar"
+           staging="true"
+           options="-Xlint,-g:none"
+          argfiles="debug.lst,aspects/test.lst"
+        aspectpath="jars/requiredAspects.jar"
+         classpath="providedClassesDir,jars/required.jar"/>
+    <run class="Main"/>
+</ajc-test>
+
+<!-- Compiler errors, recompile after changing files, and run
+     using the following files:
+
+       {testDefinitions}.xml
+       three/
+         pack/
+           IncCompileFix.java
+           IncCompileFix.20.java
+
+     Before compiling, IncCompileFix.java is copied to a staging
+     directory.  Before recompiling, IncCompileFix.20.java
+     replaces it, so the compiler treats file as updated.
+  -->
+<ajc-test dir="three" pr="622" title="incremental fix">
+    <compile staging="true" files="pack/IncCompileFix.java">
+        <message kind="error" line="20"/>
+        <message kind="error" line="42"/>
+    </compile>
+    <inc-compile tag="20"/>
+    <run class="pack.IncCompileFix"/>
+</ajc-test>
+
+</suite>
+....
+
+*Q:* I'd like to run my test case. How do I get the test harness?
+
+*A:* The test harness is not distributed. To build it, get the source
+tree as described in #q:buildingsource[Q:How do I get and compile the
+source code for AspectJ?] and then build the `build-testing-drivers`
+target:
+
+....
+cd build
+../lib/ant/bin/ant -f build.xml build-testing-drivers
+
+....
+
+This produces `../aj-build/jars/testing-drivers-all.jar` which you can
+run as described in `tests/readme-tests-module.html`.
+
+*Q:* BCEL is used by AspectJ but it's not actively developed. Will you
+change?
+
+*A:* The AspectJ bytecode weaver has used BCEL for bytecode manipulation
+since its first release. We have upgraded it extensively, to improve
+performance, support Java 5, etc. The BCEL developers have not
+incorporated our patches, so we continue to maintain our own version.
+Ours has been optimized for the AspectJ weaver and battle-hardened over
+years of development and use. At some point in the future, the AspectJ
+weaver might be restructured to make it easy to see whether another
+bytecode package offers the same stability, functionality, and
+performance, but for now we prefer using something that we know works
+well.
+
+In the AspectJ 5 release, the weaver has been restructured to use
+reflection where possible. Otherwise, it continues to use BCEL, but does
+not hold BCEL structures in memory after our evaluation completes.
+
+[[help]]
+== Getting Help
+
+*Q:* How do I find out more about AspectJ?
+
+*A:* Visit the AspectJ project web site: http://eclipse.org/aspectj.
+
+*Q:* How do I submit a bug report?
+
+*A:* You can submit a bug from
+http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ . If it seems
+to be a bug in the compiler, please attach a small test case (source
+code) to reproduce the problem. For more information on writing compiler
+test cases, see #q:ajcbugs[Q:How do I write bugs for the AspectJ
+compiler?]. If you are unable to submit a test case, consider submitting
+traces, ajcore files, and/or .class dump files, as described in the
+link:pdguide/index.html[AspectJ Problem Diagnosis Guide].
+
+*Q:* How do I communicate with other AspectJ users?
+
+*A:* You can reach other AspectJ users by using the aspectj-users
+mailing list. You can subscribe to the list or view the list archives
+from the AspectJ home page http://eclipse.org/aspectj .
+
+*Q:* How can I search the email archives or the web site?
+
+*A:* It is very effective to do a google search of the form,
+http://www.google.com/search?q=site:eclipse.org+cflowbelow , and you can
+use the eclipse.org search at http://www.eclipse.org/search/search.cgi .
+You can also check the old archives available for download from the
+AspectJ home page http://eclipse.org/aspectj .
+
+*Q:* How should I write email queries?
+
+*A:* Here's the general form of a good email:
+
+[arabic]
+. Describe the big picture of what you are trying to do...
+. Describe what you think it takes, in AspectJ terms (concepts, syntax,
+and semantics) from the link:progguide/index.html[Programming Guide]...
+. Show the AspectJ code you are using, what output it produces when run,
+and what output you expect...
+
+The big picture helps others redirect you to other approaches. Using
+AspectJ terms helps others correct mistakes in thinking about the
+problem (the most common being to confuse join points and pointcuts).
+The code is key to clarifying your question and getting a good response.
+On the mail list, someone can reply by fixing your code. In bugs, the
+developers can reproduce the problem immediately and start analyzing the
+fix. The code should not be incomplete; it should run (or fail) as-is,
+without additional libraries or source files.
+
+For the mail lists, we try to follow the conventions for open-source
+discussions that help avoid "the tragedy of the commons." For example
+conventions, see http://jakarta.apache.org/site/mail.html and
+http://www.tuxedo.org/%7Eesr/faqs/smart-questions.html .
+
+*Q:* How do I write bugs for IDE support?
+
+*A:* Bugs appearing in the IDE's may apply to the affected IDE or to the
+compiler. Compiler stack traces in IDE message windows are prefixed
+"Internal Compiler Error" and should be written up as compiler bugs. If
+you are unsure, try redoing the compile from the command line.
+
+Bug report for the IDE extensions go to their respective projects,
+listed in #q:integrateWithDevTools[Q: How well does AspectJ integrate
+with existing Java development tools?] (including bug reports for the
+AJDE Eclipse support, which you can submit at
+http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT ).
+
+Bug reports on ajbrowser should have version information for both Java
+and AspectJ, and (most importantly) clear steps for reproducing the bug.
+You may submit ajbrowser bugs against the IDE component of AspectJ via
+the web form http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
+.
+
+One of the benefits of open-source is that you can find and fix the bug
+for yourself; when you submit the fix back to us, we can validate the
+fix for you and incorporate it into the next release. You can submit a
+patch by attaching it to the bug.
+
+*Q:* How do I write bugs for the AspectJ compiler?
+
+*A:* The best compiler bug report is a reproducible test case,
+standalone code that demonstrates the problem. Sometimes with aspects, a
+test case requires several files, if not some way to capture the
+behavior. Here's how we recommend submitting test cases:
+
+[arabic]
+. Write the test case so that when the compiler bug is fixed, the test
+completes normally without output (e.g., expected compiler errors are
+issued, or classes produced run correctly). This usually means writing
+one or more source files.
+. In the bug report, briefly summarize the bug. If it is not obvious, be
+sure to specify the expected output/behavior (e.g., compiler error on
+line 32) and, if the compile should complete, the main class to run.
+. Submit the bugs via the web form
+http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ .
+. Attach the test case to the bug. The test case may be a single file or
+it may be multiple files in a single zip archive, of the form discussed
+in #q:harnesstestcases[Q:How should I submit test cases for bugs?].
+
+*Q:* Can you recommend reading or teaching material for AspectJ?
+
+*A:* The documentation available in the distribution is the best source
+for language and usage questions. You can also find selected AspectJ
+papers and presentations on the
+http://www.parc.com/groups/csl/projects/aspectj/index.html[PARC AspectJ
+page]. For links to Aspect-oriented programming materials in general,
+see http://aosd.net.
+
+*Q:* Where can our group get consulting and support?
+
+*A:* The best thing to to is join and email the
+`aspectj-dev@eclipse.org` mailing list.
+
+*Q:* What has changed since the last FAQ version?
+
+*A:* Entries changed recently:
+
+* #q:license[Q:How is AspectJ licensed?]
+* #q:productplans[Q:Is it safe to use AspectJ in my product plans??]
+* #q:whitepapers[Q:How does the compiler/weaver work? Are there any
+white papers?]
+* #q:bugreports[Q:How do I submit a bug report?]
+
+[[project]]
+== About the AspectJ Project
+
+*Q:* What does the fact that AspectJ is an Open Source Project mean to
+me?
+
+*A:* Open source protects your interest in a correct, long-lived,
+up-to-date, and widely-accepted implementation of AspectJ.
+
+* With the source code, you control your own destiny in perpetuity. You
+can continue to use the implementation and update it as necessary to fix
+bugs and add things you need.
+* Because the code is available to all, anyone can find and fix bugs.
+There is no need to hope for it to be fixed in the next product release.
+Those who encounter the bugs are motivated to fix them, and there are
+more eyeballs on the code than in closed-source, so the quality tends to
+be high. This can be particularly true for the AspectJ community, which
+tends to be highly skilled.
+* The same is true of new features or behavior, so the implementation
+should be up-to-date. This is important as the field of AOP develops, to
+capture the latest solutions.
+* For a programming language which forms the basis of an entire solution
+stack, open source facilitates the kind of adoption -- tool integrations
+and significant projects -- that develop and prove the technology for
+wider adoption. This limits delays caused by waiting for the completion
+of standards process or promulgation by industry leaders, and also
+provides the proofs necessary for such adoption.
+
+*Q:* What are your plans to make AspectJ a general feature of Java
+supported by Sun and the other key players in the Java Industry?
+
+*A:* Although we are committed to making AspectJ available to a wide
+range of users, it is too early to decide on a strategy. Some options
+include continuing AspectJ as a stand-alone product, integrating it into
+IDEs, or possibly incorporating it into standard Java with Sun's
+blessing.
+
+We currently focus on developing for the 1.1 implementation which
+improves AspectJ in key areas: rapid incremental compilation, bytecode
+weaving, and IDE integration.
+
+Through all of this our goal is to make AspectJ integrate as seamlessly
+as possible with the Java programming language. The AspectJ language
+design is becoming more integrated, the compiler is becoming faster and
+more integrated, the IDE extensions are becoming more integrated. All of
+this is designed to help users really use AspectJ and give us feedback
+on it.
+
+As the system is improved and we work more closely with users, we will
+be in good position to explore the best path for AspectJ in the long
+term.
+
+*Q:* When will AspectJ work from class files? When will it work at
+class-loading time?
+
+*A:* Bytecode weaving is in AspectJ 1.1. We believe it works as
+described in an email to the users list by Jim Hugugin:
+
+The AspectJ language was designed to support weaving at many different
+times: compile, load, or even run-time in the JVM. Weaving into
+bytecodes at both compile and load-time will definitely be provided in a
+future release. This will allow weaving at compile-time into libraries
+for which source code is not available. It will also support
+aspect-aware class loaders that can perform weaving at load time on
+arbitrary classes. One advantage of a language like AspectJ, rather than
+an explicit meta-tool like jiapi, is that it separates the specification
+of a crosscutting concern from any particular implementation strategy
+for weaving.
+
+...AspectJ provides a language that can cleanly capture crosscutting
+concerns while preserving the static type checking, modularity, and
+composability of Java.
+
+If you have an application for using aspects and bytecode, please let
+the AspectJ team know of your requirements. We expect to have a
+demonstration classloader available in the 1.1 release or soon
+thereafter.
+
+*Q:* What are the differences between the current and previously
+released versions of AspectJ?
+
+*A:* The AspectJ team aims to keep the implementation bug-free and
+up-to-date with the Java language, to limit AspectJ language changes to
+those that are carefully considered, compelling, and
+backwards-compatible, and to deliver those language changes only in
+significant releases (1.0, 1.1).
+
+[cols=",",]
+|===
+|Version |Description
+
+|AspectJ 1.5 |Upgrade to support Java 5 language and much better
+load-time weaving. See README-150.html for more details.
+
+|AspectJ 1.1 |A few language changes and clarifications; bytecode
+weaving and incremental compilation. See README-11.html for more detail.
+
+|AspectJ 1.0 |Many language changes, fixes, cleanup and clarifications,
+some significant.
+
+|AspectJ 0.8 |More cleanup of the syntax and semantics.
+
+|AspectJ 0.7 |Clean up of the semantics, 0.7 beta 4 is the first open
+source release.
+
+|AspectJ 0.6 |Advice and crosscuts get explicit type signatures which
+describe the values that are available to advice at a crosscut.
+
+|AspectJ 0.5 |Improved tool support: better Emacs environment support
+and `ajdoc` to parallel `javadoc`. around advice is added, and the
+`aspect` keyword is removed and replaced by the Java keyword class.
+
+|AspectJ 0.4 |Clear separation of crosscuts and crosscut actions makes
+it possible to define extensible library aspects.
+
+|AspectJ 0.3 |First all Java implementation, also includes many small
+language improvements.
+
+|AspectJ 0.2 |General-purpose support for crosscutting. Users could
+program any kind of aspects, not just coordination. This release dropped
+COOL.
+
+|AspectJ 0.1 |A single domain-specific aspect language, called COOL, for
+programming coordination in multi-threaded programs.
+|===
+
+More details for 1.0 and earlier releases are available in changes.html.
+
+*Q:* What is the AspectJ development schedule?
+
+*A:* Below is a table describing the goals for the major releases. For
+information about specific features, search the bug database for `RFE`'s
+("requests for enhancement") by
+http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_severity=enhancement[selecting
+severity of "enhancement"]. Like many open-source projects, we don't
+make or promise schedules, but we do follow a pattern of issuing preview
+releases which can give observers an idea of when a particular release
+might be available.
+
+.The AspectJ Development Schedule
+[cols=",",]
+|===
+|Version |Description
+
+|1.0 |Final syntax and semantic changes. Standalone structure browser.
+Complete documentation.
+
+|1.1 |Faster incremental compilation, bytecode weaving, and a small
+number of language changes.
+
+|1.2 |Faster weaving, -inpath option, better error messages, better
+handling of binary input and resources during incremental compilation,
+faster runtime
+
+|1.5 (AspectJ 5) |Support for Java 1.5, generic aspects, annotations,
+etc. Integrates AspectWerkz-style load-time weaving.
+|===
+
+*Q:* Will AspectJ support Java 5?
+
+*A:* Yes. Java 5 is supported in AspectJ 5.
+
+AspectJ is a registered trademark of Palo Alto Research Center,
+Incorporated (PARC), used with permission. Java and all Java-based marks
+are trademarks or registered trademarks of Sun Microsystems, Inc. in the
+United States and other countries. All other trademarks are the property
+of their respective owners.

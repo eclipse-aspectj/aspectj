@@ -1,0 +1,171 @@
+[.small]#© Copyright 2014 Contributors. All rights reserved.#
+
+== AspectJ 1.8.2 Readme
+
+The full list of resolved issues in 1.8.2 is available
+https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.2;[here]
+
+.
+
+* 1.8.2 available 14-Aug-2014
+
+=== Notable changes
+
+Although only a few bugs have been fixed here, they are quite important
+ones:
+
+==== Update to more recent Eclipse Compiler
+
+AspectJ is now based on a more up to date Eclipse compiler level (git
+hash 2b07958) so includes all the latest fixes
+
+==== Correct handling of RuntimeInvisibleTypeAnnotations (type annotations without runtime visibility)
+
+For anyone weaving code containing these kind of type annotations, this
+is an important fix. Although AspectJ does not currently support
+pointcuts matching on these kinds of annotation it was crashing when
+they were encountered. That is now fixed.
+
+==== Annotation processing
+
+A very long standing issue, the AspectJ compiler now supports annotation
+processors thanks to some work by Sergey Stupin.
+
+Here is a short example, a very basic annotation and application:
+
+===== Marker.java
+
+``
+
+....
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Marker { }
+....
+
+===== Code.java
+
+``
+
+....
+public class Code {
+
+  public static void main(String []argv) {
+    new Code().moo();
+    new Code().boo();
+    new Code().too();
+    new Code().woo();
+  }
+
+  public void moo() {}
+    
+  @Marker
+  public void boo() {}
+    
+  @Marker
+  public void too() {}
+    
+  public void woo() {}
+}
+....
+
+And now a basic annotation processor. This processor will find methods
+in the source marked with the annotation Marker and for each one
+generate an aspect tailored to advising that method (this *is* a
+contrived demo!)
+
+===== DemoProcessor.java
+
+``
+
+....
+import java.io.*;
+import javax.tools.*;
+import java.util.*;
+import javax.annotation.processing.*;
+import javax.lang.model.*;
+import javax.lang.model.element.*;
+
+@SupportedAnnotationTypes(value= {"*"})
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+public class DemoProcessor extends AbstractProcessor { 
+
+  private Filer filer;
+
+  @Override
+  public void init(ProcessingEnvironment env) {
+    filer = env.getFiler();
+  }
+
+  @Override
+  public boolean process(Set elements, RoundEnvironment env) {
+    // Discover anything marked with @Marker
+    for (Element element: env.getElementsAnnotatedWith(Marker.class)) {
+      if (element.getKind() == ElementKind.METHOD) {
+        // For any methods we find, create an aspect:
+        String methodName = element.getSimpleName().toString();
+        String aspectText = 
+            "public aspect Advise_"+methodName+" {\n"+
+            "  before(): execution(* "+methodName+"(..)) {\n"+
+            "    System.out.println(\""+methodName+" running\");\n"+
+            "  }\n"+
+            "}\n";
+        try {
+          JavaFileObject file = filer.createSourceFile("Advise_"+methodName, element);
+          file.openWriter().append(aspectText).close();
+          System.out.println("Generated aspect to advise "+element.getSimpleName());
+        } catch (IOException ioe) {
+          // already creates message can appear if processor runs more than once
+          if (!ioe.getMessage().contains("already created")) {
+            ioe.printStackTrace();
+          }
+        }
+      }
+    }
+    return true;
+  }
+}
+....
+
+With those sources, we compile the processor:
+
+``
+
+....
+ajc -1.6 DemoProcessor.java Marker.java
+....
+
+Now compile the code with the processor specified:
+
+``
+
+....
+ajc -1.6 -processor DemoProcessor -showWeaveInfo Code.java Marker.java
+....
+
+``
+
+....
+Generated aspect to advise too
+Generated aspect to advise boo
+Join point 'method-execution(void Code.boo())' in Type 'Code' (Code.java:14) advised by before advice from 'Advise_boo' (Advise_boo.java:2)
+Join point 'method-execution(void Code.too())' in Type 'Code' (Code.java:17) advised by before advice from 'Advise_too' (Advise_too.java:2)
+....
+
+Notice the processor generates the aspects and then they are woven into
+the code being compiled immediately.
+
+Finally we can run it:
+
+``
+
+....
+java Code
+boo running
+too running
+....
+
+*Note:* There is still work to be done to get annotation processors
+behaving under AJDT.

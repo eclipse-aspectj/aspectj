@@ -1,0 +1,199 @@
+== Messages
+
+[[messages-introduction]]
+=== Introduction
+
+Messages point out potential problems in the input program; some are
+clearly problems (errors), but many more may depend on what the
+programmer intends. To keep the noise down the latter are treated as
+warnings which can be ignored by the programmer or information which are
+hidden. However, when investigating unexpected behavior it's helpful to
+show them. This section describes how to configure messages, presents
+some problem scenarios when compiling or doing load-time weaving, and
+summarizes some of the more relevant messages.
+
+[[messages-introduction-config]]
+==== Configuring Messages
+
+The compiler offers `-verbose`, `-warning`, and `-XLint` options when
+invoked using the command-line, Ant, or embedded in an IDE. All options
+are listed in the AspectJ Development Environment Guide sections for
+xref:../devguide/ajc-ref.html[Ajc] and
+xref:../devguide/antTasks-iajc.html[Ant Tasks]. The
+xref:../devguide/ltw.html[Load-time Weaving] section describes how to
+use XML configuration files and system properties to pass options to the
+weaver. (You can also pass options to the weaver using system properties
+in build- time weaving.) The `-verbose` option has the effect of
+including messages level "info", which are normally ignored. Both
+`warning` and `XLint` enable you to identify specific messages to emit,
+but warning messages tend to be the same provided by the underlying
+Eclipse JDT (Java) compiler, while XLint messages are emitted by the
+AspectJ compiler or weaver. Obviously, during load-time weaving only
+weaver messages will be emitted. Similarly, if aspects are compiled but
+not woven, then only compiler messages will be emitted. However, the
+usual case for the compiler/weaver working at build time is to emit both
+compiler and weaver messages.
+
+The tables below list some options, System Properties (for LTW only) and
+Java 5 annotations used to control AspectJ messages. The method of
+configuration depends on your environment so please refer to the
+relevant documentation for xref:../devguide/ajc-ref.html[ajc],
+xref:../devguide/antTasks.html[Ant] or
+xref:../devguide/ltw-configuration.html#weaver-options[LTW].
+
+[cols=",",options="header",]
+|===
+|Option |Description
+|`-verbose` |Show informational messages including AspectJ version and
+build date.
+
+|`-debug` |(Load-time weaving only). Show debugging messages such as
+which classes are being woven or those that are excluded. (This is not
+related to the compiler -g option to include debug information in the
+output .class files.)
+
+|`-showWeaveInfo` |Show weaving messages.
+
+|`-Xlint` |Control level of lint messages.
+
+|`messageHolderClass`/ `-XmessageHolderClass:` |In Ant tasks and LTW
+respectively specify the class to receive all messages. See
+xref:../devguide/antTasks-iajc.html#antTasks-iajc-options[iajc task
+options] or
+xref:../devguide/ltw-configuration.html#weaver-options[Weaver Options].
+|===
+
+[cols=",",options="header",]
+|===
+|System Property |Description
+|`aj.weaving.verbose` |Show informational messages including AspectJ
+version and build date (same as `-verbose` option).
+
+|`org.aspectj.weaver.showWeaveInfo` |Show weaving messages (same as
+`-showWeaveInfo` option).
+
+|`org.aspectj.weaving.messages` |Set this system property to enable
+tracing of all compiler messages. See xref:#trace-configuration[???].
+|===
+
+[cols=",",options="header",]
+|===
+|Annotation |Description
+|`@SuppressAjWarnings` |Include this is Java 5 code to suppress AspectJ
+warnings associated with the next line of code.
+|===
+
+[[messages-scenarios]]
+=== Message scenarios
+
+[[messages-scenarios-ct]]
+==== Compile-time weaving scenarios
+
+[[messages-scenarios-ct-adviceNotWoven]]
+===== Advice not woven
+
+This means that the pointcut for the advice did not match, and it should
+be debugged as described in xref:#pointcuts[???].
+
+[[messages-scenarios-ltw]]
+==== Load-time weaving scenarios
+
+You can use `META-INF/aop.xml` to control which messages are produced
+during LTW. The following example will produce basic informational
+messages about the lifecyle of the weaver in addition to any warning or
+error messages.
+
+....
+<aspectj>
+    <weaver options="-verbose">
+    </weaver>
+</aspectj>
+....
+
+The messages indicate which `META-INF/aop.xml` configurations file(s)
+are being used. Each message is also preceeded by the name of the
+defining class loader associated with weaver. You can use this
+information in a large system to distinguish between different
+applications each of which will typically have its own class loader.
+
+....
+[AppClassLoader@92e78c] info AspectJ Weaver Version 1.5.3 built on Thursday Oct 26, 2006 at 17:22:31 GMT
+[AppClassLoader@92e78c] info register classloader sun.misc.Launcher$AppClassLoader@92e78c
+[AppClassLoader@92e78c] info using configuration /C:/temp/META-INF/aop.xml
+[AppClassLoader@92e78c] info using configuration /C:/temp/META-INF/aop-ajc.xml
+[AppClassLoader@92e78c] info register aspect ExceptionHandler
+[AppClassLoader@92e78c] info processing reweavable type ExceptionHandler: ExceptionHandler.aj
+....
+
+[[messages-scenarios-ltw-adviceNotWoven]]
+===== Advice not woven
+
+It is often difficult to determine, especially when using load-time
+weaving (LTW), why advice has not been woven. Here is a quick guide to
+the messages to look for. Firstly if you use the `-verbose` option you
+should see the following message when your aspect is registered:
+
+....
+info register aspect MyAspect
+....
+
+Secondly if you use the `-debug` option you should see a message
+indicating that you class is being woven:
+
+....
+debug weaving 'HelloWorld'
+....
+
+However this does not mean that advice has actually been woven into your
+class; it says that the class has been passed to the weaver. To
+determine whether your pointcuts match you can use the `-showWeaveInfo`
+option which will cause a message to be issued each time a join point is
+woven:
+
+....
+weaveinfo Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' ...
+....
+
+If advice is woven at this join point you should get the corresponding
+message.
+
+[[messages-xlint]]
+=== Lint messages
+
+The table below lists some useful `-Xlint` messages.
+
+[cols=",,",options="header",]
+|===
+|Message |Default |Description
+|`aspectExcludedByConfiguration` |`ignore` |If an aspect is not being
+woven, despite being registered, it could be that it has been excluded
+by either an `include` or `exclude` element in the `aspects` section of
+`META-INF/aop.xml`. Enable this message to determine whether an aspect
+has been excluded.
+
+|`adviceDidNotMatch` |`warning` |Issued when advice did not potentially
+affect any join points. This means the corresponding pointcut did not
+match any join points in the program. This may be valid e.g., in library
+aspects or code picking up error conditions, but often the programmer
+simply made a mistake in the pointcut. The best approach is to debug the
+pointcut.
+
+|`invalidAbsoluteTypeName` |`warning` |Issued when an exact type in a
+pointcut does not match any type in the system. Note that this can
+interact with the rules for resolving simple types, which permit
+unqualified names if they are imported.
+
+|`typeNotExposedToWeaver` |`warning` |This means that a type which could
+be affected by an aspect is not available for weaving. This happens when
+a class on the classpath should be woven.
+
+|`runtimeExceptionNotSoftened` |`warning` |Before AspectJ 5, declare
+soft used to soften runtime exceptions (unnecessarily). Since then, it
+does not but does issue this warning in case the programmer did intend
+for the exception to be wrapped.
+
+|`unmatchedSuperTypeInCall` |`warning` |Issued when a call pointcut
+specifies a defining type which is not matched at the call site (where
+the declared type of the reference is used, not the actual runtime
+type). Most people should use 'target(Foo) && call(void foo())' instead.
+|===
