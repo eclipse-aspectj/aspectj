@@ -189,9 +189,16 @@ public class LocalVariableTable extends Attribute {
 		return buf.toString();
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	/**
+	 * Returns copy of this attribute using same packed state. Used in unit tests.
+	 */
+	public synchronized LocalVariableTable copyFromPackedState() {
+		if (!isInPackedState) throw new IllegalStateException("No in packed state");
+		try {
+			return new LocalVariableTable(nameIndex, length, new DataInputStream(new ByteArrayInputStream(data)), getConstantPool());
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to unpack clone", e);
+		}
 	}
 
 	/**
