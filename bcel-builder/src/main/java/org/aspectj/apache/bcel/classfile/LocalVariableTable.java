@@ -190,6 +190,18 @@ public class LocalVariableTable extends Attribute {
 	}
 
 	/**
+	 * Returns copy of this attribute using same packed state. Used in unit tests.
+	 */
+	public synchronized LocalVariableTable copyFromPackedState() {
+		if (!isInPackedState) throw new IllegalStateException("No in packed state");
+		try {
+			return new LocalVariableTable(nameIndex, length, new DataInputStream(new ByteArrayInputStream(data)), getConstantPool());
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to unpack clone", e);
+		}
+	}
+
+	/**
 	 * @return deep copy of this attribute
 	 */
 	// public Attribute copy(ConstantPool constant_pool) {
@@ -223,7 +235,7 @@ public class LocalVariableTable extends Attribute {
 			dis.close();
 			data = null; // throw it away now
 		} catch (IOException e) {
-			throw new RuntimeException("Unpacking of LocalVariableTable attribute failed");
+			throw new RuntimeException("Unpacking of LocalVariableTable attribute failed", e);
 		}
 		isInPackedState = false;
 	}
