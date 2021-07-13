@@ -59,7 +59,7 @@ pointcut expressions and bound as formals in advice.
 ==== Matching signatures based on variable length argument types
 
 Recall from the definition of signature patterns given in the chapter on
-annotations (xref:#signaturePatterns[???]), that `MethodPattern` and
+annotations (xref:annotations.adoc#signaturePatterns[Signature Patterns]), that `MethodPattern` and
 `ConstructorPattern` are extended to allow a `varargs` pattern in the
 last argument position of a method or constructor signature.
 

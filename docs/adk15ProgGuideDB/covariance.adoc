@@ -46,7 +46,7 @@ A A.whoAreYou()
 B B.whoAreYou()
 ....
 
-Following the join point matching rules given in xref:#jpsigs[???],
+Following the join point matching rules given in xref:joinpointsignatures.adoc#jpsigs[Join Point Signatures].
 
 call(* whoAreYou())::
   Matches both calls, (since each call join point has at least one

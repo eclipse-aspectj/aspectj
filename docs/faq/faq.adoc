@@ -1,3 +1,4 @@
+[[faq]]
 = AspectJ FAQ
 
 _Copyright (c) 1997-2001 Xerox Corporation, 2002 Palo Alto Research
@@ -156,6 +157,7 @@ keep. On Windows, no registry settings were added or changed, so nothing
 needs to be undone. Do not install over prior versions, which might have
 different files. Delete the prior version first.
 
+[[howToStartUsing]]
 *Q:* How should I start using AspectJ?
 
 *A:* Many users adopt AspectJ in stages, first using it to understand
@@ -186,6 +188,7 @@ builds.
 This adoption sequence works well in practice and has been followed by
 many projects.
 
+[[integrateWithDevTools]]
 *Q:* How does AspectJ integrate with existing Java development tools?
 
 *A:* AspectJ products are designed to make it easy to integrate AspectJ
@@ -2583,7 +2586,7 @@ JBuilder, and NetBeans through a common API, AJDE.
 *Q:* What are the new features of AspectJ 5?
 
 *A:* All the new features are documented in the
-link:adk15notebook/index.html[AspectJ 5 Developer's Notebook] and the
+xref:../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook] and the
 link:devguide/index.html[AspectJ Development Environment Guide]. To
 summarize:
 
@@ -2639,6 +2642,7 @@ compilable by Javac, but you can't use the full AspectJ language, and
 you don't enjoy the same level of IDE support for viewing crosscutting
 structure.
 
+[[ltw]]
 *Q:* What's new about the load-time weaving support in AspectJ 5?
 
 *A:* While the AspectJ weaver could be used at load-time in previous
@@ -3289,6 +3293,7 @@ white papers?]
 [[project]]
 == About the AspectJ Project
 
+[[opensource]]
 *Q:* What does the fact that AspectJ is an Open Source Project mean to
 me?
 

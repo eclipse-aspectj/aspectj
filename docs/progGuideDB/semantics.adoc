@@ -2487,7 +2487,7 @@ a join point picked out by <Pointcut> where there is no associated
 aspect of type A.
 
 Both `perthis` and `pertarget` aspects may be affected by code the
-AspectJ compiler controls, as discussed in the xref:#implementation[???]
+AspectJ compiler controls, as discussed in the xref:implementation.adoc#implementation[Implementation Notes]
 appendix.
 
 ===== Per-control-flow aspects

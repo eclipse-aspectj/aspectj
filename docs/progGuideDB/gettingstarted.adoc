@@ -23,7 +23,8 @@ examples illustrate the kinds of aspects programmers may want to
 implement using AspectJ and the benefits associated with doing so.
 Readers who would like to understand the examples in more detail, or who
 want to learn how to program examples like these, can find more complete
-examples and supporting material linked from the https://www.eclipse.org/aspectj/:[AspectJ web site].
+examples and supporting material linked from the
+https://www.eclipse.org/aspectj/[AspectJ web site].
 
 A significant risk in adopting any new technology is going too far too
 fast. Concern about this risk causes many organizations to be
@@ -38,7 +39,7 @@ testing and performance tuning of applications. And, in the section
 following, xref:#starting-production[Production Aspects], we present
 aspects that implement crosscutting functionality common in Java
 applications. We will defer discussing a third category of aspects,
-reusable aspects, until xref:#language[???].
+reusable aspects, until xref:language.adoc[The AspectJ Language].
 
 These categories are informal, and this ordering is not the only way to
 adopt AspectJ. Some developers may want to use a production aspect right
@@ -945,8 +946,8 @@ are also highly modular, making it possible to develop plug-and-play
 implementations of crosscutting functionality.
 
 AspectJ provides more functionality than was covered by this short
-introduction. The next chapter, xref:#language[???], covers in detail
+introduction. The next chapter, xref:language.adoc[The AspectJ Language], covers in detail
 more of the features of the AspectJ language. The following chapter,
-xref:#examples[???], then presents some carefully chosen examples that
+xref:examples.adoc[Examples], then presents some carefully chosen examples that
 show you how AspectJ might be used. We recommend that you read the next
 two chapters carefully before deciding to adopt AspectJ into a project.

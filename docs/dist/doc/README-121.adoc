@@ -108,7 +108,7 @@ aspectjtools.jar around (aspectjweaver.jar is approx. 5 times smaller).
 
 In addition, the load-time weaving "aj" script which was included in the
 doc/examples/ltw directory in the 1.2 distribution has been moved into
-the regular bin directory. See link:README-12.html[README-12] for
+the regular bin directory. See xref:README-12.adoc[README-12] for
 details of using this script.
 
 === Binary Compatibility
@@ -125,8 +125,7 @@ comes with the distribution you used to build your application.
 
 '''''
 
-[#allchanges]##
-
+[[allchanges]]
 === All changes are listed in the bug database
 
 For a complete list of changes in the 1.2.1 release, search for

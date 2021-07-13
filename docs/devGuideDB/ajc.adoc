@@ -15,7 +15,7 @@
 The `ajc` command compiles and weaves AspectJ and Java source and .class
 files, producing .class files compliant with any Java VM (1.1 or later).
 It combines compilation and bytecode weaving and supports incremental
-builds; you can also weave bytecode at run-time using xref:#ltw[???].
+builds; you can also weave bytecode at run-time using xref:ltw.adoc#ltw[Load-Time Weaving].
 
 The arguments after the options specify the source file(s) to compile.
 To specify source classes, use `-inpath` (below). Files may be listed
@@ -255,7 +255,7 @@ http://java.sun.com/docs/books/vmspec/index.html[The Java Virtual
 Machine Specification, Second Edition] and runs on any Java 2 compatible
 platform. The code it generates runs on any Java 1.1 or later compatible
 platform. For more information on compatibility with Java and with
-previous releases of AspectJ, see xref:#versionCompatibility[???].
+previous releases of AspectJ, see xref:compatibility.adoc#versionCompatibility[Version Compatibility].
 
 ==== Examples
 

@@ -9,8 +9,7 @@
 
 '''''
 
-[#split]##
-
+[[split]]
 === Split matching/weaving
 
 The main goal of AspectJ 1.6.3 was to make the line between matching and
@@ -43,8 +42,7 @@ and reflection based - both of which require compilation).
 
 '''''
 
-[#bugsfixed]##
-
+[[bugsfixed]]
 === Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.3 (more than 50)
@@ -58,8 +56,7 @@ issues.
 
 '''''
 
-[#notable]##
-
+[[notable]]
 === Notable bug fixes
 
 * More improvements to the way AspectJ/AJDT communicate (251277, 249216,
@@ -74,8 +71,7 @@ type (256669)
 
 '''''
 
-[#whatsnext]##
-
+[[whatsnext]]
 === What's next?
 
 The JDT World should be completed in the 1.6.4 timeframe and that will

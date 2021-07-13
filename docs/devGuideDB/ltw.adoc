@@ -98,18 +98,18 @@ Agents::
 Command-line wrapper scripts `aj`::
   The `aj` command runs Java programs in Java 1.4 or later by setting up
   `WeavingURLClassLoader` as the system class loader. For more
-  information, see xref:#aj[???].
+  information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
   +
   The `aj5` command runs Java programs in Java 5 by using the
   `-javaagent:pathto/aspectjweaver.jar` option described above. For more
-  information, see xref:#aj[???].
+  information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
 Custom class loader::
   A public interface is provided to allow a user written class loader to
   instantiate a weaver and weave classes after loading and before
   defining them in the JVM. This enables load-time weaving to be
   supported in environments where no weaving agent is available. It also
   allows the user to explicitly restrict by class loader which classes
-  can be woven. For more information, see xref:#aj[???] and the API
+  can be woven. For more information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher] and the API
   documentation and source for `WeavingURLClassLoader` and
   `WeavingAdapter`.
 

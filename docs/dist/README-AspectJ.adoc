@@ -104,7 +104,8 @@ ____
 
 '''''
 
-=== [#configInstructions]#4. Configuration Instructions#
+[[configInstructions]]
+=== 4. Configuration Instructions
 
 ==== 4.1 Adding `<aspectj install dir>/lib/aspectjrt.jar` to your classpath
 

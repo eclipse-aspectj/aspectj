@@ -38,10 +38,10 @@ sending the output to the `docDir` output directory.
 ajdoc -d docDir @argfile.lst
 ....
 
-See the xref:#ajc[ajc documentation] for details on the text file
+See xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver] for details on the text file
 format.
 
-`ajdoc` honours `ajc` options. See the xref:#ajc_options[ajc
+`ajdoc` honours `ajc` options. See the xref:ajc.adoc#ajc_options[ajc
 documentation] for details on these options.
 
 `ajdoc` currently requires the `tools.jar` from J2SE 1.3 to be on the

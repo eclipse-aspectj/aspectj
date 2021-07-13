@@ -74,7 +74,7 @@ debugging the project.
 
 == Navigating the Program Structure
 
-Navigation of program structure is provided by the xref:#ajbrowser[???],
+Navigation of program structure is provided by the xref:ajbrowser.adoc#ajbrowser[AspectJ Browser],
 so apart from a JBuilder look and feel, the extra navigation AspectJ
 allows work as described there. In particular, you can use views with
 labels 1, 2 and 4 of the second screenshot to navigate structure using
@@ -84,9 +84,9 @@ toolbar shown by label 3 of the second screenshot.
 == Manipulating Build Configurations
 
 Build configurations can be manipulated adding, removing, and editing
-build configuration files. The xref:#ajbrowser[???] is used to select
+build configuration files. The xref:ajbrowser.adoc#ajbrowser[AspectJ Browser] is used to select
 the current build configuration. Configurations are represented by
-".lst" files which are described in the xref:#ajc[???] documentation.
+".lst" files which are described in the xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver] documentation.
 
 === Adding and Removing Build Configurations
 
