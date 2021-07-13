@@ -9,8 +9,7 @@
 
 '''''
 
-[#compilation]##
-
+[[compilation]]
 === Compilation times
 
 In AspectJ 1.6.4 the goal was to improve the IDE experience, through a
@@ -122,8 +121,7 @@ http://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.
 
 '''''
 
-[#language]##
-
+[[language]]
 === Language Enhancements
 
 *Optimizing support for maintaining per join point state*
@@ -214,8 +212,7 @@ deprecated.
 
 '''''
 
-[#bugsfixed]##
-
+[[bugsfixed]]
 === Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.4 (more than 70)
@@ -226,8 +223,7 @@ resolved]
 
 '''''
 
-[#whatsnext]##
-
+[[whatsnext]]
 === What's next?
 
 *More incremental build enhancements*

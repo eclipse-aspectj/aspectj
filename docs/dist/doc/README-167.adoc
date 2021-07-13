@@ -20,15 +20,15 @@ looks a little like this:
 
 ....
 Pointcut matching cost (total=6532ms for 675000 joinpoint match calls):
-Time:482ms (jps:#168585) matching against 
+Time:482ms (jps:#168585) matching against
     (staticinitialization(*y*.()) && persingleton(SimpleAspect))
-Time:3970ms (jps:#168585) matching against 
+Time:3970ms (jps:#168585) matching against
     (execution(* *t*.*(*)) && persingleton(SimpleAspect))
-Time:538ms (jps:#168584) matching against 
+Time:538ms (jps:#168584) matching against
     (execution(* *f*(..)) && persingleton(SimpleAspect))
-Time:1536ms (jps:#168584) matching against 
+Time:1536ms (jps:#168584) matching against
     (execution(* java.lang.CharSequence+.*e*(..)) && persingleton(SimpleAspect))
-Time:4ms (jps:#662) matching against 
+Time:4ms (jps:#662) matching against
     (within(*p*) && persingleton(SimpleAspect))
 ....
 
@@ -170,8 +170,7 @@ value.
 
 '''''
 
-[#bugsfixed]##
-
+[[bugsfixed]]
 ==== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.7 can be found with

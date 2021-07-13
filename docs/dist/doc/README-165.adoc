@@ -2,8 +2,7 @@
 
 == AspectJ 1.6.5 Readme
 
-[#bugsfixed]##
-
+[[bugsfixed]]
 === Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.5 can be found with

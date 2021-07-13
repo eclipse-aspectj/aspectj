@@ -21,7 +21,7 @@ Users should define the environment variables `CLASSPATH` and
 `ASPECTPATH`.
 
 For more information and alternatives for load-time weaving, see
-xref:#ltw[???].
+xref:ltw.adoc#ltw[Load-Time Weaving].
 
 === Examples
 

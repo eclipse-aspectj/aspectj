@@ -1,10 +1,9 @@
-© Copyright 1997-2001 Xerox Corporation. All rights reserved.
+[[_5]]
+== Exploring the Spacewar Example
 
-*Last updated*: January 10, 2001
+_© Copyright 1997-2001 Xerox Corporation. All rights reserved._
 
-
-
-== [#5]#Exploring the Spacewar Example#
+_Last updated: January 10, 2001_
 
 The code in this directory is an implementation of the classic video
 game Spacewar.
@@ -19,12 +18,14 @@ version of AspectJ correctly installed. If you're not sure you do, try
 the helloworld example first by following the instructions in
 xref:../doc/primer/default.html[Primer] section Getting Started.
 
-=== [#5.1]#Compiling Spacewar#
+[[_5_1]]
+=== Compiling Spacewar
 
 * Change to the `examples` directory.
 * Type `ajc -argfile spacewar/demo.lst` to compile the system.
 
-=== [#5.2]#Running Spacewar#
+[[_5_2]]
+=== Running Spacewar
 
 * In the examples directory, type `java spacewar.Game`
 
@@ -40,7 +41,8 @@ focus so that your keystrokes are recognized.
 
 You can quit the game with ctl-Q.
 
-=== [#5.3]#Exploring the Code#
+[[_5_3]]
+=== Exploring the Code
 
 There is one other built-in configurations for the Spacewar game. Try it
 by typing `ajc @spacewar\debug.lst`. This compiles in an elaborate

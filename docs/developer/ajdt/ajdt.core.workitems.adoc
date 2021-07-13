@@ -114,7 +114,7 @@ etc. depend.
 
 This work package enables the source code of an aspectJ program to be
 modelled as a structured document. Which user-interface actions will be
-broken without this??? (refactoring?)
+broken without this? (Refactoring?)
 
 . In the package org.aspectj.jdt.core.dom, add counterparts to the AspectJ nodes
   already defined in org.aspectj.internal.compiler.ast (not needed first time round?)

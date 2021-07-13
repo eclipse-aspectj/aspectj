@@ -10,7 +10,7 @@ crosscutting structure.
 The AspectJ Browser can edit program source files, compile using the
 AspectJ compiler `ajc` run a program, and graphically navigate the
 program's crosscutting structure. For more information on `ajc`, see
-xref:#ajc-ref[???].
+xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver].
 
 Launch the browser from the command line either by typing "ajbrowser" to
 invoke the script in `{aspectj}/bin` (if AspectJ is installed correctly)
@@ -32,7 +32,7 @@ optionally some additional compile arguments). Because `ajc` requires
 all sources to be specified (at least using the `-sourceroots` option),
 most users create `.lst` files that list the files to compile (one
 argument per line, globbing permitted - for more details, see
-xref:#ajc-ref[???]).
+xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver]).
 
 To work with a particular program, select the corresponding ".lst" build
 configuration file from the GUI using the File menu, "open" item, or by

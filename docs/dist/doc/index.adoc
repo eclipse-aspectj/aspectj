@@ -1,9 +1,8 @@
-[#top]##
-
+[[top]]
 == AspectJ Documentation and Resources
 
-AspectJ ^[.small]#tm#^ is a seamless aspect-oriented extension to
-Java^[.small]#tm#^. The compiler and development tools are available
+AspectJ^TM^ is a seamless aspect-oriented extension to
+Java^TM^. The compiler and development tools are available
 under an open-source license, require Java 1.3 to run, and produce code
 that runs in JDK 1.1 and later VM's. For the latest materials, see
 http://eclipse.org/aspectj. Not all of these materials have been updated
@@ -13,9 +12,9 @@ for AspectJ 5.
 |===
 |+++Section+++ |+++Contents+++
 
-|xref:#documentation[docs] |link:faq.html[FAQ], link:quick5.pdf[Quick
+|xref:#documentation[docs] |xref:../../faq/faq.adoc#faq[FAQ], link:quick5.pdf[Quick
 Reference (AspectJ 5)], link:quick.pdf[Quick Reference (1.2.1)],
-link:adk15notebook/index.html[AspectJ 5 Developer's Notebook],
+xref:../../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook],
 link:progguide/index.html[programming],
 link:devguide/index.html[development] and
 link:pdguide/index.html[problem diagnosis] guides,
@@ -35,8 +34,7 @@ mailto:aspectj-dev@eclipse.org[developers].
 |xref:#paths[paths] |for those new to AspectJ
 |===
 
-[#documentation]##
-
+[[documentation]]
 === AspectJ documentation
 
 [width="100%",cols="50%,50%",options="header",]
@@ -48,7 +46,7 @@ reference for the AspectJ 5 language.
 |link:quick.pdf[AspectJ Quick Reference] |This is a two-page quick
 reference for the AspectJ language.
 
-|link:adk15notebook/index.html[AspectJ 5 Developer's Notebook]
+|xref:../../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook]
 (printable link:adk15notebook/printable.html[html]) |This describes the
 changes to the AspectJ language and tools introduced in the AspectJ 5
 Development Kit. These changes are additive, and are not yet reflected
@@ -87,33 +85,33 @@ team.
 runtime classes. JoinPoint shows the state automatically available at
 each join point. See also the link:weaver-api/index.html[Weaver API]
 
-|link:faq.html[FAQ] |Frequently-asked questions about the AspectJ
+|xref:../../faq/faq.adoc#faq[FAQ] |Frequently-asked questions about the AspectJ
 language, tools, and project.
 
 |README's |Changes and porting guide for AspectJ
-link:README-197.html[1.9.7], link:README-196.html[1.9.6],
-link:README-195.html[1.9.5], link:README-194.html[1.9.4],
-link:README-193.html[1.9.3], link:README-192.html[1.9.2],
-link:README-191.html[1.9.1], link:README-190.html[1.9.0],
-link:README-1811.html[1.8.11], link:README-1810.html[1.8.10],
-link:README-189.html[1.8.9], link:README-188.html[1.8.8],
-link:README-187.html[1.8.7], link:README-186.html[1.8.6],
-link:README-185.html[1.8.5], link:README-184.html[1.8.4],
-link:README-183.html[1.8.3], link:README-182.html[1.8.2],
-link:README-181.html[1.8.1], link:README-180.html[1.8.0],
-link:README-174.html[1.7.4], link:README-173.html[1.7.3],
-link:README-172.html[1.7.2], link:README-171.html[1.7.1],
-link:README-170.html[1.7.0], link:README-1612.html[1.6.12],
-link:README-1611.html[1.6.11], link:README-1610.html[1.6.10],
-link:README-169.html[1.6.9], link:README-168.html[1.6.8],
-link:README-167.html[1.6.7], link:README-166.html[1.6.6],
-link:README-165.html[1.6.5], link:README-164.html[1.6.4],
-link:README-163.html[1.6.3], link:README-162.html[1.6.2],
-link:README-161.html[1.6.1], link:README-160.html[1.6.0],
-link:README-154.html[1.5.4], link:README-153.html[1.5.3],
-link:README-152.html[1.5.2], link:README-151.html[1.5.1],
-link:README-150.html[1.5.0], link:README-121.html[1.2.1],
-link:README-12.html[1.2.0], link:README-11.html[1.1], and
+xref:README-197.adoc[1.9.7], xref:README-196.adoc[1.9.6],
+xref:README-195.adoc[1.9.5], xref:README-194.adoc[1.9.4],
+xref:README-193.adoc[1.9.3], xref:README-192.adoc[1.9.2],
+xref:README-191.adoc[1.9.1], xref:README-190.adoc[1.9.0],
+xref:README-1811.adoc[1.8.11], xref:README-1810.adoc[1.8.10],
+xref:README-189.adoc[1.8.9], xref:README-188.adoc[1.8.8],
+xref:README-187.adoc[1.8.7], xref:README-186.adoc[1.8.6],
+xref:README-185.adoc[1.8.5], xref:README-184.adoc[1.8.4],
+xref:README-183.adoc[1.8.3], xref:README-182.adoc[1.8.2],
+xref:README-181.adoc[1.8.1], xref:README-180.adoc[1.8.0],
+xref:README-174.adoc[1.7.4], xref:README-173.adoc[1.7.3],
+xref:README-172.adoc[1.7.2], xref:README-171.adoc[1.7.1],
+xref:README-170.adoc[1.7.0], xref:README-1612.adoc[1.6.12],
+xref:README-1611.adoc[1.6.11], xref:README-1610.adoc[1.6.10],
+xref:README-169.adoc[1.6.9], xref:README-168.adoc[1.6.8],
+xref:README-167.adoc[1.6.7], xref:README-166.adoc[1.6.6],
+xref:README-165.adoc[1.6.5], xref:README-164.adoc[1.6.4],
+xref:README-163.adoc[1.6.3], xref:README-162.adoc[1.6.2],
+xref:README-161.adoc[1.6.1], xref:README-160.adoc[1.6.0],
+xref:README-154.adoc[1.5.4], xref:README-153.adoc[1.5.3],
+xref:README-152.adoc[1.5.2], xref:README-151.adoc[1.5.1],
+xref:README-150.adoc[1.5.0], xref:README-121.adoc[1.2.1],
+xref:README-12.adoc[1.2.0], xref:README-11.adoc[1.1], and
 xref:porting.adoc[1.0].
 
 |link:changes.html[Changes] |Changes between the latest releases.
@@ -124,7 +122,7 @@ tracing library, and a game application where aspects handle display
 updating.
 |===
 
-[#distributions]##
+[[distributions]]
 
 === AspectJ distributions
 
@@ -151,7 +149,7 @@ available under the Apache Software License from the java.net project
 site https://jdeveloperaop.dev.java.net/
 |===
 
-[#resources]##
+[[resources]]
 
 === Other AspectJ resources
 
@@ -190,8 +188,7 @@ workshops, conferences, and technology releases. Use discuss@aosd.net
 for general AOSD discussions.
 |===
 
-[#paths]##
-
+[[paths]]
 === Suggested paths for those new to AspectJ
 
 To learn the AspectJ language, read the
@@ -215,12 +212,12 @@ code the compiler controls.)
 
 To plan how to adopt AspectJ into a project, read the
 link:progguide/index.html[Programming Guide] on development- and
-production-time aspects and the link:faq.html[FAQ] entries for
-faq.html#q:startUsingAJ[How should I start using AspectJ?],
-link:faq.html#adoption[Deciding to adopt AspectJ], the Development tools
-sections (faq.html#q:integrateWithDevTools[one],
-link:faq.html#devtools[two], link:faq.html#ltw[Load-time weaving] ), and
-faq.html#q:opensource[AspectJ as open-source].
+production-time aspects and the FAQ entries for
+xref:../../faq/faq.adoc#howToStartUsing[How should I start using AspectJ?],
+xref:../../faq/faq.adoc#adoption[Deciding to adopt AspectJ], the Development tools
+sections (xref:../../faq/faq.adoc#integrateWithDevTools[How does AspectJ integrate with existing Java development tools?],
+xref:../../faq/faq.adoc#devtools[Integrating AspectJ into your development environment], xref:../../faq/faq.adoc#ltw[Load-time weaving]), and
+xref:../../faq/faq.adoc#opensource[AspectJ as open-source].
 
 Enjoy the language!
 

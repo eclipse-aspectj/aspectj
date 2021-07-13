@@ -76,7 +76,7 @@ can be used like Javac to compile Java sources, but it can also compile
 AspectJ sources or weave binary aspects with Java bytecode. It can run
 in normal "batch" mode or in an "incremental" mode, where it only
 recompiles files it has to revisit. For more information on ajc, see
-xref:#ajc-ref[???]. Unlike Javac or the Javac Ant task, this task always
+xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver]. Unlike Javac or the Javac Ant task, this task always
 compiles the specified files since aspects can apply to other (updated)
 files. For a workaround, see xref:#antTasks-iajc-uptodate[Avoiding clean
 compiles].

@@ -73,7 +73,7 @@ version and build date (same as `-verbose` option).
 `-showWeaveInfo` option).
 
 |`org.aspectj.weaving.messages` |Set this system property to enable
-tracing of all compiler messages. See xref:#trace-configuration[???].
+tracing of all compiler messages. See xref:trace.adoc#trace-configuration[Configuring Tracing].
 |===
 
 [cols=",",options="header",]
@@ -93,7 +93,7 @@ warnings associated with the next line of code.
 ===== Advice not woven
 
 This means that the pointcut for the advice did not match, and it should
-be debugged as described in xref:#pointcuts[???].
+be debugged as described in xref:pointcuts.adoc#pointcuts[Debugging Pointcuts].
 
 [[messages-scenarios-ltw]]
 ==== Load-time weaving scenarios

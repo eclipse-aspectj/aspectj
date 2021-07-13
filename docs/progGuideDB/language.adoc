@@ -4,7 +4,7 @@
 [[language-intro]]
 === Introduction
 
-The previous chapter, xref:#starting[???], was a brief overview of the
+The previous chapter, xref:gettingstarted.adoc[Getting Started with AspectJ], was a brief overview of the
 AspectJ language. You should read this chapter to understand AspectJ's
 syntax and semantics. It covers the same material as the previous
 chapter, but more completely and in much more detail.
@@ -187,7 +187,7 @@ In object-oriented programs, there are several kinds of "things that
 happen" that are determined by the language. We call these the join
 points of Java. Join points consist of things like method calls, method
 executions, object instantiations, constructor executions, field
-references and handler executions. (See the xref:#quick[???] for a
+references and handler executions. (See the xref:quickreference.adoc#quick[AspectJ Quick Reference] for a
 complete listing.)
 
 Pointcuts pick out these join points. For example, the pointcut
@@ -415,7 +415,7 @@ aspect A  {
 The `!within(A)` pointcut above is required to avoid the `printPC`
 pointcut applying to the `System.out.println` call in the advice body.
 If this was not present a recursive call would result as the pointcut
-would apply to its own advice. (See xref:#pitfalls-infiniteLoops[???]
+would apply to its own advice. (See xref:pitfalls.adoc#pitfalls-infiniteLoops[Infinite loops]
 for more details.)
 
 ==== Pointcut Parameters

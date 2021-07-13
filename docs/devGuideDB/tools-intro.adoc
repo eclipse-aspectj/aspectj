@@ -77,8 +77,8 @@ AspectJ program.)
 ==== Classpath, inpath, and aspectpath
 
 AspectJ introduces two new paths for the binary input to the weaver
-which you'll find referenced in xref:#ajc-ref[???],
-xref:#ajbrowser[???], xref:#antTasks[???], and xref:#ltw[???].
+which you'll find referenced in xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver],
+xref:ajbrowser.adoc#ajbrowser[AspectJ Browser], xref:antsupport.adoc[AspectJ Ant Tasks], and xref:ltw.adoc#ltw[Load-Time Weaving].
 
 As in Java, the `classpath` is where the AspectJ tools resolve types
 specified in the program. When running an AspectJ program, the classpath
