@@ -25,8 +25,7 @@ will not be woven.
 
 Here is a simple aspect:
 
-``
-
+[source, java]
 ....
 public aspect Azpect {
   before(): execution(* *(..)) {
@@ -37,8 +36,7 @@ public aspect Azpect {
 
 Compiled via:
 
-``
-
+[source, text]
 ....
 ajc -1.8 Azpect.java -outxml
 ....
@@ -48,8 +46,7 @@ META-INF/aop-ajc.xml.
 
 I then have this sample application (same directory):
 
-``
-
+[source, java]
 ....
 import java.lang.management.ManagementFactory;
 import org.aspectj.weaver.loadtime.Agent;
@@ -96,8 +93,7 @@ public class Application {
 
 And this Sample class:
 
-``
-
+[source, java]
 ....
 public class Sample {
     public void doSomething() {
@@ -116,8 +112,7 @@ JDK tools.jar on your classpath*.
 
 Once compiled we can run it:
 
-``
-
+[source, text]
 ....
 java -DAGENT_PATH=<path-to>/aspectjweaver.jar Application
 ....

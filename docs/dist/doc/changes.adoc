@@ -178,10 +178,10 @@ compiler supports an additional option, -showWeaveInfo, which will
 produce informational messages concerning the activity of the weaver.
 For example:
 +
+[source, text]
 ....
-        Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo'
-        (GetInfo.java:26) [RuntimeTest=true]
-
+Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo'
+(GetInfo.java:26) [RuntimeTest=true]
 ....
 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=44191[44191] AspectJ
 1.2.1 improves the error messages issued in many of the infamous "can't

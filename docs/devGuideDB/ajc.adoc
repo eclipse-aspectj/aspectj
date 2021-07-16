@@ -146,6 +146,7 @@ destination directory on the inpath and rebuild.)
   Emit warnings for any instances of the comma-delimited list of
   questionable code (eg '-warn:unusedLocals,deprecation'):
 +
+[source, text]
 ....
 constructorName        method with constructor name
 packageDefaultMethod   attempt to override package-default method
@@ -168,6 +169,7 @@ none                   suppress all compiler warnings
 -g<:[lines,vars,source]>::
   debug attributes level, that may take three forms:
 +
+[source, text]
 ....
 -g         all debug info ('-g:lines,vars,source')
 -g:none    no debug info
@@ -261,6 +263,7 @@ previous releases of AspectJ, see xref:compatibility.adoc#versionCompatibility[V
 
 Compile two files:
 
+[source, text]
 ....
 ajc HelloWorld.java Trace.java
 ....
@@ -271,6 +274,7 @@ relative to the argfile, and may include other argfiles by @-reference.
 The following file `sources.lst` contains absolute and relative files
 and @-references:
 
+[source, text]
 ....
 Gui.java
 /home/user/src/Library.java
@@ -283,6 +287,7 @@ view/body/ArrayView.java
 
 Compile the files using either the -argfile or @ form:
 
+[source, text]
 ....
 ajc -argfile sources.lst
 ajc @sources.lst
@@ -317,6 +322,7 @@ sources with the aspect library.
 The tracing example is in the AspectJ distribution
 (\{aspectj}/doc/examples/tracing). This uses the following files:
 
+[source, text]
 ....
 aspectj1.1/
   bin/
@@ -346,6 +352,7 @@ environment as needed.
 
 Setup the path, classpath, and current directory:
 
+[source, text]
 ....
 cd examples
 export ajrt=../lib/aspectjrt.jar
@@ -355,18 +362,21 @@ export PATH="../bin:$PATH"
 
 Build a read-only tracing library:
 
+[source, text]
 ....
 ajc -argfile tracing/tracelib.lst -outjar tracelib.jar
 ....
 
 Build the application with tracing in one step:
 
+[source, text]
 ....
 ajc -aspectpath tracelib.jar -argfile tracing/notrace.lst -outjar tracedapp.jar
 ....
 
 Run the application with tracing:
 
+[source, text]
 ....
 java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain
 ....
@@ -376,6 +386,7 @@ Build the application with tracing from binaries in two steps:
 * (a) Build the application classes (using javac for
 demonstration's sake):
 +
+[source, text]
 ....
 mkdir classes
 javac -d classes tracing/*.java
@@ -383,18 +394,21 @@ jar cfM app.jar -C classes .
 ....
 * (b) Build the application with tracing:
 +
+[source, text]
 ....
 ajc -inpath app.jar -aspectpath tracelib.jar -outjar tracedapp.jar
 ....
 
 Run the application with tracing (same as above):
 
+[source, text]
 ....
 java -classpath "$ajrt;tracedapp.jar;tracelib.jar" tracing.ExampleMain
 ....
 
 Run the application without tracing:
 
+[source, text]
 ....
 java -classpath "app.jar" tracing.ExampleMain
 ....
@@ -418,6 +432,7 @@ to collect the messages, use `MessageHandler` as your `IMessageHolder`.
 For example, compile and run the following with `aspectjtools.jar` on
 the classpath:
 
+[source, java]
 ....
 import org.aspectj.bridge.*;
 import org.aspectj.tools.ajc.Main;
@@ -454,6 +469,7 @@ the -XnoInline option.)
 Probably the only time you may see this format is when you view stack
 traces, where you may encounter traces of the format
 
+[source, text]
 ....
 java.lang.NullPointerException
   at Main.new$constructor_call37(Main.java;SynchAspect.java[1k]:1030)
@@ -461,12 +477,14 @@ java.lang.NullPointerException
 
 where instead of the usual
 
+[source, text]
 ....
 File:LineNumber
 ....
 
 format, you see
 
+[source, text]
 ....
 File0;File1[Number1];File2[Number2] ... :LineNumber
 ....

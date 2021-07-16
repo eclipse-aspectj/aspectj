@@ -14,6 +14,7 @@ declare annotation constructs that take a member signature. For example,
 if you wanted to attach an annotation to all your getter like methods,
 you needed two constructs
 
+[source, java]
 ....
 declare @method: * is*(): @FooBar;
 declare @method: * get*(): @FooBar;
@@ -22,6 +23,7 @@ declare @method: * get*(): @FooBar;
 Now AspectJ allows compound patterns for declare
 @method/@constructor/@field.
 
+[source, java]
 ....
 declare @method: (* is*()) || (* get*()): @FooBar;
 ....
@@ -32,6 +34,7 @@ It is now possible to ITD member types. The syntax is as would be
 expected. This example introduces a new member type called Inner into
 type Foo:
 
+[source, java]
 ....
 public class Foo {
     public static void main(String[] args) {
@@ -71,10 +74,9 @@ within it to switch-off if there is nothing for them to do.
 Here is an example, 'AspectA' will switch itself off if the type
 'a.b.c.Anno' cannot be found:
 
-``
-
+[source, xml]
 ....
- <aspect name="AspectA" requires="a.b.c.Anno"/>
+<aspect name="AspectA" requires="a.b.c.Anno"/>
 ....
 
 ==== Reduction in class file sizes: https://bugs.eclipse.org/bugs/show_bug.cgi?id=312839[312839]
@@ -130,8 +132,7 @@ the pointcuts defined in the original aspect.
 
 Here is an example:
 
-``
-
+[source, xml]
 ....
 <aspectj>
   <aspects>
@@ -154,8 +155,7 @@ specifies that Y should in fact only be applied to com.foo..* types.
 It is now possible to use joinpoint context in the messages attached to
 declare warning and declare error constructs. Some examples:
 
-``
-
+[source, java]
 ....
 declare warning: execution(* A.m(..)): "joinpoint is {joinpoint}";
 declare warning: execution(* A.m(..)): "joinpoint kind is '{joinpoint.kind}'";
@@ -178,8 +178,7 @@ the message. Please raise an enhancement request if you need other keys
 It is now possible to use a type pattern with declare warning and
 declare error. For example:
 
-``
-
+[source, java]
 ....
 declare warning: I+ && !hasfield(int i): "Implementations of I are expected to have a int field called i";
 ....
@@ -190,8 +189,7 @@ This is the ability to narrow the types of interest so that interfaces
 can be ignored, or inner types, or classes or aspects. There is now a
 new is() construct that enables this:
 
-``
-
+[source, java]
 ....
 execution(* (!is(InnerType)).m(..)) {}
 !within(* && is(InnerType)) {}
@@ -202,8 +200,9 @@ InnerType, AnonymousType, EnumType, AnonymousType.
 
 Note: It is important to understand that "!within(is(InnerType))" and
 "within(!is(InnerType))" are not the same. The latter one is unlikely to
-be what you want to use. For example here: ``
+be what you want to use. For example here:
 
+[source, java]
 ....
 class Boo {
   void foo() {}
@@ -223,8 +222,7 @@ result of that match will be negated.
 
 Some users always expect this:
 
-``
-
+[source, java]
 ....
 class C {
 }
@@ -248,8 +246,7 @@ produce slightly different output.
 
 Here is the output of javap when that is built with 1.6.8:
 
-``
-
+[source, java]
 ....
 class C extends java.lang.Object{
     public int ajc$interField$X$someField;
@@ -259,8 +256,7 @@ class C extends java.lang.Object{
 
 Here is the output of javap when that is built with 1.6.9:
 
-``
-
+[source, java]
 ....
 class C extends java.lang.Object{
     private int someField;
@@ -284,8 +280,7 @@ and if you browse to it you will see it currently contains 1.6.9 dev
 builds under the name 1.6.9.BUILD-SNAPSHOT. The repo is added with this
 magic:
 
-``
-
+[source, xml]
 ....
 <repository>
     <id>maven.springframework.org</id>

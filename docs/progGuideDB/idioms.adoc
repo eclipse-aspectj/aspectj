@@ -11,6 +11,7 @@ Here's an example of how to enfore a rule that code in the java.sql
 package can only be used from one particular package in your system.
 This doesn't require any access to code in the java.sql package.
 
+[source, java]
 ....
 /* Any call to methods or constructors in java.sql */
 pointcut restrictedCall():
@@ -27,6 +28,7 @@ declare error: restrictedCall() && illegalSource():
 Any call to an instance of a subtype of AbstractFacade whose class is
 not exactly equal to AbstractFacade:
 
+[source, java]
 ....
 pointcut nonAbstract(AbstractFacade af):
     call(* *(..))
@@ -37,6 +39,7 @@ pointcut nonAbstract(AbstractFacade af):
 If AbstractFacade is an abstract class or an interface, then every
 instance must be of a subtype and you can replace this with:
 
+[source, java]
 ....
 pointcut nonAbstract(AbstractFacade af):
     call(* *(..))
@@ -46,6 +49,7 @@ pointcut nonAbstract(AbstractFacade af):
 Any call to a method which is defined by a subtype of AbstractFacade,
 but which isn't defined by the type AbstractFacade itself:
 
+[source, java]
 ....
 pointcut callToUndefinedMethod():
      call(* AbstractFacade+.*(..))
@@ -55,6 +59,7 @@ pointcut callToUndefinedMethod():
 The execution of a method that is defined in the source code for a type
 that is a subtype of AbstractFacade but not in AbstractFacade itself:
 
+[source, java]
 ....
 pointcut executionOfUndefinedMethod():
     execution(* *(..))

@@ -25,12 +25,11 @@ that is not
 
 These three meet that spec:
 
-``
-
+[source, xml]
 ....
-    <include within="*"/>
-    <include within="@Foo *"/>
-    <exclude within="*Funk*y*"/>
+<include within="*"/>
+<include within="@Foo *"/>
+<exclude within="*Funk*y*"/>
 ....
 
 The include="*" can be optimized. The include="@Foo *" is not optimized.
@@ -51,22 +50,21 @@ more frequently.
 
 The stack trace when this is hit looks like:
 
-``
-
+[source, text]
 ....
-    ...
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
-    at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
-    ...
+...
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:427)
+at org.aspectj.weaver.ReferenceType.isAssignableFrom(ReferenceType.java:393)
+...
 ....
 
 The weaver has changed over the 1.5 and 1.6 releases and is now reaching

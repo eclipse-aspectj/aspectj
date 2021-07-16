@@ -4,6 +4,7 @@ _Last updated: 2004-03-15 by acolyer_
 
 == How Compilation Progresses in the JDT
 
+[source, text]
 ....
 Compiler.compile(ICompilationUnit[] sourceUnits) {
 
@@ -35,6 +36,7 @@ passed to the compiler, and the code generation phase is optional
 
 == How (batch) Compilation Progresses in AspectJ 1.1.x
 
+[source, text]
 ....
 AjBuildManager.doBuild() {
 
@@ -90,6 +92,7 @@ that do different things).
 This simple model ignores aspectpath, inpath, injars, outjar,
 sourceDirs for now.
 
+[source, text]
 ....
 Compiler.compile(ICompilationUnit[] sourceUnits) {
 

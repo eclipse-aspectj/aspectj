@@ -19,10 +19,10 @@ program source by using the `@` symbol. For example, the following piece
 of code uses the `@Deprecated` annotation to indicate that the
 `obsoleteMethod()` has been deprecated:
 
+[source, java]
 ....
 @Deprecated
 public void obsoleteMethod() { ... }
- 
 ....
 
 Annotations may be _marker annotations_, _single-valued annotations_, or
@@ -32,27 +32,27 @@ annotations, as in the deprecation example above. Single-value
 annotation types have a single member, and the annotation may be written
 in one of two equivalent forms:
 
+[source, java]
 ....
 @SuppressWarnings({"unchecked"})
 public void someMethod() {...}
- 
 ....
 
 or
 
+[source, java]
 ....
 @SuppressWarnings(value={"unchecked"})
 public void someMethod() {...}
- 
 ....
 
 Multi-value annotations must use the `member-name=value
             ` syntax to specify annotation values. For example:
 
+[source, java]
 ....
 @Authenticated(role="supervisor",clearanceLevel=5)
 public void someMethod() {...}
- 
 ....
 
 ==== Retention Policies
@@ -96,6 +96,7 @@ presence or absence of annotations.
 
 By default annotations are _not_ inherited. Given the following program
 
+[source, java]
 ....
 @MyAnnotation
 class Super {
@@ -105,7 +106,6 @@ class Super {
 class Sub extends Super {
   public void foo() {}
 }
- 
 ....
 
 Then `Sub` _does not_ have the `MyAnnotation` annotation, and
@@ -133,6 +133,7 @@ permitted on pointcut declarations or on `declare` statements.
 
 The following example illustrates the use of annotations in aspects:
 
+[source, java]
 ....
 @AspectAnnotation
 public abstract aspect ObserverProtocol {
@@ -192,6 +193,7 @@ advice statement by using the
 the same way as the Java 5 SuppressWarnings annotation (See JLS
 9.6.1.5), but has class file retention.
 
+[source, java]
 ....
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 
@@ -262,6 +264,7 @@ Some examples of annotation patterns follow:
 AspectJ 1.5 extends type patterns to allow an optional
 `AnnotationPattern` prefix.
 
+[source, text]
 ....
 TypePattern := SimpleTypePattern |
                '!' TypePattern |
@@ -288,9 +291,9 @@ pattern, the parenthesis are required (as in `(@Foo Hello+)`). In some
 cases (such as a type pattern used within a `within` or `handler`
 pointcut expression), the parenthesis are optional:
 
+[source, text]
 ....
 OptionalParensTypePattern := AnnotationPattern? TypePattern
-   
 ....
 
 The following examples illustrate the use of annotations in type
@@ -330,6 +333,7 @@ patterns:
 A `FieldPattern` can optionally specify an annotation-matching pattern
 as the first element:
 
+[source, text]
 ....
 FieldPattern :=
     AnnotationPattern? FieldModifiersPattern?
@@ -371,6 +375,7 @@ annotations that match the pattern. For example:
 A `MethodPattern` can optionally specify an annotation-matching pattern
 as the first element.
 
+[source, text]
 ....
 MethodPattern :=
     AnnotationPattern? MethodModifiersPattern? TypePattern
@@ -397,6 +402,7 @@ TypePatternList := TypePattern (',' TypePattern)*
 
 A `ConstructorPattern` has the form
 
+[source, text]
 ....
 ConstructorPattern :=
     AnnotationPattern? ConstructorModifiersPattern?
@@ -470,6 +476,7 @@ Like their counterparts, these pointcut designators can be used both for
 join point matching, and to expose context. The format of these new
 designators is:
 
+[source, text]
 ....
 AtThis := '@this' '(' AnnotationOrIdentifer ')'
 
@@ -505,6 +512,7 @@ Annotations can be exposed as context in the body of advice by using the
 forms of `@this(), @target()` and `@args()` that use bound variables in
 the place of annotation names. For example:
 
+[source, java]
 ....
 pointcut callToClassifiedObject(Classified classificationInfo) :
     call(* *(..)) && @target(classificationInfo);
@@ -521,6 +529,7 @@ at a given position in an `@args` expression indicates that the runtime
 type of the argument in that position at a join point must have an
 annotation of the indicated type. For example:
 
+[source, java]
 ....
 /**
  * matches any join point with at least one argument, and where the
@@ -544,6 +553,7 @@ available reflectively with the body of advice through the
 the arguments, or object bound to this or target at a join point you can
 use the following code fragments:
 
+[source, java]
 ....
 Annotation[] thisAnnotations = thisJoinPoint.getThis().getClass().getAnnotations();
 Annotation[] targetAnnotations = thisJoinPoint.getTarget().getClass().getAnnotations();
@@ -555,6 +565,7 @@ point where the executing code is defined within a type (`@within`), or
 a method/constructor (`@withincode`) that has an annotation of the
 specified type. The form of these designators is:
 
+[source, text]
 ....
 AtWithin := '@within' '(' AnnotationOrIdentifier ')'
 AtWithinCode := '@withincode' '(' AnnotationOrIdentifier ')'
@@ -574,6 +585,7 @@ The `@annotation` pointcut designator matches any join point where the
 _subject_ of the join point has an annotation of the given type. Like
 the other @pcds, it can also be used for context exposure.
 
+[source, text]
 ....
 AtAnnotation := '@annotation' '(' AnnotationOrIdentifier ')'
 ....
@@ -589,6 +601,7 @@ extended with additional operations that provide access to the
 annnotations can be queried. The following fragment illustrates an
 example use of this interface to access annotation information.
 
+[source, java]
 ....
 Signature sig = thisJoinPointStaticPart.getSignature();
 AnnotatedElement declaringTypeAnnotationInfo = sig.getDeclaringType();
@@ -621,6 +634,7 @@ considered to be an annotation on the parameter type or an annotation on
 the parameter itself is determined through the use of parentheses around
 the parameter type. Consider the following:
 
+[source, java]
 ....
 @SomeAnnotation
 class AnnotatedType {}
@@ -634,6 +648,7 @@ class C {
 The method foo has a parameter of an annotated type, and can be matched
 by this pointcut:
 
+[source, java]
 ....
 pointcut p(): execution(* *(@SomeAnnotation *));
 ....
@@ -645,6 +660,7 @@ parameter of any type that has the annotation @SomeAnnotation'.
 To match the parameter annotation case, the method goo, this is the
 pointcut:
 
+[source, java]
 ....
 pointcut p(): execution(* *(@SomeAnnotation (*)));
 ....
@@ -657,6 +673,7 @@ annotation of @SomeAnnotation'.
 To match when there is a parameter annotation and an annotation on the
 type as well:
 
+[source, java]
 ....
 pointcut p(): execution(* *(@SomeAnnotation (@SomeOtherAnnotation *)));
 ....
@@ -671,6 +688,7 @@ According to the Java 5 specification, non-type annotations are not
 inherited, and annotations on types are only inherited if they have the
 `@Inherited` meta-annotation. Given the following program:
 
+[source, java]
 ....
 class C1 {
   @SomeAnnotation
@@ -714,6 +732,7 @@ actually being called).
 The `if` pointcut designator can be used to write pointcuts that match
 based on the values annotation members. For example:
 
+[source, java]
 ....
 pointcut txRequiredMethod(Tx transactionAnnotation) :
     execution(* *(..)) && @this(transactionAnnotation)
@@ -729,12 +748,14 @@ Since pointcut expressions in AspectJ 5 support join point matching
 based on annotations, this facility can be exploited when writing
 `declare warning` and `declare error` statements. For example:
 
+[source, java]
 ....
 declare warning : withincode(@PerformanceCritical * *(..)) &&
                   call(@ExpensiveOperation * *(..))
                 : "Expensive operation called from within performance critical section";
 ....
 
+[source, java]
 ....
 declare error : call(* org.xyz.model.*.*(..)) &&
                 !@within(Trusted)
@@ -745,6 +766,7 @@ declare error : call(* org.xyz.model.*.*(..)) &&
 
 The general form of a `declare parents` statement is:
 
+[source, text]
 ....
 declare parents : TypePattern extends Type;
 declare parents : TypePattern implements TypeList;
@@ -774,6 +796,7 @@ issued).
 
 The general form of a declare precedence statement is:
 
+[source, java]
 ....
 declare precedence : TypePatList;
 ....
@@ -798,6 +821,7 @@ a future release.
 
 The general form is:
 
+[source, text]
 ....
 declare @<kind> : ElementPattern : Annotation ;
 ....
@@ -809,6 +833,7 @@ specified by the `@Target` annotation.
 
 `ElementPattern` is defined as follows:
 
+[source, text]
 ....
 ElementPattern := TypePattern |
                   MethodPattern |

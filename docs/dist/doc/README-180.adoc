@@ -21,8 +21,9 @@ patch on top of Eclipse 4.3.2).
 
 Here is a sample AspectJ8 program:
 
+[source, java]
 ....
-=== 8< ==== C.java ==== 8< ===
+// === 8< ==== C.java ==== 8< ===
 import java.util.Arrays;
 
 interface I {
@@ -67,5 +68,5 @@ class MyClass {
         return args;
     }
 }
-=== 8< ==== C.java ==== 8< ===
+// === 8< ==== C.java ==== 8< ===
 ....

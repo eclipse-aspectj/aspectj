@@ -50,6 +50,7 @@ http://asm.objectweb.org/download/.
 The ASM license is available at http://asm.objectweb.org/license.html.
 The license is also reproduced here:
 
+[source, text]
 ....
 Copyright (c) 2000-2005 INRIA, France Telecom
 All rights reserved.

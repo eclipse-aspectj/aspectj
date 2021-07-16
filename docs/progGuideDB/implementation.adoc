@@ -17,6 +17,7 @@ implementations should do tomorrow.
 
 According to the AspectJ language semantics, the declaration
 
+[source, java]
 ....
 before(): get(int Point.x) { System.out.println("got x"); }
 ....
@@ -128,6 +129,7 @@ source code. This means that there may be call join points to
 `Class.forName` or `StringBuffer.append` from programs that do not, at
 first glance, appear to contain such calls:
 
+[source, java]
 ....
 class Test {
     void main(String[] args) {
@@ -158,6 +160,7 @@ be the case. Before advice is allowed.
 The second is that the control flow of a handler join point is not
 picked out. For example, the following pointcut
 
+[source, java]
 ....
 cflow(call(void foo()) || handler(java.io.IOException))
 ....
@@ -173,6 +176,7 @@ This does not restrict programs from placing before advice on handlers
 inside _other_ control flows. This advice, for example, is perfectly
 fine:
 
+[source, java]
 ....
 before(): handler(java.io.IOException) && cflow(void parse()) {
     System.out.println("about to handle an exception while parsing");
@@ -187,6 +191,7 @@ have fewer such restrictions.
 
 The code for Java initializers, such as the assignment to the field d in
 
+[source, java]
 ....
 class C {
     double d = Math.sqrt(2);
@@ -203,6 +208,7 @@ a super-constructor (as opposed to a `this` constructor), the target
 type's initialization code will _not_ be run when that inter-type
 constructor is called.
 
+[source, java]
 ....
 aspect A {
     C.new(Object o) {} // implicitly calls super()

@@ -82,6 +82,7 @@ Below is an extract from that trace with method arguments removed. You
 will notice the millisecond time stamp, thread id and indication of
 entry/exit/event or message type for each line of trace.
 
+[source, text]
 ....
 15:44:18.630 main > org.aspectj.weaver.loadtime.Aj.<init>
 15:44:18.660 main < org.aspectj.weaver.loadtime.Aj.<init>
@@ -133,6 +134,7 @@ below could be used to configure Java Logging. The resulting file, just
 containing trace for the `org.aspectj.weaver.loadtime` package, will be
 written to `java0.log` in your `user.home` directory.
 
+[source, text]
 ....
 handlers= java.util.logging.FileHandler
 
@@ -150,6 +152,7 @@ By setting the System property `-Dorg.aspectj.tracing.debug=true` you
 should see a message confirming which trace infrastructure is being
 used.
 
+[source, text]
 ....
 TraceFactory.instance=org.aspectj.weaver.tools.Jdk14TraceFactory@12dacd1
 ....

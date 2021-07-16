@@ -38,6 +38,7 @@ in `${ANT_HOME}/lib` where it will be added to the system class path by
 the ant script. You may specify the task script names directly, or use
 the "resource" attribute to specify the default names:
 
+[source, xml]
 ....
 <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
 ....
@@ -50,6 +51,7 @@ In Ant 1.6, third-party tasks are declared in their own namespace using
 spacewar example, if you put the script in the examples directory and
 `aspectjtools.jar` in the `${ANT_HOME}/lib` directory.
 
+[source, xml]
 ....
 <project name="aspectj-ant1.6" default="spacewar"
     xmlns:aspectj="antlib:org.aspectj" basedir=".">
@@ -340,6 +342,7 @@ elements; these are `sourceroots`, `argfiles`, `injars`, `inpath`,
 `classpath`, `bootclasspath`, `forkclasspath`, and `aspectpath`. In all
 cases, these may be specified as nested elements, something like this:
 
+[source, xml]
 ....
 <iajc {attributes..} />
     <{name}>
@@ -354,6 +357,7 @@ cases, these may be specified as nested elements, something like this:
 As with other Path-like structures, they may be defined elsewhere and
 specified using the refid attribute:
 
+[source, xml]
 ....
 <path id="aspect.path">
     <pathelement path="${home}/lib/persist.jar"/>
@@ -369,6 +373,7 @@ specified using the refid attribute:
 The task also supports an attribute `{name}ref` for each such parameter.
 E.g., for `aspectpath`:
 
+[source, xml]
 ....
 <iajc {attributes..} aspectpathref="aspect.path"/>
 ....
@@ -379,6 +384,7 @@ E.g., for `aspectpath`:
 A minimal build script defines the task and runs it, specifying the
 sources:
 
+[source, xml]
 ....
 <project name="simple-example" default="compile" >
   <taskdef
@@ -410,6 +416,7 @@ When this target is built, the compiler will build once and then wait
 for input from the user. Messages are printed as usual. When the user
 has quit, then this runs the application.
 
+[source, xml]
 ....
 <target name="build-test" >
   <iajc outjar="${home.dir}/output/application.jar"
@@ -453,6 +460,7 @@ case where no files have been updated, there is no reason to recompile
 sources. One way to implement that is with an explicit dependency check
 using the uptodate task:
 
+[source, xml]
 ....
 <target name="check.aspects.jar">
   <uptodate property="build.unnecessary"
@@ -512,6 +520,7 @@ example, the call below passes all out-of-date source files in the
 `src/org/aspectj` subdirectories to the `ajc` command along with the
 destination directory:
 
+[source, text]
 ....
 -- command:
 
@@ -525,6 +534,7 @@ destination directory:
 
 To pass ajc-specific arguments, use a compilerarg entry.
 
+[source, text]
 ....
 -- command
 
@@ -598,6 +608,7 @@ This tells the compiler adapter to delete all .class files in the
 destination directory and re-execute the javac task so javac can
 recalculate the list of source files. e.g.,
 +
+[source, text]
 ....
 Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
     -Dbuild.compiler.clean=anything ...
@@ -746,7 +757,7 @@ This task forms an implicit FileSet and supports all attributes of
 `<exclude>`, and `<patternset>` elements. These can be used to specify
 source files.
 
-`ajc`'s `srcdir`, `classpath`, `bootclasspath`, `extdirs`, and `jvmarg`
+``ajc``'s `srcdir`, `classpath`, `bootclasspath`, `extdirs`, and `jvmarg`
 attributes are path-like structures and can also be set via nested
 `<src>`, `<classpath>`, `<bootclasspath>`, `<extdirs>`, and `<jvmargs>`
 elements, respectively.
@@ -758,6 +769,7 @@ Following is a declaration for the ajc task and a sample invocation that
 uses the ajc compiler to compile the files listed in `default.lst` into
 the dest dir:
 
+[source, xml]
 ....
 <project name="example" default="compile" >
   <taskdef name="ajc"
@@ -782,6 +794,7 @@ the dest dir:
 
 This build script snippet
 
+[source, xml]
 ....
 <ajc srcdir="${src}"
      destdir="${build}"
@@ -796,6 +809,7 @@ are included.
 
 This next example
 
+[source, xml]
 ....
 <ajc srcdir="${src}"
      destdir="${build}"

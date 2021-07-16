@@ -30,6 +30,7 @@ used to declare aspects and aspect members.
 Aspect declarations are supported by the
 `org.aspectj.lang.annotation.Aspect` annotation. The declaration:
 
+[source, java]
 ....
 @Aspect
 public class Foo {}
@@ -37,6 +38,7 @@ public class Foo {}
 
 Is equivalent to:
 
+[source, java]
 ....
 public aspect Foo {}
 ....
@@ -44,6 +46,7 @@ public aspect Foo {}
 To specify an aspect an aspect instantiation model (the default is
 singleton), provide the perclause as the `@Aspect` value. For example:
 
+[source, java]
 ....
 @Aspect("perthis(execution(* abc..*(..)))")
 public class Foo {}
@@ -51,6 +54,7 @@ public class Foo {}
 
 is equivalent to...
 
+[source, java]
 ....
 public aspect Foo perthis(execution(* abc..*(..))) {}
 ....
@@ -86,6 +90,7 @@ section.
 Here is a simple example of a pointcut declaration in both code and
 @AspectJ styles:
 
+[source, java]
 ....
 @Pointcut("call(* *.*(..))")
 void anyCall() {}
@@ -93,6 +98,7 @@ void anyCall() {}
 
 is equivalent to...
 
+[source, java]
 ....
 pointcut anyCall() : call(* *.*(..));
 ....
@@ -100,6 +106,7 @@ pointcut anyCall() : call(* *.*(..));
 When binding arguments, simply declare the arguments as normal in the
 annotated method:
 
+[source, java]
 ....
 @Pointcut("call(* *.*(int)) && args(i) && target(callee)")
 void anyCall(int i, Foo callee) {}
@@ -107,6 +114,7 @@ void anyCall(int i, Foo callee) {}
 
 is equivalent to...
 
+[source, java]
 ....
 pointcut anyCall(int i, Foo callee) : call(* *.*(int)) && args(i) && target(callee);
 ....
@@ -115,6 +123,7 @@ An example with modifiers (Remember that Java 5 annotations are not
 inherited, so the `@Pointcut` annotation must be present on the
 extending aspect's pointcut declaration too):
 
+[source, java]
 ....
 @Pointcut("")
 protected abstract void anyCall();
@@ -122,6 +131,7 @@ protected abstract void anyCall();
 
 is equivalent to...
 
+[source, java]
 ....
 protected abstract pointcut anyCall();
 ....
@@ -139,6 +149,7 @@ scope.
 
 Consider the following compilation unit:
 
+[source, java]
 ....
 package org.aspectprogrammer.examples;
 
@@ -152,6 +163,7 @@ public aspect Foo {
 
 Using the annotation style this would be written as:
 
+[source, java]
 ....
 package org.aspectprogrammer.examples;
 
@@ -186,6 +198,7 @@ have either an empty body (`if()`, or be one of the expression forms
 and return a boolean. The body of the method contains the condition to
 be evaluated. For example:
 
+[source, java]
 ....
 @Pointcut("call(* *.*(int)) && args(i) && if()")
 public static boolean someCallWithIfTest(int i) {
@@ -195,12 +208,14 @@ public static boolean someCallWithIfTest(int i) {
 
 is equivalent to...
 
+[source, java]
 ....
 pointcut someCallWithIfTest(int i) : call(* *.*(int)) && args(i) && if(i > 0);
 ....
 
 and the following is also a valid form:
 
+[source, java]
 ....
 static int COUNT = 0;
 
@@ -260,6 +275,7 @@ method execution join point).
 The following example shows a simple before advice declaration in both
 styles:
 
+[source, java]
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
 public void callFromFoo() {
@@ -269,6 +285,7 @@ public void callFromFoo() {
 
 is equivalent to...
 
+[source, java]
 ....
 before() : call(* org.aspectprogrammer..*(..)) && this(Foo) {
   System.out.println("Call from Foo");
@@ -278,6 +295,7 @@ before() : call(* org.aspectprogrammer..*(..)) && this(Foo) {
 If the advice body needs to know which particular `Foo` instance is
 making the call, just add a parameter to the advice declaration.
 
+[source, java]
 ....
 before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
   System.out.println("Call from Foo: " + foo);
@@ -286,6 +304,7 @@ before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
 
 can be written as:
 
+[source, java]
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
 public void callFromFoo(Foo foo) {
@@ -298,6 +317,7 @@ If the advice body needs access to `thisJoinPoint` ,
 these need to be declared as additional method parameters when using the
 annotation style.
 
+[source, java]
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
 public void callFromFoo(JoinPoint thisJoinPoint, Foo foo) {
@@ -308,6 +328,7 @@ public void callFromFoo(JoinPoint thisJoinPoint, Foo foo) {
 
 is equivalent to...
 
+[source, java]
 ....
 before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
   System.out.println("Call from Foo: " + foo + " at "
@@ -317,6 +338,7 @@ before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
 
 Advice that needs all three variables would be declared:
 
+[source, java]
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
 public void callFromFoo(JoinPoint thisJoinPoint,
@@ -340,6 +362,7 @@ To expose a return value with after returning advice simply declare the
 returning parameter as a parameter in the method body and bind it with
 the "returning" attribute:
 
+[source, java]
 ....
 @AfterReturning("criticalOperation()")
 public void phew() {
@@ -354,6 +377,7 @@ public void itsAFoo(Foo f) {
 
 is equivalent to...
 
+[source, java]
 ....
 after() returning : criticalOperation() {
   System.out.println("phew");
@@ -375,6 +399,7 @@ the design goals for the annotation style is that a large class of
 AspectJ applications should be compilable with a standard Java 5
 compiler. A straight call to `proceed` inside a method body:
 
+[source, java]
 ....
 @Around("call(* org.aspectprogrammer..*(..))")
 public Object doNothing() {
@@ -386,6 +411,7 @@ will result in a "No such method" compilation error. For this reason
 AspectJ 5 defines a new sub-interface of `JoinPoint` ,
 `ProceedingJoinPoint` .
 
+[source, java]
 ....
 public interface ProceedingJoinPoint extends JoinPoint {
   public Object proceed(Object[] args);
@@ -394,6 +420,7 @@ public interface ProceedingJoinPoint extends JoinPoint {
 
 The around advice given above can now be written as:
 
+[source, java]
 ....
 @Around("call(* org.aspectprogrammer..*(..))")
 public Object doNothing(ProceedingJoinPoint thisJoinPoint) {
@@ -403,6 +430,7 @@ public Object doNothing(ProceedingJoinPoint thisJoinPoint) {
 
 Here's an example that uses parameters for the proceed call:
 
+[source, java]
 ....
 @Aspect
 public class ProceedAspect {
@@ -420,6 +448,7 @@ public class ProceedAspect {
 
 is equivalent to:
 
+[source, java]
 ....
 public aspect ProceedAspect {
   pointcut setAge(int i): call(* setAge(..)) && args(i);
@@ -505,6 +534,7 @@ introduce a marker interface.
 
 Consider the following aspect:
 
+[source, java]
 ....
 public aspect MoodIndicator {
 
@@ -532,6 +562,7 @@ type of the inter-type declaration).
 
 Using the annotation style this aspect can be written:
 
+[source, java]
 ....
 @Aspect
 public class MoodIndicator {
@@ -575,6 +606,7 @@ aspect' field of a non-interface type. The interface type is the
 inter-type declaration contract that dictates which methods are declared
 on the target type.
 
+[source, java]
 ....
 // this type will be affected by the inter-type declaration as the type pattern matches
 package org.xyz;
@@ -596,6 +628,7 @@ interface methods.
 
 Consider the following aspect:
 
+[source, java]
 ....
 public aspect SerializableMarker {
    declare parents : org.xyz..* implements Serializable;
@@ -604,6 +637,7 @@ public aspect SerializableMarker {
 
 Using the annotation style this aspect can be written:
 
+[source, java]
 ....
 @Aspect
 public class SerializableMarker {
@@ -620,6 +654,7 @@ implemented by the target type, an error will be issued during weaving.
 
 Consider the following aspect:
 
+[source, java]
 ....
 public aspect MoodIndicator {
 
@@ -647,6 +682,7 @@ type of the inter-type declaration).
 
 Using the annotation style this aspect can be written:
 
+[source, java]
 ....
 @Aspect
 public class MoodIndicator {
@@ -690,6 +726,7 @@ Exploiting this syntax requires the user to obey the rules of pure Java.
 So references to any targeted type as if it were affected by the Mixin
 must be made through a cast, like this:
 
+[source, java]
 ....
 // this type will be affected by the inter-type declaration as the type pattern matches
 package org.xyz;
@@ -710,6 +747,7 @@ parameter. If it does, then when the factory method is called the
 parameter will be the object instance for which a delegate should be
 created:
 
+[source, java]
 ....
 @Aspect
 public class Foo {
@@ -725,6 +763,7 @@ It is also possible to make the factory method non-static - and in this
 case it can then exploit the local state in the surrounding aspect
 instance, but this is only supported for singleton aspects:
 
+[source, java]
 ....
 @Aspect
 public class Foo {
@@ -743,6 +782,7 @@ necessary. In this example the return type of the method extends
 multiple other interfaces and only a couple of them (I and J) should be
 mixed into any matching targets:
 
+[source, java]
 ....
 // interfaces is an array of interface classes that should be mixed in
 @DeclareMixin(value="org.xyz..*",interfaces={I.class,J.class})
@@ -777,6 +817,7 @@ Declare annotation is also not supported in the 1.5.0 release of AspectJ
 Declare precedence _is_ supported. For declare precedence, use the
 `@DeclarePrecedence` annotation as in the following example:
 
+[source, java]
 ....
 public aspect SystemArchitecture {
   declare precedence : Security*, TransactionSupport, Persistence;
@@ -787,6 +828,7 @@ public aspect SystemArchitecture {
 
 can be written as:
 
+[source, java]
 ....
 @Aspect
 @DeclarePrecedence("Security*,org.xyz.TransactionSupport,org.xyz.Persistence")
@@ -806,6 +848,7 @@ issued.
 Note that the String must be a literal and not the result of the
 invocation of a static method for example.
 
+[source, java]
 ....
 declare warning : call(* javax.sql..*(..)) && !within(org.xyz.daos..*)
                 : "Only DAOs should be calling JDBC.";
@@ -816,6 +859,7 @@ declare error : execution(* IFoo+.*(..)) && !within(org.foo..*)
 
 can be written as...
 
+[source, java]
 ....
 @DeclareWarning("call(* javax.sql..*(..)) && !within(org.xyz.daos..*)")
 static final String aMessage = "Only DAOs should be calling JDBC.";
@@ -844,6 +888,7 @@ compilation error if another part of the program tries to call them.
 To provide equivalent support for AspectJ applications compiled with a
 standard Java 5 compiler, AspectJ 5 defines the `Aspects` utility class:
 
+[source, java]
 ....
 public class Aspects {
 

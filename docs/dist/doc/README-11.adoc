@@ -288,22 +288,21 @@ In AspectJ 1.0.6, we made an effort to hide some complications with
 Aspect instantiation from the user. In particular, the following code
 compiled and ran:
 
+[source, java]
 ....
-      public class Client
-      {
-          public static void main(String[] args) {
-              Client c = new Client();
-          }
-      }
+public class Client {
+    public static void main(String[] args) {
+        Client c = new Client();
+    }
+}
 
-      aspect Watchcall {
-          pointcut myConstructor(): execution(new(..));
+aspect Watchcall {
+    pointcut myConstructor(): execution(new(..));
 
-          before(): myConstructor() {
-              System.err.println("Entering Constructor");
-          }
-      }
-
+    before(): myConstructor() {
+        System.err.println("Entering Constructor");
+    }
+}
 ....
 
 But there's a conceptual problem with this code: The before advice
@@ -317,25 +316,24 @@ preventing an aspect's advice from matching join points that were within
 the aspect's definition, and occurred before the aspect was initialized.
 But even in AspectJ 1.0.6, this circularity could be exposed:
 
+[source, java]
 ....
-      public class Client
-      {
-          public static int foo() { return 3; }
-          public static void main(String[] args) {
-              Client c = new Client();
-          }
-      }
+public class Client {
+    public static int foo() { return 3; }
+    public static void main(String[] args) {
+        Client c = new Client();
+    }
+}
 
-      aspect Watchcall {
-          int i = Client.foo();
-          pointcut myConstructor():
-              execution(new(..)) || execution(int foo());
+aspect Watchcall {
+    int i = Client.foo();
+    pointcut myConstructor():
+        execution(new(..)) || execution(int foo());
 
-          before(): myConstructor() {
-              System.err.println("Entering Constructor");
-          }
-      }
-
+    before(): myConstructor() {
+        System.err.println("Entering Constructor");
+    }
+}
 ....
 
 This program would throw a NullPointerException when run, since
@@ -356,29 +354,29 @@ Type patterns may now be used to pick out methods and constructors based
 on their throws clauses. This allows the following two kinds of
 extremely wildcarded pointcuts:
 
+[source, java]
 ....
-    pointcut throwsMathlike():
-      // each call to a method with a throws clause containing at least
-      // one exception with "Math" in its name.
-      call(* *(..) throws *..*Math*);
+pointcut throwsMathlike():
+  // each call to a method with a throws clause containing at least
+  // one exception with "Math" in its name.
+  call(* *(..) throws *..*Math*);
 
-    pointcut doesNotThrowMathlike():
-      // each call to a method with a throws clause containing no
-      // exceptions with "Math" in its name.
-      call(* *(..) throws !*..*Math*);
-
+pointcut doesNotThrowMathlike():
+  // each call to a method with a throws clause containing no
+  // exceptions with "Math" in its name.
+  call(* *(..) throws !*..*Math*);
 ....
 
 The longwinded rules are that a method or constructor pattern can have a
 "throws clause pattern". Throws clause patterns look like:
 
+[source, text]
 ....
-    ThrowsClausePattern:
-        ThrowsClausePatternItem ("," ThrowsClausePatternItem)*
+ThrowsClausePattern:
+    ThrowsClausePatternItem ("," ThrowsClausePatternItem)*
 
-    ThrowsClausePatternItem:
-        ["!"] TypeNamePattern
-
+ThrowsClausePatternItem:
+    ["!"] TypeNamePattern
 ....
 
 A ThrowsClausePattern matches the ThrowsClause of any code member
@@ -398,12 +396,12 @@ These rules are completely backwards compatible with AspectJ 1.0. The
 rule for "!" matching has one potentially surprising property, in that
 the two PCD's shown below will have different matching rules.
 
+[source, java]
 ....
-    [1] call(* *(..) throws !IOException)
-    [2] call(* *(..) throws (!IOException))
+/*[1]*/ call(* *(..) throws !IOException)
+/*[2]*/ call(* *(..) throws (!IOException))
 
-    void m() throws RuntimeException, IOException {}
-
+void m() throws RuntimeException, IOException {}
 ....
 
 [1] will NOT match the method m(), because method m's throws clause
@@ -439,31 +437,31 @@ xref:#SINGLE_INTERCLASS_TARGET[restrictions on inter-type declarations]
 . This is also motivated by many previous request to support a common
 logging idiom. Here's what pertype would look like:
 
+[source, java]
 ....
-    /** One instance of this aspect will be created for each class,
-     * interface or aspect in the com.bigboxco packages.
+/** One instance of this aspect will be created for each class,
+ * interface or aspect in the com.bigboxco packages.
+ */
+aspect Logger pertype(com.bigboxco..*) {
+    /* This field holds a logger for the class. */
+    Log log;
+
+    /* This advice will run for every public execution defined by
+     * a type for which a Logger aspect has been created, i.e.
+     * any type in com.bigboxco..*
      */
-    aspect Logger pertype(com.bigboxco..*) {
-        /* This field holds a logger for the class. */
-        Log log;
-
-        /* This advice will run for every public execution defined by
-         * a type for which a Logger aspect has been created, i.e.
-         * any type in com.bigboxco..*
-         */
-        before(): execution(public * *(..)) {
-            log.enterMethod(thisJoinPoint.getSignature().getName());
-        }
-
-        /* We can use a special constructor to initialize the log field */
-        public Logger(Class myType) {
-            this.log = new Log(myType);
-        }
+    before(): execution(public * *(..)) {
+        log.enterMethod(thisJoinPoint.getSignature().getName());
     }
 
-        /** External code could use aspectOf to get at the log, i.e. */
-        Log l = Logger.aspectOf(com.bigboxco.Foo.class).log;
+    /* We can use a special constructor to initialize the log field */
+    public Logger(Class myType) {
+        this.log = new Log(myType);
+    }
+}
 
+/** External code could use aspectOf to get at the log, i.e. */
+Log l = Logger.aspectOf(com.bigboxco.Foo.class).log;
 ....
 
 The one open question that we see is how this should interact with inner
@@ -481,23 +479,23 @@ only have one target type. So the following code intended to declare
 that there is a void doStuff() method on all subtypes of Target is not
 legal AspectJ 1.1 code.
 
+[source, java]
 ....
-    aspect A {
-        public void Target+.doStuff() { ... }
-    }
-
+aspect A {
+    public void Target+.doStuff() { ... }
+}
 ....
 
 The functionality of "multi-intertype declarations" can be recovered by
 using a helper interface.
 
+[source, java]
 ....
-    aspect A {
-        private interface MyTarget {}
-        declare parents:  Target+ implements MyTarget;
-        public void MyTarget.doStuff() { ... }
-    }
-
+aspect A {
+    private interface MyTarget {}
+    declare parents:  Target+ implements MyTarget;
+    public void MyTarget.doStuff() { ... }
+}
 ....
 
 We believe this is better style in AspectJ 1.0 as well, as it makes
@@ -531,18 +529,19 @@ The code generated by the initializers in Java source code now runs
 inside of constructor execution join points. This changes how before
 advice runs on constructor execution join points. Consider:
 
+[source, java]
 ....
-    class C {
-        C() { }
-        String id = "identifier"; // this assignment
-                                  // has to happen sometime
-    }
-    aspect A {
-        before(C c) this(c) && execution(C.new()) {
-            System.out.println(c.id.length());
-        }
-    }
+class C {
+    C() { }
+    String id = "identifier"; // this assignment
+                              // has to happen sometime
+}
 
+aspect A {
+    before(C c) this(c) && execution(C.new()) {
+        System.out.println(c.id.length());
+    }
+}
 ....
 
 In AspectJ 1.0, this will print "10", since id is assigned its initial
@@ -579,10 +578,10 @@ initialization (i.e., before initializers from the target class) or at
 the end (i.e., just before its called constructor exits). We chose the
 former, having this pattern in mind:
 
+[source, java]
 ....
-    int C.methodCount = 0;
-    before(C c): this(c) && execution(* *(..)) { c.methodCount++; }
-
+int C.methodCount = 0;
+before(C c): this(c) && execution(* *(..)) { c.methodCount++; }
 ....
 
 We felt there would be too much surprise if a constructor called a
@@ -604,25 +603,25 @@ C, below), if given a member-type (like C.InsideC, below), it is not
 guaranteed to capture code in contained local and anonymous types. For
 example:
 
+[source, java]
 ....
-    class C {
-        Thread t;
-        class InsideC {
-            void setupOuterThread() {
-                t = new Thread(
-                        new Runnable() {
-                            public void run() {
-                                // join points with code here
-                                // might not be captured by
-                                // within(C.InsideC), but are
-                                // captured by within(C)
-                                System.out.println("hi");
-                            }
-                        });
-            }
+class C {
+    Thread t;
+    class InsideC {
+        void setupOuterThread() {
+            t = new Thread(
+                    new Runnable() {
+                        public void run() {
+                            // join points with code here
+                            // might not be captured by
+                            // within(C.InsideC), but are
+                            // captured by within(C)
+                            System.out.println("hi");
+                        }
+                    });
         }
     }
-
+}
 ....
 
 We believe the non-guarantee is small, and we haven't verified that it
@@ -642,9 +641,9 @@ their argument. These tests can not be performed on type patterns with
 wildcards in them. The following code that compiled under 1.0 will be an
 error in AspectJ-1.1:
 
+[source, java]
 ....
-    pointcut oneOfMine(): this(com.bigboxco..*);
-
+pointcut oneOfMine(): this(com.bigboxco..*);
 ....
 
 The only way to implement this kind of matching in a modular way would
@@ -653,27 +652,27 @@ would have a very high performance cost and possible security issues.
 There are two good work-arounds. If you control the source or bytecode
 to the type you want to match then you can use declare parents, i.e.:
 
+[source, java]
 ....
-    private interface OneOfMine {}
-    declare parents: com.bigboxco..* implements OneOfMine;
-    pointcut oneOfMine(): this(OneOfMine);
-
+private interface OneOfMine {}
+declare parents: com.bigboxco..* implements OneOfMine;
+pointcut oneOfMine(): this(OneOfMine);
 ....
 
 If you want the more dynamic matching and are willing to pay for the
 performance, then you should use the Java reflection API combined with
 if. That would look something like:
 
+[source, java]
 ....
-    pointcut oneOfMine(): this(Object) &&
-        if(classMatches("com.bigboxco..*",
-                        thisJoinPoint.getTarget().getClass()));
+pointcut oneOfMine(): this(Object) &&
+    if(classMatches("com.bigboxco..*",
+                    thisJoinPoint.getTarget().getClass()));
 
-    static boolean classMatches(String pattern, Class _class) {
-        if (patternMatches(pattern, _class.getName())) return true;
-        ...
-    }
-
+static boolean classMatches(String pattern, Class _class) {
+    if (patternMatches(pattern, _class.getName())) return true;
+    ...
+}
 ....
 
 Note: wildcard type matching still works in all other PCD's that match
@@ -696,9 +695,9 @@ deprecated by the compiler, and will always return 0.
 
 AspectJ 1.1 has a new declare form:
 
+[source, java]
 ....
-    declare precedence ":"  TypePatternList ";"
-
+declare precedence ":"  TypePatternList ";"
 ....
 
 This is used to declare advice ordering constraints on join points. For
@@ -707,9 +706,9 @@ their name should dominate all other aspects, and (2) the Logging aspect
 (and any aspect that extends it) should dominate all non-security
 aspects, can be expressed by:
 
+[source, java]
 ....
-    declare precedence: *..*Security*, Logging+, *;
-
+declare precedence: *..*Security*, Logging+, *;
 ....
 
 In the TypePatternList, the wildcard * means "any type not matched by
@@ -720,19 +719,19 @@ another type in the declare precedence".
 It is an error for any aspect to be matched by more than one TypePattern
 in a single declare precedence, so:
 
+[source, java]
 ....
-      declare precedence:  A, B, A ;  // error
-
+declare precedence:  A, B, A ;  // error
 ....
 
 However, multiple declare precedence forms may legally have this kind of
 circularity. For example, each of these declare precedence is perfectly
 legal:
 
+[source, java]
 ....
-      declare precedence: B, A;
-      declare precedence: A, B;
-
+declare precedence: B, A;
+declare precedence: A, B;
 ....
 
 And a system in which both constraints are active may also be legal, so
@@ -743,33 +742,33 @@ idiom that can be used to enforce that A and B are strongly independent.
 
 Consider the following library aspects:
 
+[source, java]
 ....
-      abstract aspect Logging {
-          abstract pointcut logged();
+abstract aspect Logging {
+    abstract pointcut logged();
 
-          before(): logged() {
-              System.err.println("thisJoinPoint: " + thisJoinPoint);
-          }
-      }
+    before(): logged() {
+        System.err.println("thisJoinPoint: " + thisJoinPoint);
+    }
+}
 
-      aspect MyProfiling {
-          abstract pointcut profiled();
+aspect MyProfiling {
+    abstract pointcut profiled();
 
-          Object around(): profiled() {
-              long beforeTime = System.currentTimeMillis();
-              try {
-                  return proceed();
-              } finally {
-                  long afterTime = System.currentTimeMillis();
-                  addToProfile(thisJoinPointStaticPart,
-                               afterTime - beforeTime);
-              }
-          }
-          abstract void addToProfile(
-              org.aspectj.JoinPoint.StaticPart jp,
-              long elapsed);
-      }
-
+    Object around(): profiled() {
+        long beforeTime = System.currentTimeMillis();
+        try {
+            return proceed();
+        } finally {
+            long afterTime = System.currentTimeMillis();
+            addToProfile(thisJoinPointStaticPart,
+                         afterTime - beforeTime);
+        }
+    }
+    abstract void addToProfile(
+        org.aspectj.JoinPoint.StaticPart jp,
+        long elapsed);
+}
 ....
 
 In order to use either aspect, they must be extended with concrete
@@ -780,9 +779,9 @@ with the concrete aspect MyProfiling) without adding a dominates clause
 to Logging itself. In AspectJ 1.1, we can express that constraint with a
 simple:
 
+[source, java]
 ....
-      declare precedence: MyLogging, MyProfiling;
-
+declare precedence: MyLogging, MyProfiling;
 ....
 
 ===== Changing order of advice for sub-aspects
@@ -791,23 +790,23 @@ By default, advice in a sub-aspect has more precedence than advice in a
 super-aspect. One use of the AspectJ 1.0 dominates form was to change
 this precedence:
 
+[source, java]
 ....
-      abstract aspect SuperA dominates SubA {
-          pointcut foo(): ... ;
+abstract aspect SuperA dominates SubA {
+    pointcut foo(): ... ;
 
-          before(): foo() {
-              // in AspectJ 1.0, runs before the advice in SubA
-              // because of the dominates clause
-          }
-      }
+    before(): foo() {
+        // in AspectJ 1.0, runs before the advice in SubA
+        // because of the dominates clause
+    }
+}
 
-      aspect SubA extends SuperA {
-          before(): foo() {
-              // in AspectJ 1.0, runs after the advice in SuperA
-              // because of the dominates clause
-          }
-      }
-
+aspect SubA extends SuperA {
+    before(): foo() {
+        // in AspectJ 1.0, runs after the advice in SuperA
+        // because of the dominates clause
+    }
+}
 ....
 
 This no longer works in AspectJ 1.1, since declare precedence only
@@ -827,10 +826,10 @@ So, if you have your project separated into a gui module and a base
 module, each of which is stored in a directory tree, you might use one
 of
 
+[source, text]
 ....
-    ajc -sourceroots /myProject/gui:/myProject/base
-    ajc -sourceroots d:\myProject\gui;d:\myProject\base
-
+ajc -sourceroots /myProject/gui:/myProject/base
+ajc -sourceroots d:\myProject\gui;d:\myProject\base
 ....
 
 This option may be used in conjunction with lst files, listing .java
@@ -848,10 +847,10 @@ Windows).
 So, if MyTracing.java defines a trace aspect that you want to apply to
 all the classes in myBase.jar and myGui.jar, you would use one of:
 
+[source, text]
 ....
-    ajc -injars /bin/myBase.jar:/bin/myGui.jar MyTracing.java
-    ajc -injars d:\bin\myBase.jar;d:\bin\myGui.jar MyTracing.java
-
+ajc -injars /bin/myBase.jar:/bin/myGui.jar MyTracing.java
+ajc -injars d:\bin\myBase.jar;d:\bin\myGui.jar MyTracing.java
 ....
 
 The class files in the input jars must not have had advice woven into
@@ -869,9 +868,9 @@ files on the command line, and the -sourceroots option.
 The -outjar option takes the name of a jar file into which the results
 of the compilation should be put. For example:
 
+[source, text]
 ....
-    ajc -injars myBase.jar MyTracing.java -outjar myTracedBase.jar
-
+ajc -injars myBase.jar MyTracing.java -outjar myTracedBase.jar
 ....
 
 No meta information is placed in the output jar file.
@@ -920,17 +919,17 @@ The binary forms of this aspects will be untouched.
 
 The 1.0 implementation of AspectJ, when given:
 
+[source, java]
 ....
-    class MyRunnable implements Runnable {
-        public void run() { ... }
-    }
+class MyRunnable implements Runnable {
+    public void run() { /*...*/ }
+}
 
-    aspect A {
-        call(): (void run()) && target(MyRunnable) {
-            // do something here
-        }
+aspect A {
+    call(): (void run()) && target(MyRunnable) {
+        // do something here
     }
-
+}
 ....
 
 would cause A's advice to execute even when, say, java.lang.Thread
@@ -1117,14 +1116,14 @@ AspectJ 1.1 does not allow the inter-type definition of a zero-argument
 constructor on a class with a visible default constructor. So this is no
 longer allowed:
 
+[source, java]
 ....
-    class C {}
+class C {}
 
-    aspect A {
-        C.new() {}  // was allowed in 1.0.6
-                    // is a "multiple definitions" conflict in 1.1
-    }
-
+aspect A {
+    C.new() {}  // was allowed in 1.0.6
+                // is a "multiple definitions" conflict in 1.1
+}
 ....
 
 In the Java Programming Language, a class defined without a constructor
@@ -1154,25 +1153,25 @@ The first two properties are important and are preserved in AspectJ 1.1,
 but the third property is and was ludicrous, and was never properly
 implemented (and never could be) in AspectJ 1.0.6. Consider:
 
+[source, java]
 ....
-    interface Top0 {}
-    interface Top1 {}
-    interface I extends Top0, Top1 {}
-    interface J extends Top1, Top0 {}
+interface Top0 {}
+interface Top1 {}
+interface I extends Top0, Top1 {}
+interface J extends Top1, Top0 {}
 
-    class C implements I, J {}
-    // I says Top0's inits must run before Top1's
-    // J says Top1's inits must run before Top0's
+class C implements I, J {}
+// I says Top0's inits must run before Top1's
+// J says Top1's inits must run before Top0's
 
-    aspect A {
-        int Top0.i = foo("I'm in Top0");
-        int Top1.i = foo("I'm in Top1");
-        static int foo(String s) {
-            System.out.println(s);
-            return 37;
-        }
+aspect A {
+    int Top0.i = foo("I'm in Top0");
+    int Top1.i = foo("I'm in Top1");
+    static int foo(String s) {
+        System.out.println(s);
+        return 37;
     }
-
+}
 ....
 
 This was simply a bug in the AspectJ specification. The correct third
@@ -1198,27 +1197,27 @@ not to return a value, but to simply assign a value.
 
 Thus, programmers typically wanted to write something like:
 
+[source, java]
 ....
-    void around(): set(int Foo.i) {
-        if (theSetIsAllowed()) {
-            proceed();
-        }
+void around(): set(int Foo.i) {
+    if (theSetIsAllowed()) {
+        proceed();
     }
-
+}
 ....
 
 And were confused by it being a compile-time error. They weren't
 confused for long, and soon adapted to writing:
 
+[source, java]
 ....
-    int around(): set(int Foo.i) {
-        if (theSetIsAllowed()) {
-            return proceed();
-        } else {
-            return Foo.i;
-        }
+int around(): set(int Foo.i) {
+    if (theSetIsAllowed()) {
+        return proceed();
+    } else {
+        return Foo.i;
     }
-
+}
 ....
 
 But there was definitely a short disconnect.
@@ -1267,6 +1266,7 @@ implementation.
 In Java, the + operator sometimes results in StringBuffer objects being
 created, appended to, and used to generate a new String. Thus,
 
+[source, java]
 ....
 class Foo {
     String makeEmphatic(String s) {
@@ -1277,6 +1277,7 @@ class Foo {
 
 is approximately the same at runtime as
 
+[source, java]
 ....
 class Foo {
     String makeEmphatic(String s) {
@@ -1292,6 +1293,7 @@ discuss it), but in 1.1 we do.
 This change is likely to affect highly wildcarded aspects, and can do so
 in surprising ways. In particular:
 
+[source, java]
 ....
 class A {
     before(int i): call(* *(int)) && args(i) {
@@ -1303,6 +1305,7 @@ class A {
 may result in a stack overflow error, since the argument to println is
 really
 
+[source, java]
 ....
 new StringBuffer("entering with ").append(i).toString()
 ....
@@ -1310,6 +1313,7 @@ new StringBuffer("entering with ").append(i).toString()
 which has a call to StringBuffer.append(int). In such cases, it's worth
 restricting your pointcut, with something like one of:
 
+[source, java]
 ....
 call(* *(int)) && args(i) && !within(A)
 call(* *(int)) && args(i) && !target(StringBuffer)
@@ -1320,6 +1324,7 @@ call(* *(int)) && args(i) && !target(StringBuffer)
 
 Consider the following aspect
 
+[source, java]
 ....
 public aspect SwingCalls {
 
@@ -1333,9 +1338,10 @@ public aspect SwingCalls {
 
 And then consider the two statements
 
+[source, java]
 ....
-  JFrame frame = new JFrame();
-  frame.setTitle("Title");
+JFrame frame = new JFrame();
+frame.setTitle("Title");
 ....
 
 According to the Java Language Specification version 2, the call to

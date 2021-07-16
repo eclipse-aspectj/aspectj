@@ -15,6 +15,7 @@ the type name. By convention formal type parameters are named using a
 single letter, though this is not required. A simple generic list type
 (that can contain elements of any type `E`) could be declared:
 
+[source, java]
 ....
 interface List<E> {
    Iterator<E> iterator();
@@ -63,6 +64,7 @@ parameterized type by specifying a concrete type specfication for each
 type parameter in the generic type. The following example declares a
 list of strings and a list of numbers:
 
+[source, java]
 ....
 List<String> strings;
 List<Number> numbers;
@@ -78,6 +80,7 @@ written in the Java 5 language would not be expected to use raw types.
 Parameterized types are instantiated by specifying type parameter values
 in the constructor call expression as in the following examples:
 
+[source, java]
 ....
 List<String> strings = new MyListImpl<String>();
 List<Number> numbers = new MyListImpl<Number>();
@@ -135,6 +138,7 @@ The supertype of a generic type `C` is the type given in the extends
 clause of `C`, or `Object` if no extends clause is present. Given the
 type declaration
 
+[source, java]
 ....
 public interface List<E> extends Collection<E> {... }
 ....
@@ -164,6 +168,7 @@ type `List<? extends Number>`.
 A static method may be declared with one or more type parameters as in
 the following declaration:
 
+[source, java]
 ....
 static <T> T first(List<T> ts) { ... }
 ....
@@ -174,6 +179,7 @@ not need to be declared as a type parameter of the enclosing type.
 Non-static methods may also be declared with one or more type parameters
 in a similar fashion:
 
+[source, java]
 ....
 <T extends Number> T max(T t1, T t2) { ... }
 ....
@@ -215,6 +221,7 @@ generic type.
 Generic methods and constructors, and members defined in generic types,
 may use type variables as part of their signature. For example:
 
+[source, java]
 ....
 public class Utils {
 
@@ -334,6 +341,7 @@ types (methods) and field types (fields). This is achieved by specifying
 a parameterized type pattern at the appropriate point in the signature
 pattern. For example, given the class `Foo`:
 
+[source, java]
 ....
 public class Foo {
 
@@ -376,6 +384,7 @@ expression `call(* addStrings(List))` and by the expression
 Remember that any type variable reference in a generic member is
 _always_ matched by its erasure. Thus given the following example:
 
+[source, java]
 ....
 class G<T> {
     List<T> foo(List<String> ls) { return null; }
@@ -396,6 +405,7 @@ different type to `List<String>`, even though a variable of type
 `List<String>` can be assigned to a variable of type `List<?>`. Given
 the methods:
 
+[source, java]
 ....
 class C {
   public void foo(List<? extends Number> listOfSomeNumberType) {}
@@ -423,6 +433,7 @@ Under certain circumstances a Java 5 compiler is required to create
 _bridge methods_ that support the compilation of programs using raw
 types. Consider the types
 
+[source, java]
 ....
 class Generic<T> {
   public T foo(T someObject) {
@@ -445,6 +456,7 @@ in `Generic`. This is an example of a case where a Java 5 compiler will
 create a _bridge method_ in `SubGeneric`. Although you never see it, the
 bridge method will look something like this:
 
+[source, java]
 ....
 public Object foo(Object arg) {
   Number n = (Number) arg; // "bridge" to the signature defined in this type
@@ -464,6 +476,7 @@ It _is_ possible to _call_ a bridge method as the following short code
 snippet demonstrates. Such a call _does_ result in a call join point for
 the call to the method.
 
+[source, java]
 ....
 SubGeneric rawType = new SubGeneric();
 rawType.foo("hi");  // call to bridge method (will result in a runtime failure in this case)
@@ -483,6 +496,7 @@ types with the `this()` and `target()` pointcuts. Parameterized types
 may however be used in conjunction with `args()`. Consider the following
 class
 
+[source, java]
 ....
 public class C {
   public void foo(List<String> listOfStrings) {}
@@ -513,6 +527,7 @@ args(List<Double>)::
   instance of List at join point method-execution(void C.goo(List<?
   extends Number>)) [Xlint:uncheckedArgument]";
 
+[source, java]
 ....
 public aspect A {
    before(List<Double> listOfDoubles) : execution(* C.*(..)) && args(listOfDoubles) {
@@ -533,6 +548,7 @@ pointcut associated with the advice will be suppressed. To suppress just
 an `uncheckedArgument` warning, use the annotation
 `@SuppressWarnings("uncheckedArgument")` as in the following examples:
 
+[source, java]
 ....
 import org.aspectj.lang.annotation.SuppressAjWarnings
 public aspect A {
@@ -560,6 +576,7 @@ following example the advice will match the execution of `bar` but not
 of `goo` since the signature of `goo` is not matched by the execution
 pointcut expression.
 
+[source, java]
 ....
 public aspect A {
    before(List<Double> listOfDoubles) : execution(* C.*(List<Double>)) && args(listOfDoubles) {
@@ -580,6 +597,7 @@ an `uncheckedArgument` warning.
 
 Consider the following program:
 
+[source, java]
 ....
 public class C {
    public static void main(String[] args) {
@@ -622,6 +640,7 @@ to a method declared to take a `List<? extends Number>`,
 matching to only those join points at which the argument is guaranteed
 to be an instance of `List<? extends Number>`.
 
+[source, java]
 ....
 aspect A {
     before(List<? extends Number> aListOfSomeNumberType)
@@ -641,6 +660,7 @@ described for args. For example, the following aspect matches the
 execution of any method returning a `List`, and makes the returned list
 available to the body of the advice.
 
+[source, java]
 ....
 public aspect A {
   pointcut executionOfAnyMethodReturningAList() : execution(List *(..));
@@ -661,6 +681,7 @@ we only perform safe operations on the list.
 
 Given the class
 
+[source, java]
 ....
 public class C {
   public List<String> foo(List<String> listOfStrings) {...}
@@ -676,6 +697,7 @@ bind the return value. It will also run after the execution of `goo` and
 bind the return value, but gives an `uncheckedArgument` warning during
 compilation. It does _not_ run after the execution of `foo`.
 
+[source, java]
 ....
 public aspect Returning {
   after() returning(List<Double> listOfDoubles) : execution(* C.*(..)) {
@@ -701,6 +723,7 @@ reference, and not a raw type reference.
 
 Consider the generic type `Generic` with a pointcut `foo`:
 
+[source, java]
 ....
 public class Generic<T> {
    /**
@@ -713,6 +736,7 @@ public class Generic<T> {
 Such a pointcut must be refered to using a parameterized reference as
 shown below.
 
+[source, java]
 ....
 public aspect A {
   // runs before the execution of any implementation of a method defined for MyClass
@@ -813,6 +837,7 @@ permitted in this parameterization.
 
 Given the aspect declaration:
 
+[source, java]
 ....
 public abstract aspect ParentChildRelationship<P,C> {
     ...
@@ -843,6 +868,7 @@ within inter-type declarations_. For example, we can declare a
 `ParentChildRelationship` aspect to manage the bi-directional
 relationship between parent and child nodes as follows:
 
+[source, java]
 ....
 /**
  * a generic aspect, we've used descriptive role names for the type variables
@@ -939,6 +965,7 @@ parent and child. In a compiler implementation managing an abstract
 syntax tree (AST) in which AST nodes may contain other AST nodes we
 could declare the concrete aspect:
 
+[source, java]
 ....
 public aspect ASTNodeContainment extends ParentChildRelationship<ASTNode,ASTNode> {
     before(ASTNode parent, ASTNode child) : addingChild(parent, child) {
@@ -965,6 +992,7 @@ void setParent(ASTNode parent)
 
 In a system managing orders, we could declare the concrete aspect:
 
+[source, java]
 ....
 public aspect OrderItemsInOrders extends ParentChildRelationship<Order, OrderItem> {
 }
@@ -991,6 +1019,7 @@ void setParent(Order parent)
 A second example of an abstract aspect, this time for handling
 exceptions in a uniform manner, is shown below:
 
+[source, java]
 ....
 abstract aspect ExceptionHandling<T extends Throwable> {
 
@@ -1024,6 +1053,7 @@ of the aspect to be designed to work together in a type-safe manner. The
 following concrete sub-aspect shows how the abstract aspect might be
 extended to handle `IOExceptions`.
 
+[source, java]
 ....
 public aspect IOExceptionHandling extends ExceptionHandling<IOException>{
 

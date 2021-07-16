@@ -74,6 +74,7 @@ annotations, or modify existing annotations by changing their values.
 1.6.11 includes a new piece of syntax that we are thinking might be
 appropriate for one of these scenarios. 1.6.11 supports this:
 
+[source, java]
 ....
 declare @field: int Foo.i: -@Anno;
 ....
@@ -89,6 +90,7 @@ but the inability to use it with binary weaving greatly reduced the
 usefulness. Fixes have gone into 1.6.11 to support binary weaving. What
 do we mean by intertype innertypes? Here is an example:
 
+[source, java]
 ....
 class Foo {
   public void m() {

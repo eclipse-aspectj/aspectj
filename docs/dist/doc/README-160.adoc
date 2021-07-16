@@ -35,6 +35,7 @@ parentheses around the parameter types in a method signature determine
 whether the annotations relate to the type of the parameter or the
 parameter itself.
 
+[source, java]
 ....
 execution(* *(@A *));
 ....
@@ -42,12 +43,14 @@ execution(* *(@A *));
 - Execution of a method/ctor whose first parameter is of a type
 annotated with @A.
 
+[source, java]
 ....
 execution(* *(@A (*)));
 ....
 
 - Execution of a method/ctor whose first parameter is annotated with @A
 
+[source, java]
 ....
 execution(* *(@A (@B *)))
 ....
@@ -55,8 +58,9 @@ execution(* *(@A (@B *)))
 - Execution of a method/ctor whose first parameter is annotated with @A
 and is of a type annotated with @B. Example:
 
+[source, java]
 ....
------- Start of Test.java -----
+// ------ Start of Test.java -----
 @interface A {}
 @interface B {}
 
@@ -69,7 +73,11 @@ aspect X {
  before(): execution(* *(@A (*))) {}
  before(): execution(* *(@B (*))) {}
 }
------- End of Test.java -----
+// ------ End of Test.java -----
+....
+
+[source, text]
+....
 $ ajc -showWeaveInfo -1.6 Test.java
 Join point 'method-execution(void C.foo(java.lang.String))' in Type 'C' (A.java:5) advised by before advice from 'X' (A.java:10)
 
@@ -78,9 +86,7 @@ Join point 'method-execution(void C.goo(java.lang.String))' in Type 'C' (A.java:
 Join point 'method-execution(void C.goo(java.lang.String))' in Type 'C' (A.java:6) advised by before advice from 'X' (A.java:10)
 ....
 
-The first piece of advice matched both methods. The second only matched
-goo(). +
- +
+The first piece of advice matched both methods. The second only matched `goo()`.
 
 ==== Annotation Value Matching
 
@@ -93,13 +99,14 @@ has a particular value. Perhaps tracing has been turned on at the type
 level and a few critical methods should not get traced. Here is some
 code showing the use case:
 
+[source, java]
 ....
 enum TraceLevel { NONE, LEVEL1, LEVEL2, LEVEL3 }
 
 @interface Trace {
   TraceLevel value() default TraceLevel.LEVEL1;
 }
-  
+
 aspect X {
   // Advise all methods marked @Trace except those with a tracelevel of none
   before(): execution(@Trace !@Trace(TraceLevel.NONE) * *(..)) {

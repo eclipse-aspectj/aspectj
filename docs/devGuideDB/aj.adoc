@@ -27,6 +27,7 @@ xref:ltw.adoc#ltw[Load-Time Weaving].
 
 Use ajc to build a library, then weave at load time
 
+[source, text]
 ....
 REM compile library
 ${ASPECTJ_HOME}\bin\ajc.bat -outjar lib\aspects.jar @aspects.lst

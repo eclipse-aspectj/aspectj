@@ -23,6 +23,7 @@ project properties in eclipse and in the AspectJ Compiler section,
 scroll down to 'Other' and in the non-standard compiler options setting,
 specify:
 
+[source, text]
 ....
 -Xset:minimalModel=true,typeDemotion=true
 ....

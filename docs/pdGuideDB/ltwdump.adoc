@@ -31,6 +31,7 @@ package (and subpackages) but not CGLIB generated classes in the
 `com.foo.bar` package (and subpackages). It will also ensure all woven
 byte-code is dumped both before and after weaving.
 
+[source, xml]
 ....
 <aspectj>
     <aspects>
@@ -46,6 +47,7 @@ byte-code is dumped both before and after weaving.
 
 You should see messages similar to this:
 
+[source, text]
 ....
 [WeavingURLClassLoader] info AspectJ Weaver Version 1.5.3 built on Thursday Oct 26, 2006 at 17:22:31 GMT
 [WeavingURLClassLoader] info register classloader org.aspectj.weaver.loadtime.WeavingURLClassLoader
@@ -57,6 +59,7 @@ You should see messages similar to this:
 
 On disk you would find the following files:
 
+[source, text]
 ....
 _ajdump/_before/com/foo/bar/Test.class
 _ajdump/com/foo/bar/Test.class

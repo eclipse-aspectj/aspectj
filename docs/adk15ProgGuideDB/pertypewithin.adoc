@@ -5,6 +5,7 @@ AspectJ 5 defines a new per-clause type for aspect instantiation:
 `pertypewithin`. Unlike the other per-clauses, `pertypewithin` takes a
 type pattern:
 
+[source, text]
 ....
 PerTypeWithin := 'pertypewithin' '(' OptionalParensTypePattern ')'
 ....
@@ -16,6 +17,7 @@ the associated type pattern.
 Pertypewithin aspects have `aspectOf` and `hasAspect` methods with the
 following signatures:
 
+[source, java]
 ....
 /**
  * return true if this aspect has an instance associated with
@@ -37,6 +39,7 @@ In addition, `pertypewithin` aspects have a `getWithinTypeName` method
 that can be called to return the package qualified name of the type for
 which the aspect instance has been created.
 
+[source, java]
 ....
 /**
  * return the package qualified name (eg. com.foo.MyClass) of the type
@@ -51,6 +54,7 @@ upon an implicit pointcut condition. In this case, that any join point
 be `within` the type that the executing aspect is an `aspectOf`. For
 example, given the aspect definition
 
+[source, java]
 ....
 import java.util.*;
 

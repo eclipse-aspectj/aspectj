@@ -44,6 +44,7 @@ dump configuration as well as the exception (with stack trace) that is
 the source of the problem and any messages issued by the compiler. Most
 importantly the exact version of AspectJ is included.
 
+[source, text]
 ....
 ---- AspectJ Properties ---
 AspectJ Compiler DEVELOPMENT built on Tuesday Jul 25, 2006 at 13:00:09 GMT
@@ -157,5 +158,4 @@ java.lang.NoClassDefFoundError: org/apache/commons/logging/LogFactory
     at org.aspectj.tools.ajc.Main.run(Main.java:367)
     at org.aspectj.tools.ajc.Main.runMain(Main.java:246)
     at org.aspectj.tools.ajc.Main.main(Main.java:86)
-       
 ....

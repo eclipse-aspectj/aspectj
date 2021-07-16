@@ -140,9 +140,9 @@ must be able to reach classes in the small (< 100K) runtime library
 *A:* From AspectJ's http://eclipse.org/aspectj[web page] , download the
 AspectJ distribution. The `jar` file is installed by executing
 
+[source, text]
 ....
 java -jar jar file name
-
 ....
 
 Do *not* try to extract the `jar` file contents and then attempt to
@@ -503,6 +503,7 @@ AKA agile methods)?
 
 *A:* From a question on the user list:
 
+[source, text]
 ....
 > Anyone know the connections between AOP and Extreme Programming?
 > I am really confused. It seems AOP is a programming paradigm, which
@@ -510,7 +511,6 @@ AKA agile methods)?
 > this is a lightweight software development process. One of the common
 > motivations of AOP and XP is designed to adopt to the requirement
 > changes, so that it can save the cost of software development.
-
 ....
 
 This is Raymond Lee's answer:
@@ -649,6 +649,7 @@ in a modular way, something that would otherwise be spread throughout
 the code. Consider the following code, adapted from the AspectJ
 tutorial:
 
+[source, java]
 ....
 aspect PublicErrorLogging {
     Log log = new Log();
@@ -660,7 +661,6 @@ aspect PublicErrorLogging {
         log.write(o, e);
     }
 }
-
 ....
 
 The effect of this code is to ensure that whenever any public method of
@@ -838,6 +838,7 @@ below shows how the different profiles build on top of the two
 configurations CDC (Connected Device Configuration) and CLDC (Connected
 Limited Device Configuration):
 
+[source, text]
 ....
     --------------
     |  Personal  |
@@ -848,7 +849,6 @@ Limited Device Configuration):
 ------------------------------------------
 |                 Java                   |
 ------------------------------------------
-
 ....
 
 Which configuration you have dictates the restrictions when running
@@ -1007,18 +1007,18 @@ Environment Guide] link:devguide/ajc-ref.html[Reference for ajc].
 line-delimited text file and direct ajc to that file using `-argfile` or
 `@`:
 
+[source, text]
 ....
 ajc @sources.lst
 ajc -argfile sources.lst
-
 ....
 
 Another way in AspectJ 1.1 is to use the `-sourceroots` options, which
 reads all source files in a given set of directories:
 
+[source, text]
 ....
 ajc -sourceroots "src;testsrc"
-
 ....
 
 For more information, see the link:devguide/index.html[Development
@@ -1063,23 +1063,23 @@ Here's an example of using `ajc` in this sort of cross-compilation mode
 (assuming a Windows platform with all the default installation
 directories):
 
+[source, text]
 ....
 ajc -target 1.1 -bootclasspath c:\jdk1.1.7\lib\classes.zip \
    -classpath c:\aspectj1.0\lib\aspectjrt.jar -extdirs "" \
    -argfile jdk11system.lst
-
 ....
 
 This same technique can be used if you want to run `ajc` on a JDK 1.3
 JVM (highly recommended) but need to generate code for JDK 1.2. That
 would look something like:
 
+[source, text]
 ....
 ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
    -classpath c:\aspectj1.0\lib\aspectjrt.jar \
     -extdirs c:\jdk1.2\jre\lib\ext
             -argfile jdk12system.lst
-
 ....
 
 *Q:* Does the `ajc` compiler support the `assert` keyword in Java 1.4?
@@ -1226,10 +1226,10 @@ which will be affected by any advice specifying the same pointcut. For
 example, the following will print a warning whereever some code in class
 Bar gets a field value from Foo:
 
+[source, java]
 ....
 declare warning: get(* Foo.*) && within(Bar)
    : "reading Foo state from Bar";
-
 ....
 
 When you are running your program, you can trace advice as it executes.
@@ -1282,6 +1282,7 @@ use implement a hybrid build process by listing the production source
 files into a javac-compliant argfile, and the development source files
 in another ajc argfiles:
 
+[source, text]
 ....
 -- file "production.lst":
 One.java
@@ -1295,21 +1296,20 @@ Trace.java
 -- file "development.lst":
 @production.lst
 @tracing.lst
-
 ....
 
 Then your development build can use `ajc`:
 
+[source, text]
 ....
 ajc @development.lst
-
 ....
 
 And your development build can use `ajc` or `javac` or `jikes`:
 
+[source, text]
 ....
 jikes @production.lst
-
 ....
 
 *Q:* We compile module jars and then assemble them. Can we continue this
@@ -1331,6 +1331,7 @@ are visible to other clients, which themselves are otherwise unaffected
 by the aspects. In this case, the common library can be built using ajc,
 and used on the classpath for the module builds:
 
+[source, text]
 ....
 ajc -outjar common.jar -sourceroots "aspectj-src:src" ...
 cd ../otherProject
@@ -1342,6 +1343,7 @@ should affect two or more modules that are in a dependency relationship
 to one another. It should work to reuse the aspects in binary form for
 each compile, in dependency order:
 
+[source, text]
 ....
 ajc -outjar common-aspects.jar
     -sourceroots "aspectj-src" ...
@@ -1380,6 +1382,7 @@ libraries).
 In Eclipse's AJDT, you can create a top-level project with symbolic
 links out to the sources:
 
+[source, text]
 ....
 app-assembly/
 {link common/aspects}
@@ -1425,6 +1428,7 @@ Here's some code Jim Hugunin wrote to trace join points and posted to
 the users list. To reuse the aspect, define a subaspect and implement
 the pointcuts, for example:
 
+[source, java]
 ....
 aspect JoinPointSampleAspect extends aj.TraceJoinPoints {
     protected pointcut entry() :
@@ -1442,11 +1446,11 @@ aspect JoinPointSampleAspect extends aj.TraceJoinPoints {
 class JoinPointSample {
     public static void main(String[] args) {}
 }
-
 ....
 
 Here's the aspect:
 
+[source, java]
 ....
 /* TraceJoinPoints.java */
 
@@ -1639,6 +1643,7 @@ call? How about the most-recent prior entrypoint?
 most-recent recursive call or (b) the current and original recursive
 call:
 
+[source, java]
 ....
 aspect LogFactorial {
     pointcut f(int i) : call(int factorial(int)) && args(i);
@@ -1654,7 +1659,6 @@ aspect LogFactorial {
         System.err.println(i + "@" + j);
     }
 }
-
 ....
 
 *Q:* What is the difference between constructor call, constructor
@@ -1672,6 +1676,7 @@ constructor call obtained using `TraceJointPoints.java` from
 #q:seeingjoinpoints[Q:I don't understand what join points exist. How can
 I see them?].
 
+[source, java]
 ....
 public class Init {
     public static void main (String[] args) {
@@ -1689,6 +1694,7 @@ class Test extends Super implements I {
 
 For a program compiled with AspectJ 1.0, the result is this:
 
+[source, xml]
 ....
 <constructor-call sig="Test()" >
   <staticinitialization sig="Super._init_" />
@@ -1723,9 +1729,9 @@ of thumb:
 * If you want the join point on the "outside" of object creation, use
 after returning from call to the constructor:
 +
+[source, java]
 ....
 after() returning (Foo newlyCreatedObject): call(Foo.new(..)) { ... }
-
 ....
 +
 You might be tempted to use "this" or "target" to expose the new object,
@@ -1734,9 +1740,9 @@ object itself might not be created yet... it only exists "on the way
 out", when you return the object.
 * If you want the join point inside a particular constructor, use:
 +
+[source, java]
 ....
 after(Foo newlyCreatedObject) returning: this(newlyCreatedObject) && execution(Foo.new(..)) { ... }
-
 ....
 +
 Remember, though, that if you use "before" advice here, the body of the
@@ -1747,9 +1753,9 @@ object that call each other with `this(...)` and you want exactly one
 join point for each initialization of `Foo`, regardless of the path of
 constructors it takes, then use:
 +
+[source, java]
 ....
 after(Foo f) returning: this(f) && initialization(Foo.new(..)) { ... }
-
 ....
 
 *Q:* I want advice to run at two join points, but it doesn't run at all.
@@ -1759,9 +1765,9 @@ What gives?
 mistake. Most likely you want to do something like "run the advice for
 all public and private calls," and the code looks something like this:
 
+[source, java]
 ....
 within(com.xerox.printing..*) && call(public * *(..)) && call(private * *(..))
-
 ....
 
 But a pointcut is evaluated at *each* join point. The expression above
@@ -1770,9 +1776,9 @@ has both public and private access. In a pointcut, `pc1() && pc2()`
 means both must be true at a given join point for advice to run at that
 join point. The correct pointcut would use `||` as follows:
 
+[source, java]
 ....
 within(com.xerox.printing..*) && (call(public * *(..)) || call(private * *(..)))
-
 ....
 
 Then the advice will run at the join point.
@@ -1796,6 +1802,7 @@ limited to a certain set of classes. Do I have to retype it each time?
 *A:* No. You can declare that all the types implement an interface you
 define, and then use the interface type in your program. For example:
 
+[source, java]
 ....
 /**
  * Example of using an interface to represent a type pattern.
@@ -1821,7 +1828,6 @@ abstract aspect MarkerExample {
 aspect MyMarker extends MarkerExample {
   declare parents: com.mycompany.whatever..* implements Marked;
 }
-
 ....
 
 *Q:* Where do I find example programs and how-to's?
@@ -1886,6 +1892,7 @@ Specification] .
 here is the HTML code for an HTML editor applet that contains some
 debugging aspects:
 
+[source, xml]
 ....
 <APPLET
    CODE='com.company.swing.applets.EditorApplet'
@@ -1914,6 +1921,7 @@ types to Object, so that highly polymorphic advice may be written. This
 works if an advice parameter or the return type for around is typed to
 Object. So:
 
+[source, java]
 ....
 class Test {
     static int i;
@@ -1928,15 +1936,14 @@ aspect TraceSet {
         System.err.println(val.class);
     }
 }
-
 ....
 
 will print out
 
+[source, text]
 ....
 37
 java.lang.Integer
-
 ....
 
 For more information, see the Programming Guide
@@ -1951,10 +1958,10 @@ flag as an argument.
 To programmatically detect the version of the AspectJ runtime while
 running under Java 1.4 or later, get the version from the package:
 
+[source, java]
 ....
 Package lang = org.aspectj.lang.JoinPoint.class.getPackage();
 String version = lang.getImplementationVersion();
-
 ....
 
 When running under Java 1.3 or earlier, read the manifest directly. For
@@ -1973,13 +1980,13 @@ in `org.aspectj.bridge.Version`.
 *A:* The only modifier advice can take is `strictfp`. However, you can
 enclose the body of the advice in a synchronized clause:
 
+[source, java]
 ....
 before() : pc() {
   synchronized (this) {
     // advice code here
   }
 }
-
 ....
 
 It should not be necessary to synchronize a percflow aspect, but you
@@ -1999,6 +2006,7 @@ VM exhausts itself in the recursion.
 
 Of course, infinite recursion is possible in Java:
 
+[source, java]
 ....
 public class Main {
     public static void main(String[] args) {
@@ -2009,7 +2017,6 @@ public class Main {
         }
     }
 }
-
 ....
 
 If you compile and run this program, and it will fail silently, trying
@@ -2018,11 +2025,11 @@ StackOverflowError.
 
 Here's a similar AspectJ program where the recursion is not so obvious:
 
+[source, java]
 ....
 aspect A {
     after():  call(* *(..)) { System.out.println("after " + thisJoinPoint); }
 }
-
 ....
 
 This re-invokes itself because it advises any call. It invokes itself
@@ -2042,19 +2049,20 @@ finally clause, understanding that it may run after some failure.
 {empty}(2) Avoid writing advice that advises itself. One simple way to
 do so is to exclude the code within the current aspect:
 
+[source, java]
 ....
 aspect A {
     after() returning:  !within(A) && call(* *(..)) {
         System.out.println("after " + thisJoinPoint);
     }
 }
-
 ....
 
 A better way is often to re-write the pointcut. If the advice is
 advising itself accidentally, that's a sign that the pointcut is not
 saying what you mean.
 
+[source, java]
 ....
 aspect A {
     pointcut withinTargetClasses() : within(A+) || within(B+);
@@ -2062,12 +2070,12 @@ aspect A {
         System.out.println("after " + thisJoinPoint);
     }
 }
-
 ....
 
 *Q:* I've declared a field on every class in my package; how do I use it
 in advice?
 
+[source, java]
 ....
 aspect A {
     boolean com.xerox..*.dirtyFlag;
@@ -2076,7 +2084,6 @@ aspect A {
         target.dirtyFlag = true; // compile fails here
     }
 }
-
 ....
 
 *A:* You need a type to refer to any member, field or method. It's
@@ -2084,6 +2091,7 @@ generally better to introduce onto an interface and declare classes to
 implement the interface, which permits you to use the interface type in
 advice formals.
 
+[source, java]
 ....
 aspect A {
     interface TrackingSets {}
@@ -2095,7 +2103,6 @@ aspect A {
         target.dirtyFlag = true;
     }
 }
-
 ....
 
 *Q:* The AspectJ compiler aborts with an OutOfMemoryError when compiling
@@ -2182,6 +2189,7 @@ How can I fix this?]. For your IDE, do something similar or follow the
 provider's instructions. For example, to increase memory in JBuilder,
 edit the `jbuilderX/bin/jbuilder.config` file to have an entry like:
 
+[source, text]
 ....
 vmparam -Xmx384m
 ....
@@ -2430,6 +2438,7 @@ not control the code for the method execution), test the context for
 `invoke(..)`. Here's a pointcut that tests only if the method name is
 correct:
 
+[source, java]
 ....
 aspect A {
     pointcut runReflectiveCall(Method run) : target(run) &&
@@ -2438,7 +2447,6 @@ aspect A {
         System.out.println("before reflective call " + thisJoinPoint);
     }
 }
-
 ....
 
 *Q:* What are the bugs now most affecting users?
@@ -2502,11 +2510,11 @@ CGLIB generate code from the weaving process by appropriate use of the
 exclude element in the aop.xml. A typical clause in the aop.xml might
 look as follows:
 
+[source, xml]
 ....
 <weaver>
   <exclude within="*CGLIB*" />
 </weaver>
-
 ....
 
 [[aj11]]
@@ -2653,6 +2661,7 @@ only XML. This means aspect developers can write abstract aspects, and
 deployers need only configure `aop.xml` and run using the AspectJ weaver
 in Java 5. For example, to run Java 5 VM with load-time weaving,
 
+[source, text]
 ....
 java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
 ....
@@ -2661,6 +2670,7 @@ To declare a concrete aspect, add a a concrete-aspect XML entity to
 `META-INF/aop.xml`. This example extends a tracing aspect to apply to
 every type in the application:
 
+[source, xml]
 ....
 <concrete-aspect
     name="com.company.tracing.ConcreteTracing"
@@ -2987,10 +2997,10 @@ AJDT development environment and running the correctness tests. Then:
 * Create a file `aspectjlib.properties` within the `org.aspectj.ajde`
 project and add the following two lines
 +
+[source, text]
 ....
 aspectj.lib.dir=C:/eclipse/aspectj-workspace/aj-build/dist/tools/lib
 aspectj.doc.dir=C:/eclipse/aspectj-workspace/aj-build/dist/ide/eclipse/org.aspectj.ajde.doc/doc
-
 ....
 +
 making sure to change the path to correspond to your set up.
@@ -3043,6 +3053,7 @@ is a sample file with some example definitions, preceded by comments
 showing the directory layout of the files referred to in the test
 definitions.
 
+[source, xml]
 ....
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
@@ -3137,10 +3148,10 @@ tree as described in #q:buildingsource[Q:How do I get and compile the
 source code for AspectJ?] and then build the `build-testing-drivers`
 target:
 
+[source, text]
 ....
 cd build
 ../lib/ant/bin/ant -f build.xml build-testing-drivers
-
 ....
 
 This produces `../aj-build/jars/testing-drivers-all.jar` which you can
@@ -3237,8 +3248,7 @@ http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT ).
 Bug reports on ajbrowser should have version information for both Java
 and AspectJ, and (most importantly) clear steps for reproducing the bug.
 You may submit ajbrowser bugs against the IDE component of AspectJ via
-the web form http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
-.
+the web form http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ.
 
 One of the benefits of open-source is that you can find and fix the bug
 for yourself; when you submit the fix back to us, we can validate the
@@ -3422,7 +3432,7 @@ More details for 1.0 and earlier releases are available in changes.html.
 *Q:* What is the AspectJ development schedule?
 
 *A:* Below is a table describing the goals for the major releases. For
-information about specific features, search the bug database for `RFE`'s
+information about specific features, search the bug database for ``RFE``'s
 ("requests for enhancement") by
 http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_severity=enhancement[selecting
 severity of "enhancement"]. Like many open-source projects, we don't

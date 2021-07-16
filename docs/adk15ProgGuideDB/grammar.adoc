@@ -1,6 +1,7 @@
 [[grammar]]
 == A Grammar for the AspectJ 5 Language
 
+[source, text]
 ....
 === type patterns ===
 

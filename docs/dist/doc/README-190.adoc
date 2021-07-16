@@ -41,6 +41,7 @@ In anticipation of not all build plugins supporting that
 -Xajruntimetarget option, you can now specify these kinds of option in
 the ASPECTJ_OPTS environment variable. Set that in your environment:
 
+[source, text]
 ....
 export ASPECTJ_OPTS="-Xajruntimetarget:1.9"
 ....
@@ -58,17 +59,18 @@ useful with Java9 which includes a number of module related commands.
 For example, here is an iajc usage with compilerArg that is passing
 --add-modules java.xml.bind:
 
+[source, xml]
 ....
-  <iajc destdir="bin" failonerror="true"
-     showWeaveInfo="true" source="1.9" target="1.9"
-     debug="true"  fork="true"  maxmem="256m">
-     <compilerArg value="--add-modules"/>
-     <compilerArg value="java.xml.bind"/>
-    <src path="src" />
-    <classpath>
-            <pathelement location="${aspectj.home}/lib/aspectjrt.jar"/>
-    </classpath>
- </iajc>
+<iajc destdir="bin" failonerror="true"
+   showWeaveInfo="true" source="1.9" target="1.9"
+   debug="true"  fork="true"  maxmem="256m">
+   <compilerArg value="--add-modules"/>
+   <compilerArg value="java.xml.bind"/>
+  <src path="src" />
+  <classpath>
+          <pathelement location="${aspectj.home}/lib/aspectjrt.jar"/>
+  </classpath>
+</iajc>
 ....
 
 1.9.0.RC4 available 21-Feb-2018
@@ -103,6 +105,7 @@ AspectJ can now be used with the new module system available in Java9.
 The key jars in AspectJ have been given automatic module names. The
 automatic module name is org.aspectj.runtime for the aspectjrt module:
 
+[source, text]
 ....
 $ java --module-path <pathto>/lib/aspectjrt.jar --list-modules | grep aspectj
 
@@ -112,6 +115,7 @@ org.aspectj.runtime file:///<pathto>/lib/aspectjrt.jar automatic
 And similarly org.aspectj.weaver and org.aspectj.tools for aspectjweaver
 and aspectjtools respectively:
 
+[source, text]
 ....
 $ java --module-path <pathto>/lib/aspectjweaver.jar --describe-module org.aspectj.weaver
 
@@ -137,6 +141,7 @@ contains org.aspectj.asm.internal
 AspectJ understands module-info.java source files and building modules
 that include aspects. Here is an example:
 
+[source, java]
 ....
 module-info.java
 
@@ -170,6 +175,7 @@ public aspect Azpect {
 
 We can now build those into a module:
 
+[source, text]
 ....
 $ ajc -1.9 module-info.java otherpkg/Azpect.java pkg/Demo.java -outjar demo.jar
 
@@ -182,12 +188,14 @@ Wait, that failed! Yes, aspectjrt.jar (which includes the required
 org.aspectj.weaver module) wasn't supplied. We need to pass it on the
 module-path:
 
+[source, text]
 ....
 $ ajc -1.9 --module-path <pathto>/aspectjrt.jar module-info.java otherpkg/Azpect.java pkg/Demo.java -outjar demo.jar
 ....
 
 Now we have a demo module we can run:
 
+[source, text]
 ....
 $ java --module-path <pathto>/aspectjrt.jar:demo.jar --module demo/pkg.Demo
 
@@ -206,8 +214,9 @@ A module is really just a jar with a module-info descriptor. As such you
 can simply pass a module on the inpath and binary weave it with other
 aspects. Take the module we built above, let's weave into it again:
 
+[source, java]
 ....
-extra/AnotherAzpect.java
+// extra/AnotherAzpect.java
 
 package extra;
 
@@ -218,6 +227,7 @@ public aspect AnotherAzpect {
 }
 ....
 
+[source, text]
 ....
 $ ajc -inpath demo.jar AnotherAzpect.java -outjar newdemo.jar
 ....
@@ -231,6 +241,7 @@ Because the new jar produced includes the compiled aspect, the
 module-info specification inside is still correct, so we can run it
 exactly as before:
 
+[source, text]
 ....
 $ java --module-path ~/installs/aspectj190rc1/lib/aspectjrt.jar:newdemo.jar --module demo/pkg.Demo
 
@@ -238,9 +249,6 @@ Azpect running
 AnotherAzpect running
 Demo running
 ....
-
- +
- +
 
 === Faster Spring AOP
 
@@ -250,6 +258,7 @@ of Spring-AspectJ: https://github.com/dsyer/spring-boot-aspectj
 Here we can see the numbers for AspectJ 1.8.11 (on an older Macbook
 Pro):
 
+[source, text]
 ....
 Benchmark                 (scale)  Mode  Cnt   Score   Error  Units
 StartupBenchmark.ltw          N/A  avgt   10   2.553 ~ 0.030   s/op
@@ -295,6 +304,7 @@ primary change is factoring in the annotation type.
 
 What difference does that make? AspectJ 1.9.0.RC1:
 
+[source, text]
 ....
 Benchmark                 (scale)  Mode  Cnt  Score   Error  Units
 StartupBenchmark.ltw          N/A  avgt   10  2.568 ~ 0.035   s/op

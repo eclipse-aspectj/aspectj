@@ -35,6 +35,7 @@ extraneous dependencies to an applications build classpath.
 
 Example:
 
+[source, java]
 ....
 import org.aspectj.lang.annotation.*;
 
@@ -63,6 +64,7 @@ appears to come up when the aspect is non-optimal anyway and hitting
 preinitialization was never really intended by the pointcut writer. For
 example:
 
+[source, java]
 ....
 execution(* foo(..)) && cflow(within(Bar))
 ....
@@ -72,12 +74,14 @@ joinpoints, many of which the user probably didn't mean to. It feels
 like we actually need a warning to indicate the pointcut is probably
 suboptimal. What the user probably meant was something more like this:
 
+[source, java]
 ....
 execution(* foo(..)) && cflow(execution(* Bar.*(..))
 ....
 
 or
 
+[source, java]
 ....
 execution(* foo(..)) && cflow(within(Bar) && execution(* *(..)))
 ....

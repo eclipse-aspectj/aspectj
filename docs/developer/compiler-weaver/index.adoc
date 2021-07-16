@@ -65,6 +65,7 @@ code generation
 
 Let's trace the following example program through the compiler.
 
+[source, java]
 ....
 package example.parse.tree;
 
@@ -99,6 +100,7 @@ image:top-tree.gif[image]
 
 Let's look more closely at the pointcut declaration:
 
+[source, java]
 ....
 pointcut entries(Main o): execution(void doit()) && this(o);
 ....
@@ -114,6 +116,7 @@ information might be needed to implement a declare soft.
 
 Next we look at the processing for an advice declaration:
 
+[source, java]
 ....
 before(Main o): entries(o) {
     o.counter++;
@@ -262,6 +265,7 @@ failures, resolve them with the AspectJ developers before moving on.
 
 {empty}a. Create a new file in tests/design/pcds/Throw.java
 
+[source, java]
 ....
 import org.aspectj.testing.Tester;
 
@@ -290,6 +294,7 @@ aspect A {
 {empty}b. Create a temporary test harness file to run just this test in
 myTests.xml
 
+[source, xml]
 ....
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 <suite>
@@ -303,6 +308,7 @@ myTests.xml
 
 {empty}c. Run this test using the harness. You should see:
 
+[source, text]
 ....
 about to execute: execution(void Throws.willThrow())
 about to execute: call(java.lang.RuntimeException(String))
@@ -314,6 +320,7 @@ PASS Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 passed) 2 seconds
 Modify runtime/org.aspectj.lang/JoinPoint.java to add a name for the
 Throw shadow kind.
 
+[source, java]
 ....
 static String THROW = "throw";
 ....
@@ -328,6 +335,7 @@ This is because the throw bytecode in Java operates on a single argument
 that is a Throwable which must be the top element on the stack. This
 argument is removed from the stack by the bytecode.
 
+[source, java]
 ....
 public static final Kind Throw = new Kind(JoinPoint.THROW, 12, true);
 ....
@@ -335,6 +343,7 @@ public static final Kind Throw = new Kind(JoinPoint.THROW, 12, true);
 We also modify the neverHasTarget method to include the Throw kind
 because in Java there is no target for the throwing of an exception.
 
+[source, java]
 ....
 public boolean neverHasTarget() {
     return this == ConstructorCall
@@ -348,6 +357,7 @@ public boolean neverHasTarget() {
 In the read method on Shadow.Kind, add another case to read in our new
 Shadow.Kind.
 
+[source, java]
 ....
 case 12: return Throw;
 ....
@@ -357,6 +367,7 @@ case 12: return Throw;
 Modify weaver/org.aspectj.weaver.bcel/BcelClassWeaver.java to recognize
 this new joinpoint kind. In the method
 
+[source, java]
 ....
 private void match(
     LazyMethodGen mg,
@@ -368,6 +379,7 @@ private void match(
 
 Add a test for this instruction, i.e.
 
+[source, java]
 ....
 } else if (i == InstructionConstants.ATHROW) {
     match(BcelShadow.makeThrow(world, mg, ih, enclosingShadow),
@@ -378,6 +390,7 @@ Add a test for this instruction, i.e.
 Then, modify BcelShadow.java to create this new kind of join point
 shadow:
 
+[source, java]
 ....
 public static BcelShadow makeThrow(
         BcelWorld world,
@@ -408,6 +421,7 @@ public static BcelShadow makeThrow(
 Finally modify weaver/org.aspectj.weaver/Member.java to generate the
 needed signature
 
+[source, java]
 ....
 public static Member makeThrowSignature(TypeX inType, TypeX throwType) {
     return new Member(
@@ -421,6 +435,7 @@ public static Member makeThrowSignature(TypeX inType, TypeX throwType) {
 
 Run the proto test again and you should see:
 
+[source, text]
 ....
 about to execute: execution(void Throws.willThrow())
 about to execute: call(java.lang.RuntimeException(String))
@@ -439,6 +454,7 @@ part of the clean-up. For now, let's go on with the interesting parts.
 
 Add a second piece of before advice to the test aspect A:
 
+[source, java]
 ....
 before(): throw(Throwable) {
     System.out.println("about to throw: " + thisJoinPoint);
@@ -448,6 +464,7 @@ before(): throw(Throwable) {
 When we run the test again we'll get a long error message from the
 harness. The interesting part of the message is the following:
 
+[source, text]
 ....
 [  0] [error   0]: error can't find referenced pointcut at C:\aspectj\eclipse\tests\design\pcds\Throws.java:23:0
 ....
@@ -470,6 +487,7 @@ Modify the parseSinglePointcut method in
 weaver/org.aspectj.weaver.patterns/PatternParser.java to add one more
 else if clause for the throw pcd:
 
+[source, java]
 ....
 } else  if (kind.equals("throw")) {
     parseIdentifier(); eat("(");
@@ -485,6 +503,7 @@ else if clause for the throw pcd:
 Modify the matches method in
 weaver/org.aspectj.weaver.patterns/SignaturePattern.java to add:
 
+[source, java]
 ....
 if (kind == Member.HANDLER) {
     return parameterTypes.matches(world.resolve(sig.getParameterTypes()),
@@ -494,6 +513,7 @@ if (kind == Member.HANDLER) {
 
 Run the proto test again and you should see:
 
+[source, text]
 ....
 about to execute: execution(void Throws.willThrow())
 about to execute: call(java.lang.RuntimeException(String))
@@ -513,6 +533,7 @@ case. Modify our test aspect A to be the following. In addition to
 removing the overly generic withincode pcd, this change also prints the
 actual object that is about to be thrown:
 
+[source, java]
 ....
 aspect A {
     before(Throwable t): throw(*) && args(t) {
@@ -523,6 +544,7 @@ aspect A {
 
 When we run the test again we should see the output below:
 
+[source, text]
 ....
 about to throw: 'java.lang.RuntimeException: expected exception' at throw(catch(Throwable))
 PASS Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 passed) 1 seconds
@@ -546,6 +568,7 @@ exception thrown to be 'Throwable'. Can we set this to be more accurate?
 Looking at the source code, it seems easy to identify the static type of
 the exception that is thrown:
 
+[source, java]
 ....
 throw new RuntimeException("expected exception");
 ....
@@ -585,6 +608,7 @@ thrown, we need to fix the parser for the throw pcd to remove this
 information. We'll fix the PatternParser code that we added in step 1.6
 to read as follows:
 
+[source, java]
 ....
 } else  if (kind.equals("throw")) {
     parseIdentifier(); eat("(");
@@ -602,6 +626,7 @@ before. To make this work we have a set of things to do. First, let's
 create this new kind in org.aspectj.weaver.Member. Find where the
 HANDLER kind is defined there, and add a corresponding throw kind:
 
+[source, java]
 ....
 public static final Kind THROW         = new Kind("THROW", 8);
 ....
@@ -610,6 +635,7 @@ We also need to fix the serialization kind in
 Member.Kind.read(DataInputStream) just above this constant list to add a
 case for this new kind:
 
+[source, java]
 ....
 case 8: return THROW;
 ....
@@ -617,6 +643,7 @@ case 8: return THROW;
 Still in this file, we also need to fix Member.makeThrowSignature to use
 this new kind:
 
+[source, java]
 ....
 public static Member makeThrowSignature(TypeX inType, TypeX throwType) {
     return new ResolvedMember(
@@ -631,6 +658,7 @@ public static Member makeThrowSignature(TypeX inType, TypeX throwType) {
 If you run the test now you'll get an error from the parser reminding us
 that the throw pcd now doesn't accept a type pattern:
 
+[source, text]
 ....
 ------------  FAIL: simple throw join point()
 ...
@@ -642,6 +670,7 @@ FAIL Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 failed) 1 seconds
 This is an easy fix to the test case as we modify our pcd for the new
 syntax in the aspect A in our Throws.java test code:
 
+[source, java]
 ....
 before(Throwable t): throw() && args(t) {
 ....
@@ -649,6 +678,7 @@ before(Throwable t): throw() && args(t) {
 Now when we run the test case it looks like everything's fixed and we're
 passing:
 
+[source, text]
 ....
 PASS Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 passed) 2 seconds
 ....
@@ -664,6 +694,7 @@ that by adding code that notes when the advice runs and then checks for
 this event. This code uses the Tester.event and Tester.checkEvent
 methods:
 
+[source, java]
 ....
 import org.aspectj.testing.Tester;
 
@@ -694,6 +725,7 @@ aspect A {
 Now when we run our test case it will fail. This failure is good because
 we're not matching the throw join point anymore.
 
+[source, text]
 ....
 ------------  FAIL: simple throw join point()
 ...
@@ -711,6 +743,7 @@ use combinations with other pcds to narrow their matches. So, find the
 line for kind == Member.ADVICE and add the same line below it for
 Member.THROW.
 
+[source, java]
 ....
 if (kind == Member.ADVICE) return true;
 if (kind == Member.THROW) return true;
@@ -727,6 +760,7 @@ kind of printing back on the see what's happening. If you uncomment to
 System.out.println in the test aspect A and rerun the test, you won't be
 very happy with the results:
 
+[source, text]
 ....
 ------------  FAIL: simple throw join point()
 ...
@@ -752,6 +786,7 @@ signature, these classes are extremely simple. Nevertheless, we have to
 build them. Notice that when we add new source files to the system we
 need to include the standard eclipse EPL license header.
 
+[source, java]
 ....
 /* *******************************************************************
  * Copyright (c) 2006 Contributors.
@@ -771,6 +806,7 @@ import org.aspectj.lang.Signature;
 public interface ThrowSignature extends Signature { }
 ....
 
+[source, java]
 ....
 /* *******************************************************************
  * Copyright (c) 2006 Contributors.
@@ -807,6 +843,7 @@ To finish up our work in the runtime module, we need to extend
 org.aspectj.runtime.reflect.Factory to add a factory method for this new
 signature kind:
 
+[source, java]
 ....
 public ThrowSignature makeThrowSig(String stringRep) {
     ThrowSignatureImpl ret = new ThrowSignatureImpl(stringRep);
@@ -822,6 +859,7 @@ first place. First let's add a method to create a string for the throw
 signature. This is a very simple method copied from the other
 create*SignatureString methods.
 
+[source, java]
 ....
 private String getThrowSignatureString(World world) {
     StringBuffer buf = new StringBuffer();
@@ -836,6 +874,7 @@ private String getThrowSignatureString(World world) {
 Now we need to modify three methods to add cases for the new
 Member.THROW kind. First, Member.getSignatureMakerName add:
 
+[source, java]
 ....
 } else if (kind == THROW) {
     return "makeThrowSig";
@@ -843,6 +882,7 @@ Member.THROW kind. First, Member.getSignatureMakerName add:
 
 Next, to Member.getSignatureType add:
 
+[source, java]
 ....
 } else if (kind == THROW) {
     return "org.aspectj.lang.reflect.ThrowSignature";
@@ -850,6 +890,7 @@ Next, to Member.getSignatureType add:
 
 Finally, to Member.getSignatureString add:
 
+[source, java]
 ....
 } else if (kind == THROW) {
     return getThrowSignatureString(world);
@@ -859,6 +900,7 @@ With all of these changes in place we should have working code for
 thisJoinPoint reflection using our new join point and signature kinds.
 Rerun the test to confirm:
 
+[source, text]
 ....
 about to throw: 'java.lang.RuntimeException: expected exception' at throw(throw)
 PASS Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 passed) 1 seconds
@@ -869,6 +911,7 @@ PASS Suite.Spec(c:\aspectj\eclipse\tests) 1 tests (1 passed) 1 seconds
 Modify the before advice to include at least minimal checks of the new
 reflective information:
 
+[source, java]
 ....
 before(Throwable t): throw() && args(t) {
     Tester.event("before throw");
@@ -908,6 +951,7 @@ tests.
 You should expect to see at least one other test case fail when you run
 ajcTests.xml. Here's the failure message:
 
+[source, text]
 ....
 ------------  FAIL: validate (enclosing) join point and source locations()
 ...
@@ -948,6 +992,7 @@ that the only occurence of throw is just before the handler for
 catch(Error) and right after the call to new Error. We should add our
 new expected event between these two:
 
+[source, text]
 ....
 , "before AllTargetJoinPoints call(java.lang.Error(String))"
 , "before AllTargetJoinPoints throw(throw)"  // added for new throw join point
@@ -964,6 +1009,7 @@ to make sure that the new join point kind is compatible with all 5 kinds
 of advice. Let's extend our current simple Throws test to check for
 before and the three kinds of after advice:
 
+[source, java]
 ....
 import org.aspectj.testing.Tester;
 
@@ -1019,6 +1065,7 @@ point kind work for before and all three kinds of after advice.
 Let's create a new test case to see how this new join point interacts
 with around advice.
 
+[source, java]
 ....
 import org.aspectj.testing.Tester;
 
@@ -1050,6 +1097,7 @@ aspect A {
 
 When we run this test case we get a very unpleasant result:
 
+[source, text]
 ....
 ------------  FAIL: simple throw join point with around()
 ...
@@ -1080,6 +1128,7 @@ implemented in the org.aspectj.weaver.Shadow.match(Shadow, World)
 method. We can add our new rule at the beginning of the if(kind ==
 AdviceKind.Around) block:
 
+[source, java]
 ....
 } else if (kind == AdviceKind.Around) {
      if (shadow.getKind() == Shadow.Throw) {
@@ -1093,6 +1142,7 @@ AdviceKind.Around) block:
 Now if we rerun our test we'll see errors telling us that around is
 prohibited on throw join points:
 
+[source, text]
 ....
 ------------  FAIL: simple throw join point with around()
 ...
@@ -1106,6 +1156,7 @@ To finish this test case up we need to modify the specification to be
 looking for these errors as the correct behavior. This will produce the
 following specification:
 
+[source, xml]
 ....
 <ajc-test dir="design/pcds"
   title="simple throw join point with around">
