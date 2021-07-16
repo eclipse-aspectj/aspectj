@@ -82,13 +82,13 @@ Method and constructor patterns are used in the `call`, `execution`,
 `initialization`, `preinitialization`, and `withincode` pointcut
 designators. Some examples of usage follow:
 
-call(* org.xyz.*.*(int, String...))::
+`call(* org.xyz.*.*(int, String...))`::
   Matches a call join point for a call to a method defined in the
   `org.xyz` package, taking an `int` and a `String vararg`.
-execution(* org.xyz.*.*(Integer...))::
+`execution(* org.xyz.*.*(Integer...))`::
   Matches an execution join point for the execution of a method defined
   in the `org.xyz` package, taking an `Integer vararg`.
-initialization(org.xyz.*.new((Foo || Goo)...))::
+`initialization(org.xyz.*.new((Foo || Goo)...))`::
   Matches the initialization join point for the construction of an
   object in the `org.xyz` package via a constructor taking either a
   variable number of `Foo` parameters or a variable number of `Goo`

@@ -40,22 +40,22 @@ destination directory on the inpath and rebuild.)
 [[ajc_options]]
 ==== Options
 
--injars <JarList>::
+`-injars <JarList>`::
   deprecated: since 1.2, use -inpath, which also takes directories.
--inpath <Path>::
+`-inpath <Path>`::
   Accept as source bytecode any .class files in the .jar files or
   directories on Path. The output will include these classes, possibly
   as woven with any applicable aspects. Path is a single argument
   containing a list of paths to zip files or directories, delimited by
   the platform-specific path delimiter.
--aspectpath <Path>::
+`-aspectpath <Path>`::
   Weave binary aspects from jar files and directories on path into all
   sources. The aspects should have been output by the same version of
   the compiler. When running the output classes, the run classpath
   should contain all aspectpath entries. Path, like classpath, is a
   single argument containing a list of paths to jar files, delimited by
   the platform- specific classpath delimiter.
--argfile <File>::
+`-argfile <File>`::
   The file contains a line-delimited list of arguments. Each line in the
   file should contain one option, filename, or argument string (e.g., a
   classpath or inpath). Arguments read from the file are inserted into
@@ -67,82 +67,82 @@ destination directory on the inpath and rebuild.)
   specifying options like <-classpath> in argument files unlike the
   argument file is the only build specification. The form <@file> is the
   same as specifying <-argfile file>.
--outjar <output.jar>::
+`-outjar <output.jar>`::
   Put output classes in zip file output.jar.
--outxml::
+`-outxml`::
   Generate aop.xml file for load-time weaving with default name.
--outxmlfile <custom/aop.xml>::
+`-outxmlfile <custom/aop.xml>`::
   Generate aop.xml file for load-time weaving with custom name.
--incremental::
+`-incremental`::
   Run the compiler continuously. After the initial compilation, the
   compiler will wait to recompile until it reads a newline from the
   standard input, and will quit when it reads a 'q'. It will only
   recompile necessary components, so a recompile should be much faster
   than doing a second compile. This requires -sourceroots.
--sourceroots <DirPaths>::
+`-sourceroots <DirPaths>`::
   Find and build all .java or .aj source files under any directory
   listed in DirPaths. DirPaths, like classpath, is a single argument
   containing a list of paths to directories, delimited by the platform-
   specific classpath delimiter. Required by -incremental.
--crossrefs::
+`-crossrefs`::
   Generate a build .ajsym file into the output directory. Used for
   viewing crosscutting references by tools like the AspectJ Browser.
--emacssym::
+`-emacssym`::
   Generate .ajesym symbol files for emacs support (deprecated).
--Xlint::
+`-Xlint`::
   Same as -Xlint:warning (enabled by default)
--Xlint:\{level}::
+`-Xlint:{level}`::
   Set default level for messages about potential programming mistakes in
   crosscutting code. \{level} may be ignore, warning, or error. This
   overrides entries in org/aspectj/weaver/XlintDefault.properties from
   aspectjtools.jar, but does not override levels set using the
   -Xlintfile option.
--Xlintfile <PropertyFile>::
+`-Xlintfile <PropertyFile>`::
   Specify properties file to set levels for specific crosscutting
   messages. PropertyFile is a path to a Java .properties file that takes
   the same property names and values as
   org/aspectj/weaver/XlintDefault.properties from aspectjtools.jar,
   which it also overrides.
--help::
+`-help`::
   Emit information on compiler options and usage
--version::
+`-version`::
   Emit the version of the AspectJ compiler
--classpath <Path>::
+`-classpath <Path>`::
   Specify where to find user class files. Path is a single argument
   containing a list of paths to zip files or directories, delimited by
   the platform-specific path delimiter.
--bootclasspath <Path>::
+`-bootclasspath <Path>`::
   Override location of VM's bootclasspath for purposes of evaluating
   types when compiling. Path is a single argument containing a list of
   paths to zip files or directories, delimited by the platform-specific
   path delimiter.
--extdirs <Path>::
+`-extdirs <Path>`::
   Override location of VM's extension directories for purposes of
   evaluating types when compiling. Path is a single argument containing
   a list of paths to directories, delimited by the platform-specific
   path delimiter.
--d <Directory>::
+`-d <Directory>`::
   Specify where to place generated .class files. If not specified,
   <Directory> defaults to the current working dir.
--target <[1.1 to 1.5]>::
+`-target <[1.1 to 1.5]>`::
   Specify classfile target setting (1.1 to 1.5, default is 1.2)
--1.3::
+`-1.3`::
   Set compliance level to 1.3 This implies -source 1.3 and -target 1.1.
--1.4::
+`-1.4`::
   Set compliance level to 1.4 (default) This implies -source 1.4 and
   -target 1.2.
--1.5::
+`-1.5`::
   Set compliance level to 1.5. This implies -source 1.5 and -target 1.5.
--source <[1.3|1.4|1.5]>::
+`-source <[1.3|1.4|1.5]>`::
   Toggle assertions (1.3, 1.4, or 1.5 - default is 1.4). When using
   -source 1.3, an assert() statement valid under Java 1.4 will result in
   a compiler error. When using -source 1.4, treat `assert` as a keyword
   and implement assertions according to the 1.4 language spec. When
   using -source 1.5, Java 5 language features are permitted.
--nowarn::
+`-nowarn`::
   Emit no warnings (equivalent to '-warn:none') This does not suppress
   messages generated by `declare warning` or `Xlint`.
--warn: <items>::
+`-warn: <items>`::
   Emit warnings for any instances of the comma-delimited list of
   questionable code (eg '-warn:unusedLocals,deprecation'):
 +
@@ -160,13 +160,13 @@ none                   suppress all compiler warnings
 +
 `-warn:none` does not suppress messages generated by `declare warning`
   or `Xlint`.
--deprecation::
+`-deprecation`::
   Same as -warn:deprecation
--noImportError::
+`-noImportError`::
   Emit no errors for unresolved imports
--proceedOnError::
+`-proceedOnError`::
   Keep compiling after error, dumping class files with problem methods
--g<:[lines,vars,source]>::
+`-g<:[lines,vars,source]>`::
   debug attributes level, that may take three forms:
 +
 [source, text]
@@ -176,54 +176,54 @@ none                   suppress all compiler warnings
 -g:{items} debug info for any/all of [lines, vars, source], e.g.,
            -g:lines,source
 ....
--preserveAllLocals::
+`-preserveAllLocals`::
   Preserve all local variables during code generation (to facilitate
   debugging).
--referenceInfo::
+`-referenceInfo`::
   Compute reference information.
--encoding <format>::
+`-encoding <format>`::
   Specify default source encoding format. Specify custom encoding on a
   per file basis by suffixing each input source file/folder name with
   '[encoding]'.
--verbose::
+`-verbose`::
   Emit messages about accessed/processed compilation units
--showWeaveInfo::
+`-showWeaveInfo`::
   Emit messages about weaving
--log <file>::
+`-log <file>`::
   Specify a log file for compiler messages.
--progress::
+`-progress`::
   Show progress (requires -log mode).
--time::
+`-time`::
   Display speed information.
--noExit::
+`-noExit`::
   Do not call System.exit(n) at end of compilation (n=0 if no error)
--repeat <N>::
+`-repeat <N>`::
   Repeat compilation process N times (typically to do performance
   analysis).
--XterminateAfterCompilation::
+`-XterminateAfterCompilation`::
   Causes compiler to terminate before weaving
--XaddSerialVersionUID::
+`-XaddSerialVersionUID`::
   Causes the compiler to calculate and add the SerialVersionUID field to
   any type implementing Serializable that is affected by an aspect. The
   field is calculated based on the class before weaving has taken place.
--Xreweavable[:compress]::
+`-Xreweavable[:compress]`::
   (Experimental - deprecated as now default) Runs weaver in reweavable
   mode which causes it to create woven classes that can be rewoven,
   subject to the restriction that on attempting a reweave all the types
   that advised the woven type must be accessible.
--XnoInline::
+`-XnoInline`::
   (Experimental) do not inline around advice
--XincrementalFile <file>::
+`-XincrementalFile <file>`::
   (Experimental) This works like incremental mode, but using a file
   rather than standard input to control the compiler. It will recompile
   each time file is changed and and halt when file is deleted.
--XserializableAspects::
+`-XserializableAspects`::
   (Experimental) Normally it is an error to declare aspects
   Serializable. This option removes that restriction.
--XnotReweavable::
+`-XnotReweavable`::
   (Experimental) Create class files that can't be subsequently rewoven
   by AspectJ.
--Xajruntimelevel:1.2, ajruntimelevel:1.5::
+`-Xajruntimelevel:1.2, ajruntimelevel:1.5`::
   (Experimental) Allows code to be generated that targets a 1.2 or a 1.5
   level AspectJ runtime (default 1.5)
 

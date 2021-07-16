@@ -83,35 +83,37 @@ interfaces for integration of AspectJ load-time weaving in custom
 environments.
 
 Agents::
-  AspectJ 5 ships with a load-time weaving agent that enables load-time
-  weaving. This agent and its configuration is execution environment
-  dependent. Configuration for the supported environments is discussed
-  later in this chapter.
-  +
-  Using Java 5 JVMTI you can specify the
-  `-javaagent:pathto/aspectjweaver.jar` option to the JVM.
-  +
-  Since AspectJ 1.9.7, the obsolete Oracle/BEA JRockit agent is no
-  longer part of AspectJ. JRockit JDK never supported Java versions
-  higher than 1.6. Several JRockit JVM features are now part of HotSpot
-  and tools like Mission Control available for OpenJDK and Oracle JDK.
+AspectJ 5 ships with a load-time weaving agent that enables load-time
+weaving. This agent and its configuration is execution environment
+dependent. Configuration for the supported environments is discussed
+later in this chapter.
++
+Using Java 5 JVMTI you can specify the
+`-javaagent:pathto/aspectjweaver.jar` option to the JVM.
++
+Since AspectJ 1.9.7, the obsolete Oracle/BEA JRockit agent is no
+longer part of AspectJ. JRockit JDK never supported Java versions
+higher than 1.6. Several JRockit JVM features are now part of HotSpot
+and tools like Mission Control available for OpenJDK and Oracle JDK.
+
 Command-line wrapper scripts `aj`::
-  The `aj` command runs Java programs in Java 1.4 or later by setting up
-  `WeavingURLClassLoader` as the system class loader. For more
-  information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
-  +
-  The `aj5` command runs Java programs in Java 5 by using the
-  `-javaagent:pathto/aspectjweaver.jar` option described above. For more
-  information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
+The `aj` command runs Java programs in Java 1.4 or later by setting up
+`WeavingURLClassLoader` as the system class loader. For more
+information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
++
+The `aj5` command runs Java programs in Java 5 by using the
+`-javaagent:pathto/aspectjweaver.jar` option described above. For more
+information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher].
+
 Custom class loader::
-  A public interface is provided to allow a user written class loader to
-  instantiate a weaver and weave classes after loading and before
-  defining them in the JVM. This enables load-time weaving to be
-  supported in environments where no weaving agent is available. It also
-  allows the user to explicitly restrict by class loader which classes
-  can be woven. For more information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher] and the API
-  documentation and source for `WeavingURLClassLoader` and
-  `WeavingAdapter`.
+A public interface is provided to allow a user written class loader to
+instantiate a weaver and weave classes after loading and before
+defining them in the JVM. This enables load-time weaving to be
+supported in environments where no weaving agent is available. It also
+allows the user to explicitly restrict by class loader which classes
+can be woven. For more information, see xref:#aj[`aj`, the AspectJ load-time weaving launcher] and the API
+documentation and source for `WeavingURLClassLoader` and
+`WeavingAdapter`.
 
 [[configuring-load-time-weaving-with-aopxml-files]]
 ==== Configuring Load-time Weaving with aop.xml files

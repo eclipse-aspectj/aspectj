@@ -61,17 +61,13 @@ Annotations can have one of three retention policies:
 
 Source-file retention::
   Annotations with source-file retention are read by the compiler during
-  the compilation process, but are not rendered in the generated
-  `.class` files.
+  the compilation process, but are not rendered in the generated `.class` files.
 Class-file retention::
   This is the default retention policy. Annotations with class-file
-  retention are read by the compiler and also retained in the generated
-  `
-                          .class` files.
+  retention are read by the compiler and also retained in the generated `.class` files.
 Runtime retention::
   Annotations with runtime retention are read by the compiler, retained
-  in the generated `
-                          .class` files, and also made available at
+  in the generated `.class` files, and also made available at
   runtime.
 
 Local variable annotations are not retained in class files (or at
@@ -201,7 +197,6 @@ public aspect AnAspect {
 
   pointcut anInterfaceOperation() : execution(* AnInterface.*(..));
 
-
   @SuppressAjWarnings // may not match if there are no implementers of the interface...
   before() : anInterfaceOperation() {
      // do something...
@@ -229,8 +224,8 @@ etc.), an annotation pattern can be used to match against the set of
 annotations on the annotated element.An annotation pattern element has
 one of two basic forms:
 
-* @<qualified-name>, for example, @Foo, or @org.xyz.Foo.
-* @(<type-pattern>), for example, @(org.xyz..*), or @(Foo || Boo)
+* `@<qualified-name>`, for example, `@Foo`, or `@org.xyz.Foo`.
+* `@(<type-pattern>)`, for example, `@(org.xyz..*)`, or `@(Foo || Boo)`
 
 These simple elements may be negated using `!`, and combined by simple
 concatentation. The pattern `@Foo @Boo` matches an annotated element
@@ -239,21 +234,21 @@ that has both an annotation of type `Foo` and an annotation of type
 
 Some examples of annotation patterns follow:
 
-@Immutable::
+`@Immutable`::
   Matches any annotated element which has an annotation of type
   `Immutable`.
-!@Persistent::
+`!@Persistent`::
   Matches any annotated element which does not have an annotation of
   type `Persistent`.
-@Foo @Goo::
+`@Foo @Goo`::
   Matches any annotated element which has both an annotation of type
   `Foo` and an annotation of type `Goo`.
-@(Foo || Goo)::
+`@(Foo || Goo)`::
   Matches any annotated element which has either an annotation of a type
   matching the type pattern `(Foo || Goo)`. In other words, an annotated
   element with either an annotation of type `Foo` or an annotation of
   type `Goo` (or both). (The parenthesis are required in this example).
-@(org.xyz..*)::
+`@(org.xyz..*)`::
   Matches any annotated element which has either an annotation of a type
   matching the type pattern `(org.xyz..*)`. In other words, an annotated
   element with an annotation that is declared in the org.xyz package or
@@ -299,25 +294,25 @@ OptionalParensTypePattern := AnnotationPattern? TypePattern
 The following examples illustrate the use of annotations in type
 patterns:
 
-(@Immutable *)::
+`(@Immutable *)`::
   Matches any type with an `@Immutable` annotation.
-(!@Immutable *)::
+`(!@Immutable *)`::
   Matches any type which does not have an `@Immutable` annotation.
-(@Immutable (org.xyz.* || org.abc.*))::
+`(@Immutable (org.xyz.* || org.abc.*))`::
   Matches any type in the `org.xyz` or `org.abc` packages with the
   `@Immutable` annotation.
-((@Immutable Foo+) || Goo)::
+`((@Immutable Foo+) || Goo)`::
   Matches a type `Foo` or any of its subtypes, which have the
   `@Immutable` annotation, or a type `Goo`.
-((@(Immutable || NonPersistent) org.xyz..*)::
+`((@(Immutable || NonPersistent) org.xyz..*)`::
   Matches any type in a package beginning with the prefix `org.xyz`,
   which has either the `@Immutable` annotation or the `@NonPersistent`
   annotation.
-(@Immutable @NonPersistent org.xyz..*)::
+`(@Immutable @NonPersistent org.xyz..*)`::
   Matches any type in a package beginning with the prefix `org.xyz`,
   which has both an `@Immutable` annotation and an `@NonPersistent`
   annotation.
-(@(@Inherited *) org.xyz..*)::
+`(@(@Inherited *) org.xyz..*)`::
   Matches any type in a package beginning with the prefix `org.xyz`,
   which has an inheritable annotation. The annotation pattern
   `@(@Inherited *)` matches any annotation of a type matching the type
@@ -352,20 +347,20 @@ SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?
 If present, the `AnnotationPattern` restricts matches to fields with
 annotations that match the pattern. For example:
 
-@SensitiveData * *::
+`@SensitiveData * *`::
   Matches a field of any type and any name, that has an annotation of
   type `@SensitiveData`
-@SensitiveData List org.xyz..*.*::
+`@SensitiveData List org.xyz..*.*`::
   Matches a member field of a type in a package with prefix `org.xzy`,
   where the field is of type `List`, and has an annotation of type
   `@SensitiveData`
-(@SensitiveData *) org.xyz..*.*::
+`(@SensitiveData *) org.xyz..*.*`::
   Matches a member field of a type in a package with prefix `org.xzy`,
   where the field is of a type which has a `@SensitiveData` annotation.
-@Foo (@Goo *) (@Hoo *).*::
+`@Foo (@Goo *) (@Hoo *).*`::
   Matches a field with an annotation `@Foo`, of a type with an
   annotation `@Goo`, declared in a type with annotation `@Hoo`.
-@Persisted @Classified * *::
+`@Persisted @Classified * *`::
   Matches a field with an annotation `@Persisted` and an annotation
   `@Classified`.
 
@@ -418,37 +413,37 @@ The optional `AnnotationPattern` at the beginning of a method or
 constructor pattern restricts matches to methods/constructors with
 annotations that match the pattern. For example:
 
-@Oneway * *(..)::
+`@Oneway * *(..)`::
   Matches a method with any return type and any name, that has an
   annotation of type `@Oneway`.
-@Transaction * (@Persistent org.xyz..*).*(..)::
+`@Transaction * (@Persistent org.xyz..*).*(..)`::
   Matches a method with the `@Transaction` annotation, declared in a
   type with the `@Persistent` annotation, and in a package beginning
   with the `org.xyz` prefix.
-* *.*(@Immutable *,..)::
+`* *.*(@Immutable *,..)`::
   Matches any method taking at least one parameter, where the parameter
   type has an annotation `@Immutable`.
 
 ==== Example Pointcuts
 
-within(@Secure *)::
+`within(@Secure *)`::
   Matches any join point where the code executing is declared in a type
   with an `@Secure` annotation. The format of the `within` pointcut
   designator in AspectJ 5 is
   `'within' '(' OptionalParensTypePattern ')'`.
-staticinitialization(@Persistent *)::
+`staticinitialization(@Persistent *)`::
   Matches the staticinitialization join point of any type with the
   `@Persistent` annotation. The format of the `staticinitialization`
   pointcut designator in AspectJ 5 is
   `'staticinitialization' '(' OptionalParensTypePattern ')'`.
-call(@Oneway * *(..))::
+`call(@Oneway * *(..))`::
   Matches a call to a method with a `@Oneway` annotation.
-execution(public (@Immutable *) org.xyz..*.*(..))::
+`execution(public (@Immutable *) org.xyz..*.*(..))`::
   The execution of any public method in a package with prefix `org.xyz`,
   where the method returns an immutable result.
-set(@Cachable * *)::
+`set(@Cachable * *)`::
   Matches the set of any cachable field.
-handler(!@Catastrophic *)::
+`handler(!@Catastrophic *)`::
   Matches the handler join point for the handling of any exception that
   is not `Catastrophic`. The format of the `handler` pointcut designator
   in AspectJ 5 is `'handler' '(' OptionalParensTypePattern ')'`.
@@ -501,10 +496,10 @@ name are analogous to their counterparts that take a single type name.
 They match at join points where the object bound to `this` (or `target`,
 respectively) has an annotation of the specified type. For example:
 
-@this(Foo)::
+`@this(Foo)`::
   Matches any join point where the object currently bound to 'this' has
   an annotation of type `Foo`.
-call(* *(..)) && @target(Classified)::
+`call(* *(..)) && @target(Classified)`::
   Matches a call to any object where the target of the call has a
   `@Classified` annotation.
 
@@ -573,10 +568,10 @@ AtWithinCode := '@withincode' '(' AnnotationOrIdentifier ')'
 
 Some examples of using these designators follow:
 
-@within(Foo)::
+`@within(Foo)`::
   Matches any join point where the executing code is defined within a
   type which has an annotation of type `Foo`.
-pointcut insideCriticalMethod(Critical c) : @withincode(c);::
+`pointcut insideCriticalMethod(Critical c) : @withincode(c);`::
   Matches any join point where the executing code is defined in a method
   or constructor which has an annotation of type `@Critical`, and
   exposes the value of the annotation in the parameter `c`.
@@ -777,10 +772,10 @@ specification, it is now possible to match types based on the presence
 of annotations _with either class-file or runtime retention_. For
 example:
 
-declare parents : (@Secured *) implements SecuredObject;::
+`declare parents : (@Secured *) implements SecuredObject;`::
   All types with the `@Secured` annotation implement the `SecuredObject`
   inteface.
-declare parents : (@Secured BankAccount+) implements SecuredObject;::
+`declare parents : (@Secured BankAccount+) implements SecuredObject;`::
   The subset of types drawn from the `BankAccount` type and any subtype
   of `BankAccount`, where the `@Secured` annotation is present,
   implement the `SecuredObject` interface.
@@ -804,7 +799,7 @@ declare precedence : TypePatList;
 AspectJ 5 allows the type patterns in the list to include annotation
 information as part of the pattern specification. For example:
 
-declare precedence : (@Security *),*;::
+`declare precedence : (@Security *),*;`::
   All aspects with the `@Security` annotation take precedence over any
   other aspects in the system. (Or, more informally, all
   security-related aspects take precedence).
@@ -843,18 +838,18 @@ ElementPattern := TypePattern |
 
 The following examples illustrate the use of `declare annotation`.
 
-declare @type : org.xyz.model..* : @BusinessDomain ;::
+`declare @type : org.xyz.model..* : @BusinessDomain ;`::
   All types defined in a package with the prefix `org.xyz.model` have
   the `@BusinessDomain` annotation.
 declare @method : public * BankAccount+.*(..) :
-@Secured(role="supervisor")::
+`@Secured(role="supervisor")`::
   All public methods in `BankAccount` and its subtypes have the
   annotation `@Secured(role="supervisor")`.
 declare @constructor : BankAccount+.new(..) :
-@Secured(role="supervisor")::
+`@Secured(role="supervisor")`::
   All constructors in `BankAccount` and its subtypes have the annotation
   `@Secured(role="supervisor")`.
-declare @field : * DAO+.* : @Persisted;::
+`declare @field : * DAO+.* : @Persisted;`::
   All fields defined in `DAO` or its subtypes have the `@Persisted`
   annotation.
 
