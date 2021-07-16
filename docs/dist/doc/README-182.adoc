@@ -35,8 +35,7 @@ Here is a short example, a very basic annotation and application:
 
 ===== Marker.java
 
-``
-
+[source, java]
 ....
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,8 +46,7 @@ public @interface Marker { }
 
 ===== Code.java
 
-``
-
+[source, java]
 ....
 public class Code {
 
@@ -60,13 +58,13 @@ public class Code {
   }
 
   public void moo() {}
-    
+
   @Marker
   public void boo() {}
-    
+
   @Marker
   public void too() {}
-    
+
   public void woo() {}
 }
 ....
@@ -78,8 +76,7 @@ contrived demo!)
 
 ===== DemoProcessor.java
 
-``
-
+[source, java]
 ....
 import java.io.*;
 import javax.tools.*;
@@ -90,7 +87,7 @@ import javax.lang.model.element.*;
 
 @SupportedAnnotationTypes(value= {"*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class DemoProcessor extends AbstractProcessor { 
+public class DemoProcessor extends AbstractProcessor {
 
   private Filer filer;
 
@@ -106,7 +103,7 @@ public class DemoProcessor extends AbstractProcessor {
       if (element.getKind() == ElementKind.METHOD) {
         // For any methods we find, create an aspect:
         String methodName = element.getSimpleName().toString();
-        String aspectText = 
+        String aspectText =
             "public aspect Advise_"+methodName+" {\n"+
             "  before(): execution(* "+methodName+"(..)) {\n"+
             "    System.out.println(\""+methodName+" running\");\n"+
@@ -131,22 +128,19 @@ public class DemoProcessor extends AbstractProcessor {
 
 With those sources, we compile the processor:
 
-``
-
+[source, text]
 ....
 ajc -1.6 DemoProcessor.java Marker.java
 ....
 
 Now compile the code with the processor specified:
 
-``
-
+[source, text]
 ....
 ajc -1.6 -processor DemoProcessor -showWeaveInfo Code.java Marker.java
 ....
 
-``
-
+[source, text]
 ....
 Generated aspect to advise too
 Generated aspect to advise boo
@@ -159,8 +153,7 @@ the code being compiled immediately.
 
 Finally we can run it:
 
-``
-
+[source, text]
 ....
 java Code
 boo running

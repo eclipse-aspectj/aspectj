@@ -25,6 +25,7 @@ A kinded pointcut is written using patterns, some of which match based
 on _signature_, and some of which match based on _modifiers_. For
 example, in the `call` pointcut designator:
 
+[source, text]
 ....
 call(ModifierPattern TypePattern TypePattern.IdPattern(TypePatternList) ThrowsPattern)
 ....
@@ -96,6 +97,7 @@ For a call join point where a call is made to a method
 `m(parameter_types)` on a target type `T` (where `T` is the static type
 of the target):
 
+[source, java]
 ....
 T t = new T();
 t.m("hello");  <= call join point occurs when this line is executed
@@ -108,6 +110,7 @@ declare a definition of `m(parameter_types)`, then `R(T)` is the return
 type in the definition of `m` that `T` inherits. Given the call above,
 and the definition of `T.m`:
 
+[source, java]
 ....
 interface Q {
   R m(String s);
@@ -135,6 +138,7 @@ signature of the call join point, where `R(A)` is the return type of `
 
 Continuing the example from above,we can deduce that
 
+[source, java]
 ....
 R' S.m(String)
 R  P.m(String)
@@ -151,6 +155,7 @@ different declaring type.
 Join point signatures for execution join points are defined in a similar
 manner to signatures for call join points. Given the hierarchy:
 
+[source, java]
 ....
 interface Q {
   R m(String s);
@@ -174,6 +179,7 @@ class U extends T {
 Then the execution join point signatures arising as a result of the call
 to `u.m("hello")` are:
 
+[source, java]
 ....
 R' U.m(String)
 R' S.m(String)
@@ -198,6 +204,7 @@ If `T` does not directly declare a member `f`, then for each super type
 does declare the member `f`, `F S.f` is a signature of the join point.
 For example, given the hierarchy:
 
+[source, java]
 ....
 class P  {
   F f;
@@ -213,6 +220,7 @@ class T extends S { }
 Then the join point signatures for a field get join point of the field
 `f` on an object with declared type `T` are:
 
+[source, java]
 ....
 F S.f
 F T.f
@@ -263,6 +271,7 @@ chain.
 
 For example, given the following types
 
+[source, java]
 ....
 public class X {
   @Foo
@@ -293,6 +302,7 @@ point
 
 Given the hierarchy
 
+[source, java]
 ....
 interface Q {
   R m(String s);
@@ -313,6 +323,7 @@ class T extends S {}
 
 and the program fragment:
 
+[source, java]
 ....
 P p = new P();
 S s = new S();

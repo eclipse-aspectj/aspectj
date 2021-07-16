@@ -7,6 +7,7 @@ Java 5 (and hence AspectJ 5) allows you to specify methods that take a
 variable number of arguments of a specified type. This is achieved using
 an ellipsis (...) in the method signature as shown:
 
+[source, java]
 ....
 public void foo(int i, String... strings) {
 }
@@ -21,6 +22,7 @@ A _varargs_ method may be called with zero or more arguments in the
 variable argument position. For example, given the definition of `foo`
 above, the following calls are all legal:
 
+[source, java]
 ....
 foo(5);
 foo(5,"One String");
@@ -31,6 +33,7 @@ foo(3,"One String","Two Strings","Three Strings");
 A _varargs_ parameter is treated as an array within the defining member.
 So in the body of `foo` we could write for example:
 
+[source, java]
 ....
 public void foo(int i, String... strings) {
   String[] someStrings = strings;
@@ -41,6 +44,7 @@ public void foo(int i, String... strings) {
 One consequence of this treatment of a varargs parameter as an array is
 that you can also call a varargs method with an array:
 
+[source, java]
 ....
 foo(7,new String[] {"One String","Two Strings"});
 ....
@@ -63,6 +67,7 @@ annotations (xref:annotations.adoc#signaturePatterns[Signature Patterns]), that 
 `ConstructorPattern` are extended to allow a `varargs` pattern in the
 last argument position of a method or constructor signature.
 
+[source, text]
 ....
 FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
                   OptionalParensTypePattern (',' FormalsPattern)* |
@@ -93,6 +98,7 @@ initialization(org.xyz.*.new((Foo || Goo)...))::
 A variable argument parameter and an array parameter are treated as
 distinct signature elements, so given the method definitions:
 
+[source, java]
 ....
 void foo(String...);
 void bar(String[]);
@@ -110,6 +116,7 @@ array type, as discussed in the introduction to this section. We follow
 the same convention when binding a varargs parameter via the `args`
 pointcut designator. Given a method
 
+[source, java]
 ....
 public void foo(int i, String... strings) {
 }
@@ -123,6 +130,7 @@ syntax within an args pointcut designator - so you _cannot_ write
 Binding of a varargs parameter in an advice statement is
 straightforward:
 
+[source, java]
 ....
 before(int i, String[] ss) : call(* foo(int,String...)) && args(i,ss) {
   // varargs String... argument is accessible in advice body through ss

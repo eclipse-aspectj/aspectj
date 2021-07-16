@@ -39,7 +39,7 @@ testing and performance tuning of applications. And, in the section
 following, xref:#starting-production[Production Aspects], we present
 aspects that implement crosscutting functionality common in Java
 applications. We will defer discussing a third category of aspects,
-reusable aspects, until xref:language.adoc[The AspectJ Language].
+reusable aspects, until xref:language.adoc#language[The AspectJ Language].
 
 These categories are informal, and this ordering is not the only way to
 adopt AspectJ. Some developers may want to use a production aspect right
@@ -56,7 +56,7 @@ language, but this is by no means a complete overview of AspectJ.
 
 The features are presented using a simple figure editor system. A
 `Figure` consists of a number of `FigureElements`, which can be either
-`Point`s or `Line`s. The `Figure` class provides factory services. There
+``Point``s or ``Line``s. The `Figure` class provides factory services. There
 is also a `Display`. Most example programs later in this chapter are
 based on this system as well.
 
@@ -143,17 +143,19 @@ context_ of the original call join point.
 In AspectJ, _pointcuts_ pick out certain join points in the program
 flow. For example, the pointcut
 
+[source, java]
 ....
 call(void Point.setX(int))
 ....
 
 picks out each join point that is a call to a method that has the
-signature `void Point.setX(int)` - that is, `Point`'s void `setX` method
+signature `void Point.setX(int)` - that is, ``Point``'s void `setX` method
 with a single `int` parameter.
 
 A pointcut can be built out of other pointcuts with and, or, and not
 (spelled `&&`, `||`, and `!`). For example:
 
+[source, java]
 ....
 call(void Point.setX(int)) ||
 call(void Point.setY(int))
@@ -165,6 +167,7 @@ picks out each join point that is either a call to `setX` or a call to
 Pointcuts can identify join points from many different types - in other
 words, they can crosscut types. For example,
 
+[source, java]
 ....
 call(void FigureElement.setXY(int,int)) ||
 call(void Point.setX(int))              ||
@@ -182,6 +185,7 @@ crosscutting concern, it is a bit of a mouthful. So AspectJ allows
 programmers to define their own named pointcuts with the `pointcut`
 form. So the following declares a new, named pointcut:
 
+[source, java]
 ....
 pointcut move():
     call(void FigureElement.setXY(int,int)) ||
@@ -202,6 +206,7 @@ _property-based_ crosscutting. The simplest of these involve using
 wildcards in certain fields of the method signature. For example, the
 pointcut
 
+[source, java]
 ....
 call(void Figure.make*(..))
 ....
@@ -211,16 +216,18 @@ picks out each join point that's a call to a void method defined on
 parameters. In our system, this picks out calls to the factory methods
 `makePoint` and `makeLine`. The pointcut
 
+[source, java]
 ....
 call(public * Figure.* (..))
 ....
 
-picks out each call to `Figure`'s public methods.
+picks out each call to ``Figure``'s public methods.
 
 But wildcards aren't the only properties AspectJ supports. Another
 pointcut, `cflow`, identifies join points based on whether they occur in
 the dynamic context of other join points. So
 
+[source, java]
 ....
 cflow(move())
 ....
@@ -245,6 +252,7 @@ For example, before advice on a method call join point runs before the
 actual method starts running, just after the arguments to the method
 call are evaluated.
 
+[source, java]
 ....
 before(): move() {
     System.out.println("about to move");
@@ -260,6 +268,7 @@ of after advice: `after returning`, `after
         throwing`, and plain `after` (which runs after returning _or_
 throwing, like Java's `finally`).
 
+[source, java]
 ....
 after() returning: move() {
     System.out.println("just successfully moved");
@@ -280,6 +289,7 @@ An advice declaration has a parameter list (like a method) that gives
 names to all the pieces of context that it uses. For example, the after
 advice
 
+[source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
         ...SomePointcut... {
@@ -288,10 +298,11 @@ after(FigureElement fe, int x, int y) returning:
 ....
 
 uses three pieces of exposed context, a `FigureElement` named fe, and
-two `int`s named x and y.
+two ``int``s named x and y.
 
 The body of the advice uses the names just like method parameters, so
 
+[source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
         ...SomePointcut... {
@@ -303,6 +314,7 @@ The advice's pointcut publishes the values for the advice's arguments.
 The three primitive pointcuts `this`, `target` and `args` are used to
 publish these values. So now we can write the complete piece of advice:
 
+[source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
         call(void FigureElement.setXY(int, int))
@@ -326,6 +338,7 @@ named pointcut is used (by advice, or in another named pointcut), it
 publishes its context by name just like the `this`, `target` and `args`
 pointcut. So another way to write the above advice is
 
+[source, java]
 ....
 pointcut setXY(FigureElement fe, int x, int y):
     call(void FigureElement.setXY(int, int))
@@ -360,8 +373,9 @@ Suppose we want to have `Screen` objects observe changes to `Point`
 objects, where `Point` is an existing class. We can implement this by
 writing an aspect declaring that the class Point `Point` has an instance
 field, `observers`, that keeps track of the `Screen` objects that are
-observing `Point`s.
+observing ``Point``s.
 
+[source, java]
 ....
 aspect PointObserving {
     private Vector Point.observers = new Vector();
@@ -373,6 +387,7 @@ The `observers` field is private, so only `PointObserving` can see it.
 So observers are added or removed with the static methods `addObserver`
 and `removeObserver` on the aspect.
 
+[source, java]
 ....
 aspect PointObserving {
     private Vector Point.observers = new Vector();
@@ -391,6 +406,7 @@ Along with this, we can define a pointcut `changes` that defines what we
 want to observe, and the after advice defines what we want to do when we
 observe a change.
 
+[source, java]
 ....
 aspect PointObserving {
     private Vector Point.observers = new Vector();
@@ -417,7 +433,7 @@ aspect PointObserving {
 }
 ....
 
-Note that neither `Screen`'s nor `Point`'s code has to be modified, and
+Note that neither ``Screen``'s nor ``Point``'s code has to be modified, and
 that all the changes needed to support this new capability are local to
 this aspect.
 
@@ -435,6 +451,7 @@ aspect instances. By default, each aspect is a singleton, so one aspect
 instance is created. This means that advice may use non-static fields of
 the aspect, if it needs to keep state around:
 
+[source, java]
 ....
 aspect Logging {
     OutputStream logStream = System.err;
@@ -471,6 +488,7 @@ workings of a program. It is a simple tracing aspect that prints a
 message at specified method calls. In our figure editor example, one
 such aspect might simply trace whenever points are drawn.
 
+[source, java]
 ....
 aspect SimpleTracing {
     pointcut tracedCall():
@@ -487,6 +505,7 @@ advice bodies this variable is bound to an object that describes the
 current join point. The effect of this code is to print a line like the
 following every time a figure element receives a `draw` method call:
 
+[source, text]
 ....
 Entering: call(void FigureElement.draw(GraphicsContext))
 ....
@@ -529,6 +548,7 @@ For example, the following aspect counts the number of calls to the
 methods of a `Point` that happen within the control flow of those calls
 to `rotate`:
 
+[source, java]
 ....
 aspect SetsInRotateCounting {
     int rotateCount = 0;
@@ -589,6 +609,7 @@ properly do the work they are supposed to.
 AspectJ makes it possible to implement pre- and post-condition testing
 in modular form. For example, this code
 
+[source, java]
 ....
 aspect PointBoundsChecking {
 
@@ -636,6 +657,7 @@ the constraint that only the well-known factory methods can add an
 element to the registry of figure elements. Enforcing this constraint
 ensures that no figure element is added to the registry more than once.
 
+[source, java]
 ....
 aspect RegistrationProtection {
 
@@ -662,6 +684,7 @@ This advice throws a runtime exception at certain join points, but
 AspectJ can do better. Using the `declare error` form, we can have the
 _compiler_ signal the error.
 
+[source, java]
 ....
 aspect RegistrationProtection {
 
@@ -722,6 +745,7 @@ state of the dirty flag and resets it to false. The pointcut `move`
 captures all the method calls that can move a figure element. The after
 advice on `move` sets the dirty flag whenever an object moves.
 
+[source, java]
 ....
 aspect MoveTracking {
     private static boolean dirty = false;
@@ -807,6 +831,7 @@ modular way. The following code adds after advice that runs only when
 the factory methods of `Figure` are called in the control flow of a
 method on a `ColorControllingClient`.
 
+[source, java]
 ....
 aspect ColorControl {
     pointcut CCClientCflow(ColorControllingClient client):
@@ -841,6 +866,7 @@ captures the public method calls of the package, and the after advice
 runs whenever one of those calls throws an Error. The advice logs that
 Error and then the throw resumes.
 
+[source, java]
 ....
 aspect PublicErrorLogging {
     Log log = new Log();
@@ -861,6 +887,7 @@ outermost call into the `com.bigboxco` package and the re-entrant call.
 The `cflow` primitive pointcut can be used in a nice way to exclude
 these re-entrant calls:
 
+[source, java]
 ....
 after() throwing (Error e):
         publicMethodCall() && !cflow(publicMethodCall()) {
@@ -874,6 +901,7 @@ individual methods handle each of the different kinds of elements that
 must be parsed. They have names like `parseMethodDec`, `parseThrows`,
 and `parseExpr`.
 
+[source, java]
 ....
 aspect ContextFilling {
     pointcut parse(JavaParser jp):

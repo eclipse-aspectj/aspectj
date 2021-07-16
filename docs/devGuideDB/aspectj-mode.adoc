@@ -103,11 +103,11 @@ initialization file `sample.emacs` in the distribution.
 . The files in this package need to be in the load-path and
 ``required''. For example, for the 1.0 release:
 +
+[source, text]
 ....
 ;; I keep my emacs packages in C:/Emacs
 (setq load-path (cons "C:/Emacs/aspectj-emacsMode-1.0" load-path))
 (require 'aspectj-mode)
-
 ....
 . _[Optional]_ add `-emacssym` switch to the `ajc` and `ajc.bat` files
 in your AspectJ tools installations (in the `/bin` directory). If you
@@ -130,6 +130,7 @@ given in the file `sample.emacs` in the distribution.
 
 * _Symptom_: No annotations show. Message:
 +
+[source, text]
 ....
 AspectJ Mode Warning: Can't find declarations file for...
 ....
@@ -160,6 +161,7 @@ menu.
 * _Symptom_: Reported bug fixes and new features to aspectj-mode are not
 seen, or aspectj-mode.el cannot be found or loaded, with message:
 +
+[source, text]
 ....
 Error in init file: File error: "Cannot open load file", "aspectj-mode"
 ....

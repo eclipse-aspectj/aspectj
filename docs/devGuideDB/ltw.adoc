@@ -125,6 +125,7 @@ Aspects defined in this way must extend an abstract aspect visible to
 the weaver. The abstract aspect may define abstract pointcuts (but not
 abstract methods). The following example shows a simple aop.xml file:
 
+[source, xml]
 ....
 <aspectj>
 
@@ -260,6 +261,7 @@ pointcuts at deployment time, and also gives control over precedence
 through the `precedence` attribute of the `concrete-aspect` XML element.
 Consider the following:
 
+[source, java]
 ....
 package mypack;
 
@@ -272,13 +274,14 @@ public abstract class AbstractAspect {
 
     @Before("scope() && execution(* *..doSome(..))")
     public void before(JoinPoint jp) {
-       ....
+       // ...
     }
 }
 ....
 
 This aspect is equivalent to the following in code style:
 
+[source, java]
 ....
 package mypack;
 
@@ -288,7 +291,7 @@ public abstract aspect AbstractAspect {
     abstract pointcut scope();
 
     before() : scope() && execution(* *..doSome(..)) {
-       ....
+       // ...
     }
 }
 ....
@@ -318,6 +321,7 @@ If more complex aspect inheritance is required use regular aspect
 inheritance instead of XML. The following XML definition shows a valid
 concrete sub-aspect for the abstract aspects above:
 
+[source, xml]
 ....
 <aspectj>
     <aspects>
@@ -339,6 +343,7 @@ aspect instance(s) (depending on the perclause of the aspect it extends)
 you have to use the helper API `org.aspectj.lang.Aspects.aspectOf(..)`
 as in:
 
+[source, java]
 ....
 // exception handling omitted
 Class myConcreteAspectClass = Class.forName("mypack.__My__AbstractAspect");
@@ -359,6 +364,7 @@ abstract aspect. It is therefore possible to use the `concrete-aspect`
 element without the `extends` attribute and without any `pointcut`
 nested elements, just a `precedence` attribute. Consider the following:
 
+[source, xml]
 ....
 <aspectj>
     <aspects>
@@ -459,6 +465,7 @@ weaving configuration files.
 When using Java 5 the JVMTI agent can be used by starting the JVM with
 the following option (adapt according to the path to aspectjweaver.jar):
 
+[source, text]
 ....
 -javaagent:pathto/aspectjweaver.jar
 ....

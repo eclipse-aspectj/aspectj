@@ -11,6 +11,7 @@ surprising behavior and how to understand them.
 
 Here is a Java program with peculiar behavior
 
+[source, java]
 ....
 public class Main {
     public static void main(String[] args) {
@@ -39,6 +40,7 @@ the completely silent abort.
 
 The following short aspect will also generate this behavior:
 
+[source, java]
 ....
 aspect A {
     before(): call(* *(..)) { System.out.println("before"); }
@@ -50,6 +52,7 @@ Why? Because the call to println is also a call matched by the pointcut
 `call (* *(..))`. We get no output because we used simple after()
 advice. If the aspect were changed to
 
+[source, java]
 ....
 aspect A {
     before(): call(* *(..)) { System.out.println("before"); }
@@ -65,6 +68,7 @@ There's a simple idiom to use if you ever have a worry that your advice
 might apply in this way. Just restrict the advice from occurring in join
 points caused within the aspect. So:
 
+[source, java]
 ....
 aspect A {
     before(): call(* *(..)) && !within(A) { System.out.println("before"); }
@@ -75,6 +79,7 @@ aspect A {
 Other solutions might be to more closely restrict the pointcut in other
 ways, for example:
 
+[source, java]
 ....
 aspect A {
     before(): call(* MyObject.*(..))  { System.out.println("before"); }

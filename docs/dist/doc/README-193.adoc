@@ -10,8 +10,9 @@ expression syntax, but you must activate support for that via an
 --enable-preview flag when using the compiler and attempting to run the
 resultant classes: Here is Switch3.java:
 
+[source, java]
 ....
-=========8<=========
+// =========8<=========
 public class Switch3 {
     public static void main(String[] argv) {
         System.out.println(one(Color.R));
@@ -29,7 +30,7 @@ public class Switch3 {
         };
         return result;
     }
-    
+
     public static final int foo(int i) {
         return i+1;
     }
@@ -44,11 +45,12 @@ aspect X {
         return proceed()*3;
     }
 }
-=========8<=========
+// =========8<=========
 ....
 
 Compile it with:
 
+[source, text]
 ....
 $ ajc --enable-preview -showWeaveInfo -12 Switch3.java
 
@@ -63,6 +65,7 @@ Join point 'method-call(int Switch3.foo(int))' in Type 'Switch3' (Switch3.java:1
 
 Now run it:
 
+[source, text]
 ....
 $ java --enable-preview Switch3
 3

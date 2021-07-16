@@ -11,12 +11,13 @@ AspectJ 1.9.6 supports Java14. Java14 introduces records, but you must
 activate support for that via an --enable-preview flag when using the
 compiler and attempting to run the resultant classes: Here is Code.java:
 
+[source, java]
 ....
-=======8<=========
+// =======8<=========
 public record Person(String firstName, String lastName, int age) {}
-=======8<=========
+// =======8<=========
 
-=======8<=========
+// =======8<=========
 public class UsingPersonRecord {
   public static void main(String[] argv) {
     Person p = new Person("A","B",99);
@@ -24,25 +25,27 @@ public class UsingPersonRecord {
     System.out.println(p.firstName());
   }
 }
-=======8<=========
+// =======8<=========
 
-=======8<=========
+// =======8<=========
 public aspect TraceRecordComponents {
   before(): execution(public * *()) {
     System.out.println(thisJoinPointStaticPart);
   }
 }
-=======8<=========
+// =======8<=========
 ....
 
 Compile it with:
 
+[source, text]
 ....
 $ ajc --enable-preview -14 Person.java UsingPersonRecord.java TraceRecordComponents.java
 ....
 
 Now run it:
 
+[source, text]
 ....
 $ java --enable-preview UsingPersonRecord
 execution(String Person.toString())

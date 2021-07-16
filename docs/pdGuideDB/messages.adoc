@@ -103,6 +103,7 @@ during LTW. The following example will produce basic informational
 messages about the lifecyle of the weaver in addition to any warning or
 error messages.
 
+[source, xml]
 ....
 <aspectj>
     <weaver options="-verbose">
@@ -116,6 +117,7 @@ defining class loader associated with weaver. You can use this
 information in a large system to distinguish between different
 applications each of which will typically have its own class loader.
 
+[source, text]
 ....
 [AppClassLoader@92e78c] info AspectJ Weaver Version 1.5.3 built on Thursday Oct 26, 2006 at 17:22:31 GMT
 [AppClassLoader@92e78c] info register classloader sun.misc.Launcher$AppClassLoader@92e78c
@@ -133,6 +135,7 @@ weaving (LTW), why advice has not been woven. Here is a quick guide to
 the messages to look for. Firstly if you use the `-verbose` option you
 should see the following message when your aspect is registered:
 
+[source, text]
 ....
 info register aspect MyAspect
 ....
@@ -140,6 +143,7 @@ info register aspect MyAspect
 Secondly if you use the `-debug` option you should see a message
 indicating that you class is being woven:
 
+[source, text]
 ....
 debug weaving 'HelloWorld'
 ....
@@ -150,6 +154,7 @@ determine whether your pointcuts match you can use the `-showWeaveInfo`
 option which will cause a message to be issued each time a join point is
 woven:
 
+[source, text]
 ....
 weaveinfo Join point 'method-execution(void HelloWorld.main(java.lang.String[]))' ...
 ....

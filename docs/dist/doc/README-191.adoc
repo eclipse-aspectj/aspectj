@@ -14,6 +14,7 @@ AspectJ has updated to a recent JDT compiler version (commit
 This means you can use the 'var' support. A simple example of combining
 var with an aspect:
 
+[source, java]
 ....
 public class Code3 {
     public static void main(String []argv) {

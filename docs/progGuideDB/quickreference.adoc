@@ -9,16 +9,16 @@
 |*Methods and Constructors* |
 
 |`call(Signature)` |every call to any method or constructor matching
-<Signature> at the call site
+`<Signature>` at the call site
 
 |`execution(Signature)` |every execution of any method or constructor
-matching <Signature>
+matching `<Signature>`
 
 |*Fields* |
 
-|`get(Signature)` |every reference to any field matching <Signature>
+|`get(Signature)` |every reference to any field matching `<Signature>`
 
-|`set(Signature)` |every assignment to any field matching <Signature>.
+|`set(Signature)` |every assignment to any field matching `<Signature>`.
 The assigned value can be exposed with an `args` pointcut
 
 |*Exception Handlers* |
@@ -37,12 +37,12 @@ pointcut
 initializer for any type in <TypePattern>
 
 |`initialization(Signature)` |every initialization of an object when the
-first constructor called in the type matches <Signature>, encompassing
+first constructor called in the type matches `<Signature>`, encompassing
 the return from the super constructor call to the return of the
 first-called constructor
 
 |`preinitialization(Signature)` |every pre-initialization of an object
-when the first constructor called in the type matches <Signature>,
+when the first constructor called in the type matches `<Signature>`,
 encompassing the entry of the first-called constructor to the call to
 the super constructor
 
@@ -52,7 +52,7 @@ the super constructor
 <TypePattern>
 
 |`withincode(Signature)` |every join point from code defined in a method
-or constructor matching <Signature>
+or constructor matching `<Signature>`
 |===
 
 [[quick-typePatterns]]
@@ -62,290 +62,118 @@ A type pattern is one of
 
 [cols=",",]
 |===
-|<TypeNamePattern> |all types in <TypeNamePattern>
+|*Type pattern* |
 
-|<SubtypePattern> |all types in <SubtypePattern>, a pattern with a +.
+|`<TypeNamePattern>` |all types in `<TypeNamePattern>`
 
-|<ArrayTypePattern> |all types in <ArrayTypePattern>, a pattern with one
-or more []s.
+|`<SubtypePattern>` |all types in `<SubtypePattern>`, a pattern with a `+`
+
+|`<ArrayTypePattern>` |all types in `<ArrayTypePattern>`, a pattern with one or more ``[]``s.
 
 |`!TypePattern` |all types not in <TypePattern>
 
-|`TypePattern0
-            && TypePattern1` |all types in both <TypePattern0> and
-<TypePattern1>
+|`TypePattern0 && TypePattern1` |all types in both `<TypePattern0>` and `<TypePattern1>`
 
-|`TypePattern0 || TypePattern1` |all types in either <TypePattern0> or
-<TypePattern1>
+|`TypePattern0 \|\| TypePattern1` |all types in either `<TypePattern0>` or `<TypePattern1>`
 
-|`( TypePattern )` |all types in <TypePattern>
+|`( TypePattern )` |all types in `<TypePattern>`
 |===
 
-where <TypeNamePattern> can either be a plain type name, the wildcard
-`*` (indicating all types), or an identifier with embedded `*` and `..`
+where `<TypeNamePattern>` can either be a plain type name, the wildcard
+`\*` (indicating all types), or an identifier with embedded `*` and `..`
 wildcards.
 
 An embedded `*` in an identifier matches any sequence of characters, but
-does not match the package (or inner-type) separator ".".
+does not match the package (or inner-type) separator `.`.
 
 An embedded `..` in an identifier matches any sequence of characters
-that starts and ends with the package (or inner-type) separator ".".
+that starts and ends with the package (or inner-type) separator `.`.
 
 [[quick-advice]]
 === Advice
 
 Each piece of advice is of the form
 
-____
-[ strictfp ]
+[source, text]
+....
+[ strictfp ] AdviceSpec [ throws TypeList ] : Pointcut { Body }
+....
 
-AdviceSpec
+where `<AdviceSpec>` is one of
 
-[ throws
-
-TypeList
-
-] :
-
-Pointcut
-
-\{
-
-Body
-
-}
-____
-
-where <AdviceSpec> is one of
-
-`before( Formals ) `::
+`before( Formals )`::
   runs before each join point
-`after( Formals ) returning
-          [ ( Formal ) ] `::
+`after( Formals ) returning [ ( Formal ) ]`::
   runs after each join point that returns normally. The optional formal
   gives access to the returned value
-`after( Formals ) throwing [
-          ( Formal ) ] `::
-  runs after each join point that throws a
-  +
-  Throwable
-  +
-  . If the optional formal is present, runs only after each join point
-  that throws a
-  +
-  Throwable
-  +
-  of the type of
-  +
-  Formal
-  +
-  , and
-  +
-  Formal
-  +
-  gives access to the
-  +
-  Throwable
-  +
-  exception value
-`after( Formals ) `::
+`after( Formals ) throwing [ ( Formal ) ]`::
+  runs after each join point that throws a `Throwable`.
+  If the optional formal is present, runs only after each join point
+  that throws a `Throwable` of the type of `Formal`, and `Formal` gives access to the
+  `Throwable` exception value
+`after( Formals )`::
   runs after each join point regardless of whether it returns normally
-  or throws a
-  +
-  Throwable
-`Type
-          around( Formals ) `::
+  or throws a `Throwable`
+`Type around( Formals )`::
   runs in place of each join point. The join point can be executed by
-  calling
-  +
-  proceed
-  +
-  , which takes the same number and types of arguments as the around
+  calling `proceed`, which takes the same number and types of arguments as the around
   advice.
 
 Three special variables are available inside of advice bodies:
 
 `thisJoinPoint`::
-  an object of type
-  +
-  org.aspectj.lang.JoinPoint
-  +
-  representing the join point at which the advice is executing.
+  an object of type `org.aspectj.lang.JoinPoint` representing the join point
+  at which the advice is executing
 `thisJoinPointStaticPart`::
-  equivalent to
-  +
-  thisJoinPoint.getStaticPart()
-  +
-  , but may use fewer runtime resources.
+  equivalent to `thisJoinPoint.getStaticPart()`, but may use fewer runtime resources
 `thisEnclosingJoinPointStaticPart`::
-  the static part of the dynamically enclosing join point.
+  the static part of the dynamically enclosing join point
 
 [[quick-interType]]
 === Inter-type member declarations
 
 Each inter-type member is one of
 
-`
-            Modifiers ReturnType OnType . Id
-            ( Formals )
-            [ throws TypeList ]
-            { Body }
-          `::
-  a method on
-  +
-  OnType
-  +
-  .
-`
-            abstract Modifiers ReturnType OnType . Id
-            ( Formals )
-            [ throws TypeList ] ;
-          `::
-  an abstract method on
-  +
-  OnType
-  +
-  .
-`
-            Modifiers OnType .  new
-            ( Formals )
-            [ throws TypeList ]
-            { Body }
-          `::
-  a constructor on
-  +
-  OnType
-  +
-  .
-`
-            Modifiers Type OnType . Id
-            [ = Expression ] ;
-          `::
-  a field on
-  +
-  OnType
-  +
-  .
+`Modifiers ReturnType OnType . Id ( Formals ) [ throws TypeList ] { Body }`::
+  a method on `OnType`
+`abstract Modifiers ReturnType OnType . Id ( Formals ) [ throws TypeList ] ;`::
+  an abstract method on `OnType`
+`Modifiers OnType .  new ( Formals ) [ throws TypeList ] { Body }`::
+  a constructor on `OnType`
+`Modifiers Type OnType . Id [ = Expression ] ;`::
+  a field on `OnType`
 
 [[quick-other]]
 === Other declarations
 
-`
-            declare parents :
-            TypePattern extends
-            Type ;
-          `::
-  the types in
-  +
-  TypePattern
-  +
-  extend
-  +
-  Type
-  +
-  .
-`
-            declare parents : TypePattern
-            implements TypeList ;
-          `::
-  the types in
-  +
-  TypePattern
-  +
-  implement the types in
-  +
-  TypeList
-  +
-  .
-`
-            declare warning : Pointcut :
-            String ;
-          `::
-  if any of the join points in
-  +
-  Pointcut
-  +
-  possibly exist in the program, the compiler emits the warning
-  +
-  String
-  +
-  .
-`
-            declare error : Pointcut :
-            String ;
-          `::
-  if any of the join points in
-  +
-  Pointcut
-  +
-  could possibly exist in the program, the compiler emits the error
-  +
-  String
-  +
-  .
-`
-            declare soft :
-            Type :
-            Pointcut ;
-          `::
-  any
-  +
-  Type
-  +
-  exception that gets thrown at any join point picked out by
-  +
-  Pointcut
-  +
-  is wrapped in
-  +
-  org.aspectj.lang.SoftException
-  +
-  .
-`
-            declare precedence :
-            TypePatternList ;
-          `::
+`declare parents : TypePattern extends Type ;`::
+  the types in `TypePattern` extend `Type`
+`declare parents : TypePattern implements TypeList ;`::
+  the types in `TypePattern` implement the types in `TypeList`
+`declare warning : Pointcut : String ;`::
+  if any of the join points in `Pointcut` possibly exist in the program,
+  the compiler emits the warning `String`
+`declare error : Pointcut : String ;`::
+  if any of the join points in `Pointcut` could possibly exist in the program,
+  the compiler emits the error `String`
+`declare soft : Type : Pointcut ;`::
+  any `Type` exception that gets thrown at any join point picked out by `Pointcut`
+  is wrapped in `org.aspectj.lang.SoftException`
+`declare precedence : TypePatternList ;`::
   at any join point where multiple pieces of advice apply, the advice
-  precedence at that join point is in
-  +
-  TypePatternList
-  +
-  order.
+  precedence at that join point is in `TypePatternList` order
 
 [[quick-aspectAssociations]]
 === Aspects
 
 Each aspect is of the form
 
-____
-[ privileged ]
+[source, text]
+....
+[ privileged ] Modifiers aspect Id [ extends Type ] [ implements TypeList ] [ PerClause ] { Body }
+....
 
-Modifiers
-
-aspect
-
-Id
-
-[ extends
-
-Type
-
-] [ implements
-
-TypeList
-
-] [
-
-PerClause
-
-] \{
-
-Body
-
-}
-____
-
-where <PerClause> defines how the aspect is instantiated and associated
+where `<PerClause>` defines how the aspect is instantiated and associated
 (`issingleton()` by default):
 
 [cols=",,",options="header",]
@@ -355,18 +183,18 @@ where <PerClause> defines how the aspect is instantiated and associated
 default. |`aspectOf()` at all join points
 
 |`perthis(Pointcut)` |An instance is associated with each object that is
-the currently executing object at any join point in <Pointcut>.
+the currently executing object at any join point in `<Pointcut>`.
 |`aspectOf(Object)` at all join points
 
 |`pertarget(Pointcut)` |An instance is associated with each object that
-is the target object at any join point in <Pointcut>.
+is the target object at any join point in `<Pointcut>`.
 |`aspectOf(Object)` at all join points
 
 |`percflow(Pointcut)` |The aspect is defined for each entrance to the
-control flow of the join points defined by <Pointcut>. |`aspectOf()` at
+control flow of the join points defined by `<Pointcut>`. |`aspectOf()` at
 join points in `cflow(Pointcut)`
 
 |`percflowbelow(Pointcut)` |The aspect is defined for each entrance to
-the control flow below the join points defined by <Pointcut>.
+the control flow below the join points defined by `<Pointcut>`.
 |`aspectOf()` at join points in `cflowbelow(Pointcut)`
 |===

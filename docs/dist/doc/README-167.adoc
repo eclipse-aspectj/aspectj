@@ -18,6 +18,7 @@ pointcut matching]. Basically by turning on the options '-timers
 -verbose' on the command line (or via Ant), output will be produced that
 looks a little like this:
 
+[source, text]
 ....
 Pointcut matching cost (total=6532ms for 675000 joinpoint match calls):
 Time:482ms (jps:#168585) matching against
@@ -102,8 +103,7 @@ that actually runs? One user, Oliver Hoff, raised a query on the
 performance of annotation binding. His case uncovered an old TODO left
 in the code a few years ago:
 
-``
-
+[source, text]
 ....
 // OPTIMIZE cache result of getDeclaredMethod and getAnnotation?
 ....
@@ -121,29 +121,28 @@ value at an execution join point in different ways. The three scenarios
 look like this (where the annotation type is 'Marker' and it has a
 String value field called 'message'):
 
-``
-
+[source, java]
 ....
-  // CaseOne: annotation value fetching is done in the advice:
-  pointcut adviceRetrievesAnnotation(): execution(@Marker * runOne(..));
-  before(): adviceRetrievesAnnotation() {
-    Marker marker = (Marker) ((MethodSignature)
-        thisJoinPointStaticPart.getSignature()).getMethod().getAnnotation(Marker.class);
-    String s = marker.message();
-  }
+// CaseOne: annotation value fetching is done in the advice:
+pointcut adviceRetrievesAnnotation(): execution(@Marker * runOne(..));
+before(): adviceRetrievesAnnotation() {
+  Marker marker = (Marker) ((MethodSignature)
+      thisJoinPointStaticPart.getSignature()).getMethod().getAnnotation(Marker.class);
+  String s = marker.message();
+}
 
-  // CaseTwo: annotation binding is done in the pointcut, advice retrieves message
-  pointcut pointcutBindsAnnotation(Marker l): execution(@Marker * runTwo(..)) && @annotation(l);
-  before(Marker l): pointcutBindsAnnotation(l) {
-    String s = l.message();
-  }
+// CaseTwo: annotation binding is done in the pointcut, advice retrieves message
+pointcut pointcutBindsAnnotation(Marker l): execution(@Marker * runTwo(..)) && @annotation(l);
+before(Marker l): pointcutBindsAnnotation(l) {
+  String s = l.message();
+}
 
-  // CaseThree: annotation binding directly targets the message value in the annotation
-  pointcut pointcutBindsAnnotationValue(String msg):
-    execution(@Marker * runThree(..)) && @annotation(Marker(msg));
-  before(String s): pointcutBindsAnnotationValue(s) {
-    // already got the string
-  }
+// CaseThree: annotation binding directly targets the message value in the annotation
+pointcut pointcutBindsAnnotationValue(String msg):
+  execution(@Marker * runThree(..)) && @annotation(Marker(msg));
+before(String s): pointcutBindsAnnotationValue(s) {
+  // already got the string
+}
 ....
 
 Before 1.6.7, case 2 was slower than case 1 and case 3 wasn't supported
@@ -157,8 +156,7 @@ stress the AspectJ binding code. For the benchmark numbers the join
 points advised by those advice were invoked 1,000,000 times. AspectJ
 1.6.7:
 
-``
-
+[source, text]
 ....
 Manually fetching annotation with getAnnotation(): 645ms
 Binding annotation with @annotation(Marker): 445ms  (was >20 *seconds* for 1.6.6, due to an extra reflection call)

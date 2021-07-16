@@ -63,11 +63,7 @@ Constructor call::
 Constructor execution::
   When the body of code for an actual constructor executes, after its
   this or super constructor call. The object being constructed is the
-  currently executing object, and so may be accessed with the
-  +
-  this
-  +
-  pointcut. The constructor execution join point for a constructor that
+  currently executing object, and so may be accessed with the `_this_` pointcut. The constructor execution join point for a constructor that
   calls a super constructor also includes any non-static initializers of
   enclosing class. No value is returned from a constructor execution
   join point, so its return type is considered to be void.
@@ -80,15 +76,7 @@ Object pre-initialization::
   This encompasses the time between the start of its first called
   constructor and the start of its parent's constructor. Thus, the
   execution of these join points encompass the join points of the
-  evaluation of the arguments of
-  +
-  this()
-  +
-  and
-  +
-  super()
-  +
-  constructor calls. No value is returned from an object
+  evaluation of the arguments of `_this()_` and `_super()_` constructor calls. No value is returned from an object
   pre-initialization join point, so its return type is considered to be
   void.
 Object initialization::
@@ -97,11 +85,7 @@ Object initialization::
   and the return of its first called constructor. It includes all the
   dynamic initializers and constructors used to create the object. The
   object being constructed is the currently executing object, and so may
-  be accessed with the
-  +
-  this
-  +
-  pointcut. No value is returned from a constructor execution join
+  be accessed with the `_this_` pointcut. No value is returned from a constructor execution join
   point, so its return type is considered to be void.
 Field reference::
   When a non-constant field is referenced. [Note that references to
@@ -180,219 +164,84 @@ build up other pointcuts. The primitive pointcuts and combinators
 provided by the language are:
 
 `call(MethodPattern)`::
-  Picks out each method call join point whose signature matches
-  +
-  MethodPattern
-  +
-  .
+  Picks out each method call join point whose signature matches `_MethodPattern_`.
 `execution(MethodPattern)`::
-  Picks out each method execution join point whose signature matches
-  +
-  MethodPattern
-  +
-  .
+  Picks out each method execution join point whose signature matches `_MethodPattern_`.
 `get(FieldPattern)`::
-  Picks out each field reference join point whose signature matches
-  +
-  FieldPattern
-  +
-  . [Note that references to constant fields (static final fields bound
+  Picks out each field reference join point whose signature matches `_FieldPattern_`. [Note that references to constant fields (static final fields bound
   to a constant string object or primitive value) are not join points,
   since Java requires them to be inlined.]
 `set(FieldPattern)`::
-  Picks out each field set join point whose signature matches
-  +
-  FieldPattern
-  +
-  . [Note that the initializations of constant fields (static final
+  Picks out each field set join point whose signature matches `_FieldPattern_`. [Note that the initializations of constant fields (static final
   fields where the initializer is a constant string object or primitive
   value) are not join points, since Java requires their references to be
   inlined.]
 `call(ConstructorPattern)`::
-  Picks out each constructor call join point whose signature matches
-  +
-  ConstructorPattern
-  +
-  .
+  Picks out each constructor call join point whose signature matches `_ConstructorPattern_`.
 `execution(ConstructorPattern)`::
   Picks out each constructor execution join point whose signature
-  matches
-  +
-  ConstructorPattern
-  +
-  .
+  matches `_ConstructorPattern_`.
 `initialization(ConstructorPattern)`::
   Picks out each object initialization join point whose signature
-  matches
-  +
-  ConstructorPattern
-  +
-  .
+  matches `_ConstructorPattern_`.
 `preinitialization(ConstructorPattern)`::
   Picks out each object pre-initialization join point whose signature
-  matches
-  +
-  ConstructorPattern
-  +
-  .
+  matches `_ConstructorPattern_`.
 `staticinitialization(TypePattern)`::
   Picks out each static initializer execution join point whose signature
-  matches
-  +
-  TypePattern
-  +
-  .
+  matches `_TypePattern_`.
 `handler(TypePattern)`::
-  Picks out each exception handler join point whose signature matches
-  +
-  TypePattern
-  +
-  .
+  Picks out each exception handler join point whose signature matches `_TypePattern_`.
 `adviceexecution()`::
   Picks out all advice execution join points.
 `within(TypePattern)`::
   Picks out each join point where the executing code is defined in a
-  type matched by
-  +
-  TypePattern
-  +
-  .
+  type matched by `_TypePattern_`.
 `withincode(MethodPattern)`::
   Picks out each join point where the executing code is defined in a
-  method whose signature matches
-  +
-  MethodPattern
-  +
-  .
+  method whose signature matches `_MethodPattern_`.
 `withincode(ConstructorPattern)`::
   Picks out each join point where the executing code is defined in a
-  constructor whose signature matches
-  +
-  ConstructorPattern
-  +
-  .
+  constructor whose signature matches `_ConstructorPattern_`.
 `cflow(Pointcut)`::
-  Picks out each join point in the control flow of any join point
-  +
-  P
-  +
-  picked out by
-  +
-  Pointcut
-  +
-  , including
-  +
-  P
-  +
-  itself.
+  Picks out each join point in the control flow of any join point `_P_` picked out by `_Pointcut_` , including `_P_` itself.
 `cflowbelow(Pointcut)`::
-  Picks out each join point in the control flow of any join point
-  +
-  P
-  +
-  picked out by
-  +
-  Pointcut
-  +
-  , but not
-  +
-  P
-  +
-  itself.
+  Picks out each join point in the control flow of any join point `_P_` picked out by `_Pointcut_`, but not `_P_` itself.
 `this(Type or Id)`::
   Picks out each join point where the currently executing object (the
-  object bound to
-  +
-  this
-  +
-  ) is an instance of
-  +
-  Type
-  +
-  , or of the type of the identifier
-  +
-  Id
-  +
-  (which must be bound in the enclosing advice or pointcut definition).
+  object bound to `_this_`) is an instance of `_Type_` , or of the type of the identifier `_Id_` (which must be bound in the enclosing advice or pointcut definition).
   Will not match any join points from static contexts.
 `target(Type or Id)`::
   Picks out each join point where the target object (the object on which
-  a call or field operation is applied to) is an instance of
-  +
-  Type
-  +
-  , or of the type of the identifier
-  +
-  Id
-  +
-  (which must be bound in the enclosing advice or pointcut definition).
+  a call or field operation is applied to) is an instance of `_Type_` , or of the type of the identifier `_Id_` (which must be bound in the enclosing advice or pointcut definition).
   Will not match any calls, gets, or sets of static members.
 `args(Type or Id, ...)`::
   Picks out each join point where the arguments are instances of the
-  appropriate type (or type of the identifier if using that form). A
-  +
-  null
-  +
-  argument is matched iff the static type of the argument (declared
+  appropriate type (or type of the identifier if using that form). A `_null_` argument is matched iff the static type of the argument (declared
   parameter type or field type) is the same as, or a subtype of, the
   specified args type.
 `PointcutId(TypePattern or Id, ...)`::
   Picks out each join point that is picked out by the user-defined
-  pointcut designator named by
-  +
-  PointcutId
-  +
-  .
+  pointcut designator named by `_PointcutId_` .
 `if(BooleanExpression)`::
-  Picks out each join point where the boolean expression evaluates to
-  +
-  true
-  +
-  . The boolean expression used can only access static members,
-  parameters exposed by the enclosing pointcut or advice, and
-  +
-  thisJoinPoint
-  +
-  forms. In particular, it cannot call non-static methods on the aspect
+  Picks out each join point where the boolean expression evaluates to `_true_` . The boolean expression used can only access static members,
+  parameters exposed by the enclosing pointcut or advice, and `_thisJoinPoint_` forms. In particular, it cannot call non-static methods on the aspect
   or use return values or exceptions exposed by after advice.
 `! Pointcut`::
-  Picks out each join point that is not picked out by
-  +
-  Pointcut
-  +
-  .
+  Picks out each join point that is not picked out by `_Pointcut_` .
 `Pointcut0 && Pointcut1`::
-  Picks out each join points that is picked out by both
-  +
-  Pointcut0
-  +
-  and
-  +
-  Pointcut1
-  +
-  .
+  Picks out each join points that is picked out by both `_Pointcut0_` and `_Pointcut1_` .
 `Pointcut0 || Pointcut1`::
-  Picks out each join point that is picked out by either pointcuts.
-  +
-  Pointcut0
-  +
-  or
-  +
-  Pointcut1
-  +
-  .
+  Picks out each join point that is picked out by either pointcuts. `_Pointcut0_` or `_Pointcut1_` .
 `( Pointcut )`::
-  Picks out each join points picked out by
-  +
-  Pointcut
-  +
-  .
+  Picks out each join points picked out by `_Pointcut_` .
 
 ==== Pointcut definition
 
 Pointcuts are defined and named by the programmer with the `pointcut`
 declaration.
 
+[source, java]
 ....
 pointcut publicIntCall(int i):
     call(public * *(int)) && args(i);
@@ -402,6 +251,7 @@ A named pointcut may be defined in either a class or aspect, and is
 treated as a member of the class or aspect where it is found. As a
 member, it may have an access modifier such as `public` or `private`.
 
+[source, java]
 ....
 class C {
     pointcut publicCall(int i):
@@ -418,6 +268,7 @@ Pointcuts that are not final may be declared abstract, and defined
 without a body. Abstract pointcuts may only be declared within abstract
 aspects.
 
+[source, java]
 ....
 abstract aspect A {
     abstract pointcut publicCall(int i);
@@ -426,6 +277,7 @@ abstract aspect A {
 
 In such a case, an extending aspect may override the abstract pointcut.
 
+[source, java]
 ....
 aspect B extends A {
     pointcut publicCall(int i): call(public Foo.m(int)) && args(i);
@@ -444,6 +296,7 @@ is different than the scope of other members; the scope of other members
 is the enclosing class _body_. This means that the following code is
 legal:
 
+[source, java]
 ....
 aspect B percflow(publicCall()) {
     pointcut publicCall(): call(public Foo.m(int));
@@ -466,6 +319,7 @@ collection of types. The pointcut designators that allow this are
 rather than a type does two things. First, it selects join points as
 based on the type of the formal parameter. So the pointcut
 
+[source, java]
 ....
 pointcut intArg(int i): args(i);
 ....
@@ -477,6 +331,7 @@ advice or pointcut.
 
 Values can be exposed from named pointcuts as well, so
 
+[source, java]
 ....
 pointcut publicCall(int x): call(public *.*(int)) && intArg(x);
 pointcut intArg(int i): args(i);
@@ -489,6 +344,7 @@ There is one special case for this kind of exposure. Exposing an
 argument of type Object will also match primitive typed arguments, and
 expose a "boxed" version of the primitive. So,
 
+[source, java]
 ....
 pointcut publicCall(): call(public *.*(..)) && args(Object);
 ....
@@ -496,6 +352,7 @@ pointcut publicCall(): call(public *.*(..)) && args(Object);
 will pick out all unary methods that take, as their only argument,
 subtypes of Object (i.e., not primitive types like `int`), but
 
+[source, java]
 ....
 pointcut publicCall(Object o): call(public *.*(..)) && args(o);
 ....
@@ -507,6 +364,7 @@ argument was an `int`, then the value passed to advice will be of type
 The "boxing" of the primitive value is based on the _original_ primitive
 type. So in the following program
 
+[source, java]
 ....
 public class InstanceOf {
 
@@ -569,6 +427,7 @@ field is being set to, so at a set join point, that value can be
 accessed with an `args` pointcut. So an aspect guarding a static integer
 variable x declared in type T might be written as
 
+[source, java]
 ....
 aspect GuardedX {
     static final int MAX_CHANGE = 100;
@@ -632,6 +491,7 @@ the exception being handled. That value can be accessed with an `args`
 pointcut. So an aspect used to put `FooException` objects into some
 normal form before they are handled could be written as
 
+[source, java]
 ....
 aspect NormalizeFooException {
     before(FooException e): handler(FooException) && args(e) {
@@ -650,6 +510,7 @@ of advice
 This can be used, for example, to filter out any join point in the
 control flow of advice from a particular aspect.
 
+[source, java]
 ....
 aspect TraceStuff {
     pointcut myAdvice(): adviceexecution() && within(TraceStuff);
@@ -719,6 +580,7 @@ Object). If it is the "*" wildcard, then any argument will match, and if
 it is the special wildcard "..", then any number of arguments will
 match, just like in signature patterns. So the pointcut
 
+[source, java]
 ....
 args(int, .., String)
 ....
@@ -762,6 +624,7 @@ Anytime such state is accessed, it is accessed through the _most recent_
 control flow that matched. So the "current arg" that would be printed by
 the following program is zero, even though it is in many control flows.
 
+[source, java]
 ....
 class Test {
     public static void main(String[] args) {
@@ -842,6 +705,7 @@ false. Within this expression, the `thisJoinPoint` object is available.
 So one (extremely inefficient) way of picking out all call join points
 would be to use the pointcut
 
+[source, java]
 ....
 if(thisJoinPoint.getKind().equals("call"))
 ....
@@ -922,6 +786,7 @@ while constructor declarations omit the return type and replace the
 method name with the class name. The start of a particular method
 declaration, in class `Test`, for example, might be
 
+[source, java]
 ....
 class C {
     public final void foo() throws ArrayOutOfBoundsException { ... }
@@ -931,12 +796,14 @@ class C {
 In AspectJ, method signature patterns have all these, but most elements
 can be replaced by wildcards. So
 
+[source, java]
 ....
 call(public final void C.foo() throws ArrayOutOfBoundsException)
 ....
 
 picks out call join points to that method, and the pointcut
 
+[source, java]
 ....
 call(public final void *.*() throws ArrayOutOfBoundsException)
 ....
@@ -949,12 +816,14 @@ throw `ArrayOutOfBounds` exceptions.
 The defining type name, if not present, defaults to *, so another way of
 writing that pointcut would be
 
+[source, java]
 ....
 call(public final void *() throws ArrayOutOfBoundsException)
 ....
 
 The wildcard `..` indicates zero or more parameters, so
 
+[source, java]
 ....
 execution(void m(..))
 ....
@@ -962,6 +831,7 @@ execution(void m(..))
 picks out execution join points for void methods named `m`, of any
 number of arguments, while
 
+[source, java]
 ....
 execution(void m(.., int))
 ....
@@ -974,6 +844,7 @@ signature pattern should match methods without a particular modifier,
 such as all non-public methods, the appropriate modifier should be
 negated with the `!` operator. So,
 
+[source, java]
 ....
 withincode(!public void foo())
 ....
@@ -981,6 +852,7 @@ withincode(!public void foo())
 picks out all join points associated with code in null non-public void
 methods named `foo`, while
 
+[source, java]
 ....
 withincode(void foo())
 ....
@@ -991,12 +863,14 @@ named `foo`, regardless of access modifier.
 Method names may contain the * wildcard, indicating any number of
 characters in the method name. So
 
+[source, java]
 ....
 call(int *())
 ....
 
 picks out all call join points to `int` methods regardless of name, but
 
+[source, java]
 ....
 call(int get*())
 ....
@@ -1009,6 +883,7 @@ than using a particular class name. So the execution join points of
 private null constructor of a class C defined to throw an
 ArithmeticException can be picked out with
 
+[source, java]
 ....
 execution(private C.new() throws ArithmeticException)
 ....
@@ -1027,6 +902,7 @@ type used to access the method. A common mistake is to specify a
 declaring type for the `call` pointcut that is a subtype of the
 originally-declaring type. For example, given the class
 
+[source, java]
 ....
 class Service implements Runnable {
   public void run() { ... }
@@ -1035,12 +911,14 @@ class Service implements Runnable {
 
 the following pointcut
 
+[source, java]
 ....
 call(void Service.run())
 ....
 
 would fail to pick out the join point for the code
 
+[source, java]
 ....
 ((Runnable) new Service()).run();
 ....
@@ -1049,6 +927,7 @@ Specifying the originally-declaring type is correct, but would pick out
 any such call (here, calls to the `run()` method of any Runnable). In
 this situation, consider instead picking out the target type:
 
+[source, java]
 ....
 call(void run()) && target(Service)
 ....
@@ -1058,6 +937,7 @@ method signature specifies a declaring type, the pointcut will only
 match methods declared in that type, or methods that override methods
 declared in or inherited by that type. So the pointcut
 
+[source, java]
 ....
 execution(public void Middle.*())
 ....
@@ -1068,6 +948,7 @@ Middle, even if those methods are overridden in a subclass of Middle. So
 the pointcut would pick out the method-execution join point for Sub.m()
 in this code:
 
+[source, java]
 ....
 class Super {
   protected void m() { ... }
@@ -1085,6 +966,7 @@ Type patterns may be used to pick out methods and constructors based on
 their throws clauses. This allows the following two kinds of extremely
 wildcarded pointcuts:
 
+[source, java]
 ....
 pointcut throwsMathlike():
     // each call to a method with a throws clause containing at least
@@ -1190,6 +1072,7 @@ So exact type patterns match based on usual Java scope rules.
 There is a special type name, *, which is also a type pattern. * picks
 out all types, including primitive types. So
 
+[source, java]
 ....
 call(void foo(*))
 ....
@@ -1202,6 +1085,7 @@ patterns. The * wildcard matches zero or more characters characters
 except for ".", so it can be used when types have a certain naming
 convention. So
 
+[source, java]
 ....
 handler(java.util.*Map)
 ....
@@ -1209,6 +1093,7 @@ handler(java.util.*Map)
 picks out the types java.util.Map and java.util.java.util.HashMap, among
 others, and
 
+[source, java]
 ....
 handler(java.util.*)
 ....
@@ -1221,6 +1106,7 @@ The "`..`" wildcard matches any sequence of characters that start and
 end with a ".", so it can be used to pick out all types in any
 subpackage, or all inner types. So
 
+[source, java]
 ....
 within(com.xerox..*)
 ....
@@ -1238,6 +1124,7 @@ It is possible to pick out all subtypes of a type (or a collection of
 types) with the "+" wildcard. The "+" wildcard follows immediately a
 type name pattern. So, while
 
+[source, java]
 ....
 call(Foo.new())
 ....
@@ -1245,6 +1132,7 @@ call(Foo.new())
 picks out all constructor call join points where an instance of exactly
 type Foo is constructed,
 
+[source, java]
 ....
 call(Foo+.new())
 ....
@@ -1252,6 +1140,7 @@ call(Foo+.new())
 picks out all constructor call join points where an instance of any
 subtype of Foo (including Foo itself) is constructed, and the unlikely
 
+[source, java]
 ....
 call(*Handler+.new())
 ....
@@ -1271,6 +1160,7 @@ Type patterns are built up out of type name patterns, subtype patterns,
 and array type patterns, and constructed with boolean operators `&&`,
 `||`, and `!`. So
 
+[source, java]
 ....
 staticinitialization(Foo || Bar)
 ....
@@ -1278,6 +1168,7 @@ staticinitialization(Foo || Bar)
 picks out the static initializer execution join points of either Foo or
 Bar, and
 
+[source, java]
 ....
 call((Foo+ && ! Foo).new(..))
 ....
@@ -1289,6 +1180,7 @@ not Foo itself, is constructed.
 
 Here is a summary of the pattern syntax used in AspectJ:
 
+[source, text]
 ....
 MethodPattern =
   [ModifiersPattern] TypePattern
@@ -1397,6 +1289,7 @@ interpretations of after advice: After the execution of a join point
 completes normally, after it throws an exception, or after it does
 either one. AspectJ allows after advice for any of these situations.
 
+[source, java]
 ....
 aspect A {
     pointcut publicCall(): call(public Object *(..));
@@ -1415,6 +1308,7 @@ aspect A {
 After returning advice may not care about its returned object, in which
 case it may be written
 
+[source, java]
 ....
 after() returning: call(public Object *(..)) {
     System.out.println("Returned normally");
@@ -1448,6 +1342,7 @@ must be declared with a return type, like a method.
 Thus, a simple use of around advice is to make a particular method
 constant:
 
+[source, java]
 ....
 aspect A {
     int around(): call(int C.foo()) {
@@ -1459,6 +1354,7 @@ aspect A {
 Within the body of around advice, though, the computation of the
 original join point can be executed with the special syntax
 
+[source, java]
 ....
 proceed( ... )
 ....
@@ -1468,6 +1364,7 @@ pointcut, and returns whatever the around is declared to return. So the
 following around advice will double the second argument to `foo`
 whenever it is called, and then halve its result:
 
+[source, java]
 ....
 aspect A {
     int around(int i): call(int C.foo(Object, int)) && args(i) {
@@ -1483,6 +1380,7 @@ is originally a primitive value. And when the advice returns an Object
 value, that value is converted back to whatever representation it was
 originally. So another way to write the doubling and halving advice is:
 
+[source, java]
 ....
 aspect A {
     Object around(int i): call(int C.foo(Object, int)) && args(i) {
@@ -1500,6 +1398,7 @@ program the first call to proceed will be treated as a method call to
 the `ICanProceed` instance, whereas the second call to proceed is
 treated as the special proceed form.
 
+[source, java]
 ....
 aspect A {
    Object around(ICanProceed canProceed) : execution(* *(..)) && this(canProceed) {
@@ -1519,6 +1418,7 @@ method parameters. In particular, assigning to any parameter affects
 only the value of the parameter, not the value that it came from. This
 means that
 
+[source, java]
 ....
 aspect A {
     after() returning (int i): call(int C.foo()) {
@@ -1536,6 +1436,7 @@ less-precedent advice and the underlying join point by supplying
 different values for the variables. For example, this aspect replaces
 the string bound to `s` in the named pointcut `privateData`:
 
+[source, java]
 ....
 aspect A {
   Object around(String s): MyPointcuts.privateData(s) {
@@ -1551,6 +1452,7 @@ In the following aspect, the around advice replaces the declared target
 `List` with an `ArrayList`. This is valid code at compile-time since the
 types match.
 
+[source, java]
 ....
 import java.util.*;
 
@@ -1565,6 +1467,7 @@ But imagine a simple program where the actual target is `LinkedList`. In
 this case, the advice would cause a `ClassCastException` at runtime, and
 `peek()` is not declared in `ArrayList`.
 
+[source, java]
 ....
 public class Test {
   public static void main(String[] args) {
@@ -1577,6 +1480,7 @@ The `ClassCastException` can occur even in situations where it appears
 to be unnecessary, e.g., if the program is changed to call `size()`,
 declared in `List`:
 
+[source, java]
 ....
 public class Test {
   public static void main(String[] args) {
@@ -1605,6 +1509,7 @@ signalled by the compiler.
 
 For example, in the following declarations:
 
+[source, java]
 ....
 import java.io.FileNotFoundException;
 
@@ -1626,22 +1531,14 @@ aspect A {
 
 both pieces of advice are illegal. The first because the body throws an
 undeclared checked exception, and the second because field get join
-points cannot throw `FileNotFoundException`s.
+points cannot throw ``FileNotFoundException``s.
 
 The exceptions that each kind of join point in AspectJ may throw are:
 
 method call and execution::
-  the checked exceptions declared by the target method's
-  +
-  throws
-  +
-  clause.
+  the checked exceptions declared by the target method's `_throws_` clause.
 constructor call and execution::
-  the checked exceptions declared by the target constructor's
-  +
-  throws
-  +
-  clause.
+  the checked exceptions declared by the target constructor's `_throws_` clause.
 field get and set::
   no checked exceptions can be thrown from these join points.
 exception handler execution::
@@ -1649,11 +1546,7 @@ exception handler execution::
 static initializer execution::
   no checked exceptions can be thrown from these join points.
 pre-initialization and initialization::
-  any exception that is in the throws clause of
-  +
-  all
-  +
-  constructors of the initialized class.
+  any exception that is in the throws clause of all constructors of the initialized class.
 advice execution::
   any exception that is in the throws clause of the advice.
 
@@ -1700,6 +1593,7 @@ precedence over the one that appears later.
 
 These rules can lead to circularity, such as
 
+[source, java]
 ....
 aspect A {
     before(): execution(void main(String[] args)) {}
@@ -1747,6 +1641,7 @@ encapsulates some of the context of the advice's current or enclosing
 join point. These variables exist because some pointcuts may pick out
 very large collections of join points. For example, the pointcut
 
+[source, java]
 ....
 pointcut publicCall(): call(public * *(..));
 ....
@@ -1843,6 +1738,7 @@ The effect of such a declaration is to make <OnType> support the new
 method. Even if <OnType> is an interface. Even if the method is neither
 public nor abstract. So the following is legal AspectJ code:
 
+[source, java]
 ....
 interface Iface {}
 
@@ -1979,6 +1875,7 @@ Inter-type declarations raise the possibility of conflicts among locally
 declared members and inter-type members. For example, assuming
 `otherPackage` is not the package containing the aspect `A`, the code
 
+[source, java]
 ....
 aspect A {
     private Registry otherPackage.onType.r;
@@ -2001,6 +1898,7 @@ there is no conflict: The aspect cannot see such a field, and no code in
 If `onType` defines a public field "`r`", there is a conflict: The
 expression
 
+[source, java]
 ....
 this.r = r
 ....
@@ -2071,6 +1969,7 @@ might define appropriate inter-type `void
 fulfills the `Runnable` interface. In order to implement the methods in
 the `Runnable` interface, the inter-type `run()` method must be public:
 
+[source, java]
 ....
 aspect A {
     declare parents: SomeClass implements Runnable;
@@ -2091,9 +1990,10 @@ initializers. The order of super-interface instantiation is observable.
 We fix this order with the following properties: A supertype is
 initialized before a subtype, initialized code runs only once, and the
 initializers for a type's superclass are run before the initializers for
-its superinterfaces. Consider the following hierarchy where \{`Object`,
-`C`, `D`, `E`} are classes, \{`M`, `N`, `O`, `P`, `Q`} are interfaces.
+its superinterfaces. Consider the following hierarchy where {`Object`,
+`C`, `D`, `E`} are classes, {`M`, `N`, `O`, `P`, `Q`} are interfaces.
 
+[source, text]
 ....
   Object  M   O
  \ / \ /
@@ -2106,6 +2006,7 @@ its superinterfaces. Consider the following hierarchy where \{`Object`,
 
 when a new `E` is instantiated, the initializers run in this order:
 
+[source, text]
 ....
 Object M C O N D Q P E
 ....
@@ -2158,6 +2059,7 @@ Pointcut
 
 For example, the aspect
 
+[source, java]
 ....
 aspect A {
     declare soft: Exception: execution(void main(String[] args));
@@ -2169,6 +2071,7 @@ Would, at the execution join point, catch any `Exception` and rethrow a
 
 This is similar to what the following advice would do
 
+[source, java]
 ....
 aspect A {
     void around() execution(void main(String[] args)) {
@@ -2187,6 +2090,7 @@ Like advice, the declare soft form has no effect in an abstract aspect
 that is not extended by a concreate aspect. So the following code will
 not compile unless it is compiled with an extending concrete aspect:
 
+[source, java]
 ....
 abstract aspect A {
   abstract pointcut softeningPC();
@@ -2223,6 +2127,7 @@ of their name should have precedence over all other aspects, and (2) the
 Logging aspect (and any aspect that extends it) should have precedence
 over all non-security aspects, can be expressed by:
 
+[source, java]
 ....
 declare precedence: *..*Security*, Logging+, *;
 ....
@@ -2235,6 +2140,7 @@ accomplished by stating that CountEntry has precedence over
 DisallowNulls. This declaration could be in either aspect, or in
 another, ordering aspect:
 
+[source, java]
 ....
 aspect Ordering {
     declare precedence: CountEntry, DisallowNulls;
@@ -2259,6 +2165,7 @@ aspect CountEntry {
 It is an error for any aspect to be matched by more than one TypePattern
 in a single decare precedence, so:
 
+[source, java]
 ....
 declare precedence:  A, B, A ;  // error
 ....
@@ -2267,6 +2174,7 @@ However, multiple declare precedence forms may legally have this kind of
 circularity. For example, each of these declare precedence is perfectly
 legal:
 
+[source, java]
 ....
 declare precedence: B, A;
 declare precedence: A, B;
@@ -2280,6 +2188,7 @@ idiom that can be used to enforce that A and B are strongly independent.
 
 Consider the following library aspects:
 
+[source, java]
 ....
 abstract aspect Logging {
     abstract pointcut logged();
@@ -2313,12 +2222,14 @@ aspects, say, MyLogging and MyProfiling. Because advice only applies
 from concrete aspects, the declare precedence form only matters when
 declaring precedence with concrete aspects. So
 
+[source, java]
 ....
 declare precedence: Logging, Profiling;
 ....
 
 has no effect, but both
 
+[source, java]
 ....
 declare precedence: MyLogging, MyProfiling;
 declare precedence: Logging+, Profiling+;
@@ -2526,6 +2437,7 @@ All advice runs in the context of an aspect instance, but it is possible
 to write a piece of advice with a pointcut that picks out a join point
 that must occur before asopect instantiation. For example:
 
+[source, java]
 ....
 public class Client
 {
@@ -2574,6 +2486,7 @@ private or protected resources of other types. To allow this, aspects
 may be declared `privileged`. Code in priviliged aspects has access to
 all members, even private ones.
 
+[source, java]
 ....
 class C {
     private int i = 0;
@@ -2594,6 +2507,7 @@ If a privileged aspect can access multiple versions of a particular
 member, then those that it could see if it were not privileged take
 precedence. For example, in the code
 
+[source, java]
 ....
 class C {
     private int i = 0;

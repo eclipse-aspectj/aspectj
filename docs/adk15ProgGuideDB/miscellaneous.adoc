@@ -8,6 +8,7 @@ AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut
 expressions that bind context variables in more than one location. For
 example, AspectJ 1.2.1 does not allow:
 
+[source, java]
 ....
 pointcut foo(Foo foo) : (execution(* *(..)) && this(foo) ) ||
                         (set(* *) && target(foo));
@@ -28,6 +29,7 @@ exceptions. If the exception type specified in a declare soft statement
 is `RuntimeException` or a subtype of `RuntimeException` then a new
 XLint warning will be issued:
 
+[source, java]
 ....
 declare soft : SomeRuntimeException : execution(* *(..));
 
@@ -43,6 +45,7 @@ _checked_ exception thrown at a matched join point, where the exception
 is an instance of the softened exception, will be softened to an
 `org.aspectj.lang.SoftException`.
 
+[source, java]
 ....
 public aspect SoftenExample {
   declare soft : Exception : execution(* Foo.*(..));

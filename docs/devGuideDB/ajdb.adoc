@@ -133,7 +133,7 @@ Pass a non-standard option to the VM
 
 === Capabilities
 
-The AspectJ debugger implements all of `jdb`'s commands. In addition,
+The AspectJ debugger implements all of ``jdb``'s commands. In addition,
 the command `workingdir` allow you to set the AspectJ working directory,
 and the breakpoint command, `stop on`, has been extended to allow the
 setting of breakpoint on a source file line.
@@ -158,25 +158,25 @@ For this example, we need to set the source path by: `
 To view the file to debug, type `list
       spacewar/Ship.java` which generates the following output:
 
+[source, java]
 ....
-209 void fire() {
-210     // firing a shot takes energy
-211     if (!expendEnergy(BULLET_ENERGY))
-212     return;
-213
-214     //create a bullet object so it doesn't hit the ship that's firing it
-215     double xV = getXVel() + BULLET_SPEED * (Math.cos(orientation));
-216     double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
-217
-218     // create the actual bullet
-219     new Bullet(
-220         getGame(),
-221         (getXPos() + ((getSize()/2 + 2) * (Math.cos(orientation))) + xV),
-222         (getYPos() + ((getSize()/2 + 2) * (Math.sin(orientation))) + yV),
-223         xV,
-224         yV);
-225 }
-    
+/*209*/ void fire() {
+/*210*/     // firing a shot takes energy
+/*211*/     if (!expendEnergy(BULLET_ENERGY))
+/*212*/     return;
+/*213*/
+/*214*/     //create a bullet object so it doesn't hit the ship that's firing it
+/*215*/     double xV = getXVel() + BULLET_SPEED * (Math.cos(orientation));
+/*216*/     double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
+/*217*/
+/*218*/     // create the actual bullet
+/*219*/     new Bullet(
+/*220*/         getGame(),
+/*221*/         (getXPos() + ((getSize()/2 + 2) * (Math.cos(orientation))) + xV),
+/*222*/         (getYPos() + ((getSize()/2 + 2) * (Math.sin(orientation))) + yV),
+/*223*/         xV,
+/*224*/         yV);
+/*225*/ }
 ....
 
 This is different from `jdb` because it allows one to view files before
@@ -222,88 +222,88 @@ The following message appears notifying the user that the breakpoint has
 been noted but will not be set until the class has been loaded by the
 VM:
 
+[source, text]
 ....
 Deferring breakpoint spacewar.Ship.fire()
 It will be set after the class is loaded.
-        
 ....
 
 To start Spacewar we type `run spacewar.Game`.
 
 When the breakpoint is set, the following message appears:
 
+[source, text]
 ....
 Set deferred breakpoint spacewar.Ship.fire()
-    
 ....
 
 We are notified that we've hit the breakpoint:
 
+[source, text]
 ....
 Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=174, bci=0 209 void fire() {
-    
 ....
 
 The prompt changes to present the thread that has broken, and we can
 view the current stack with the `where` command, as follows:
 
+[source, text]
 ....
 Thread-2[1] where
 [1] fire (spacewar\Ship.java:209)
 [2] run (spacewar\Robot.java:100)
 [3] run [class java.lang.Thread]
-    
 ....
 
 Next, to stop on line 216 we type `stop on spacewar/Ship.java:216`
 
 The following message tells us the breakpoint was set:
 
+[source, text]
 ....
 Set breakpoint Ship.java:216
-    
 ....
 
 To continue execution, we type `cont` and the breakpoint at line 216 is
 hit
 
+[source, text]
 ....
 Breakpoint hit: thread="Thread-2", spacewar.Ship.fire(), line=216, bci=28
 216 double yV = getYVel() + BULLET_SPEED * (Math.sin(orientation));
-    
 ....
 
 To view the visible local variables, we type `locals` and ajdb responds
 with:
 
+[source, text]
 ....
 Local variables
 xV = 12.242462584304468
-    
 ....
 
 To change the value of the local variable i to 15, we type
 `set xV = 16.1`
 
+[source, text]
 ....
 Changed 'xV' from '12.242462584304468' to '16.1'
-    
 ....
 
 To see our changes we can print the value of `i` by the following:
 
+[source, text]
 ....
 print xV
 Value for printing 'xV' = 12.242462584304468
-    
 ....
 
 We can now type exit or quit to leave the debugger, and we receive the
 following message:
 
+[source, text]
 ....
 The application has exited.
-    
 ....
 
 === The AspectJ debugger API
@@ -314,13 +314,10 @@ the method `org.aspectj.tools.debugger.Main.main(String[]
     args)` where `args` are the standard `ajc` command line arguments.
 This means that an alternative way to run the compiler is
 
-java org.aspectj.tools.debugger.Main
-
-option
-
-class
-
-arguments
+[source, text]
+....
+java org.aspectj.tools.debugger.Main options class arguments
+....
 
 You must additionally include `tools.jar` from your Java developer's kit
 in your classpath.

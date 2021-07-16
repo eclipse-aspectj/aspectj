@@ -123,6 +123,7 @@ enable AspectJ mode on a per-project basis.
 your `load-path` and are ``required''. This is an example for the 1.0
 release:
 +
+[source, text]
 ....
    ;; I keep my emacs packages in C:/Emacs
    (setq load-path
@@ -140,7 +141,6 @@ load-path))
 
    (require 'jde)
    (require 'ajdee) ; can also appear in prj.el
-
 ....
 . _[Optional]_ add `-emacssym` switch to the `ajc` and `ajc.bat` files
 in your AspectJ tools installations (in the `/bin` directory). If you
@@ -152,6 +152,7 @@ following in your `.emacs` file or in a JDE project file `prj.el` in
 your project's hierarchy (see the `JDE Project File Name` option for the
 latter). Here is a simple example:
 +
+[source, text]
 ....
 ;; A default version for simple projects, maybe good for
 ;;; .emacs file.
@@ -161,11 +162,11 @@ latter). Here is a simple example:
 
 ;; ajc requires all files to be named for a compile
 '(aspectj-compile-file-specification "*.java"))
-
 ....
 +
 Here is an example for spacewar, in `examples/spacewar`.
 +
+[source, text]
 ....
 ;;; These options are for the spacewar, in examples/spacewar.
 (custom-set-variables
@@ -180,7 +181,6 @@ Here is an example for spacewar, in `examples/spacewar`.
 '(jde-compile-option-directory "..")
 '(jde-run-working-directory ".."))
 '(jde-run-application-class "spacewar.Game")
-
 ....
 . _[XEmacs only]_ If you're installing JDE yourself, be sure to closely
 follow the JDE installation directions for XEmacs, otherwise you may get
@@ -207,6 +207,7 @@ for problems not specific to AJDEE's features.
 * _Symptom_: Get standard speedbar menus in JDE; no annotations display.
 Message:
 +
+[source, text]
 ....
 AspectJ Mode Warning: Can't find declarations file for...
 ....
@@ -235,6 +236,7 @@ AspectJ project's directory (see sample.prj in the distribution).
 * _Symptom_: Reported bug fixes and new features to AJDEE are not seen,
 or ajdee.el cannot be found or loaded, with message:
 +
+[source, text]
 ....
 Error in init file: File error: "Cannot open load file", "ajdee"
 ....

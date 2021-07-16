@@ -36,6 +36,7 @@ start of a system using LTW and then reuses that woven bytecode on
 subsequent starts - this saves weaving time and also memory consumption.
 To activate it, use the following system properties:
 
+[source, text]
 ....
 -Daj.weaving.cache.enabled=true
 -Daj.weaving.cache.dir=/tmp/aspectj-cache/
@@ -51,8 +52,9 @@ Eclipse compiler.
 It means that you can now use the new Java 7 language constructs in your
 programs:
 
-- Diamond operator in advice: ``
+- Diamond operator in advice:
 
+[source, java]
 ....
 aspect Foo {
   before(): execution(* *(..)) {
@@ -61,58 +63,63 @@ aspect Foo {
 }
 ....
 
-- Diamond operator in ITD: ``
+- Diamond operator in ITD:
 
+[source, java]
 ....
 public List DiamondITD.ls = new ArrayList<>();
 ....
 
-- Underscore literals and binary literals in advice: ``
+- Underscore literals and binary literals in advice:
 
+[source, java]
 ....
-  before(): execution(* *(..)) {
-    int onemill = 1_000_000;
-    int four =0b100;
-  }
+before(): execution(* *(..)) {
+  int onemill = 1_000_000;
+  int four =0b100;
+}
 ....
 
 - Multi-catch:``
 
+[source, java]
 ....
 before(): execution(* main(..)) {
-    try {
-      foo("abc");
-    } catch (ExceptionA | ExceptionB ex) {
-      bar(ex);
-    }
+  try {
+    foo("abc");
+  } catch (ExceptionA | ExceptionB ex) {
+    bar(ex);
+  }
 }
 ....
 
 - String switch:``
 
+[source, java]
 ....
- before(String s): execution(* *(..)) && args(s) {
-   switch(s) {
-     case "quux":
-       foo();
-       break;
-     case "bar":
-       foo();
-       break;
-     default:
-       foo();
-       break;
-   }
- }
+before(String s): execution(* *(..)) && args(s) {
+  switch(s) {
+    case "quux":
+      foo();
+      break;
+    case "bar":
+      foo();
+      break;
+    default:
+      foo();
+      break;
+  }
+}
 ....
 
 - Try with resources:``
 
+[source, java]
 ....
-   try (
-     InputStream in = new FileInputStream(src);
-     OutputStream out = new FileOutputStream(dest))
-   {
-     // code
-   }
+try (
+  InputStream in = new FileInputStream(src);
+  OutputStream out = new FileOutputStream(dest))
+{
+  // code
+}
 ....

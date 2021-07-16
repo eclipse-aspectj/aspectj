@@ -14,8 +14,7 @@ Notable changes since the 1.5.2 release include: +
 Until this release, the memory profile for AspectJ looked like this
 (time is along the X axis, memory usage is the Y axis)
 
-``
-
+[source, text]
 ....
      /\_
     /   \_
@@ -31,8 +30,7 @@ discarding them once woven and dumped to disk. In 1.5.3 we don't compile
 everything up front - we compile and weave files one at a time. Giving
 us this profile:
 
-``
-
+[source, text]
 ....
   /\  /\  /\
  /  \/  \/  \
@@ -46,6 +44,7 @@ to compile a project. For example, I have a 1000file project, affected
 by aspects at >750 join points. For given values of Xmx, here are the
 times taken to compile it (on the command line) with AspectJ1.5.2:
 
+[source, text]
 ....
 Xmx  Time
 512M 33seconds
@@ -58,6 +57,7 @@ The times gradually increase as the memory is reduced because the VM
 starts to thrash in garbage collection. Here are the results for
 AspectJ1.5.3:
 
+[source, text]
 ....
 Xmx  Time
 512M 33s
@@ -106,8 +106,7 @@ Concrete aspects defined using aop.xml are now exposed for weaving.
 It is now possible to ask an instance of a ptw aspect which type it is
 'attached' to. The method:
 
-``
-
+[source, java]
 ....
 String getWithinTypeName()
 ....

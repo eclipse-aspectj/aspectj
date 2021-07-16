@@ -17,9 +17,9 @@ invoke the script in `{aspectj}/bin` (if AspectJ is installed correctly)
 or by using the `aspectjtools.jar` directly, and specifying no arguments
 or some number of build configuration files (suffix `.lst`):
 
+[source, text]
 ....
 java -jar aspectj1.1/lib/aspectjtools.jar aspectj1.1/doc/examples/spacewar/debug.lst
-
 ....
 
 [[ajbrowser-building]]

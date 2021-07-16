@@ -34,17 +34,18 @@ option, or set showweaveinfo=true in the iajc ant task.
 The following is an example of the messages produced when this option is
 enabled:
 
+[source, text]
 ....
-    C:\aspectj1.2.1\doc\examples\tjp>ajc -showWeaveInfo *.java
+C:\aspectj1.2.1\doc\examples\tjp>ajc -showWeaveInfo *.java
 
-    Type 'tjp.Demo' (Demo.java:20) advised by around advice from 'tjp.GetInfo'
-    (GetInfo.java:26) [RuntimeTest=true]
+Type 'tjp.Demo' (Demo.java:20) advised by around advice from 'tjp.GetInfo'
+(GetInfo.java:26) [RuntimeTest=true]
 
-    Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo'
-    (GetInfo.java:26) [RuntimeTest=true]
+Type 'tjp.Demo' (Demo.java:30) advised by around advice from 'tjp.GetInfo'
+(GetInfo.java:26) [RuntimeTest=true]
 
-    Type 'tjp.Demo' (Demo.java:34) advised by around advice from 'tjp.GetInfo'
-    (GetInfo.java:26) [RuntimeTest=true]
+Type 'tjp.Demo' (Demo.java:34) advised by around advice from 'tjp.GetInfo'
+(GetInfo.java:26) [RuntimeTest=true]
 ....
 
 === Dump Support
@@ -91,11 +92,11 @@ detecting this performance related bug and for piloting the fix.
 String concatentation in declare error and warning statements is now
 supported. For example, you can write:
 
+[source, java]
 ....
-        declare warning : jdbcCall() && !inDataLayer()
-                        : "Please don't make calls to JDBC " +
-                          "outside of the data layer.";
-
+declare warning : jdbcCall() && !inDataLayer()
+                : "Please don't make calls to JDBC " +
+                  "outside of the data layer.";
 ....
 
 === Load-time Weaving Support

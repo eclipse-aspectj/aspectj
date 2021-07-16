@@ -27,8 +27,7 @@ the full build times in AJDT:
 
 AJDT 1.6.3 (uses AspectJ 1.6.3)
 
-``
-
+[source, text]
 ....
 21352ms
 21597ms
@@ -37,8 +36,7 @@ AJDT 1.6.3 (uses AspectJ 1.6.3)
 
 AJDT 1.6.5dev builds (use AspectJ 1.6.4)
 
-``
-
+[source, text]
 ....
 19811ms
 19802ms
@@ -70,8 +68,7 @@ building code, weaving code.
 
 Initially this is using AJDT 1.6.2 (which embeds AspectJ 1.6.3):
 
-``
-
+[source, text]
 ....
 Type of change: adding a new method to a type
 Project build times (first one is the compile of our change, the rest are for downstream projects):
@@ -88,8 +85,7 @@ Summary: Total time spent in the compiler for that change: 1597ms
 
 Now with AspectJ 1.6.5 dev builds (which embed AspectJ 1.6.4):
 
-``
-
+[source, text]
 ....
 Type of change: adding a new method to a type
 Project build times (first one is the compile of our change, the rest are for downstream projects):
@@ -127,8 +123,9 @@ http://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.
 *Optimizing support for maintaining per join point state*
 
 The traditional way to maintain state on a per join point basis involves
-using the JoinPoint.StaticPart as a key into a map: ``
+using the JoinPoint.StaticPart as a key into a map:
 
+[source, java]
 ....
 aspect X pertypewithin(*) {
   Map<JoinPoint.StaticPart,Timer> timerMap = ...
@@ -149,8 +146,7 @@ points within a target type are unique (and start from 0) - they are
 ideal for array lookups. So using this the above aspect can be
 rewritten:
 
-``
-
+[source, java]
 ....
 aspect X pertypewithin(*) {
   Timer[] timerArray = ...
@@ -189,17 +185,16 @@ target instance.
 The @DeclareMixin annotation is attached to a factory method which
 returns instances of the delegate. Here is a basic example:
 
-``
-
+[source, java]
 ....
-        // The factory method that can build the delegate instance is annotated with @DeclareMixin.
-        // The annotation value defines the type pattern for targets of the mixin.
-        // The parameter is the object for which a delegate is being constructed.
-        // The interface that will be mixed in is the return value of the factory method.
-        @DeclareMixin("org.xyz..*")
-        public static SomeInterface createDelegate(Object instance) {
-          return new SomeImplementation(instance);
-        }
+// The factory method that can build the delegate instance is annotated with @DeclareMixin.
+// The annotation value defines the type pattern for targets of the mixin.
+// The parameter is the object for which a delegate is being constructed.
+// The interface that will be mixed in is the return value of the factory method.
+@DeclareMixin("org.xyz..*")
+public static SomeInterface createDelegate(Object instance) {
+  return new SomeImplementation(instance);
+}
 ....
 
 More examples are
@@ -248,5 +243,3 @@ weaver. Although the type map uses Weak/Soft references to try and
 better control how it uses memory, the JVM policies for managing these
 references vary wildly and so some work needs to be done to allow for
 these differences.
-
-'''''

@@ -37,6 +37,7 @@ up ajc as the compiler, do the following before starting Tomcat:
   tell Ant to use `ajc` by setting the compiler property to the AspectJ
   compiler adapter:
 +
+[source, xml]
 ....
 <servlet>
     <servlet-name>jsp</servlet-name>

@@ -24,30 +24,31 @@ exposed to the new terminology introduced by AspectJ.
 
 Here's an example of an aspect definition in AspectJ:
 
+[source, java]
 ....
- 1 aspect FaultHandler {
- 2
- 3   private boolean Server.disabled = false;
- 4
- 5   private void reportFault() {
- 6     System.out.println("Failure! Please fix it.");
- 7   }
- 8
- 9   public static void fixServer(Server s) {
-10     s.disabled = false;
-11   }
-12
-13   pointcut services(Server s): target(s) && call(public * *(..));
-14
-15   before(Server s): services(s) {
-16     if (s.disabled) throw new DisabledException();
-17   }
-18
-19   after(Server s) throwing (FaultException e): services(s) {
-20     s.disabled = true;
-21     reportFault();
-22   }
-23 }
+/*01*/ aspect FaultHandler {
+/*02*/
+/*03*/   private boolean Server.disabled = false;
+/*04*/
+/*05*/   private void reportFault() {
+/*06*/     System.out.println("Failure! Please fix it.");
+/*07*/   }
+/*08*/
+/*09*/   public static void fixServer(Server s) {
+/*10*/     s.disabled = false;
+/*11*/   }
+/*12*/
+/*13*/   pointcut services(Server s): target(s) && call(public * *(..));
+/*14*/
+/*15*/   before(Server s): services(s) {
+/*16*/     if (s.disabled) throw new DisabledException();
+/*17*/   }
+/*18*/
+/*19*/   after(Server s) throwing (FaultException e): services(s) {
+/*20*/     s.disabled = true;
+/*21*/     reportFault();
+/*22*/   }
+/*23*/ }
 ....
 
 The `FaultHandler` consists of one inter-type field on `Server` (line
@@ -69,6 +70,7 @@ invocations and executions, the handling of exceptions, field
 assignments and accesses, etc. Take, for example, the pointcut
 definition in line 13:
 
+[source, java]
 ....
 pointcut services(Server s): target(s) && call(public * *(..))
 ....
@@ -114,6 +116,7 @@ define aspect implementation that runs at join points picked out by the
 pointcut. For example, the advice in lines 15-17 specifies that the
 following piece of code
 
+[source, java]
 ....
 {
   if (s.disabled) throw new DisabledException();
@@ -128,6 +131,7 @@ corresponding methods are executed.
 The advice in lines 19-22 defines another piece of implementation that
 is executed on the same pointcut:
 
+[source, java]
 ....
 {
   s.disabled = true;
@@ -148,6 +152,7 @@ this guide.
 
 Consider the following Java class:
 
+[source, java]
 ....
 class Point {
     private int x, y;
@@ -166,6 +171,7 @@ In order to get an intuitive understanding of AspectJ's join points and
 pointcuts, let's go back to some of the basic principles of Java.
 Consider the following a method declaration in class Point:
 
+[source, java]
 ....
 void setX(int x) { this.x = x; }
 ....
@@ -192,6 +198,7 @@ complete listing.)
 
 Pointcuts pick out these join points. For example, the pointcut
 
+[source, java]
 ....
 pointcut setter(): target(Point) &&
                    (call(void setX(int)) ||
@@ -201,6 +208,7 @@ pointcut setter(): target(Point) &&
 picks out each call to `setX(int)` or `setY(int)` when called on an
 instance of `Point`. Here's another example:
 
+[source, java]
 ....
 pointcut ioHandler(): within(MyClass) && handler(IOException);
 ....
@@ -230,7 +238,7 @@ when the target object is of type `SomeType`::
   `target(SomeType)`
 when the executing code belongs to class `MyClass`::
   `within(MyClass)`
-when the join point is in the control flow of a call to a `Test`'s
+when the join point is in the control flow of a call to a ``Test``'s
 no-argument `main` method::
   `cflow(call(void Test.main()))`
 
@@ -256,9 +264,9 @@ such `set` method; this pointcut picks out calls to all of them.
 means (1) the execution of any method with no parameters that returns an
 `int`, (2) the call to any `setY` method that takes a `long` as an
 argument, regardless of return type or declaring type, (3) the call to
-any of `Point`'s `setY` methods that take an `int` as an argument,
+any of ``Point``'s `setY` methods that take an `int` as an argument,
 regardless of return type, and (4) the call to any classes' constructor,
-so long as it takes exactly two `int`s as arguments.
+so long as it takes exactly two ``int``s as arguments.
 * You can compose pointcuts. For example,
 [arabic]
 . `target(Point) && call(int *())`
@@ -270,7 +278,7 @@ so long as it takes exactly two `int`s as arguments.
 +
 means (1) any call to an `int` method with no arguments on an instance
 of `Point`, regardless of its name, (2) any call to any method where the
-call is made from the code in `Point`'s or `Line`'s type declaration,
+call is made from the code in ``Point``'s or ``Line``'s type declaration,
 (3) the execution of any constructor taking exactly one `int` argument,
 regardless of where the call is made from, and (4) any method call to an
 `int` method when the executing object is any type except `Point`.
@@ -286,12 +294,13 @@ non-static method, and (3) any execution of a public, non-static method.
 * Pointcuts can also deal with interfaces. For example, given the
 interface
 +
+[source, java]
 ....
 interface MyInterface { ... }
 ....
 +
 the pointcut `call(* MyInterface.*(..))` picks out any call to a method
-in `MyInterface`'s signature -- that is, any method defined by
+in ``MyInterface``'s signature -- that is, any method defined by
 `MyInterface` or inherited by one of its a supertypes.
 
 [[call-vs-execution]]
@@ -339,6 +348,7 @@ primitive pointcuts like `cflow` and `cflowbelow`. Here's an example:
 `cflow(P)` picks out each join point in the control flow of the join
 points picked out by <P>. So, pictorially:
 
+[source, text]
 ....
 P ---------------------
   \
@@ -350,6 +360,7 @@ What does `cflow(P) &&
         cflow(Q)` pick out? Well, it picks out each join point that is
 in both the control flow of <P> and in the control flow of <Q>. So...
 
+[source, text]
 ....
         P ---------------------
           \
@@ -370,6 +381,7 @@ But what does `cflow(P
         && Q)` mean? Well, it means the control flow of those join
 points that are both picked out by <P> and picked out by <Q>.
 
+[source, text]
 ....
 P && Q -------------------
        \
@@ -384,6 +396,7 @@ control flow of `(P &&
 
 Here's some code that expresses this.
 
+[source, java]
 ....
 public class Test {
     public static void main(String[] args) {
@@ -422,6 +435,7 @@ for more details.)
 
 Consider again the first pointcut definition in this chapter:
 
+[source, java]
 ....
 pointcut setter(): target(Point) &&
                    (call(void setX(int)) ||
@@ -435,6 +449,7 @@ side. An empty parameter list means that none of the context from the
 join points is published from this pointcut. But consider another
 version of version of this pointcut definition:
 
+[source, java]
 ....
 pointcut setter(Point p): target(p) &&
                           (call(void setX(int)) ||
@@ -452,6 +467,7 @@ matched join point.
 Here's another example that illustrates the flexible mechanism for
 defining pointcut parameters:
 
+[source, java]
 ....
 pointcut testEquality(Point p): target(Point) &&
                                 args(p) &&
@@ -464,10 +480,11 @@ access to a `Point` from each join point. But in this case, looking at
 the right-hand side we find that the object named in the parameters is
 not the target `Point` object that receives the call; it's the argument
 (also of type `Point`) passed to the `equals` method when some other
-`Point` is the target. If we wanted access to both `Point`s, then the
+`Point` is the target. If we wanted access to both ``Point``s, then the
 pointcut definition that would expose target `Point p1` and argument
 `Point p2` would be
 
+[source, java]
 ....
 pointcut testEquality(Point p1, Point p2): target(p1) &&
                                            args(p2) &&
@@ -476,6 +493,7 @@ pointcut testEquality(Point p1, Point p2): target(p1) &&
 
 Let's look at another variation of the `setters` pointcut:
 
+[source, java]
 ....
 pointcut setter(Point p, int newval): target(p) &&
                                       args(newval) &&
@@ -493,6 +511,7 @@ important rule is that all the pointcut parameters must be bound at
 every join point picked out by the pointcut. So, for example, the
 following pointcut definition will result in a compilation error:
 
+[source, java]
 ....
 pointcut badPointcut(Point p1, Point p2):
     (target(p1) && call(void setX(int))) ||
@@ -512,6 +531,7 @@ operations to their `Partner` objects. The aspect `HandleLiveness`
 ensures that, before the delegations, the partner exists and is alive,
 or else it throws an exception.
 
+[source, java]
 ....
 class Handle {
   Partner partner = new Partner();
@@ -594,6 +614,7 @@ given either by named pointcuts (like the ones you've seen above) or by
 anonymous pointcuts. Here is an example of an advice on a named
 pointcut:
 
+[source, java]
 ....
 pointcut setter(Point p1, int newval): target(p1) && args(newval)
                                        (call(void setX(int) ||
@@ -607,6 +628,7 @@ before(Point p1, int newval): setter(p1, newval) {
 
 And here is exactly the same example, but using an anonymous pointcut:
 
+[source, java]
 ....
 before(Point p1, int newval): target(p1) && args(newval)
                               (call(void setX(int)) ||
@@ -621,6 +643,7 @@ Here are examples of the different advice:
 This before advice runs just before the join points picked out by the
 (anonymous) pointcut:
 
+[source, java]
 ....
 before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
     if (!p.assertX(x)) return;
@@ -631,6 +654,7 @@ This after advice runs just after each join point picked out by the
 (anonymous) pointcut, regardless of whether it returns normally or
 throws an exception:
 
+[source, java]
 ....
 after(Point p, int x): target(p) && args(x) && call(void setX(int)) {
     if (!p.assertX(x)) throw new PostConditionViolation();
@@ -642,6 +666,7 @@ by the (anonymous) pointcut, but only if it returns normally. The return
 value can be accessed, and is named `x` here. After the advice runs, the
 return value is returned:
 
+[source, java]
 ....
 after(Point p) returning(int x): target(p) && call(int getX()) {
     System.out.println("Returning int value " + x + " for p = " + p);
@@ -653,6 +678,7 @@ the (anonymous) pointcut, but only when it throws an exception of type
 `Exception`. Here the exception value can be accessed with the name `e`.
 The advice re-raises the exception after it's done:
 
+[source, java]
 ....
 after() throwing(Exception e): target(Point) && call(void setX(int)) {
     System.out.println(e);
@@ -663,6 +689,7 @@ This around advice traps the execution of the join point; it runs
 _instead_ of the join point. The original action associated with the
 join point can be invoked through the special `proceed` call:
 
+[source, java]
 ....
 void around(Point p, int x): target(p)
                           && args(x)
@@ -683,6 +710,7 @@ class. Here are examples of some such inter-type declarations:
 This declares that each `Server` has a `boolean` field named `disabled`,
 initialized to `false`:
 
+[source, java]
 ....
 private boolean Server.disabled = false;
 ....
@@ -696,6 +724,7 @@ another aspect) there won't be a name collision, since no reference to
 This declares that each `Point` has an `int` method named `getX` with no
 arguments that returns whatever `this.x` is:
 
+[source, java]
 ....
 public int Point.getX() { return this.x; }
 ....
@@ -707,6 +736,7 @@ conflict.
 
 This publically declares a two-argument constructor for `Point`:
 
+[source, java]
 ....
 public Point.new(int x, int y) { this.x = x; this.y = y; }
 ....
@@ -714,6 +744,7 @@ public Point.new(int x, int y) { this.x = x; this.y = y; }
 This publicly declares that each `Point` has an `int` field named `x`,
 initialized to zero:
 
+[source, java]
 ....
 public int Point.x = 0;
 ....
@@ -724,6 +755,7 @@ has a field named `x` (defined by `Point` or by another aspect).
 This declares that the `Point` class implements the `Comparable`
 interface:
 
+[source, java]
 ....
 declare parents: Point implements Comparable;
 ....
@@ -734,6 +766,7 @@ required by `Comparable`.
 This declares that the `Point` class extends the `GeometricObject`
 class.
 
+[source, java]
 ....
 declare parents: Point extends GeometricObject;
 ....
@@ -741,6 +774,7 @@ declare parents: Point extends GeometricObject;
 An aspect can have several inter-type declarations. For example, the
 following declarations
 
+[source, java]
 ....
 public String Point.name;
 public void Point.setName(String name) { this.name = name; }
@@ -754,6 +788,7 @@ An inter-type member can only have one target type, but often you may
 wish to declare the same member on more than one type. This can be done
 by using an inter-type member in combination with a private interface:
 
+[source, java]
 ....
 aspect A {
   private interface HasName {}
@@ -782,18 +817,20 @@ declarations in addition to public inter-type declarations. Private
 means private in relation to the aspect, not necessarily the target
 type. So, if an aspect makes a private inter-type declaration of a field
 
+[source, java]
 ....
 private int Foo.x;
 ....
 
-Then code in the aspect can refer to `Foo`'s `x` field, but nobody else
+Then code in the aspect can refer to ``Foo``'s `x` field, but nobody else
 can. Similarly, if an aspect makes a package-protected introduction,
 
+[source, java]
 ....
-  int Foo.x;
+int Foo.x;
 ....
 
-then everything in the aspect's package (which may or may not be `Foo`'s
+then everything in the aspect's package (which may or may not be ``Foo``'s
 package) can access `x`.
 
 ==== Example: `PointAssertions`
@@ -806,6 +843,7 @@ other parts of the program (including the code in `Point`) have no
 business accessing the assert methods. Only the code inside of the
 aspect can call those methods.
 
+[source, java]
 ....
 class Point  {
     int x, y;
@@ -856,6 +894,7 @@ One way to use it is simply to print it out. Like all Java objects,
 `thisJoinPoint` has a `toString()` method that makes quick-and-dirty
 tracing easy:
 
+[source, java]
 ....
 aspect TraceNonStaticMethods {
     before(Point p): target(p) && call(* *(..)) {
@@ -868,6 +907,7 @@ The type of `thisJoinPoint` includes a rich reflective class hierarchy
 of signatures, and can be used to access both static and dynamic
 information about join points such as the arguments of the join point:
 
+[source, java]
 ....
 thisJoinPoint.getArgs()
 ....
@@ -876,6 +916,7 @@ In addition, it holds an object consisting of all the static information
 about the join point such as corresponding line number and static
 signature:
 
+[source, java]
 ....
 thisJoinPoint.getStaticPart()
 ....
@@ -888,6 +929,7 @@ necessary when using `thisJoinPoint` directly.
 
 It is always the case that
 
+[source, java]
 ....
 thisJoinPointStaticPart == thisJoinPoint.getStaticPart()
 
@@ -903,8 +945,9 @@ but it is not the current but the enclosing join point. So, for example,
 it is possible to print out the calling source location (if available)
 with
 
+[source, java]
 ....
-   before() : execution (* *(..)) {
-     System.err.println(thisEnclosingJoinPointStaticPart.getSourceLocation())
-   }
+before() : execution (* *(..)) {
+  System.err.println(thisEnclosingJoinPointStaticPart.getSourceLocation())
+}
 ....

@@ -18,6 +18,7 @@ JVM where JMX is turned on
 (https://bugs.eclipse.org/bugs/show_bug.cgi?id=420210[420210]) The new
 keys are:
 +
+[source, java]
 ....
 joinpoint.enclosingclass // Bar
 joinpoint.enclosingmember // void Bar.foo(String)
@@ -29,6 +30,7 @@ All keys are case insensitive.
 needing to supply a file
 (https://bugs.eclipse.org/bugs/show_bug.cgi?id=419279[419279])
 +
+[source, text]
 ....
 ajc -Xlint:adviceDidNotMatch=error,noGuardForLazyTjp=ignore Foo.java
 ....

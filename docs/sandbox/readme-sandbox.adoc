@@ -34,6 +34,7 @@ tells how.
 extracts samples of the following form from any "source" file (currently
 source, html, text, and shell scripts):
 
+[source, text]
 ....
 ... some text, possibly including @author tags
 {comment} START-SAMPLE [anchorName] [anchor title] {end-comment}
@@ -63,6 +64,7 @@ indented only once in the source code, even though they might normally
 be indented more.
 ** In AspectJ, indent advice pointcuts beyond the block code:
 +
+[source, java]
 ....
 before() : call(!public * com.company.library..*.*(String,..))
        && within(Runnable+) { // indent once more than code
@@ -107,6 +109,7 @@ suffixes necessary for clarity and to make sure there are unique titles
 for each test. E.g., for a sample with the anchor
 "`language-initialization`",
 +
+[source, xml]
 ....
 <ajc-test
     dir="common"
@@ -124,6 +127,7 @@ compile.
 by verifying that the error message is produced, checking either or both
 of the line number and the message text. E.g.,
 +
+[source, xml]
 ....
 <compile files="declares/Declares.java, {others}"
     <message kind="error" line="15" text="Factory"/>
@@ -135,6 +139,7 @@ message and the target code in sync. You can help with this by adding a
 comment in the target code so people editing the code know not to fix or
 move the code. E.g.,
 +
+[source, java]
 ....
 void spawn() {
     new Thread(this, toString()).start(); // KEEP CE 15 declares-factory
@@ -151,6 +156,7 @@ make it easier to find the test that will break if the code is modified.
 If the code is broken (e.g., if it no longer works in the latest version
 of AspectJ), then prefix SAMPLE with BROKEN in the tag:
 
+[source, text]
 ....
 {comment} START-BROKEN-SAMPLE ...
 ... sample code ...

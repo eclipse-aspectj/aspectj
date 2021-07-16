@@ -7,35 +7,27 @@ This chapter consists entirely of examples of AspectJ use.
 
 The examples can be grouped into four categories:
 
-technique
-
-Examples which illustrate how to use one or more features of the
-language.
-
-development
-
-Examples of using AspectJ during the development phase of a project.
-
-production
-
-Examples of using AspectJ to provide functionality in an application.
-
-reusable
-
-Examples of reuse of aspects and pointcuts.
+technique::
+  Examples which illustrate how to use one or more features of the language
+development::
+  Examples of using AspectJ during the development phase of a project
+production::
+  Examples of using AspectJ to provide functionality in an application
+reusable::
+  Examples of reuse of aspects and pointcuts
 
 [[examples-howto]]
 === Obtaining, Compiling and Running the Examples
 
 The examples source code is part of the AspectJ distribution which may
-be downloaded from the AspectJ project page (
-http://eclipse.org/aspectj[] ).
+be downloaded from the https://eclipse.org/aspectj[AspectJ project page].
 
 Compiling most examples is straightforward. Go the `InstallDir/examples`
 directory, and look for a `.lst` file in one of the example
 subdirectories. Use the `-arglist` option to `ajc` to compile the
 example. For instance, to compile the telecom example with billing, type
 
+[source, text]
 ....
 ajc -argfile telecom/billing.lst
 ....
@@ -45,11 +37,13 @@ Java archive (`aspectjrt.jar`). You may either set the `CLASSPATH`
 environment variable or use the `-classpath` command line option to the
 Java interpreter:
 
+[source, text]
 ....
 (In Unix use a : in the CLASSPATH)
 java -classpath ".:InstallDir/lib/aspectjrt.jar" telecom.billingSimulation
 ....
 
+[source, text]
 ....
 (In Windows use a ; in the CLASSPATH)
 java -classpath ".;InstallDir/lib/aspectjrt.jar" telecom.billingSimulation
@@ -64,7 +58,7 @@ dynamic join points and advice, and with static introduction. Advice
 changes an application's behavior. Introduction changes both an
 application's behavior and its structure.
 
-The first example, xref:#examples-joinPoints[Join Points and ], is about
+The first example, xref:#examples-joinPoints[Join Points and `thisJoinPoint`], is about
 gathering and using information about the join point that has triggered
 some advice. The second example, xref:#examples-roles[Roles and Views],
 concerns a crosscutting view of an existing class hierarchy.
@@ -87,6 +81,7 @@ join point. Here, for example, since the only join points picked out by
 the pointcut are calls of a certain method, we can get the target value
 and one of the argument values of the method calls directly.
 
+[source, java]
 ....
 before(Point p, int x): target(p)
                      && args(x)
@@ -101,6 +96,7 @@ But sometimes the shape of the join point is not so clear. For instance,
 suppose a complex application is being debugged, and we want to trace
 when any method of some class is executed. The pointcut
 
+[source, java]
 ....
 pointcut execsInProblemClass(): within(ProblemClass)
                              && execution(* *(..));
@@ -124,19 +120,16 @@ point
 * the currently executing object
 * the target object
 * an object encapsulating the static information about the join point.
-This is also available through the special variable
-+
-thisJoinPointStaticPart
-+
-.
+This is also available through the special variable `thisJoinPointStaticPart`.
 
 ===== The `Demo` class
 
 The class `tjp.Demo` in `tjp/Demo.java` defines two methods `foo` and
 `bar` with different parameter lists and return types. Both are called,
-with suitable arguments, by `Demo`'s `go` method which was invoked from
+with suitable arguments, by ``Demo``'s `go` method which was invoked from
 within its `main` method.
 
+[source, java]
 ....
 public class Demo {
     static Demo d;
@@ -168,6 +161,7 @@ This aspect uses around advice to intercept the execution of methods
 `foo` and `bar` in `Demo`, and prints out information garnered from
 `thisJoinPoint` to the console.
 
+[source, java]
 ....
 aspect GetInfo {
 
@@ -207,6 +201,7 @@ aspect GetInfo {
 
 The pointcut `goCut` is defined as
 
+[source, java]
 ....
 cflow(this(Demo)) && execution(void go())
 ....
@@ -221,7 +216,7 @@ advised.
 
 The name of the method and that method's defining class are available as
 parts of the
-xref:../api/org/aspectj/lang/Signature.html[org.aspectj.lang.Signature]
+xref:../api/org/aspectj/lang/Signature.html[`org.aspectj.lang.Signature`]
 object returned by calling `getSignature()` on either `thisJoinPoint` or
 `thisJoinPointStaticPart`.
 
@@ -274,7 +269,7 @@ are provided by AspectJ without having to modify the code for the class
 
 The `Point` class defines geometric points whose interface includes
 polar and rectangular coordinates, plus some simple operations to
-relocate points. `Point`'s implementation has attributes for both its
+relocate points. ``Point``'s implementation has attributes for both its
 polar and rectangular coordinates, plus flags to indicate which
 currently reflect the position of the point. Some operations cause the
 polar coordinates to be updated from the rectangular, and some have the
@@ -292,20 +287,21 @@ image:aspects.gif[image]
 
 ===== The `CloneablePoint` aspect
 
-This first aspect is responsible for `Point`'s implementation of the
+This first aspect is responsible for ``Point``'s implementation of the
 `Cloneable` interface. It declares that `Point implements Cloneable`
 with a `declare parents` form, and also publically declares a
-specialized `Point`'s `clone()` method. In Java, all objects inherit the
+specialized ``Point``'s `clone()` method. In Java, all objects inherit the
 method `clone` from the class `Object`, but an object is not cloneable
 unless its class also implements the interface `Cloneable`. In addition,
 classes frequently have requirements over and above the simple
 bit-for-bit copying that `Object.clone` does. In our case, we want to
-update a `Point`'s coordinate systems before we actually clone the
+update a ``Point``'s coordinate systems before we actually clone the
 `Point`. So our aspect makes sure that `Point` overrides `Object.clone`
 with a new method that does what we want.
 
 We also define a test `main` method in the aspect for convenience.
 
+[source, java]
 ....
 public aspect CloneablePoint {
 
@@ -338,7 +334,7 @@ public aspect CloneablePoint {
 
 ===== The `ComparablePoint` aspect
 
-`ComparablePoint` is responsible for `Point`'s implementation of the
+`ComparablePoint` is responsible for ``Point``'s implementation of the
 `Comparable` interface.
 
 The interface `Comparable` defines the single method `compareTo` which
@@ -349,11 +345,11 @@ class that implement it.
           parents` to declare that `Point implements
           Comparable`, and also publically declares the appropriate
 `compareTo(Object)` method: A `Point` `p1` is said to be less than
-another `Point``
-          p2` if `p1` is closer to the origin.
+another `Point p2` if `p1` is closer to the origin.
 
 We also define a test `main` method in the aspect for convenience.
 
+[source, java]
 ....
 public aspect ComparablePoint {
 
@@ -391,8 +387,8 @@ public aspect ComparablePoint {
 
 ===== The `HashablePoint` aspect
 
-Our third aspect is responsible for `Point`'s overriding of `Object`'s
-`equals` and `hashCode` methods in order to make `Point`s hashable.
+Our third aspect is responsible for ``Point``'s overriding of ``Object``'s
+`equals` and `hashCode` methods in order to make ``Point``s hashable.
 
 The method `Object.hashCode` returns an integer, suitable for use as a
 hash table key. It is not required that two objects which are not equal
@@ -408,14 +404,15 @@ values, or the same `rho` and `theta` values, not just when they refer
 to the same object. We do this by overriding the methods `equals` and
 `hashCode` in the class `Point`.
 
-So `HashablePoint` declares `Point`'s `hashCode` and `equals` methods,
-using `Point`'s rectangular coordinates to generate a hash code and to
+So `HashablePoint` declares ``Point``'s `hashCode` and `equals` methods,
+using ``Point``'s rectangular coordinates to generate a hash code and to
 test for equality. The `x` and `y` coordinates are obtained using the
 appropriate get methods, which ensure the rectangular coordinates are
 up-to-date before returning their values.
 
 And again, we supply a `main` method in the aspect for testing.
 
+[source, java]
 ....
 public aspect HashablePoint {
 
@@ -489,6 +486,7 @@ Throughout this example we will use a simple application that contains
 only four classes. The application is about shapes. The `TwoDShape`
 class is the root of the shape hierarchy:
 
+[source, java]
 ....
 public abstract class TwoDShape {
     protected double x, y;
@@ -512,6 +510,7 @@ public abstract class TwoDShape {
 
 `TwoDShape` has two subclasses, `Circle` and `Square`:
 
+[source, java]
 ....
 public class Circle extends TwoDShape {
     protected double r;
@@ -533,6 +532,7 @@ public class Circle extends TwoDShape {
 }
 ....
 
+[source, java]
 ....
 public class Square extends TwoDShape {
     protected double s;    // side
@@ -558,12 +558,14 @@ To run this application, compile the classes. You can do it with or
 without ajc, the AspectJ compiler. If you've installed AspectJ, go to
 the directory `InstallDir/examples` and type:
 
+[source, text]
 ....
 ajc -argfile tracing/notrace.lst
 ....
 
 To run the program, type
 
+[source, text]
 ....
 java tracing.ExampleMain
 ....
@@ -571,6 +573,7 @@ java tracing.ExampleMain
 (we don't need anything special on the classpath since this is pure Java
 code). You should see the following output:
 
+[source, text]
 ....
 c1.perimeter() = 12.566370614359172
 c1.area() = 12.566370614359172
@@ -588,6 +591,7 @@ by writing a `Trace` class that is exactly what we would write if we
 didn't have aspects. The implementation is in `version1/Trace.java`. Its
 public interface is:
 
+[source, java]
 ....
 public class Trace {
     public static int TRACELEVEL = 0;
@@ -605,8 +609,9 @@ calls, and we would hope we had not forgotten any method. But we can do
 that more consistently and reliably with the following aspect (found in
 `version1/TraceMyClasses.java`):
 
+[source, java]
 ....
-aspect TraceMyClasses {
+public aspect TraceMyClasses {
     pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
     pointcut myConstructor(): myClass() && execution(new(..));
     pointcut myMethod(): myClass() && execution(* *(..));
@@ -638,6 +643,7 @@ information, we can get it through `thisJoinPointStaticPart`.
 To run this version of tracing, go to the directory
 `InstallDir/examples` and type:
 
+[source, text]
 ....
 ajc -argfile tracing/tracev1.lst
 ....
@@ -645,6 +651,7 @@ ajc -argfile tracing/tracev1.lst
 Running the main method of `tracing.version1.TraceMyClasses` should
 produce the output:
 
+[source, text]
 ....
   --> tracing.TwoDShape(double, double)
   <-- tracing.TwoDShape(double, double)
@@ -707,6 +714,7 @@ functionality of `Trace - version1` with the crosscutting support of
 `TraceMyClasses - version1`. We end up with a `Trace` aspect (found in
 `version2/Trace.java`) with the following public interface
 
+[source, java]
 ....
 abstract aspect Trace {
 
@@ -721,6 +729,7 @@ abstract aspect Trace {
 In order to use it, we need to define our own subclass that knows about
 our application classes, in `version2/TraceMyClasses.java`:
 
+[source, java]
 ....
 public aspect TraceMyClasses extends Trace {
     pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
@@ -737,6 +746,7 @@ Notice that we've simply made the pointcut `classes`, that was an
 abstract pointcut in the super-aspect, concrete. To run this version of
 tracing, go to the directory `examples` and type:
 
+[source, text]
 ....
 ajc -argfile tracing/tracev2.lst
 ....
@@ -748,6 +758,7 @@ the same trace information as that from version 1.
 
 The entire implementation of the new `Trace` class is:
 
+[source, java]
 ....
 abstract aspect Trace {
 
@@ -869,6 +880,7 @@ bound property protocol.
 The `Point` class is a very simple class with trivial getters and
 setters, and a simple vector offset method.
 
+[source, java]
 ....
 class Point {
 
@@ -908,11 +920,12 @@ class Point {
 
 ===== The `BoundPoint` aspect
 
-The `BoundPoint` aspect is responsible for `Point`'s "beanness". The
+The `BoundPoint` aspect is responsible for ``Point``'s "beanness". The
 first thing it does is privately declare that each `Point` has a
 `support` field that holds reference to an instance of
 `PropertyChangeSupport`.
 
+[source, java]
 ....
 private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 ....
@@ -923,10 +936,11 @@ passing it `this`, an instance of `Point`. Since the `support` field is
 private declared in the aspect, only the code in the aspect can refer to
 it.
 
-The aspect also declares `Point`'s methods for registering and managing
+The aspect also declares ``Point``'s methods for registering and managing
 listeners for property change events, which delegate the work to the
 property change support object:
 
+[source, java]
 ....
 public void Point.addPropertyChangeListener(PropertyChangeListener listener){
   support.addPropertyChangeListener(listener);
@@ -951,6 +965,7 @@ public void Point.hasListeners(String propertyName) {
 The aspect is also responsible for making sure `Point` implements the
 `Serializable` interface:
 
+[source, java]
 ....
 declare parents: Point implements Serializable;
 ....
@@ -959,13 +974,14 @@ Implementing this interface in Java does not require any methods to be
 implemented. Serialization for `Point` objects is provided by the
 default serialization method.
 
-The `setters` pointcut picks out calls to the `Point`'s `set` methods:
+The `setters` pointcut picks out calls to the ``Point``'s `set` methods:
 any method whose name begins with "`set`" and takes one parameter. The
 around advice on `setters()` stores the values of the `X` and `Y`
 properties, calls the original `set` method and then fires the
 appropriate property change event according to which set method was
 called.
 
+[source, java]
 ....
 aspect BoundPoint {
   private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
@@ -1025,6 +1041,7 @@ that point: calling its set methods and the offset method. Then it
 serializes the point and writes it to a file and then reads it back. The
 result of saving and restoring the point is that a new point is created.
 
+[source, java]
 ....
 class Demo implements PropertyChangeListener {
 
@@ -1059,6 +1076,7 @@ class Demo implements PropertyChangeListener {
 
 To compile and run this example, go to the examples directory and type:
 
+[source, text]
 ....
 ajc -argfile bean/files.lst
 java bean.Demo
@@ -1093,6 +1111,7 @@ The generic parts of the protocol are the interfaces `Subject` and
 view `Observer` objects, and a method for getting data about state
 changes:
 
+[source, java]
 ....
 interface Subject {
     void addObserver(Observer obs);
@@ -1105,6 +1124,7 @@ interface Subject {
 The `Observer` interface is just as simple, with methods to set and get
 `Subject` objects, and a method to call when the subject gets updated.
 
+[source, java]
 ....
 interface Observer {
     void setSubject(Subject s);
@@ -1117,6 +1137,7 @@ The `SubjectObserverProtocol` aspect contains within it all of the
 generic parts of the protocol, namely, how to fire the `Observer`
 objects' update methods when some state changes in a subject.
 
+[source, java]
 ....
 abstract aspect SubjectObserverProtocol {
 
@@ -1157,6 +1178,7 @@ its `Subject`.
 `Button` objects extend `java.awt.Button`, and all they do is make sure
 the `void click()` method is called whenever a button is clicked.
 
+[source, java]
 ....
 class Button extends java.awt.Button {
 
@@ -1187,6 +1209,7 @@ Note that this class knows nothing about being a Subject.
 ColorLabel objects are labels that support the void colorCycle() method.
 Again, they know nothing about being an observer.
 
+[source, java]
 ....
 class ColorLabel extends Label {
 
@@ -1212,6 +1235,7 @@ Finally, the `SubjectObserverProtocolImpl` implements the
 subject/observer protocol, with `Button` objects as subjects and
 `ColorLabel` objects as observers:
 
+[source, java]
 ....
 package observer;
 
@@ -1246,6 +1270,7 @@ all `ColorLabel` objects observing that button will `colorCycle`.
 buttons and three observers and links them together as subjects and
 observers. So to run the demo, go to the `examples` directory and type:
 
+[source, text]
 ....
 ajc -argfile observer/files.lst
 java observer.Demo
@@ -1303,6 +1328,7 @@ involved in many calls at one time. image:telecom.gif[image]
 `Customer` has methods `call`, `pickup`, `hangup` and `merge` for
 managing calls.
 
+[source, java]
 ....
 public class Customer {
 
@@ -1377,6 +1403,7 @@ connection between customers. It does this with a simple state machine
 connections can be observed. Connection is an abstract class with two
 concrete subclasses: `Local` and `LongDistance`.
 
+[source, java]
 ....
 abstract class Connection {
 
@@ -1422,6 +1449,7 @@ abstract class Connection {
 The two kinds of connections supported by our simulation are `Local` and
 `LongDistance` connections.
 
+[source, java]
 ....
 class Local extends Connection {
     Local(Customer a, Customer b) {
@@ -1432,6 +1460,7 @@ class Local extends Connection {
 }
 ....
 
+[source, java]
 ....
 class LongDistance extends Connection {
     LongDistance(Customer a, Customer b) {
@@ -1448,6 +1477,7 @@ The source files for the basic system are listed in the file
 `basic.lst`. To build and run the basic system, in a shell window, type
 these commands:
 
+[source, text]
 ....
 ajc -argfile telecom/basic.lst
 java telecom.BasicSimulation
@@ -1466,6 +1496,7 @@ stopped, and returns their difference when asked for the elapsed time.
 The aspect `TimerLog` (below) can be used to cause the start and stop
 times to be printed to standard output.
 
+[source, java]
 ....
 class Timer {
     long startTime, stopTime;
@@ -1490,6 +1521,7 @@ class Timer {
 The `TimerLog` aspect can be included in a build to get the timer to
 announce when it is started and stopped.
 
+[source, java]
 ....
 public aspect TimerLog {
 
@@ -1509,6 +1541,7 @@ The `Timing` aspect is declares an inter-type field `totalConnectTime`
 for `Customer` to store the accumulated connection time per `Customer`.
 It also declares that each `Connection` object has a timer.
 
+[source, java]
 ....
 public long Customer.totalConnectTime = 0;
 private Timer Connection.timer = new Timer();
@@ -1518,6 +1551,7 @@ Two pieces of after advice ensure that the timer is started when a
 connection is completed and and stopped when it is dropped. The pointcut
 `endTiming` is defined so that it can be used by the `Billing` aspect.
 
+[source, java]
 ....
 public aspect Timing {
 
@@ -1556,10 +1590,11 @@ responsible to pay for it. It also declares the inter-type method
 charged differently. The call charge must be calculated after the timer
 is stopped; the after advice on pointcut `Timing.endTiming` does this,
 and `Billing` is declared to be more precedent than `Timing` to make
-sure that this advice runs after `Timing`'s advice on the same join
+sure that this advice runs after ``Timing``'s advice on the same join
 point. Finally, it declares inter-type methods and fields for `Customer`
 to handle the `totalCharge`.
 
+[source, java]
 ....
 public aspect Billing {
     // precedence required to get advice on endtiming in the right order
@@ -1613,6 +1648,7 @@ the method run of the superclass `AbstractSimulation`. This method is
 intended to print out the status of the customer, with respect to the
 `Timing` feature.
 
+[source, java]
 ....
 protected void report(Customer c){
     Timing t = Timing.aspectOf();
@@ -1626,6 +1662,7 @@ The files timing.lst and billing.lst contain file lists for the timing
 and billing configurations. To build and run the application with only
 the timing feature, go to the directory examples and type:
 
+[source, text]
 ....
 ajc -argfile telecom/timing.lst
 java telecom.TimingSimulation
@@ -1634,6 +1671,7 @@ java telecom.TimingSimulation
 To build and run the application with the timing and billing features,
 go to the directory examples and type:
 
+[source, text]
 ....
 ajc -argfile telecom/billing.lst
 java telecom.BillingSimulation
@@ -1669,6 +1707,7 @@ the object whose methods are being traced. This can be achieved in at
 least two ways. One way is keep the interface of the methods
 `traceEntry` and `traceExit` as it was before,
 
+[source, java]
 ....
 public static void traceEntry(String str);
 public static void traceExit(String str);
@@ -1678,6 +1717,7 @@ In this case, the caller is responsible for ensuring that the string
 representation of the object is part of the string given as argument.
 So, calls must look like:
 
+[source, java]
 ....
 Trace.traceEntry("Square.distance in " + toString());
 ....
@@ -1685,6 +1725,7 @@ Trace.traceEntry("Square.distance in " + toString());
 Another way is to enforce the requirement with a second argument in the
 trace operations, e.g.
 
+[source, java]
 ....
 public static void traceEntry(String str, Object obj);
 public static void traceExit(String str, Object obj);
@@ -1694,6 +1735,7 @@ In this case, the caller is still responsible for sending the right
 object, but at least there is some guarantees that some object will be
 passed. The calls will look like:
 
+[source, java]
 ....
 Trace.traceEntry("Square.distance", this);
 ....
@@ -1709,6 +1751,7 @@ only a small effect inside the `Trace` class. Here's a partial view at
 the implementation of `Trace`, version 3. The differences with respect
 to version 2 are stressed in the comments:
 
+[source, java]
 ....
 abstract aspect Trace {
 
@@ -1794,6 +1837,7 @@ In fact, esimply excluding the execution join point may not be enough,
 if there are calls to other traced methods within it -- in which case,
 the restriction should be
 
+[source, java]
 ....
 && !cflow(execution(String toString()))
 ....
@@ -1811,6 +1855,7 @@ every application class.
 Finally, to run this version of tracing, go to the directory `examples`
 and type:
 
+[source, text]
 ....
 ajc -argfile tracing/tracev3.lst
 ....
@@ -1819,12 +1864,14 @@ The file tracev3.lst lists the application classes as well as this
 version of the files `Trace.java` and `TraceMyClasses.java`. To run the
 program, type
 
+[source, text]
 ....
 java tracing.version3.TraceMyClasses
 ....
 
 The output should be:
 
+[source, text]
 ....
   --> tracing.TwoDShape(double, double)
   <-- tracing.TwoDShape(double, double)

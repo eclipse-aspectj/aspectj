@@ -43,13 +43,14 @@ added and for some cases there can be no need for that abstract aspect.
 
 This is a work in progress but now you can write this in the aop.xml:
 
+[source, xml]
 ....
 <concrete-aspect name="MyAspect">
   <before pointcut="execution(* Hello.say2(..)) AND args(message)"
-   invokeClass="SomeRegularJavaClass" 
+   invokeClass="SomeRegularJavaClass"
    invokeMethod="someMethod(JoinPoint tjp, java.lang.String message)"/>
   <after pointcut="execution(* Hello.say2(..)) AND args(message)"
-   invokeClass="SomeRegularJavaClass" 
+   invokeClass="SomeRegularJavaClass"
    invokeMethod="someOtherMethod(JoinPoint tjp, java.lang.String message)"/>
 </concrete-aspect>
 
@@ -58,7 +59,7 @@ public class SomeRegularJavaClass {
   public static void someMethod(org.aspectj.lang.JoinPoint tjp, String s) {
     System.out.println("in advice4: s="+s+" at "+tjp);
   }
-  
+
   public static void someOtherMethod(org.aspectj.lang.JoinPoint tjp, String s) {
     System.out.println("in advice5: s="+s+" at "+tjp);
   }
@@ -101,8 +102,9 @@ get started!
 
 There is now a new well known name that you can use in the if clauses in
 your aspects. thisAspectInstance provides access to the aspect instance.
-Here is an example: ``
+Here is an example:
 
+[source, java]
 ....
 aspect X {
   boolean doit() {
@@ -116,10 +118,11 @@ aspect X {
 }
 ....
 
-Now why not just use X.aspectOf() instead of thisAspectInstance? Well
-thisAspectInstance is quite useful when working with abstract/concrete
-aspects: ``
+Now why not just use `X.aspectOf()` instead of `thisAspectInstance`? Well,
+`thisAspectInstance` is quite useful when working with abstract/concrete
+aspects:
 
+[source, java]
 ....
 abstract aspect X {
 abstract pointcut p();
@@ -185,6 +188,7 @@ supports Java7 language constructs - that will happen after Eclipse
 
 It is now possible to specify synthetic in pointcuts:
 
+[source, java]
 ....
 pointcut p(): execution(!synthetic * *(..));
 ....
@@ -210,6 +214,7 @@ use when you want to match upon the existence of an annotation but you
 don't need the annotation, you just need a value from it. This code
 snippet shows an example:
 
+[source, java]
 ....
 @interface SomeAnnotation {
   int i();
@@ -227,6 +232,7 @@ binding too. Suppose the annotation had multiple int values, how would
 we select which int to bind? AspectJ will now use the name (if it can)
 to select the right value:
 
+[source, java]
 ....
 @interface SomeAnnotation {
   int mods();

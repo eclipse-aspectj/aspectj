@@ -6,6 +6,7 @@
 Java 5 (and hence AspectJ 5) allows you to narrow the return type in an
 overriding method. For example:
 
+[source, java]
 ....
 class A {
   public A whoAreYou() {...}
@@ -26,6 +27,7 @@ designators are extended to match against covariant methods.
 Given the classes `A` and `B` as defined in the previous section, and
 the program fragment
 
+[source, java]
 ....
 A a = new A();
 B b = new B();
@@ -35,12 +37,14 @@ b.whoAreYou();
 
 The signatures for the call join point `a.whoAreYou()` are simply:
 
+[source, java]
 ....
 A A.whoAreYou()
 ....
 
 The signatures for the call join point `b.whoAreYou()` are:
 
+[source, java]
 ....
 A A.whoAreYou()
 B B.whoAreYou()

@@ -15,6 +15,7 @@ assignments or method or constructor invocations.
 
 For example:
 
+[source, java]
 ....
 int i = 0;
 i = new Integer(5); // auto-unboxing
@@ -28,6 +29,7 @@ Integer i2 = 5;  // autoboxing
 Most of the pointcut designators match based on signatures, and hence
 are unaffected by autoboxing. For example, a call to a method
 
+[source, java]
 ....
 public void foo(Integer i);
 ....
@@ -52,6 +54,7 @@ single argument of type `Integer` or of type `int`.
 Autoboxing and unboxing are also applied when binding pointcut or advice
 parameters, for example:
 
+[source, java]
 ....
 pointcut foo(int i) : args(i);
 

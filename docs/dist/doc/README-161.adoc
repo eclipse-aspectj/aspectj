@@ -146,8 +146,7 @@ If only binding an annotation at a method-execution join point in order
 to access an *enum value* within it, there is a more optimal syntax that
 can be used to produce faster code. Given this setup:
 
-``
-
+[source, java]
 ....
 enum Colour { RED,GREEN,BLUE;}
 
@@ -159,6 +158,7 @@ public void colouredMethod() { }
 
 Current syntax:
 
+[source, java]
 ....
 before(ColouredAnnotation anno): execution(* *(..)) && @annotation(anno) {
   printTheColour(anno.value());
@@ -167,12 +167,9 @@ before(ColouredAnnotation anno): execution(* *(..)) && @annotation(anno) {
 
 New optional syntax:
 
-``
-
+[source, java]
 ....
 before(Colour col): execution(* *(..)) && @annotation(ColouredAnnotation(col)) {
   printTheColour(col);
 }
 ....
-
-'''''
