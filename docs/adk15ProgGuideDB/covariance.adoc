@@ -52,31 +52,31 @@ B B.whoAreYou()
 
 Following the join point matching rules given in xref:joinpointsignatures.adoc#jpsigs[Join Point Signatures].
 
-call(* whoAreYou())::
+`call(* whoAreYou())`::
   Matches both calls, (since each call join point has at least one
   matching signature).
-call(* A.whoAreYou())::
+`call(* A.whoAreYou())`::
   Matches both calls, (since each call join point has at least one
   matching signature).
-call(A whoAreYou())::
+`call(A whoAreYou())`::
   Matches both calls, (since each call join point has at least one
   matching signature).
-call(A B.whoAreYou())::
+`call(A B.whoAreYou())`::
   Does not match anything - neither of the call join points has a
   signature matched by this pattern. A lint warning is given for the
   call `a.whoAreYou()` ("does not match because declaring type is A, if
   match required use target(B)").
-call(A+ B.whoAreYou())::
+`call(A+ B.whoAreYou())`::
   Matches the call to `b.whoAreYou()` since the signature pattern
   matches the signature `B B.whoAreYou()`. A lint warning is given for
   the call `a.whoAreYou()` ("does not match because declaring type is A,
   if match required use target(B)").
-call(B A.whoAreYou())::
+`call(B A.whoAreYou())`::
   Does not match anything since neither join point has a signature
   matched by this pattern.
-call(B whoAreYou())::
+`call(B whoAreYou())`::
   Matches the call to `b.whoAreYou()` only.
-call(B B.whoAreYou())::
+`call(B B.whoAreYou())`::
   Matches the call to `b.whoAreYou()` only.
 
 The rule for signature matching at call and execution join points is

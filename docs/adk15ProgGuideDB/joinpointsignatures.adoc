@@ -10,16 +10,13 @@ annotations, generics, covariance, varargs, and autoboxing.
 === Join Point Matching
 
 AspectJ supports 11 different kinds of join points. These are the
-`method call, method execution, constructor call,
-        constructor execution, field get, field set, pre-initialization,
-        initialization, static initialization, handler,` and
-`advice execution` join points.
+`method call, method execution, constructor call, constructor execution, field get,
+field set, pre-initialization, initialization, static initialization, handler,`
+and `advice execution` join points.
 
 The _kinded_ pointcut designators match based on the kind of a join
-point. These are the `call,
-        execution, get, set, preinitialization, initialization,
-        staticinitialization, handler,` and `adviceexecution`
-designators.
+point. These are the `call, execution, get, set, preinitialization, initialization,
+staticinitialization, handler,` and `adviceexecution` designators.
 
 A kinded pointcut is written using patterns, some of which match based
 on _signature_, and some of which match based on _modifiers_. For
@@ -100,7 +97,7 @@ of the target):
 [source, java]
 ....
 T t = new T();
-t.m("hello");  <= call join point occurs when this line is executed
+t.m("hello");  // <= call join point occurs when this line is executed
 ....
 
 Then the signature `R(T) T.m(parameter_types)` is a signature of the

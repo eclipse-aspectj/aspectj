@@ -52,41 +52,38 @@ Method execution::
   When the body of code for an actual method executes.
 Constructor call::
   When an object is built and that object's initial constructor is
-  called (i.e., not for "super" or "this" constructor calls). The object
+  called (i.e., not for `super` or `this` constructor calls). The object
   being constructed is returned at a constructor call join point, so its
   return type is considered to be the type of the object, and the object
-  itself may be accessed with
-  +
-  after returning
-  +
-  advice.
+  itself may be accessed with `after returning` advice.
 Constructor execution::
   When the body of code for an actual constructor executes, after its
   this or super constructor call. The object being constructed is the
-  currently executing object, and so may be accessed with the `_this_` pointcut. The constructor execution join point for a constructor that
+  currently executing object, and so may be accessed with the `this()` pointcut.
+  The constructor execution join point for a constructor that
   calls a super constructor also includes any non-static initializers of
   enclosing class. No value is returned from a constructor execution
-  join point, so its return type is considered to be void.
+  join point, so its return type is considered to be `void`.
 Static initializer execution::
   When the static initializer for a class executes. No value is returned
   from a static initializer execution join point, so its return type is
-  considered to be void.
+  considered to be `void`.
 Object pre-initialization::
   Before the object initialization code for a particular class runs.
   This encompasses the time between the start of its first called
   constructor and the start of its parent's constructor. Thus, the
   execution of these join points encompass the join points of the
-  evaluation of the arguments of `_this()_` and `_super()_` constructor calls. No value is returned from an object
-  pre-initialization join point, so its return type is considered to be
-  void.
+  evaluation of the arguments of `this()` and `super()` constructor calls.
+  No value is returned from an object pre-initialization join point, so its
+  return type is considered to be `void`.
 Object initialization::
   When the object initialization code for a particular class runs. This
   encompasses the time between the return of its parent's constructor
   and the return of its first called constructor. It includes all the
   dynamic initializers and constructors used to create the object. The
   object being constructed is the currently executing object, and so may
-  be accessed with the `_this_` pointcut. No value is returned from a constructor execution join
-  point, so its return type is considered to be void.
+  be accessed with the `this()` pointcut. No value is returned from a constructor
+  execution join point, so its return type is considered to be `void`.
 Field reference::
   When a non-constant field is referenced. [Note that references to
   constant fields (static final fields bound to a constant string object
@@ -96,8 +93,8 @@ Field set::
   When a field is assigned to. Field set join points are considered to
   have one argument, the value the field is being set to. No value is
   returned from a field set join point, so its return type is considered
-  to be void. [Note that the initializations of constant fields (static
-  final fields where the initializer is a constant string object or
+  to be void. [Note that the initializations of constant fields (`static final`
+  fields where the initializer is a constant string object or
   primitive value) are not join points, since Java requires their
   references to be inlined.]
 Handler execution::
@@ -979,43 +976,42 @@ pointcut doesNotThrowMathlike():
     call(* *(..) throws !*..*Math*);
 ....
 
-A <ThrowsClausePattern> is a comma-separated list of
-<ThrowsClausePatternItem>s, where
+A `ThrowsClausePattern` is a comma-separated list of ``ThrowsClausePatternItem``s, where
 
-<ThrowsClausePatternItem> :::
-  [ ! ]
-  +
-  TypeNamePattern
+`ThrowsClausePatternItem`: ::
+  `[ ! ] TypeNamePattern`
 
-A <ThrowsClausePattern> matches the throws clause of any code member
+A `ThrowsClausePattern` matches the `throws` clause of any code member
 signature. To match, each `ThrowsClausePatternItem` must match the
 throws clause of the member in question. If any item doesn't match, then
 the whole pattern doesn't match.
 
-If a ThrowsClausePatternItem begins with "!", then it matches a
+If a `ThrowsClausePatternItem` begins with `!`, then it matches a
 particular throws clause if and only if _none_ of the types named in the
-throws clause is matched by the `TypeNamePattern`.
+`throws` clause is matched by the `TypeNamePattern`.
 
-If a <ThrowsClausePatternItem> does not begin with "!", then it matches
-a throws clause if and only if _any_ of the types named in the throws
-clause is matched by the _TypeNamePattern_.
+If a `ThrowsClausePatternItem` does not begin with `!`, then it matches
+a throws clause if and only if _any_ of the types named in the `throws`
+clause is matched by the `TypeNamePattern`.
 
-The rule for "!" matching has one potentially surprising property, in
+The rule for `!` matching has one potentially surprising property, in
 that these two pointcuts
 
-* call(* *(..) throws !IOException)
-* call(* *(..) throws (!IOException))
+. `call(* *(..) throws !IOException)`
+. `call(* *(..) throws (!IOException))`
 
 will match differently on calls to
 
-____
-void m() throws RuntimeException, IOException \{}
-____
+[source, java]
+....
+void m() throws RuntimeException, IOException {}
+....
 
-[1] will NOT match the method m(), because method m's throws clause
-declares that it throws IOException. [2] WILL match the method m(),
-because method m's throws clause declares the it throws some exception
-which does not match IOException, i.e. RuntimeException.
+[1] will *not* match the method `m()`, because ``m``'s throws clause
+declares that it `throws IOException`.
+
+[2] *will* match the method `m()`, because ``m``'s throws clause declares that
+it throws some exception which does not match `IOException`, i.e. `RuntimeException`.
 
 ==== Type patterns
 
@@ -1031,45 +1027,21 @@ First, all type names are also type patterns. So `Object`,
 If a type pattern is an exact type - if it doesn't include a wildcard -
 then the matching works just like normal type lookup in Java:
 
-* Patterns that have the same names as primitive types (like
-+
-int
-+
-) match those primitive types.
-* Patterns that are qualified by package names (like
-+
-java.util.HashMap
-+
-) match types in other packages.
-* Patterns that are not qualified (like
-+
-HashMap
-+
-) match types that are resolved by Java's normal scope rules. So, for
-example,
-+
-HashMap
-+
-might match a package-level type in the same package or a type that have
-been imported with java's
-+
-import
-+
-form. But it would not match
-+
-java.util.HashMap
-+
-unless the aspect were in
-+
-java.util
-+
-or the type had been imported.
+* Patterns that have the same names as primitive types (like `int`) match those
+  primitive types.
+* Patterns that are qualified by package names (like `java.util.HashMap`) match
+  types in other packages.
+* Patterns that are not qualified (like `HashMap`) match types that are resolved
+  by Java's normal scope rules. So, for example, `HashMap` might match a package-level
+  type in the same package or a type that have been imported with Java's `import`
+  form. But it would not match `java.util.HashMap` unless the aspect were in `java.util`
+  or the type had been imported.
 
 So exact type patterns match based on usual Java scope rules.
 
 ===== Type name patterns
 
-There is a special type name, *, which is also a type pattern. * picks
+There is a special type name, `\*`, which is also a type pattern. `*` picks
 out all types, including primitive types. So
 
 [source, java]
@@ -1080,9 +1052,9 @@ call(void foo(*))
 picks out all call join points to void methods named foo, taking one
 argument of any type.
 
-Type names that contain the two wildcards "*" and "`..`" are also type
-patterns. The * wildcard matches zero or more characters characters
-except for ".", so it can be used when types have a certain naming
+Type names that contain the two wildcards `\*` and `..` are also type
+patterns. The `*` wildcard matches zero or more characters characters
+except for `.`, so it can be used when types have a certain naming
 convention. So
 
 [source, java]
@@ -1090,7 +1062,7 @@ convention. So
 handler(java.util.*Map)
 ....
 
-picks out the types java.util.Map and java.util.java.util.HashMap, among
+picks out the types `java.util.Map` and `java.util.java.util.HashMap`, among
 others, and
 
 [source, java]
@@ -1098,12 +1070,12 @@ others, and
 handler(java.util.*)
 ....
 
-picks out all types that start with "`java.util.`" and don't have any
-more "."s, that is, the types in the `java.util` package, but not inner
-types (such as java.util.Map.Entry).
+picks out all types that start with `java.util.` and don't have any
+more ``.``s, that is, the types in the `java.util` package, but not inner
+types (such as `java.util.Map.Entry`).
 
-The "`..`" wildcard matches any sequence of characters that start and
-end with a ".", so it can be used to pick out all types in any
+The `..` wildcard matches any sequence of characters that start and
+end with a `.`, so it can be used to pick out all types in any
 subpackage, or all inner types. So
 
 [source, java]
@@ -1112,7 +1084,7 @@ within(com.xerox..*)
 ....
 
 picks out all join points where the code is in any declaration of a type
-whose name begins with "`com.xerox.`".
+whose name begins with `com.xerox.`.
 
 Type patterns with wildcards do not depend on Java's usual scope rules -
 they match against all types available to the weaver, not just those
@@ -1121,7 +1093,7 @@ that are imported into an Aspect's declaring file.
 ===== Subtype patterns
 
 It is possible to pick out all subtypes of a type (or a collection of
-types) with the "+" wildcard. The "+" wildcard follows immediately a
+types) with the `+` wildcard. The `+` wildcard follows immediately a
 type name pattern. So, while
 
 [source, java]
@@ -1130,7 +1102,7 @@ call(Foo.new())
 ....
 
 picks out all constructor call join points where an instance of exactly
-type Foo is constructed,
+type `Foo` is constructed,
 
 [source, java]
 ....
@@ -1138,7 +1110,7 @@ call(Foo+.new())
 ....
 
 picks out all constructor call join points where an instance of any
-subtype of Foo (including Foo itself) is constructed, and the unlikely
+subtype of `Foo` (including `Foo` itself) is constructed, and the unlikely
 
 [source, java]
 ....
@@ -1146,7 +1118,7 @@ call(*Handler+.new())
 ....
 
 picks out all constructor call join points where an instance of any
-subtype of any type whose name ends in "Handler" is constructed.
+subtype of any type whose name ends in `Handler` is constructed.
 
 ===== Array type patterns
 
@@ -1165,16 +1137,16 @@ and array type patterns, and constructed with boolean operators `&&`,
 staticinitialization(Foo || Bar)
 ....
 
-picks out the static initializer execution join points of either Foo or
-Bar, and
+picks out the static initializer execution join points of either `Foo` or
+`Bar`, and
 
 [source, java]
 ....
 call((Foo+ && ! Foo).new(..))
 ....
 
-picks out the constructor call join points when a subtype of Foo, but
-not Foo itself, is constructed.
+picks out the constructor call join points when a subtype of `Foo`, but
+not `Foo` itself, is constructed.
 
 ==== Pattern Summary
 
@@ -1211,67 +1183,22 @@ ModifiersPattern =
 
 Each piece of advice is of the form
 
-____
-[ strictfp ]
+[source, text]
+....
+[ strictfp ] AdviceSpec [ throws TypeList ] : Pointcut { Body }
+....
 
-AdviceSpec
+where `AdviceSpec` is one of
 
-[ throws
+* `before( Formals )`
+* `after( Formals ) returning [ ( Formal ) ]`
+* `after( Formals ) throwing [ ( Formal ) ]`
+* `after( Formals )`
+* `Type around( Formals )`
 
-TypeList
-
-] :
-
-Pointcut
-
-\{
-
-Body
-
-}
-____
-
-where <AdviceSpec> is one of
-
-* before(
-+
-Formals
-+
-)
-* after(
-+
-Formals
-+
-) returning [ (
-+
-Formal
-+
-) ]
-* after(
-+
-Formals
-+
-) throwing [ (
-+
-Formal
-+
-) ]
-* after(
-+
-Formals
-+
-)
-* Type
-+
-around(
-+
-Formals
-+
-)
-
-and where <Formal> refers to a variable binding like those used for
-method parameters, of the form `Type` `Variable-Name`, and <Formals>
-refers to a comma-delimited list of <Formal>.
+and where `Formal` refers to a variable binding like those used for
+method parameters, of the form `Type` `Variable-Name`, and `Formals`
+refers to a comma-delimited list of `Formal`.
 
 Advice defines crosscutting behavior. It is defined in terms of
 pointcuts. The code of a piece of advice runs at every join point picked
@@ -1536,9 +1463,9 @@ points cannot throw ``FileNotFoundException``s.
 The exceptions that each kind of join point in AspectJ may throw are:
 
 method call and execution::
-  the checked exceptions declared by the target method's `_throws_` clause.
+  the checked exceptions declared by the target method's `throws` clause.
 constructor call and execution::
-  the checked exceptions declared by the target constructor's `_throws_` clause.
+  the checked exceptions declared by the target constructor's `throws` clause.
 field get and set::
   no checked exceptions can be thrown from these join points.
 exception handler execution::
@@ -1546,9 +1473,9 @@ exception handler execution::
 static initializer execution::
   no checked exceptions can be thrown from these join points.
 pre-initialization and initialization::
-  any exception that is in the throws clause of all constructors of the initialized class.
+  any exception that is in the `throws` clause of all constructors of the initialized class.
 advice execution::
-  any exception that is in the throws clause of the advice.
+  any exception that is in the `throws` clause of the advice.
 
 ==== Advice precedence
 
@@ -1563,33 +1490,23 @@ advice has precedence over another when they advise the same join point.
 If the two pieces of advice are defined in different aspects, then there
 are three cases:
 
-* If aspect A is matched earlier than aspect B in some
-+
-declare precedence
-+
-form, then all advice in concrete aspect A has precedence over all
-advice in concrete aspect B when they are on the same join point.
-* Otherwise, if aspect A is a subaspect of aspect B, then all advice
-defined in A has precedence over all advice defined in B. So, unless
-otherwise specified with
-+
-declare precedence
-+
-, advice in a subaspect has precedence over advice in a superaspect.
+* If aspect `A` is matched earlier than aspect `B` in some `declare precedence`
+  form, then all advice in concrete aspect `A` has precedence over all
+  advice in concrete aspect `B` when they are on the same join point.
+* Otherwise, if aspect `A` is a subaspect of aspect `B`, then all advice
+  defined in `A` has precedence over all advice defined in `B`. So, unless
+  otherwise specified with `declare precedence`, advice in a subaspect has
+  precedence over advice in a superaspect.
 * Otherwise, if two pieces of advice are defined in two different
-aspects, it is undefined which one has precedence.
+  aspects, it is undefined which one has precedence.
 
 If the two pieces of advice are defined in the same aspect, then there
 are two cases:
 
-* If either are
-+
-after
-+
-advice, then the one that appears later in the aspect has precedence
-over the one that appears earlier.
+* If either are `after` advice, then the one that appears later in the aspect has precedence
+  over the one that appears earlier.
 * Otherwise, then the one that appears earlier in the aspect has
-precedence over the one that appears later.
+  precedence over the one that appears later.
 
 These rules can lead to circularity, such as
 
@@ -1650,16 +1567,16 @@ picks out calls to many methods. Yet the body of advice over this
 pointcut may wish to have access to the method name or parameters of a
 particular join point.
 
-`thisJoinPoint` is bound to a complete join point object.
+* `thisJoinPoint` is bound to a complete join point object.
 
-`thisJoinPointStaticPart` is bound to a part of the join point object
-that includes less information, but for which no memory allocation is
-required on each execution of the advice. It is equivalent to
-`thisJoinPoint.getStaticPart()`.
+* `thisJoinPointStaticPart` is bound to a part of the join point object
+  that includes less information, but for which no memory allocation is
+  required on each execution of the advice. It is equivalent to
+  `thisJoinPoint.getStaticPart()`.
 
-`thisEnclosingJoinPointStaticPart` is bound to the static part of the
-join point enclosing the current join point. Only the static part of
-this enclosing join point is available through this mechanism.
+* `thisEnclosingJoinPointStaticPart` is bound to the static part of the
+  join point enclosing the current join point. Only the static part of
+  this enclosing join point is available through this mechanism.
 
 Standard Java reflection uses objects from the `java.lang.reflect`
 hierarchy to build up its reflective objects. Similarly, AspectJ join
@@ -1683,56 +1600,8 @@ with other types.
 
 An inter-type method declaration looks like
 
-* [
-+
-Modifiers
-+
-]
-+
-Type
-+
-OnType
-+
-.
-+
-Id
-+
-(
-+
-Formals
-+
-) [
-+
-ThrowsClause
-+
-] \{
-+
-Body
-+
-}
-* abstract [
-+
-Modifiers
-+
-]
-+
-Type
-+
-OnType
-+
-.
-+
-Id
-+
-(
-+
-Formals
-+
-) [
-+
-ThrowsClause
-+
-] ;
+* `[ Modifiers ] Type OnType . Id ( Formals ) [ ThrowsClause ] { Body }`
+* `abstract [ Modifiers ] Type OnType . Id ( Formals ) [ ThrowsClause ] ;`
 
 The effect of such a declaration is to make <OnType> support the new
 method. Even if <OnType> is an interface. Even if the method is neither
@@ -1755,27 +1624,7 @@ aspect A {
 
 An inter-type constructor declaration looks like
 
-* [
-+
-Modifiers
-+
-]
-+
-OnType
-+
-. new (
-+
-Formals
-+
-) [
-+
-ThrowsClause
-+
-] \{
-+
-Body
-+
-}
+* `[ Modifiers ] OnType . new ( Formals ) [ ThrowsClause ] { Body }`
 
 The effect of such a declaration is to make <OnType> support the new
 constructor. It is an error for <OnType> to be an interface.
@@ -1793,43 +1642,11 @@ constructor is defined.
 
 An inter-type field declaration looks like one of
 
-* [
-+
-Modifiers
-+
-]
-+
-Type
-+
-OnType
-+
-.
-+
-Id
-+
-=
-+
-Expression
-+
-;
-* [
-+
-Modifiers
-+
-]
-+
-Type
-+
-OnType
-+
-.
-+
-Id
-+
-;
+* `[ Modifiers ] Type OnType . Id = Expression ;`
+* `[ Modifiers ] Type OnType . Id ;`
 
-The effect of such a declaration is to make <OnType> support the new
-field. Even if <OnType> is an interface. Even if the field is neither
+The effect of such a declaration is to make `OnType` support the new
+field. Even if `OnType` is an interface. Even if the field is neither
 public, nor static, nor final.
 
 The initializer, if any, of an inter-type field declaration runs before
@@ -1837,7 +1654,7 @@ the class-local initializers defined in its target class.
 
 Any occurrence of the identifier `this` in the body of an inter-type
 constructor or method declaration, or in the initializer of an
-inter-type field declaration, refers to the <OnType> object rather than
+inter-type field declaration, refers to the `OnType` object rather than
 to the aspect type; it is an error to access `this` in such a position
 from a `static` inter-type member declaration.
 
@@ -1891,11 +1708,11 @@ however, is only accessible from the code inside of aspect `A`. The
 aspect also declares that `onType` has a method "`register`", but makes
 this method accessible from everywhere.
 
-If `onType` already defines a private or package-protected field "`r`",
+If `onType` already defines a private or package-protected field `r`,
 there is no conflict: The aspect cannot see such a field, and no code in
-`otherPackage` can see the inter-type "`r`".
+`otherPackage` can see the inter-type `r`.
 
-If `onType` defines a public field "`r`", there is a conflict: The
+If `onType` defines a public field `r`, there is a conflict: The
 expression
 
 [source, java]
@@ -1903,33 +1720,22 @@ expression
 this.r = r
 ....
 
-is an error, since it is ambiguous whether the private inter-type "`r`"
-or the public locally-defined "`r`" should be used.
+is an error, since it is ambiguous whether the private inter-type `r`
+or the public locally-defined `r` should be used.
 
-If `onType` defines a method "`register(Registry)`" there is a conflict,
+If `onType` defines a method `register(Registry)` there is a conflict,
 since it would be ambiguous to any code that could see such a defined
-method which "`register(Registry)`" method was applicable.
+method which `register(Registry)` method was applicable.
 
 Conflicts are resolved as much as possible as per Java's conflict
 resolution rules:
 
-* A subclass can inherit multiple
-+
-fields
-+
-from its superclasses, all with the same name and type. However, it is
-an error to have an ambiguous
-+
-reference
-+
-to a field.
-* A subclass can only inherit multiple
-+
-methods
-+
-with the same name and argument types from its superclasses if only zero
-or one of them is concrete (i.e., all but one is abstract, or all are
-abstract).
+* A subclass can inherit multiple fields from its superclasses, all with the
+  same name and type. However, it is an error to have an ambiguous reference
+  to a field.
+* A subclass can only inherit multiple methods with the same name and argument
+  types from its superclasses if only zero or one of them is concrete (i.e., all
+  but one is abstract, or all are abstract).
 
 Given a potential conflict between inter-type member declarations in
 different aspects, if one aspect has precedence over the other its
@@ -1944,24 +1750,8 @@ An aspect may change the inheritance hierarchy of a system by changing
 the superclass of a type or adding a superinterface onto a type, with
 the `declare parents` form.
 
-* declare parents:
-+
-TypePattern
-+
-extends
-+
-Type
-+
-;
-* declare parents:
-+
-TypePattern
-+
-implements
-+
-TypeList
-+
-;
+* `declare parents: TypePattern extends Type ;`
+* `declare parents: TypePattern implements TypeList ;`
 
 For example, if an aspect wished to make a particular class runnable, it
 might define appropriate inter-type `void
@@ -2016,28 +1806,12 @@ Object M C O N D Q P E
 An aspect may specify that a particular join point should never be
 reached.
 
-* declare error:
-+
-Pointcut
-+
-:
-+
-String
-+
-;
-* declare warning:
-+
-Pointcut
-+
-:
-+
-String
-+
-;
+* `declare error: Pointcut : String ;`
+* `declare warning: Pointcut : String ;`
 
-If the compiler determines that a join point in <Pointcut> could
+If the compiler determines that a join point in `Pointcut` could
 possibly be reached, then it will signal either an error or warning, as
-declared, using the <String> for its message.
+declared, using the `String` for its message.
 
 ==== Softened exceptions
 
@@ -2047,15 +1821,7 @@ system and instead be thrown as a `org.aspectj.lang.SoftException`,
 which is subtype of `RuntimeException` and thus does not need to be
 declared.
 
-* declare soft:
-+
-Type
-+
-:
-+
-Pointcut
-+
-;
+* `declare soft: Type : Pointcut ;`
 
 For example, the aspect
 
@@ -2109,17 +1875,13 @@ abstract aspect A {
 An aspect may declare a precedence relationship between concrete aspects
 with the `declare precedence` form:
 
-* declare precedence :
-+
-TypePatternList
-+
-;
+* `declare precedence : TypePatternList ;`
 
 This signifies that if any join point has advice from two concrete
-aspects matched by some pattern in <TypePatternList>, then the
+aspects matched by some pattern in `TypePatternList`, then the
 precedence of the advice will be the order of in the list.
 
-In <TypePatternList>, the wildcard "*" can appear at most once, and it
+In `TypePatternList`, the wildcard `*` can appear at most once, and it
 means "any type not matched by any other pattern in the list".
 
 For example, the constraints that (1) aspects that have Security as part
@@ -2132,12 +1894,12 @@ over all non-security aspects, can be expressed by:
 declare precedence: *..*Security*, Logging+, *;
 ....
 
-For another example, the CountEntry aspect might want to count the entry
+For another example, the `CountEntry` aspect might want to count the entry
 to methods in the current package accepting a Type object as its first
 argument. However, it should count all entries, even those that the
-aspect DisallowNulls causes to throw exceptions. This can be
-accomplished by stating that CountEntry has precedence over
-DisallowNulls. This declaration could be in either aspect, or in
+aspect `DisallowNulls` causes to throw exceptions. This can be
+accomplished by stating that `CountEntry` has precedence over
+`DisallowNulls`. This declaration could be in either aspect, or in
 another, ordering aspect:
 
 [source, java]
@@ -2145,17 +1907,19 @@ another, ordering aspect:
 aspect Ordering {
     declare precedence: CountEntry, DisallowNulls;
 }
+
 aspect DisallowNulls {
     pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
     before(Type obj):  allTypeMethods(obj) {
-  if (obj == null) throw new RuntimeException();
+        if (obj == null) throw new RuntimeException();
     }
 }
+
 aspect CountEntry {
     pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
     static int count = 0;
     before():  allTypeMethods(Type) {
-  count++;
+        count++;
     }
 }
 ....
@@ -2181,8 +1945,8 @@ declare precedence: A, B;
 ....
 
 And a system in which both constraints are active may also be legal, so
-long as advice from A and B don't share a join point. So this is an
-idiom that can be used to enforce that A and B are strongly independent.
+long as advice from `A` and `B` don't share a join point. So this is an
+idiom that can be used to enforce that `A` and `B` are strongly independent.
 
 ===== Applies to concrete aspects
 
@@ -2248,12 +2012,12 @@ Consequently, such pointcuts may not include, directly or indirectly
 based on dynamic (runtime) context. Therefore, such pointcuts may not be
 defined in terms of
 
-* cflow
-* cflowbelow
-* this
-* target
-* args
-* if
+* `cflow`
+* `cflowbelow`
+* `this`
+* `target`
+* `args`
+* `if`
 
 all of which can discriminate on runtime information.
 
@@ -2332,70 +2096,46 @@ the concrete aspect class.
 
 ===== Singleton Aspects
 
-* aspect
-+
-Id
-+
-\{ ... }
-* aspect
-+
-Id
-+
-issingleton() \{ ... }
+* `aspect Id { ... }`
+* `aspect Id issingleton() { ... }`
 
 By default (or by using the modifier `issingleton()`) an aspect has
 exactly one instance that cuts across the entire program. That instance
 is available at any time during program execution from the static method
 `aspectOf()` automatically defined on all concrete aspects -- so, in the
-above examples, `A.aspectOf()` will return A's instance. This aspect
+above examples, `A.aspectOf()` will return ``A``'s instance. This aspect
 instance is created as the aspect's classfile is loaded.
 
 Because the an instance of the aspect exists at all join points in the
 running of a program (once its class is loaded), its advice will have a
 chance to run at all such join points.
 
-(In actuality, one instance of the aspect A is made for each version of
-the aspect A, so there will be one instantiation for each time A is
+(In actuality, one instance of the aspect `A` is made for each version of
+the aspect `A`, so there will be one instantiation for each time `A` is
 loaded by a different classloader.)
 
 ===== Per-object aspects
 
-* aspect
-+
-Id
-+
-perthis(
-+
-Pointcut
-+
-) \{ ... }
-* aspect
-+
-Id
-+
-pertarget(
-+
-Pointcut
-+
-) \{ ... }
+* `aspect Id perthis( Pointcut ) { ... }`
+* `aspect Id pertarget( Pointcut ) { ... }`
 
-If an aspect A is defined `perthis(Pointcut)`, then one object of type A
-is created for every object that is the executing object (i.e., "this")
-at any of the join points picked out by <Pointcut>. The advice defined
-in A will run only at a join point where the currently executing object
-has been associated with an instance of A.
+If an aspect `A` is defined `perthis(Pointcut)`, then one object of type `A`
+is created for every object that is the executing object (i.e., `this`)
+at any of the join points picked out by `Pointcut`. The advice defined
+in `A` will run only at a join point where the currently executing object
+has been associated with an instance of `A`.
 
-Similarly, if an aspect A is defined `pertarget(Pointcut)`, then one
-object of type A is created for every object that is the target object
-of the join points picked out by <Pointcut>. The advice defined in A
+Similarly, if an aspect `A` is defined `pertarget(Pointcut)`, then one
+object of type `A` is created for every object that is the target object
+of the join points picked out by `Pointcut`. The advice defined in `A`
 will run only at a join point where the target object has been
-associated with an instance of A.
+associated with an instance of `A`.
 
 In either case, the static method call `A.aspectOf(Object)` can be used
-to get the aspect instance (of type A) registered with the object. Each
+to get the aspect instance (of type `A`) registered with the object. Each
 aspect instance is created as early as possible, but not before reaching
 a join point picked out by <Pointcut> where there is no associated
-aspect of type A.
+aspect of type `A`.
 
 Both `perthis` and `pertarget` aspects may be affected by code the
 AspectJ compiler controls, as discussed in the xref:implementation.adoc#implementation[Implementation Notes]
@@ -2403,32 +2143,16 @@ appendix.
 
 ===== Per-control-flow aspects
 
-* aspect
-+
-Id
-+
-percflow(
-+
-Pointcut
-+
-) \{ ... }
-* aspect
-+
-Id
-+
-percflowbelow(
-+
-Pointcut
-+
-) \{ ... }
+* `aspect Id percflow( Pointcut ) { ... }`
+* `aspect Id percflowbelow( Pointcut ) { ... }`
 
-If an aspect A is defined `percflow(Pointcut)` or
-`percflowbelow(Pointcut)`, then one object of type A is created for each
-flow of control of the join points picked out by <Pointcut>, either as
+If an aspect `A` is defined `percflow(Pointcut)` or
+`percflowbelow(Pointcut)`, then one object of type `A` is created for each
+flow of control of the join points picked out by `Pointcut`, either as
 the flow of control is entered, or below the flow of control,
-respectively. The advice defined in A may run at any join point in or
+respectively. The advice defined in `A` may run at any join point in or
 under that control flow. During each such flow of control, the static
-method `A.aspectOf()` will return an object of type A. An instance of
+method `A.aspectOf()` will return an object of type `A`. An instance of
 the aspect is created upon entry into each such control flow.
 
 ===== Aspect instantiation and advice
@@ -2468,11 +2192,7 @@ xref:../api/org/aspectj/lang/NoAspectBoundException.html[`org.aspectj.lang.NoAsp
 
 ==== Aspect privilege
 
-* privileged aspect
-+
-Id
-+
-\{ ... }
+* `privileged aspect Id { ... }`
 
 Code written in aspects is subject to the same access control rules as
 Java code when referring to members of classes or aspects. So, for
@@ -2500,7 +2220,7 @@ privileged aspect A {
 }
 ....
 
-In this case, if A had not been declared privileged, the field reference
+In this case, if `A` had not been declared privileged, the field reference
 c.i would have resulted in an error signaled by the compiler.
 
 If a privileged aspect can access multiple versions of a particular
@@ -2522,9 +2242,9 @@ privileged aspect A {
 }
 ....
 
-A's private inter-type field C.i, initially bound to 999, will be
+``A``'s private inter-type field C.i, initially bound to 999, will be
 referenced in the body of the advice in preference to C's privately
-declared field, since the A would have access to its own inter-type
+declared field, since `A` would have access to its own inter-type
 fields even if it were not privileged.
 
 Note that a privileged aspect can access private inter-type declarations

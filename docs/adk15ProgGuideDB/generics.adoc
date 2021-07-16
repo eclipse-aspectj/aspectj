@@ -41,18 +41,18 @@ addition to simple type parameter names, type parameter declarations can
 also constrain the set of types allowed by using the `extends` keyword.
 Some examples follow:
 
-class Foo<T> \{...}::
+`class Foo<T> {...}`::
   A class `Foo` with one type parameter, `T`.
-class Foo<T,S> \{...}::
+`class Foo<T,S> {...}`::
   A class `Foo` with two type parameters, `T` and `S`.
-class Foo<T extends Number> \{...}::
+`class Foo<T extends Number> {...}`::
   A class `Foo` with one type parameter `T`, where `T` must be
   instantiated as the type `Number` or a subtype of `Number`.
-class Foo<T, S extends T> \{...}::
+`class Foo<T, S extends T> {...}`::
   A class `Foo` with two type parameters, `T` and `S`. `Foo` must be
   instantiated with a type `S` that is a subtype of the type specified
   for parameter `T`.
-class Foo<T extends Number & Comparable> \{...}::
+`class Foo<T extends Number & Comparable> {...}`::
   A class `Foo` with one type parameter, `T`. `Foo` must be instantiated
   with a type that is a subtype of `Number` and that implements
   `Comparable`.
@@ -91,13 +91,13 @@ stands for "some type". The `extends` and `super` keywords may be used
 in conjunction with the wildcard to provide upper and lower bounds on
 the types that may satisfy the type constraints. For example:
 
-List<?>::
+`List<?>`::
   A list containing elements of some type, the type of the elements in
   the list is unknown.
-List<? extends Number>::
+`List<? extends Number>`::
   A list containing elements of some type that extends Number, the exact
   type of the elements in the list is unknown.
-List<? super Double>::
+`List<? super Double>`::
   A list containing elements of some type that is a super-type of
   Double, the exact type of the elements in the list is unknown.
 
@@ -105,24 +105,24 @@ A generic type may be extended as any other type. Given a generic type
 `Foo<T>` then a subtype `Goo` may be declared in one of the following
 ways:
 
-class Goo extends Foo::
+`class Goo extends Foo`::
   Here `Foo` is used as a raw type, and the appropriate warning messages
   will be issued by the compiler on attempting to invoke methods in
   `Foo`.
-class Goo<E> extends Foo::
+`class Goo<E> extends Foo`::
   `Goo` is a generic type, but the super-type `Foo` is used as a raw
   type and the appropriate warning messages will be issued by the
   compiler on attempting to invoke methods defined by `Foo`.
-class Goo<E> extends Foo<E>::
+`class Goo<E> extends Foo<E>`::
   This is the most usual form. `Goo` is a generic type with one
   parameter that extends the generic type `Foo` with that same
   parameter. So `Goo<String<` is a subclass of `Foo<String>`.
-class Goo<E,F> extends Foo<E>::
+`class Goo<E,F> extends Foo<E>`::
   `Goo` is a generic type with two parameters that extends the generic
   type `Foo` with the first type parameter of `Goo` being used to
   parameterize `Foo`. So `Goo<String,Integer<` is a subclass of
   `Foo<String>`.
-class Goo extends Foo<String>::
+`class Goo extends Foo<String>`::
   `Goo` is a type that extends the parameterized type `Foo<String>`.
 
 A generic type may implement one or more generic interfaces, following
@@ -416,14 +416,14 @@ class C {
 }
 ....
 
-execution(* C.*(List))::
+`execution(* C.*(List))`::
   Matches an execution join point for any of the three methods.
-execution(* C.*(List<? extends Number>))::
+`execution(* C.*(List<? extends Number>))`::
   matches only the execution of `foo`, and _not_ the execution of `goo`
   since `List<? extends Number>` and `List<Double>` are distinct types.
-execution(* C.*(List<?>))::
+`execution(* C.*(List<?>))`::
   matches only the execution of `bar`.
-execution(* C.*(List<? extends Object+>))::
+`execution(* C.*(List<? extends Object+>))`::
   matches both the execution of `foo` and the execution of `bar` since
   the upper bound of `List<?>` is implicitly `Object`.
 
@@ -507,11 +507,11 @@ public class C {
 }
 ....
 
-args(List)::
+`args(List)`::
   will match an execution or call join point for any of these methods
-args(List<String>)::
+`args(List<String>)`::
   will match an execution or call join point for `foo`.
-args(List<Double>)::
+`args(List<Double>)`::
   matches an execution or call join point for `bar`, and _may_ match at
   an execution or call join point for `goo` since it is legitimate to
   pass an object of type `List<Double>` to a method expecting a
@@ -761,17 +761,16 @@ members on generic types. For generic methods, the syntax is exactly as
 for a regular method declaration, with the addition of the target type
 specification:
 
-<T extends Number> T Utils.max(T first, T second) \{...}::
+`<T extends Number> T Utils.max(T first, T second) {...}`::
   Declares a generic instance method `max` on the class `Util`. The
   `max` method takes two arguments, `first` and `second` which must both
   be of the same type (and that type must be Number or a subtype of
   Number) and returns an instance of that type.
-static <E> E Utils.first(List<E> elements) \{...}::
+`static <E> E Utils.first(List<E> elements) {...}`::
   Declares a static generic method `first` on the class `Util`. The
   `first` method takes a list of elements of some type, and returns an
   instance of that type.
-<T> Sorter.new(List<T> elements,Comparator<? super T> comparator)
-\{...}::
+<T> Sorter.new(List<T> elements,Comparator<? super T> comparator) `{...}`::
   Declares a constructor on the class `Sorter`. The constructor takes a
   list of elements of some type, and a comparator that can compare
   instances of the element type.
@@ -783,17 +782,17 @@ match the number of type parameters in the generic type declaration.
 Type parameter _names_ do not have to match. For example, given the
 generic type `Foo<T,S extends Number>` then:
 
-String Foo.getName() \{...}::
+`String Foo.getName() {...}`::
   Declares a `getName` method on behalf of the type `Foo`. It is not
   possible to refer to the type parameters of Foo in such a declaration.
-public R Foo<Q, R>.getMagnitude() \{...}::
+`public R Foo<Q, R>.getMagnitude() {...}`::
   Declares a method `getMagnitude` on the generic class `Foo`. The
   method returns an instance of the type substituted for the second type
   parameter in an invocation of `Foo` If `Foo` is declared as
   `Foo<T,N extends Number> {...}` then this inter-type declaration is
   equivalent to the declaration of a method `public N getMagnitude()`
   within the body of `Foo`.
-R Foo<Q, R extends Number>.getMagnitude() \{...}::
+`R Foo<Q, R extends Number>.getMagnitude() {...}`::
   Results in a compilation error since a bounds specification is not
   allowed in this form of an inter-type declaration (the bounds are
   determined from the declaration of the target type).
@@ -814,7 +813,7 @@ would be well-formed in accordance with Java's sub-typing rules).
 Generic types may also be used as the target type of a `declare parents`
 statement.
 
-declare parents: Foo implements List<String>::
+`declare parents: Foo implements List<String>`::
   The `Foo` type implements the `List<String>` interface. If `Foo`
   already implements some other parameterization of the `List` interface
   (for example, `List<Integer>` then a compilation error will result
@@ -840,25 +839,22 @@ Given the aspect declaration:
 [source, java]
 ....
 public abstract aspect ParentChildRelationship<P,C> {
-    ...
+    // ...
 }
 ....
 
 then
 
-public aspect FilesInFolders extends
-ParentChildRelationship<Folder,File> \{...::
+`public aspect FilesInFolders extends ParentChildRelationship<Folder,File> {...`::
   declares a concrete sub-aspect, `FilesInFolders` which extends the
   parameterized abstract aspect `ParentChildRelationship<Folder,File>`.
-public aspect FilesInFolders extends ParentChildRelationship \{...::
+`public aspect FilesInFolders extends ParentChildRelationship {...`::
   results in a compilation error since the `ParentChildRelationship`
   aspect must be fully parameterized.
-public aspect ThingsInFolders<T> extends
-ParentChildRelationship<Folder,T>::
+`public aspect ThingsInFolders<T> extends ParentChildRelationship<Folder,T>`::
   results in a compilation error since concrete aspects may not have
   type parameters.
-public abstract aspect ThingsInFolders<T> extends
-ParentChildRelationship<Folder,T>::
+`public abstract aspect ThingsInFolders<T> extends ParentChildRelationship<Folder,T>`::
   declares a sub-aspect of `ParentChildRelationship` in which `Folder`
   plays the role of parent (is bound to the type variable `P`).
 
