@@ -31,7 +31,7 @@ does. Because of the special restrictions Java 5 places around
 enumerated types, AspectJ makes the following additional restrictions:
 
 * You cannot use declare parents to change the super type of an enum.
-* You cannot use declare parents to declare java.lang.Enum as the parent
+* You cannot use declare parents to declare `java.lang.Enum` as the parent
 of any type.
 * You cannot make inter-type constructor declarations on an enum.
 * You cannot extend the set of values in an enum via any ITD-like

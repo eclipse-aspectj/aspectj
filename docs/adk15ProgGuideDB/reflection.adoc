@@ -8,7 +8,7 @@ reflection APIs are only supported when running under Java 5 and for
 code compiled by the AspectJ 5 compiler at target level 1.5.
 
 [[reflection_api]]
-=== Using AjTypeSystem
+=== Using `AjTypeSystem`
 
 The starting point for using the reflection apis is
 `org.aspectj.lang.reflect.AjTypeSystem` which provides the method

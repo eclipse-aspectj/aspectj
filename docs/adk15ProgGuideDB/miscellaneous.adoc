@@ -10,8 +10,9 @@ example, AspectJ 1.2.1 does not allow:
 
 [source, java]
 ....
-pointcut foo(Foo foo) : (execution(* *(..)) && this(foo) ) ||
-                        (set(* *) && target(foo));
+pointcut foo(Foo foo) :
+  (execution(* *(..)) && this(foo) ) ||
+  (set(* *) && target(foo));
 ....
 
 whereas this expression is permitted in AspectJ 5. Each context variable
@@ -33,7 +34,8 @@ XLint warning will be issued:
 ....
 declare soft : SomeRuntimeException : execution(* *(..));
 
->> "SomeRuntimeException will not be softened as it is already a RuntimeException" [XLint:runtimeExceptionNotSoftened]
+// "SomeRuntimeException will not be softened as it is already a
+// RuntimeException" [XLint:runtimeExceptionNotSoftened]
 ....
 
 This XLint message can be controlled by setting the

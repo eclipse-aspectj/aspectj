@@ -5,22 +5,24 @@
 ....
 === type patterns ===
 
-TypePattern := SimpleTypePattern |
-               '!' TypePattern |
-               '(' AnnotationPattern? TypePattern ')'
-               TypePattern '&&' TypePattern |
-               TypePattern '||' TypePattern
+TypePattern :=
+    SimpleTypePattern |
+    '!' TypePattern |
+    '(' AnnotationPattern? TypePattern ')'
+    TypePattern '&&' TypePattern |
+    TypePattern '||' TypePattern
 
 SimpleTypePattern := DottedNamePattern '+'? '[]'*
 
-DottedNamePattern := FullyQualifiedName RestOfNamePattern? |
-                   '*' NotStarNamePattern?
+DottedNamePattern :=
+    FullyQualifiedName RestOfNamePattern? |
+    '*' NotStarNamePattern?
 
-RestOfNamePattern := '..' DottedNamePattern |
-                   '*' NotStarNamePattern?
+RestOfNamePattern := '..' DottedNamePattern | '*' NotStarNamePattern?
 
-NotStarNamePattern := FullyQualifiedName RestOfNamePattern? |
-                    '..' DottedNamePattern
+NotStarNamePattern :=
+    FullyQualifiedName RestOfNamePattern? |
+    '..' DottedNamePattern
 
 FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*
 
@@ -28,22 +30,21 @@ FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*
 
 AnnotationPattern := '!'? '@' AnnotationTypePattern AnnotationPattern*
 
-
-AnnotationTypePattern := FullyQualifiedName |
-                         '(' TypePattern ')'
+AnnotationTypePattern := FullyQualifiedName | '(' TypePattern ')'
 
 === signature patterns ===
 
 -- field --
 
 FieldPattern :=
-  AnnotationPattern? FieldModifiersPattern?
-  TypePattern (TypePattern DotOrDotDot)? SimpleNamePattern
+    AnnotationPattern? FieldModifiersPattern?
+    TypePattern (TypePattern DotOrDotDot)? SimpleNamePattern
 
 FieldModifiersPattern := '!'? FieldModifier FieldModifiersPattern*
 
-FieldModifier := 'public' | 'private' | 'protected' | 'static' |
-             'transient' | 'final'
+FieldModifier :=
+    'public' | 'private' | 'protected' | 'static' |
+    'transient' | 'final'
 
 DotOrDotDot := '.' | '..'
 
@@ -52,18 +53,20 @@ SimpleNamePattern := JavaIdentifierChar+ ('*' SimpleNamePattern)?
 -- method --
 
 MethodPattern :=
-  AnnotationPattern? MethodModifiersPattern? TypePattern
-                     (TypePattern DotOrDotDot)? SimpleNamePattern
-                     '(' FormalsPattern ')' ThrowsPattern?
+    AnnotationPattern? MethodModifiersPattern? TypePattern
+    (TypePattern DotOrDotDot)? SimpleNamePattern
+    '(' FormalsPattern ')' ThrowsPattern?
 
 MethodModifiersPattern := '!'? MethodModifier MethodModifiersPattern*
 
-MethodModifier := 'public' | 'private' | 'protected' | 'static' |
-              'synchronized' | 'final'
+MethodModifier :=
+    'public' | 'private' | 'protected' | 'static' |
+    'synchronized' | 'final'
 
-FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
-              OptionalParensTypePattern (',' FormalsPattern)* |
-              TypePattern '...'
+FormalsPattern :=
+    '..' (',' FormalsPatternAfterDotDot)? |
+    OptionalParensTypePattern (',' FormalsPattern)* |
+    TypePattern '...'
 
 FormalsPatternAfterDotDot :=
     OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
@@ -76,27 +79,28 @@ TypePatternList := TypePattern (',' TypePattern)*
 -- constructor --
 
 ConstructorPattern :=
-  AnnotationPattern? ConstructorModifiersPattern?
-                     (TypePattern DotOrDotDot)? 'new' '(' FormalsPattern ')'
-                     ThrowsPattern?
+    AnnotationPattern? ConstructorModifiersPattern?
+    (TypePattern DotOrDotDot)? 'new' '(' FormalsPattern ')'
+    ThrowsPattern?
 
-ConstructorModifiersPattern := '!'? ConstructorModifier ConstructorModifiersPattern*
+ConstructorModifiersPattern :=
+    '!'? ConstructorModifier ConstructorModifiersPattern*
 
 ConstructorModifier := 'public' | 'private' | 'protected'
 
 === Pointcuts ===
 
 PointcutPrimitive :=
-            Call | Execution | Get | Set | Handler |
-            Initialization | PreInitialization |
-            StaticInitialization | AdviceExecution |
-            This | Target | Args | CFlow | CFlowBelow |
-            Within | WithinCode | If |
-            AnnotationPointcut
+    Call | Execution | Get | Set | Handler |
+    Initialization | PreInitialization |
+    StaticInitialization | AdviceExecution |
+    This | Target | Args | CFlow | CFlowBelow |
+    Within | WithinCode | If |
+    AnnotationPointcut
 
-AnnotationPointcut := AtAnnotation | AtThis | AtTarget |
-                      AtWithin | AtWithinCode | AtArgs
-
+AnnotationPointcut :=
+    AtAnnotation | AtThis | AtTarget |
+    AtWithin | AtWithinCode | AtArgs
 
 Call := 'call' '(' MethodOrConstructorPattern ')'
 
@@ -124,13 +128,13 @@ TypeOrIdentifier := FullyQualifiedName ('[' ']')* | Identifier
 Identifier := JavaIdentifierChar+
 
 FormalsOrIdentifiersPattern :=
-                  '..' (',' FormalsOrIdentifiersPatternAfterDotDot)? |
-              TypeOrIdentifier (',' FormalsOrIdentifiersPattern)* |
-              '*' (',' FormalsOrIdentifiersPattern)*
+    '..' (',' FormalsOrIdentifiersPatternAfterDotDot)? |
+    TypeOrIdentifier (',' FormalsOrIdentifiersPattern)* |
+    '*' (',' FormalsOrIdentifiersPattern)*
 
 FormalsOrIdentifiersPatternAfterDotDot :=
-              TypeOrIdentifier (',' FormalsOrIdentifiersPatternAfterDotDot)* |
-              '*' (',' FormalsOrIdentifiersPatternAfterDotDot)*
+    TypeOrIdentifier (',' FormalsOrIdentifiersPatternAfterDotDot)* |
+    '*' (',' FormalsOrIdentifiersPatternAfterDotDot)*
 
 AtAnnotation := '@annotation' '(' AnnotationOrIdentifier ')'
 AtThis := '@this' '(' AnnotationOrIdentifer ')'
@@ -143,31 +147,32 @@ AnnotationOrIdentifier := FullyQualifiedName | Identifier
 AtArgs := '@args' '(' AnnotationsOrIdentifiersPattern ')'
 
 AnnotationsOrIdentifiersPattern :=
-                  '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
-                  AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
-                  '*' (',' AnnotationsOrIdentifiersPattern)*
+    '..' (',' AnnotationsOrIdentifiersPatternAfterDotDot)? |
+    AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPattern)* |
+    '*' (',' AnnotationsOrIdentifiersPattern)*
 
 AnnotationsOrIdentifiersPatternAfterDotDot :=
-              AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPatternAfterDotDot)* |
-              '*' (',' AnnotationsOrIdentifiersPatternAfterDotDot)*
+    AnnotationOrIdentifier (',' AnnotationsOrIdentifiersPatternAfterDotDot)* |
+    '*' (',' AnnotationsOrIdentifiersPatternAfterDotDot)*
 
-PointcutDeclaration := PointcutModifiers? 'pointcut' Identifier Formals
-                       ':' PointcutExpression
+PointcutDeclaration :=
+    PointcutModifiers? 'pointcut' Identifier Formals ':' PointcutExpression
 
 PointcutModifiers := PointcutModifier*
 
-PointcutModifier :=  'public' | 'private' | 'protected' | 'abstract'
+PointcutModifier := 'public' | 'private' | 'protected' | 'abstract'
 
 Formals := '(' ParamList? ')'
 ParamList := FullyQualifiedName Identifier (',' ParamList)*
 
 ReferencePointcut := (FullyQualifiedName '.')? Identifier Formals
 
-PointcutExpression := (PointcutPrimitive | ReferencePointcut) |
-                      '!' PointcutExpression |
-                      '(' PointcutExpression ')' |
-                      PointcutExpression '&&' PointcutExpression |
-                      PointcutExpression '||' PointcutExpression
+PointcutExpression :=
+    (PointcutPrimitive | ReferencePointcut) |
+    '!' PointcutExpression |
+    '(' PointcutExpression ')' |
+    PointcutExpression '&&' PointcutExpression |
+    PointcutExpression '||' PointcutExpression
 
 === Advice ===
 

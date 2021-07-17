@@ -200,9 +200,9 @@ Pointcuts pick out these join points. For example, the pointcut
 
 [source, java]
 ....
-pointcut setter(): target(Point) &&
-                   (call(void setX(int)) ||
-                    call(void setY(int)));
+pointcut setter():
+  target(Point) &&
+  (call(void setX(int)) || call(void setY(int)));
 ....
 
 picks out each call to `setX(int)` or `setY(int)` when called on an
@@ -242,8 +242,8 @@ when the join point is in the control flow of a call to a ``Test``'s
 no-argument `main` method::
   `cflow(call(void Test.main()))`
 
-Pointcuts compose through the operations `or` ("`||`"), `and` ("`&&`")
-and `not` ("`!`").
+Pointcuts compose through the operations `OR` (`||`), `ANT` (`&&`)
+and `NOT` (`!`).
 
 * It is possible to use wildcards. So
 [arabic]
@@ -272,9 +272,7 @@ so long as it takes exactly two ``int``s as arguments.
 . `target(Point) && call(int *())`
 . `call(* *(..)) && (within(Line) || within(Point))`
 . `within(*) && execution(*.new(int))`
-. `
-                    !this(Point) && call(int *(..))
-                  `
+. `!this(Point) && call(int *(..))`
 +
 means (1) any call to an `int` method with no arguments on an instance
 of `Point`, regardless of its name, (2) any call to any method where the
@@ -287,7 +285,7 @@ on negations of modifiers. For example, you can say:
 [arabic]
 . `call(public * *(..))`
 . `execution(!static * *(..))`
-. ` execution(public !static * *(..))`
+. `execution(public !static * *(..))`
 +
 which means (1) any call to a public method, (2) any execution of a
 non-static method, and (3) any execution of a public, non-static method.
@@ -319,12 +317,12 @@ number of differences:
 
 Firstly, the lexical pointcut declarations `within` and `withincode`
 match differently. At a call join point, the enclosing code is that of
-the call site. This means that `call(void m())
-        && withincode(void m())` will only capture directly recursive
+the call site. This means that `call(void m()) && withincode(void m())`
+will only capture directly recursive
 calls, for example. At an execution join point, however, the program is
 already executing the method, so the enclosing code is the method
-itself: `execution(void m())
-        && withincode(void m())` is the same as `execution(void m())`.
+itself: `execution(void m()) && withincode(void m())` is the same as
+`execution(void m())`.
 
 Secondly, the call join point does not capture super calls to non-static
 methods. This is because such super calls are different in Java, since
@@ -346,7 +344,7 @@ pointcuts. This composition can be somewhat confusing when used with
 primitive pointcuts like `cflow` and `cflowbelow`. Here's an example:
 
 `cflow(P)` picks out each join point in the control flow of the join
-points picked out by <P>. So, pictorially:
+points picked out by `P`. So, pictorially:
 
 [source, text]
 ....
@@ -356,9 +354,8 @@ P ---------------------
     \
 ....
 
-What does `cflow(P) &&
-        cflow(Q)` pick out? Well, it picks out each join point that is
-in both the control flow of <P> and in the control flow of <Q>. So...
+What does `cflow(P) && cflow(Q)` pick out? Well, it picks out each join point that is
+in both the control flow of `P` and in the control flow of `Q`. So...
 
 [source, text]
 ....
@@ -374,12 +371,11 @@ Q -------------\-------
     \             \
 ....
 
-Note that <P> and <Q> might not have any join points in common... but
+Note that `P` and `Q` might not have any join points in common... but
 their control flows might have join points in common.
 
-But what does `cflow(P
-        && Q)` mean? Well, it means the control flow of those join
-points that are both picked out by <P> and picked out by <Q>.
+But what does `cflow(P && Q)` mean? Well, it means the control flow of those join
+points that are both picked out by `P` and picked out by `Q`.
 
 [source, text]
 ....
@@ -389,10 +385,9 @@ P && Q -------------------
          \
 ....
 
-and if there are _no_ join points that are both picked by <P> and picked
-out by <Q>, then there's no chance that there are any join points in the
-control flow of `(P &&
-        Q)`.
+and if there are _no_ join points that are both picked by `P` and picked
+out by `Q`, then there's no chance that there are any join points in the
+control flow of `(P && Q)`.
 
 Here's some code that expresses this.
 
@@ -437,23 +432,23 @@ Consider again the first pointcut definition in this chapter:
 
 [source, java]
 ....
-pointcut setter(): target(Point) &&
-                   (call(void setX(int)) ||
-                    call(void setY(int)));
+pointcut setter():
+  target(Point) &&
+  (call(void setX(int)) || call(void setY(int)));
 ....
 
 As we've seen, this pointcut picks out each call to `setX(int)` or
 `setY(int)` methods where the target is an instance of `Point`. The
-pointcut is given the name `setters` and no parameters on the left-hand
+pointcut is given the name `setter` and no parameters on the left-hand
 side. An empty parameter list means that none of the context from the
 join points is published from this pointcut. But consider another
 version of version of this pointcut definition:
 
 [source, java]
 ....
-pointcut setter(Point p): target(p) &&
-                          (call(void setX(int)) ||
-                           call(void setY(int)));
+pointcut setter(Point p):
+  target(p) &&
+  (call(void setX(int)) || call(void setY(int)));
 ....
 
 This version picks out exactly the same join points. But in this
@@ -469,13 +464,14 @@ defining pointcut parameters:
 
 [source, java]
 ....
-pointcut testEquality(Point p): target(Point) &&
-                                args(p) &&
-                                call(boolean equals(Object));
+pointcut testEquality(Point p):
+  target(Point) &&
+  args(p) &&
+  call(boolean equals(Object));
 ....
 
 This pointcut also has a parameter of type `Point`. Similar to the
-`setters` pointcut, this means that anyone using this pointcut has
+`setter` pointcut, this means that anyone using this pointcut has
 access to a `Point` from each join point. But in this case, looking at
 the right-hand side we find that the object named in the parameters is
 not the target `Point` object that receives the call; it's the argument
@@ -486,19 +482,20 @@ pointcut definition that would expose target `Point p1` and argument
 
 [source, java]
 ....
-pointcut testEquality(Point p1, Point p2): target(p1) &&
-                                           args(p2) &&
-                                           call(boolean equals(Object));
+pointcut testEquality(Point p1, Point p2):
+  target(p1) &&
+  args(p2) &&
+  call(boolean equals(Object));
 ....
 
-Let's look at another variation of the `setters` pointcut:
+Let's look at another variation of the `setter` pointcut:
 
 [source, java]
 ....
-pointcut setter(Point p, int newval): target(p) &&
-                                      args(newval) &&
-                                      (call(void setX(int)) ||
-                                       call(void setY(int)));
+pointcut setter(Point p, int newval):
+  target(p) &&
+  args(newval) &&
+  (call(void setX(int)) || call(void setY(int)));
 ....
 
 In this case, a `Point` object and an `int` value are exposed by the
@@ -514,8 +511,8 @@ following pointcut definition will result in a compilation error:
 [source, java]
 ....
 pointcut badPointcut(Point p1, Point p2):
-    (target(p1) && call(void setX(int))) ||
-    (target(p2) && call(void setY(int)));
+  (target(p1) && call(void setX(int))) ||
+  (target(p2) && call(void setY(int)));
 ....
 
 because `p1` is only bound when calling `setX`, and `p2` is only bound
@@ -588,11 +585,11 @@ in the definition. Basically there are three kinds of pointcut
 designator: kinded, scoping and context:
 
 * Kinded designators are those which select a particular kind of join
-point. For example: execution, get, set, call, handler
+point. For example: `execution, get, set, call, handler`
 * Scoping designators are those which select a group of join points of
-interest (of probably many kinds). For example: within, withincode
+interest (of probably many kinds). For example: `within, withincode`
 * Contextual designators are those that match (and optionally bind)
-based on context. For example: this, target, @annotation
+based on context. For example: `this, target, @annotation`
 
 A well written pointcut should try and include at least the first two
 types (kinded and scoping), whilst the contextual designators may be
@@ -616,13 +613,15 @@ pointcut:
 
 [source, java]
 ....
-pointcut setter(Point p1, int newval): target(p1) && args(newval)
-                                       (call(void setX(int) ||
-                                        call(void setY(int)));
+pointcut setter(Point p1, int newval):
+  target(p1) && args(newval)
+  (call(void setX(int) || call(void setY(int)));
 
 before(Point p1, int newval): setter(p1, newval) {
-    System.out.println("About to set something in " + p1 +
-                       " to the new value " + newval);
+  System.out.println(
+    "About to set something in " + p1 +
+    " to the new value " + newval
+  );
 }
 ....
 
@@ -630,11 +629,14 @@ And here is exactly the same example, but using an anonymous pointcut:
 
 [source, java]
 ....
-before(Point p1, int newval): target(p1) && args(newval)
-                              (call(void setX(int)) ||
-                               call(void setY(int))) {
-    System.out.println("About to set something in " + p1 +
-                       " to the new value " + newval);
+before(Point p1, int newval):
+  target(p1) && args(newval)
+  (call(void setX(int)) || call(void setY(int)))
+{
+  System.out.println(
+    "About to set something in " + p1 +
+    " to the new value " + newval
+  );
 }
 ....
 
@@ -646,7 +648,7 @@ This before advice runs just before the join points picked out by the
 [source, java]
 ....
 before(Point p, int x): target(p) && args(x) && call(void setX(int)) {
-    if (!p.assertX(x)) return;
+  if (!p.assertX(x)) return;
 }
 ....
 
@@ -656,8 +658,10 @@ throws an exception:
 
 [source, java]
 ....
-after(Point p, int x): target(p) && args(x) && call(void setX(int)) {
-    if (!p.assertX(x)) throw new PostConditionViolation();
+after(Point p, int x):
+  target(p) && args(x) && call(void setX(int))
+{
+  if (!p.assertX(x)) throw new PostConditionViolation();
 }
 ....
 
@@ -668,8 +672,10 @@ return value is returned:
 
 [source, java]
 ....
-after(Point p) returning(int x): target(p) && call(int getX()) {
-    System.out.println("Returning int value " + x + " for p = " + p);
+after(Point p) returning(int x):
+  target(p) && call(int getX())
+{
+  System.out.println("Returning int value " + x + " for p = " + p);
 }
 ....
 
@@ -680,7 +686,9 @@ The advice re-raises the exception after it's done:
 
 [source, java]
 ....
-after() throwing(Exception e): target(Point) && call(void setX(int)) {
+after() throwing(Exception e):
+  target(Point) && call(void setX(int))
+{
     System.out.println(e);
 }
 ....
@@ -691,11 +699,13 @@ join point can be invoked through the special `proceed` call:
 
 [source, java]
 ....
-void around(Point p, int x): target(p)
-                          && args(x)
-                          && call(void setX(int)) {
-    if (p.assertX(x)) proceed(p, x);
-    p.releaseResources();
+void around(Point p, int x):
+  target(p)
+  && args(x)
+  && call(void setX(int))
+{
+  if (p.assertX(x)) proceed(p, x);
+  p.releaseResources();
 }
 ....
 
@@ -880,7 +890,7 @@ aspect PointAssertions {
 ....
 
 [[language-thisJoinPoint]]
-=== thisJoinPoint
+=== `thisJoinPoint`
 
 AspectJ provides a special reference variable, `thisJoinPoint`, that
 contains reflective information about the current join point for the
