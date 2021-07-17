@@ -5,12 +5,11 @@
 
 Java 5 (and hence AspectJ 5) allows you to specify methods that take a
 variable number of arguments of a specified type. This is achieved using
-an ellipsis (...) in the method signature as shown:
+an ellipsis (`...`) in the method signature as shown:
 
 [source, java]
 ....
-public void foo(int i, String... strings) {
-}
+public void foo(int i, String... strings) {}
 ....
 
 A method or constructor may take at most one variable length argument,
@@ -69,13 +68,14 @@ last argument position of a method or constructor signature.
 
 [source, text]
 ....
-FormalsPattern := '..' (',' FormalsPatternAfterDotDot)? |
-                  OptionalParensTypePattern (',' FormalsPattern)* |
-                  TypePattern '...'
+FormalsPattern :=
+  '..' (',' FormalsPatternAfterDotDot)? |
+  OptionalParensTypePattern (',' FormalsPattern)* |
+  TypePattern '...'
 
 FormalsPatternAfterDotDot :=
-        OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
-        TypePattern '...'
+  OptionalParensTypePattern (',' FormalsPatternAfterDotDot)* |
+  TypePattern '...'
 ....
 
 Method and constructor patterns are used in the `call`, `execution`,
@@ -84,16 +84,16 @@ designators. Some examples of usage follow:
 
 `call(* org.xyz.*.*(int, String...))`::
   Matches a call join point for a call to a method defined in the
-  `org.xyz` package, taking an `int` and a `String vararg`.
+  `org.xyz` package, taking an `int` and a `String` _vararg_.
 `execution(* org.xyz.*.*(Integer...))`::
   Matches an execution join point for the execution of a method defined
-  in the `org.xyz` package, taking an `Integer vararg`.
+  in the `org.xyz` package, taking an `Integer` _vararg_.
 `initialization(org.xyz.*.new((Foo || Goo)...))`::
   Matches the initialization join point for the construction of an
   object in the `org.xyz` package via a constructor taking either a
   variable number of `Foo` parameters or a variable number of `Goo`
   parameters. (This example illustrating the use of a type pattern with
-  ...).
+  `...`).
 
 A variable argument parameter and an array parameter are treated as
 distinct signature elements, so given the method definitions:
@@ -118,8 +118,7 @@ pointcut designator. Given a method
 
 [source, java]
 ....
-public void foo(int i, String... strings) {
-}
+public void foo(int i, String... strings) {}
 ....
 
 The call or execution join points for `foo` will be matched by the
@@ -143,7 +142,7 @@ designator, you also cannot use the varargs syntax to declare advice
 parameters.
 
 Note: the proposal in this section does not allow you to distinguish
-between a join point with a signature (int, String...) and a join point
-with a signature (int, String[]) based _solely_ on the use of the `args`
+between a join point with a signature `(int, String...)` and a join point
+with a signature `(int, String[])` based _solely_ on the use of the `args`
 pointcut designator. If this distinction is required, `args` can always
 be coupled with `call` or `execution`.

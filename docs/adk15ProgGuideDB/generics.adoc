@@ -251,80 +251,20 @@ defines the rules for determing the erasure of a type as follows.
 
 Let `|T|` represent the erasure of some type `T`. Then:
 
-The erasure of a parameterized type
+* The erasure of a parameterized type `T<T1,...,Tn>` is `|T|`.
+  For example, the erasure of `List<String>` is `List`.
 
-T<T1,...,Tn>
+* The erasure of a nested type `T.C` is `|T|.C`.
+  For example, the erasure of the nested type `Foo<T>.Bar` is `Foo.Bar`.
 
-is
+* The erasure of an array type `T[]` is `|T|[]`.
+  For example, the erasure of `List<String>[]` is `List[]`.
 
-|T|
+* The erasure of a type variable is its leftmost bound.
+  For example, the erasure of a type variable `P` is `Object`,
+  and the erasure of a type variable `N extends Number` is `Number`.
 
-. For example, the erasure of
-
-List<String>
-
-is
-
-List
-
-.
-
-The erasure of a nested type
-
-T.C
-
-is
-
-|T|.C
-
-. For example, the erasure of the nested type
-
-Foo<T>.Bar
-
-is
-
-Foo.Bar
-
-.
-
-The erasure of an array type
-
-T[]
-
-is
-
-|T|[]
-
-. For example, the erasure of
-
-List<String>[]
-
-is
-
-List[]
-
-.
-
-The erasure of a type variable is its leftmost bound. For example, the
-erasure of a type variable
-
-P
-
-is
-
-Object
-
-, and the erasure of a type variable
-
-N extends Number
-
-is
-
-Number
-
-.
-
-The erasure of every other type is the type itself
+* The erasure of every other type is the type itself.
 
 Applying these rules to the earlier examples, we find that the methods
 defined in `Utils` can be matched by a signature pattern matching
@@ -409,9 +349,7 @@ the methods:
 ....
 class C {
   public void foo(List<? extends Number> listOfSomeNumberType) {}
-
   public void bar(List<?> listOfSomeType) {}
-
   public void goo(List<Double> listOfDoubles) {}
 }
 ....
@@ -508,24 +446,26 @@ public class C {
 ....
 
 `args(List)`::
-  will match an execution or call join point for any of these methods
+will match an execution or call join point for any of these methods
+
 `args(List<String>)`::
-  will match an execution or call join point for `foo`.
+will match an execution or call join point for `foo`.
+
 `args(List<Double>)`::
-  matches an execution or call join point for `bar`, and _may_ match at
-  an execution or call join point for `goo` since it is legitimate to
-  pass an object of type `List<Double>` to a method expecting a
-  `List<? extends Number>`.
-  +
-  In this situation a runtime test would normally be applied to
-  ascertain whether or not the argument was indeed an instance of the
-  required type. However, in the case of parameterized types such a test
-  is not possible and therefore AspectJ 5 considers this a match, but
-  issues an _unchecked_ warning. For example, compiling the aspect `A`
-  below with the class `C` produces the compilation warning: "unchecked
-  match of List<Double> with List<? extends Number> when argument is an
-  instance of List at join point method-execution(void C.goo(List<?
-  extends Number>)) [Xlint:uncheckedArgument]";
+matches an execution or call join point for `bar`, and _may_ match at
+an execution or call join point for `goo` since it is legitimate to
+pass an object of type `List<Double>` to a method expecting a
+`List<? extends Number>`.
++
+In this situation, a runtime test would normally be applied to
+ascertain whether or not the argument was indeed an instance of the
+required type. However, in the case of parameterized types such a test
+is not possible and therefore AspectJ 5 considers this a match, but
+issues an _unchecked_ warning. For example, compiling the aspect `A`
+below with the class `C` produces the compilation warning: `unchecked
+match of List<Double> with List<? extends Number> when argument is an
+instance of List at join point method-execution(void C.goo(List<?
+extends Number>)) [Xlint:uncheckedArgument]`;
 
 [source, java]
 ....
@@ -622,9 +562,9 @@ aspect A {
 
 From the signature of `foo` all we know is that the runtime argument
 will be an instance of `Object`.Compiling this program gives the
-unchecked argument warning: "unchecked match of List<? extends Number>
+unchecked argument warning: `unchecked match of List<? extends Number>
 with List when argument is an instance of List at join point
-method-execution(void C.foo(Object)) [Xlint:uncheckedArgument]". The
+method-execution(void C.foo(Object)) [Xlint:uncheckedArgument]`. The
 advice will not execute at the call join point for `c.foo("hi")` since
 `String` is not an instance of `List`. The advice _will_ execute at the
 call join points for `c.foo(ls)` and `c.foo(ld)` since in both cases the
@@ -685,9 +625,7 @@ Given the class
 ....
 public class C {
   public List<String> foo(List<String> listOfStrings) {...}
-
   public List<Double> bar(List<Double> listOfDoubles) {...}
-
   public List<? extends Number> goo(List<? extends Number> listOfSomeNumberType) {...}
 }
 ....
@@ -764,8 +702,8 @@ specification:
 `<T extends Number> T Utils.max(T first, T second) {...}`::
   Declares a generic instance method `max` on the class `Util`. The
   `max` method takes two arguments, `first` and `second` which must both
-  be of the same type (and that type must be Number or a subtype of
-  Number) and returns an instance of that type.
+  be of the same type (and that type must be `Number` or a subtype of
+  `Number`) and returns an instance of that type.
 `static <E> E Utils.first(List<E> elements) {...}`::
   Declares a static generic method `first` on the class `Util`. The
   `first` method takes a list of elements of some type, and returns an
@@ -965,52 +903,40 @@ could declare the concrete aspect:
 ....
 public aspect ASTNodeContainment extends ParentChildRelationship<ASTNode,ASTNode> {
     before(ASTNode parent, ASTNode child) : addingChild(parent, child) {
-      ...
+      // ...
     }
 }
 ....
 
 As a result of this declaration, `ASTNode` gains members:
 
-List<ASTNode> children
-
-ASTNode parent
-
-List<ASTNode>getChildren()
-
-ASTNode getParent()
-
-void addChild(ASTNode child)
-
-void removeChild(ASTNode child)
-
-void setParent(ASTNode parent)
+* `List<ASTNode> children`
+* `ASTNode parent`
+* `List<ASTNode>getChildren()`
+* `ASTNode getParent()`
+* `void addChild(ASTNode child)`
+* `void removeChild(ASTNode child)`
+* `void setParent(ASTNode parent)`
 
 In a system managing orders, we could declare the concrete aspect:
 
 [source, java]
 ....
-public aspect OrderItemsInOrders extends ParentChildRelationship<Order, OrderItem> {
-}
+public aspect OrderItemsInOrders extends ParentChildRelationship<Order, OrderItem> {}
 ....
 
 As a result of this declaration, `Order` gains members:
 
-List<OrderItem> children
-
-List<OrderItem> getChildren()
-
-void addChild(OrderItem child)
-
-void removeChild(OrderItem child)
+* `List<OrderItem> children`
+* `List<OrderItem> getChildren()`
+* `void addChild(OrderItem child)`
+* `void removeChild(OrderItem child)`
 
 and `OrderItem` gains members:
 
-Order parent
-
-Order getParent()
-
-void setParent(Order parent)
+* `Order parent`
+* `Order getParent()`
+* `void setParent(Order parent)`
 
 A second example of an abstract aspect, this time for handling
 exceptions in a uniform manner, is shown below:

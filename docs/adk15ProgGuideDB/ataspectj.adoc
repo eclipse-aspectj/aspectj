@@ -210,7 +210,8 @@ is equivalent to...
 
 [source, java]
 ....
-pointcut someCallWithIfTest(int i) : call(* *.*(int)) && args(i) && if(i > 0);
+pointcut someCallWithIfTest(int i) :
+  call(* *.*(int)) && args(i) && if(i > 0);
 ....
 
 and the following is also a valid form:
@@ -321,8 +322,7 @@ annotation style.
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(foo)")
 public void callFromFoo(JoinPoint thisJoinPoint, Foo foo) {
-  System.out.println("Call from Foo: " + foo + " at "
-                     + thisJoinPoint);
+  System.out.println("Call from Foo: " + foo + " at " + thisJoinPoint);
 }
 ....
 
@@ -331,8 +331,7 @@ is equivalent to...
 [source, java]
 ....
 before(Foo foo) : call(* org.aspectprogrammer..*(..)) && this(foo) {
-  System.out.println("Call from Foo: " + foo + " at "
-                     + thisJoinPoint);
+  System.out.println("Call from Foo: " + foo + " at " + thisJoinPoint);
 }
 ....
 
@@ -341,9 +340,11 @@ Advice that needs all three variables would be declared:
 [source, java]
 ....
 @Before("call(* org.aspectprogrammer..*(..)) && this(Foo)")
-public void callFromFoo(JoinPoint thisJoinPoint,
-                        JoinPoint.StaticPart thisJoinPointStaticPart,
-                        JoinPoint.EnclosingStaticPart thisEnclosingJoinPointStaticPart) {
+public void callFromFoo(
+  JoinPoint thisJoinPoint,
+  JoinPoint.StaticPart thisJoinPointStaticPart,
+  JoinPoint.EnclosingStaticPart thisEnclosingJoinPointStaticPart
+) {
     // ...
 }
 ....
@@ -388,7 +389,7 @@ after() returning(Foo f) : call(Foo+.new(..)) {
 }
 ....
 
-(Note the use of the "pointcut=" prefix in front of the pointcut
+(Note the use of the `pointcut=` prefix in front of the pointcut
 expression in the returning case).
 
 After throwing advice works in a similar fashion, using the `throwing`
@@ -460,73 +461,63 @@ public aspect ProceedAspect {
 ....
 
 Note that the ProceedingJoinPoint does not need to be passed to the
-proceed(..) arguments.
+`proceed(..)` arguments.
 
 In code style, the proceed method has the same signature as the advice,
 any reordering of actual arguments to the joinpoint that is done in the
 advice signature must be respected. Annotation style is different. The
-proceed(..) call takes, in this order:
+`proceed(..)` call takes, in this order:
 
-* If 'this()' was used in the pointcut
-+
-for binding
-+
-, it must be passed first in proceed(..).
-* If 'target()' was used in the pointcut
-+
-for binding
-+
-, it must be passed next in proceed(..) - it will be the first argument
-to proceed(..) if this() was not used for binding.
-* Finally come
-+
-all
-+
-the arguments expected at the join point, in the order they are supplied
-at the join point. Effectively the advice signature is ignored - it
-doesn't matter if a subset of arguments were bound or the ordering was
-changed in the advice signature, the proceed(..) calls takes all of them
-in the right order for the join point.
+* If `this()` was used in the pointcut for binding, it must be passed first in
+  `proceed(..)`.
+* If `target()` was used in the pointcut for binding, it must be passed next in
+  `proceed(..)` - it will be the first argument to `proceed(..)` if `this()`
+  was not used for binding.
+* Finally come all the arguments expected at the join point, in the order they
+  are supplied at the join point. Effectively the advice signature is ignored -
+  it doesn't matter if a subset of arguments were bound or the ordering was
+  changed in the advice signature, the `proceed(..)` calls takes all of them
+  in the right order for the join point.
 
-Since proceed(..) in this case takes an Object array, AspectJ cannot do
+Since `proceed(..)` in this case takes an `Object` array, AspectJ cannot do
 as much compile time checking as it can for code style. If the rules
-above aren't obeyed then it will unfortunately manifest as a runtime
+above aren't obeyed, then it will unfortunately manifest as a runtime
 error.
 
 [[ataspectj-itds]]
 === Inter-type Declarations
 
 Inter-type declarations are challenging to support using an annotation
-style. For code style aspects compiled with the ajc compiler, the entire
+style. For code style aspects compiled with the _ajc_ compiler, the entire
 type system can be made aware of inter-type declarations (new
 supertypes, new methods, new fields) and the completeness and
 correctness of it can be guaranteed. Achieving this with an annotation
 style is hard because the source code may simply be compiled with javac
 where the type system cannot be influenced and what is compiled must be
-'pure java'.
+'pure Java'.
 
-AspectJ 1.5.0 introduced @DeclareParents, an attempt to offer something
+AspectJ 1.5.0 introduced `@DeclareParents`, an attempt to offer something
 like that which is achievable with code style declare parents and the
 other intertype declarations (fields, methods, constructors). However,
 it has proved too challenging to get close to the expressiveness and
-capabilities of code style in this area and effectively @DeclareParents
-is offering just a mixin strategy. The definition of mixin I am using
-here is that when some interface I is mixed into some target type T then
-this means that all the methods from I are created in T and their
+capabilities of code style in this area and effectively `@DeclareParents`
+is offering just a mixin strategy. The definition of mixin `I` am using
+here is that when some `interface I` is mixed into some target type `T` then
+this means that all the methods from `I` are created in `T` and their
 implementations are simple forwarding methods that call a delegate which
-that provides an implementation of I.
+that provides an implementation of `I`.
 
-The next section covers @DeclareParents but AspectJ 1.6.4 introduces
-@DeclareMixin - an improved approach to defining a mixin and the choice
+The next section covers `@DeclareParents` but AspectJ 1.6.4 introduces
+`@DeclareMixin` - an improved approach to defining a mixin and the choice
 of a different name for the annotation will hopefully alleviate some of
-the confusion about why @DeclareParents just doesn't offer the same
-semantics as the code style variant. Offering @DeclareMixin also gives
+the confusion about why `@DeclareParents` just doesn't offer the same
+semantics as the code style variant. Offering `@DeclareMixin` also gives
 code style developers a new tool for a simple mixin whereas previously
-they would have avoided @DeclareParents thinking what it could only do
+they would have avoided `@DeclareParents`, thinking what it could only do
 was already achievable with code style syntax.
 
-The defaultImpl attribute of @DeclareParents may become deprecated if
-@DeclareMixin proves popular, leaving @DeclareParents purely as a way to
+The `defaultImpl` attribute of `@DeclareParents` may become deprecated if
+`@DeclareMixin` proves popular, leaving `@DeclareParents` purely as a way to
 introduce a marker interface.
 
 [[atDeclareParents]]
@@ -595,13 +586,13 @@ public class MoodIndicator {
 This is very similar to the mixin mechanism supported by AspectWerkz.
 The effect of the `@DeclareParents` annotation is equivalent to a
 declare parents statement that all types matching the type pattern
-implement the given interface (in this case Moody). Each method declared
+implement the given interface (in this case `Moody`). Each method declared
 in the interface is treated as an inter-type declaration. Note how this
 scheme operates within the constraints of Java type checking and ensures
 that `this` has access to the exact same set of members as in the code
 style example.
 
-Note that it is illegal to use the @DeclareParents annotation on an
+Note that it is illegal to use the `@DeclareParents` annotation on an
 aspect' field of a non-interface type. The interface type is the
 inter-type declaration contract that dictates which methods are declared
 on the target type.
@@ -680,7 +671,7 @@ and a method that returns the mood. Within the body of the inter-type
 declared method `getMoody`, the type of `this` is `Moody` (the target
 type of the inter-type declaration).
 
-Using the annotation style this aspect can be written:
+Using the annotation style, this aspect can be written:
 
 [source, java]
 ....
@@ -779,7 +770,7 @@ public class Foo {
 Although the interface type is usually determined purely from the return
 type of the factory method, it can be specified in the annotation if
 necessary. In this example the return type of the method extends
-multiple other interfaces and only a couple of them (I and J) should be
+multiple other interfaces and only a couple of them (`I` and `J`) should be
 mixed into any matching targets:
 
 [source, java]
@@ -805,14 +796,13 @@ delegate forwarding methods created in the matched target type.
 === Declare statements
 
 The previous section on inter-type declarations covered the case of
-declare parents ... implements. The 1.5.0 release of AspectJ 5 does not
-support annotation style declarations for declare parents ... extends
-and declare soft (programs with these declarations would not in general
+`declare parents ...` implements. The 1.5.0 release of AspectJ 5 does not
+support annotation style declarations for `declare parents ... extends`
+and `declare soft` (programs with these declarations would not in general
 be compilable by a regular Java 5 compiler, reducing the priority of
 their implementation). These may be supported in a future release.
 
-Declare annotation is also not supported in the 1.5.0 release of AspectJ
-5.
+Declare annotation is also not supported in the 1.5.0 release of AspectJ 5.
 
 Declare precedence _is_ supported. For declare precedence, use the
 `@DeclarePrecedence` annotation as in the following example:
@@ -821,7 +811,6 @@ Declare precedence _is_ supported. For declare precedence, use the
 ....
 public aspect SystemArchitecture {
   declare precedence : Security*, TransactionSupport, Persistence;
-
   // ...
 }
 ....
@@ -871,12 +860,12 @@ static final String badIFooImplementors = "Only foo types can implement IFoo";
 @DeclareError("execution(* IFoo+.*(..)) && !within(org.foo..*)")
 static final String badIFooImplementorsCorrupted = getMessage();
 static String getMessage() {
-    return "Only foo types can implement IFoo " + System.currentTimeMillis();
+  return "Only foo types can implement IFoo " + System.currentTimeMillis();
 }
 ....
 
 [[ataspectj-aspectof]]
-=== aspectOf() and hasAspect() methods
+=== `aspectOf()` and `hasAspect()` methods
 
 A central part of AspectJ's programming model is that aspects written
 using the code style and compiled using ajc support `aspectOf` and

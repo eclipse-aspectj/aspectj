@@ -14,28 +14,28 @@ AspectJ, we recommend you start by reading the programming guide.
 ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
 table of contents (TOC) can be wrong and the first section of each document missing completely.
 ////
-include::joinpointsignatures.adoc[]
+include::joinpointsignatures.adoc[Join Point Signatures]
 
-include::annotations.adoc[]
+include::annotations.adoc[Annotations]
 
-include::generics.adoc[]
+include::generics.adoc[Generics]
 
-include::autoboxing.adoc[]
+include::autoboxing.adoc[Autoboxing and Unboxing]
 
-include::covariance.adoc[]
+include::covariance.adoc[Covariance]
 
-include::varargs.adoc[]
+include::varargs.adoc[Varargs]
 
-include::enumeratedtypes.adoc[]
+include::enumeratedtypes.adoc[Enumerated Types]
 
-include::pertypewithin.adoc[]
+include::pertypewithin.adoc[The `pertypewithin` Aspect Instantiation Model]
 
-include::ataspectj.adoc[]
+include::ataspectj.adoc[An Annotation Based Development Style]
 
-include::reflection.adoc[]
+include::reflection.adoc[New Reflection Interfaces]
 
-include::miscellaneous.adoc[]
+include::miscellaneous.adoc[Other Changes in AspectJ 5]
 
-include::ltw.adoc[]
+include::ltw.adoc[Load-Time Weaving]
 
-include::grammar.adoc[]
+include::grammar.adoc[A Grammar for the AspectJ 5 Language]

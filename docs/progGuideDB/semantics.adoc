@@ -978,8 +978,10 @@ pointcut doesNotThrowMathlike():
 
 A `ThrowsClausePattern` is a comma-separated list of ``ThrowsClausePatternItem``s, where
 
-`ThrowsClausePatternItem`: ::
-  `[ ! ] TypeNamePattern`
+[source, text]
+....
+ThrowsClausePatternItem := [ ! ] TypeNamePattern
+....
 
 A `ThrowsClausePattern` matches the `throws` clause of any code member
 signature. To match, each `ThrowsClausePatternItem` must match the

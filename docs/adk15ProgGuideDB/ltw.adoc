@@ -4,5 +4,5 @@
 [[ltw-introduction]]
 === Introduction
 
-See Developer's Guide for information on load-time weaving support in
-AspectJ 5.
+See xref:../devGuideDB/ltw.adoc#ltw[Developer's Guide] for information on
+load-time weaving support in AspectJ 5.
