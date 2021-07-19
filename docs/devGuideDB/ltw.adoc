@@ -381,6 +381,7 @@ You have to remember that the `name` attribute must be a valid fully
 qualified class name that will be then reserved for this concrete-aspect
 and must not conflict with other classes you deploy.
 
+[[weaver-options]]
 ==== Weaver Options
 
 The table below lists the AspectJ options supported by LTW. All other

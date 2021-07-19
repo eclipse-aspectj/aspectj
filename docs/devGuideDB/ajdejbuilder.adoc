@@ -135,7 +135,7 @@ exist)
 . in the leftmost pane you will notice "Spacewar.jpr", right click this
 and select "Add to project" in the popup, then "Add class/package..." in
 thenext popup. Or directly choose "Add files/packages".
-. <cntrl> select the "spacewar" and "coordination" packages and then
+. <ctrl> select the "spacewar" and "coordination" packages and then
 click "OK"; this will add the two packages to your project
 . click the "Build Project" button (image:jbuilder-build.gif[image]) to
 compile the project

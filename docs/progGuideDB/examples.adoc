@@ -1,3 +1,4 @@
+[[examples]]
 == Examples
 
 [[examples-intro]]
@@ -83,12 +84,13 @@ and one of the argument values of the method calls directly.
 
 [source, java]
 ....
-before(Point p, int x): target(p)
-                     && args(x)
-                     && call(void setX(int)) {
-    if (!p.assertX(x)) {
-        System.out.println("Illegal value for x"); return;
-    }
+before(Point p, int x):
+  target(p) &&
+  args(x) &&
+  call(void setX(int))
+{
+  if (!p.assertX(x))
+    System.out.println("Illegal value for x"); return;
 }
 ....
 
@@ -98,8 +100,9 @@ when any method of some class is executed. The pointcut
 
 [source, java]
 ....
-pointcut execsInProblemClass(): within(ProblemClass)
-                             && execution(* *(..));
+pointcut execsInProblemClass():
+  within(ProblemClass) &&
+  execution(* *(..));
 ....
 
 will pick out each execution join point of every method defined within
@@ -132,26 +135,26 @@ within its `main` method.
 [source, java]
 ....
 public class Demo {
-    static Demo d;
+  static Demo d;
 
-    public static void main(String[] args){
-        new Demo().go();
-    }
+  public static void main(String[] args) {
+    new Demo().go();
+  }
 
-    void go(){
-        d = new Demo();
-        d.foo(1,d);
-        System.out.println(d.bar(new Integer(3)));
-    }
+  void go() {
+    d = new Demo();
+    d.foo(1,d);
+    System.out.println(d.bar(new Integer(3)));
+  }
 
-    void foo(int i, Object o){
-        System.out.println("Demo.foo(" + i + ", " + o + ")\n");
-    }
+  void foo(int i, Object o) {
+    System.out.println("Demo.foo(" + i + ", " + o + ")\n");
+  }
 
-    String bar (Integer j){
-        System.out.println("Demo.bar(" + j + ")\n");
-        return "Demo.bar(" + j  + ")";
-    }
+  String bar (Integer j)  {
+    System.out.println("Demo.bar(" + j + ")\n");
+    return "Demo.bar(" + j  + ")";
+  }
 }
 ....
 
@@ -165,35 +168,36 @@ This aspect uses around advice to intercept the execution of methods
 ....
 aspect GetInfo {
 
-   static final void println(String s){ System.out.println(s); }
+  static final void println(String s){ System.out.println(s); }
 
-   pointcut goCut(): cflow(this(Demo) && execution(void go()));
+  pointcut goCut(): cflow(this(Demo) && execution(void go()));
 
-   pointcut demoExecs(): within(Demo) && execution(* *(..));
+  pointcut demoExecs(): within(Demo) && execution(* *(..));
 
-   Object around(): demoExecs() && !execution(* go()) && goCut() {
-      println("Intercepted message: " +
-          thisJoinPointStaticPart.getSignature().getName());
-      println("in class: " +
-          thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
-      printParameters(thisJoinPoint);
-      println("Running original method: \n" );
-      Object result = proceed();
-      println("  result: " + result );
-      return result;
-   }
+  Object around(): demoExecs() && !execution(* go()) && goCut() {
+    println("Intercepted message: " +
+      thisJoinPointStaticPart.getSignature().getName());
+    println("in class: " +
+      thisJoinPointStaticPart.getSignature().getDeclaringType().getName());
+    printParameters(thisJoinPoint);
+    println("Running original method: \n" );
+    Object result = proceed();
+    println("  result: " + result );
+    return result;
+  }
 
-   static private void printParameters(JoinPoint jp) {
-      println("Arguments: " );
-      Object[] args = jp.getArgs();
-      String[] names = ((CodeSignature)jp.getSignature()).getParameterNames();
-      Class[] types = ((CodeSignature)jp.getSignature()).getParameterTypes();
-      for (int i = 0; i < args.length; i++) {
-         println("  "  + i + ". " + names[i] +
-             " : " +            types[i].getName() +
-             " = " +            args[i]);
-      }
-   }
+  static private void printParameters(JoinPoint jp) {
+    println("Arguments: " );
+    Object[] args = jp.getArgs();
+    String[] names = ((CodeSignature)jp.getSignature()).getParameterNames();
+    Class[] types = ((CodeSignature)jp.getSignature()).getParameterTypes();
+    for (int i = 0; i < args.length; i++) {
+      println(
+        "  "  + i + ". " + names[i] +
+        " : " +            types[i].getName() +
+        " = " +            args[i]);
+    }
+  }
 }
 ....
 
@@ -305,30 +309,30 @@ We also define a test `main` method in the aspect for convenience.
 ....
 public aspect CloneablePoint {
 
-   declare parents: Point implements Cloneable;
+  declare parents: Point implements Cloneable;
 
-   public Object Point.clone() throws CloneNotSupportedException {
-      // we choose to bring all fields up to date before cloning.
-      makeRectangular();
-      makePolar();
-      return super.clone();
-   }
+  public Object Point.clone() throws CloneNotSupportedException {
+    // we choose to bring all fields up to date before cloning.
+    makeRectangular();
+    makePolar();
+    return super.clone();
+  }
 
-   public static void main(String[] args){
-      Point p1 = new Point();
-      Point p2 = null;
+  public static void main(String[] args) {
+    Point p1 = new Point();
+    Point p2 = null;
 
-      p1.setPolar(Math.PI, 1.0);
-      try {
-         p2 = (Point)p1.clone();
-      } catch (CloneNotSupportedException e) {}
-      System.out.println("p1 =" + p1 );
-      System.out.println("p2 =" + p2 );
+    p1.setPolar(Math.PI, 1.0);
+    try {
+      p2 = (Point)p1.clone();
+    } catch (CloneNotSupportedException e) {}
+    System.out.println("p1 =" + p1);
+    System.out.println("p2 =" + p2);
 
-      p1.rotate(Math.PI / -2);
-      System.out.println("p1 =" + p1 );
-      System.out.println("p2 =" + p2 );
-   }
+    p1.rotate(Math.PI / -2);
+    System.out.println("p1 =" + p1);
+    System.out.println("p2 =" + p2);
+  }
 }
 ....
 
@@ -341,11 +345,9 @@ The interface `Comparable` defines the single method `compareTo` which
 can be use to define a natural ordering relation among the objects of a
 class that implement it.
 
-`ComparablePoint` uses `declare
-          parents` to declare that `Point implements
-          Comparable`, and also publically declares the appropriate
-`compareTo(Object)` method: A `Point` `p1` is said to be less than
-another `Point p2` if `p1` is closer to the origin.
+`ComparablePoint` uses `declare parents` to declare that `Point implements Comparable`,
+and also publically declares the appropriate `compareTo(Object)` method:
+A `Point` `p1` is said to be less than another `Point p2` if `p1` is closer to the origin.
 
 We also define a test `main` method in the aspect for convenience.
 
@@ -353,35 +355,35 @@ We also define a test `main` method in the aspect for convenience.
 ....
 public aspect ComparablePoint {
 
-   declare parents: Point implements Comparable;
+  declare parents: Point implements Comparable;
 
-   public int Point.compareTo(Object o) {
-      return (int) (this.getRho() - ((Point)o).getRho());
-   }
+  public int Point.compareTo(Object o) {
+    return (int) (this.getRho() - ((Point)o).getRho());
+  }
 
-   public static void main(String[] args){
-      Point p1 = new Point();
-      Point p2 = new Point();
+  public static void main(String[] args) {
+    Point p1 = new Point();
+    Point p2 = new Point();
 
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
 
-      p1.setRectangular(2,5);
-      p2.setRectangular(2,5);
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+    p1.setRectangular(2,5);
+    p2.setRectangular(2,5);
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
 
-      p2.setRectangular(3,6);
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+    p2.setRectangular(3,6);
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
 
-      p1.setPolar(Math.PI, 4);
-      p2.setPolar(Math.PI, 4);
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+    p1.setPolar(Math.PI, 4);
+    p2.setPolar(Math.PI, 4);
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
 
-      p1.rotate(Math.PI / 4.0);
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+    p1.rotate(Math.PI / 4.0);
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
 
-      p1.offset(1,1);
-      System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
-   }
+    p1.offset(1,1);
+    System.out.println("p1 =?= p2 :" + p1.compareTo(p2));
+  }
 }
 ....
 
@@ -416,34 +418,34 @@ And again, we supply a `main` method in the aspect for testing.
 ....
 public aspect HashablePoint {
 
-   public int Point.hashCode() {
-      return (int) (getX() + getY() % Integer.MAX_VALUE);
-   }
+  public int Point.hashCode() {
+    return (int) (getX() + getY() % Integer.MAX_VALUE);
+  }
 
-   public boolean Point.equals(Object o) {
-      if (o == this) { return true; }
-      if (!(o instanceof Point)) { return false; }
-      Point other = (Point)o;
-      return (getX() == other.getX()) && (getY() == other.getY());
-   }
+  public boolean Point.equals(Object o) {
+    if (o == this) return true;
+    if (!(o instanceof Point)) return false;
+    Point other = (Point)o;
+    return (getX() == other.getX()) && (getY() == other.getY());
+  }
 
-   public static void main(String[] args) {
-      Hashtable h = new Hashtable();
-      Point p1 = new Point();
+  public static void main(String[] args) {
+    Hashtable h = new Hashtable();
+    Point p1 = new Point();
 
-      p1.setRectangular(10, 10);
-      Point p2 = new Point();
+    p1.setRectangular(10, 10);
+    Point p2 = new Point();
 
-      p2.setRectangular(10, 10);
+    p2.setRectangular(10, 10);
 
-      System.out.println("p1 = " + p1);
-      System.out.println("p2 = " + p2);
-      System.out.println("p1.hashCode() = " + p1.hashCode());
-      System.out.println("p2.hashCode() = " + p2.hashCode());
+    System.out.println("p1 = " + p1);
+    System.out.println("p2 = " + p2);
+    System.out.println("p1.hashCode() = " + p1.hashCode());
+    System.out.println("p2.hashCode() = " + p2.hashCode());
 
-      h.put(p1, "P1");
-      System.out.println("Got: " + h.get(p2));
-   }
+    h.put(p1, "P1");
+    System.out.println("Got: " + h.get(p2));
+  }
 }
 ....
 
@@ -489,22 +491,22 @@ class is the root of the shape hierarchy:
 [source, java]
 ....
 public abstract class TwoDShape {
-    protected double x, y;
-    protected TwoDShape(double x, double y) {
-        this.x = x; this.y = y;
-    }
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double distance(TwoDShape s) {
-        double dx = Math.abs(s.getX() - x);
-        double dy = Math.abs(s.getY() - y);
-        return Math.sqrt(dx*dx + dy*dy);
-    }
-    public abstract double perimeter();
-    public abstract double area();
-    public String toString() {
-        return (" @ (" + String.valueOf(x) + ", " + String.valueOf(y) + ") ");
-    }
+  protected double x, y;
+  protected TwoDShape(double x, double y) {
+    this.x = x; this.y = y;
+  }
+  public double getX() { return x; }
+  public double getY() { return y; }
+  public double distance(TwoDShape s) {
+    double dx = Math.abs(s.getX() - x);
+    double dy = Math.abs(s.getY() - y);
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+  public abstract double perimeter();
+  public abstract double area();
+  public String toString() {
+    return (" @ (" + String.valueOf(x) + ", " + String.valueOf(y) + ") ");
+  }
 }
 ....
 
@@ -513,44 +515,44 @@ public abstract class TwoDShape {
 [source, java]
 ....
 public class Circle extends TwoDShape {
-    protected double r;
-    public Circle(double x, double y, double r) {
-        super(x, y); this.r = r;
-    }
-    public Circle(double x, double y) { this(  x,   y, 1.0); }
-    public Circle(double r)           { this(0.0, 0.0,   r); }
-    public Circle()                   { this(0.0, 0.0, 1.0); }
-    public double perimeter() {
-        return 2 * Math.PI * r;
-    }
-    public double area() {
-        return Math.PI * r*r;
-    }
-    public String toString() {
-        return ("Circle radius = " + String.valueOf(r) + super.toString());
-    }
+  protected double r;
+  public Circle(double x, double y, double r) {
+    super(x, y); this.r = r;
+  }
+  public Circle(double x, double y) { this(  x,   y, 1.0); }
+  public Circle(double r)           { this(0.0, 0.0,   r); }
+  public Circle()                   { this(0.0, 0.0, 1.0); }
+  public double perimeter() {
+    return 2 * Math.PI * r;
+  }
+  public double area() {
+    return Math.PI * r*r;
+  }
+  public String toString() {
+    return ("Circle radius = " + String.valueOf(r) + super.toString());
+  }
 }
 ....
 
 [source, java]
 ....
 public class Square extends TwoDShape {
-    protected double s;    // side
-    public Square(double x, double y, double s) {
-        super(x, y); this.s = s;
-    }
-    public Square(double x, double y) { this(  x,   y, 1.0); }
-    public Square(double s)           { this(0.0, 0.0,   s); }
-    public Square()                   { this(0.0, 0.0, 1.0); }
-    public double perimeter() {
-        return 4 * s;
-    }
-    public double area() {
-        return s*s;
-    }
-    public String toString() {
-        return ("Square side = " + String.valueOf(s) + super.toString());
-    }
+  protected double s;  // side
+  public Square(double x, double y, double s) {
+    super(x, y); this.s = s;
+  }
+  public Square(double x, double y) { this(  x,   y, 1.0); }
+  public Square(double s)           { this(0.0, 0.0,   s); }
+  public Square()                   { this(0.0, 0.0, 1.0); }
+  public double perimeter() {
+    return 4 * s;
+  }
+  public double area() {
+    return s*s;
+  }
+  public String toString() {
+    return ("Square side = " + String.valueOf(s) + super.toString());
+  }
 }
 ....
 
@@ -594,10 +596,10 @@ public interface is:
 [source, java]
 ....
 public class Trace {
-    public static int TRACELEVEL = 0;
-    public static void initStream(PrintStream s) {...}
-    public static void traceEntry(String str) {...}
-    public static void traceExit(String str) {...}
+  public static int TRACELEVEL = 0;
+  public static void initStream(PrintStream s) {...}
+  public static void traceEntry(String str) {...}
+  public static void traceExit(String str) {...}
 }
 ....
 
@@ -612,23 +614,23 @@ that more consistently and reliably with the following aspect (found in
 [source, java]
 ....
 public aspect TraceMyClasses {
-    pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
-    pointcut myConstructor(): myClass() && execution(new(..));
-    pointcut myMethod(): myClass() && execution(* *(..));
+  pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
+  pointcut myConstructor(): myClass() && execution(new(..));
+  pointcut myMethod(): myClass() && execution(* *(..));
 
-    before (): myConstructor() {
-        Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
-    }
-    after(): myConstructor() {
-        Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
-    }
+  before (): myConstructor() {
+    Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
+  }
+  after(): myConstructor() {
+    Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
+  }
 
-    before (): myMethod() {
-        Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
-    }
-    after(): myMethod() {
-        Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
-    }
+  before (): myMethod() {
+    Trace.traceEntry("" + thisJoinPointStaticPart.getSignature());
+  }
+  after(): myMethod() {
+    Trace.traceExit("" + thisJoinPointStaticPart.getSignature());
+  }
 }
 ....
 
@@ -717,12 +719,11 @@ functionality of `Trace - version1` with the crosscutting support of
 [source, java]
 ....
 abstract aspect Trace {
-
-    public static int TRACELEVEL = 2;
-    public static void initStream(PrintStream s) {...}
-    protected static void traceEntry(String str) {...}
-    protected static void traceExit(String str) {...}
-    abstract pointcut myClass();
+  public static int TRACELEVEL = 2;
+  public static void initStream(PrintStream s) {...}
+  protected static void traceEntry(String str) {...}
+  protected static void traceExit(String str) {...}
+  abstract pointcut myClass();
 }
 ....
 
@@ -732,13 +733,13 @@ our application classes, in `version2/TraceMyClasses.java`:
 [source, java]
 ....
 public aspect TraceMyClasses extends Trace {
-    pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
+  pointcut myClass(): within(TwoDShape) || within(Circle) || within(Square);
 
-    public static void main(String[] args) {
-        Trace.TRACELEVEL = 2;
-        Trace.initStream(System.err);
-        ExampleMain.main(args);
-    }
+  public static void main(String[] args) {
+    Trace.TRACELEVEL = 2;
+    Trace.initStream(System.err);
+    ExampleMain.main(args);
+  }
 }
 ....
 
@@ -751,7 +752,7 @@ tracing, go to the directory `examples` and type:
 ajc -argfile tracing/tracev2.lst
 ....
 
-The file tracev2.lst lists the application classes as well as this
+The file `tracev2.lst` lists the application classes as well as this
 version of the files Trace.java and TraceMyClasses.java. Running the
 main method of `tracing.version2.TraceMyClasses` should output exactly
 the same trace information as that from version 1.
@@ -762,58 +763,58 @@ The entire implementation of the new `Trace` class is:
 ....
 abstract aspect Trace {
 
-    // implementation part
+  // implementation part
 
-    public static int TRACELEVEL = 2;
-    protected static PrintStream stream = System.err;
-    protected static int callDepth = 0;
+  public static int TRACELEVEL = 2;
+  protected static PrintStream stream = System.err;
+  protected static int callDepth = 0;
 
-    public static void initStream(PrintStream s) {
-        stream = s;
-    }
-    protected static void traceEntry(String str) {
-        if (TRACELEVEL == 0) return;
-        if (TRACELEVEL == 2) callDepth++;
-        printEntering(str);
-    }
-    protected static void traceExit(String str) {
-        if (TRACELEVEL == 0) return;
-        printExiting(str);
-        if (TRACELEVEL == 2) callDepth--;
-    }
-    private static void printEntering(String str) {
-        printIndent();
-        stream.println("--> " + str);
-    }
-    private static void printExiting(String str) {
-        printIndent();
-        stream.println("<-- " + str);
-    }
-    private static void printIndent() {
-        for (int i = 0; i < callDepth; i++)
-            stream.print("  ");
-    }
+  public static void initStream(PrintStream s) {
+    stream = s;
+  }
+  protected static void traceEntry(String str) {
+    if (TRACELEVEL == 0) return;
+    if (TRACELEVEL == 2) callDepth++;
+    printEntering(str);
+  }
+  protected static void traceExit(String str) {
+    if (TRACELEVEL == 0) return;
+    printExiting(str);
+    if (TRACELEVEL == 2) callDepth--;
+  }
+  private static void printEntering(String str) {
+    printIndent();
+    stream.println("--> " + str);
+  }
+  private static void printExiting(String str) {
+    printIndent();
+    stream.println("<-- " + str);
+  }
+  private static void printIndent() {
+    for (int i = 0; i < callDepth; i++)
+      stream.print("  ");
+  }
 
-    // protocol part
+  // protocol part
 
-    abstract pointcut myClass();
+  abstract pointcut myClass();
 
-    pointcut myConstructor(): myClass() && execution(new(..));
-    pointcut myMethod(): myClass() && execution(* *(..));
+  pointcut myConstructor(): myClass() && execution(new(..));
+  pointcut myMethod(): myClass() && execution(* *(..));
 
-    before(): myConstructor() {
-        traceEntry("" + thisJoinPointStaticPart.getSignature());
-    }
-    after(): myConstructor() {
-        traceExit("" + thisJoinPointStaticPart.getSignature());
-    }
+  before(): myConstructor() {
+    traceEntry("" + thisJoinPointStaticPart.getSignature());
+  }
+  after(): myConstructor() {
+    traceExit("" + thisJoinPointStaticPart.getSignature());
+  }
 
-    before(): myMethod() {
-        traceEntry("" + thisJoinPointStaticPart.getSignature());
-    }
-    after(): myMethod() {
-        traceExit("" + thisJoinPointStaticPart.getSignature());
-    }
+  before(): myMethod() {
+    traceEntry("" + thisJoinPointStaticPart.getSignature());
+  }
+  after(): myMethod() {
+    traceExit("" + thisJoinPointStaticPart.getSignature());
+  }
 }
 ....
 
@@ -860,13 +861,13 @@ bean are few. Beans must define a no-argument constructor and must be
 either `Serializable` or `Externalizable`. Any properties of the object
 that are to be treated as bean properties should be indicated by the
 presence of appropriate `get` and `set` methods whose names are
-`get`__property__ and `set `__property__ where _property_ is the name of
+`get__property__` and `set__property__` where `__property__` is the name of
 a field in the bean class. Some bean properties, known as bound
 properties, fire events whenever their values change so that any
 registered listeners (such as, other beans) will be informed of those
 changes. Making a bound property involves keeping a list of registered
 listeners, and creating and dispatching event objects in methods that
-change the property values, such as set__property__ methods.
+change the property values, such as `set__property__` methods.
 
 `Point` is a simple class representing points with rectangular
 coordinates. `Point` does not know anything about being a bean: there
@@ -945,13 +946,10 @@ property change support object:
 public void Point.addPropertyChangeListener(PropertyChangeListener listener){
   support.addPropertyChangeListener(listener);
 }
-public void Point.addPropertyChangeListener(String propertyName,
-                                            PropertyChangeListener listener){
-
+public void Point.addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
   support.addPropertyChangeListener(propertyName, listener);
 }
-public void Point.removePropertyChangeListener(String propertyName,
-                                               PropertyChangeListener listener) {
+public void Point.removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
   support.removePropertyChangeListener(propertyName, listener);
 }
 public void Point.removePropertyChangeListener(PropertyChangeListener listener) {
@@ -986,16 +984,13 @@ called.
 aspect BoundPoint {
   private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 
-  public void Point.addPropertyChangeListener(PropertyChangeListener listener){
+  public void Point.addPropertyChangeListener(PropertyChangeListener listener) {
     support.addPropertyChangeListener(listener);
   }
-  public void Point.addPropertyChangeListener(String propertyName,
-                                              PropertyChangeListener listener){
-
+  public void Point.addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
     support.addPropertyChangeListener(propertyName, listener);
   }
-  public void Point.removePropertyChangeListener(String propertyName,
-                                                 PropertyChangeListener listener) {
+  public void Point.removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
     support.removePropertyChangeListener(propertyName, listener);
   }
   public void Point.removePropertyChangeListener(PropertyChangeListener listener) {
@@ -1010,25 +1005,20 @@ aspect BoundPoint {
   pointcut setter(Point p): call(void Point.set*(*)) && target(p);
 
   void around(Point p): setter(p) {
-        String propertyName =
-      thisJoinPointStaticPart.getSignature().getName().substring("set".length());
-        int oldX = p.getX();
-        int oldY = p.getY();
-        proceed(p);
-        if (propertyName.equals("X")){
+    String propertyName =
+    thisJoinPointStaticPart.getSignature().getName().substring("set".length());
+    int oldX = p.getX();
+    int oldY = p.getY();
+    proceed(p);
+    if (propertyName.equals("X")){
       firePropertyChange(p, propertyName, oldX, p.getX());
-        } else {
+    } else {
       firePropertyChange(p, propertyName, oldY, p.getY());
-        }
+    }
   }
 
-  void firePropertyChange(Point p,
-                          String property,
-                          double oldval,
-                          double newval) {
-        p.support.firePropertyChange(property,
-                                 new Double(oldval),
-                                 new Double(newval));
+  void firePropertyChange(Point p, String property, double oldval, double newval) {
+    p.support.firePropertyChange(property, new Double(oldval), new Double(newval));
   }
 }
 ....
@@ -1048,11 +1038,13 @@ class Demo implements PropertyChangeListener {
   static final String fileName = "test.tmp";
 
   public void propertyChange(PropertyChangeEvent e){
-    System.out.println("Property " + e.getPropertyName() + " changed from " +
-       e.getOldValue() + " to " + e.getNewValue() );
+    System.out.println(
+      "Property " + e.getPropertyName() + " changed from " +
+      e.getOldValue() + " to " + e.getNewValue()
+    );
   }
 
-  public static void main(String[] args){
+  public static void main(String[] args) {
     Point p1 = new Point();
     p1.addPropertyChangeListener(new Demo());
     System.out.println("p1 =" + p1);
@@ -1067,8 +1059,8 @@ class Demo implements PropertyChangeListener {
     Point p2 = (Point) restore(fileName);
     System.out.println("Had: " + p1);
     System.out.println("Got: " + p2);
-    }
-  ...
+  }
+  // ...
 }
 ....
 
@@ -1114,10 +1106,10 @@ changes:
 [source, java]
 ....
 interface Subject {
-    void addObserver(Observer obs);
-    void removeObserver(Observer obs);
-    Vector getObservers();
-    Object getData();
+  void addObserver(Observer obs);
+  void removeObserver(Observer obs);
+  Vector getObservers();
+  Object getData();
 }
 ....
 
@@ -1127,9 +1119,9 @@ The `Observer` interface is just as simple, with methods to set and get
 [source, java]
 ....
 interface Observer {
-    void setSubject(Subject s);
-    Subject getSubject();
-    void update();
+  void setSubject(Subject s);
+  Subject getSubject();
+  void update();
 }
 ....
 
@@ -1141,28 +1133,28 @@ objects' update methods when some state changes in a subject.
 ....
 abstract aspect SubjectObserverProtocol {
 
-    abstract pointcut stateChanges(Subject s);
+  abstract pointcut stateChanges(Subject s);
 
-    after(Subject s): stateChanges(s) {
-        for (int i = 0; i < s.getObservers().size(); i++) {
-            ((Observer)s.getObservers().elementAt(i)).update();
-        }
+  after(Subject s): stateChanges(s) {
+    for (int i = 0; i < s.getObservers().size(); i++) {
+      ((Observer)s.getObservers().elementAt(i)).update();
     }
+  }
 
-    private Vector Subject.observers = new Vector();
-    public void   Subject.addObserver(Observer obs) {
-        observers.addElement(obs);
-        obs.setSubject(this);
-    }
-    public void   Subject.removeObserver(Observer obs) {
-        observers.removeElement(obs);
-        obs.setSubject(null);
-    }
-    public Vector Subject.getObservers() { return observers; }
+  private Vector Subject.observers = new Vector();
+  public void    Subject.addObserver(Observer obs) {
+    observers.addElement(obs);
+    obs.setSubject(this);
+  }
+  public void    Subject.removeObserver(Observer obs) {
+    observers.removeElement(obs);
+    obs.setSubject(null);
+  }
+  public Vector  Subject.getObservers() { return observers; }
 
-    private Subject Observer.subject = null;
-    public void     Observer.setSubject(Subject s) { subject = s; }
-    public Subject  Observer.getSubject() { return subject; }
+  private Subject Observer.subject = null;
+  public void     Observer.setSubject(Subject s) { subject = s; }
+  public Subject  Observer.getSubject() { return subject; }
 
 }
 ....
@@ -1182,25 +1174,24 @@ the `void click()` method is called whenever a button is clicked.
 ....
 class Button extends java.awt.Button {
 
-    static final Color  defaultBackgroundColor = Color.gray;
-    static final Color  defaultForegroundColor = Color.black;
-    static final String defaultText = "cycle color";
+  static final Color  defaultBackgroundColor = Color.gray;
+  static final Color  defaultForegroundColor = Color.black;
+  static final String defaultText = "cycle color";
 
-    Button(Display display) {
-        super();
-        setLabel(defaultText);
-        setBackground(defaultBackgroundColor);
-        setForeground(defaultForegroundColor);
-        addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    Button.this.click();
-                }
-            });
-        display.addToFrame(this);
-    }
+  Button(Display display) {
+    super();
+    setLabel(defaultText);
+    setBackground(defaultBackgroundColor);
+    setForeground(defaultForegroundColor);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Button.this.click();
+      }
+    });
+    display.addToFrame(this);
+  }
 
-    public void click() {}
-
+  public void click() {}
 }
 ....
 
@@ -1213,21 +1204,21 @@ Again, they know nothing about being an observer.
 ....
 class ColorLabel extends Label {
 
-    ColorLabel(Display display) {
-        super();
-        display.addToFrame(this);
-    }
+  ColorLabel(Display display) {
+    super();
+    display.addToFrame(this);
+  }
 
-    final static Color[] colors = {Color.red, Color.blue,
-                                   Color.green, Color.magenta};
-    private int colorIndex = 0;
-    private int cycleCount = 0;
-    void colorCycle() {
-        cycleCount++;
-        colorIndex = (colorIndex + 1) % colors.length;
-        setBackground(colors[colorIndex]);
-        setText("" + cycleCount);
-    }
+  final static Color[] colors =
+    { Color.red, Color.blue, Color.green, Color.magenta };
+  private int colorIndex = 0;
+  private int cycleCount = 0;
+  void colorCycle() {
+    cycleCount++;
+    colorIndex = (colorIndex + 1) % colors.length;
+    setBackground(colors[colorIndex]);
+    setText("" + cycleCount);
+  }
 }
 ....
 
@@ -1243,17 +1234,17 @@ import java.util.Vector;
 
 aspect SubjectObserverProtocolImpl extends SubjectObserverProtocol {
 
-    declare parents: Button implements Subject;
-    public Object Button.getData() { return this; }
+  declare parents: Button implements Subject;
+  public Object    Button.getData() { return this; }
 
-    declare parents: ColorLabel implements Observer;
-    public void    ColorLabel.update() {
-        colorCycle();
-    }
+  declare parents: ColorLabel implements Observer;
+  public void      ColorLabel.update() {
+    colorCycle();
+  }
 
-    pointcut stateChanges(Subject s):
-        target(s) &&
-        call(void Button.click());
+  pointcut stateChanges(Subject s):
+    target(s) &&
+    call(void Button.click());
 
 }
 ....
@@ -1293,17 +1284,17 @@ which customers make, accept, merge and hang-up both local and long
 distance calls. The application architecture is in three layers.
 
 * The basic objects provide basic functionality to simulate customers,
-calls and connections (regular calls have one connection, conference
-calls have more than one).
+  calls and connections (regular calls have one connection, conference
+  calls have more than one).
 * The timing feature is concerned with timing the connections and
-keeping the total connection time per customer. Aspects are used to add
-a timer to each connection and to manage the total time per customer.
+  keeping the total connection time per customer. Aspects are used to add
+  a timer to each connection and to manage the total time per customer.
 * The billing feature is concerned with charging customers for the calls
-they make. Aspects are used to calculate a charge per connection and,
-upon termination of a connection, to add the charge to the appropriate
-customer's bill. The billing aspect builds upon the timing aspect: it
-uses a pointcut defined in Timing and it uses the timers that are
-associated with connections.
+  they make. Aspects are used to calculate a charge per connection and,
+  upon termination of a connection, to add the charge to the appropriate
+  customer's bill. The billing aspect builds upon the timing aspect: it
+  uses a pointcut defined in Timing and it uses the timers that are
+  associated with connections.
 
 The simulation of system has three configurations: basic, timing and
 billing. Programs for the three configurations are in classes
@@ -1321,7 +1312,9 @@ have methods for managing calls. Simple calls are made between one
 customer (the caller) and another (the receiver), a `Connection` object
 is used to connect them. Conference calls between more than two
 customers will involve more than one connection. A customer may be
-involved in many calls at one time. image:telecom.gif[image]
+involved in many calls at one time.
+
+image:telecom.gif[image]
 
 ===== The `Customer` class
 
@@ -1332,56 +1325,56 @@ managing calls.
 ....
 public class Customer {
 
-      private String name;
-      private int areacode;
-      private Vector calls = new Vector();
+  private String name;
+  private int areacode;
+  private Vector calls = new Vector();
 
-      protected void removeCall(Call c){
-          calls.removeElement(c);
-      }
-
-      protected void addCall(Call c){
-          calls.addElement(c);
-      }
-
-      public Customer(String name, int areacode) {
-          this.name = name;
-          this.areacode = areacode;
-      }
-
-      public String toString() {
-          return name + "(" + areacode + ")";
-      }
-
-      public int getAreacode(){
-          return areacode;
-      }
-
-      public boolean localTo(Customer other){
-          return areacode == other.areacode;
-      }
-
-      public Call call(Customer receiver) {
-          Call call = new Call(this, receiver);
-          addCall(call);
-          return call;
-      }
-
-      public void pickup(Call call) {
-          call.pickup();
-          addCall(call);
-      }
-
-      public void hangup(Call call) {
-          call.hangup(this);
-          removeCall(call);
-      }
-
-      public void merge(Call call1, Call call2){
-          call1.merge(call2);
-          removeCall(call2);
-      }
+  protected void removeCall(Call c){
+    calls.removeElement(c);
   }
+
+  protected void addCall(Call c){
+    calls.addElement(c);
+  }
+
+  public Customer(String name, int areacode) {
+    this.name = name;
+    this.areacode = areacode;
+  }
+
+  public String toString() {
+    return name + "(" + areacode + ")";
+  }
+
+  public int getAreacode(){
+    return areacode;
+  }
+
+  public boolean localTo(Customer other){
+    return areacode == other.areacode;
+  }
+
+  public Call call(Customer receiver) {
+    Call call = new Call(this, receiver);
+    addCall(call);
+    return call;
+  }
+
+  public void pickup(Call call) {
+    call.pickup();
+    addCall(call);
+  }
+
+  public void hangup(Call call) {
+    call.hangup(this);
+    removeCall(call);
+  }
+
+  public void merge(Call call1, Call call2){
+    call1.merge(call2);
+    removeCall(call2);
+  }
+}
 ....
 
 ===== The `Call` class
@@ -1407,39 +1400,39 @@ concrete subclasses: `Local` and `LongDistance`.
 ....
 abstract class Connection {
 
-    public static final int PENDING = 0;
-    public static final int COMPLETE = 1;
-    public static final int DROPPED = 2;
+  public static final int PENDING = 0;
+  public static final int COMPLETE = 1;
+  public static final int DROPPED = 2;
 
-    Customer caller, receiver;
-    private int state = PENDING;
+  Customer caller, receiver;
+  private int state = PENDING;
 
-    Connection(Customer a, Customer b) {
-        this.caller = a;
-        this.receiver = b;
-    }
+  Connection(Customer a, Customer b) {
+    this.caller = a;
+    this.receiver = b;
+  }
 
-    public int getState(){
-        return state;
-    }
+  public int getState(){
+    return state;
+  }
 
-    public Customer getCaller() { return caller; }
+  public Customer getCaller() { return caller; }
 
-    public Customer getReceiver() { return receiver; }
+  public Customer getReceiver() { return receiver; }
 
-    void complete() {
-        state = COMPLETE;
-        System.out.println("connection completed");
-    }
+  void complete() {
+    state = COMPLETE;
+    System.out.println("connection completed");
+  }
 
-    void drop() {
-        state = DROPPED;
-        System.out.println("connection dropped");
-    }
+  void drop() {
+    state = DROPPED;
+    System.out.println("connection dropped");
+  }
 
-    public boolean connects(Customer c){
-        return (caller == c || receiver == c);
-    }
+  public boolean connects(Customer c){
+    return (caller == c || receiver == c);
+  }
 
 }
 ....
@@ -1452,22 +1445,24 @@ The two kinds of connections supported by our simulation are `Local` and
 [source, java]
 ....
 class Local extends Connection {
-    Local(Customer a, Customer b) {
-        super(a, b);
-        System.out.println("[new local connection from " +
-           a + " to " + b + "]");
-    }
+  Local(Customer a, Customer b) {
+    super(a, b);
+    System.out.println(
+      "[new local connection from " + a + " to " + b + "]"
+    );
+  }
 }
 ....
 
 [source, java]
 ....
 class LongDistance extends Connection {
-    LongDistance(Customer a, Customer b) {
-        super(a, b);
-        System.out.println("[new long distance connection from " +
-            a + " to " + b + "]");
-    }
+  LongDistance(Customer a, Customer b) {
+    super(a, b);
+    System.out.println(
+      "[new long distance connection from " + a + " to " + b + "]"
+    );
+  }
 }
 ....
 
@@ -1499,20 +1494,20 @@ times to be printed to standard output.
 [source, java]
 ....
 class Timer {
-    long startTime, stopTime;
+  long startTime, stopTime;
 
-    public void start() {
-        startTime = System.currentTimeMillis();
-        stopTime = startTime;
-    }
+  public void start() {
+    startTime = System.currentTimeMillis();
+    stopTime = startTime;
+  }
 
-    public void stop() {
-        stopTime = System.currentTimeMillis();
-    }
+  public void stop() {
+    stopTime = System.currentTimeMillis();
+  }
 
-    public long getTime() {
-        return stopTime - startTime;
-    }
+  public long getTime() {
+    return stopTime - startTime;
+  }
 }
 ....
 
@@ -1525,13 +1520,13 @@ announce when it is started and stopped.
 ....
 public aspect TimerLog {
 
-    after(Timer t): target(t) && call(* Timer.start())  {
-      System.err.println("Timer started: " + t.startTime);
-    }
+  after(Timer t): target(t) && call(* Timer.start())  {
+    System.err.println("Timer started: " + t.startTime);
+  }
 
-    after(Timer t): target(t) && call(* Timer.stop()) {
-      System.err.println("Timer stopped: " + t.stopTime);
-    }
+  after(Timer t): target(t) && call(* Timer.stop()) {
+    System.err.println("Timer stopped: " + t.stopTime);
+  }
 }
 ....
 
@@ -1555,26 +1550,26 @@ connection is completed and and stopped when it is dropped. The pointcut
 ....
 public aspect Timing {
 
-    public long Customer.totalConnectTime = 0;
+  public long Customer.totalConnectTime = 0;
 
-    public long getTotalConnectTime(Customer cust) {
-        return cust.totalConnectTime;
-    }
-    private Timer Connection.timer = new Timer();
-    public Timer getTimer(Connection conn) { return conn.timer; }
+  public long getTotalConnectTime(Customer cust) {
+    return cust.totalConnectTime;
+  }
+  private Timer Connection.timer = new Timer();
+  public Timer getTimer(Connection conn) { return conn.timer; }
 
-    after (Connection c): target(c) && call(void Connection.complete()) {
-        getTimer(c).start();
-    }
+  after (Connection c): target(c) && call(void Connection.complete()) {
+    getTimer(c).start();
+  }
 
-    pointcut endTiming(Connection c): target(c) &&
-        call(void Connection.drop());
+  pointcut endTiming(Connection c): target(c) &&
+    call(void Connection.drop());
 
-    after(Connection c): endTiming(c) {
-        getTimer(c).stop();
-        c.getCaller().totalConnectTime += getTimer(c).getTime();
-        c.getReceiver().totalConnectTime += getTimer(c).getTime();
-    }
+  after(Connection c): endTiming(c) {
+    getTimer(c).stop();
+    c.getCaller().totalConnectTime += getTimer(c).getTime();
+    c.getReceiver().totalConnectTime += getTimer(c).getTime();
+  }
 }
 ....
 
@@ -1597,38 +1592,38 @@ to handle the `totalCharge`.
 [source, java]
 ....
 public aspect Billing {
-    // precedence required to get advice on endtiming in the right order
-    declare precedence: Billing, Timing;
+  // precedence required to get advice on endtiming in the right order
+  declare precedence: Billing, Timing;
 
-    public static final long LOCAL_RATE = 3;
-    public static final long LONG_DISTANCE_RATE = 10;
+  public static final long LOCAL_RATE = 3;
+  public static final long LONG_DISTANCE_RATE = 10;
 
-    public Customer Connection.payer;
-    public Customer getPayer(Connection conn) { return conn.payer; }
+  public Customer Connection.payer;
+  public Customer getPayer(Connection conn) { return conn.payer; }
 
-    after(Customer cust) returning (Connection conn):
-        args(cust, ..) && call(Connection+.new(..)) {
-        conn.payer = cust;
-    }
+  after(Customer cust) returning (Connection conn):
+  args(cust, ..) && call(Connection+.new(..)) {
+    conn.payer = cust;
+  }
 
-    public abstract long Connection.callRate();
+  public abstract long Connection.callRate();
 
-    public long LongDistance.callRate() { return LONG_DISTANCE_RATE; }
-    public long Local.callRate() { return LOCAL_RATE; }
+  public long LongDistance.callRate() { return LONG_DISTANCE_RATE; }
+  public long Local.callRate() { return LOCAL_RATE; }
 
-    after(Connection conn): Timing.endTiming(conn) {
-        long time = Timing.aspectOf().getTimer(conn).getTime();
-        long rate = conn.callRate();
-        long cost = rate * time;
-        getPayer(conn).addCharge(cost);
-    }
+  after(Connection conn): Timing.endTiming(conn) {
+    long time = Timing.aspectOf().getTimer(conn).getTime();
+    long rate = conn.callRate();
+    long cost = rate * time;
+    getPayer(conn).addCharge(cost);
+  }
 
-    public long Customer.totalCharge = 0;
-    public long getTotalCharge(Customer cust) { return cust.totalCharge; }
+  public long Customer.totalCharge = 0;
+  public long getTotalCharge(Customer cust) { return cust.totalCharge; }
 
-    public void Customer.addCharge(long charge){
-        totalCharge += charge;
-    }
+  public void Customer.addCharge(long charge) {
+    totalCharge += charge;
+  }
 }
 ....
 
@@ -1651,8 +1646,8 @@ intended to print out the status of the customer, with respect to the
 [source, java]
 ....
 protected void report(Customer c){
-    Timing t = Timing.aspectOf();
-    System.out.println(c + " spent " + t.getTotalConnectTime(c));
+  Timing t = Timing.aspectOf();
+  System.out.println(c + " spent " + t.getTotalConnectTime(c));
 }
 ....
 
@@ -1679,13 +1674,13 @@ java telecom.BillingSimulation
 
 ===== Discussion
 
-There are some explicit dependencies between the aspects Billing and
-Timing:
+There are some explicit dependencies between the aspects `Billing` and
+`Timing`:
 
-* Billing is declared more precedent than Timing so that Billing's after
-advice runs after that of Timing when they are on the same join point.
-* Billing uses the pointcut Timing.endTiming.
-* Billing needs access to the timer associated with a connection.
+* `Billing` is declared more precedent than `Timing` so that ``Billing``'s after
+advice runs after that of `Timing` when they are on the same join point.
+* `Billing` uses the pointcut `Timing.endTiming`.
+* `Billing` needs access to the timer associated with a connection.
 
 [[examples-reusable]]
 === Reusable Aspects
@@ -1696,7 +1691,7 @@ advice runs after that of Timing when they are on the same join point.
 
 ===== Tracing - Version 3
 
-One advantage of not exposing the methods traceEntry and traceExit as
+One advantage of not exposing the methods `traceEntry` and `traceExit` as
 public operations is that we can easily change their interface without
 any dramatic consequences in the rest of the code.
 
@@ -1742,7 +1737,7 @@ Trace.traceEntry("Square.distance", this);
 
 In either case, this change to the requirements of tracing will have
 dramatic consequences in the rest of the code -- every call to the trace
-operations traceEntry and traceExit must be changed!
+operations `traceEntry` and `traceExit` must be changed!
 
 Here's another advantage of doing tracing with an aspect. We've already
 seen that in version 2 `traceEntry` and `traceExit` are not publicly
@@ -1755,60 +1750,60 @@ to version 2 are stressed in the comments:
 ....
 abstract aspect Trace {
 
-    public static int TRACELEVEL = 0;
-    protected static PrintStream stream = null;
-    protected static int callDepth = 0;
+  public static int TRACELEVEL = 0;
+  protected static PrintStream stream = null;
+  protected static int callDepth = 0;
 
-    public static void initStream(PrintStream s) {
-        stream = s;
-    }
+  public static void initStream(PrintStream s) {
+    stream = s;
+  }
 
-    protected static void traceEntry(String str, Object o) {
-        if (TRACELEVEL == 0) return;
-        if (TRACELEVEL == 2) callDepth++;
-        printEntering(str + ": " + o.toString());
-    }
+  protected static void traceEntry(String str, Object o) {
+    if (TRACELEVEL == 0) return;
+    if (TRACELEVEL == 2) callDepth++;
+    printEntering(str + ": " + o.toString());
+  }
 
-    protected static void traceExit(String str, Object o) {
-        if (TRACELEVEL == 0) return;
-        printExiting(str + ": " + o.toString());
-        if (TRACELEVEL == 2) callDepth--;
-    }
+  protected static void traceExit(String str, Object o) {
+    if (TRACELEVEL == 0) return;
+    printExiting(str + ": " + o.toString());
+    if (TRACELEVEL == 2) callDepth--;
+  }
 
-    private static void printEntering(String str) {
-        printIndent();
-        stream.println("Entering " + str);
-    }
+  private static void printEntering(String str) {
+    printIndent();
+    stream.println("Entering " + str);
+  }
 
-    private static void printExiting(String str) {
-        printIndent();
-        stream.println("Exiting " + str);
-    }
+  private static void printExiting(String str) {
+    printIndent();
+    stream.println("Exiting " + str);
+  }
 
-    private static void printIndent() {
-        for (int i = 0; i < callDepth; i++)
-            stream.print("  ");
-    }
+  private static void printIndent() {
+    for (int i = 0; i < callDepth; i++)
+      stream.print("  ");
+  }
 
-    abstract pointcut myClass(Object obj);
+  abstract pointcut myClass(Object obj);
 
-    pointcut myConstructor(Object obj): myClass(obj) && execution(new(..));
-    pointcut myMethod(Object obj): myClass(obj) &&
-        execution(* *(..)) && !execution(String toString());
+  pointcut myConstructor(Object obj): myClass(obj) && execution(new(..));
+  pointcut myMethod(Object obj):
+    myClass(obj) && execution(* *(..)) && !execution(String toString());
 
-    before(Object obj): myConstructor(obj) {
-        traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
-    }
-    after(Object obj): myConstructor(obj) {
-        traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
-    }
+  before(Object obj): myConstructor(obj) {
+    traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
+  }
+  after(Object obj): myConstructor(obj) {
+    traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
+  }
 
-    before(Object obj): myMethod(obj) {
-        traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
-    }
-    after(Object obj): myMethod(obj) {
-        traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
-    }
+  before(Object obj): myMethod(obj) {
+    traceEntry("" + thisJoinPointStaticPart.getSignature(), obj);
+  }
+  after(Object obj): myMethod(obj) {
+    traceExit("" + thisJoinPointStaticPart.getSignature(), obj);
+  }
 }
 ....
 
@@ -1834,7 +1829,7 @@ calls back to the objects, there is always the possibility of recursion.
 Keep that in mind!
 
 In fact, esimply excluding the execution join point may not be enough,
-if there are calls to other traced methods within it -- in which case,
+if there are calls to other traced methods within it - in which case,
 the restriction should be
 
 [source, java]
@@ -1842,7 +1837,7 @@ the restriction should be
 && !cflow(execution(String toString()))
 ....
 
-excluding both the execution of toString methods and all join points
+excluding both the execution of `toString` methods and all join points
 under that execution.
 
 In summary, to implement the change in the tracing requirements we had
@@ -1860,7 +1855,7 @@ and type:
 ajc -argfile tracing/tracev3.lst
 ....
 
-The file tracev3.lst lists the application classes as well as this
+The file `tracev3.lst` lists the application classes as well as this
 version of the files `Trace.java` and `TraceMyClasses.java`. To run the
 program, type
 

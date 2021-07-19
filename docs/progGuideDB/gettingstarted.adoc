@@ -188,11 +188,11 @@ form. So the following declares a new, named pointcut:
 [source, java]
 ....
 pointcut move():
-    call(void FigureElement.setXY(int,int)) ||
-    call(void Point.setX(int))              ||
-    call(void Point.setY(int))              ||
-    call(void Line.setP1(Point))            ||
-    call(void Line.setP2(Point));
+  call(void FigureElement.setXY(int,int)) ||
+  call(void Point.setX(int))              ||
+  call(void Point.setY(int))              ||
+  call(void Line.setP1(Point))            ||
+  call(void Line.setP2(Point));
 ....
 
 and whenever this definition is visible, the programmer can simply use
@@ -255,7 +255,7 @@ call are evaluated.
 [source, java]
 ....
 before(): move() {
-    System.out.println("about to move");
+  System.out.println("about to move");
 }
 ....
 
@@ -271,7 +271,7 @@ throwing, like Java's `finally`).
 [source, java]
 ....
 after() returning: move() {
-    System.out.println("just successfully moved");
+  System.out.println("just successfully moved");
 }
 ....
 
@@ -292,8 +292,9 @@ advice
 [source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
-        ...SomePointcut... {
-    ...SomeBody...
+  // SomePointcut...
+{
+  // SomeBody
 }
 ....
 
@@ -305,8 +306,9 @@ The body of the advice uses the names just like method parameters, so
 [source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
-        ...SomePointcut... {
-    System.out.println(fe + " moved to (" + x + ", " + y + ")");
+  // SomePointcut...
+{
+  System.out.println(fe + " moved to (" + x + ", " + y + ")");
 }
 ....
 
@@ -317,10 +319,11 @@ publish these values. So now we can write the complete piece of advice:
 [source, java]
 ....
 after(FigureElement fe, int x, int y) returning:
-        call(void FigureElement.setXY(int, int))
-        && target(fe)
-        && args(x, y) {
-    System.out.println(fe + " moved to (" + x + ", " + y + ")");
+  call(void FigureElement.setXY(int, int))
+  && target(fe)
+  && args(x, y)
+{
+  System.out.println(fe + " moved to (" + x + ", " + y + ")");
 }
 ....
 
@@ -341,12 +344,12 @@ pointcut. So another way to write the above advice is
 [source, java]
 ....
 pointcut setXY(FigureElement fe, int x, int y):
-    call(void FigureElement.setXY(int, int))
-    && target(fe)
-    && args(x, y);
+  call(void FigureElement.setXY(int, int))
+  && target(fe)
+  && args(x, y);
 
 after(FigureElement fe, int x, int y) returning: setXY(fe, x, y) {
-    System.out.println(fe + " moved to (" + x + ", " + y + ").");
+  System.out.println(fe + " moved to (" + x + ", " + y + ").");
 }
 ....
 
@@ -378,8 +381,8 @@ observing ``Point``s.
 [source, java]
 ....
 aspect PointObserving {
-    private Vector Point.observers = new Vector();
-    ...
+  private Vector Point.observers = new Vector();
+  // ...
 }
 ....
 
@@ -390,15 +393,15 @@ and `removeObserver` on the aspect.
 [source, java]
 ....
 aspect PointObserving {
-    private Vector Point.observers = new Vector();
+  private Vector Point.observers = new Vector();
 
-    public static void addObserver(Point p, Screen s) {
-        p.observers.add(s);
-    }
-    public static void removeObserver(Point p, Screen s) {
-        p.observers.remove(s);
-    }
-    ...
+  public static void addObserver(Point p, Screen s) {
+    p.observers.add(s);
+  }
+  public static void removeObserver(Point p, Screen s) {
+    p.observers.remove(s);
+  }
+  //...
 }
 ....
 
@@ -409,27 +412,27 @@ observe a change.
 [source, java]
 ....
 aspect PointObserving {
-    private Vector Point.observers = new Vector();
+  private Vector Point.observers = new Vector();
 
-    public static void addObserver(Point p, Screen s) {
-        p.observers.add(s);
-    }
-    public static void removeObserver(Point p, Screen s) {
-        p.observers.remove(s);
-    }
+  public static void addObserver(Point p, Screen s) {
+    p.observers.add(s);
+  }
+  public static void removeObserver(Point p, Screen s) {
+    p.observers.remove(s);
+  }
 
-    pointcut changes(Point p): target(p) && call(void Point.set*(int));
+  pointcut changes(Point p): target(p) && call(void Point.set*(int));
 
-    after(Point p): changes(p) {
-        Iterator iter = p.observers.iterator();
-        while ( iter.hasNext() ) {
-            updateObserver(p, (Screen)iter.next());
-        }
+  after(Point p): changes(p) {
+    Iterator iter = p.observers.iterator();
+    while ( iter.hasNext() ) {
+      updateObserver(p, (Screen)iter.next());
     }
+  }
 
-    static void updateObserver(Point p, Screen s) {
-        s.display(p);
-    }
+  static void updateObserver(Point p, Screen s) {
+    s.display(p);
+  }
 }
 ....
 
@@ -454,11 +457,11 @@ the aspect, if it needs to keep state around:
 [source, java]
 ....
 aspect Logging {
-    OutputStream logStream = System.err;
+  OutputStream logStream = System.err;
 
-    before(): move() {
-        logStream.println("about to move");
-    }
+  before(): move() {
+    logStream.println("about to move");
+  }
 }
 ....
 
@@ -491,12 +494,12 @@ such aspect might simply trace whenever points are drawn.
 [source, java]
 ....
 aspect SimpleTracing {
-    pointcut tracedCall():
-        call(void FigureElement.draw(GraphicsContext));
+  pointcut tracedCall():
+    call(void FigureElement.draw(GraphicsContext));
 
-    before(): tracedCall() {
-        System.out.println("Entering: " + thisJoinPoint);
-    }
+  before(): tracedCall() {
+    System.out.println("Entering: " + thisJoinPoint);
+  }
 }
 ....
 
@@ -525,7 +528,7 @@ code look bad, and can cause trace statements for one kind of debugging
 to get confused with trace statements for another kind of debugging.
 
 With AspectJ it is easy to both preserve the work of designing a good
-set of trace points and disable the tracing when it isn t being used.
+set of trace points and disable the tracing when it isn't being used.
 This is done by writing an aspect specifically for that tracing mode,
 and removing that aspect from the compilation when it is not needed.
 
@@ -551,17 +554,19 @@ to `rotate`:
 [source, java]
 ....
 aspect SetsInRotateCounting {
-    int rotateCount = 0;
-    int setCount = 0;
+  int rotateCount = 0;
+  int setCount = 0;
 
-    before(): call(void Line.rotate(double)) {
-        rotateCount++;
-    }
+  before(): call(void Line.rotate(double)) {
+    rotateCount++;
+  }
 
-    before(): call(void Point.set*(int))
-              && cflow(call(void Line.rotate(double))) {
-        setCount++;
-    }
+  before():
+    call(void Point.set*(int)) &&
+    cflow(call(void Line.rotate(double)))
+  {
+    setCount++;
+  }
 }
 ....
 
@@ -569,32 +574,17 @@ In effect, this aspect allows the programmer to ask very specific
 questions like
 
 ____
-How many times is the
-
-rotate
-
-method defined on
-
-Line
-
-objects called?
+How many times is the `rotate` method defined on `Line` objects called?
 ____
 
 and
 
 ____
-How many times are methods defined on
-
-Point
-
-objects whose name begins with "
-
-set
-
-" called in fulfilling those rotate calls?
+How many times are methods defined on `Point` objects whose name begins with
+`"set"` called in fulfilling those `rotate` calls?
 ____
 
-questions it may be difficult to express using standard profiling or
+Such questions may be difficult to express using standard profiling or
 logging tools.
 
 [[pre-and-post-conditions]]
@@ -613,23 +603,23 @@ in modular form. For example, this code
 ....
 aspect PointBoundsChecking {
 
-    pointcut setX(int x):
-        (call(void FigureElement.setXY(int, int)) && args(x, *))
-        || (call(void Point.setX(int)) && args(x));
+  pointcut setX(int x):
+    (call(void FigureElement.setXY(int, int)) && args(x, *))
+    || (call(void Point.setX(int)) && args(x));
 
-    pointcut setY(int y):
-        (call(void FigureElement.setXY(int, int)) && args(*, y))
-        || (call(void Point.setY(int)) && args(y));
+  pointcut setY(int y):
+    (call(void FigureElement.setXY(int, int)) && args(*, y))
+    || (call(void Point.setY(int)) && args(y));
 
-    before(int x): setX(x) {
-        if ( x < MIN_X || x > MAX_X )
-            throw new IllegalArgumentException("x is out of bounds.");
-    }
+  before(int x): setX(x) {
+    if ( x < MIN_X || x > MAX_X )
+      throw new IllegalArgumentException("x is out of bounds.");
+  }
 
-    before(int y): setY(y) {
-        if ( y < MIN_Y || y > MAX_Y )
-            throw new IllegalArgumentException("y is out of bounds.");
-    }
+  before(int y): setY(y) {
+    if ( y < MIN_Y || y > MAX_Y )
+      throw new IllegalArgumentException("y is out of bounds.");
+  }
 }
 ....
 
@@ -661,13 +651,12 @@ ensures that no figure element is added to the registry more than once.
 ....
 aspect RegistrationProtection {
 
-    pointcut register(): call(void Registry.register(FigureElement));
+  pointcut register(): call(void Registry.register(FigureElement));
+  pointcut canRegister(): withincode(static * FigureElement.make*(..));
 
-    pointcut canRegister(): withincode(static * FigureElement.make*(..));
-
-    before(): register() && !canRegister() {
-        throw new IllegalAccessException("Illegal call " + thisJoinPoint);
-    }
+  before(): register() && !canRegister() {
+    throw new IllegalAccessException("Illegal call " + thisJoinPoint);
+  }
 }
 ....
 
@@ -688,10 +677,10 @@ _compiler_ signal the error.
 ....
 aspect RegistrationProtection {
 
-    pointcut register(): call(void Registry.register(FigureElement));
-    pointcut canRegister(): withincode(static * FigureElement.make*(..));
+  pointcut register(): call(void Registry.register(FigureElement));
+  pointcut canRegister(): withincode(static * FigureElement.make*(..));
 
-    declare error: register() && !canRegister(): "Illegal call"
+  declare error: register() && !canRegister(): "Illegal call"
 }
 ....
 
@@ -748,24 +737,24 @@ advice on `move` sets the dirty flag whenever an object moves.
 [source, java]
 ....
 aspect MoveTracking {
-    private static boolean dirty = false;
+  private static boolean dirty = false;
 
-    public static boolean testAndClear() {
-        boolean result = dirty;
-        dirty = false;
-        return result;
-    }
+  public static boolean testAndClear() {
+    boolean result = dirty;
+    dirty = false;
+    return result;
+  }
 
-    pointcut move():
-        call(void FigureElement.setXY(int, int)) ||
-        call(void Line.setP1(Point))             ||
-        call(void Line.setP2(Point))             ||
-        call(void Point.setX(int))               ||
-        call(void Point.setY(int));
+  pointcut move():
+    call(void FigureElement.setXY(int, int)) ||
+    call(void Line.setP1(Point))             ||
+    call(void Line.setP2(Point))             ||
+    call(void Point.setX(int))               ||
+    call(void Point.setY(int));
 
-    after() returning: move() {
-        dirty = true;
-    }
+  after() returning: move() {
+    dirty = true;
+  }
 }
 ....
 
@@ -834,15 +823,16 @@ method on a `ColorControllingClient`.
 [source, java]
 ....
 aspect ColorControl {
-    pointcut CCClientCflow(ColorControllingClient client):
-        cflow(call(* * (..)) && target(client));
+  pointcut CCClientCflow(ColorControllingClient client):
+    cflow(call(* * (..)) && target(client));
 
-    pointcut make(): call(FigureElement Figure.make*(..));
+  pointcut make(): call(FigureElement Figure.make*(..));
 
-    after (ColorControllingClient c) returning (FigureElement fe):
-            make() && CCClientCflow(c) {
-        fe.setColor(c.colorFor(fe));
-    }
+  after (ColorControllingClient c) returning (FigureElement fe):
+    make() && CCClientCflow(c)
+  {
+    fe.setColor(c.colorFor(fe));
+  }
 }
 ....
 
@@ -869,14 +859,14 @@ Error and then the throw resumes.
 [source, java]
 ....
 aspect PublicErrorLogging {
-    Log log = new Log();
+  Log log = new Log();
 
-    pointcut publicMethodCall():
-        call(public * com.bigboxco.*.*(..));
+  pointcut publicMethodCall():
+    call(public * com.bigboxco.*.*(..));
 
-    after() throwing (Error e): publicMethodCall() {
-        log.write(e);
-    }
+  after() throwing (Error e): publicMethodCall() {
+    log.write(e);
+  }
 }
 ....
 
@@ -890,8 +880,9 @@ these re-entrant calls:
 [source, java]
 ....
 after() throwing (Error e):
-        publicMethodCall() && !cflow(publicMethodCall()) {
-    log.write(e);
+  publicMethodCall() && !cflow(publicMethodCall())
+{
+  log.write(e);
 }
 ....
 
@@ -904,26 +895,24 @@ and `parseExpr`.
 [source, java]
 ....
 aspect ContextFilling {
-    pointcut parse(JavaParser jp):
-        call(* JavaParser.parse*(..))
-        && target(jp)
-        && !call(Stmt parseVarDec(boolean)); // var decs
-                                              // are tricky
+  pointcut parse(JavaParser jp):
+    call(* JavaParser.parse*(..))
+    && target(jp)
+    && !call(Stmt parseVarDec(boolean)); // var decs  are tricky
 
-    around(JavaParser jp) returns ASTObject: parse(jp) {
-        Token beginToken = jp.peekToken();
-        ASTObject ret = proceed(jp);
-        if (ret != null) jp.addContext(ret, beginToken);
-        return ret;
-     }
+  around(JavaParser jp) returns ASTObject: parse(jp) {
+    Token beginToken = jp.peekToken();
+    ASTObject ret = proceed(jp);
+    if (ret != null) jp.addContext(ret, beginToken);
+      return ret;
+  }
 }
 ....
 
 This example exhibits a property found in many aspects with large
 property-based pointcuts. In addition to a general property based
 pattern `call(* JavaParser.parse*(..))` it includes an exception to the
-pattern `!call(Stmt
-        parseVarDec(boolean))`. The exclusion of `parseVarDec` happens
+pattern `!call(Stmt parseVarDec(boolean))`. The exclusion of `parseVarDec` happens
 because the parsing of variable declarations in Java is too complex to
 fit with the clean pattern of the other `parse*` methods. Even with the
 explicit exclusion this aspect is a clear expression of a clean
@@ -974,8 +963,8 @@ are also highly modular, making it possible to develop plug-and-play
 implementations of crosscutting functionality.
 
 AspectJ provides more functionality than was covered by this short
-introduction. The next chapter, xref:language.adoc[The AspectJ Language], covers in detail
+introduction. The next chapter, xref:language.adoc#language[The AspectJ Language], covers in detail
 more of the features of the AspectJ language. The following chapter,
-xref:examples.adoc[Examples], then presents some carefully chosen examples that
+xref:examples.adoc#examples[Examples], then presents some carefully chosen examples that
 show you how AspectJ might be used. We recommend that you read the next
 two chapters carefully before deciding to adopt AspectJ into a project.

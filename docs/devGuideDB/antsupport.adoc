@@ -328,8 +328,8 @@ depends on compliance mode.
 ==== AjcTask matching parameters specified as nested elements
 
 This task forms an implicit FileSet and supports all attributes of
-`<fileset>` (dir becomes srcdir) as well as the nested `<include>`,
-`<exclude>`, and `<patternset>` elements. These can be used to specify
+`fileset` (dir becomes srcdir) as well as the nested `include`,
+`exclude`, and `patternset` elements. These can be used to specify
 source files. However, it is better to use `sourceroots` to specify
 source directories unless using filters to exclude some files from
 compilation.
@@ -753,13 +753,13 @@ sure to include exactly one argument on each line.
 ==== Ajc10 parameters specified as nested elements
 
 This task forms an implicit FileSet and supports all attributes of
-`<fileset>` (dir becomes srcdir) as well as the nested `<include>`,
-`<exclude>`, and `<patternset>` elements. These can be used to specify
+`fileset` (dir becomes srcdir) as well as the nested `include`,
+`exclude`, and `patternset` elements. These can be used to specify
 source files.
 
 ``ajc``'s `srcdir`, `classpath`, `bootclasspath`, `extdirs`, and `jvmarg`
 attributes are path-like structures and can also be set via nested
-`<src>`, `<classpath>`, `<bootclasspath>`, `<extdirs>`, and `<jvmargs>`
+`src`, `classpath`, `bootclasspath`, `extdirs`, and `jvmargs`
 elements, respectively.
 
 [[antTasks-ajc-sample]]

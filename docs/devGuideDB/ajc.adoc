@@ -1,3 +1,4 @@
+[[ajc]]
 == `ajc`, the AspectJ compiler/weaver
 
 === Name
@@ -9,7 +10,6 @@
 [subs=+quotes]
  ajc [_option_...] [_file_... | @_file_... | -argfile _file_...]
 
-[[ajc]]
 === Description
 
 The `ajc` command compiles and weaves AspectJ and Java source and .class
