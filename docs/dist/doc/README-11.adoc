@@ -1,8 +1,8 @@
 [[readme-1_1]]
-== AspectJ 1.1 Readme
+== AspectJ 1.1
 
-[.small]#© Copyright 2002 Palo Alto Research Center, Incorporated, 2003
-Contributors. All rights reserved.#
+_© Copyright 2002 Palo Alto Research Center, Incorporated, 2003
+Contributors. All rights reserved._
 
 This is the initial release of AspectJ 1.1. It includes a small number
 of new language features as well as major improvements to the

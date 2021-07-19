@@ -1,36 +1,31 @@
-[.small]#© Copyright 2018 Contributors. All rights reserved.#
+== AspectJ 1.9.1
+
+_© Copyright 2018 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.9.1 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.1[here]
 
-.
-
-== AspectJ 1.9.1
+_Release info: 1.9.1 available 20-Apr-2018_
 
 === Java 10 support
 
 AspectJ has updated to a recent JDT compiler version (commit
 #abe06abe4ce1 - 9-Apr-2018). With this update it now supports Java10.
-This means you can use the 'var' support. A simple example of combining
+This means you can use the `var` support. A simple example of combining
 var with an aspect:
 
 [source, java]
 ....
 public class Code3 {
-    public static void main(String []argv) {
-        var x = "hello";
-        System.out.println(x.getClass());
-    }
+  public static void main(String []argv) {
+    var x = "hello";
+    System.out.println(x.getClass());
+  }
 }
 
 aspect X {
-    before(): call(* *.getClass()) && target(String) {
-        System.out.println(thisJoinPointStaticPart);
-    }
+  before(): call(* *.getClass()) && target(String) {
+    System.out.println(thisJoinPointStaticPart);
+  }
 }
 ....
-
-Available: 1.9.1 available 20-Apr-2018
-
- +
- +

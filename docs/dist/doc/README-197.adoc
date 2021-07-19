@@ -1,13 +1,15 @@
-[.small]#© Copyright 2021 Contributors. All rights reserved.#
-
 == AspectJ 1.9.7
+
+_© Copyright 2021 Contributors. All rights reserved._
+
+_Release info: 1.9.7 available 24-Jun-2021_
 
 AspectJ (binaries, source code, documentation) is now distributed under
 the https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse
 Public License v 2.0].
 
-Please note that going forward Bugzilla for issue management is
-deprecated and new issues should be filed as
+Please note, that going forward Bugzilla for issue management is
+deprecated, and new issues should be filed as
 https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The
 list of issues addressed for 1.9.7 can be found
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.7[here
@@ -28,7 +30,7 @@ respective final and review features:
 * sealed classes (preview 15, preview 16)
 
 For features marked as preview on a given JDK, you need to compile with
-ajc --enable-preview and run with java --enable-preview on that JDK.
+`ajc --enable-preview` and run with `java --enable-preview on` that JDK.
 
 Please note that you cannot run code compiled with preview features on
 any other JDK than the one used for compilation. For example, records
@@ -53,7 +55,7 @@ respective AspectJ version in which the features were first supported
 Please note that if you want to use load-time weaving on Java 16+, the
 weaving agent collides with https://openjdk.java.net/jeps/396[JEP 396
 (Strongly Encapsulate JDK Internals by Default)]. Therefore, you need to
-set the JVM parameter --add-opens java.base/java.lang=ALL-UNNAMED in
+set the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in
 order to enable aspect weaving. This is due to the fact that the weaver
 uses internal APIs for which we have not found an adequate replacement
 yet when defining classes in different classloaders.
@@ -89,11 +91,11 @@ to work on Linux or on Windows.
 * Remove legacy JRockit support.
 * Support Windows 10 and Windows Server 2016/2019 in installer. Those
 versions were not detected until now, which led to bogus Windows batch
-files forwarding only 9 AJC parameters to the Java process via %1 %2 %3
-%4 %5 %6 %7 %8 %9 instead of %*.
+files forwarding only 9 AJC parameters to the Java process via `%1 %2 %3
+%4 %5 %6 %7 %8 %9` instead of `%*`.
 * AJdoc (AspectJ's javadoc generator add-on for aspects) now supports
 the JDK 16 javadoc generator.
-* Fix serialVersionUID initialization for Java 9+
+* Fix `serialVersionUID` initialization for Java 9+
 * AJC (AspectJ Compiler) usage texts sometimes used to be printed twice
 and they were printed too often, e.g. on top of every compile error.
 This has been fixed. Furthermore, the partly outdated usage text is now
@@ -105,5 +107,3 @@ regard to what is included (ASM, JDT Core) and how package names have
 been relocated.
 * Fix sample code formatting issues (indentation) throughout the
 documentation.
-
-Available: 1.9.7 available 24-Jun-2021

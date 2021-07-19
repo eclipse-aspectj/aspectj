@@ -1,6 +1,8 @@
-[.small]#© Copyright 2017 Contributors. All rights reserved.#
+== AspectJ 1.8.11
 
-== AspectJ 1.8.11 Readme
+_© Copyright 2017 Contributors. All rights reserved._
+
+_Release info: 1.8.11 available 26-Sep-2017_
 
 This release is a small compatibility release to improve the behaviour
 of the AspectJ 1.8 line on JDK9. Importantly it includes a change that
@@ -15,5 +17,3 @@ actual weaving. Although if you using Spring AOP with class level
 annotation retention there may still be issues. If you experience
 problems or need to do actual weaving on JDK9, please use AspectJ9
 instead.
-
-* 1.8.11 available 26-Sep-2017

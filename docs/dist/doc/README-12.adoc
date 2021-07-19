@@ -1,6 +1,6 @@
-[.small]#© Copyright 2003,2004 Contributors. All rights reserved.#
+== AspectJ 1.2
 
-== AspectJ 1.2 Readme
+_© Copyright 2003,2004 Contributors. All rights reserved._
 
 The definition of the AspectJ language is unchanged in the 1.2 release.
 Instead, AspectJ 1.2 provides major improvements to the functionality of

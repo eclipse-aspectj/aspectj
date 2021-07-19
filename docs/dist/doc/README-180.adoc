@@ -1,15 +1,15 @@
-[.small]#© Copyright 2014 Contributors. All rights reserved.#
+== AspectJ 1.8.0
 
-== AspectJ 1.8.0 Readme
+_© Copyright 2014 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.8.0 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.0.M1;target_milestone=1.8.0;[here]
 
-.
+_Release info:_
 
-* 1.8.0 available 17-Apr-2014
-* 1.8.0.RC1 available 18-Mar-2014
-* 1.8.0.M1 available 29-Jul-2013
+* _1.8.0 available 17-Apr-2014_
+* _1.8.0.RC1 available 18-Mar-2014_
+* _1.8.0.M1 available 29-Jul-2013_
 
 === Notable changes
 

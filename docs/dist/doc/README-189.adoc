@@ -1,13 +1,11 @@
-[.small]#© Copyright 2016 Contributors. All rights reserved.#
+== AspectJ 1.8.9
 
-== AspectJ 1.8.9 Readme
+_© Copyright 2016 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.8.9 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.8.9;[here]
 
-.
-
-* 1.8.9 available 14-Mar-2016
+_Release info: 1.8.9 available 14-Mar-2016_
 
 === Notable changes
 

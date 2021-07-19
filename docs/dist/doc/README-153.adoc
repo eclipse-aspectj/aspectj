@@ -1,6 +1,6 @@
-[.small]#© Copyright 2006 Contributors. All rights reserved.#
-
 == AspectJ 5 v1.5.3 Readme
+
+_© Copyright 2006 Contributors. All rights reserved._
 
 This release includes a number of bug fixes and enhancements (over 80).
 The full list of resolved issues can be found with

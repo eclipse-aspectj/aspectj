@@ -1,6 +1,6 @@
-[.small]#© Copyright 2010 Contributors. All rights reserved.#
+== AspectJ 1.6.9
 
-== AspectJ 1.6.9 Readme
+_© Copyright 2010 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.6.9 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.9;target_milestone=1.6.9M1;target_milestone=1.6.9M2;target_milestone=1.6.9RC1[here]

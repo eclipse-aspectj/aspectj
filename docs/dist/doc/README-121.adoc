@@ -1,6 +1,6 @@
-[.small]#© Copyright 2004 Contributors. All rights reserved.#
+== AspectJ 1.2.1
 
-== AspectJ 1.2.1 Readme
+_© Copyright 2004 Contributors. All rights reserved._
 
 AspectJ 1.2.1 is largely a bug-fix release and the definition of the
 AspectJ language is unchanged from the 1.2.0 release (with the exception

@@ -1,6 +1,6 @@
-[.small]#© Copyright 2009 Contributors. All rights reserved.#
+== AspectJ 1.6.7
 
-== AspectJ 1.6.7 Readme
+_© Copyright 2009 Contributors. All rights reserved._
 
 AspectJ 1.6.7 includes some radical internal changes. These improvements
 enable faster compilation, faster binary weaving, faster load time

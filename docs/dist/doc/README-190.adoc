@@ -1,23 +1,23 @@
-[.small]#© Copyright 2018 Contributors. All rights reserved.#
+== AspectJ 1.9.0
+
+_© Copyright 2018 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.9.0 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.0[here]
 
-.
-
-== AspectJ 1.9.0
+_Release info: 1.9.0 available 2-Apr-2018_
 
 === Improved runtime interface
 
 New factory methods have been added to the AspectJ runtime. This is an
-attempt to more optimally create thisJoinPoint and
-thisEnclosingJoinPoint objects. The generated code that invokes these
-now also uses the ability for the LDC bytecode instruction to load class
+attempt to more optimally create `thisJoinPoint` and
+`thisEnclosingJoinPoint` objects. The generated code that invokes these
+now also uses the ability for the `LDC` bytecode instruction to load class
 constants directly (this replaces what was happening previously where
-generated code referenced string classnames and classloading was being
-done from the aspectj runtime as the woven application was starting).
+generated code referenced string class names and class-loading was being
+done from the AspectJ runtime as the woven application was starting).
 
-This is turned on by using -Xajruntimetarget:1.9. This option was used
+This is turned on by using `-Xajruntimetarget:1.9`. This option was used
 previously to enable users to target an old runtime if they knew that
 old runtime is all that was available at some deployed target. The new
 generation mechanism is not the default, not until it has had a bit more
@@ -34,12 +34,12 @@ across other uses in the class file.
 more instructions involved in preparing the data for invocation of the
 new joinpoint factory methods. It is possible if you have a lot of
 joinpoints that we might blow the 64k instruction limit for the
-ajc$preClinit method (where the factory invocation code is generated).
+`ajc$preClinit` method (where the factory invocation code is generated).
 Please provide feedback if this happens to you!
 
 In anticipation of not all build plugins supporting that
--Xajruntimetarget option, you can now specify these kinds of option in
-the ASPECTJ_OPTS environment variable. Set that in your environment:
+`-Xajruntimetarget` option, you can now specify these kinds of option in
+the `ASPECTJ_OPTS` environment variable. Set that in your environment:
 
 [source, text]
 ....
@@ -48,43 +48,43 @@ export ASPECTJ_OPTS="-Xajruntimetarget:1.9"
 
 And it should get picked up by AspectJ when it runs.
 
-* 1.9.0 available 2-Apr-2018
-
 == AspectJ 1.9.0.RC4
 
-Primary changes in RC4 are to add support for <compilerArg> in the Ant
+_Release info: 1.9.0.RC4 available 21-Feb-2018_
+
+Primary changes in RC4 are to add support for `<compilerArg>` in the Ant
 task. This enables users of the Ant task to pass in options supported by
 the underlying AspectJ but not yet surfaced elsewhere. Particularly
 useful with Java9 which includes a number of module related commands.
-For example, here is an iajc usage with compilerArg that is passing
---add-modules java.xml.bind:
+For example, here is an `iajc` usage with `compilerArg` that is passing
+`--add-modules java.xml.bind`:
 
 [source, xml]
 ....
 <iajc destdir="bin" failonerror="true"
-   showWeaveInfo="true" source="1.9" target="1.9"
-   debug="true"  fork="true"  maxmem="256m">
-   <compilerArg value="--add-modules"/>
-   <compilerArg value="java.xml.bind"/>
+  showWeaveInfo="true" source="1.9" target="1.9"
+  debug="true"  fork="true" maxmem="256m">
+
+  <compilerArg value="--add-modules"/>
+  <compilerArg value="java.xml.bind"/>
   <src path="src" />
   <classpath>
-          <pathelement location="${aspectj.home}/lib/aspectjrt.jar"/>
+    <pathelement location="${aspectj.home}/lib/aspectjrt.jar"/>
   </classpath>
+
 </iajc>
 ....
 
-1.9.0.RC4 available 21-Feb-2018
-
 == AspectJ 1.9.0.RC3
+
+_Release info: 1.9.0.RC3 available 5-Feb-2018_
 
 Primary changes in RC3 are to upgrade JDT and pickup all the fixes for
 Java9 that have gone into it over the last few months.
 
-1.9.0.RC3 available 5-Feb-2018
-
 == AspectJ 1.9.0.RC2
 
-* 1.9.0.RC2 available 9-Nov-2017
+_Release info: 1.9.0.RC2 available 9-Nov-2017_
 
 Key change in 1.9.0.RC2 is actually to be more tolerant of JDK10. The
 version handling has been somewhat overhauled so AspectJ 9 will behave
@@ -93,7 +93,7 @@ place if new JDK versions are going to arrive thick and fast.
 
 == AspectJ 1.9.0.RC1
 
-* 1.9.0.RC1 available 20-Oct-2017
+_Release info: 1.9.0.RC1 available 20-Oct-2017_
 
 This is the first release candidate of AspectJ 1.9.0 - the version of
 AspectJ to be based on Java9. It includes a recent version of the
@@ -103,7 +103,7 @@ Eclipse Java9 compiler (from jdt core, commit #062ac5d7a6bf9).
 
 AspectJ can now be used with the new module system available in Java9.
 The key jars in AspectJ have been given automatic module names. The
-automatic module name is org.aspectj.runtime for the aspectjrt module:
+automatic module name is `org.aspectj.runtime` for the `aspectjrt` module:
 
 [source, text]
 ....
@@ -112,8 +112,8 @@ $ java --module-path <pathto>/lib/aspectjrt.jar --list-modules | grep aspectj
 org.aspectj.runtime file:///<pathto>/lib/aspectjrt.jar automatic
 ....
 
-And similarly org.aspectj.weaver and org.aspectj.tools for aspectjweaver
-and aspectjtools respectively:
+And similarly `org.aspectj.weaver` and `org.aspectj.tools` for `aspectjweaver`
+and `aspectjtools`, respectively:
 
 [source, text]
 ....
@@ -133,43 +133,38 @@ contains org.aspectj.asm.internal
 ...
 ....
 
- +
- +
-
 === Building woven modules
 
-AspectJ understands module-info.java source files and building modules
+AspectJ understands `module-info.java` source files and building modules
 that include aspects. Here is an example:
 
 [source, java]
 ....
-module-info.java
+// module-info.java
 
 module demo {
-    exports pkg;
-    requires org.aspectj.runtime;
+  exports pkg;
+  requires org.aspectj.runtime;
 }
 
-
-pkg/Demo.java
+// pkg/Demo.java
 
 package pkg;
 
 public class Demo {
-    public static void main(String[] argv) {
-        System.out.println("Demo running");
-    }
+  public static void main(String[] argv) {
+    System.out.println("Demo running");
+  }
 }
 
-
-otherpkg/Azpect.java
+// otherpkg/Azpect.java
 
 package otherpkg;
 
 public aspect Azpect {
-    before(): execution(* *(..)) && !within(Azpect) {
-        System.out.println("Azpect running");
-    }
+  before(): execution(* *(..)) && !within(Azpect) {
+    System.out.println("Azpect running");
+  }
 }
 ....
 
@@ -184,8 +179,8 @@ module-info.java:3 [error] org.aspectj.runtime cannot be resolved to a module
 ...
 ....
 
-Wait, that failed! Yes, aspectjrt.jar (which includes the required
-org.aspectj.weaver module) wasn't supplied. We need to pass it on the
+Wait, that failed! Yes, `aspectjrt.jar` (which includes the required
+`org.aspectj.weaver` module) wasn't supplied. We need to pass it on the
 module-path:
 
 [source, text]
@@ -205,13 +200,10 @@ Demo running
 
 That's it!
 
- +
- +
-
 === Binary weaving with modules
 
-A module is really just a jar with a module-info descriptor. As such you
-can simply pass a module on the inpath and binary weave it with other
+A module is really just a jar with a _module-info_ descriptor. As such, you
+can simply pass a module on the _inpath_ and binary-weave it with other
 aspects. Take the module we built above, let's weave into it again:
 
 [source, java]
@@ -221,9 +213,9 @@ aspects. Take the module we built above, let's weave into it again:
 package extra;
 
 public aspect AnotherAzpect {
-    before(): execution(* *(..)) && !within(*Azpect) {
-        System.out.println("AnotherAzpect running");
-    }
+  before(): execution(* *(..)) && !within(*Azpect) {
+    System.out.println("AnotherAzpect running");
+  }
 }
 ....
 
@@ -232,13 +224,13 @@ public aspect AnotherAzpect {
 $ ajc -inpath demo.jar AnotherAzpect.java -outjar newdemo.jar
 ....
 
-Notice how there was no complaint here that the org.aspectj.runtime
+Notice how there was no complaint here that the `org.aspectj.runtime`
 module hadn't been passed in. That is because inpath was being used
 which doesn't treat specified jars as modules (and so does not check
-dependencies). There is no module-inpath right now.
+dependencies). There is no _module-inpath_ right now.
 
-Because the new jar produced includes the compiled aspect, the
-module-info specification inside is still correct, so we can run it
+Because the new JAR produced includes the compiled aspect, the
+_module-info_ specification inside is still correct, so we can run it
 exactly as before:
 
 [source, text]
@@ -252,8 +244,8 @@ Demo running
 
 === Faster Spring AOP
 
-Dave Syer recently created a series of benchmarks for checking the speed
-of Spring-AspectJ: https://github.com/dsyer/spring-boot-aspectj
+Dave Syer recently created a https://github.com/dsyer/spring-boot-aspectj[series of benchmarks] for checking the speed
+of Spring-AspectJ.
 
 Here we can see the numbers for AspectJ 1.8.11 (on an older Macbook
 Pro):
@@ -332,18 +324,18 @@ it impacts it by 1 second.
 * Eclipse JDT Java 9 support is still being actively worked on and lots
 of fixes will be coming through over the next few months and included in
 AspectJ 1.9.X revisions.
-* AspectJ does not currently modify module-info.java files. An aspect
+
+* AspectJ does not currently modify `module-info.java` files. An aspect
 from one module applying to code in another module clearly introduces a
 dependency between those two modules. There is no reason - other than
 time! - that this can't be done.
 (https://bugs.eclipse.org/bugs/show_bug.cgi?id=526244[Issue 526244])
-* Related to that AspectJ, on detection of aspects should be able to
-automatically introduce the requires org.aspectj.runtime to the
-module-info. (https://bugs.eclipse.org/bugs/show_bug.cgi?id=526242[Issue
-526242])
-* Module aware variants of AspectJ paths: --module-inpath,
---module-aspectpath.
-(https://bugs.eclipse.org/bugs/show_bug.cgi?id=526243[Issue 526243])
 
- +
- +
+* Related to that AspectJ, on detection of aspects should be able to
+automatically introduce the `requires org.aspectj.runtime` to the
+_module-info_. (https://bugs.eclipse.org/bugs/show_bug.cgi?id=526242[Issue
+526242])
+
+* Module-aware variants of AspectJ paths: `--module-inpath`,
+`--module-aspectpath`.
+(https://bugs.eclipse.org/bugs/show_bug.cgi?id=526243[Issue 526243])

@@ -1,6 +1,6 @@
-[.small]#© Copyright 2008 Contributors. All rights reserved.#
+== AspectJ 1.6.2
 
-== AspectJ 1.6.2 Readme
+_© Copyright 2008 Contributors. All rights reserved._
 
 The main theme of AspectJ1.6.2 was improved IDE incremental performance
 and a number of changes have gone in to improve how AspectJ and AJDT

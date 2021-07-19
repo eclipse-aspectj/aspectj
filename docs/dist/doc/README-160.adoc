@@ -1,6 +1,6 @@
-[.small]#© Copyright 2008 Contributors. All rights reserved.#
+== AspectJ 1.6.0
 
-== AspectJ v1.6.0 Readme
+_© Copyright 2008 Contributors. All rights reserved._
 
 === AspectJ v1.6.0 - 23 Apr 2008
 

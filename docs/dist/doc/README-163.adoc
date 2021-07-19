@@ -1,6 +1,6 @@
-[.small]#© Copyright 2008 Contributors. All rights reserved.#
+== AspectJ 1.6.3
 
-== AspectJ 1.6.3 Readme
+_© Copyright 2008 Contributors. All rights reserved._
 
 * xref:#split[Split matching/weaving]
 * xref:#bugsfixed[Bugs fixed]

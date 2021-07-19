@@ -1,13 +1,11 @@
-[.small]#© Copyright 2013 Contributors. All rights reserved.#
+== AspectJ 1.7.4
 
-== AspectJ 1.7.4 Readme
-
-Available 24-Oct-2013
+_© Copyright 2013 Contributors. All rights reserved._
 
 The list of resolved issues in 1.7.4 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.4;[here]
 
-.
+_Release info: 1.7.4 available 24-Oct-2013_
 
 *Notes*
 

@@ -1,6 +1,6 @@
-[.small]#© Copyright 2009 Contributors. All rights reserved.#
+== AspectJ 1.6.4
 
-== AspectJ 1.6.4 Readme
+_© Copyright 2009 Contributors. All rights reserved._
 
 * xref:#compilation[Compilation times]
 * xref:#language[Language enhancements]

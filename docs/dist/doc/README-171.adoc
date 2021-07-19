@@ -1,13 +1,11 @@
-[.small]#© Copyright 2011 Contributors. All rights reserved.#
+== AspectJ 1.7.1
 
-== AspectJ 1.7.1 Readme
+_© Copyright 2011 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.7.1 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.7.1;[here]
 
-.
-
-* 1.7.1 available 6-Sep-2012
+_Release info: 1.7.1 available 6-Sep-2012_
 
 === Changes
 
