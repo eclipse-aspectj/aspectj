@@ -9,22 +9,22 @@
 |*Methods and Constructors* |
 
 |`call(Signature)` |every call to any method or constructor matching
-`<Signature>` at the call site
+`Signature` at the call site
 
 |`execution(Signature)` |every execution of any method or constructor
-matching `<Signature>`
+matching `Signature`
 
 |*Fields* |
 
-|`get(Signature)` |every reference to any field matching `<Signature>`
+|`get(Signature)` |every reference to any field matching `Signature`
 
-|`set(Signature)` |every assignment to any field matching `<Signature>`.
+|`set(Signature)` |every assignment to any field matching `Signature`.
 The assigned value can be exposed with an `args` pointcut
 
 |*Exception Handlers* |
 
 |`handler(TypePattern)` |every exception handler for any `Throwable`
-type in <TypePattern>. The exception value can be exposed with an `args`
+type in `TypePattern`. The exception value can be exposed with an `args`
 pointcut
 
 |*Advice* |
@@ -34,25 +34,25 @@ pointcut
 |*Initialization* |
 
 |`staticinitialization(TypePattern)` |every execution of a static
-initializer for any type in <TypePattern>
+initializer for any type in `TypePattern`
 
 |`initialization(Signature)` |every initialization of an object when the
-first constructor called in the type matches `<Signature>`, encompassing
+first constructor called in the type matches `Signature`, encompassing
 the return from the super constructor call to the return of the
 first-called constructor
 
 |`preinitialization(Signature)` |every pre-initialization of an object
-when the first constructor called in the type matches `<Signature>`,
+when the first constructor called in the type matches `Signature`,
 encompassing the entry of the first-called constructor to the call to
 the super constructor
 
 |*Lexical* |
 
 |`within(TypePattern)` |every join point from code defined in a type in
-<TypePattern>
+`TypePattern`
 
 |`withincode(Signature)` |every join point from code defined in a method
-or constructor matching `<Signature>`
+or constructor matching `Signature`
 |===
 
 [[quick-typePatterns]]
@@ -64,22 +64,22 @@ A type pattern is one of
 |===
 |*Type pattern* |
 
-|`<TypeNamePattern>` |all types in `<TypeNamePattern>`
+|`TypeNamePattern` |all types in `TypeNamePattern`
 
-|`<SubtypePattern>` |all types in `<SubtypePattern>`, a pattern with a `+`
+|`SubtypePattern` |all types in `SubtypePattern`, a pattern with a `+`
 
-|`<ArrayTypePattern>` |all types in `<ArrayTypePattern>`, a pattern with one or more ``[]``s.
+|`ArrayTypePattern` |all types in `ArrayTypePattern`, a pattern with one or more ``[]``s.
 
-|`!TypePattern` |all types not in <TypePattern>
+|`!TypePattern` |all types not in `TypePattern`
 
-|`TypePattern0 && TypePattern1` |all types in both `<TypePattern0>` and `<TypePattern1>`
+|`TypePattern0 && TypePattern1` |all types in both `TypePattern0` and `TypePattern1`
 
-|`TypePattern0 \|\| TypePattern1` |all types in either `<TypePattern0>` or `<TypePattern1>`
+|`TypePattern0 \|\| TypePattern1` |all types in either `TypePattern0` or `TypePattern1`
 
-|`( TypePattern )` |all types in `<TypePattern>`
+|`( TypePattern )` |all types in `TypePattern`
 |===
 
-where `<TypeNamePattern>` can either be a plain type name, the wildcard
+where `TypeNamePattern` can either be a plain type name, the wildcard
 `\*` (indicating all types), or an identifier with embedded `*` and `..`
 wildcards.
 
@@ -99,7 +99,7 @@ Each piece of advice is of the form
 [ strictfp ] AdviceSpec [ throws TypeList ] : Pointcut { Body }
 ....
 
-where `<AdviceSpec>` is one of
+where `AdviceSpec` is one of
 
 `before( Formals )`::
   runs before each join point
@@ -173,7 +173,7 @@ Each aspect is of the form
 [ privileged ] Modifiers aspect Id [ extends Type ] [ implements TypeList ] [ PerClause ] { Body }
 ....
 
-where `<PerClause>` defines how the aspect is instantiated and associated
+where `PerClause` defines how the aspect is instantiated and associated
 (`issingleton()` by default):
 
 [cols=",,",options="header",]
@@ -183,18 +183,18 @@ where `<PerClause>` defines how the aspect is instantiated and associated
 default. |`aspectOf()` at all join points
 
 |`perthis(Pointcut)` |An instance is associated with each object that is
-the currently executing object at any join point in `<Pointcut>`.
+the currently executing object at any join point in `Pointcut`.
 |`aspectOf(Object)` at all join points
 
 |`pertarget(Pointcut)` |An instance is associated with each object that
-is the target object at any join point in `<Pointcut>`.
+is the target object at any join point in `Pointcut`.
 |`aspectOf(Object)` at all join points
 
 |`percflow(Pointcut)` |The aspect is defined for each entrance to the
-control flow of the join points defined by `<Pointcut>`. |`aspectOf()` at
+control flow of the join points defined by `Pointcut`. |`aspectOf()` at
 join points in `cflow(Pointcut)`
 
 |`percflowbelow(Pointcut)` |The aspect is defined for each entrance to
-the control flow below the join points defined by `<Pointcut>`.
+the control flow below the join points defined by `Pointcut`.
 |`aspectOf()` at join points in `cflowbelow(Pointcut)`
 |===

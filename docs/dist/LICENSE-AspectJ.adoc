@@ -1,6 +1,6 @@
 == *AspectJ^TM^ Compiler and Core Tools License*
 
-This is a binary-only release.  Source code is available from
+This is a binary-only release. Source code is available from
 http://eclipse.org/aspectj
 
 The Eclipse Foundation makes available all content in this distribution

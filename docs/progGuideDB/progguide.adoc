@@ -10,28 +10,31 @@ All rights reserved._
 This programming guide describes the AspectJ language. A companion guide describes the tools which are part of the
 AspectJ development environment.
 
-* If you are completely new to AspectJ, please read the link:gettingstarted.adoc[getting started] chapter for a broad overview of AspectJ programming.
-* If you are already familiar with AspectJ, but want a deeper understanding, you can learn more about the link:language.adoc[AspectJ language] and look at the examples in the chapter.
-* If you want a more formal definition of AspectJ, please refer to the link:semantics.adoc[language semantics] section.
+* If you are completely new to AspectJ, please read the xref:gettingstarted.adoc#starting[getting started] chapter for a
+  broad overview of AspectJ programming.
+* If you are already familiar with AspectJ, but want a deeper understanding, you can learn more about the
+  xref:language.adoc#language[AspectJ language] and look at the examples in the chapter.
+* If you want a more formal definition of AspectJ, please refer to the xref:semantics.adoc#semantics[language semantics]
+  section.
 
 ////
 ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
 table of contents (TOC) can be wrong and the first section of each document missing completely.
 ////
-include::preface.adoc[]
+include::preface.adoc[Preface]
 
-include::gettingstarted.adoc[]
+include::gettingstarted.adoc[Getting Started with AspectJ]
 
-include::language.adoc[]
+include::language.adoc[The AspectJ Language]
 
-include::examples.adoc[]
+include::examples.adoc[Examples]
 
-include::idioms.adoc[]
+include::idioms.adoc[Idioms]
 
-include::pitfalls.adoc[]
+include::pitfalls.adoc[Pitfalls]
 
-include::quickreference.adoc[]
+include::quickreference.adoc[AspectJ Quick Reference]
 
-include::semantics.adoc[]
+include::semantics.adoc[Language Semantics]
 
-include::implementation.adoc[]
+include::implementation.adoc[Implementation Notes]

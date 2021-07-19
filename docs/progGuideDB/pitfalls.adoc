@@ -14,25 +14,25 @@ Here is a Java program with peculiar behavior
 [source, java]
 ....
 public class Main {
-    public static void main(String[] args) {
-        foo();
-        System.out.println("done with call to foo");
-    }
+  public static void main(String[] args) {
+    foo();
+    System.out.println("done with call to foo");
+  }
 
-    static void foo() {
-        try {
-            foo();
-        } finally {
-            foo();
-        }
+  static void foo() {
+    try {
+      foo();
+    } finally {
+      foo();
     }
+  }
 }
 ....
 
-This program will never reach the println call, but when it aborts may
+This program will never reach the `println` call, but when it aborts may
 have no stack trace.
 
-This silence is caused by multiple StackOverflowExceptions. First the
+This silence is caused by multiple ``StackOverflowException``s. First the
 infinite loop in the body of the method generates one, which the finally
 clause tries to handle. But this finally clause also generates an
 infinite loop which the current JVMs can't handle gracefully leading to
@@ -43,24 +43,24 @@ The following short aspect will also generate this behavior:
 [source, java]
 ....
 aspect A {
-    before(): call(* *(..)) { System.out.println("before"); }
-    after():  call(* *(..)) { System.out.println("after"); }
+  before(): call(* *(..)) { System.out.println("before"); }
+  after():  call(* *(..)) { System.out.println("after"); }
 }
 ....
 
 Why? Because the call to println is also a call matched by the pointcut
-`call (* *(..))`. We get no output because we used simple after()
+`call (* *(..))`. We get no output because we used simple `after()`
 advice. If the aspect were changed to
 
 [source, java]
 ....
 aspect A {
-    before(): call(* *(..)) { System.out.println("before"); }
-    after() returning:  call(* *(..)) { System.out.println("after"); }
+  before(): call(* *(..)) { System.out.println("before"); }
+  after() returning:  call(* *(..)) { System.out.println("after"); }
 }
 ....
 
-Then at least a StackOverflowException with a stack trace would be seen.
+then at least a `StackOverflowException` with a stack trace would be seen.
 In both cases, though, the overall problem is advice applying within its
 own body.
 
@@ -71,8 +71,8 @@ points caused within the aspect. So:
 [source, java]
 ....
 aspect A {
-    before(): call(* *(..)) && !within(A) { System.out.println("before"); }
-    after() returning:  call(* *(..)) && !within(A) { System.out.println("after"); }
+  before(): call(* *(..)) && !within(A) { System.out.println("before"); }
+  after() returning:  call(* *(..)) && !within(A) { System.out.println("after"); }
 }
 ....
 
@@ -82,8 +82,8 @@ ways, for example:
 [source, java]
 ....
 aspect A {
-    before(): call(* MyObject.*(..))  { System.out.println("before"); }
-    after() returning:  call(* MyObject.*(..))  { System.out.println("after"); }
+  before(): call(* MyObject.*(..))  { System.out.println("before"); }
+  after() returning:  call(* MyObject.*(..))  { System.out.println("after"); }
 }
 ....
 

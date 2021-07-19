@@ -145,10 +145,10 @@ exception
 |Advice execution |executing aspect |executing aspect |advice arguments
 |===
 
-* There is no executing object in static contexts such as static method
++++*+++ There is no executing object in static contexts such as static method
 bodies or static initializers.
 
-** There is no target object for join points associated with static
++++**+++ There is no target object for join points associated with static
 methods or fields.
 
 [[semantics-pointcuts]]
@@ -241,7 +241,7 @@ declaration.
 [source, java]
 ....
 pointcut publicIntCall(int i):
-    call(public * *(int)) && args(i);
+  call(public * *(int)) && args(i);
 ....
 
 A named pointcut may be defined in either a class or aspect, and is
@@ -251,13 +251,13 @@ member, it may have an access modifier such as `public` or `private`.
 [source, java]
 ....
 class C {
-    pointcut publicCall(int i):
-  call(public * *(int)) && args(i);
+  pointcut publicCall(int i):
+    call(public * *(int)) && args(i);
 }
 
 class D {
-    pointcut myPublicCall(int i):
-  C.publicCall(i) && within(SomeType);
+  pointcut myPublicCall(int i):
+    C.publicCall(i) && within(SomeType);
 }
 ....
 
@@ -268,7 +268,7 @@ aspects.
 [source, java]
 ....
 abstract aspect A {
-    abstract pointcut publicCall(int i);
+  abstract pointcut publicCall(int i);
 }
 ....
 
@@ -277,7 +277,7 @@ In such a case, an extending aspect may override the abstract pointcut.
 [source, java]
 ....
 aspect B extends A {
-    pointcut publicCall(int i): call(public Foo.m(int)) && args(i);
+  pointcut publicCall(int i): call(public Foo.m(int)) && args(i);
 }
 ....
 
@@ -296,7 +296,7 @@ legal:
 [source, java]
 ....
 aspect B percflow(publicCall()) {
-    pointcut publicCall(): call(public Foo.m(int));
+  pointcut publicCall(): call(public Foo.m(int));
 }
 ....
 
@@ -364,7 +364,6 @@ type. So in the following program
 [source, java]
 ....
 public class InstanceOf {
-
   public static void main(String[] args) {
     doInt(5);
   }
@@ -374,10 +373,10 @@ public class InstanceOf {
 
 aspect IntToLong {
   pointcut el(long l) :
-      execution(* doInt(..)) && args(l);
+    execution(* doInt(..)) && args(l);
 
   before(Object o) : el(o) {
-       System.out.println(o.getClass());
+    System.out.println(o.getClass());
   }
 }
 ....
@@ -392,32 +391,16 @@ expose it as an `Integer`, not a `Long`.
 AspectJ provides two primitive pointcut designators designed to capture
 method call and execution join points.
 
-* call(
-+
-MethodPattern
-+
-)
-* execution(
-+
-MethodPattern
-+
-)
+* `call( MethodPattern )`
+* `execution( MethodPattern )`
 
 ===== Field-related pointcuts
 
 AspectJ provides two primitive pointcut designators designed to capture
 field reference and set join points:
 
-* get(
-+
-FieldPattern
-+
-)
-* set(
-+
-FieldPattern
-+
-)
+* `get( FieldPattern )`
+* `set( FieldPattern )`
 
 All set join points are treated as having one argument, the value the
 field is being set to, so at a set join point, that value can be
@@ -427,11 +410,12 @@ variable x declared in type T might be written as
 [source, java]
 ....
 aspect GuardedX {
-    static final int MAX_CHANGE = 100;
-    before(int newval): set(static int T.x) && args(newval) {
-  if (Math.abs(newval - T.x) > MAX_CHANGE)
+  static final int MAX_CHANGE = 100;
+
+  before(int newval): set(static int T.x) && args(newval) {
+    if (Math.abs(newval - T.x) > MAX_CHANGE)
       throw new RuntimeException();
-    }
+  }
 }
 ....
 
@@ -440,48 +424,24 @@ aspect GuardedX {
 AspectJ provides primitive pointcut designators designed to capture the
 initializer execution join points of objects.
 
-* call(
-+
-ConstructorPattern
-+
-)
-* execution(
-+
-ConstructorPattern
-+
-)
-* initialization(
-+
-ConstructorPattern
-+
-)
-* preinitialization(
-+
-ConstructorPattern
-+
-)
+* `call( ConstructorPattern )`
+* `execution( ConstructorPattern )`
+* `initialization( ConstructorPattern )`
+* `preinitialization( ConstructorPattern )`
 
 ===== Class initialization-related pointcuts
 
 AspectJ provides one primitive pointcut designator to pick out static
 initializer execution join points.
 
-* staticinitialization(
-+
-TypePattern
-+
-)
+* `staticinitialization( TypePattern )`
 
 ===== Exception handler execution-related pointcuts
 
 AspectJ provides one primitive pointcut designator to capture execution
 of exception handlers:
 
-* handler(
-+
-TypePattern
-+
-)
+* `handler( TypePattern )`
 
 All handler join points are treated as having one argument, the value of
 the exception being handled. That value can be accessed with an `args`
@@ -491,9 +451,9 @@ normal form before they are handled could be written as
 [source, java]
 ....
 aspect NormalizeFooException {
-    before(FooException e): handler(FooException) && args(e) {
-  e.normalize();
-    }
+  before(FooException e): handler(FooException) && args(e) {
+    e.normalize();
+  }
 }
 ....
 
@@ -502,7 +462,7 @@ aspect NormalizeFooException {
 AspectJ provides one primitive pointcut designator to capture execution
 of advice
 
-* adviceexecution()
+* `adviceexecution()`
 
 This can be used, for example, to filter out any join point in the
 control flow of advice from a particular aspect.
@@ -510,11 +470,11 @@ control flow of advice from a particular aspect.
 [source, java]
 ....
 aspect TraceStuff {
-    pointcut myAdvice(): adviceexecution() && within(TraceStuff);
+  pointcut myAdvice(): adviceexecution() && within(TraceStuff);
 
-    before(): call(* *(..)) && !cflow(myAdvice) {
-  // do something
-    }
+  before(): call(* *(..)) && !cflow(myAdvice) {
+    // do something
+  }
 }
 ....
 
@@ -527,24 +487,8 @@ times. These pointcuts use the dynamic types of their objects to pick
 out join points. They may also be used to expose the objects used for
 discrimination.
 
-* this(
-+
-Type
-+
-or
-+
-Id
-+
-)
-* target(
-+
-Type
-+
-or
-+
-Id
-+
-)
+* `this( Type or Id )`
+* `target( Type or Id )`
 
 The `this` pointcut picks out each join point where the currently
 executing object (the object bound to `this`) is an instance of a
@@ -556,15 +500,7 @@ control to. This means that the target object is the same as the current
 object at a method execution join point, for example, but may be
 different at a method call join point.
 
-* args(
-+
-Type
-+
-or
-+
-Id
-+
-or "..", ...)
+* `args( Type or Id or "..", ...)`
 
 The args pointcut picks out each join point where the arguments are
 instances of some types. Each element in the comma-separated list is one
@@ -573,8 +509,8 @@ must be an instance of that type. If it is an identifier, then that
 identifier must be bound in the enclosing advice or pointcut
 declaration, and so the argument in that position must be an instance of
 the type of the identifier (or of any type if the identifier is typed to
-Object). If it is the "*" wildcard, then any argument will match, and if
-it is the special wildcard "..", then any number of arguments will
+Object). If it is the `*` wildcard, then any argument will match, and if
+it is the special wildcard `..`, then any number of arguments will
 match, just like in signature patterns. So the pointcut
 
 [source, java]
@@ -591,26 +527,18 @@ Some concerns cut across the control flow of the program. The `cflow`
 and `cflowbelow` primitive pointcut designators capture join points
 based on control flow.
 
-* cflow(
-+
-Pointcut
-+
-)
-* cflowbelow(
-+
-Pointcut
-+
-)
+* `cflow( Pointcut )`
+* `cflowbelow( Pointcut )`
 
 The `cflow` pointcut picks out all join points that occur between entry
-and exit of each join point <P> picked out by <Pointcut>, including <P>
+and exit of each join point `P` picked out by `Pointcut`, including `P`
 itself. Hence, it picks out the join points _in_ the control flow of the
-join points picked out by <Pointcut>.
+join points picked out by `Pointcut`.
 
 The `cflowbelow` pointcut picks out all join points that occur between
-entry and exit of each join point <P> picked out by <Pointcut>, but not
-including <P> itself. Hence, it picks out the join points _below_ the
-control flow of the join points picked out by <Pointcut>.
+entry and exit of each join point `P` picked out by `Pointcut`, but not
+including `P` itself. Hence, it picks out the join points _below_ the
+control flow of the join points picked out by `Pointcut`.
 
 ====== Context exposure from control flows
 
@@ -624,31 +552,30 @@ the following program is zero, even though it is in many control flows.
 [source, java]
 ....
 class Test {
-    public static void main(String[] args) {
-        fact(5);
+  public static void main(String[] args) {
+    fact(5);
+  }
+  static int fact(int x) {
+    if (x == 0) {
+      System.err.println("bottoming out");
+      return 1;
     }
-    static int fact(int x) {
-        if (x == 0) {
-            System.err.println("bottoming out");
-            return 1;
-        }
-        else return x * fact(x - 1);
-    }
+    else return x * fact(x - 1);
+  }
 }
 
 aspect A {
-    pointcut entry(int i): call(int fact(int)) && args(i);
-    pointcut writing(): call(void println(String)) && ! within(A);
+  pointcut entry(int i): call(int fact(int)) && args(i);
+  pointcut writing(): call(void println(String)) && ! within(A);
 
-    before(int i): writing() && cflow(entry(i)) {
-        System.err.println("Current arg is " + i);
-    }
+  before(int i): writing() && cflow(entry(i)) {
+    System.err.println("Current arg is " + i);
+  }
 }
 ....
 
 It is an error to expose such state through _negated_ control flow
-pointcuts, such as within `!
-            cflowbelow(P)`.
+pointcuts, such as within `!cflowbelow(P)`.
 
 ===== Program text-based pointcuts
 
@@ -656,24 +583,12 @@ While many concerns cut across the runtime structure of the program,
 some must deal with the lexical structure. AspectJ allows aspects to
 pick out join points based on where their associated code is defined.
 
-* within(
-+
-TypePattern
-+
-)
-* withincode(
-+
-MethodPattern
-+
-)
-* withincode(
-+
-ConstructorPattern
-+
-)
+* `within( TypePattern )`
+* `withincode( MethodPattern )`
+* `withincode( ConstructorPattern )`
 
 The `within` pointcut picks out each join point where the code executing
-is defined in the declaration of one of the types in <TypePattern>. This
+is defined in the declaration of one of the types in `TypePattern`. This
 includes the class initialization, object initialization, and method and
 constructor execution join points for the type, as well as any join
 points associated with the statements and expressions of the type. It
@@ -690,11 +605,7 @@ or anonymous types.
 
 ===== Expression-based pointcuts
 
-* if(
-+
-BooleanExpression
-+
-)
+* `if( BooleanExpression )`
 
 The if pointcut picks out join points based on a dynamic property. its
 syntax takes an expression, which must evaluate to a boolean true or
@@ -786,7 +697,7 @@ declaration, in class `Test`, for example, might be
 [source, java]
 ....
 class C {
-    public final void foo() throws ArrayOutOfBoundsException { ... }
+  public final void foo() throws ArrayOutOfBoundsException { ... }
 }
 ....
 
@@ -808,7 +719,7 @@ call(public final void *.*() throws ArrayOutOfBoundsException)
 picks out all call join points to methods, regardless of their name name
 or which class they are defined on, so long as they take no arguments,
 return no value, are both `public` and `final`, and are declared to
-throw `ArrayOutOfBounds` exceptions.
+throw ``ArrayOutOfBoundsException``s.
 
 The defining type name, if not present, defaults to *, so another way of
 writing that pointcut would be
@@ -877,8 +788,8 @@ starts with the characters "get".
 
 AspectJ uses the `new` keyword for constructor signature patterns rather
 than using a particular class name. So the execution join points of
-private null constructor of a class C defined to throw an
-ArithmeticException can be picked out with
+private null constructor of a class `C` defined to throw an
+`ArithmeticException` can be picked out with
 
 [source, java]
 ....
@@ -921,7 +832,7 @@ would fail to pick out the join point for the code
 ....
 
 Specifying the originally-declaring type is correct, but would pick out
-any such call (here, calls to the `run()` method of any Runnable). In
+any such call (here, calls to the `run()` method of any `Runnable`). In
 this situation, consider instead picking out the target type:
 
 [source, java]
@@ -941,39 +852,40 @@ execution(public void Middle.*())
 
 picks out all method executions for public methods returning void and
 having no arguments that are either declared in, or inherited by,
-Middle, even if those methods are overridden in a subclass of Middle. So
-the pointcut would pick out the method-execution join point for Sub.m()
+`Middle`, even if those methods are overridden in a subclass of `Middle`. So
+the pointcut would pick out the method-execution join point for `Sub.m()`
 in this code:
 
 [source, java]
 ....
 class Super {
-  protected void m() { ... }
+  protected void m() { /*...*/ }
 }
-class Middle extends Super {
-}
+
+class Middle extends Super {}
+
 class Sub extends Middle {
-  public void m() { ... }
+  public void m() { /*...*/ }
 }
 ....
 
-===== Matching based on the throws clause
+===== Matching based on the `throws` clause
 
 Type patterns may be used to pick out methods and constructors based on
-their throws clauses. This allows the following two kinds of extremely
+their `throws` clauses. This allows the following two kinds of extremely
 wildcarded pointcuts:
 
 [source, java]
 ....
 pointcut throwsMathlike():
-    // each call to a method with a throws clause containing at least
-    // one exception exception with "Math" in its name.
-    call(* *(..) throws *..*Math*);
+  // each call to a method with a throws clause containing at least
+  // one exception exception with "Math" in its name.
+  call(* *(..) throws *..*Math*);
 
 pointcut doesNotThrowMathlike():
-    // each call to a method with a throws clause containing no
-    // exceptions with "Math" in its name.
-    call(* *(..) throws !*..*Math*);
+  // each call to a method with a throws clause containing no
+  // exceptions with "Math" in its name.
+  call(* *(..) throws !*..*Math*);
 ....
 
 A `ThrowsClausePattern` is a comma-separated list of ``ThrowsClausePatternItem``s, where
@@ -985,11 +897,11 @@ ThrowsClausePatternItem := [ ! ] TypeNamePattern
 
 A `ThrowsClausePattern` matches the `throws` clause of any code member
 signature. To match, each `ThrowsClausePatternItem` must match the
-throws clause of the member in question. If any item doesn't match, then
+`throws` clause of the member in question. If any item doesn't match, then
 the whole pattern doesn't match.
 
 If a `ThrowsClausePatternItem` begins with `!`, then it matches a
-particular throws clause if and only if _none_ of the types named in the
+particular `throws` clause if and only if _none_ of the types named in the
 `throws` clause is matched by the `TypeNamePattern`.
 
 If a `ThrowsClausePatternItem` does not begin with `!`, then it matches
@@ -1157,17 +1069,17 @@ Here is a summary of the pattern syntax used in AspectJ:
 [source, text]
 ....
 MethodPattern =
-  [ModifiersPattern] TypePattern
-        [TypePattern . ] IdPattern (TypePattern | ".." , ... )
-        [ throws ThrowsPattern ]
+    [ModifiersPattern] TypePattern
+    [TypePattern . ] IdPattern (TypePattern | ".." , ... )
+    [ throws ThrowsPattern ]
 ConstructorPattern =
-  [ModifiersPattern ]
-        [TypePattern . ] new (TypePattern | ".." , ...)
-        [ throws ThrowsPattern ]
+    [ModifiersPattern ]
+    [TypePattern . ] new (TypePattern | ".." , ...)
+    [ throws ThrowsPattern ]
 FieldPattern =
-  [ModifiersPattern] TypePattern [TypePattern . ] IdPattern
+    [ModifiersPattern] TypePattern [TypePattern . ] IdPattern
 ThrowsPattern =
-  [ ! ] TypePattern , ...
+    [ ! ] TypePattern , ...
 TypePattern =
     IdPattern [ + ] [ [] ... ]
     | ! TypePattern
@@ -1175,9 +1087,9 @@ TypePattern =
     | TypePattern || TypePattern
     | ( TypePattern )
 IdPattern =
-  Sequence of characters, possibly with special * and .. wildcards
+    Sequence of characters, possibly with special * and .. wildcards
 ModifiersPattern =
-  [ ! ] JavaModifier  ...
+    [ ! ] JavaModifier  ...
 ....
 
 [[semantics-advice]]
@@ -1209,42 +1121,45 @@ advice.
 
 AspectJ supports three kinds of advice. The kind of advice determines
 how it interacts with the join points it is defined over. Thus AspectJ
-divides advice into that which runs before its join points, that which
-runs after its join points, and that which runs in place of (or
-"around") its join points.
+divides advice into that which runs *before* its join points, that which
+runs *after* its join points, and that which runs *in place of (or
+"around")* its join points.
 
-While before advice is relatively unproblematic, there can be three
-interpretations of after advice: After the execution of a join point
+While `before` advice is relatively unproblematic, there can be three
+interpretations of `after` advice: After the execution of a join point
 completes normally, after it throws an exception, or after it does
-either one. AspectJ allows after advice for any of these situations.
+either one. AspectJ allows `after` advice for any of these situations:
 
 [source, java]
 ....
 aspect A {
-    pointcut publicCall(): call(public Object *(..));
-    after() returning (Object o): publicCall() {
-  System.out.println("Returned normally with " + o);
-    }
-    after() throwing (Exception e): publicCall() {
-  System.out.println("Threw an exception: " + e);
-    }
-    after(): publicCall(){
-  System.out.println("Returned or threw an Exception");
-    }
+  pointcut publicCall(): call(public Object *(..));
+
+  after() returning (Object o): publicCall() {
+    System.out.println("Returned normally with " + o);
+  }
+
+  after() throwing (Exception e): publicCall() {
+    System.out.println("Threw an exception: " + e);
+  }
+
+  after(): publicCall(){
+    System.out.println("Returned or threw an Exception");
+  }
 }
 ....
 
-After returning advice may not care about its returned object, in which
+`after returning` advice may not care about its returned object, in which
 case it may be written
 
 [source, java]
 ....
 after() returning: call(public Object *(..)) {
-    System.out.println("Returned normally");
+  System.out.println("Returned normally");
 }
 ....
 
-If after returning does expose its returned object, then the type of the
+If `after returning` does expose its returned object, then the type of the
 parameter is considered to be an `instanceof`-like constraint on the
 advice: it will run only when the return value is of the appropriate
 type.
@@ -1253,34 +1168,34 @@ A value is of the appropriate type if it would be assignable to a
 variable of that type, in the Java sense. That is, a `byte` value is
 assignable to a `short` parameter but not vice-versa, an `int` is
 assignable to a `float` parameter, `boolean` values are only assignable
-to `boolean` parameters, and reference types work by instanceof.
+to `boolean` parameters, and reference types work by `instanceof`.
 
 There are two special cases: If the exposed value is typed to `Object`,
 then the advice is not constrained by that type: the actual return value
 is converted to an object type for the body of the advice: `int` values
 are represented as `java.lang.Integer` objects, etc, and no value (from
-void methods, for example) is represented as `null`.
+`void` methods, for example) is represented as `null`.
 
 Secondly, the `null` value is assignable to a parameter `T` if the join
 point _could_ return something of type `T`.
 
-Around advice runs in place of the join point it operates over, rather
-than before or after it. Because around is allowed to return a value, it
+`around` advice runs in place of the join point it operates over, rather
+than before or after it. Because `around` is allowed to return a value, it
 must be declared with a return type, like a method.
 
-Thus, a simple use of around advice is to make a particular method
+Thus, a simple use of `around` advice is to make a particular method
 constant:
 
 [source, java]
 ....
 aspect A {
-    int around(): call(int C.foo()) {
-  return 3;
-    }
+  int around(): call(int C.foo()) {
+    return 3;
+  }
 }
 ....
 
-Within the body of around advice, though, the computation of the
+Within the body of `around` advice, though, the computation of the
 original join point can be executed with the special syntax
 
 [source, java]
@@ -1288,7 +1203,7 @@ original join point can be executed with the special syntax
 proceed( ... )
 ....
 
-The proceed form takes as arguments the context exposed by the around's
+The `proceed` form takes as arguments the context exposed by the around's
 pointcut, and returns whatever the around is declared to return. So the
 following around advice will double the second argument to `foo`
 whenever it is called, and then halve its result:
@@ -1296,49 +1211,49 @@ whenever it is called, and then halve its result:
 [source, java]
 ....
 aspect A {
-    int around(int i): call(int C.foo(Object, int)) && args(i) {
-  int newi = proceed(i*2)
-  return newi/2;
-    }
+  int around(int i): call(int C.foo(Object, int)) && args(i) {
+    int newi = proceed(i*2)
+    return newi/2;
+  }
 }
 ....
 
-If the return value of around advice is typed to `Object`, then the
+If the return value of `around` advice is typed to `Object`, then the
 result of proceed is converted to an object representation, even if it
-is originally a primitive value. And when the advice returns an Object
+is originally a primitive value. And when the advice returns an `Object`
 value, that value is converted back to whatever representation it was
 originally. So another way to write the doubling and halving advice is:
 
 [source, java]
 ....
 aspect A {
-    Object around(int i): call(int C.foo(Object, int)) && args(i) {
-  Integer newi = (Integer) proceed(i*2)
-  return new Integer(newi.intValue() / 2);
-    }
+  Object around(int i): call(int C.foo(Object, int)) && args(i) {
+    Integer newi = (Integer) proceed(i*2)
+    return new Integer(newi.intValue() / 2);
+  }
 }
 ....
 
 Any occurence of `proceed(..)` within the body of around advice is
-treated as the special proceed form (even if the aspect defines a method
+treated as the special `proceed` form (even if the aspect defines a method
 named `proceed`), unless a target other than the aspect instance is
 specified as the recipient of the call. For example, in the following
-program the first call to proceed will be treated as a method call to
-the `ICanProceed` instance, whereas the second call to proceed is
-treated as the special proceed form.
+program the first call to `proceed` will be treated as a method call to
+the `ICanProceed` instance, whereas the second call to `proceed` is
+treated as the special `proceed` form.
 
 [source, java]
 ....
 aspect A {
-   Object around(ICanProceed canProceed) : execution(* *(..)) && this(canProceed) {
-      canProceed.proceed();         // a method call
-      return proceed(canProceed);   // the special proceed form
-   }
+  Object around(ICanProceed canProceed) : execution(* *(..)) && this(canProceed) {
+    canProceed.proceed();        // a method call
+    return proceed(canProceed);  // the special proceed form
+  }
 
-   private Object proceed(ICanProceed canProceed) {
-      // this method cannot be called from inside the body of around advice in
-      // the aspect
-   }
+  private Object proceed(ICanProceed canProceed) {
+    // this method cannot be called from inside the body of around advice
+    // in the aspect
+  }
 }
 ....
 
@@ -1350,15 +1265,15 @@ means that
 [source, java]
 ....
 aspect A {
-    after() returning (int i): call(int C.foo()) {
-  i = i * 2;
-    }
+  after() returning (int i): call(int C.foo()) {
+    i = i * 2;
+  }
 }
 ....
 
 will _not_ double the returned value of the advice. Rather, it will
 double the local parameter. Changing the values of parameters or return
-values of join points can be done by using around advice.
+values of join points can be done by using `around` advice.
 
 With `proceed(..)` it is possible to change the values used by
 less-precedent advice and the underlying join point by supplying
@@ -1443,18 +1358,18 @@ For example, in the following declarations:
 import java.io.FileNotFoundException;
 
 class C {
-    int i;
-
-    int getI() { return i; }
+  int i;
+  int getI() { return i; }
 }
 
 aspect A {
-    before(): get(int C.i) {
-  throw new FileNotFoundException();
-    }
-    before() throws FileNotFoundException: get(int C.i) {
-  throw new FileNotFoundException();
-    }
+  before(): get(int C.i) {
+    throw new FileNotFoundException();
+  }
+
+  before() throws FileNotFoundException: get(int C.i) {
+    throw new FileNotFoundException();
+  }
 }
 ....
 
@@ -1515,9 +1430,9 @@ These rules can lead to circularity, such as
 [source, java]
 ....
 aspect A {
-    before(): execution(void main(String[] args)) {}
-    after():  execution(void main(String[] args)) {}
-    before(): execution(void main(String[] args)) {}
+  before(): execution(void main(String[] args)) {}
+  after():  execution(void main(String[] args)) {}
+  before(): execution(void main(String[] args)) {}
 }
 ....
 
@@ -1605,8 +1520,8 @@ An inter-type method declaration looks like
 * `[ Modifiers ] Type OnType . Id ( Formals ) [ ThrowsClause ] { Body }`
 * `abstract [ Modifiers ] Type OnType . Id ( Formals ) [ ThrowsClause ] ;`
 
-The effect of such a declaration is to make <OnType> support the new
-method. Even if <OnType> is an interface. Even if the method is neither
+The effect of such a declaration is to make `OnType` support the new
+method. Even if `OnType` is an interface. Even if the method is neither
 public nor abstract. So the following is legal AspectJ code:
 
 [source, java]
@@ -1614,13 +1529,14 @@ public nor abstract. So the following is legal AspectJ code:
 interface Iface {}
 
 aspect A {
-    private void Iface.m() {
-  System.err.println("I'm a private method on an interface");
-    }
-    void worksOnI(Iface iface) {
-  // calling a private method on an interface
-  iface.m();
-    }
+  private void Iface.m() {
+    System.err.println("I'm a private method on an interface");
+  }
+
+  void worksOnI(Iface iface) {
+    // calling a private method on an interface
+    iface.m();
+  }
 }
 ....
 
@@ -1628,12 +1544,12 @@ An inter-type constructor declaration looks like
 
 * `[ Modifiers ] OnType . new ( Formals ) [ ThrowsClause ] { Body }`
 
-The effect of such a declaration is to make <OnType> support the new
-constructor. It is an error for <OnType> to be an interface.
+The effect of such a declaration is to make `OnType` support the new
+constructor. It is an error for `OnType` to be an interface.
 
 Inter-type declared constructors cannot be used to assign a value to a
-final variable declared in <OnType>. This limitation significantly
-increases the ability to both understand and compile the <OnType> class
+final variable declared in `OnType`. This limitation significantly
+increases the ability to both understand and compile the `OnType` class
 and the declaring aspect separately.
 
 Note that in the Java language, classes that define no constructors have
@@ -1662,7 +1578,7 @@ from a `static` inter-type member declaration.
 
 ==== Access modifiers
 
-Inter-type member declarations may be public or private, or have default
+Inter-type member declarations may be `public` or `private`, or have default
 (package-protected) visibility. AspectJ does not provide protected
 inter-type members.
 
@@ -1697,11 +1613,12 @@ declared members and inter-type members. For example, assuming
 [source, java]
 ....
 aspect A {
-    private Registry otherPackage.onType.r;
-    public void otherPackage.onType.register(Registry r) {
+  private Registry otherPackage.onType.r;
+
+  public void otherPackage.onType.register(Registry r) {
     r.register(this);
     this.r = r;
-    }
+  }
 }
 ....
 
@@ -1764,8 +1681,9 @@ the `Runnable` interface, the inter-type `run()` method must be public:
 [source, java]
 ....
 aspect A {
-    declare parents: SomeClass implements Runnable;
-    public void SomeClass.run() { ... }
+  declare parents: SomeClass implements Runnable;
+
+  public void SomeClass.run() { ... }
 }
 ....
 
@@ -1787,13 +1705,13 @@ its superinterfaces. Consider the following hierarchy where {`Object`,
 
 [source, text]
 ....
-  Object  M   O
- \ / \ /
-  C   N   Q
-   \ /   /
-    D   P
-     \ /
-      E
+Object  M   O
+     \ / \ /
+      C   N   Q
+       \ /   /
+        D   P
+         \ /
+          E
 ....
 
 when a new `E` is instantiated, the initializers run in this order:
@@ -1830,7 +1748,7 @@ For example, the aspect
 [source, java]
 ....
 aspect A {
-    declare soft: Exception: execution(void main(String[] args));
+  declare soft: Exception: execution(void main(String[] args));
 }
 ....
 
@@ -1842,12 +1760,12 @@ This is similar to what the following advice would do
 [source, java]
 ....
 aspect A {
-    void around() execution(void main(String[] args)) {
-  try { proceed(); }
-  catch (Exception e) {
+  void around() execution(void main(String[] args)) {
+    try { proceed(); }
+    catch (Exception e) {
       throw new org.aspectj.lang.SoftException(e);
-  }
     }
+  }
 }
 ....
 
@@ -1907,22 +1825,22 @@ another, ordering aspect:
 [source, java]
 ....
 aspect Ordering {
-    declare precedence: CountEntry, DisallowNulls;
+  declare precedence: CountEntry, DisallowNulls;
 }
 
 aspect DisallowNulls {
-    pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
-    before(Type obj):  allTypeMethods(obj) {
-        if (obj == null) throw new RuntimeException();
-    }
+  pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
+  before(Type obj):  allTypeMethods(obj) {
+    if (obj == null) throw new RuntimeException();
+  }
 }
 
 aspect CountEntry {
-    pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
-    static int count = 0;
-    before():  allTypeMethods(Type) {
-        count++;
-    }
+  pointcut allTypeMethods(Type obj): call(* *(..)) && args(obj, ..);
+  static int count = 0;
+  before():  allTypeMethods(Type) {
+    count++;
+  }
 }
 ....
 
@@ -1957,29 +1875,30 @@ Consider the following library aspects:
 [source, java]
 ....
 abstract aspect Logging {
-    abstract pointcut logged();
+  abstract pointcut logged();
 
-    before(): logged() {
-        System.err.println("thisJoinPoint: " + thisJoinPoint);
-    }
+  before(): logged() {
+    System.err.println("thisJoinPoint: " + thisJoinPoint);
+  }
 }
 
 abstract aspect MyProfiling {
-    abstract pointcut profiled();
+  abstract pointcut profiled();
 
-    Object around(): profiled() {
-        long beforeTime = System.currentTimeMillis();
-        try {
-            return proceed();
-        } finally {
-            long afterTime = System.currentTimeMillis();
-            addToProfile(thisJoinPointStaticPart,
-                         afterTime - beforeTime);
-        }
+  Object around(): profiled() {
+    long beforeTime = System.currentTimeMillis();
+    try {
+      return proceed();
+    } finally {
+      long afterTime = System.currentTimeMillis();
+      addToProfile(thisJoinPointStaticPart, afterTime - beforeTime);
     }
-    abstract void addToProfile(
-        org.aspectj.JoinPoint.StaticPart jp,
-        long elapsed);
+  }
+
+  abstract void addToProfile(
+    org.aspectj.JoinPoint.StaticPart jp,
+    long elapsed
+  );
 }
 ....
 
@@ -2051,10 +1970,10 @@ and throwing no checked exceptions.
 
 ===== Nested aspects must be `static`
 
-Aspects may be defined either at the package level, or as a static
-nested aspect -- that is, a static member of a class, interface, or
+Aspects may be defined either at the package level, or as a `static`
+nested aspect -- that is, a `static` member of a class, interface, or
 aspect. If it is not at the package level, the aspect _must_ be defined
-with the static keyword. Local and anonymous aspects are not allowed.
+with the `static` keyword. Local and anonymous aspects are not allowed.
 
 ==== Aspect Extension
 
@@ -2136,7 +2055,7 @@ associated with an instance of `A`.
 In either case, the static method call `A.aspectOf(Object)` can be used
 to get the aspect instance (of type `A`) registered with the object. Each
 aspect instance is created as early as possible, but not before reaching
-a join point picked out by <Pointcut> where there is no associated
+a join point picked out by `Pointcut` where there is no associated
 aspect of type `A`.
 
 Both `perthis` and `pertarget` aspects may be affected by code the
@@ -2167,17 +2086,17 @@ that must occur before asopect instantiation. For example:
 ....
 public class Client
 {
-    public static void main(String[] args) {
-        Client c = new Client();
-    }
+  public static void main(String[] args) {
+    Client c = new Client();
+  }
 }
 
 aspect Watchcall {
-    pointcut myConstructor(): execution(new(..));
+  pointcut myConstructor(): execution(new(..));
 
-    before(): myConstructor() {
-        System.err.println("Entering Constructor");
-    }
+  before(): myConstructor() {
+    System.err.println("Entering Constructor");
+  }
 }
 ....
 
@@ -2211,19 +2130,21 @@ all members, even private ones.
 [source, java]
 ....
 class C {
-    private int i = 0;
-    void incI(int x) { i = i+x; }
+  private int i = 0;
+  void incI(int x) { i = i+x; }
 }
+
 privileged aspect A {
-    static final int MAX = 1000;
-    before(int x, C c): call(void C.incI(int)) && target(c) && args(x) {
-      if (c.i+x > MAX) throw new RuntimeException();
-    }
+  static final int MAX = 1000;
+
+  before(int x, C c): call(void C.incI(int)) && target(c) && args(x) {
+    if (c.i+x > MAX) throw new RuntimeException();
+  }
 }
 ....
 
-In this case, if `A` had not been declared privileged, the field reference
-c.i would have resulted in an error signaled by the compiler.
+In this case, if `A` had not been declared `privileged`, the field reference
+`c.i` would have resulted in an error signaled by the compiler.
 
 If a privileged aspect can access multiple versions of a particular
 member, then those that it could see if it were not privileged take
@@ -2232,20 +2153,21 @@ precedence. For example, in the code
 [source, java]
 ....
 class C {
-    private int i = 0;
-    void foo() { }
+  private int i = 0;
+  void foo() { }
 }
 
 privileged aspect A {
-    private int C.i = 999;
-    before(C c): call(void C.foo()) target(c) {
-        System.out.println(c.i);
-    }
+  private int C.i = 999;
+
+  before(C c): call(void C.foo()) target(c) {
+    System.out.println(c.i);
+  }
 }
 ....
 
-``A``'s private inter-type field C.i, initially bound to 999, will be
-referenced in the body of the advice in preference to C's privately
+``A``'s private inter-type field `C.i`, initially bound to 999, will be
+referenced in the body of the advice in preference to ``C``'s privately
 declared field, since `A` would have access to its own inter-type
 fields even if it were not privileged.
 
