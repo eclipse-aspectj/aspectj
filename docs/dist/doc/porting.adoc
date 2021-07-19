@@ -1,7 +1,7 @@
-[.small]#© Copyright 1998-2002 Palo Alto Research Center Incorporated,
-2003-2004 Contributors. All rights reserved.#
-
 == AspectJ Porting Notes
+
+_© Copyright 1998-2002 Palo Alto Research Center Incorporated,
+2003-2004 Contributors. All rights reserved._
 
 * xref:#pre-1_2[Pre-1.2 code]
 * xref:#pre-1_1[Pre-1.1 code]
@@ -366,19 +366,11 @@ crosscutting]
 One of the most pervasive changes in porting code written before
 1.0alpha1 is the change in some of the pointcut names from plural to
 singular, that is, they lose an "s". In one sense, making this change in
-your programs is easy: just go through and whever you see uses of the
-pointcuts
+your programs is easy: Just go through and whever you see uses of the
+pointcuts `calls, executions, gets, sets, handlers, initializations,
+staticinitializations`.
 
-____
-calls executions gets sets handlers initializations
-staticinitializations
-____
-
-Just take off the final "s", to make one of
-
-____
-call execution get set handler initialization staticinitialization
-____
+Just take off the final "s", to make one of `call, execution, get, set, handler, initialization, staticinitialization`.
 
 Often, there will be other changes you should make for each of these
 pointcuts, but as for the name, just take off the "s".
@@ -487,12 +479,12 @@ allows caching constructed objects
 [source, java]
 ....
 aspect Singleton {
-    private C theC = null;
+  private C theC = null;
 
-    C around(): call(C.new(..)) {
-        if (c == null) theC = proceed();
-        return theC;
-    }
+  C around(): call(C.new(..)) {
+    if (c == null) theC = proceed();
+    return theC;
+  }
 }
 ....
 
@@ -512,12 +504,7 @@ after() returning (Point p): call(Point+.new(int, int)) { ... }
 In previous versions of AspectJ, state such as the currently executing
 object or a particular argument of a method call could be accessed from
 the signatures of many pointcuts, leading to difficult-to-read forms. In
-AspectJ 1.0, all state accesses now use only three pointcuts
-
-____
-args this target
-____
-
+AspectJ 1.0, all state accesses now use only three pointcuts `args, this, target`
 which pick out argument values, the currently executing object, and the
 target object of a method call or field operation, respectively.
 
@@ -601,17 +588,18 @@ the circularity.
 [source, java]
 ....
 aspect A {
-    before(Frame f, Color c): gets(Color f.color)[c] { ... }
+  before(Frame f, Color c): gets(Color f.color)[c] { ... }
 }
 
 // ==>
 
 aspect A {
-    before(Frame f):
-            target(f) && get(Color Frame.color) && !within(A) {
-        Color c = f.color;
-        ...
-    }
+  before(Frame f):
+    target(f) && get(Color Frame.color) && !within(A)
+  {
+    Color c = f.color;
+    // ...
+  }
 }
 ....
 
@@ -621,18 +609,19 @@ after advice that needs the old value is to convert it to around advice.
 [source, java]
 ....
 aspect A {
-    after(Frame f, Color c) returning (): gets(Color f.color)[c] { ... }
+  after(Frame f, Color c) returning (): gets(Color f.color)[c] { ... }
 }
 
 // ==>
 
 aspect A {
-    void around(Frame f):
-            target(f) && get(Color Frame.color) && !within(A) {
-        Color c = f.color;
-        proceed(f);
-        ...
-    }
+  void around(Frame f):
+    target(f) && get(Color Frame.color) && !within(A)
+  {
+    Color c = f.color;
+    proceed(f);
+    // ...
+  }
 }
 ....
 
@@ -731,10 +720,12 @@ converted to `target` (and `receptions` converted to `call`). So,
 [source, java]
 ....
 pointcut stateChanges(Subject s):
-    instanceof(s) && receptions(void Button.click());
+  instanceof(s) && receptions(void Button.click());
+
 // ==>
+
 pointcut stateChange(Subject s):
-    target(s) && call(void Button.click());
+  target(s) && call(void Button.click());
 ....
 
 In all other cases, `instanceof` referred to the currently executing
@@ -827,12 +818,12 @@ body of the advice. For example, if the aspect A were defined
 [source, java]
 ....
 before(A myA): hasaspect(myA) {
-    myA.checkStatus();
+  myA.checkStatus();
 }
 // ==>
 before(): if(A.hasAspect()) {
-    A myA = A.aspectOf();
-    myA.checkStatus();
+  A myA = A.aspectOf();
+  myA.checkStatus();
 }
 ....
 
@@ -841,7 +832,7 @@ before(): if(A.hasAspect()) {
 
 The withinall poinctut is no longer defined. You can use a combination
 of within and the xref:#_1_0a1-subtypes-to-plus[new subtypes operator],
-+, instead. You'll save two characters and be using a simpler and more
+`+`, instead. You'll save two characters and be using a simpler and more
 orthogonal language.
 
 [source, java]
@@ -931,11 +922,11 @@ in `TypePattern`.
 [source, java]
 ....
 public void (subtypes(Target0 || Target1)).accept(Visitor v) {
-    v.visit(this);
+  v.visit(this);
 }
 // ==>
 public void (Target0+ || Target1+).accept(Visitor v) {
-    v.visit(this);
+  v.visit(this);
 }
 ....
 
@@ -964,13 +955,13 @@ Around advice must now declare the checked exceptions it throws with a
 [source, java]
 ....
 char around(char c) throws java.io.CharConversionException: converter(c) {
-    char result;
-    try { result = proceed(); }
-    catch (Exception e) {
-        throw new java.io.CharConversionException();
-    }
-    if (result == 0) throw new java.io.CharConversionException();
-    return result;
+  char result;
+  try { result = proceed(); }
+  catch (Exception e) {
+    throw new java.io.CharConversionException();
+  }
+  if (result == 0) throw new java.io.CharConversionException();
+  return result;
 }
 ....
 
@@ -1003,12 +994,12 @@ the `before` advice
 [source, java]
 ....
 aspect A {
-    before(): call(void main(..)) {
-        throw new RuntimeException();
-    }
-    after() throwing(RuntimeException e): call(void main(..)) {
-         System.err.println("caught you!");
-    }
+  before(): call(void main(..)) {
+    throw new RuntimeException();
+  }
+  after() throwing(RuntimeException e): call(void main(..)) {
+    System.err.println("caught you!");
+  }
 }
 ....
 
@@ -1018,12 +1009,12 @@ making its exception uncatchable by the `after throwing` advice
 [source, java]
 ....
 aspect A {
-    after() throwing(RuntimeException e): call(void main(..)) {
-         System.err.println("missed you!");
-    }
-    before(): call(void main(..)) {
-        throw new RuntimeException();
-    }
+  after() throwing(RuntimeException e): call(void main(..)) {
+    System.err.println("missed you!");
+  }
+  before(): call(void main(..)) {
+    throw new RuntimeException();
+  }
 }
 ....
 
@@ -1069,10 +1060,10 @@ was
 [source, java]
 ....
 before() executions(* myMethod()) {
-    ExecutionJoinPoint jp = (ExecutionJoinPoint)thisJoinPoint;
-    CodeSignature jp = (CodeSignature)jp.getSignature();
-    System.err.println(jp.getParameters());
-    System.err.println(jp.getParameterNames());
+  ExecutionJoinPoint jp = (ExecutionJoinPoint)thisJoinPoint;
+  CodeSignature jp = (CodeSignature)jp.getSignature();
+  System.err.println(jp.getParameters());
+  System.err.println(jp.getParameterNames());
 }
 ....
 
@@ -1082,10 +1073,10 @@ While there is still a rich hierarchy for signatures, there is only one
 [source, java]
 ....
 before() executions(* myMethod()) {
-    JoinPoint jp = thisJoinPoint;
-    CodeSignature jp = (CodeSignature)jp.getSignature();
-    System.err.println(jp.getArgs());
-    System.err.println(jp.getParameterNames());
+  JoinPoint jp = thisJoinPoint;
+  CodeSignature jp = (CodeSignature)jp.getSignature();
+  System.err.println(jp.getArgs());
+  System.err.println(jp.getParameterNames());
 }
 ....
 
@@ -1103,14 +1094,14 @@ AspectJ uses the `declare` form for exactly the same functionality.
 [source, java]
 ....
 Point +implements Serializable;
-=>
+// ==>
 declare parents: Point implements Serializable;
 ....
 
 [source, java]
 ....
 MyButton +extends ButtonAdaptor;
-=>
+// ==>
 declare parents: MyButton extends ButtonAdaptor;
 ....
 
@@ -1123,26 +1114,27 @@ Java. This means that the following code previously compiled:
 [source, java]
 ....
 class C {
-    void noExceptionDeclared() {
-        exceptionDeclared();
-    }
-    void exceptionDeclared() throws IOException {}
+  void noExceptionDeclared() {
+    exceptionDeclared();
+  }
+  void exceptionDeclared() throws IOException {}
 }
+
 aspect A {
-    around(): call(void C.exceptionDeclared()) {
-        try { proceed(); }
-        catch (IOException e) {}
-    }
+  around(): call(void C.exceptionDeclared()) {
+    try { proceed(); }
+    catch (IOException e) {}
+  }
 }
 ....
 
-even though the class C is not compilable on its own (because
-noExceptionDeclared actually throws an Exception).
+even though the class `C` is not compilable on its own (because
+`noExceptionDeclared` actually throws an `Exception`).
 
 AspectJ now firmly places everything that affects the type system of
 Java, including the declared-exception checking system, into the space
 of introduction and declare. So, in order to state that the call to
-exceptionDeclared() will not, actually, throw an exception, we now
+`exceptionDeclared()` will not, actually, throw an exception, we now
 "soften" that exception, that is, take it out of the space of declared
 exceptions.
 
@@ -1159,8 +1151,8 @@ needed:
 [source, java]
 ....
 declare soft: IOException:
-    call(void C.exceptionDeclared()) &&
-    withincode(void noExceptionDeclared());
+  call(void C.exceptionDeclared()) &&
+  withincode(void noExceptionDeclared());
 ....
 
 [[_1_0a1-aspects]]
@@ -1200,16 +1192,23 @@ If you use a pointcut that picked out reception join points, then use
 [source, java]
 ....
 aspect Shadow
-        of eachobject(receptions(void Point.setX(int)) ||
-                      receptions(void Point.setY(int))) {
-    ...
+  of eachobject(
+    receptions(void Point.setX(int)) ||
+    receptions(void Point.setY(int))
+  )
+{
+  // ...
 }
 
 // ==>
 
-aspect Shadow pertarget(call(void Point.setX(int)) ||
-                        call(void Point.setY(int))) {
-    ...
+aspect Shadow
+  pertarget(
+    call(void Point.setX(int)) ||
+    call(void Point.setY(int))
+  )
+{
+  // ...
 }
 ....
 
@@ -1300,7 +1299,7 @@ any abstract pointcuts. Thus the following extension:
 [source, java]
 ----
 abstract aspect A {
-    abstract pointcut pc();
+  abstract pointcut pc();
 }
 
 aspect B {}
@@ -1320,11 +1319,11 @@ in the declaration of the concrete aspect fixes this problem.
 [source, java]
 ----
 abstract aspect A {
-    abstract pointcut pc();
+  abstract pointcut pc();
 }
 
 aspect B {
-    pointcut pc();
+  pointcut pc();
 }
 ----
 
@@ -1337,13 +1336,13 @@ advice to join points within its own advice body. So, for example, in
 [source, java]
 ----
 class C {
-    static int i;
+  static int i;
 }
 
 aspect A {
-    before(): gets(int C.i) {
-        System.err.println("C.i was " + C.i)
-    }
+  before(): gets(int C.i) {
+    System.err.println("C.i was " + C.i)
+  }
 }
 ----
 
@@ -1360,13 +1359,13 @@ trace _all_ references of `C.i`, just those outside the aspect.
 [source, java]
 ----
 class C {
-    static int i;
+  static int i;
 }
 
 aspect A {
-    before(): get(int C.i) && ! within(A) {
-        System.err.println("C.i was " + C.i)
-    }
+  before(): get(int C.i) && ! within(A) {
+    System.err.println("C.i was " + C.i)
+  }
 }
 ----
 
@@ -1378,22 +1377,24 @@ away from that method (and away from calls to that method):
 [source, java]
 ----
 class C {
-    static int i;
+  static int i;
 }
 
 aspect A {
-    public static int getCi() {
-        return C.i;                          // will be traced
-    }
+  public static int getCi() {
+    return C.i;                          // will be traced
+  }
 
-    before(): get(int C.i) &&
-              ! withincode(void A.traceCi())
-              ! call(void A.traceCi())      {
-        traceCi();
-    }
-    private void traceCi() {
-        System.err.println("C.i was " + C.i) // will not be traced
-    }
+  before(): get(int C.i) &&
+    ! withincode(void A.traceCi()) &&
+    ! call(void A.traceCi())
+  {
+    traceCi();
+  }
+
+  private void traceCi() {
+    System.err.println("C.i was " + C.i) // will not be traced
+  }
 }
 ----
 
@@ -1421,7 +1422,7 @@ require some simple editing. Anywhere you have an introduction block
 [source, java]
 ----
 introduction GTN {
-    // ...
+  // ...
 }
 ----
 
@@ -1436,9 +1437,9 @@ identifier.
 [source, java]
 ----
 introduction Foo {
-    public void doStuff() { this.doStuffLater(); }
-    public int calorieCount = 3;
-    public new(int x) { super(); calorieCount = x; }
+  public void doStuff() { this.doStuffLater(); }
+  public int calorieCount = 3;
+  public new(int x) { super(); calorieCount = x; }
 }
 
 // ==>
@@ -1455,8 +1456,8 @@ new identifiers `implements` or `extends`, and place that in a
 [source, java]
 ----
 introduction Foo {
-    implements Comparable;
-    extends Goo;
+  implements Comparable;
+  extends Goo;
 }
 
 // ==>
@@ -1472,7 +1473,7 @@ be parenthesized.
 [source, java]
 ----
 introduction subtypes(Foo) && !Goo {
-    int x;
+  int x;
 }
 
 // ==>
@@ -1491,20 +1492,20 @@ introduction.
 [source, java]
 ----
 class Counter {
-    private int count = 2;
+  private int count = 2;
 }
 
 aspect ExposeCountersPrivates {
-    introduction Counter {
-        public int getCount() { return count; }
-    }
+  introduction Counter {
+    public int getCount() { return count; }
+  }
 }
 
 // ==>
 
 // in 0.8, only privileged aspects can expose a class's privates
 privileged aspect ExposeCountersPrivates {
-    public int Counter.getCount() { return count; }
+  public int Counter.getCount() { return count; }
 }
 ----
 
@@ -1514,21 +1515,20 @@ privates can be improved by using private introduction instead.
 
 [source, java]
 ----
-class C {
-}
+class C {}
 
 aspect AddCounter {
-    introduction C {
-        private int count;
-        public int getCount() { return count; }
-    }
+  introduction C {
+    private int count;
+    public int getCount() { return count; }
+  }
 }
 
 // ==>
 
 aspect AddCounter {
-    private int Counter.count;
-    public int Counter.getCount() { return count; }
+  private int Counter.count;
+  public int Counter.getCount() { return count; }
 }
 ----
 
@@ -1561,17 +1561,17 @@ and make sure the aspect is not defined with the "abstract" modifier.
 [source, java]
 ----
 aspect Tracing {
-    static before(): executions(* *(..)) {
-        System.out.println("Got Here! " + thisJoinPoint);
-    }
+  static before(): executions(* *(..)) {
+    System.out.println("Got Here! " + thisJoinPoint);
+  }
 }
 
 // ==>
 
 aspect Tracing {
-    before(): execution(* *(..)) {
-        System.out.println("Got Here! " + thisJoinPoint);
-    }
+  before(): execution(* *(..)) {
+    System.out.println("Got Here! " + thisJoinPoint);
+  }
 }
 ----
 
@@ -1583,29 +1583,29 @@ put it in a new aspect, possibly even an inner aspect.
 [source, java]
 ----
 aspect ComplexTracing of eachobject(cflow(executions(void Main.main(..)))) {
-    static before(): executions(* *(..)) {
-        System.out.println("Got Here! " + thisJoinPoint);
-    }
-    static after(): executions(* *(..)) {
-        System.out.println("Returned! " + thisJoinPoint);
-    }
+  static before(): executions(* *(..)) {
+    System.out.println("Got Here! " + thisJoinPoint);
+  }
+  static after(): executions(* *(..)) {
+    System.out.println("Returned! " + thisJoinPoint);
+  }
 
-    // some other dynamic advice, fields, etc
+  // some other dynamic advice, fields, etc
 }
 
 // ==>
 
 aspect ComplexTracing of eachobject(cflow(executions(void Main.main(..)))) {
-    static aspect AlwaysTracing {
-        before(): execution(* *(..)) {
-            System.out.println("Got Here! " + thisJoinPoint);
-        }
-        after(): execution(* *(..)) {
-            System.out.println("Returned! " + thisJoinPoint);
-        }
+  static aspect AlwaysTracing {
+    before(): execution(* *(..)) {
+      System.out.println("Got Here! " + thisJoinPoint);
     }
+    after(): execution(* *(..)) {
+      System.out.println("Returned! " + thisJoinPoint);
+    }
+  }
 
-    // some other dynamic advice, fields, etc
+  // some other dynamic advice, fields, etc
 }
 ----
 
@@ -1621,17 +1621,17 @@ implicitly abstract.
 [source, java]
 ----
 aspect BaseTracing {
-    abstract pointcut traced();
-    before(): traced() {
-        System.out.println("Got Here! " + thisJoinPoint);
-    }
+  abstract pointcut traced();
+  before(): traced() {
+    System.out.println("Got Here! " + thisJoinPoint);
+  }
 }
 
 // ==>
 
 // make this abstract aspect explicitly abstract
 abstract aspect BaseTracing {
-    // ...
+  // ...
 }
 ----
 
@@ -1682,15 +1682,15 @@ each point with a `PropertyChangeSupport` object.
 ----
 aspect BoundPoint of eachobject(instanceof(Point)) {
 
-    java.beans.PropertyChangeSupport support = null;
+  java.beans.PropertyChangeSupport support = null;
 
-    after() returning(Point p): receptions(p.new(..)){
-        support = new PropertyChangeSupport(myPoint);
-    }
+  after() returning(Point p): receptions(p.new(..)){
+    support = new PropertyChangeSupport(myPoint);
+  }
 
-    around(Point p) returns void: receptions(void p.set*(*)) {
-        // code that uses support
-    }
+  around(Point p) returns void: receptions(void p.set*(*)) {
+    // code that uses support
+  }
 }
 ----
 
@@ -1702,11 +1702,11 @@ of creating an aspect instance for every `Point` object, store the
 [source, java]
 ----
 aspect BoundPoint {
-    private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
+  private PropertyChangeSupport Point.support = new PropertyChangeSupport(this);
 
-    void around(Point p): setters(p) {
-        // code that uses p.support
-    }
+  void around(Point p): setters(p) {
+    // code that uses p.support
+  }
 }
 ----
 
@@ -1741,39 +1741,35 @@ different cases depending on what the original pointcut did.
 
 For pointcuts denoting calls to particular static methods, such as
 
-____
+[source, java]
 ....
 calls(String, static String valueOf(int)) // deprecated
 ....
-____
 
 the transformation is easy. Simply make the desired signature explicit.
 Instead of catching all calls to any static method that happens to have
 the signature `String valueOf(int)`, catch calls to that exact method
 defined in the String class.
 
-____
+[source, java]
 ....
 call(static String String.valueOf(int))
 ....
-____
 
 Pointcuts denoting calls to classes of static methods can also be
 rewritten with these rules. For example,
 
-____
+[source, java]
 ....
 calls(my.package.*, static * get*(..)) // deprecated
 ....
-____
 
 should now be written
 
-____
+[source, java]
 ....
 call(static * my.package.*.get*(..))
 ....
-____
 
 ===== Calls to non-static methods
 
@@ -1781,21 +1777,19 @@ Many pointcuts denoting calls to non-static methods can be fixed the
 same way that those pointcuts denoting calls to static methods are
 fixed. So,
 
-____
+[source, java]
 ....
 calls(Thread, int getPriority()) // deprecated
 ....
-____
 
 which denotes all calls to nullary int methods named `getPriority` when
 the called object is an instance of the `Thread` type, can almost always
 be rewritten
 
-____
+[source, java]
 ....
 call(int Thread.getPriority())
 ....
-____
 
 which denotes all calls to the nullary int `Thread.getPriority()`
 method.
@@ -1809,11 +1803,10 @@ method is called. If you want to capture calls to the
 `int Thread.getPriority()` method, regardless of how the called object
 is statically typed, you shoud use the different translation:
 
-____
+[source, java]
 ....
 call(int getPriority()) && target(Thread)
 ....
-____
 
 This will capture all call join points of methods with signature
 `int Thread.getPriority()`.
@@ -1827,38 +1820,35 @@ It will also denote any join points if the Thread type does not define
 The simplest way to remove an advice declaration from a class is to
 simply define the advice declaration in an inner aspect. So, instead of
 
-____
+[source, java]
 ....
 class C {
-    static before(): executions(C.new()) { ... } // deprecated
+  static before(): executions(C.new()) { /*...*/ } // deprecated
 }
 ....
-____
 
 write
 
-____
+[source, java]
 ....
 class C {
-    static aspect ConstructionProtocol {
-        static before(): executions(C.new()) { ... }
-    }
+  static aspect ConstructionProtocol {
+    static before(): executions(C.new()) { /*...*/ }
+  }
 }
 ....
-____
 
 If your advice doesn't refer to any inner classes or interfaces of C,
 you can move the inner aspect out of the class entirely.
 
-____
+[source, java]
 ....
-class C { ... }
+class C { /*...*/ }
 
 aspect ConstructionProtocol {
-    static before(): execution(C.new()) { ... }
+  static before(): execution(C.new()) { /*...*/ }
 }
 ....
-____
 
 Your code will be clearer if you consider the purpose of each piece of
 advice when you make this change. It may be that some of the advice
@@ -1891,21 +1881,23 @@ represent the join point object.
 The elimination of the `runNext()` static method requires almost no
 porting work. An automatic replacement of the string
 
-____
-`thisJoinPoint.runNext`
-____
+[source, java]
+....
+thisJoinPoint.runNext
+....
 
 with the string
 
-____
-`proceed`
-____
+[source, java]
+....
+proceed
+....
 
 will do the job. However, if any around advice used the identifier
-"`proceed`" as a formal parameter or local variable, it must be renamed,
+`proceed` as a formal parameter or local variable, it must be renamed,
 and if any aspect used it as a field, then references to the field in
 around advice should be made explicit (prefixing the reference with the
-aspect name or "`this`", depending on whether the field is static or
+aspect name or `this`, depending on whether the field is static or
 not).
 
 [[thisJoinPoint]]
@@ -1928,33 +1920,19 @@ one of:
 
 For example:
 
-____
-....
-System.out.println(thisJoinPoint.className + "." +
-                   thisJoinPoint.methodName)
-....
-____
+* `System.out.println(thisJoinPoint.className + "." + thisJoinPoint.methodName)`
 
 can be replaced with
 
-____
-`System.out.println(thisJoinPoint)`
-____
-
-or
-
-____
-`System.out.println(thisJoinPoint.getSignature().toShortString())`
-____
+* `System.out.println(thisJoinPoint)` or
+* `System.out.println(thisJoinPoint.getSignature().toShortString())`
 
 with comparable behavior.
 
 Accesses to the parameters field of join points should be changed as
 follows. A field access like:
 
-____
-`thisJoinPoint.parameters`
-____
+* `thisJoinPoint.parameters`
 
 must be changed to:
 

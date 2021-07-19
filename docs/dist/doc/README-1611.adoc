@@ -1,13 +1,11 @@
-[.small]#© Copyright 2010-2011 Contributors. All rights reserved.#
+== AspectJ 1.6.11
 
-== AspectJ 1.6.11 Readme
+_© Copyright 2010-2011 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.6.11 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.11;[here]
 
-.
-
-=== 1.6.11 available 15-03-2011
+_Release info: 1.6.11 available 15-Mar-2011_
 
 === Notable Changes
 

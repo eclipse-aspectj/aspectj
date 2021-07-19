@@ -1,6 +1,6 @@
-[.small]#© Copyright 2009 Contributors. All rights reserved.#
+== AspectJ 1.6.8
 
-== AspectJ 1.6.8 Readme
+_© Copyright 2009 Contributors. All rights reserved._
 
 The first sentence in the 1.6.7 readme was 'AspectJ 1.6.7 includes some
 radical internal changes.'

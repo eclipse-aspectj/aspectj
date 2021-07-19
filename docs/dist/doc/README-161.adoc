@@ -1,6 +1,6 @@
-[.small]#© Copyright 2008 Contributors. All rights reserved.#
+== AspectJ 1.6.1
 
-== AspectJ 1.6.1 Readme
+_© Copyright 2008 Contributors. All rights reserved._
 
 The main themes of AspectJ1.6.1 are better memory usage and faster
 weaving. This has been achieved through profiling of the weaving process

@@ -1,11 +1,9 @@
-[.small]#© Copyright 2018 Contributors. All rights reserved.#
+== AspectJ 1.9.2
+
+_© Copyright 2018 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.9.2 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.2[here]
-
-.
-
-== AspectJ 1.9.2
 
 === Java 11 support
 
@@ -13,6 +11,3 @@ AspectJ now supports Java11. It has been updated to a more recent JDT
 compiler that supports Java 11 (JDTCore #6373b82afa49b).
 
 Available: 1.9.2 available Oct-2018
-
- +
- +

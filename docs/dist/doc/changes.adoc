@@ -1,7 +1,7 @@
-[.small]#© Copyright 1998-2002 Palo Alto Research Center Incorporated
-2003-2008 Contributors. All rights reserved.#
-
 == Changes in AspectJ
+
+_© Copyright 1998-2002 Palo Alto Research Center Incorporated
+2003-2008 Contributors. All rights reserved._
 
 * xref:#_1_6_0[1.6.0] (released 2008-04)
 * xref:#_1_5_4[1.5.4] (released 2007-12)
@@ -1097,8 +1097,12 @@ is limited.
 ** ...
 * Limitations:
 ** AJBrowser is currently an undocumented demonstration application. To
-use it type: +
-> ajbrowser <lst file1> <lst file2> ...
+use it type:
++
+[source, text]
+....
+ajbrowser <lst file1> <lst file2> ...
+....
 
 === Emacs Support: aspectj-mode and AJDEE
 
@@ -1193,8 +1197,12 @@ is limited.
 ** Build configuration file editor added.
 * Limitations:
 ** AJBrowser is currently an undocumented demonstration application. To
-use it type: +
-> ajbrowser <lst file1> <lst file2> ...
+use it type:
++
+[source, text]
+....
+ajbrowser <lst file1> <lst file2> ...
+....
 
 === Aspectj-mode and AJDEE: AspectJ support in Emacs
 

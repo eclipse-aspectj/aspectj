@@ -1,6 +1,6 @@
-[.small]#© Copyright 2009 Contributors. All rights reserved.#
+== AspectJ 1.6.5
 
-== AspectJ 1.6.5 Readme
+_© Copyright 2009 Contributors. All rights reserved._
 
 [[bugsfixed]]
 === Bugs fixed
