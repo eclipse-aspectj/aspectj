@@ -22,8 +22,7 @@ link:runtime-api/index.html[API] and link:examples/[example code].
 
 |xref:#distributions[distributions]
 |http://eclipse.org/aspectj[AspectJ]; development environment support
-for http://eclipse.org/ajdt[Eclipse] and
-https://jdeveloperaop.dev.java.net/[JDeveloper].
+for http://eclipse.org/ajdt[Eclipse].
 
 |xref:#resources[resources] |http://aosd.net[aosd.net];
 http://eclipse.org/aspectj[AspectJ project] the bug
@@ -142,11 +141,6 @@ project. See the faq.html#q:buildingsource[FAQ entry].
 |http://eclipse.org/ajdt[AspectJ for Eclipse] |AspectJ Development
 Environment support for Eclipse is available under Eclipse Public
 License v 1.0 from the eclipse.org project site http://eclipse.org/ajdt
-
-|https://jdeveloperaop.dev.java.net/[Support for the JDeveloper IDE]
-|Support for programming in AspectJ using the JDeveloper IDE is
-available under the Apache Software License from the java.net project
-site https://jdeveloperaop.dev.java.net/
 |===
 
 [[resources]]

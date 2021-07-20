@@ -1258,7 +1258,6 @@ developer communities to build the integration.
 * IDEA/IntelliJ has an enthusiastic community and the developers are
 working on an extensibility API - http://intellij.com
 * jEdit comes from a very active open-source community.
-* Oracle JDeveloper is supported at https://jdeveloperaop.dev.java.net/.
 * Some have suggested Codeguide from Omnicore
 http://www.omnicore.com[http://www.omnicore.com/]
 
