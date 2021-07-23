@@ -99,7 +99,7 @@ AJDT (AspectJ support for Eclipse). Amongst the many improvements, we
 will have full eager parsing support that avoids the need to keep the
 whole structure model of a project in memory, hopefully making AJDT much
 less memory hungry and much slicker to use. For more details see the
-http://www.eclipse.org/ajdt[AJDT project website].
+https://www.eclipse.org/ajdt[AJDT project website].
 
 '''''
 

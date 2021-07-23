@@ -1,20 +1,20 @@
 <html>
 <head>
-<title>Build and Test AspectJ</title>	
+<title>Build and Test AspectJ</title>
 </head>
 <body>
 <h1>Build and Test AspectJ</h1>
 
 This describes how to build and test AspectJ
 for developers working on source code for AspectJ.
-It covers building with Ant or Eclipse and testing with 
+It covers building with Ant or Eclipse and testing with
 JUnit and the harness used for compiler tests.
 
-For information on how the build works and how to 
-debug failed builds, see 
+For information on how the build works and how to
+debug failed builds, see
 <a href="readme-build-module.html">
          readme-build-module.html</a>.
-             
+
 <ol>
   <li>Quick start</li>
   <li>Requirements</li>
@@ -47,7 +47,7 @@ debug failed builds, see
     <li>Release preconditions and testing</li>
     <li>Release completion</li>
     </ol>
-   </li>  
+   </li>
   <li>New modules, Java 5, and Ant-only build problems</li>
   <li>Build Problems</li>
 </ol>
@@ -59,8 +59,8 @@ This is a minimal introduction to building and testing AspectJ.
 <pre>
   export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
   cvs co org.aspectj/modules</pre>
-If using Eclipse, check out the subdirectories of 
-<code>org.aspectj/modules</code> as Eclipse projects.  
+If using Eclipse, check out the subdirectories of
+<code>org.aspectj/modules</code> as Eclipse projects.
 Skip the  <code>aspectj-attic</code> module.
 
 <p/>Build an AspectJ distribution:
@@ -72,7 +72,7 @@ Install the distribution (e.g., into build/../aspectj-install):
 
 <pre>  java -jar ../aj-build/dist/aspectj-DEVELOPMENT.jar</pre>
 
-You can skip the GUI by specifying an existing, empty writable 
+You can skip the GUI by specifying an existing, empty writable
 target directory using <code>-to {targDir}</code>:
 
 <pre>  java -jar ../aj-build/dist/aspectj-DEVELOPMENT.jar -to .</pre>
@@ -83,46 +83,46 @@ Test it by running the build script in the examples directory:
   ../../lib/ant/bin/ant</pre>
 
 This should build and run the spacewar example.
-  
+
 <h3>Required sources, libraries, and tools</h3>
 	<p>
-		
+
 To build requires only the AspectJ project modules and Java VM's.
-All necessary libraries and tools are in the 
+All necessary libraries and tools are in the
 <a href="../lib/">lib</a> directory, including Ant.
 	</p>
 <p>To get the source, check out from CVS.  E.g., from the command line,
 </p>
-			
+
 <pre>
    export CVS_ROOT=":pserver:anonymous@dev.eclipse.org:/home/technology"
    cvs co org.aspectj/modules
 </pre>
 <p>
-	Eclipse users should check out each relevant subdirectory of 
+	Eclipse users should check out each relevant subdirectory of
  <code>org.aspectj/modules</code> as a project
-	(most have .project files).  
+	(most have .project files).
 </p>
 <p>
 Not all modules are required.
-The <code>aspectj-attic</code> module only has old code.		
+The <code>aspectj-attic</code> module only has old code.
 </p>
 
 <h3>Standard builds</h3>
 <h4>Overview</h4>
-The build system is designed to work standalone and support 
+The build system is designed to work standalone and support
 Eclipse and Ant.
 Each module is an Eclipse project, and all required libraries
 are in lib/.
 All build dependencies are read from Eclipse .classpath files
 and managed using an Ant builder task,
 so no Ant build scripts need to change when dependencies change.
-However, that means the modules (read: Eclipse projects) can only 
+However, that means the modules (read: Eclipse projects) can only
 do what the builder task understands.  Currently it expects
 release source files in <code>src</code> (or <code>java5-src</code>
-for Java 5 code) and test source files in 
+for Java 5 code) and test source files in
 <code>testsrc</code> (or <code>java5-testsrc</code>),
-and can handle Java and AspectJ projects.  
+and can handle Java and AspectJ projects.
 For more information on the build infrastructure and setup, see
 <a href="readme-build-module.html">readme-build-module.html</a>
 and <a href="#antInvariants">below</a>.
@@ -133,45 +133,45 @@ You should use the Ant in ../lib/ant.  Currently this is a vanilla
 distribution of Ant 1.6.3, but that might change.
 </p>
 <p>
-This <a href=".">build</a> directory has a master 
+This <a href=".">build</a> directory has a master
 <a href="build.xml">build.xml</a> script, and the modules have
 satellite <code>build.xml</code> which support building only that
-module.	
+module.
 The <a href="release">release</a> directory has scripts for doing
 release builds (in multiple VM's, with testing).  These are run by
 automated build and before any AspectJ distribution.
-Custom <code>build.xml</code> files are in	
+Custom <code>build.xml</code> files are in
 The <a href="../docs/build.xml">../docs/build.xml</a>,
 	<a href="../org.aspectj.lib/build-aspectjlib.xml">org.aspectj.lib/build-aspectjlib.xml</a>,
-and <a href="../eclipse.plugin/build.xml">../eclipse.plugin/build.xml</a>. 
+and <a href="../eclipse.plugin/build.xml">../eclipse.plugin/build.xml</a>.
 These are invoked by the master
 <a href="build.xml">build.xml</a> as needed.
 Other modules have generic <code>build.xml</code>'s that just
-use the master build file to run targets <code>compile</code> and 
+use the master build file to run targets <code>compile</code> and
 <code>test</code> for that module.
 (If you do <code>clean</code>, all binaries for all
 modules are cleaned.)
 </p>
 <p>
-The master <a href="build.xml">build.xml</a> 
-creates an AspectJ distribution in 
+The master <a href="build.xml">build.xml</a>
+creates an AspectJ distribution in
 	<a href="../aj-build/dist/aspectj-DEVELOPMENT.jar">
 		../aj-build/dist/aspectj-DEVELOPMENT.jar
 	</a>;
-You'll notice module jar results are put in 
+You'll notice module jar results are put in
 	<a href="../aj-build/jars">../aj-build/jars</a>,
 including <code>{module}.jar</code> and <code>{module}-test.jar</code>
-(for the release and test classes) and 
-<code>{module}-all.jar</code>, and	
-<code>{module}-test-all.jar</code> 
+(for the release and test classes) and
+<code>{module}-all.jar</code>, and
+<code>{module}-test-all.jar</code>
 (including all antecedant classes and libraries).
 See <a href="build.xml">build.xml</a> for other targets.
 </p>
 <p>
 For any build, you should create your own version of
-	<a href="local.properties">local.properties</a>, using 	
+	<a href="local.properties">local.properties</a>, using
 	<a href="sample.local.properties">sample.local.properties</a>
-as a template.  	
+as a template.
 When using the master <code>build.xml</code>,
 consider defining "build.config" to pass flags to the Ant
 builder.  E.g., to reuse Eclipse classes and log verbosely,
@@ -190,7 +190,7 @@ with verbose logging:
 </p>
 <pre>
   cd modules/build
-  ../lib/ant/bin/ant 
+  ../lib/ant/bin/ant
 </pre>
 
 <p>
@@ -210,7 +210,7 @@ To build and test the asm module from that module:
 </pre>
 
 <p>
-To build the test harness into 
+To build the test harness into
   <code>../aj-build/jars/testing-drivers-all.jar</code>:
 </p>
 <pre>
@@ -227,7 +227,7 @@ handle the .project and .classpath files in the modules/projects.)
 That will enable you
 to run the compiler or test harness from within Eclipse (see below),
 but it will not build the AspectJ release as Ant does.
-If you are making changes in Eclipse, you should set your default JRE 
+If you are making changes in Eclipse, you should set your default JRE
 to the minimum supported by the AspectJ tools (currently JDK 1.3)
 to avoid using later API's.
 You'll need to set some variables in your Eclipse environment;
@@ -246,10 +246,10 @@ currently these are:
 </ul>
 
 <h4>Running the Ant build scripts from Eclipse</h4>
-When running Ant from older versions of Eclipse, 
-be sure to replace the Eclipse Ant 
-libraries with ours.  In the Ant configuration, remove all jars 
-specified by Eclipse and add all the libraries in 
+When running Ant from older versions of Eclipse,
+be sure to replace the Eclipse Ant
+libraries with ours.  In the Ant configuration, remove all jars
+specified by Eclipse and add all the libraries in
 <a href="../lib/ant/lib">../lib/ant/lib</a>
 as well as in <a href="../lib/junit">../lib/junit</a>.
 (Do not add <code>../lib/build/build.jar</code>, which is
@@ -264,14 +264,14 @@ for more information.
 <h4>Using Eclipse to compile but Ant to assemble</h4>
 As mentioned above,
 assuming Eclipse is compiling the AspectJ modules successfully,
-you can use Ant to assemble the Eclipse-built .class files into a 
-product by including <code>useEclipseCompiles</code> in the 
+you can use Ant to assemble the Eclipse-built .class files into a
+product by including <code>useEclipseCompiles</code> in the
 <code>build.config</code>.  That reduces the build process
 to product assembly.
 (And of course you can run Ant from Eclipse as described above.)
 
 <h4>Running the compiler, browser, or harness from the command-line</h4>
-The build produces jar files in 
+The build produces jar files in
   <a href="../aj-build/jars/">../aj-build/jars/</a>,
 some of which have manifests specifying the main class, so they
 can be run using <code>java -jar {file} {arguments}</code>.
@@ -312,7 +312,7 @@ in the next build.
 It appears that sometimes these jar files are not close during the
 Eclipse session, which means they cannot be overwritten in new builds,
 even those run from a different Ant process.
-If you find that builds are silently failing, try deleting the 
+If you find that builds are silently failing, try deleting the
 build products.
 
 
@@ -320,15 +320,15 @@ build products.
 <p>
 Each module has a tree of JUnit tests in the <code>testsrc</code> directory.
 These parallel the <code>src</code> directories and contain roll-up suites
-for each package 
-  (<code>{module}/testsrc/{packagePath}/{package}Tests.java</code>) and 
-for the module as a whole  
-  (<code>{module}/testsrc/{module}ModuleTests.java</code>). 
+for each package
+  (<code>{module}/testsrc/{packagePath}/{package}Tests.java</code>) and
+for the module as a whole
+  (<code>{module}/testsrc/{module}ModuleTests.java</code>).
 </p>
 <p>
-The AspectJ project also has <i>additional</i> custom tests in the 
+The AspectJ project also has <i>additional</i> custom tests in the
 <a href="../tests">tests module</a>,
-mainly the compiler tests run by the harness in 
+mainly the compiler tests run by the harness in
   <a href="../tests/ajcTests.xml">ajcTests.xml</a>. <u>It is important
 to run these additional compiler tests (not covered by the JUnit
 suite) before and after any change to the compiler.</u>
@@ -337,7 +337,7 @@ suite) before and after any change to the compiler.</u>
 The module <a href="../run-all-junit-tests">run-all-junit-tests</a>
 refers to all the other modules and the compiler tests adapted through
 the <a href="../tests/src">../tests/src</a>.  So the easiest way to
-run the JUnit and compiler tests is to run the top-level suite 
+run the JUnit and compiler tests is to run the top-level suite
 <a href="../run-all-junit-tests/testsrc/RunTheseBeforeYouCommitTests.java">
 	RunTheseBeforeYouCommitTests</a>.
 </p>
@@ -365,17 +365,17 @@ on the classpath:
 <p>
 The assembled (<code>-all</code>) jar files include all antecedants,
 except for those "skipped" (like Ant and JUnit).
-(For more on skipped libraries, see 
+(For more on skipped libraries, see
 <a href="readme-build-module.html">readme-build-module.html</a>).
 </p>
 
 <h4>Using the test harness to run compiler tests</h4>
 <p>
-	
-The <a href="build.xml">build.xml</a> <code>build-harness-jar</code> 
+
+The <a href="build.xml">build.xml</a> <code>build-harness-jar</code>
 target builds a single jar with
-the AspectJ binaries and a test harness as the main class. 
-It reads test suite files like 
+the AspectJ binaries and a test harness as the main class.
+It reads test suite files like
    <a href="../tests/ajcTests.xml">../tests/ajcTests.xml</a>;
 use the -help flag to see available options.
 For more information, see
@@ -392,7 +392,7 @@ Release builds differ mainly in running
 from a clean, up-to-date tree and with correct build version values
 in <a href="local.properties">local.properties</a>, which
 will update <code>org.aspectj.bridge.Version</code>.
-Do not run using the <code>build.config</code> value 
+Do not run using the <code>build.config</code> value
 <code>useEclipseCompiles</code>,
 because this will include testing classes in the release libraries.
 See <a href="#version">Version synchronization</a> below
@@ -402,12 +402,12 @@ for more details on how the version is updated.
 <p/>
 Normally, we do releases only after fixing all high-priority
 (P1 and P2) bugs in the bug database
-  (<a href="http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;priority=P1&amp;priority=P2">
+  (<a href="https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;priority=P1&amp;priority=P2">
 All open AspectJ bugs with P1 and P2</a>).
-For bug fixes, associated tests in 
+For bug fixes, associated tests in
   <code>tests/ajcTestsFailing.xml</code> are fixed and moved to
   <code>tests/ajcTests.xml</code>.
-  
+
 
 <p/>Before a release, run the release tests as described in
   <a href="../tests/readme-release-tests.html">
@@ -415,8 +415,8 @@ For bug fixes, associated tests in
   (deprecated? using:
   <a href="../build/release-checklist.txt">
            ../build/release-checklist.txt</a>).
-  
-                                 
+
+
 <h4>Release completion</h4>
 When the release build is accepted,
 tag the tree with the release version
@@ -429,24 +429,24 @@ based on the release code.  E.g., from the command line:
 <p/>
 Pushing the release out to the web involves manually updating
 the web with the release files and documentation,
-  verifying the downloads and pages, 
+  verifying the downloads and pages,
   and sending any release notifications.
-  Save the release installer, test results, and any notes 
+  Save the release installer, test results, and any notes
   about deferred bugs or tests in
   <code>org.aspectj/releases/aspectj-{version}/</code>.
- 
+
 <p/>
 <hr/>
 <a name="antInvariants"/>
 <h3>New modules, Java 5, and Ant-only build problems</h3>
 <p>
-	To reiterate (and as described more fully in 
+	To reiterate (and as described more fully in
 	<a href="readme-build-module.html">readme-build-module.html</a>),
 	the build system introspects on module and the .classpath file
 	to determine how to build.  Further, it enforces stricter build
 	invariants than the Eclipse projects do; when your code works
 	in Eclipse but fails in the Ant, it's your responsibility to fix it
-	by following the build invariants below.	
+	by following the build invariants below.
 </p>
 <p>
 <p>What to do when adding a new module (i.e., eclipse project):
@@ -459,16 +459,16 @@ the web with the release files and documentation,
         <li>same use of known classpath variables/entries</li>
     </ol>
 	</li>
-	<li>Add module to those checked for copyright/license in 
+	<li>Add module to those checked for copyright/license in
         <a href="testsrc/org/aspectj/build/BuildModuleTests.java">
             testsrc/org/aspectj/build/BuildModuleTests.java
         </a>
 	</li>
     <li>Add module to module dependency tree as usual in Eclipse project properties</li>
     <li>If the module is to produce a jar visible in {AspectJ}/lib,
-        then add a zero-length file of the correct name to 
+        then add a zero-length file of the correct name to
         <a href="products/tools/dist/lib">products/tools/dist/lib</a>
-        and an alias to that file from the module name in 
+        and an alias to that file from the module name in
 		<a href="src/org/aspectj/internal/tools/build/Builder.properties">
 			Builder.properties</a>
     </li>
@@ -503,7 +503,7 @@ the web with the release files and documentation,
 	<li>Neither <code>testsrc</code> directory is used in production builds.
 	</li>
 	<li>
-		This only requires what's in the 
+		This only requires what's in the
 		<a href="../lib">../lib</a> directory and the usual Java VM's.
 		That means modules can only depend on each other and the libraries
 		in <a href="../lib">../lib</a>.
@@ -511,7 +511,7 @@ the web with the release files and documentation,
 	<li>Modules are built into jar files.  <code>{module.name}.jar</code>
 		includes only the module classes, and <code>{module.name}-all.jar</code>
 		includes the module classes plus any antecendant modules and any
-		required libraries not skipped (see below).  
+		required libraries not skipped (see below).
 	</li>
 	<li>A file <code>{module.name}/{module.name}.mf.txt</code>, if available,
 		will be used as the jar file manifest, after replacing certain
@@ -524,7 +524,7 @@ the web with the release files and documentation,
 		(Ant, JUnit, etc.).
 	</li>
 	<li>Test classes are excluded from the compile process for production builds.
-		These result in the same jar files; there is no way to 
+		These result in the same jar files; there is no way to
 		tell externally whether the test classes were stripped from a jar.
 	</li>
 	<li>ONLY resources specified as <code>resource.pattern</code> in
@@ -546,7 +546,7 @@ the web with the release files and documentation,
 	<li>Java 5 code is built in Ant only if JAVA_HOME points to Java 5 (or later).
 	</li>
 	<li>No normal code can depend on any Java 5 code.
-		The build system checks by building everything using the 
+		The build system checks by building everything using the
 		lowest VM supported by the tools.
 	</li>
 </ul>
@@ -581,16 +581,16 @@ Some build problems and fixes encountered in the past:
    if this is added as an ordinary (external jar), then the main
    ant build script will pick up the contents of graphics.jar and
    include it in the aspectj distribution (obvious clue, the size of
-   the built aspectjtools.jar doubles to about 10MB). Instead, from the 
+   the built aspectjtools.jar doubles to about 10MB). Instead, from the
    Java Build Path properties page of the project, select "Add Library"
    and add the JDK library. You now have to remove the JRE_LIB entry
    from the project or Eclipse complains about duplicate jar files
    in the path.
    </li>
-   <li>More generally, if you find extra classes in the assembled jars, 
-	most likely you have added unexpected libraries to the build, e.g., 
-	when adding libraries for the IBM JRE.  
-	To skip those, add them to the "skip.libraries" list in 
+   <li>More generally, if you find extra classes in the assembled jars,
+	most likely you have added unexpected libraries to the build, e.g.,
+	when adding libraries for the IBM JRE.
+	To skip those, add them to the "skip.libraries" list in
 	<a href="src/org/aspectj/internal/tools/build/Builder.properties">
 		src/org/aspectj/internal/tools/build/Builder.properties</a>.
 	These libraries will always be skipped for any module built this way;

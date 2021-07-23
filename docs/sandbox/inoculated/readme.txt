@@ -1,10 +1,10 @@
 
 This contains demonstration source code for the article
 "Get Inoculated!" in the May 2002 issue of Software Development
-magazine.  
+magazine.
 
 To use it you will need the AspectJ tools available from
-http://eclipse.org/aspectj.  We also recommend you download the
+https://eclipse.org/aspectj.  We also recommend you download the
 documentation bundle and support for the IDE of your choice.
 
 Each file has a snippet for a section of the article.  To find
@@ -28,7 +28,7 @@ Compile and run as usual:
    > ajc -classpath "$AJ_HOME/lib/aspectjrt.jar" {file}
    > java -classpath ".;$AJ_HOME/lib/aspectjrt.jar" {class}
 
-For email discussions and support, see http://eclipse.org/aspectj.
+For email discussions and support, see https://eclipse.org/aspectj.
 
 
 Enjoy!

@@ -48,7 +48,7 @@ aspect XlintTest {
      * no example for "invalidWildcardTypeName"
      *
      * Never signalled anywhere in the codebase
-     * @see http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg01404.html
+     * @see https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg01404.html
      */
 
 
@@ -74,7 +74,7 @@ aspect XlintTest {
      * no example for "shadowNotInStructure"
      *
      * Signalled if the structure model is broken, probably can't happen
-     * @see http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg01404.html
+     * @see https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg01404.html
      */
 
 

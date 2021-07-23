@@ -64,11 +64,11 @@ public class Main {
 	/** Header used when rendering exceptions for users */
 	public static final String THROWN_PREFIX = "Exception thrown from AspectJ " + Version.getText() + LangUtil.EOL + "" + LangUtil.EOL
 			+ "This might be logged as a bug already -- find current bugs at" + LangUtil.EOL
-			+ "  http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler" + LangUtil.EOL + "" + LangUtil.EOL
+			+ "  https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler" + LangUtil.EOL + "" + LangUtil.EOL
 			+ "Bugs for exceptions thrown have titles File:line from the top stack, " + LangUtil.EOL
 			+ "e.g., \"SomeFile.java:243\"" + LangUtil.EOL + "" + LangUtil.EOL
 			+ "If you don't find the exception below in a bug, please add a new bug" + LangUtil.EOL
-			+ "at http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ" + LangUtil.EOL
+			+ "at https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ" + LangUtil.EOL
 			+ "To make the bug a priority, please include a test program" + LangUtil.EOL + "that can reproduce this exception."
 			+ LangUtil.EOL;
 
@@ -77,7 +77,7 @@ public class Main {
 			+ "found in your AspectJ installation directory. The -Xmx parameter value" + LangUtil.EOL
 			+ "should be increased from 64M (default) to 128M or even 256M." + LangUtil.EOL + LangUtil.EOL
 			+ "See the AspectJ FAQ available from the documentation link" + LangUtil.EOL
-			+ "on the AspectJ home page at http://www.eclipse.org/aspectj";
+			+ "on the AspectJ home page at https://www.eclipse.org/aspectj";
 
 	private static final String MESSAGE_HOLDER_OPTION = "-messageHolder";
 

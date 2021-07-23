@@ -15,7 +15,7 @@ Before you begin... you will need:
 * A Linux box         distribution :      [                                   ]
 * An iMac (nice-to-have) JDK 1.4.x :      [                                   ]
 * Eclipse            version :            [                                   ]
-  
+
 * A pair of scissors (get an adult to help you with these)
 * Some sticky-backed plastic
 
@@ -33,23 +33,23 @@ Preparation:
 
 * Create a new directory under releases for this release                [   ]
    (e.g. releases/aspectj-1.1rc1)
-   
+
 * Save a copy of this file there as package-and-test-notes.txt          [   ]
-    
+
 * Edit build/build-properties.xml and set the version properties for this
   release                                                               [   ]
-  
-  e.g. 
-  
-      <property name="build.version"       value="1.1rc1"/> 
-      <property name="build.version.base"  value="1.1"/> 
-      <property name="build.version.long"  value="1.1 release candidate 1"/> 
-      <property name="build.version.short" value="1.1rc1"/> 
-       
+
+  e.g.
+
+      <property name="build.version"       value="1.1rc1"/>
+      <property name="build.version.base"  value="1.1"/>
+      <property name="build.version.long"  value="1.1 release candidate 1"/>
+      <property name="build.version.short" value="1.1rc1"/>
+
 * Edit org.aspectj.ajdt.core/src/org.aspectj.ajdt.ajc/messages.properties and
   set the version properties for this release                           [   ]
-  
-  e.g. 
+
+  e.g.
 
   ### AspectJ-specific messages
   configure.version = AspectJ Compiler 1.1rc1
@@ -58,14 +58,14 @@ Preparation:
   ### miscellaneous
   misc.usage = AspectJ Compiler 1.1 release candidate 1\n\
   ...
-    
+
 Build:
 ================================================================================
 
 * Ensure JAVA_HOME is set to point to your 1.3 JDK                      [   ]
      echo $JAVA_HOME       [                                                ]
-     
-     (even when you "Run Ant..." from eclipse, the value of JAVA_HOME is 
+
+     (even when you "Run Ant..." from eclipse, the value of JAVA_HOME is
      used rather than the JRE specified in your Eclipse settings).
 
 * When running ant, use the version in modules/lib/ant,
@@ -77,10 +77,10 @@ Build:
     $ ant clean                                                         [   ]
     $ ant fail-unless-boot-libraries-uptodate                           [   ]
     $ ant                                                               [   ]
-    
+
 * Save the build output (console log) as build-<version>.log.txt        [   ]
     (e.g. build-1.1rc1.log.txt)
-    
+
 * Save the built jar to the releases directory                          [   ]
   (releases/aspectj-<version>)
 
@@ -92,8 +92,8 @@ Pre-installation tests:
 
 * run junitModules.xml tests
 
-  - go to modules/tests/ and run 
-  
+  - go to modules/tests/ and run
+
      $ ant -f junitModules.xml {target} \
        -Daspectjrt.path=../aj-build/dist/tools/lib/aspectjrt.jar
 
@@ -101,88 +101,88 @@ Pre-installation tests:
 
      -- target = clean                                                  [   ]
      -- target = default                                                [   ]
-     
-  - Record any failures here (should be none)     
-     
+
+  - Record any failures here (should be none)
+
   - Save the test results as junitModules.report.zip                    [   ]
     (zip of eclipse/workspace/tests/bin/junitXmlOutput/html)
-    
-   
+
+
 * run Harness tests on the 1.3 vm (ajcTests.xml):
-   
+
     Where {harness} is
-    
+
       $ cd tests
-      $ {java-1.3} -jar ../aj-build/jars/testing-drivers-all.jar 
+      $ {java-1.3} -jar ../aj-build/jars/testing-drivers-all.jar
 
     Do:
 
       $ {harness} -release -logFail ajcTests.xml                        [   ]
-  
+
     -- save results in ajcTests-result-<version>-JDK13.txt              [   ]
         (e.g. ajcTests-result-1.1rc1-JDK13.txt)
-  
+
       -- record any failures (should be none) inline here.
-      
+
       $ {harness} -release -logFail -emacssym ajcTests.xml              [   ]
 
     -- save results in ajcTests-result-<version>-emacssym-JDK13.txt     [   ]
         (e.g. ajcTests-result-1.1rc1-emacssym-JDK13.txt)
-  
+
       -- record any failures (should be none) inline here.
-                  
+
 * run Harness tests on the 1.4 vm:
 
     Where {harness} is
-    
+
       $ cd tests
-      $ {java-1.4} -jar ../aj-build/jars/testing-drivers-all.jar 
+      $ {java-1.4} -jar ../aj-build/jars/testing-drivers-all.jar
 
     Do:
 
       $ {harness} -release -logFail ajcTests.xml                        [   ]
-  
+
     -- save results in ajcTests-result-<version>-JDK14.txt              [   ]
         (e.g. ajcTests-result-1.1rc1-JDK14.txt)
-  
+
       -- record any failures (should be none) inline here.
-      
+
       $ {harness} -release -logFail -emacssym ajcTests.xml              [   ]
 
     -- save results in ajcTests-result-<version>-emacssym-JDK14.txt     [   ]
         (e.g. ajcTests-result-1.1rc1-emacssym-JDK14.txt)
-  
+
       -- record any failures (should be none) inline here.
-                      
+
 * run Harness on ajcTestsFailing.xml
 
     Where {harness} is
-    
+
       $ cd tests
-      $ {java-1.3} -jar ../aj-build/jars/testing-drivers-all.jar 
+      $ {java-1.3} -jar ../aj-build/jars/testing-drivers-all.jar
 
     Do:
 
       $ {harness} -release -logFail ajcTestsFailing.xml                 [   ]
-  
+
     -- save results in ajcTestsFailing-result-<version>-JDK13.txt       [   ]
         (e.g. ajcTestsFailing-result-1.1rc1-JDK13.txt)
-  
-      -- record any failures inline here (should be none. ajcTestsFailing 
+
+      -- record any failures inline here (should be none. ajcTestsFailing
          should be empty for a final release.  Known exceptions are
          permissible for a non-final release.)
-         
-      
+
+
 Installation & Verification Tests
 ================================================================================
 
 * install from aspectj-<version>.jar as built above
 
     - verify version number and build date on splash screen             [   ]
-    
+
     - save screenshot of splash screen (not essential) as               [   ]
-        Installer-Splash-Screen.bmp (file format may vary)   
-        
+        Installer-Splash-Screen.bmp (file format may vary)
+
 * verify directory structure created ok                                 [   ]
 
 * check version in README-AspectJ.html                                  [   ]
@@ -225,7 +225,7 @@ Installation & Verification Tests
 
 * verify debug info included in class files
     - "javap -l org.aspectj.tools.ajc.Main" under jdk 1.4 or later      [   ]
-    
+
 * verify manual dates correct in docs                                   [   ]
 
 * verify api docs present and correct                                   [   ]
@@ -233,7 +233,7 @@ Installation & Verification Tests
 Product Testing
 ================================================================================
 
-These tests are a bit more rigorous and time-consuming. 
+These tests are a bit more rigorous and time-consuming.
 Run at your discretion
 
 * Compile AspectJ sources using AspectJ                                 [   ]
@@ -282,18 +282,18 @@ Release
 
 Once developer consensus is reached on the build:
 
-* commit all releases/aspectj-<version>/*.* files created during 
+* commit all releases/aspectj-<version>/*.* files created during
   this process                                                          [   ]
 
 * tag /home/technology/org.aspectj as vM_m_r_XX (e.g. v1_1_0_RC1)       [   ]
 
-* post aspectj-<version>.jar to 
+* post aspectj-<version>.jar to
     download.eclipse.org/technology/ajdt/aspectj-<version>.jar          [   ]
-    
-* download from 
-  http://download.eclipse.org/technology/ajdt/aspectj-<version>.jar
+
+* download from
+  https://download.eclipse.org/technology/ajdt/aspectj-<version>.jar
   and install                                                           [   ]
-  
+
 * post news article on project home page                                [   ]
 
 * post link on download page                                            [   ]

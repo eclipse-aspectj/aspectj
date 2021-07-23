@@ -51,7 +51,7 @@ public class ErrorDialog extends JDialog {
             String exceptionName = "<unknown exception>";
             if (throwable != null) exceptionName = throwable.getClass().getName();
             this.error_label1.setText("Exception: " + exceptionName);
-            this.error_label2.setText("If you can't fix it, please submit a bug to http://dev.eclipse.org/bugs");
+            this.error_label2.setText("If you can't fix it, please submit a bug to https://dev.eclipse.org/bugs");
             this.stackTrace_textArea.setText("Message: " + message + '\n' + "Stack trace: " + details);
             this.setSize(420, 330);
             this.setLocationRelativeTo(owner);

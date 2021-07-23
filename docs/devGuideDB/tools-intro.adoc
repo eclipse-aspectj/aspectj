@@ -6,7 +6,7 @@
 
 The xref:../progguide/index.html[AspectJ Programming Guide] describes
 the AspectJ language. This guide describes the AspectJ tools produced by
-the AspectJ team on http://eclipse.org/aspectj. The AspectJ tools
+the AspectJ team on https://eclipse.org/aspectj. The AspectJ tools
 include - ajc, the compiler/weaver; ajdoc, a documentation tool;
 ajbrowser, a crosscutting code viewer; Ant support for ajc; and
 load-time weaving support. These tools are delivered in the library
@@ -14,7 +14,7 @@ folder of the AspectJ tools installation, mainly in `aspectjtools.jar`
 (tools) and `aspectjrt.jar` (runtime). This guide does not describe the
 Eclipse AspectJ development tools (AJDT). That is produced by another
 team (sharing some members) on
-http://eclipse.org/aspectj[http://eclipse.org/ajdt]. AJDT is delivered
+https://eclipse.org/aspectj[https://eclipse.org/ajdt]. AJDT is delivered
 as an Eclipse plugin, incorporating the classes in the AspectJ tools
 libraries along with the Eclipse plugin interface classes.
 

@@ -88,7 +88,7 @@ public final class TestUtil {
 		{
 			URL url = null;
 			try {
-				url = new URL("http://eclipse.org/BADURL");
+				url = new URL("https://eclipse.org/BADURL");
 			} catch (MalformedURLException e) {
 				// ignore - hopefully never
 			}

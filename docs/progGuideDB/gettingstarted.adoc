@@ -784,7 +784,7 @@ exactly which figure elements moved, the change would be entirely local
 to the aspect. The pointcut would be updated to expose the object being
 moved, and the advice would be updated to record that object. The paper
 An Overview of AspectJ (available linked off of the AspectJ web site --
-http://eclipse.org/aspectj[]), presented at ECOOP 2001, presents a
+https://eclipse.org/aspectj[]), presented at ECOOP 2001, presents a
 detailed discussion of various ways this aspect could be expected to
 evolve.
 

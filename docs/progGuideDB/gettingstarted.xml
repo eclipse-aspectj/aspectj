@@ -47,7 +47,7 @@
       doing so.  Readers who would like to understand the examples in more
       detail, or who want to learn how to program examples like these, can
       find more complete examples and supporting material linked from the
-      AspectJ web site ( <ulink url="http://eclipse.org/aspectj" /> ).
+      AspectJ web site ( <ulink url="https://eclipse.org/aspectj" /> ).
     </para>
 
     <para>
@@ -1069,7 +1069,7 @@ aspect MoveTracking {
         advice would be updated to record that object. The paper
         <citetitle>An Overview of AspectJ</citetitle> (available linked off
         of the AspectJ web site -- <ulink
-        url="http://eclipse.org/aspectj" />), presented at ECOOP
+        url="https://eclipse.org/aspectj" />), presented at ECOOP
         2001, presents a detailed discussion of various ways this aspect
         could be expected to evolve.
       </para>
@@ -1308,4 +1308,3 @@ aspect ContextFilling {
     </para>
   </sect1>
 </chapter>
-

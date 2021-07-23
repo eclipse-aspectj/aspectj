@@ -83,7 +83,7 @@ sophisticated. To help us work on problems in these scenarios we have
 added a tracing and logging framework and improved our dump mechanism.
 These traces and dumps can be attached to bug reports. In AspectJ 1.5.3
 we have included some
-http://www.eclipse.org/aspectj/doc/released/pdguide/index.html[documentation]
+https://www.eclipse.org/aspectj/doc/released/pdguide/index.html[documentation]
 on how to configure these new features. Don't be surprised if you get
 asked for an AspectJ trace on a future bug report!
 

@@ -325,7 +325,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 			}
 			// if we got a "MAYBE" it's worth looking at the other signatures
 			// The first signature is the subject signature - and against it we must match modifiers/annotations/throws
-			// see http://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+			// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
 			subjectMatch = false;
 			// Early exit
 			if (wantsAnnotationMatch) {
@@ -346,7 +346,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		}
 
 		// Only the subject is checked for modifiers
-		// see http://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+		// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
 		if (subjectMatch && !modifiers.matches(aMember.getModifiers())) {
 			return FuzzyBoolean.NO;
 		}
@@ -366,7 +366,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		}
 
 		// Only the subject is checked for annotations (239441/119749)
-		// see http://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+		// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
 		if (subjectMatch) {
 			// The annotations must match if specified
 			if (!matchesAnnotations(aMember, inAWorld).alwaysTrue()) {
@@ -717,7 +717,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 			return FuzzyBoolean.YES;
 		} else {
 			// do NOT look at ancestor members... only the subject can have an annotation match
-			// see http://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+			// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
 			return FuzzyBoolean.NO;
 		}
 	}

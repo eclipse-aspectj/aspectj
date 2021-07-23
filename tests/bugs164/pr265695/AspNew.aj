@@ -11,17 +11,14 @@ interface DemoService {
     void secureMethod();
 }
 
-
 class DemoServiceImpl implements DemoService {
-    public void secureMethod() {    }    
+    public void secureMethod() {    }
 }
 
 aspect X {
 	// None of these match, the subject at execution(secureMethod()) does not have the annotation
-	// see http://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+	// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
 	before(): execution(@Secured! * *Service+.*(..))  {	}
-	
-	
 }
 
 public class AspNew {
@@ -29,4 +26,3 @@ public class AspNew {
 		new DemoServiceImpl().secureMethod();
 	}
 }
-

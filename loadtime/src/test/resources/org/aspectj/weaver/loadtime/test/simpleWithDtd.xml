@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://sswww.aspectj.org/dtd/aspectj_1_5_0.dtd">
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "https://www.aspectj.org/dtd/aspectj_1_5_0.dtd">
 <aspectj>
     <weaver options="-showWeaveInfo">
         <include within="foo..bar.Goo+"/>

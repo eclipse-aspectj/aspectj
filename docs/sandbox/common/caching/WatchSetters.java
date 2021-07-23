@@ -20,15 +20,15 @@ import java.lang.reflect.Method;
  * ...
  * if (!foo.isDirtyValid() || foo.isDirty()) {
  *    foo.write();
- * } 
+ * }
  * </pre>
- * 
+ *
  * (Initial draft was sent to aspectj-users@eclipse.org by
- * Ricardo on 5/13/2003 
- * (http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg00482.html)
+ * Ricardo on 5/13/2003
+ * (https://dev.eclipse.org/mhonarc/lists/aspectj-users/msg00482.html)
  * but his email fails now, so we
  * did not get explicit authorization to post.)
- * 
+ *
  * @author Ricardo Giacomin, Wes Isberg
  */
 public aspect WatchSetters {
@@ -59,7 +59,7 @@ public aspect WatchSetters {
     public boolean IWatched.isDirtyValid() {
         return dirtyValid;
     }
-    
+
     /** Setters are instance methods returning void,
      * prefixed "set..." and taking exactly 1 argument.
      * Does not use args(id), since that requires the
@@ -75,7 +75,7 @@ public aspect WatchSetters {
      * there wasn't a corresponding setter, we didn't
      * have the right security permissions, etc.
      */
-    void around(IWatched watched) : setters(watched) 
+    void around(IWatched watched) : setters(watched)
             && if(watched.dirtyValid) {
         // get value by invoking getter method
         Object value = NONE;
@@ -86,7 +86,7 @@ public aspect WatchSetters {
                 .getMethod(getterName, GETTER_ARG_TYPES);
             value = method.invoke(watched, GETTER_ARGS);
         } catch (Throwable t) {
-            // NoSuchMethodException, SecurityException, 
+            // NoSuchMethodException, SecurityException,
             // InvocationTargetException...
         }
         if (NONE == value) {
@@ -110,17 +110,17 @@ class Timer implements WatchSetters.IWatched {
     private static int ID;
     public final int id = ++ID;
     private int counter;
-    public int getCounter() { 
+    public int getCounter() {
         return counter;
     }
-    public void setCounter(int i) { 
+    public void setCounter(int i) {
         counter = i;
     }
     public void write() {
         System.out.println("writing " + this);
     }
     public String toString() {
-        return "Timer " + id + "==" + counter;  
+        return "Timer " + id + "==" + counter;
     }
 }
 
@@ -137,14 +137,14 @@ class Client {
        }
    }
 }
- 
+
 // ---- aspects use dirty to implement cache, etc.
 // Volatile things are flushed when dirty
 abstract aspect Volatile {
     // subaspects declare targets using Volatile.ITag
     protected interface ITag {}
     declare precedence : Volatile+, WatchSetters;
-    after(WatchSetters.IWatched watched) returning : 
+    after(WatchSetters.IWatched watched) returning :
             WatchSetters.setters(watched) {
         if (!watched.isDirtyValid() || watched.isDirty()) {
             flushCache(watched);
@@ -169,18 +169,18 @@ aspect Testing {
     void signal(String s) {
         org.aspectj.testing.Tester.event(s);
     }
-    
+
     static {
         org.aspectj.testing.Tester.expectEvent("client-write");
         org.aspectj.testing.Tester.expectEvent("volatile-write");
     }
 
-    before() : withincode(void VolatileTimer.flushCache(Object)) 
+    before() : withincode(void VolatileTimer.flushCache(Object))
         && call(void Timer.write()) {
         signal("volatile-write");
     }
 
-    before() : withincode(void Client.handleTimer(Timer)) 
+    before() : withincode(void Client.handleTimer(Timer))
         && call(void Timer.write()) {
         signal("client-write");
     }

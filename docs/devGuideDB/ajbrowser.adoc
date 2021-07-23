@@ -186,10 +186,10 @@ building from the browser, then please submit a bug report.
 ==== Known issues with the AspectJ browser
 
 For the most up-to-date information on known problems, see the
-http://bugs.eclipse.org/bugs[bug database] for unresolved
-http://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Compiler&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler
+https://bugs.eclipse.org/bugs[bug database] for unresolved
+https://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Compiler&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler
 bugs] or
-http://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=IDE&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[IDE
+https://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=IDE&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[IDE
 bugs] .
 
 * Memory and forking: Users email most about the browser task running
@@ -217,5 +217,5 @@ well.
 You can send email to aspectj-users@dev.eclipse.org. (Do join the list
 to participate!) We also welcome any bug reports, patches, and feature
 requests; you can submit them to the bug database at
-http://bugs.eclipse.org/bugs using the AspectJ product and IDE
+https://bugs.eclipse.org/bugs using the AspectJ product and IDE
 component.

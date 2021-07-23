@@ -9,7 +9,7 @@
         describes the AspectJ language.  This guide describes the AspectJ
         tools produced by the AspectJ
         team on
-         <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
+         <ulink url="https://eclipse.org/aspectj">https://eclipse.org/aspectj</ulink>.
         The AspectJ tools include
         - ajc, the compiler/weaver;
         ajdoc, a documentation tool; ajbrowser, a crosscutting code viewer;
@@ -19,7 +19,7 @@
         <literal>aspectjrt.jar</literal> (runtime).
         This guide does not describe the Eclipse AspectJ development tools
         (AJDT).  That is produced by another team (sharing some members) on
-         <ulink url="http://eclipse.org/aspectj">http://eclipse.org/ajdt</ulink>.
+         <ulink url="https://eclipse.org/aspectj">https://eclipse.org/ajdt</ulink>.
         AJDT is delivered as an Eclipse plugin, incorporating the classes in
         the AspectJ tools libraries along with the Eclipse plugin interface
         classes.

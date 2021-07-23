@@ -5,15 +5,15 @@ directory:
 
 [cols=",",]
 |===
-|For Eclipse 3.0 with AJDT 1.1.12       
-|http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.1.12.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.1.12.zip]
+|For Eclipse 3.0 with AJDT 1.1.12
+|https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.1.12.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.1.12.zip]
 
-|For Eclipse 3.0 with AJDT 1.2.0M2       
-|http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0M2.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0M2.zip]
+|For Eclipse 3.0 with AJDT 1.2.0M2
+|https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0M2.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0M2.zip]
 
-|For Eclipse 3.0 with AJDT 1.2.0 latest dev build       
-|http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0_301_Dev.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0_301_Dev.zip]
+|For Eclipse 3.0 with AJDT 1.2.0 latest dev build
+|https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0_301_Dev.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0_301_Dev.zip]
 
-|For Eclipse 3.1M5 with AJDT 1.2.0 latest dev build       
-|http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0_31M5_Dev.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0_31M5_Dev.zip]
+|For Eclipse 3.1M5 with AJDT 1.2.0 latest dev build
+|https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/docs/teaching/exercises/plugins/org.aspectj.tutorial.exercises_1.2.0_31M5_Dev.zip?rev=1.1&cvsroot=Technology_Project[org.aspectj.tutorial.exercises_1.2.0_31M5_Dev.zip]
 |===

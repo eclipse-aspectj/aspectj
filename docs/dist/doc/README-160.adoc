@@ -25,7 +25,7 @@ incremental builds are required when project dependencies change. The
 result is that the compiler will more frequently do an incremental build
 rather than falling back to doing a full build. Some basic performance
 findings can be seen in
-http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg09002.html[this
+https://dev.eclipse.org/mhonarc/lists/aspectj-users/msg09002.html[this
 mailing list post].
 
 ==== Parameter annotation matching
