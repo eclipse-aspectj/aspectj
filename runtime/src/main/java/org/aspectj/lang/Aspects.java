@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
  * Handles generic aspectOf method when those are not available in the aspects but added later on
  * thru load time weaving.
  * Aspects.aspectOf(..) is doing reflective calls to the aspect aspectOf, so for better performance
- * consider using ajc compilation of the aspects and using them as a binary dependancies in your project.
+ * consider using ajc compilation of the aspects and using them as a binary dependencies in your project.
  *
  * @author Alexandre Vasseur
  */

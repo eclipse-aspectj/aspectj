@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
  * are not available in the aspects but added later on through load time weaving.  Users on Java5 should use
  * the class Aspects instead.
  * Aspects14.aspectOf(..) is doing reflective calls to the aspect aspectOf, so for better performance
- * consider using ajc compilation of the aspects and using them as a binary dependancies in your project.
+ * consider using ajc compilation of the aspects and using them as a binary dependencies in your project.
  */
 public class Aspects14 {
 
