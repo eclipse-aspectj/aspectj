@@ -2444,7 +2444,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	/**
-	 * Now the most complex test. Create a dependancy between two projects. Building one may affect whether the other does an
+	 * Now the most complex test. Create a dependency between two projects. Building one may affect whether the other does an
 	 * incremental or full build. The structural information recorded in the state object should be getting used to control whether
 	 * a full build is necessary...
 	 */
