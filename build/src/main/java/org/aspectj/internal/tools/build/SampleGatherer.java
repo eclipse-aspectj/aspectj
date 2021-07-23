@@ -457,7 +457,7 @@ class SamplesRenderer {
         + "is hereby granted if the publication acknowledges "
         + "the author by name and "
         + "the source by reference to the AspectJ project home page "
-        + "at http://eclipse.org/aspectj.</small></p>"
+        + "at https://eclipse.org/aspectj.</small></p>"
         + EOL;
 
     /** template algorithm to render */

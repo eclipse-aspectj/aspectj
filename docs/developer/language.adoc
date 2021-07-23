@@ -3,16 +3,16 @@
 === User-suggested New Language Features
 
 * `-` wildcard
-** http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00717.html
+** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00717.html
 ** https://bugs.eclipse.org/bugs/show_bug.cgi?id=34054#c2
 
 * Class cast pointcut
-** http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg01479.html
+** https://dev.eclipse.org/mhonarc/lists/aspectj-users/msg01479.html
 
 * Extensible pointcuts, abstract pointcuts, and interfaces
-** http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00458.html
-** http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00467.html +
- 
+** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00458.html
+** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00467.html +
+
 === Key Language Design Properties
 
 ==== Orthogonal join point model

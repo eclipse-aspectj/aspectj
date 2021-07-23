@@ -4,12 +4,12 @@ _Last updated: 2003-07-08 by wisberg_
 
 MyEclipseIde (http://www.myeclipseide.com/[http://www.myeclipseide.com])
 aims to make it easy to develop J2EE applications using Eclipse. AJDT
-(http://eclipse.org/ajdt) is an Eclipse plug-in that supports AspectJ.
+(https://eclipse.org/ajdt) is an Eclipse plug-in that supports AspectJ.
 
 == Getting started
 
 * To install AJDT with MyEclipseIDE, direct the Eclipse update manager
-to http://download.eclipse.org/technology/ajdt/dev/update, install the
+to https://download.eclipse.org/technology/ajdt/dev/update, install the
 plug-in, and follow any post-install instructions.
 * To enable a project to use aspects, first select
 `Convert to AspectJ project` from the project's context menu (select

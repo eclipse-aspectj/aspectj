@@ -53,7 +53,7 @@
 	compiled with those versions of the Ant libraries to be used
 	under those versions of Ant.
 	Sources are available under the Eclipse Public License v 2.0
-	at <ulink url="http://eclipse.org/aspectj">http://eclipse.org/aspectj</ulink>.
+	at <ulink url="https://eclipse.org/aspectj">https://eclipse.org/aspectj</ulink>.
 	</para>
 	<para>
 	In Ant 1.5, third-party tasks can be declared using a taskdef entry in
@@ -1559,12 +1559,12 @@ Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 		<para>
 		For the most up-to-date information on known problems,
 		see the
-		<ulink url="http://bugs.eclipse.org/bugs">bug database</ulink>
+		<ulink url="https://bugs.eclipse.org/bugs">bug database</ulink>
 		for unresolved
-		<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+		<ulink url="https://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Compiler&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
 			compiler bugs
 			</ulink> or
-		<ulink url="http://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Ant&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
+		<ulink url="https://bugs.eclipse.org/bugs/buglist.cgi?&amp;product=AspectJ&amp;component=Ant&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED">
 			taskdef bugs
 			</ulink>.
 		</para>
@@ -1600,8 +1600,8 @@ Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
         (Do join the list to participate!)
         We also welcome any bug reports, patches, and features;
         you can submit them to the bug database at
-        <ulink url="http://bugs.eclipse.org/bugs">
-           http://bugs.eclipse.org/bugs</ulink>
+        <ulink url="https://bugs.eclipse.org/bugs">
+           https://bugs.eclipse.org/bugs</ulink>
         using the AspectJ product and Ant component.
 		</para>
 	</sect2>
@@ -1613,4 +1613,3 @@ Ant -Dbuild.compiler=org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter
 <!-- sgml-local-ecat-files: devguide.ced -->
 <!-- sgml-parent-document:("devguide.sgml" "book" "refentry") -->
 <!-- End: -->
-

@@ -254,7 +254,7 @@ the batch-build mode of the new compiler.
 
 The AspectJ tools sources are available under the
 https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
-License v 2.0] in the Git repository at http://eclipse.org/aspectj. For
+License v 2.0] in the Git repository at https://eclipse.org/aspectj. For
 more information, see the FAQ entry on
 faq.html#q:buildingsource[building sources].
 
@@ -267,7 +267,7 @@ AspectJ 1.0 had many distributions - for the tools, the documentation,
 each IDE support package, their respective sources, and the Ant tasks -
 because they came under different licenses. All of AspectJ 1.1 is
 licensed under the CPL 1.0, so the tools, Ant tasks, and documentation
-are all in one distribution available from http://eclipse.org/aspectj.
+are all in one distribution available from https://eclipse.org/aspectj.
 To retain their MPL 1.1 license, Ajde for
 http://aspectj4emacs.sourceforge.net/[Emacs],
 http://aspectj4netbean.sourceforge.net/[NetBeans] and
@@ -1364,19 +1364,19 @@ is what the target matching will handle.
 The AspectJ 1.1.0 release contains a small number of known limitations
 relative to the AspectJ 1.1 language. For the most up-to-date
 information about known limitations in an AspectJ 1.1 release, see the
-bug database at http://bugs.eclipse.org/bugs, especially the open bugs
+bug database at https://bugs.eclipse.org/bugs, especially the open bugs
 for the
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler],
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[IDE
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler],
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[IDE
 support],
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Doc&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[documentation],
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Doc&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[documentation],
 and
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[Ant
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[Ant
 tasks]. Developers should know about bugs marked with the "info" keyword
 because those bugs reflect failures to implement the 1.1 language
 perfectly. These might be fixed during the 1.1 release cycle; find them
 using the query
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info
 For ajc's 1.1 implementation limitations, see
 link:progguide/implementation.html[Programming Guide Appendix:
 "Implementation Notes"].

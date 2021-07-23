@@ -37,7 +37,7 @@
     <para>
       The examples source code is part of the AspectJ distribution which may be
       downloaded from the AspectJ project page ( <ulink
-      url="http://eclipse.org/aspectj" /> ).
+      url="https://eclipse.org/aspectj" /> ).
     </para>
 
     <para>
@@ -2441,4 +2441,3 @@ s1.toString(): Square side = 1.0 @ (1.0, 2.0)
     </sect2>
   </sect1>
 </chapter>
-

@@ -75,7 +75,7 @@ The AspectJ changes are done to support this, but we are still bedding
 them down in AJDT. If you want to see numbers like those above you need
 to install the latest AJDT dev builds for Eclipse 3.4 (an AJDT 1.6.1 dev
 build from the dev update site:
-http://download.eclipse.org/tools/ajdt/34/dev/update ) and then after
+https://download.eclipse.org/tools/ajdt/34/dev/update ) and then after
 starting Eclipse, select 'Window>Preferences' and in the AspectJ tab
 select 'Incremental Compiler Optimizations'. Let us know how you get on!
 When it has had enough testing it will be made the default and then is

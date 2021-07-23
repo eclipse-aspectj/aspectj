@@ -5,7 +5,7 @@ AspectJ^TM^ is a seamless aspect-oriented extension to
 Java^TM^. The compiler and development tools are available
 under an open-source license, require Java 1.3 to run, and produce code
 that runs in JDK 1.1 and later VM's. For the latest materials, see
-http://eclipse.org/aspectj. Not all of these materials have been updated
+https://eclipse.org/aspectj. Not all of these materials have been updated
 for AspectJ 5.
 
 [cols=",",]
@@ -21,12 +21,12 @@ link:pdguide/index.html[problem diagnosis] guides,
 link:runtime-api/index.html[API] and link:examples/[example code].
 
 |xref:#distributions[distributions]
-|http://eclipse.org/aspectj[AspectJ]; development environment support
-for http://eclipse.org/ajdt[Eclipse].
+|https://eclipse.org/aspectj[AspectJ]; development environment support
+for https://eclipse.org/ajdt[Eclipse].
 
 |xref:#resources[resources] |http://aosd.net[aosd.net];
-http://eclipse.org/aspectj[AspectJ project] the bug
-http://bugs.eclipse.org/bugs[db], and mailing lists for
+https://eclipse.org/aspectj[AspectJ project] the bug
+https://bugs.eclipse.org/bugs[db], and mailing lists for
 mailto:aspectj-users@eclipse.org[users] and
 mailto:aspectj-dev@eclipse.org[developers].
 
@@ -128,19 +128,19 @@ updating.
 [cols=",",options="header",]
 |===
 |Distributions |Description
-|http://eclipse.org/aspectj[AspectJ] |The AspectJ distribution contains
+|https://eclipse.org/aspectj[AspectJ] |The AspectJ distribution contains
 binaries for the compiler, structure browser, and Ant taskdefs, as well
 as the documentation and examples.
 
-|http://eclipse.org/aspectj[AspectJ] source code |Source code for
+|https://eclipse.org/aspectj[AspectJ] source code |Source code for
 AspectJ is available under the open-source
 https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
 License v 2.0] license from the Git repositories for the AspectJ
 project. See the faq.html#q:buildingsource[FAQ entry].
 
-|http://eclipse.org/ajdt[AspectJ for Eclipse] |AspectJ Development
+|https://eclipse.org/ajdt[AspectJ for Eclipse] |AspectJ Development
 Environment support for Eclipse is available under Eclipse Public
-License v 1.0 from the eclipse.org project site http://eclipse.org/ajdt
+License v 1.0 from the eclipse.org project site https://eclipse.org/ajdt
 |===
 
 [[resources]]
@@ -156,22 +156,22 @@ discuss issues with developing the AspectJ tools on
 aspectj-dev@eclipse.org. To get occasional emails about AspectJ releases
 and relevant events, subscribe to aspectj-announce@eclipse.org. To view
 list archives or subscribe to the list, go to
-http://eclipse.org/aspectj[the AspectJ home page]. To find archived
+https://eclipse.org/aspectj[the AspectJ home page]. To find archived
 emails, use the Eclipse site
-http://www.eclipse.org/search/search.cgi[search page].
+https://www.eclipse.org/search/search.cgi[search page].
 
-|http://bugs.eclipse.org/bugs[Bug database] |Use the Eclipse project's
+|https://bugs.eclipse.org/bugs[Bug database] |Use the Eclipse project's
 Bugzilla database to view and submit bugs against the AspectJ product
 components
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler[Compiler]
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler[Compiler]
 (for the AspectJ compiler, ajc)
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE[IDE]
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE[IDE]
 (for AJBrowser and AJDE bugs),
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant[Ant]
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant[Ant]
 (for the Ant tasks), and
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs[Docs]
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs[Docs]
 (for the documentation). Bugs all users should know about are
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info[flagged
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info[flagged
 with the "info" keyword]. See the faq.html#q:ajcbugs[FAQ entry] for
 instructions on submitting compiler bugs.
 
@@ -193,7 +193,7 @@ pointcuts, concepts AOP adds to OOP. To read about how the
 link:examples/[examples] work, see the
 link:progguide/examples.html[Examples] section in the
 link:progguide/index.html[Programming Guide]. View and navigate the
-crosscutting structure using http://eclipse.org/ajdt[AJDT]; if you can't
+crosscutting structure using https://eclipse.org/ajdt[AJDT]; if you can't
 use Eclipse, try the `ajbrowser` structure viewer, as described in the
 link:devguide/ajbrowser.html[AspectJ Browser] section of the
 link:devguide/index.html[Development Environment Guide].

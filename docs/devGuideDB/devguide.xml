@@ -39,11 +39,11 @@
         				AspectJ Programming Guide</ulink>,
               the documentation available with the AspectJ support available for
 		        various integrated development environments (e.g.,
-              <ulink url="http://eclipse.org/ajdt">Eclipse AJDT</ulink>),
+              <ulink url="https://eclipse.org/ajdt">Eclipse AJDT</ulink>),
               and the most-recent documentation available from
               the AspectJ project page, at
-              	<ulink url="http://eclipse.org/aspectj">
-              				http://eclipse.org/aspectj</ulink>.
+              	<ulink url="https://eclipse.org/aspectj">
+              				https://eclipse.org/aspectj</ulink>.
       </para>
     </abstract>
   </bookinfo>

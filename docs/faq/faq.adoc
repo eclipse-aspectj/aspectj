@@ -85,11 +85,11 @@ https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
 License v 2.0].
 
 AspectJ 1.5.2 through 1.9.6 source code and documentation is available
-under the http://www.eclipse.org/org/documents/epl-v10.php[Eclipse
+under the https://www.eclipse.org/org/documents/epl-v10.php[Eclipse
 Public License v 1.0].
 
 AspectJ 1.1 through 1.5.1 source code and documentation is available
-under the http://eclipse.org/legal/cpl-v10.html[Common Public License
+under the https://eclipse.org/legal/cpl-v10.html[Common Public License
 1.0].
 
 The AspectJ 1.0 tools are open-source software available under the
@@ -102,7 +102,7 @@ the https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse
 Public License].
 
 For answers to common licensing questions, see the
-http://www.eclipse.org/legal/eplfaq.php[Eclipse Public License FAQ].
+https://www.eclipse.org/legal/eplfaq.php[Eclipse Public License FAQ].
 
 *Q:* What is the AspectJ Project?
 
@@ -111,13 +111,13 @@ http://www.parc.xerox.com[Xerox Palo Alto Research Center] as funded by
 Xerox, a U.S. Government grant (NISTATP), and a DARPA contract.
 
 It has evolved through open-source releases to a strong user community
-and now operates as an open source project at http://eclipse.org/aspectj
+and now operates as an open source project at https://eclipse.org/aspectj
 The AspectJ team works closely with the community to ensure AspectJ
 continues to evolve as an effective aspect-oriented programming language
 and tool set.
 
 The latest release is 1.2 which can be downloaded from the
-http://eclipse.org/aspectj[AspectJ project page], including sources as
+https://eclipse.org/aspectj[AspectJ project page], including sources as
 described #q:buildingsource[Q:How do I get and compile the source code
 for AspectJ?]. Development is focused on supporting applications,
 improving quality and performance, enhancing integration with IDE's, and
@@ -137,7 +137,7 @@ must be able to reach classes in the small (< 100K) runtime library
 
 *Q:* How do I download and install AspectJ?
 
-*A:* From AspectJ's http://eclipse.org/aspectj[web page] , download the
+*A:* From AspectJ's https://eclipse.org/aspectj[web page] , download the
 AspectJ distribution. The `jar` file is installed by executing
 
 [source, text]
@@ -224,7 +224,7 @@ AJDE is a set of API's providing the basis for the following development
 tool integrations:
 
 * Eclipse (version 2.0) in the Eclipse AspectJ Development Tools project
-http://eclipse.org/ajdt
+https://eclipse.org/ajdt
 * Emacs (GNU version 20.3) and XEmacs (version 21.1 on Unix and 21.4 on
 Windows), in the SourceForge AspectJ for Emacs project
 http://aspectj4emacs.sourceforge.net
@@ -495,7 +495,7 @@ interceptors. For AspectJ examples of configurable or
 reflection-dependent programs, see the sample code linked off the
 AspectJ documentation page or the examples discussed on the mailing
 list, e.g.,
-http://dev.eclipse.org/mhonarc/lists/aspectj-users/msg02151.html[Incremental
+https://dev.eclipse.org/mhonarc/lists/aspectj-users/msg02151.html[Incremental
 and runtime weaving support?].
 
 *Q:* What is the relationship between AOP and XP (extreme programming
@@ -929,13 +929,13 @@ developer mailing list, `aspectj-dev@eclipse.org`.
 To find out about known issues, see the
 link:progguide/implementation.html[AspectJ Programming Guide Appendix,
 "Implementation Notes"] and the AspectJ bugs in the database at
-http://bugs.eclipse.org/bugs (using the product `AspectJ`). Here are
+https://bugs.eclipse.org/bugs (using the product `AspectJ`). Here are
 direct links to
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[view
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[view
 open compiler bugs],
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ[view all
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ[view all
 Aspectj bugs (open or closed)], or
-http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ[add new
+https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ[add new
 bugs].
 
 *Q:* What mailing lists are there?
@@ -954,7 +954,7 @@ answer questions about what's possible and about integrating AspectJ
 technology with other technologies.
 
 For both mailing lists, only subscribed members may post messages. To
-subscribe, visit the http://eclipse.org/aspectj[AspectJ web site].
+subscribe, visit the https://eclipse.org/aspectj[AspectJ web site].
 
 There you can also subscribe to `aspectj-announce@eclipse.org`, a
 low-traffic list containing only announcements about significant AspectJ
@@ -1248,7 +1248,7 @@ with existing Java development tools?]
 
 *A:* The AspectJ team directly provided components for JBuilder, Forte,
 and Emacs and supported the open-source AspectJ plugin project at
-http://eclipse.org/ajdt which uses the AJDE API support for IDE's.
+https://eclipse.org/ajdt which uses the AJDE API support for IDE's.
 Supporting new IDE's is a matter of building on the AJDE API's, mostly
 likely adopting one of the existing open-source IDE extensions as a
 design template. Here are the IDE's where we know people have expressed
@@ -1269,7 +1269,7 @@ integrations, contact those projects.
 
 *A:* Yes. The core AJDE API is extensible and the source code is
 available for download. Start by studying the sources for the existing
-IDE support linked off the AspectJ site http://eclipse.org/aspectj.
+IDE support linked off the AspectJ site https://eclipse.org/aspectj.
 
 *Q:* I want the aspects for development builds but remove them for
 production builds. How can I set up the build system so they are
@@ -1839,7 +1839,7 @@ for using AspectJ with other programming tools.
 . There is a community repository of sample code and tutorials in the
 AspectJ CVS tree `docs` module `sandbox` directory. These are extracted
 and published (online only)
-http://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-code.html[here]
+https://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-code.html[here]
 .
 . The `teaching` directory of the `docs` module contains public
 materials the AspectJ committers use for presentations, some of which
@@ -2452,7 +2452,7 @@ aspect A {
 
 *A:* The bugs affecting the semantics of the language are marked with
 the "info" keyword. Find them with the query
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info
 
 *Q:* What extra memory is required at runtime?
 
@@ -2718,7 +2718,7 @@ used in AspectJ-1.1 if we can find the time. Erik Hilsdale and Jim
 Hugunin did draft a paper for AOSD 2004, now available on Jim's web
 site: http://hugunin.net/papers.html Jim summarized advice weaving in
 the AspectJ 1.1 implementation in the
-http://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00519.html[following
+https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00519.html[following
 mailing-list reply]:
 
 Each piece of advice in an aspect is associated with a pointcut. This
@@ -2866,7 +2866,7 @@ another bug or actually cover many bugs.
 Find them by searching open compiler bugs and picking out any which do
 not have test case attachments or a comment that a test case has been
 written. Here is a query for open compiler bugs:
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED
 +
 For how to write test cases, see #q:harnesstestcases[Q:How should I
 submit test cases for bugs?].
@@ -2894,11 +2894,11 @@ the 1.0 downloads. It contains instructions for building from sources.
 AspectJ 1.1+ source code is available through CVS using the CVS Root
 `dev.eclipse.org:/cvsroot/technology`. For more information on accessing
 the CVS tree at eclipse.org, see the documentation from
-http://eclipse.org. Find specific instructions in the AspectJ tree at
-http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&content-type=text/html&cvsroot=Technology_Project[org.aspectj/modules/build/readme-build-and-test-aspectj.html].
+https://eclipse.org. Find specific instructions in the AspectJ tree at
+https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&content-type=text/html&cvsroot=Technology_Project[org.aspectj/modules/build/readme-build-and-test-aspectj.html].
 If you would like to use Ant to checkout the sources, build the
 distribution, and test everything, see
-http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&content-type=text/xml&cvsroot=Technology_Project[org.aspectj/modules/build/release/build.xml].
+https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&content-type=text/xml&cvsroot=Technology_Project[org.aspectj/modules/build/release/build.xml].
 
 To check out the source code in Eclipse go to
 (`File > new > Other > CVS > Checkout Projects from CVS`). You'll need
@@ -2927,7 +2927,7 @@ go to `File > Switch Workspace`.
 
 The `org.aspectj.lib` project is an AspectJ project so you also have to
 have AJDT installed. For the latest AJDT release and download
-instructions visit the http://www.eclipse.org/ajdt/downloads/[AJDT
+instructions visit the https://www.eclipse.org/ajdt/downloads/[AJDT
 Downloads] page.
 
 When you've added the variables click OK to do a full rebuild, then run
@@ -2989,7 +2989,7 @@ versions.
 `your_eclipse_installation_directory/aspectj_development_workspace/aj-build`.
 
 To import a locally built AspectJ into AJDT first follow the
-instructions on http://www.eclipse.org/ajdt/faq.php#q:develop[How do I
+instructions on https://www.eclipse.org/ajdt/faq.php#q:develop[How do I
 setup an AJDT development environment in Eclipse?] for setting up an
 AJDT development environment and running the correctness tests. Then:
 
@@ -3179,12 +3179,12 @@ not hold BCEL structures in memory after our evaluation completes.
 
 *Q:* How do I find out more about AspectJ?
 
-*A:* Visit the AspectJ project web site: http://eclipse.org/aspectj.
+*A:* Visit the AspectJ project web site: https://eclipse.org/aspectj.
 
 *Q:* How do I submit a bug report?
 
 *A:* You can submit a bug from
-http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ . If it seems
+https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ . If it seems
 to be a bug in the compiler, please attach a small test case (source
 code) to reproduce the problem. For more information on writing compiler
 test cases, see #q:ajcbugs[Q:How do I write bugs for the AspectJ
@@ -3196,15 +3196,15 @@ link:pdguide/index.html[AspectJ Problem Diagnosis Guide].
 
 *A:* You can reach other AspectJ users by using the aspectj-users
 mailing list. You can subscribe to the list or view the list archives
-from the AspectJ home page http://eclipse.org/aspectj .
+from the AspectJ home page https://eclipse.org/aspectj .
 
 *Q:* How can I search the email archives or the web site?
 
 *A:* It is very effective to do a google search of the form,
 http://www.google.com/search?q=site:eclipse.org+cflowbelow , and you can
-use the eclipse.org search at http://www.eclipse.org/search/search.cgi .
+use the eclipse.org search at https://www.eclipse.org/search/search.cgi .
 You can also check the old archives available for download from the
-AspectJ home page http://eclipse.org/aspectj .
+AspectJ home page https://eclipse.org/aspectj .
 
 *Q:* How should I write email queries?
 
@@ -3242,12 +3242,12 @@ Bug report for the IDE extensions go to their respective projects,
 listed in #q:integrateWithDevTools[Q: How well does AspectJ integrate
 with existing Java development tools?] (including bug reports for the
 AJDE Eclipse support, which you can submit at
-http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT ).
+https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT ).
 
 Bug reports on ajbrowser should have version information for both Java
 and AspectJ, and (most importantly) clear steps for reproducing the bug.
 You may submit ajbrowser bugs against the IDE component of AspectJ via
-the web form http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ.
+the web form https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ.
 
 One of the benefits of open-source is that you can find and fix the bug
 for yourself; when you submit the fix back to us, we can validate the
@@ -3270,7 +3270,7 @@ one or more source files.
 sure to specify the expected output/behavior (e.g., compiler error on
 line 32) and, if the compile should complete, the main class to run.
 . Submit the bugs via the web form
-http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ .
+https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ .
 . Attach the test case to the bug. The test case may be a single file or
 it may be multiple files in a single zip archive, of the form discussed
 in #q:harnesstestcases[Q:How should I submit test cases for bugs?].
@@ -3433,7 +3433,7 @@ More details for 1.0 and earlier releases are available in changes.html.
 *A:* Below is a table describing the goals for the major releases. For
 information about specific features, search the bug database for ``RFE``'s
 ("requests for enhancement") by
-http://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_severity=enhancement[selecting
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&bug_severity=enhancement[selecting
 severity of "enhancement"]. Like many open-source projects, we don't
 make or promise schedules, but we do follow a pattern of issuing preview
 releases which can give observers an idea of when a particular release

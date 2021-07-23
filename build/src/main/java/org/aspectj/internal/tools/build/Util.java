@@ -334,7 +334,7 @@ public class Util {
      * features that we use.
      * sources:
      * http://www-128.ibm.com/developerworks/library/os-ecl-osgi/index.html
-     * http://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/osgi/org/osgi/framework/Constants.html
+     * https://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/osgi/org/osgi/framework/Constants.html
      */
     public static class OSGIBundle {
         public static final Name BUNDLE_NAME = new Name("Bundle-Name");
@@ -487,4 +487,3 @@ public class Util {
         }
     }
 }
-

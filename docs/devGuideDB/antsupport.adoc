@@ -29,7 +29,7 @@ for more information and the 1.5.1 distribution. This release is
 source-compatible with Ant 1.3 and Ant 1.4, but the task sources must be
 compiled with those versions of the Ant libraries to be used under those
 versions of Ant. Sources are available under the Eclipse Public License
-v 2.0 at http://eclipse.org/aspectj.
+v 2.0 at https://eclipse.org/aspectj.
 
 In Ant 1.5, third-party tasks can be declared using a taskdef entry in
 the build script, to identify the name and classes. When declaring a
@@ -845,10 +845,10 @@ if possible).
 ==== Known issues with the Ant tasks
 
 For the most up-to-date information on known problems, see the
-http://bugs.eclipse.org/bugs[bug database] for unresolved
-http://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Compiler&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler
+https://bugs.eclipse.org/bugs[bug database] for unresolved
+https://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Compiler&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[compiler
 bugs] or
-http://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Ant&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[taskdef
+https://bugs.eclipse.org/bugs/buglist.cgi?&product=AspectJ&component=Ant&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED[taskdef
 bugs] .
 
 When running Ant build scripts under Eclipse 2.x variants, you will get
@@ -874,5 +874,5 @@ they use in their scripts to pass VM options, e.g., ANT_OPTS=-Xmx128m).
 For questions, you can send email to aspectj-users@dev.eclipse.org. (Do
 join the list to participate!) We also welcome any bug reports, patches,
 and features; you can submit them to the bug database at
-http://bugs.eclipse.org/bugs using the AspectJ product and Ant
+https://bugs.eclipse.org/bugs using the AspectJ product and Ant
 component.

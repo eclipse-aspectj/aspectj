@@ -198,7 +198,7 @@ public static SomeInterface createDelegate(Object instance) {
 ....
 
 More examples are
-http://www.eclipse.org/aspectj/doc/released/adk15notebook/ataspectj-itds.html[here
+https://www.eclipse.org/aspectj/doc/released/adk15notebook/ataspectj-itds.html[here
 in the online documentation].
 
 Going forward attempts will be made to try and make @DeclareParents

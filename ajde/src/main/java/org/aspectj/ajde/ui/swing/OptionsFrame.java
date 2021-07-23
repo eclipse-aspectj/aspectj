@@ -59,12 +59,12 @@ public class OptionsFrame extends JFrame {
         "conforming to the Open Source Definition.\n\n" +
         "For support or for more information about the AspectJ\n" +
         "project or the license, visit the project home page at\n" +
-        "    http://eclipse.org/aspectj\n\n" +
+        "    https://eclipse.org/aspectj\n\n" +
         "If you find a bug (not solved by the documentation in the\n" +
         "Development Environment Guide available with this release,\n" +
         "any release notes, or the bug database), please submit steps\n" +
         "to reproduce the bug (using the IDE component) at:\n" +
-        "    http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ";
+        "    https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ";
 
     private JTabbedPane main_tabbedPane = new JTabbedPane();
     private JPanel button_panel = new JPanel();

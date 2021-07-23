@@ -8,7 +8,7 @@ arguably it should.
 
 For a list of publications about AspectJ that might contain sample code,
 see the publications link off the AspectJ web site at
-http://eclipse.org/aspectj
+https://eclipse.org/aspectj
 
 *"AspectJ in Action"* by Ramnivas Laddad has sample code including
 four patterns: the worker object creation pattern, the exception
