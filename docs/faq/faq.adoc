@@ -118,7 +118,7 @@ and tool set.
 
 The latest release is 1.2 which can be downloaded from the
 https://eclipse.org/aspectj[AspectJ project page], including sources as
-described #q:buildingsource[Q:How do I get and compile the source code
+described xref:#buildingsource[Q:How do I get and compile the source code
 for AspectJ?]. Development is focused on supporting applications,
 improving quality and performance, enhancing integration with IDE's, and
 building the next generations of the language.
@@ -1843,7 +1843,7 @@ https://dev.eclipse.org/viewcvs/indextech.cgi/~checkout~/aspectj-home/sample-cod
 .
 . The `teaching` directory of the `docs` module contains public
 materials the AspectJ committers use for presentations, some of which
-include example code. To access CVS, see #q:buildingsource[Q:How do I
+include example code. To access CVS, see xref:#buildingsource[Q:How do I
 get and compile the source code for AspectJ?].
 . The archives for the user and developer mailing lists contain many
 good examples. To search the archives, see #q:searchingsite[Q:How can I
@@ -1968,7 +1968,7 @@ example code, see the source for
 `AjBuildManager.checkRtJar(AjBuildConfig)` in the
 `org.aspectj.ajdt.internal.core.builder` package of the
 `org.aspectj.ajdt.core` module, available as described in
-#q:buildingsource[Q:How do I get and compile the source code for
+xref:#buildingsource[Q:How do I get and compile the source code for
 AspectJ?].
 
 Note that the version of AspectJ for the tools in `aspectjtools.jar` is
@@ -2834,7 +2834,7 @@ For people who want to know how the AspectJ technology works, the source
 code is the best resource, until we write some proper white papers (see
 #q:implementation[Q:Do I need to know how the compiler works?]). To get
 and compile the Java source code for the AspectJ distribution, see
-#q:buildingsource[Q:How do I get and compile the source code for
+xref:#buildingsource[Q:How do I get and compile the source code for
 AspectJ?].
 
 Bear in mind when looking at the code that there are many ways to
@@ -2886,92 +2886,22 @@ bugs, in some cases you might want to declare your intentions on the
 mailing list to avoid wasting time on something that's been fixed but
 not committed or on an approach that will be fruitless.
 
+[[buildingsource]]
 *Q:* How do I get and compile the source code for AspectJ?
 
-*A:* AspectJ 1.0 source code is available in an archive available with
-the 1.0 downloads. It contains instructions for building from sources.
+*A:* The AspectJ source code is available on the https://github.com/eclipse/org.aspectj[AspectJ GitHub page].
+Read-me section https://github.com/eclipse/org.aspectj#building[Building] briefly explains how to compile AspectJ
+from scratch.
+Read-me section https://github.com/eclipse/org.aspectj#documentation-for-aspectj-developers[Documentation for AspectJ developers]
+links to more detailed resources about build options, how to contribute to the project and how to release it.
 
-AspectJ 1.1+ source code is available through CVS using the CVS Root
-`dev.eclipse.org:/cvsroot/technology`. For more information on accessing
-the CVS tree at eclipse.org, see the documentation from
-https://eclipse.org. Find specific instructions in the AspectJ tree at
-https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/readme-build-and-test-aspectj.html?rev=HEAD&content-type=text/html&cvsroot=Technology_Project[org.aspectj/modules/build/readme-build-and-test-aspectj.html].
-If you would like to use Ant to checkout the sources, build the
-distribution, and test everything, see
-https://dev.eclipse.org/viewcvs/index.cgi/~checkout~/org.aspectj/modules/build/release/build.xml?rev=HEAD&content-type=text/xml&cvsroot=Technology_Project[org.aspectj/modules/build/release/build.xml].
-
-To check out the source code in Eclipse go to
-(`File > new > Other > CVS > Checkout Projects from CVS`). You'll need
-about 125 MB of space for the source and build. Host: `dev.eclipse.org`,
-Repository Path: `/cvsroot/technology`, user name: `anonymous`,
-password: (your email address), connection type: `pserver`, default
-port. Then select the individual modules you want to check out (you
-probably want all of them bar aspectj-attic and java5) and click Next
-and choose to check out the modules you selected as Java projects. Once
-thats done each module you checked out should show up as a project in
-the package explorer. If you have problems after this point you can view
-the build instructions that come with AspectJ by going in the package
-explorer to: `build > readme-build-and-test-aspectj.html`.
-
-To get the modules to build you have to set some classpath variables
-(`Window > Preferences > Java > Build Path > Classpath Variables`):
-
-* Name: `JAVA_HOME`, Value: (wherever your Java JDK is installed)
-* Name: `JRE14_LIB`, Value: (wherever your Java 4 Runtime is
-installed)`\jre\lib\rt.jar`
-* Name: `JRE15_LIB`, Value: (wherever your Java 5 Runtime is
-installed)`\jre\lib\rt.jar`
-* Name: `ASPECTJRT_LIB`, Value: (wherever your workspace
-is)`\lib\aspectj\lib\aspectjrt.jar`. To find out where your workspace is
-go to `File > Switch Workspace`.
-
-The `org.aspectj.lib` project is an AspectJ project so you also have to
-have AJDT installed. For the latest AJDT release and download
-instructions visit the https://www.eclipse.org/ajdt/downloads/[AJDT
-Downloads] page.
-
-When you've added the variables click OK to do a full rebuild, then run
-the tests by going in the Package Explorer to:
-`run-all-junit-tests > testsrc > (default package) > RunTheseBeforeYouCommitTests.java`
-and running this as a JUnit test (right click and select
-`Run As > JUnit Test`). Don't worry about any errors that appear in the
-console output, just check that there are no failures in the JUnit view
-(`Window > Show View > Other > Java > JUnit`). If that finishes with no
-Failures and a full green bar you have the AspectJ compiler source and
-it's building and testing properly.
-
-Further details:
-
-You can check out the entire modules directory and build using the Ant
-build script `modules/build/build.xml`. All required libraries are
-included in `modules/lib/`, (including Ant 1.5.1 in `modules/lib/ant`).
-If you are using Eclipse, you can check out any `modules/` subdirectory
-as an eclipse Java project. Depending on what you are trying to build,
-you need not check out all modules; as of this writing, here are the
-modules to get for building the specific parts of AspectJ:
-
-* For any builds: build, lib
-* For the documentation: docs
-* For the compiler: bridge, util, testing-util, weaver, asm,
-org.eclipse.jdt.core, org.aspectj.ajdt.core, and runtime.
-* For ajbrowser: the compiler modules, plus ajbrowser, ajdoc, taskdefs,
-and ajde.
-* For the AspectJ distribution, the ajbrowser modules, plus aspectj5rt
-and org.aspectj.lib.
-* For the test harness (or to run the release build scripts and tests):
-the ajbrowser modules, plus testing, testing-client, and
-testing-drivers.
-* To run the test suite: the test harness modules, plus tests.
-
-Note that module interdependencies are recorded only in the eclipse
-`modules/{module}/.classpath
-          ` files and may change, so the list above may not be correct
-when you read it.
+For the latest AspectJ Development Tools (AJDT) for Eclipse release, please visit the
+https://www.eclipse.org/ajdt/downloads/[AJDT Downloads] page.
 
 *Q:* How do I build AspectJ and integrate it into AJDT?
 
-*A:* To build AspectJ, first get the source tree as described in
-#q:buildingsource[Q:How do I get and compile the source code for
+*A:* *[TODO: outdated, update!]* To build AspectJ, first get the source tree as described in
+xref:#buildingsource[Q:How do I get and compile the source code for
 AspectJ?]. Once you have a development environment set up, copy the
 `build/sample-local.properties` file to `build/local.properties` and
 within this file point the `java14.home` and `java15.home` to the
@@ -3143,7 +3073,7 @@ definitions.
 *Q:* I'd like to run my test case. How do I get the test harness?
 
 *A:* The test harness is not distributed. To build it, get the source
-tree as described in #q:buildingsource[Q:How do I get and compile the
+tree as described in xref:#buildingsource[Q:How do I get and compile the
 source code for AspectJ?] and then build the `build-testing-drivers`
 target:
 
