@@ -255,8 +255,7 @@ the batch-build mode of the new compiler.
 The AspectJ tools sources are available under the
 https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
 License v 2.0] in the Git repository at https://eclipse.org/aspectj. For
-more information, see the FAQ entry on
-faq.html#q:buildingsource[building sources].
+more information, see the FAQ entry on building sources.
 
 '''''
 
