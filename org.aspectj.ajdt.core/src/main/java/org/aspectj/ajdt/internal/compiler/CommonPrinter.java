@@ -61,6 +61,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ThrowStatement;
@@ -617,6 +618,8 @@ public class CommonPrinter {
 			return output;
 		} else if (statement instanceof LocalDeclaration) {
 			return printLocalDeclaration((LocalDeclaration) statement, indent);
+		} else if (statement instanceof SwitchExpression) {
+			return printSwitchExpression((SwitchExpression) statement, indent);
 		} else if (statement instanceof SwitchStatement) {
 			return printSwitchStatement((SwitchStatement) statement, indent);
 		} else if (statement instanceof CaseStatement) {
@@ -754,22 +757,44 @@ public class CommonPrinter {
 	}
 
 	private StringBuilder printBreakStatement(BreakStatement statement, int indent) {
-		printIndent(indent).append("break "); //$NON-NLS-1$
+		printIndent(indent).append("break"); //$NON-NLS-1$
 		if (statement.label != null) {
-			output.append(statement.label);
+			output.append(' ').append(statement.label);
 		}
 		return output.append(';');
 	}
 
 	private StringBuilder printCaseStatement(CaseStatement statement, int indent) {
 		printIndent(indent);
-		if (statement.constantExpression == null) {
-			output.append("default : "); //$NON-NLS-1$
+		if (statement.constantExpressions == null) {
+			output.append("default "); //$NON-NLS-1$
+			output.append(statement.isExpr ? "->" : ":"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
 			output.append("case "); //$NON-NLS-1$
-			printExpression(statement.constantExpression).append(" : "); //$NON-NLS-1$
+			for (int i = 0, l = statement.constantExpressions.length; i < l; ++i) {
+				printExpression(statement.constantExpressions[i]);
+				if (i < l -1) output.append(',');
+			}
+			output.append(statement.isExpr ? " ->" : " :"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		return output;// output.append(';');
+		return output;
+	}
+
+  private StringBuilder printSwitchExpression(SwitchExpression statement, int indent) {
+		printIndent(indent).append("switch ("); //$NON-NLS-1$
+		printExpression(statement.expression).append(") {"); //$NON-NLS-1$
+		if (statement.statements != null) {
+			for (int i = 0; i < statement.statements.length; i++) {
+				output.append('\n');
+				if (statement.statements[i] instanceof CaseStatement) {
+					printCaseStatement((CaseStatement) statement.statements[i], indent);
+				} else {
+					printStatement(statement.statements[i], indent + 2);
+				}
+			}
+		}
+		output.append("\n"); //$NON-NLS-1$
+		return printIndent(indent).append('}');
 	}
 
 	private StringBuilder printSwitchStatement(SwitchStatement statement, int indent) {
@@ -779,7 +804,7 @@ public class CommonPrinter {
 			for (int i = 0; i < statement.statements.length; i++) {
 				output.append('\n');
 				if (statement.statements[i] instanceof CaseStatement) {
-					printStatement(statement.statements[i], indent);
+					printCaseStatement((CaseStatement) statement.statements[i], indent);
 				} else {
 					printStatement(statement.statements[i], indent + 2);
 				}
