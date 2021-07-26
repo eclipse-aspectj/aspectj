@@ -146,7 +146,8 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 		if (!scopeSetup) {
 		  interTypeScope = new InterTypeScope(upperScope, onTypeBinding,typeVariableAliases);
-		  scope.parent = interTypeScope;
+			// Use setter in order to also update member 'compilationUnitScope'
+			scope.setParent(interTypeScope);
 		  this.scope.isStatic = Modifier.isStatic(declaredModifiers);
 		  scopeSetup = true;
 		}
