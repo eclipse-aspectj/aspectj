@@ -20,13 +20,13 @@ public abstract class XMLBasedAjcTestCaseForJava16Only extends XMLBasedAjcTestCa
 	@Override
 	public void setUp() throws Exception {
 		// Activate this block after upgrading to JDT Core Java 17
-		/*
 		throw new IllegalStateException(
 			"These tests need a Java 16 level AspectJ compiler " +
 				"(e.g. because they use version-specific preview features). " +
 				"This compiler does not support preview features of a previous version anymore."
 		);
-		*/
+		// Activate this block before upgrading to JDT Core Java 17
+		/*
 		if (!LangUtil.is16VMOrGreater() || LangUtil.is17VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 16 only " +
@@ -34,6 +34,7 @@ public abstract class XMLBasedAjcTestCaseForJava16Only extends XMLBasedAjcTestCa
 			);
 		}
 		super.setUp();
+		*/
 	}
 
 }

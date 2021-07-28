@@ -17,23 +17,28 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava17Only;
  */
 public class Java17PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava17Only {
 
-/*
-  public void testSealedClassWithLegalSubclasses() {
-    runTest("sealed class with legal subclasses");
-    checkVersion("Employee", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Manager", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+  public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
+    // TODO: JDT Core does not support detecting type domination detection in the development version yet -> activate when available
+    System.out.println("TODO: JDT Core does not support detecting type domination detection in the development version yet -> activate when available");
+//    runTest("switch pattern matching error");
   }
 
-  public void testSealedClassWithIllegalSubclass() {
-    runTest("sealed class with illegal subclass");
-    checkVersion("Person", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+  public void testSwitchPatternMatchingJava() {
+    // TODO: JDT Core does not support sealed class coverage in the development version yet -> activate when available
+    System.out.println("TODO: JDT Core does not support sealed class coverage in the development version yet -> activate when available");
+//    runTest("switch pattern matching java");
+//    checkVersion("SwitchPatternOK", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
   }
 
-  public void testWeaveSealedClass() {
-    runTest("weave sealed class");
-    checkVersion("PersonAspect", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+  public void testSwitchPatternMatchingAspect() {
+    // TODO: JDT Core does not support sealed class coverage in the development version yet -> activate when available
+    System.out.println("TODO: JDT Core does not support sealed class coverage in the development version yet -> activate when available");
+//    runTest("switch pattern matching aspect");
+//    checkVersion("SwitchPatternAspect", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
+//    checkVersion("Application", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
+//    checkVersion("Shape", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
+//    checkVersion("S", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
   }
-*/
 
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Java17PreviewFeaturesTests.class);

@@ -48,14 +48,14 @@
       <compile files="SimpleI.java" options="-17"/>
     </ajc-test>
 
-    <!-- check class file version is 60.0 (Java 16) -->
+    <!-- check class file version is 61.0 (Java 17) -->
     <ajc-test dir="bugs160/simplejava" title="simple - j">
       <compile files="SimpleJ.java" options="-17"/>
     </ajc-test>
 
-    <!-- check class file version is 60.0 (Java 16) -->
+    <!-- check class file version is 61.0 (Java 17) -->
     <ajc-test dir="bugs160/simplejava" title="simple - k">
-      <compile files="SimpleJ.java" options="-source 16"/>
+      <compile files="SimpleJ.java" options="-source 17"/>
     </ajc-test>
 
     <!-- check class file version is 49.0 -->

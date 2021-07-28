@@ -3,34 +3,78 @@
 
 <suite>
 
-	<!-- Java ?? final, Java 16, 15 preview -->
-<!--
+	<!-- Java 17 final, Java 16, 15 preview -->
 	<ajc-test dir="features197/java15" vm="17" title="sealed class with legal subclasses">
-		<compile files="Person.java Employee.java Manager.java" options="&#45;&#45;enable-preview -16" />
+		<compile files="Person.java Employee.java Manager.java" options="-17" />
 	</ajc-test>
--->
 
-	<!-- Java ?? final, Java 16, 15 preview -->
-<!--
+	<!-- Java 17 final, Java 16, 15 preview -->
 	<ajc-test dir="features197/java15" vm="17" title="sealed class with illegal subclass">
-		<compile files="Person.java  Employee.java Manager.java PersonaNonGrata.java" options="&#45;&#45;enable-preview -16">
+		<compile files="Person.java  Employee.java Manager.java PersonaNonGrata.java" options="-17">
 			<message kind="error" file="PersonaNonGrata.java" text="should be a permitted subtype of Person"/>
 		</compile>
 	</ajc-test>
--->
 
-	<!-- Java ?? final, Java 16, 15 preview -->
-<!--
+	<!-- Java 17 final, Java 16, 15 preview -->
 	<ajc-test dir="features197/java15" vm="17" title="weave sealed class">
-		<compile files="Person.java Employee.java Manager.java TopManager.java PersonAspect.aj" options="&#45;&#45;enable-preview -16" />
-		<run class="TopManager" vmargs="&#45;&#45;enable-preview">
+		<compile files="Person.java Employee.java Manager.java TopManager.java PersonAspect.aj" options="-17" />
+		<run class="TopManager">
 			<stdout>
 				<line text="Hello Sir John" />
 				<line text="CEO" />
 			</stdout>
 		</run>
 	</ajc-test>
--->
+
+  <!-- Java ?? final, Java 17 preview -->
+  <ajc-test dir="features198/java17" vm="17" title="switch pattern matching error">
+    <compile files="SwitchPatternError.java" options="--enable-preview -17">
+      <!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+      <message kind="error" file="SwitchPatternError.java" text="XXX"/>
+    </compile>
+  </ajc-test>
+
+  <!-- Java ?? final, Java 17 preview -->
+	<ajc-test dir="features198/java17" vm="17" title="switch pattern matching java">
+		<compile files="SwitchPatternOK.java" options="--enable-preview -17" />
+		<run class="SwitchPatternOK" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12,340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+  <!-- Java ?? final, Java 17 preview -->
+	<ajc-test dir="features198/java17" vm="17" title="switch pattern matching aspect">
+		<compile files="SwitchPatternAspect.aj" options="--enable-preview -17" />
+		<run class="Application" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12,340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
 
 	<!-- Javac/ECJ 9+ compiler option, but belated implementation in AJC 1.9.7 -->
 	<ajc-test dir="features198/compiler_release" vm="9" title="compile to older JDK release">
