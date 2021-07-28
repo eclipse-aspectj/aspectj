@@ -25,9 +25,12 @@ public class AllTestsAspectJ197 {
 			suite.addTest(SanityTestsJava16.suite());
 			suite.addTest(Ajc197TestsJava.suite());
 		}
+		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
+		/*
 		if (LangUtil.is16VMOrGreater() && !LangUtil.is17VMOrGreater()) {
 			suite.addTest(Java16PreviewFeaturesTests.suite());
 		}
+		*/
 		return suite;
 	}
 }

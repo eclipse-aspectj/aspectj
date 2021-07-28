@@ -14,7 +14,7 @@ import junit.framework.Test;
 
 /*
  * Some very trivial tests that help verify things are OK.
- * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -10 option
+ * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -14 option
  * to check code generation and modification with that version specified.
  *
  * @author Andy Clement

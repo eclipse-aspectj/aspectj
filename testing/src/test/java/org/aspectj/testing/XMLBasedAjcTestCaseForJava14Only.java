@@ -17,11 +17,13 @@ public abstract class XMLBasedAjcTestCaseForJava14Only extends XMLBasedAjcTestCa
 
 	@Override
 	public void setUp() throws Exception {
+		// Activate this block after upgrading to JDT Core Java 15
 		throw new IllegalStateException(
 			"These tests need a Java 14 level AspectJ compiler " +
 				"(e.g. because they use version-specific preview features). " +
 				"This compiler does not support preview features of a previous version anymore."
 		);
+		// Activate this block before upgrading to JDT Core Java 15
 		/*
 		if (!LangUtil.is14VMOrGreater() || LangUtil.is15VMOrGreater()) {
 			throw new IllegalStateException(
