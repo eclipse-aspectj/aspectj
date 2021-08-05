@@ -11,13 +11,15 @@ import org.aspectj.lang.reflect.FieldSignature;
 public class AnnoBinding {
 	public static void main(String[] argv) {
 		long stime = System.currentTimeMillis();
-		for (int i = 0; i < 10000; i++) {
+		// 10,000 or 100,000 rounds are too quick, making the test flaky
+		final int ROUNDS = 1000 * 1000;
+		for (int i = 0; i < ROUNDS; i++) {
 			runOne();
 		}
 		long etime = System.currentTimeMillis();
 		long manual = (etime - stime);
 		stime = System.currentTimeMillis();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < ROUNDS; i++) {
 			runTwo();
 		}
 		etime = System.currentTimeMillis();
