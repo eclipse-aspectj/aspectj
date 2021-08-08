@@ -17,19 +17,24 @@ public class AnnoBinding {
 			runOne();
 		}
 		long etime = System.nanoTime();
-		long manual = (etime - stime);
+		long reflective = (etime - stime);
 		stime = System.nanoTime();
 		for (int i = 0; i < ROUNDS; i++) {
 			runTwo();
 		}
 		etime = System.nanoTime();
-		long woven = (etime - stime);
-		System.out.println("woven=" + woven + " manual=" + manual);
-		if (woven > manual) {
-			throw new RuntimeException("woven=" + woven + " manual=" + manual);
+		long bound = (etime - stime);
+		String result = String.format("bound = %,d, reflective = %,d", bound, reflective);
+		System.out.println(result);
+		if (bound > reflective) {
+			throw new RuntimeException(
+				"Accessing annotation via bound parameter should be faster than reflective access: " + result
+			);
 		}
-		if (X.a != X.b) {
-			throw new RuntimeException("a=" + X.a + " b=" + X.b);
+		if (X.sumReflective != X.sumBound) {
+			throw new RuntimeException(
+				String.format("Sums of @Marker message lengths should be equal: reflective = %,d, bound = %,d", X.sumReflective, X.sumBound)
+			);
 		}
 	}
 
@@ -50,21 +55,18 @@ public class AnnoBinding {
 }
 
 aspect X {
-	  pointcut pManual(): withincode(* runOne(..)) && get(@Marker * *);
-	  pointcut pWoven(Marker l): withincode(* runTwo(..)) && get(@Marker * * ) && @annotation(l);
+	pointcut pReflective(): withincode(* runOne(..)) && get(@Marker * *);
+	pointcut pBound(Marker marker): withincode(* runTwo(..)) && get(@Marker * * ) && @annotation(marker);
 
-	   public static int a,b;
+	public static int sumReflective, sumBound;
 
-	   before(): pManual() {
-	     Marker marker = (Marker) ((FieldSignature) thisJoinPointStaticPart.getSignature()).getField().getAnnotation(Marker.class);
-	     String s = marker.message();
-	     a+=s.length();
-	   }
+	before(): pReflective() {
+		Marker marker = (Marker) ((FieldSignature) thisJoinPointStaticPart.getSignature()).getField().getAnnotation(Marker.class);
+		sumReflective += marker.message().length();
+	}
 
-	   before(Marker l): pWoven(l) {
-	     String s = l.message();
-	     b+=s.length();
-	   }
-
+	before(Marker marker): pBound(marker) {
+		sumBound += marker.message().length();
+	}
 
 }
