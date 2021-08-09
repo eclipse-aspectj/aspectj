@@ -54,10 +54,9 @@ public class AjcTest {
 	public boolean runTest(AjcTestCase testCase) {
 		if (!canRunOnThisVM()) return false;
 		try {
-			System.out.print("TEST: " + getTitle() + "\t");
+			System.out.println("TEST: " + getTitle());
 			for (ITestStep step: testSteps) {
 				step.setBaseDir(getDir());
-				System.out.print(".");
 				step.execute(testCase);
 			}
 		} finally {
