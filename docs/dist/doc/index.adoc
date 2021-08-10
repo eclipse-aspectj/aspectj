@@ -24,8 +24,7 @@ link:runtime-api/index.html[API] and link:examples/[example code].
 |https://eclipse.org/aspectj[AspectJ]; development environment support
 for https://eclipse.org/ajdt[Eclipse].
 
-|xref:#resources[Other resources] |http://aosd.net[aosd.net];
-https://eclipse.org/aspectj[AspectJ project] the bug
+|xref:#resources[Other resources] |https://eclipse.org/aspectj[AspectJ project], the bug
 https://bugs.eclipse.org/bugs[db], and mailing lists for
 mailto:aspectj-users@eclipse.org[users] and
 mailto:aspectj-dev@eclipse.org[developers].
@@ -175,11 +174,6 @@ https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info[flagged
 with the "info" keyword]. See the faq.html#q:ajcbugs[FAQ entry] for
 instructions on submitting compiler bugs.
 
-|http://aosd.net - the AOSD web site |This site has discussion and
-announcements related to aspect-oriented software development (AOSD) in
-general. Use announce@aosd.net to get and publish notices about AOSD
-workshops, conferences, and technology releases. Use discuss@aosd.net
-for general AOSD discussions.
 |===
 
 [[paths]]
