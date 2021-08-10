@@ -428,9 +428,6 @@ is an overall framework into which many of these approaches fit. AspectJ
 is one particular instance of AOP, distinguished by the fact that it was
 designed from the ground up to be compatible with Java.
 
-For more alternatives for aspect-oriented programming, see
-http://aosd.net.
-
 *Q:* How do you compare the features of AspectJ with reflective systems?
 
 *A:* Reflective and aspect-oriented languages have an important
@@ -578,11 +575,13 @@ AspectJ.
 * Removing AspectJ from your program is not difficult, although you will
 lose the flexibility and economy that AspectJ provided.
 * A number of significant open-source projects and industry products use
-AspectJ successfully. One list is kept on
-http://www.aosd.net/wiki/index.php?title=FAQ[the AOSD FAQ], and more
-appear on the mailing lists (search for, e.g., "AspectJ in real world",
-as described in #q:searchingsite[Q:How can I search the email archives
-or the web site?]).
+AspectJ successfully. A prominent example is the Spring framework which supports
+both native AspectJ and its internal "AOP lite" framework Spring AOP. Spring AOP
+is based on dynamic proxies, offers a subset of AspectJ features and offers the
+corresponding subset of the @AspectJ annotation-based aspect syntax.
+* You may also search for search for, e.g., "AspectJ in real world" on the WWW
+or in AspectJ mailing list archives, as described in
+xref:#searchingsite[How can I search the email archives or the web site?]).
 
 *Q:* What is the effect of using AspectJ on the source code size of
 programs?
@@ -958,8 +957,7 @@ subscribe, visit the https://eclipse.org/aspectj[AspectJ web site].
 
 There you can also subscribe to `aspectj-announce@eclipse.org`, a
 low-traffic list containing only announcements about significant AspectJ
-events and product releases. To get on a similar list for
-aspect-oriented software development generally, see http://aosd.net.
+events and product releases.
 
 [[compiler]]
 == Using the AspectJ compiler
@@ -3128,6 +3126,7 @@ link:pdguide/index.html[AspectJ Problem Diagnosis Guide].
 mailing list. You can subscribe to the list or view the list archives
 from the AspectJ home page https://eclipse.org/aspectj .
 
+[[searchingsite]]
 *Q:* How can I search the email archives or the web site?
 
 *A:* It is very effective to do a google search of the form,
@@ -3208,15 +3207,11 @@ in #q:harnesstestcases[Q:How should I submit test cases for bugs?].
 *Q:* Can you recommend reading or teaching material for AspectJ?
 
 *A:* The documentation available in the distribution is the best source
-for language and usage questions. You can also find selected AspectJ
-papers and presentations on the
-http://www.parc.com/groups/csl/projects/aspectj/index.html[PARC AspectJ
-page]. For links to Aspect-oriented programming materials in general,
-see http://aosd.net.
+for language and usage questions.
 
 *Q:* Where can our group get consulting and support?
 
-*A:* The best thing to to is join and email the
+*A:* The best thing to do is join and email the
 `aspectj-dev@eclipse.org` mailing list.
 
 *Q:* What has changed since the last FAQ version?

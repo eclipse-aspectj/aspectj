@@ -810,9 +810,6 @@ java -jar <emphasis>jar file name</emphasis>
             distinguished by the fact that it was designed from the ground up
             to be compatible with Java.
           </para>
-          <para>For more alternatives for aspect-oriented programming, see
-            <ulink url="http://aosd.net">http://aosd.net</ulink>.
-          </para>
         </answer>
       </qandaentry>
       <qandaentry>
@@ -1039,12 +1036,18 @@ aspect.
                 </para>
               </listitem>
               <listitem>
-                <para>A number of significant open-source projects and industry
-                    products use AspectJ successfully.  One list is kept on
-                    <ulink url="http://www.aosd.net/wiki/index.php?title=FAQ">
-                        the AOSD FAQ</ulink>, and more appear on the mailing
-                    lists (search for, e.g., "AspectJ in real world", as
-                    described in <xref linkend="q:searchingsite"/>).
+                <para>
+                  A number of significant open-source projects and industry products use
+                  AspectJ successfully. A prominent example is the Spring framework which supports
+                  both native AspectJ and its internal "AOP lite" framework Spring AOP. Spring AOP
+                  is based on dynamic proxies, offers a subset of AspectJ features and offers the
+                  corresponding subset of the @AspectJ annotation-based aspect syntax.
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  You may also search for search for, e.g., "AspectJ in real world" on the WWW
+                  or in AspectJ mailing list archives, as described in <xref linkend="q:searchingsite"/>.
                 </para>
               </listitem>
             </itemizedlist>
@@ -1593,9 +1596,6 @@ aspect PublicErrorLogging {
             <literal>aspectj-announce@eclipse.org</literal>,
             a low-traffic list containing only announcements
             about significant AspectJ events and product releases.
-            To get on a similar list for aspect-oriented software
-            development generally, see
-            <ulink url="http://aosd.net">http://aosd.net</ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -5102,12 +5102,7 @@ cd build
         </question>
         <answer>
           <para>The documentation available in the distribution is the
-          best source for language and usage questions.  You can also find
-          selected AspectJ papers and presentations on the
-          <ulink url="http://www.parc.com/groups/csl/projects/aspectj/index.html">
-                            PARC AspectJ page</ulink>.
-          For links to Aspect-oriented programming materials in general, see
-          <ulink url="http://aosd.net">http://aosd.net</ulink>.
+          best source for language and usage questions.
           </para>
         </answer>
       </qandaentry>
@@ -5119,7 +5114,7 @@ cd build
           </para>
         </question>
         <answer>
-          <para>The best thing to to is join and email the
+          <para>The best thing to do is join and email the
            <literal>aspectj-dev@eclipse.org</literal> mailing list.
           </para>
         </answer>

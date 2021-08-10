@@ -298,7 +298,6 @@ Once developer consensus is reached on the build:
 
 * post link on download page                                            [   ]
 
-* post announce message to aspectj-users, aspectj-announce,
-    aosd-discuss, aosd-announce                                         [   ]
+* post announce message to aspectj-users, aspectj-announce              [   ]
 
 * buy beer                                                              [   ]
