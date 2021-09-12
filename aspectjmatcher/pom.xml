@@ -47,10 +47,9 @@
 	</scm>
 
 	<properties>
-		<!-- By default, do not deploy artifacts - but deploy this public one -->
+        <!-- Override defaults: always sign and deploy this required artifact -->
+        <maven.gpg.skip>false</maven.gpg.skip>
 		<maven.deploy.skip>false</maven.deploy.skip>
-		<!-- By default, do not sign artifacts - but sign this public one -->
-		<maven.gpg.skip>false</maven.gpg.skip>
 	</properties>
 
 	<build>
@@ -94,8 +93,6 @@
 									<Can-Redefine-Classes>true</Can-Redefine-Classes>
 									-->
 								</manifestEntries>
-
-
 								<manifestSections>
 									<manifestSection>
 										<name>org/aspectj/matcher/</name>
@@ -148,6 +145,7 @@
 						<configuration>
 							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
 							<appendAssemblyId>true</appendAssemblyId>
+                            <!-- False for release profile (see parent POM) -->
 							<skipAssembly>${maven.source.skip}</skipAssembly>
 							<archive>
 							</archive>
@@ -171,11 +169,6 @@
 							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<!--
-								Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
-								profile is active or the property is overridden manually to be false. See property definitions in parent
-								POM for default case and release profile.
-							-->
 							<skip>${maven.javadoc.skip}</skip>
 							<verbose>true</verbose>
 							<fileset>
@@ -270,7 +263,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore>true</ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

@@ -15,10 +15,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
+		<!-- By default, do not sign or deploy artifacts. Overridden where needed. -->
+        <maven.gpg.skip>true</maven.gpg.skip>
 		<maven.deploy.skip>true</maven.deploy.skip>
-		<!-- By default, do not create javadoc - override in release profile or manually -->
+
+		<!-- By default, do not create javadoc or include source. Overridden in release profile. -->
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.source.skip>true</maven.source.skip>
 
 		<!-- Dependency versions -->
 		<jdt.core.version>1.9.7.M2</jdt.core.version>
@@ -144,22 +147,22 @@
 		<module>run-all-junit-tests</module>
 		<module>docs</module>
 
-		<!-- create the important artifacts we care about -->
+		<!-- These required artifacts are published in Maven Central upon release -->
 		<module>aspectjrt</module>
 		<module>aspectjweaver</module>
 		<module>aspectjtools</module>
 		<module>aspectjmatcher</module>
 
-		<!-- build the java -jar'able installer -->
+		<!-- Build the java -jar'able installer. Not currently published (see installer pom) -->
 		<module>installer</module>
 	</modules>
 
 	<!--
-    Caveat: Automatic, JDK-based profile activation can *not* be inherited by child POMs defining
-    the same profiles. Thus, we have to repeat activation conditions there.
+        Caveat: Automatic, JDK-based profile activation can *not* be inherited by child POMs defining
+        the same profiles. Thus, we have to repeat activation conditions there.
 
-    Note: We can check if automatic profile activation works via mvn help:active-profiles.
-  -->
+        Note: We can check if automatic profile activation works via mvn help:active-profiles.
+    -->
 	<profiles>
 		<profile>
 			<id>jdk-8-to-15</id>
@@ -189,6 +192,7 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+                        <!-- FIXME Why getting 'plugin not found' error here? -->
 						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
 				</plugins>
@@ -332,8 +336,8 @@
 								<goal>sign</goal>
 							</goals>
 							<configuration>
-								<!-- Only sign artifacts which are also meant to be deployed -->
-								<skip>${maven.gpg.skip}</skip>
+								<!-- Only sign certain artifacts, typically those also meant to be deployed -->
+                              <skip>${maven.gpg.skip}</skip>
 							</configuration>
 						</execution>
 					</executions>
@@ -492,8 +496,8 @@
 
 	<dependencies>
 		<!--
-			Actually, it would be cleaner to only define JUnit only it modules which actually use it. But since this comprises
-			the majority, we can afford to be a little bit unclean here with regard to dependency management.
+			It would be cleaner to only define JUnit in modules which actually use it. But since this comprises the
+			majority, we can afford to be a little bit unclean here with regard to dependency management.
 		-->
 		<dependency>
 			<groupId>junit</groupId>

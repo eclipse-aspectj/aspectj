@@ -52,10 +52,9 @@
 			  ones from aspectjtools, because the installer contains runtime, weaver and tools and the latter one is a
 			  superset of the former two.
 		-->
-		<!-- By default, do not deploy artifacts - but deploy this public one -->
-		<!--<maven.deploy.skip>false</maven.deploy.skip>-->
-		<!-- By default, do not sign artifacts - but sign this public one -->
-		<!--<maven.gpg.skip>false</maven.gpg.skip>-->
+        <!-- Override defaults: always sign and deploy this public artifact -->
+        <!-- <maven.gpg.skip>false</maven.gpg.skip> -->
+        <!-- <maven.deploy.skip>false</maven.deploy.skip> -->
 	</properties>
 
 	<dependencies>
