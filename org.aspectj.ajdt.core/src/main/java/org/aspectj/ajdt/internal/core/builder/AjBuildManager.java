@@ -436,7 +436,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			zos = null;
 
 			/* Ensure we don't write an incomplete JAR bug-71339 */
-			if (handler.hasErrors()) {
+			if (!proceedOnError() && handler.hasErrors()) {
 				outJar.delete();
 				if (buildConfig.getCompilationResultDestinationManager() != null) {
 					buildConfig.getCompilationResultDestinationManager().reportFileRemove(outJar.getPath(),
