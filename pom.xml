@@ -372,6 +372,18 @@
 						<!-- Activate in order to directly release to Maven Central after successful staging -->
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
 					</configuration>
+					<dependencies>
+						<!--
+							Plugin version 1.6.8 does not work on JDK 16+ without special MAVEN_OPTS opening certain modules,
+							because the XStream version used needs it. One workaround is to use a more recent XStream version.
+							TODO: remove plugin dependency after OSSRH-66257, NEXUS-26993 are fixed.
+						-->
+						<dependency>
+							<groupId>com.thoughtworks.xstream</groupId>
+							<artifactId>xstream</artifactId>
+							<version>1.4.15</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
