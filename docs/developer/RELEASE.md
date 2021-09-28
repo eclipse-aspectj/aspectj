@@ -91,10 +91,6 @@ mvn versions:set -DnewVersion=1.9.7.M2
 # Verify if the POM changes are OK, then remove the POM backup files
 mvn versions:commit
 
-# Set some environment variables needed by Nexus Staging Maven plugin on JDK 16,
-# until https://issues.sonatype.org/browse/OSSRH-66257 is resolved
-export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
-
 # Build and deploy the release to a Nexus staging repository.
 # The 'release' profile will activate:
 #   - Maven GPG plugin for signing artifacts (stand by to enter your passpharase).
