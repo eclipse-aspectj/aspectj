@@ -1,3 +1,5 @@
+import java.util.List;
+
 aspect SwitchPatternAspect {
   Object around(Object o) : execution(* doSomethingWithObject(*)) && args(o) {
     System.out.println(switch (o) {
@@ -41,7 +43,7 @@ final class A implements S {}
 final class B implements S {}
 record C(int i) implements S {}  // Implicitly final
 
-public class Application {
+class Application {
   public static void main(String[] args) {
     doSomethingWithObject(null);
     doSomethingWithObject(123);
@@ -54,12 +56,12 @@ public class Application {
     doSomethingWithShape(new Circle(5));
     doSomethingWithShape(new Circle(6));
 
-    doSomethingWithSealedClass(new A()));
-    doSomethingWithSealedClass(new B()));
-    doSomethingWithSealedClass(new C(5)));
+    doSomethingWithSealedClass(new A());
+    doSomethingWithSealedClass(new B());
+    doSomethingWithSealedClass(new C(5));
   }
 
-  public Object doSomethingWithObject(Object o) { return o; }
-  public void doSomethingWithSealedClass(S s) {}
-  public void doSomethingWithShape(Shape s) {}
+  public static Object doSomethingWithObject(Object o) { return o; }
+  public static void doSomethingWithSealedClass(S s) {}
+  public static void doSomethingWithShape(Shape s) {}
 }
