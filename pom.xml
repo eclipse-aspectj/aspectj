@@ -21,8 +21,7 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-<!--		<jdt.core.version>1.9.7.M2</jdt.core.version>-->
-		<jdt.core.version>1.9.8-SNAPSHOT</jdt.core.version>
+		<jdt.core.version>1.9.8.RC1</jdt.core.version>
 		<asm.version>9.2</asm.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
