@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Inspired by examples in https://openjdk.java.net/jeps/406
@@ -26,7 +27,7 @@ public class SwitchPatternOK {
       case null      -> "null";
       case Integer i -> String.format("int %d", i);
       case Long l    -> String.format("long %d", l);
-      case Double d  -> String.format("double %f", d);
+      case Double d  -> String.format(Locale.ENGLISH, "double %f", d);
       case String s  -> String.format("String %s", s);
       default        -> o.toString();
     };

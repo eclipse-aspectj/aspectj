@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Locale;
 
 aspect SwitchPatternAspect {
   Object around(Object o) : execution(* doSomethingWithObject(*)) && args(o) {
@@ -6,7 +7,7 @@ aspect SwitchPatternAspect {
       case null      -> "null";
       case Integer i -> String.format("int %d", i);
       case Long l    -> String.format("long %d", l);
-      case Double d  -> String.format("double %f", d);
+      case Double d  -> String.format(Locale.ENGLISH, "double %f", d);
       case String s  -> String.format("String %s", s);
       default        -> o.toString();
     });

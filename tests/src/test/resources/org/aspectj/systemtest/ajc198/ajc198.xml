@@ -42,7 +42,7 @@
 				<line text="null" />
 				<line text="int 123" />
 				<line text="long 999" />
-				<line text="double 12,340000" />
+				<line text="double 12.340000" />
 				<line text="String foo" />
 				<line text="[123, foo, 999, 12.34]" />
 				<line text="Non-circle" />
@@ -63,7 +63,7 @@
 				<line text="null" />
 				<line text="int 123" />
 				<line text="long 999" />
-				<line text="double 12,340000" />
+				<line text="double 12.340000" />
 				<line text="String foo" />
 				<line text="[123, foo, 999, 12.34]" />
 				<line text="Non-circle" />
