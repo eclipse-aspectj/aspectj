@@ -9,7 +9,7 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-public abstract class IdentifierTypePattern extends TypePattern {
+public abstract class IdentifierTypePattern extends AbstractTypePattern {
 
 	private Type type;
 

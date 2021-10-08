@@ -15,7 +15,7 @@ public class AndTypePattern extends AbstractBooleanTypePattern {
 
 	public static final String AND_OPERATOR = "&&";
 
-	AndTypePattern(AST ast, TypePattern left, TypePattern right) {
+	AndTypePattern(AST ast, AbstractTypePattern left, AbstractTypePattern right) {
 		super(ast, left, right, AND_OPERATOR);
 	}
 
@@ -25,7 +25,7 @@ public class AndTypePattern extends AbstractBooleanTypePattern {
 
 	ASTNode clone0(AST target) {
 		AndTypePattern cloned = new AndTypePattern(target,
-				(TypePattern) getLeft().clone(target), (TypePattern) getRight()
+				(AbstractTypePattern) getLeft().clone(target), (AbstractTypePattern) getRight()
 						.clone(target));
 		cloned.setSourceRange(getStartPosition(), getLength());
 		return cloned;

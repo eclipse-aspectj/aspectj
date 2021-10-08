@@ -11,7 +11,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-public class EllipsisTypePattern extends TypePattern {
+public class EllipsisTypePattern extends AbstractTypePattern {
 
 	public static final String ELLIPSIS_DETAIL = "..";
 

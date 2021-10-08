@@ -11,7 +11,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-public class AnyTypePattern extends TypePattern {
+public class AnyTypePattern extends AbstractTypePattern {
 
 	public static final String ANYTYPE_DETAIL = "*";
 

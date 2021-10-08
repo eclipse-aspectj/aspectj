@@ -16,8 +16,8 @@ public class OrTypePattern extends AbstractBooleanTypePattern {
 	public static final String OR_OPERATOR = "||";
 
 	OrTypePattern(AST ast,
-			org.aspectj.org.eclipse.jdt.core.dom.TypePattern left,
-			org.aspectj.org.eclipse.jdt.core.dom.TypePattern right) {
+			AbstractTypePattern left,
+			AbstractTypePattern right) {
 		super(ast, left, right, OR_OPERATOR);
 	}
 
@@ -27,7 +27,7 @@ public class OrTypePattern extends AbstractBooleanTypePattern {
 
 	ASTNode clone0(AST target) {
 		OrTypePattern cloned = new OrTypePattern(target,
-				(TypePattern) getLeft().clone(target), (TypePattern) getRight()
+				(AbstractTypePattern) getLeft().clone(target), (AbstractTypePattern) getRight()
 						.clone(target));
 		cloned.setSourceRange(getStartPosition(), getLength());
 		return cloned;

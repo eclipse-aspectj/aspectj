@@ -1661,7 +1661,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		}
 
 		for (Iterator it = node.parentTypePatterns().iterator(); it.hasNext();) {
-			TypePattern typePat = (TypePattern) it.next();
+			AbstractTypePattern typePat = (AbstractTypePattern) it.next();
 			typePat.accept(this);
 			if(it.hasNext()){
 				this.buffer.append(", ");
@@ -1711,7 +1711,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 
 		this.buffer.append("declare precedence: ");
 		for (Iterator it = node.typePatterns().iterator(); it.hasNext();) {
-			TypePattern typePat = (TypePattern) it.next();
+			AbstractTypePattern typePat = (AbstractTypePattern) it.next();
 			typePat.accept(this);
 			if(it.hasNext()){
 				this.buffer.append(", ");

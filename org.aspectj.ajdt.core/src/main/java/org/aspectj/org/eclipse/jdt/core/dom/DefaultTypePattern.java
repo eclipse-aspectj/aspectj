@@ -18,7 +18,7 @@ import java.util.List;
  *
  * This class is a stub and should be deleted when concrete subclasses exist for all the different TypePattern's in AspectJ.
  */
-public class DefaultTypePattern extends TypePattern {
+public class DefaultTypePattern extends AbstractTypePattern {
 
 	private String detail;
 

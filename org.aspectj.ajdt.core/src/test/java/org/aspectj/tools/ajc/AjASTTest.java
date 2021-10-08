@@ -19,6 +19,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.AST;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
 import org.aspectj.org.eclipse.jdt.core.dom.ASTParser;
 import org.aspectj.org.eclipse.jdt.core.dom.AbstractBooleanTypePattern;
+import org.aspectj.org.eclipse.jdt.core.dom.AbstractTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
@@ -73,7 +74,6 @@ import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
 import org.aspectj.org.eclipse.jdt.core.dom.Type;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
 
 /**
  * For each AspectJ ASTNode there is a test for:
@@ -1439,7 +1439,7 @@ public class AjASTTest extends AjASTTestCase {
 				ChildListPropertyDescriptor element = (ChildListPropertyDescriptor) o;
 				assertNotNull("DeclareErrorDeclaration's " + element.getId() + " property"
 						+ "should not be null since it is a list", d.getStructuralProperty(element));
-				assertEquals("should only be able to put TypePattern's into the list", TypePattern.class, element.getElementType());
+				assertEquals("should only be able to put TypePattern's into the list", AbstractTypePattern.class, element.getElementType());
 			} else {
 				fail("unknown PropertyDescriptor associated with DeclareErrorDeclaration: " + o);
 			}
@@ -1820,12 +1820,12 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 
-	protected void assertExpression(String expectedExpression, TypePattern node) {
+	protected void assertExpression(String expectedExpression, AbstractTypePattern node) {
 		assertTrue("Expected: " + expectedExpression + ". Actual: " + node.getTypePatternExpression(), node.getTypePatternExpression().equals(expectedExpression));
 
 	}
 
-	protected void assertNodeType(Class<?> expected, TypePattern node) {
+	protected void assertNodeType(Class<?> expected, AbstractTypePattern node) {
 		assertTrue("Expected " + expected.toString() + ". Actual: " + node.getClass().toString(), node.getClass().equals(expected));
 	}
 }

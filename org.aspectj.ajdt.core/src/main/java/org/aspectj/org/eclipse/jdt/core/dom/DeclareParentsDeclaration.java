@@ -27,13 +27,13 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 		internalJavadocPropertyFactory(DeclareParentsDeclaration.class);
 
 	public static final ChildPropertyDescriptor CHILD_TYPE_PATTERN_PROPERTY =
-		new ChildPropertyDescriptor(DeclareParentsDeclaration.class, "childTypePattern", TypePattern.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(DeclareParentsDeclaration.class, "childTypePattern", AbstractTypePattern.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	public static final SimplePropertyDescriptor IS_EXTENDS_PROPERTY =
 		new SimplePropertyDescriptor(DeclareParentsDeclaration.class, "isExtends", boolean.class, MANDATORY); //$NON-NLS-1$
 
 	public static final ChildListPropertyDescriptor PARENTS_TYPE_PATTERNS_LIST_PROPERTY =
-		new ChildListPropertyDescriptor(DeclareParentsDeclaration.class, "typePatternsList", TypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(DeclareParentsDeclaration.class, "typePatternsList", AbstractTypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	private static final List PROPERTY_DESCRIPTORS_2_0;
 	private static final List PROPERTY_DESCRIPTORS_3_0;
@@ -57,7 +57,7 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 	}
 
 	private boolean isExtends;
-	private TypePattern childTypePattern;
+	private AbstractTypePattern childTypePattern;
 	protected ASTNode.NodeList parentTypePatterns =new ASTNode.NodeList(PARENTS_TYPE_PATTERNS_LIST_PROPERTY);
 
 
@@ -76,7 +76,7 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 		result.setJavadoc(
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.setChildTypePattern(
-				(TypePattern) ASTNode.copySubtree(target, getChildTypePattern()));
+				(AbstractTypePattern) ASTNode.copySubtree(target, getChildTypePattern()));
 		result.setExtends(isExtends());
 		result.parentTypePatterns().addAll(
 				ASTNode.copySubtrees(target, parentTypePatterns()));
@@ -172,7 +172,7 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 			if (get) {
 				return getChildTypePattern();
 			} else {
-				setChildTypePattern((TypePattern) child);
+				setChildTypePattern((AbstractTypePattern) child);
 				return null;
 			}
 		}
@@ -218,11 +218,11 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 	}
 
 
-	public TypePattern getChildTypePattern(){
+	public AbstractTypePattern getChildTypePattern(){
 		return childTypePattern;
 	}
 
-	public void setChildTypePattern(TypePattern typePattern) {
+	public void setChildTypePattern(AbstractTypePattern typePattern) {
 		if (typePattern == null) {
 			throw new IllegalArgumentException();
 		}

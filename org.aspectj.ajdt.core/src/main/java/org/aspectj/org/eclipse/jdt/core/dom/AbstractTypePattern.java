@@ -14,17 +14,17 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 /**
  * abstract TypePattern DOM AST node.
  */
-public abstract class TypePattern extends PatternNode {
+public abstract class AbstractTypePattern extends PatternNode {
 
 	private String typePatternExpression;
 
 	public static final String EMPTY_EXPRESSION = "";
 
-	TypePattern(AST ast) {
+	AbstractTypePattern(AST ast) {
 		super(ast);
 	}
 
-	TypePattern(AST ast, String typePatternExpression) {
+	AbstractTypePattern(AST ast, String typePatternExpression) {
 		super(ast);
 		this.typePatternExpression = typePatternExpression;
 	}
