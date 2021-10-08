@@ -9,23 +9,23 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-public abstract class AbstractBooleanTypePattern extends TypePattern {
+public abstract class AbstractBooleanTypePattern extends AbstractTypePattern {
 
-	private TypePattern left;
-	private TypePattern right;
+	private AbstractTypePattern left;
+	private AbstractTypePattern right;
 
-	AbstractBooleanTypePattern(AST ast, TypePattern left, TypePattern right,
-			String booleanOperator) {
+	AbstractBooleanTypePattern(AST ast, AbstractTypePattern left, AbstractTypePattern right,
+                             String booleanOperator) {
 		super(ast, booleanOperator);
 		this.left = left;
 		this.right = right;
 	}
 
-	public TypePattern getLeft() {
+	public AbstractTypePattern getLeft() {
 		return left;
 	}
 
-	public TypePattern getRight() {
+	public AbstractTypePattern getRight() {
 		return right;
 	}
 

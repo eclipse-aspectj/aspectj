@@ -11,7 +11,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-public class NoTypePattern extends TypePattern {
+public class NoTypePattern extends AbstractTypePattern {
 
 	NoTypePattern(AST ast) {
 		super(ast);

@@ -203,7 +203,8 @@ public class IntertypeMemberClassDeclaration extends TypeDeclaration {
 			// this is the original version in case tricking the JDT causes grief (if you reinstate this variant, you
 			// will need to change the expected messages output for some of the generic ITD tests)
 			// scope.isStatic = Modifier.isStatic(declaredModifiers);
-			scope.parent = interTypeScope;
+			// Use setter in order to also update member 'compilationUnitScope'
+			scope.setParent(interTypeScope);
 		}
 		scopeSetup = true;
 	}

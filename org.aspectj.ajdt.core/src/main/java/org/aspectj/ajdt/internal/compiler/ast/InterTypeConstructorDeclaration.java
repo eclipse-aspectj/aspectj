@@ -192,7 +192,8 @@ public class InterTypeConstructorDeclaration extends InterTypeDeclaration {
 		}
 
 		InterTypeScope newParent = new InterTypeScope(scope, onTypeBinding);
-		pre.scope.parent = newParent;
+		// Use setter in order to also update member 'compilationUnitScope'
+		pre.scope.setParent(newParent);
 
 		pre.resolveStatements(); // newParent);
 

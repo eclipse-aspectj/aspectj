@@ -16,7 +16,7 @@ import java.util.List;
  * expression
  *
  */
-public class AnyWithAnnotationTypePattern extends TypePattern {
+public class AnyWithAnnotationTypePattern extends AbstractTypePattern {
 
 	AnyWithAnnotationTypePattern(AST ast, String annotationExpression) {
 		// Is this correct? should the "*" be added

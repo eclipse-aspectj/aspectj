@@ -14,6 +14,7 @@ package org.aspectj.tools.ajc;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
+import org.aspectj.org.eclipse.jdt.core.dom.AbstractTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.AjAST;
 import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AspectDeclaration;
@@ -23,8 +24,6 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.PerTypeWithin;
 import org.aspectj.org.eclipse.jdt.core.dom.SimplePropertyDescriptor;
-import org.aspectj.org.eclipse.jdt.core.dom.TypePattern;
-
 
 public class AjAST5Test extends AjASTTestCase {
 
@@ -113,7 +112,7 @@ public class AjAST5Test extends AjASTTestCase {
 								"should not be null since it is a list",
 						d.getStructuralProperty(element));
 				assertEquals("should only be able to put TypePattern's into the list",
-						TypePattern.class, element.getElementType());
+						AbstractTypePattern.class, element.getElementType());
 			} else if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
 				assertNotNull("DeclareParentsDeclaration's " + element.getId() + " property" +

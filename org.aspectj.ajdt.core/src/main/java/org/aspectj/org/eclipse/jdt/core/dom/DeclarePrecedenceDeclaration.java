@@ -26,7 +26,7 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 		internalJavadocPropertyFactory(DeclarePrecedenceDeclaration.class);
 
 	public static final ChildListPropertyDescriptor TYPE_PATTERNS_LIST_PROPERTY =
-		new ChildListPropertyDescriptor(DeclarePrecedenceDeclaration.class, "parentTypePatterns", TypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(DeclarePrecedenceDeclaration.class, "parentTypePatterns", AbstractTypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	private static final List PROPERTY_DESCRIPTORS_2_0;
 	private static final List PROPERTY_DESCRIPTORS_3_0;

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public class HasMemberTypePattern extends TypePattern {
+public class HasMemberTypePattern extends AbstractTypePattern {
 
 	private SignaturePattern signaturePattern;
 

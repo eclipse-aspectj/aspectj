@@ -27,6 +27,7 @@ public abstract class XMLBasedAjcTestCaseForJava17Only extends XMLBasedAjcTestCa
 				"This compiler does not support preview features of a previous version anymore."
 		);
 		*/
+		// Activate this block before upgrading to JDT Core Java 18
 		if (!LangUtil.is17VMOrGreater() || LangUtil.is18VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 17 only " +

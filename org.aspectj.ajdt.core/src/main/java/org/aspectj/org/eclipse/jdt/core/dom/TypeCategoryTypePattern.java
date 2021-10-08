@@ -11,7 +11,7 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-public class TypeCategoryTypePattern extends TypePattern {
+public class TypeCategoryTypePattern extends AbstractTypePattern {
 
 	private int typeCategory;
 

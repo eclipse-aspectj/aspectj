@@ -11,9 +11,9 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-public class NotTypePattern extends TypePattern {
+public class NotTypePattern extends AbstractTypePattern {
 
-	private TypePattern negatedPattern;
+	private AbstractTypePattern negatedPattern;
 
 	/**
 	 * The negated type pattern cannot be null
@@ -23,7 +23,7 @@ public class NotTypePattern extends TypePattern {
 	 * @param negatedPattern
 	 *            not null
 	 */
-	NotTypePattern(AST ast, TypePattern negatedPattern) {
+	NotTypePattern(AST ast, AbstractTypePattern negatedPattern) {
 		super(ast, "!");
 		this.negatedPattern = negatedPattern;
 	}
@@ -32,13 +32,13 @@ public class NotTypePattern extends TypePattern {
 		return null;
 	}
 
-	public TypePattern getNegatedTypePattern() {
+	public AbstractTypePattern getNegatedTypePattern() {
 		return negatedPattern;
 	}
 
 	ASTNode clone0(AST target) {
 		ASTNode node = new NotTypePattern(target,
-				(TypePattern) getNegatedTypePattern().clone(target));
+				(AbstractTypePattern) getNegatedTypePattern().clone(target));
 		node.setSourceRange(getStartPosition(), getLength());
 		return node;
 	}

@@ -26,7 +26,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 		internalJavadocPropertyFactory(DeclareSoftDeclaration.class);
 
 	public static final ChildPropertyDescriptor TYPE_PATTERN_PROPERTY =
-		new ChildPropertyDescriptor(DeclareSoftDeclaration.class, "typePattern", TypePattern.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(DeclareSoftDeclaration.class, "typePattern", AbstractTypePattern.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	public static final ChildPropertyDescriptor POINTCUT_PROPERTY =
 		new ChildPropertyDescriptor(DeclareSoftDeclaration.class, "pointcut", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
@@ -51,7 +51,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
 	}
 
-	private TypePattern typePattern;
+	private AbstractTypePattern typePattern;
 	private PointcutDesignator pointcut;
 
 	DeclareSoftDeclaration(AST ast) {
@@ -64,7 +64,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 		result.setJavadoc(
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.setPointcut((PointcutDesignator)ASTNode.copySubtree(target,getPointcut()));
-		result.setTypePattern((TypePattern)ASTNode.copySubtree(target,getTypePattern()));
+		result.setTypePattern((AbstractTypePattern)ASTNode.copySubtree(target,getTypePattern()));
 
 		return result;
 	}
@@ -166,7 +166,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 			if (get) {
 				return getTypePattern();
 			} else {
-				setTypePattern((TypePattern) child);
+				setTypePattern((AbstractTypePattern) child);
 				return null;
 			}
 		}
@@ -174,11 +174,11 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
-	public TypePattern getTypePattern(){
+	public AbstractTypePattern getTypePattern(){
 		return typePattern;
 	}
 
-	public void setTypePattern(TypePattern typePattern) {
+	public void setTypePattern(AbstractTypePattern typePattern) {
 		if (typePattern == null) {
 			throw new IllegalArgumentException();
 		}
