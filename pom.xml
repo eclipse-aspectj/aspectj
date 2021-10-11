@@ -68,51 +68,23 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>aspectj-dev</id>
-			<name>AspectJ artifacts on aspectj.dev</name>
-			<url>https://aspectj.dev/maven</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>ossrh-snapshots-classic</id>
-			<name>Sonatype OSSRH snapshots classic</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>ossrh-snapshots-new</id>
-			<name>Sonatype OSSRH snapshots new</name>
-			<url> https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</repository>
-		<repository>
 			<id>ossrh-snapshots</id>
 			<name>Sonatype OSSRH snapshots</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>aspectj-dev</id>
+			<name>AspectJ artifacts on aspectj.dev</name>
+			<url>https://aspectj.dev/maven</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
