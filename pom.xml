@@ -21,7 +21,7 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-		<jdt.core.version>1.9.8.RC1</jdt.core.version>
+		<jdt.core.version>1.9.8.RC2</jdt.core.version>
 		<asm.version>9.2</asm.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
@@ -432,12 +432,13 @@
 						<!--
 							Plugin version 1.6.8 does not work on JDK 16+ without special MAVEN_OPTS opening certain modules,
 							because the XStream version used needs it. One workaround is to use a more recent XStream version.
+							Attention: Do *not* upgrade to e.g. 1.4.18, because it causes exceptions during deployment.
 							TODO: remove plugin dependency after OSSRH-66257, NEXUS-26993 are fixed.
 						-->
 						<dependency>
 							<groupId>com.thoughtworks.xstream</groupId>
 							<artifactId>xstream</artifactId>
-							<version>1.4.18</version>
+							<version>1.4.15</version>
 						</dependency>
 					</dependencies>
 				</plugin>
