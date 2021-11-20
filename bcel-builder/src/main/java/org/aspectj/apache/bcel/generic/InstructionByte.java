@@ -78,7 +78,7 @@ public class InstructionByte extends Instruction {
 
 	/**
 	 * For supporting NEWARRAY
-	 * 
+	 *
 	 * @return typecode of the array
 	 */
 	public final byte getTypecode() {
@@ -87,7 +87,7 @@ public class InstructionByte extends Instruction {
 
 	/**
 	 * For supporting NEWARRAY
-	 * 
+	 *
 	 * @return type of the array
 	 */
 	public final Type getType() {

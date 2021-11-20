@@ -59,7 +59,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
  * Denotes reference such as java.lang.String.
- * 
+ *
  * @version $Id: ObjectType.java,v 1.7 2009/09/28 16:39:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

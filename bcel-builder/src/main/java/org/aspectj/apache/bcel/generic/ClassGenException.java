@@ -54,7 +54,7 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-/** 
+/**
  * Thrown on internal errors. Extends RuntimeException so it hasn't to be declared
  * in the throws clause every time.
  *

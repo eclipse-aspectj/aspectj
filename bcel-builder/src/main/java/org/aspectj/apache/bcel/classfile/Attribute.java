@@ -71,7 +71,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
  * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
  * <em>Exceptiontable</em>, <em>LineNumberTable</em>, <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em>
  * attributes are supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
- * 
+ *
  * @version $Id: Attribute.java,v 1.9 2009/12/09 18:01:31 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ConstantValue

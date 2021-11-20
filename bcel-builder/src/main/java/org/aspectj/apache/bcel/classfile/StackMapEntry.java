@@ -113,7 +113,7 @@ public final class StackMapEntry implements Cloneable {
    *
    * @param file Output file stream
    * @throws IOException
-   */ 
+   */
   public final void dump(DataOutputStream file) throws IOException
   {
     file.writeShort(byte_code_offset);
@@ -129,7 +129,7 @@ public final class StackMapEntry implements Cloneable {
 
   /**
    * @return String representation.
-   */ 
+   */
   public final String toString() {
     StringBuffer buf = new StringBuffer("(offset=" + byte_code_offset);
 
@@ -159,7 +159,7 @@ public final class StackMapEntry implements Cloneable {
 
     buf.append(")");
 
-    return buf.toString();    
+    return buf.toString();
   }
 
 
@@ -198,12 +198,12 @@ public final class StackMapEntry implements Cloneable {
 
   /**
    * @return Constant pool used by this object.
-   */   
+   */
   public final ConstantPool getConstantPool() { return constant_pool; }
 
   /**
    * @param constant_pool Constant pool to be used for this object.
-   */   
+   */
   public final void setConstantPool(ConstantPool constant_pool) {
     this.constant_pool = constant_pool;
   }

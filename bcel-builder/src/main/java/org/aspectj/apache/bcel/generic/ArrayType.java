@@ -55,7 +55,7 @@ package org.aspectj.apache.bcel.generic;
  */
 import org.aspectj.apache.bcel.Constants;
 
-/** 
+/**
  * Denotes array type, such as int[][]
  *
  * @version $Id: ArrayType.java,v 1.4 2008/08/26 15:02:04 aclement Exp $
@@ -69,7 +69,7 @@ public final class ArrayType extends ReferenceType {
    * Convenience constructor for array type, e.g. int[]
    *
    * @param type array type, e.g. T_INT
-   */ 
+   */
   public ArrayType(byte type, int dimensions) {
     this(BasicType.getType(type), dimensions);
   }
@@ -78,7 +78,7 @@ public final class ArrayType extends ReferenceType {
    * Convenience constructor for reference array type, e.g. Object[]
    *
    * @param class_name complete name of class (java.lang.String, e.g.)
-   */ 
+   */
   public ArrayType(String class_name, int dimensions) {
     this(new ObjectType(class_name), dimensions);
   }
@@ -87,7 +87,7 @@ public final class ArrayType extends ReferenceType {
    * Constructor for array of given type
    *
    * @param type type of array (may be an array itself)
-   */ 
+   */
   public ArrayType(Type type, int dimensions) {
     super(Constants.T_ARRAY, "<dummy>");
 
@@ -100,7 +100,7 @@ public final class ArrayType extends ReferenceType {
       this.dimensions = dimensions + array.dimensions;
       basic_type      = array.basic_type;
       break;
-      
+
     case Constants.T_VOID:
       throw new ClassGenException("Invalid type: void[]");
 

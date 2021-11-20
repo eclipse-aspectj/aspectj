@@ -66,8 +66,8 @@ import org.aspectj.apache.bcel.Constants;
  * href="./AttributeReader.html">AttributeReader</a> implementation and attach it via <a
  * href="./Attribute.html#addAttributeReader(java.lang.String,
  * org.aspectj.apache.bcel.classfile.AttributeReader)">Attribute.addAttributeReader</a>.
- * 
- * 
+ *
+ *
  * @version $Id: Unknown.java,v 1.6 2009/09/15 19:40:12 aclement Exp $
  * @see org.aspectj.apache.bcel.classfile.Attribute
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
@@ -102,7 +102,7 @@ public final class Unknown extends Attribute {
 
 	/**
 	 * Create a non-standard attribute.
-	 * 
+	 *
 	 * @param name_index Index in constant pool
 	 * @param length Content length in bytes
 	 * @param bytes Attribute contents
@@ -118,7 +118,7 @@ public final class Unknown extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index in constant pool
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -137,7 +137,7 @@ public final class Unknown extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -147,7 +147,7 @@ public final class Unknown extends Attribute {
 
 	/**
 	 * Dump unknown bytes to file stream.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */

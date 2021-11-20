@@ -63,10 +63,10 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 /**
  * The repository maintains informations about class interdependencies, e.g., whether a class is a sub-class of another. Delegates
  * actual class loading to SyntheticRepository with current class path by default.
- * 
+ *
  * @see org.aspectj.apache.bcel.util.Repository
  * @see org.aspectj.apache.bcel.util.SyntheticRepository
- * 
+ *
  * @version $Id: Repository.java,v 1.6 2009/09/09 22:18:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -92,7 +92,7 @@ public abstract class Repository {
 
 	/**
 	 * Lookup class somewhere found on your CLASSPATH, or whereever the repository instance looks for it.
-	 * 
+	 *
 	 * @return class object for given fully qualified class name, or null if the class could not be found or parsed correctly
 	 */
 	public static JavaClass lookupClass(String class_name) {
@@ -143,7 +143,7 @@ public abstract class Repository {
 
 	/**
 	 * Add clazz to repository if there isn't an equally named class already in there.
-	 * 
+	 *
 	 * @return old entry in repository
 	 */
 	public static JavaClass addClass(JavaClass clazz) {
@@ -201,7 +201,7 @@ public abstract class Repository {
 
 	/**
 	 * Equivalent to runtime "instanceof" operator.
-	 * 
+	 *
 	 * @return true, if clazz is an instance of super_class
 	 */
 	public static boolean instanceOf(JavaClass clazz, JavaClass super_class) {

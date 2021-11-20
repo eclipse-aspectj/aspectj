@@ -64,13 +64,13 @@ import org.aspectj.apache.bcel.Constants;
  * information captured in a class file.
  * http://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
  * http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.25
- * 
+ *
  * @author Andy Clement
  */
 public final class Module extends Attribute {
 
 	private static final String[] NO_MODULE_NAMES = {};
-	
+
 	private int moduleNameIndex;    // u2 module_name_index
 	private int moduleFlags;        // u2 module_flags
 	private int moduleVersionIndex; // u2 module_version_index
@@ -88,18 +88,18 @@ public final class Module extends Attribute {
 		super(module.getTag(), module.getNameIndex(), module.getLength(), module.getConstantPool());
 		moduleInfo = module.getBytes();
 	}
-	
+
 	public Module(int nameIndex, int length, byte[] data, ConstantPool cp) {
 		super(Constants.ATTR_MODULE, nameIndex, length, cp);
 	}
-	
+
 	Module(int nameIndex, int length, DataInputStream stream, ConstantPool cp) throws IOException {
 		this(nameIndex, length, (byte[])null, cp);
 		moduleInfo = new byte[length];
 		stream.read(moduleInfo);
 		unpacked = false;
 	}
-	
+
 	public class Require {
 
 		private final int moduleIndex;
@@ -111,19 +111,19 @@ public final class Module extends Attribute {
 			this.flags = flags;
 			this.versionIndex = versionIndex;
 		}
-		
+
 		public String getModuleName() {
 			return cpool.getModuleName(moduleIndex);
 		}
-		
+
 		public int getFlags() {
 			return flags;
 		}
-		
+
 		public int getVersionIndex() {
 			return versionIndex;
 		}
-		
+
 		public String getVersionString() {
 			if (versionIndex == 0) {
 				return null;
@@ -148,13 +148,13 @@ public final class Module extends Attribute {
 			}
 			return s.toString();
 		}
-		
+
 		public String toString() {
 			return "requires"+getFlagsAsString()+" "+getModuleName()+(versionIndex==0?"":" "+getVersionString());
 		}
 	}
 
-	
+
 	public class Export {
 
 		private final int packageIndex;
@@ -170,19 +170,19 @@ public final class Module extends Attribute {
 		public int getPackageIndex() {
 			return packageIndex;
 		}
-		
+
 		public int getFlags() {
 			return flags;
 		}
-		
+
 		public int[] getToModuleIndices() {
 			return toModuleIndices;
 		}
-		
+
 		public String getPackage() {
 			return cpool.getPackageName(packageIndex);
-		}		
-		
+		}
+
 		public String getFlagsAsString() {
 			StringBuilder s = new StringBuilder();
 			if ((flags & Constants.MODULE_ACC_SYNTHETIC)!=0) {
@@ -204,7 +204,7 @@ public final class Module extends Attribute {
 			}
 			return toModuleNames;
 		}
-		
+
 		public String toString() {
 			StringBuilder s =new StringBuilder();
 			s.append("exports").append(getFlagsAsString()).append(" ").append(getPackage().replace('/', '.'));
@@ -221,7 +221,7 @@ public final class Module extends Attribute {
 			return s.toString().trim();
 		}
 	}
-	
+
 
 	public class Open {
 
@@ -238,19 +238,19 @@ public final class Module extends Attribute {
 		public int getPackageIndex() {
 			return packageIndex;
 		}
-		
+
 		public int getFlags() {
 			return flags;
 		}
-		
+
 		public int[] getToModuleIndices() {
 			return toModuleIndices;
 		}
-		
+
 		public String getPackage() {
 			return cpool.getPackageName(packageIndex);
-		}		
-		
+		}
+
 		public String getFlagsAsString() {
 			StringBuilder s = new StringBuilder();
 			if ((flags & Constants.MODULE_ACC_SYNTHETIC)!=0) {
@@ -272,7 +272,7 @@ public final class Module extends Attribute {
 			}
 			return toModuleNames;
 		}
-		
+
 		public String toString() {
 			StringBuilder s =new StringBuilder();
 			s.append("opens").append(getFlagsAsString()).append(" ").append(getPackage().replace('/', '.'));
@@ -289,7 +289,7 @@ public final class Module extends Attribute {
 			return s.toString().trim();
 		}
 	}
-	
+
 	public class Provide {
 		private final int providedTypeIndex;
 		private final int[] withTypeIndices;
@@ -298,11 +298,11 @@ public final class Module extends Attribute {
 			this.providedTypeIndex = providedTypeIndex;
 			this.withTypeIndices = withTypeIndices;
 		}
-		
+
 		public String getProvidedType() {
 			return cpool.getConstantString_CONSTANTClass(providedTypeIndex);
 		}
-		
+
 		public int getProvidedTypeIndex() {
 			return providedTypeIndex;
 		}
@@ -334,7 +334,7 @@ public final class Module extends Attribute {
 
 	public class Uses {
 		private final int typeNameIndex;
-		
+
 		public Uses(int typeNameIndex) {
 			this.typeNameIndex = typeNameIndex;
 		}
@@ -346,14 +346,14 @@ public final class Module extends Attribute {
 		public int getTypeNameIndex() {
 			return typeNameIndex;
 		}
-		
+
 		public String toString() {
 			StringBuilder s =new StringBuilder();
 			s.append("uses ").append(getTypeName().replace('/', '.'));
 			return s.toString().trim();
 		}
 	}
-	
+
 	private final int readInt() {
 		return ((moduleInfo[ptr++] & 0xFF) << 24) + ((moduleInfo[ptr++] & 0xFF) << 16)
 				+ ((moduleInfo[ptr++] & 0xFF) << 8) + (moduleInfo[ptr++] & 0xFF);
@@ -374,13 +374,13 @@ public final class Module extends Attribute {
 			moduleNameIndex = readUnsignedShort();
 			moduleFlags = readUnsignedShort();
 			moduleVersionIndex = readUnsignedShort();
-			
+
 			int count = readUnsignedShort();
 			requires = new Require[count];
 			for (int i = 0; i < count; i++) {
 				requires[i] = new Require(readUnsignedShort(), readUnsignedShort(), readUnsignedShort());
 			}
-			
+
 			count = readUnsignedShort();
 			exports = new Export[count];
 			for (int i = 0; i < count; i++) {
@@ -393,7 +393,7 @@ public final class Module extends Attribute {
 				}
 				exports[i] = new Export(index, flags, to);
 			}
-			
+
 			count = readUnsignedShort();
 			opens = new Open[count];
 			for (int i = 0; i < count; i++) {
@@ -436,7 +436,7 @@ public final class Module extends Attribute {
 			file.writeShort(moduleNameIndex);
 			file.writeShort(moduleFlags);
 			file.writeShort(moduleVersionIndex);
-			
+
 			file.writeShort(requires.length);
 			for (Require require : requires) {
 				file.writeShort(require.moduleIndex);
@@ -507,7 +507,7 @@ public final class Module extends Attribute {
 		}
 		return s.toString();
 	}
-	
+
 	public String toStringOpens() {
 		StringBuilder s = new StringBuilder();
 		s.append('#').append(opens.length);
@@ -598,12 +598,12 @@ public final class Module extends Attribute {
 //	 public Attribute copy(ConstantPool constant_pool) {
 //		 return (Module) clone();
 //	 }
-	
+
 	@Override
 	public void accept(ClassVisitor v) {
 		v.visitModule(this);
 	}
-	
+
 	public Require[] getRequires() {
 		ensureUnpacked();
 		return requires;
@@ -617,7 +617,7 @@ public final class Module extends Attribute {
 		}
 		return results;
 	}
-	
+
 	public byte[] getBytes() {
 		return moduleInfo;
 	}
@@ -626,7 +626,7 @@ public final class Module extends Attribute {
 		ensureUnpacked();
 		return exports;
 	}
-	
+
 	public Open[] getOpens() {
 		ensureUnpacked();
 		return opens;
@@ -641,18 +641,18 @@ public final class Module extends Attribute {
 		ensureUnpacked();
 		return provides;
 	}
-	
+
 	public String getModuleName() {
 		return ((ConstantModule)cpool.getConstant(moduleNameIndex)).getModuleName(cpool);
 	}
-	
+
 	public int getModuleFlags() {
 		// 0x0020 (ACC_OPEN) - Indicates that this module is open.
 		// 0x1000 (ACC_SYNTHETIC) - Indicates that this module was not explicitly or implicitly declared.
 		// 0x8000 (ACC_MANDATED) - Indicates that this module was implicitly declared
 		return moduleFlags;
 	}
-	
+
 	/** @return the module version or null if no version information specified */
 	public String getModuleVersion() {
 		if (moduleVersionIndex == 0) {

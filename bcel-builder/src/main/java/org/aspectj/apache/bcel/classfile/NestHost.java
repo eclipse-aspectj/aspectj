@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.28
- * 
+ *
  * @see Attribute
  */
 public final class NestHost extends Attribute {
@@ -100,7 +100,7 @@ public final class NestHost extends Attribute {
 	public final void setHostClassIndex(int hostClassIndex) {
 		this.hostClassIndex = hostClassIndex;
 	}
-	
+
 	public final String getHostClassName() {
 		ConstantClass constantClass = (ConstantClass)cpool.getConstant(hostClassIndex,Constants.CONSTANT_Class);
 		return constantClass.getClassname(cpool);

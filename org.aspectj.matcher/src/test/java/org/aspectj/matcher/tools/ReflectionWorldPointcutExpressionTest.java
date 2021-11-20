@@ -5,7 +5,7 @@ import org.aspectj.weaver.reflect.ReflectionWorld;
 
 /**
  * Run all the pointcut parsing/matching tests against a ReflectionWorld.
- * 
+ *
  * @author Andy Clement
  */
 public class ReflectionWorldPointcutExpressionTest extends CommonPointcutExpressionTests {

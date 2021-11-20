@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
  * Super class for object and array types.
- * 
+ *
  * @version $Id: ReferenceType.java,v 1.6 2009/09/09 22:18:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

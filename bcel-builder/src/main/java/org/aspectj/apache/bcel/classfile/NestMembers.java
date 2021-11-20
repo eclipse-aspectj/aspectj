@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.29
- * 
+ *
  * @see Attribute
  */
 public final class NestMembers extends Attribute {
@@ -109,7 +109,7 @@ public final class NestMembers extends Attribute {
 		this.classes = inner_classes;
 		numberOfClasses = (inner_classes == null) ? 0 : inner_classes.length;
 	}
-	
+
 	public final String[] getClassesNames() {
 		String[] result = new String[numberOfClasses];
 		for (int i = 0; i < numberOfClasses; i++) {

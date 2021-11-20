@@ -67,7 +67,7 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * This class represents the method info structure, i.e., the representation for a method in the class. See JVM specification for
  * details. A method has access flags, a name, a signature and a number of attributes.
- * 
+ *
  * @version $Id: Method.java,v 1.11 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

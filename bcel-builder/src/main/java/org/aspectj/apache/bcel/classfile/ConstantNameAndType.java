@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to the name and signature of a field or method.
- * 
+ *
  * @version $Id: ConstantNameAndType.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constant
@@ -74,7 +74,7 @@ public final class ConstantNameAndType extends Constant {
 
 	/**
 	 * Initialize instance from file data.
-	 * 
+	 *
 	 * @param file Input stream
 	 * @throws IOException
 	 */
@@ -95,7 +95,7 @@ public final class ConstantNameAndType extends Constant {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -105,7 +105,7 @@ public final class ConstantNameAndType extends Constant {
 
 	/**
 	 * Dump name and signature index to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */

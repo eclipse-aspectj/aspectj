@@ -113,19 +113,19 @@ public final class StackMapType implements Cloneable {
    * in byte code, if type == ITEM_NewObject, and -1 otherwise
    */
   public int  getIndex()      { return index; }
-  
+
   /**
    * Dump type entries to file.
    *
    * @param file Output file stream
    * @throws IOException
-   */ 
+   */
   public final void dump(DataOutputStream file) throws IOException
   {
     file.writeByte(type);
     if(hasIndex())
       file.writeShort(getIndex());
-  }    
+  }
 
   /** @return true, if type is either ITEM_Object or ITEM_NewObject
    */
@@ -145,10 +145,10 @@ public final class StackMapType implements Cloneable {
 
   /**
    * @return String representation
-   */ 
+   */
   public final String toString() {
     return "(type=" + Constants.ITEM_NAMES[type] + printIndex() + ")";
-  }    
+  }
 
   /**
    * @return deep copy of this object
@@ -163,12 +163,12 @@ public final class StackMapType implements Cloneable {
 
   /**
    * @return Constant pool used by this object.
-   */   
+   */
   public final ConstantPool getConstantPool() { return constant_pool; }
 
   /**
    * @param constant_pool Constant pool to be used for this object.
-   */   
+   */
   public final void setConstantPool(ConstantPool constant_pool) {
     this.constant_pool = constant_pool;
   }

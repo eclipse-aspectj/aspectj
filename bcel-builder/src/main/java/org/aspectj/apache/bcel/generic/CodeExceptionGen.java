@@ -57,7 +57,7 @@ package org.aspectj.apache.bcel.generic;
 import org.aspectj.apache.bcel.classfile.CodeException;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
-/** 
+/**
  * This class represents an exception handler, i.e., specifies the  region where
  * a handler is active and an instruction where the actual handling is done.
  * pool as parameters. Opposed to the JVM specification the end of the handled
@@ -78,7 +78,7 @@ public final class CodeExceptionGen
   private InstructionHandle end_pc;
   private InstructionHandle handler_pc;
   private ObjectType        catch_type;
-  
+
   /**
    * Add an exception handler, i.e., specify region where a handler is active and an
    * instruction where the actual handling is done.
@@ -112,15 +112,15 @@ public final class CodeExceptionGen
 			     (catch_type == null)? 0 : cp.addClass(catch_type));
   }
 
-  /* Set start of handler 
+  /* Set start of handler
    * @param start_pc Start of handled region (inclusive)
    */
   public void setStartPC(InstructionHandle start_pc) {
 	  InstructionBranch.notifyTarget(this.start_pc, start_pc, this);
-    this.start_pc = start_pc; 
+    this.start_pc = start_pc;
   }
 
-  /* Set end of handler 
+  /* Set end of handler
    * @param end_pc End of handled region (inclusive)
    */
   public void setEndPC(InstructionHandle end_pc) {

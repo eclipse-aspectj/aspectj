@@ -77,10 +77,10 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 /**
  * Represents a Java class, i.e., the data structures, constant pool, fields, methods and commands contained in a Java .class file.
  * See <a href="ftp://java.sun.com/docs/specs/">JVM specification</a> for details.
- * 
+ *
  * The intent of this class is to represent a parsed or otherwise existing class file. Those interested in programatically
  * generating classes should see the <a href="../generic/ClassGen.html">ClassGen</a> class.
- * 
+ *
  * @version $Id: JavaClass.java,v 1.22 2009/09/15 19:40:14 aclement Exp $
  * @see org.aspectj.apache.bcel.generic.ClassGen
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
@@ -185,7 +185,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	public void accept(ClassVisitor v) {
@@ -194,7 +194,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	/**
 	 * Dump class to a file.
-	 * 
+	 *
 	 * @param file Output file
 	 * @throws IOException
 	 */
@@ -209,7 +209,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	/**
 	 * Dump class to a file named file_name.
-	 * 
+	 *
 	 * @param file_name Output file name
 	 * @exception IOException
 	 */
@@ -671,7 +671,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	/**
 	 * Equivalent to runtime "instanceof" operator.
-	 * 
+	 *
 	 * @return true if this JavaClass is derived from teh super class
 	 */
 	public final boolean instanceOf(JavaClass super_class) {

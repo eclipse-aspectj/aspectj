@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.classfile.Utility;
 /**
  * Instances of this class may be used, e.g., to generate typed versions of instructions. Its main purpose is to be used as the byte
  * code generating backend of a compiler. You can subclass it to add your own create methods.
- * 
+ *
  * @version $Id: InstructionFactory.java,v 1.7 2010/08/23 20:44:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Constants
@@ -85,10 +85,10 @@ public class InstructionFactory implements InstructionConstants {
 	public InvokeInstruction createInvoke(String class_name, String name, Type ret_type, Type[] arg_types, short kind) {
 		return createInvoke(class_name, name, ret_type, arg_types, kind, false);
 	}
-		
+
 	/**
 	 * Create an invoke instruction.
-	 * 
+	 *
 	 * @param class_name name of the called class
 	 * @param name name of the called method
 	 * @param ret_type return type of method
@@ -173,7 +173,7 @@ public class InstructionFactory implements InstructionConstants {
 
 	/**
 	 * Uses PUSH to push a constant value onto the stack.
-	 * 
+	 *
 	 * @param value must be of type Number, Boolean, Character or String
 	 */
 	// OPTIMIZE callers should use the PUSH methods where possible if they know the types
@@ -199,7 +199,7 @@ public class InstructionFactory implements InstructionConstants {
 
 	/**
 	 * Create a field instruction.
-	 * 
+	 *
 	 * @param class_name name of the accessed class
 	 * @param name name of the referenced field
 	 * @param type type of field
@@ -520,7 +520,7 @@ public class InstructionFactory implements InstructionConstants {
 
 	/**
 	 * Create new array of given size and type.
-	 * 
+	 *
 	 * @return an instruction that creates the corresponding array at runtime, i.e. is an AllocationInstruction
 	 */
 	public Instruction createNewArray(Type t, short dim) {

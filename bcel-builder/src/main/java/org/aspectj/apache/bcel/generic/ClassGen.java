@@ -79,11 +79,11 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisAnnos;
 
 /**
  * Template class for building up a java class. May be initialized with an existing java class.
- * 
+ *
  * @see JavaClass
  * @version $Id: ClassGen.java,v 1.15 2009/09/15 19:40:14 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * 
+ *
  *         Upgraded, Andy Clement 9th Mar 06 - calculates SUID
  */
 public class ClassGen extends Modifiers implements Cloneable {
@@ -236,9 +236,9 @@ public class ClassGen extends Modifiers implements Cloneable {
 
 	/**
 	 * Convenience method.
-	 * 
+	 *
 	 * Add an empty constructor to this class that does nothing but calling super().
-	 * 
+	 *
 	 * @param access rights for constructor
 	 */
 	public void addEmptyConstructor(int access_flags) {
@@ -255,7 +255,7 @@ public class ClassGen extends Modifiers implements Cloneable {
 
 	/**
 	 * Add a field to this class.
-	 * 
+	 *
 	 * @param f field to add
 	 */
 	public void addField(Field f) {

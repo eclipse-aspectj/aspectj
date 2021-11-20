@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
  * Abstract super class for branching instructions like GOTO, IFEQ, etc.. Branch instructions may have a variable length, namely
  * GOTO, JSR, LOOKUPSWITCH and TABLESWITCH. A branch instruction may be talking in terms of absolute destination (targetIndex) or
  * about an instruction it doesnt yet know the position if (targetInstruction). targetInstruction (if set) overrides targetIndex
- * 
+ *
  * @see InstructionList
  * @version $Id: InstructionBranch.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
@@ -153,7 +153,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
 	 * instructions `setPositions' performs multiple passes over the instruction list to calculate the correct (byte) positions and
 	 * offsets by calling this function.
-	 * 
+	 *
 	 * @param offset additional offset caused by preceding (variable length) instructions
 	 * @param max_offset the maximum offset that may be caused by these instructions
 	 * @return additional offset caused by possible change of this instruction's length
@@ -183,7 +183,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 
 	/**
 	 * Long output format:
-	 * 
+	 *
 	 * @param verbose long/short format switch
 	 * @return mnemonic for instruction
 	 */
@@ -227,7 +227,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 
 	/**
 	 * Set branch target
-	 * 
+	 *
 	 * @param target branch target
 	 */
 	public void setTarget(InstructionHandle target) {
@@ -250,7 +250,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 	/**
 	 * Update the target destination for this instruction. If an oldHandle is provided it is checked to verify that is where the
 	 * target currently points to before changing it.
-	 * 
+	 *
 	 * @param oldHandle old target
 	 * @param newHandle new target
 	 */
@@ -289,7 +289,7 @@ public class InstructionBranch extends Instruction implements InstructionTargete
 	 * Returns an InstructionHandle to the physical successor of this JsrInstruction. <B>For this method to work, this
 	 * JsrInstruction object must not be shared between multiple InstructionHandle objects!</B> Formally, there must not be
 	 * InstructionHandle objects i, j where i != j and i.getInstruction() == this == j.getInstruction().
-	 * 
+	 *
 	 * @return an InstructionHandle to the "next" instruction that will be executed when RETurned from a subroutine.
 	 */
 	public InstructionHandle physicalSuccessor() {

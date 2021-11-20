@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class represents a inner class attribute, i.e., the class indices of the inner and outer classes, the name and the
  * attributes of the inner class.
- * 
+ *
  * @version $Id: InnerClass.java,v 1.4 2009/09/10 15:35:05 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see InnerClasses
@@ -83,7 +83,7 @@ public final class InnerClass implements Cloneable, Node {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param file Input stream
 	 * @throws IOException
 	 */
@@ -107,7 +107,7 @@ public final class InnerClass implements Cloneable, Node {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	public void accept(ClassVisitor v) {
@@ -116,7 +116,7 @@ public final class InnerClass implements Cloneable, Node {
 
 	/**
 	 * Dump inner class attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */

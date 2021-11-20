@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class ClassloaderRepositoryTest extends TestCase {
 
 	private ClassLoaderRepository rep1,rep2;
-	
+
 	public void setUp() throws Exception {
 		super.setUp();
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -25,7 +25,7 @@ public class ClassloaderRepositoryTest extends TestCase {
 	}
 
 	// Retrieve string 5 times from same repository, 4 hits should be from local cache
-	public void testLocalCacheWorks() throws ClassNotFoundException {		
+	public void testLocalCacheWorks() throws ClassNotFoundException {
 		ClassLoaderRepository.useSharedCache=false;
 		JavaClass jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
@@ -36,7 +36,7 @@ public class ClassloaderRepositoryTest extends TestCase {
 	}
 
 	// Retrieve string 5 times from same repository, 4 hits should be from local cache
-	public void testSharedCacheWorksOnOne() throws ClassNotFoundException {		
+	public void testSharedCacheWorksOnOne() throws ClassNotFoundException {
 		ClassLoaderRepository.useSharedCache=true;
 		JavaClass jc = rep1.loadClass("java.lang.String");
 		jc = rep1.loadClass("java.lang.String");
@@ -47,16 +47,16 @@ public class ClassloaderRepositoryTest extends TestCase {
 	}
 
 	// Retrieve String through one repository then load again through another, should be shared cache hit
-	public void testSharedCacheWorks() throws ClassNotFoundException {		
+	public void testSharedCacheWorks() throws ClassNotFoundException {
 		ClassLoaderRepository.useSharedCache=true;
 		JavaClass jc = rep1.loadClass("java.lang.String");
 		jc = rep2.loadClass("java.lang.String");
 		assertTrue("Should have retrieved String from shared cache: "+reportSharedCacheHits(rep1),
 				reportSharedCacheHits(rep1)==1);
 	}
-	
+
 	// Shared cache OFF, shouldn't get a shared cache hit
-	public void testSharedCacheCanBeDeactivated() throws ClassNotFoundException {		
+	public void testSharedCacheCanBeDeactivated() throws ClassNotFoundException {
 		try {
 			ClassLoaderRepository.useSharedCache=false;
 			JavaClass jc = rep1.loadClass("java.lang.String");
@@ -68,7 +68,7 @@ public class ClassloaderRepositoryTest extends TestCase {
 			ClassLoaderRepository.useSharedCache=true;
 		}
 	}
-	
+
 	public void tearDown() throws Exception {
 		super.tearDown();
 		System.err.println("Rep1: "+rep1.reportStats());

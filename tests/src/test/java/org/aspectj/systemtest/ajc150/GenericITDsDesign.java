@@ -245,7 +245,7 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	// // Verify: a) sharing type vars with some target type results in the correct variable names in the serialized form
 	// public void testDesignE() {
 	// runTest("generic itds - design E");
-	//		
+	//
 	// }
 
 }

@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariable;
 /**
  * This class represents a local variable within a method. It contains its scope, name and type. The generated LocalVariable object
  * can be obtained with getLocalVariable which needs the instruction list and the constant pool as parameters.
- * 
+ *
  * @version $Id: LocalVariableGen.java,v 1.7 2008/08/28 00:04:23 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LocalVariable
@@ -76,7 +76,7 @@ public class LocalVariableGen implements InstructionTargeter, Cloneable, java.io
 	/**
 	 * Generate a local variable that with index `index'. Note that double and long variables need two indexs. Index indices have to
 	 * be provided by the user.
-	 * 
+	 *
 	 * @param index index of local variable
 	 * @param name its name
 	 * @param type its type
@@ -97,14 +97,14 @@ public class LocalVariableGen implements InstructionTargeter, Cloneable, java.io
 
 	/**
 	 * Get LocalVariable object.
-	 * 
+	 *
 	 * This relies on that the instruction list has already been dumped to byte code or or that the `setPositions' methods has been
 	 * called for the instruction list.
-	 * 
+	 *
 	 * Note that for local variables whose scope end at the last instruction of the method's code, the JVM specification is
 	 * ambiguous: both a start_pc+length ending at the last instruction and start_pc+length ending at first index beyond the end of
 	 * the code are valid.
-	 * 
+	 *
 	 * @param il instruction list (byte code) which this variable belongs to
 	 * @param cp constant pool
 	 */

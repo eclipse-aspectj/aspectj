@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * LOOKUPSWITCH - Switch with unordered set of values
- * 
+ *
  * @version $Id: LOOKUPSWITCH.java,v 1.5 2011/04/05 15:15:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -76,7 +76,7 @@ public class LOOKUPSWITCH extends InstructionSelect {
 
 	/**
 	 * Dump instruction as byte code to stream out.
-	 * 
+	 *
 	 * @param out Output stream
 	 */
 	public void dump(DataOutputStream out) throws IOException {

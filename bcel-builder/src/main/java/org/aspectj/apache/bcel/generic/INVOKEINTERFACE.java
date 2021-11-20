@@ -61,11 +61,11 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * INVOKEINTERFACE - Invoke interface method
- * 
+ *
  * <PRE>
  * Stack: ..., objectref, [arg1, [arg2 ...]] -&gt; ...
  * </PRE>
- * 
+ *
  * @version $Id: INVOKEINTERFACE.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -84,7 +84,7 @@ public final class INVOKEINTERFACE extends InvokeInstruction {
 
 	/**
 	 * Dump instruction as byte code to stream out.
-	 * 
+	 *
 	 * @param out Output stream
 	 */
 	public void dump(DataOutputStream out) throws IOException {

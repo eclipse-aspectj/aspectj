@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * Indicates all the packages of a module that are exported or opened by the module attribute.
  * http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.26
- * 
+ *
  * @author Andy Clement
  */
 public final class ModulePackages extends Attribute {

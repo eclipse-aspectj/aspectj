@@ -64,10 +64,10 @@ import org.aspectj.apache.bcel.Constants;
  * This class represents a chunk of Java byte code contained in a method. It is instantiated by the
  * <em>Attribute.readAttribute()</em> method. A <em>Code</em> attribute contains informations about operand stack, local variables,
  * byte code and the exceptions handled within this method.
- * 
+ *
  * This attribute has attributes itself, namely <em>LineNumberTable</em> which is used for debugging purposes and
  * <em>LocalVariableTable</em> which contains information about the local variables.
- * 
+ *
  * @version $Id: Code.java,v 1.9 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
@@ -149,7 +149,7 @@ public final class Code extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -159,7 +159,7 @@ public final class Code extends Attribute {
 
 	/**
 	 * Dump code attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -348,7 +348,7 @@ public final class Code extends Attribute {
 	// Code c = (Code)clone();
 	// c.code = (byte[])code.clone();
 	// c.cpool = constant_pool;
-	//  
+	//
 	// c.exceptionTable = new CodeException[exceptionTable.length];
 	// for(int i=0; i < exceptionTable.length; i++)
 	// c.exceptionTable[i] = exceptionTable[i].copy();

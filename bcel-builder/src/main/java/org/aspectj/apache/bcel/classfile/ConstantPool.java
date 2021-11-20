@@ -136,7 +136,7 @@ public class ConstantPool implements Node {
 	/**
 	 * Get string from constant pool and bypass the indirection of `ConstantClass' and `ConstantString' objects. I.e. these classes
 	 * have an index field that points to another entry of the constant pool of type `ConstantUtf8' which contains the real data.
-	 * 
+	 *
 	 * @param index Index in constant pool
 	 * @param tag Tag of expected constant, either ConstantClass or ConstantString
 	 * @return Contents of string reference
@@ -207,7 +207,7 @@ public class ConstantPool implements Node {
 			str = (constantToString(((ConstantCP) c).getClassIndex(), Constants.CONSTANT_Class) + "." + constantToString(
 					((ConstantCP) c).getNameAndTypeIndex(), Constants.CONSTANT_NameAndType));
 			break;
-			
+
 		case Constants.CONSTANT_InvokeDynamic:
 			ConstantInvokeDynamic cID = ((ConstantInvokeDynamic)c);
 			return "#"+cID.getBootstrapMethodAttrIndex()+"."+constantToString(cID.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
@@ -296,7 +296,7 @@ public class ConstantPool implements Node {
 		assert c.tag == Constants.CONSTANT_Utf8;
 		return (ConstantUtf8) c;
 	}
-	
+
 	public ConstantModule getConstantModule(int index) {
 		Constant c = getConstant(index);
 		assert c != null;
@@ -621,7 +621,7 @@ public class ConstantPool implements Node {
 
 			return addNameAndType(u8.getValue(), u8_2.getValue());
 		}
-		
+
 		case Constants.CONSTANT_InvokeDynamic: {
 			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)c;
 			int index1 = cid.getBootstrapMethodAttrIndex();
@@ -631,7 +631,7 @@ public class ConstantPool implements Node {
 			int index2 = addNameAndType(name.getValue(), signature.getValue());
 			return addInvokeDynamic(index1,index2);
 		}
-		
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cmh = (ConstantMethodHandle)c;
 			return addMethodHandle(cmh.getReferenceKind(),addConstant(constants[cmh.getReferenceIndex()],cp));
@@ -650,7 +650,7 @@ public class ConstantPool implements Node {
 
 		case Constants.CONSTANT_Integer:
 			return addInteger(((ConstantInteger) c).getValue());
-			
+
 		case Constants.CONSTANT_MethodType:
 			ConstantMethodType cmt = (ConstantMethodType)c;
 			return addMethodType(addConstant(constants[cmt.getDescriptorIndex()],cp));
@@ -689,14 +689,14 @@ public class ConstantPool implements Node {
 			throw new RuntimeException("Unknown constant type " + c);
 		}
 	}
-	
+
 	public int addMethodHandle(byte referenceKind, int referenceIndex) {
 		adjustSize();
 		int ret = poolSize;
 		pool[poolSize++] = new ConstantMethodHandle(referenceKind, referenceIndex);
 		return ret;
 	}
-	
+
 	public int addMethodType(int descriptorIndex) {
 		adjustSize();
 		int ret = poolSize;
@@ -718,7 +718,7 @@ public class ConstantPool implements Node {
 		pool[poolSize++] = new ConstantMethodref(class_index, name_and_type_index);
 		return ret;
 	}
-	
+
 	public int addInvokeDynamic(int bootstrapMethodIndex, int constantNameAndTypeIndex) {
 		adjustSize();
 		int ret = poolSize;

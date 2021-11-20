@@ -61,7 +61,7 @@ import java.io.IOException;
 /**
  * This class represents a (PC offset, line number) pair, i.e., a line number in the source that corresponds to a relative address
  * in the byte code. This is used for debugging purposes.
- * 
+ *
  * @version $Id: LineNumber.java,v 1.6 2009/09/09 21:26:54 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author Andy Clement

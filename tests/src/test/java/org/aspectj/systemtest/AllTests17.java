@@ -18,9 +18,9 @@ public class AllTests17 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ System Test Suite - 1.7");
 		// $JUnit-BEGIN$
-		suite.addTest(AllTestsAspectJ175.suite()); 
-		suite.addTest(AllTestsAspectJ174.suite()); 
-		suite.addTest(AllTestsAspectJ173.suite()); 
+		suite.addTest(AllTestsAspectJ175.suite());
+		suite.addTest(AllTestsAspectJ174.suite());
+		suite.addTest(AllTestsAspectJ173.suite());
 		suite.addTest(AllTestsAspectJ172.suite());
 		suite.addTest(AllTestsAspectJ171.suite());
 		suite.addTest(AllTestsAspectJ170.suite());
