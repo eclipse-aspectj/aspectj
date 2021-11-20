@@ -314,7 +314,7 @@ public class Checklics extends MatchingTask {
 
 	private void list() {
 		Iterator enu = LICENSES.keySet().iterator();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("known license keys:");
 		boolean first = true;
 		while (enu.hasNext()) {

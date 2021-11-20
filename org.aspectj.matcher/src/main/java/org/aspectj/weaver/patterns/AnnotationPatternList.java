@@ -138,7 +138,7 @@ public class AnnotationPatternList extends PatternNode {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("(");
 		for (int i = 0, len = typePatterns.length; i < len; i++) {
 			AnnotationTypePattern type = typePatterns[i];

@@ -487,7 +487,7 @@ public class FileUtilTest extends TestCase {
 		final String prefix = new File(tempDir, "testLineSeek").getPath();
 		// setup files 0..MAX with 2*MAX lines
 		String[] sources = new String[MAX];
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < sources.length; i++) {
 			sources[i] = new File(prefix + i).getPath();
 			sb.append("not matched");
@@ -604,7 +604,7 @@ public class FileUtilTest extends TestCase {
 
 	public void testPipe() {
 		String str = "The quick brown fox jumped over the lazy dog";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 4096; i++) {
 			sb.append(str);
 		}

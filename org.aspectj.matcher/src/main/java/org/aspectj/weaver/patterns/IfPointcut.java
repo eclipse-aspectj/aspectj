@@ -273,7 +273,7 @@ public class IfPointcut extends Pointcut {
 					} else {
 						if (state.size() == 0 || currentStateIndex > state.size()) {
 							String[] paramNames = testMethod.getParameterNames();
-							StringBuffer errorParameter = new StringBuffer();
+							StringBuilder errorParameter = new StringBuilder();
 							if (paramNames != null) {
 								errorParameter.append(testMethod.getParameterTypes()[i].getName()).append(" ");
 								errorParameter.append(paramNames[i]);

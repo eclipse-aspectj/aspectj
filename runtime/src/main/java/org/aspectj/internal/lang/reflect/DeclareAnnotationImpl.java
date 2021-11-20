@@ -72,7 +72,7 @@ public class DeclareAnnotationImpl implements DeclareAnnotation {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("declare @");
 		switch(getKind()) {
 		case Type:

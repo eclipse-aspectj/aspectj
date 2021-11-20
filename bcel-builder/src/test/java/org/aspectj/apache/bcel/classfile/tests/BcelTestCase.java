@@ -116,7 +116,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	protected String dumpAnnotations(AnnotationGen[] as) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append("[");
 		for (int i = 0; i < as.length; i++) {
 			AnnotationGen annotation = as[i];
@@ -129,7 +129,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	protected String dumpAnnotations(List<AnnotationGen> as) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append("[");
 		for (int i = 0; i < as.size(); i++) {
 			AnnotationGen annotation = as.get(i);
@@ -142,7 +142,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	protected String dumpAttributes(Attribute[] as) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append("AttributeArray:[");
 		for (int i = 0; i < as.length; i++) {
 			Attribute attr = as[i];

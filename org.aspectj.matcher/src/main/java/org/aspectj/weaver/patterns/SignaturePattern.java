@@ -149,7 +149,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 	private void reportUnmatchedTargetKindMessage(AnnotationTargetKind[] annotationTargetKinds, PatternNode node, IScope scope,
 			boolean checkMatchesMemberKindName) {
-		StringBuffer targetNames = new StringBuffer("{");
+		StringBuilder targetNames = new StringBuilder("{");
 		for (int i = 0; i < annotationTargetKinds.length; i++) {
 			AnnotationTargetKind targetKind = annotationTargetKinds[i];
 			if (checkMatchesMemberKindName && kind.getName().equals(targetKind.getName())) {
@@ -819,7 +819,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buf.append(annotationPattern.toString());

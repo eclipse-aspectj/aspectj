@@ -327,13 +327,13 @@ public class NameMangler {
 	}
 
 	public static String aroundShadowMethodName(Member shadowSig, String suffixTag) {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag);
 		return ret.toString();
 	}
 
 	public static String aroundAdviceMethodName(Member shadowSig, String suffixTag) {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append(getExtractableName(shadowSig)).append("_aroundBody").append(suffixTag).append("$advice");
 		return ret.toString();
 	}

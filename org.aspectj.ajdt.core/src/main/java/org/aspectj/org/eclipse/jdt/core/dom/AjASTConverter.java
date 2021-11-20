@@ -695,7 +695,7 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	private String updateString(String message) {
-		StringBuffer sb = new StringBuffer(message);
+		StringBuilder sb = new StringBuilder(message);
 		int nextQuote = sb.toString().indexOf("\"");
 		while (nextQuote != -1) {
 			sb.insert(nextQuote, "\\");

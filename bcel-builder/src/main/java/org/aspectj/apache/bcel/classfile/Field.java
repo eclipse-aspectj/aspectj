@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * This class represents the field info structure, i.e., the representation for a variable in the class. See JVM specification for
  * details.
- * 
+ *
  * @version $Id: Field.java,v 1.6 2009/09/15 03:33:52 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -103,7 +103,7 @@ public final class Field extends FieldOrMethod {
 	@Override
 	public final String toString() {
 		// Get names from constant pool
-		StringBuffer buf = new StringBuffer(Utility.accessToString(modifiers));
+		StringBuilder buf = new StringBuilder(Utility.accessToString(modifiers));
 		if (buf.length() > 0) {
 			buf.append(" ");
 		}

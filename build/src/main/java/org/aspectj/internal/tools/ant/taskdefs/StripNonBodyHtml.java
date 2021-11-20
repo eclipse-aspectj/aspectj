@@ -176,7 +176,7 @@ public class StripNonBodyHtml extends MatchingTask {
     String stripTags(String input, final String SOURCE,
                      final String START, final String END) {
         if (null == input) return  input;
-        StringBuffer buffer = new StringBuffer(input.length());
+        StringBuilder buffer = new StringBuilder(input.length());
         String result = input;
         int curLoc = 0;
         while (true) {

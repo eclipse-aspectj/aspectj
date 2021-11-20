@@ -554,7 +554,7 @@ public class Main {
 		public static String render(IMessage message) {
 			// IMessage.Kind kind = message.getKind();
 
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			String text = message.getMessage();
 			if (text.equals(AbortException.NO_MESSAGE_TEXT)) {
 				text = null;

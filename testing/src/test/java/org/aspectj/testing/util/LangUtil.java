@@ -242,7 +242,7 @@ public class LangUtil {
         } else if (0 == ra.length) {
             return null;
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         final String cname = LangUtil.unqualifiedClassName(superType);
 //        int index = 0;
         for (int i = 0; i < ra.length; i++) {
@@ -478,7 +478,7 @@ public class LangUtil {
      * @param errs the StringBuffer for error messages (if any)
      */
     public static String unsplit(String[] input, StringBuffer errs) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(SPLIT_START);
         for (int i = 0; i < input.length; i++) {
             if (input[i].contains(SPLIT_DELIM)) {
@@ -604,7 +604,7 @@ public class LangUtil {
         }
         boolean longFormat = (args.length < 10);
         String sep = (longFormat ? ", " : "\n\t");
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (!longFormat) sb.append("[");
         for (int i = 0; i < args.length; i++) {
             if (0 < i) sb.append(sep);
@@ -693,7 +693,7 @@ public class LangUtil {
         Class c = o.getClass();
         if (c.isArray()) {
             Object[] ra = (Object[]) o;
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (int i = 0; i < ra.length; i++) {
                 if (i > 0) {
@@ -808,7 +808,7 @@ public class LangUtil {
         if (null == suffix) {
             suffix = SPLIT_END;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (null != source) {
             sb.append(org.aspectj.util.LangUtil.unqualifiedClassName(source));
         }

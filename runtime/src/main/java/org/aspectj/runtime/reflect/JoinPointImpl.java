@@ -52,7 +52,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		}
 
 		String toString(StringMaker sm) {
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append(sm.makeKindName(getKind()));
 			buf.append("(");
 			buf.append(((SignatureImpl) getSignature()).toString(sm));

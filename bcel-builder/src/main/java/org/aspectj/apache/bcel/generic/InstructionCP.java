@@ -70,7 +70,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 /**
  * Class for instructions that use an index into the constant pool such as LDC, INVOKEVIRTUAL, etc.
- * 
+ *
  * @version $Id: InstructionCP.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -111,10 +111,10 @@ public class InstructionCP extends Instruction {
 
 	/**
 	 * Long output format:
-	 * 
+	 *
 	 * &lt;name of opcode&gt; "["&lt;opcode number&gt;"]" "("&lt;length of instruction&gt;")" "&lt;"&lt; constant pool
 	 * index&gt;"&gt;"
-	 * 
+	 *
 	 * @param verbose long/short format switch
 	 * @return mnemonic for instruction
 	 */
@@ -172,7 +172,7 @@ public class InstructionCP extends Instruction {
 			// ConstantPool cp = cpg.getConstantPool();
 			// String name = cp.getConstantString(index, CONSTANT_Class);
 			if (!name.startsWith("[")) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append("L").append(name).append(";");
 				return Type.getType(sb.toString());
 			} else {

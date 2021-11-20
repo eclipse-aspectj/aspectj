@@ -473,7 +473,7 @@ public abstract class Builder {
         // copy binaries (but not module flag files)
         String excludes = null;
         {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
 			for (ProductModule productModule : productModules) {
 				if (0 < buf.length()) {
 					buf.append(",");

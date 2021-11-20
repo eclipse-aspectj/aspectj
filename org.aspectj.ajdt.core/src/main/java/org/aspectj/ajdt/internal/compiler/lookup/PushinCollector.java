@@ -133,7 +133,7 @@ public class PushinCollector {
 		}
 
 		// Process all types working from end to start as whatever we do (insert-wise) will affect locations later in the file
-		StringBuffer sourceContents = new StringBuffer();
+		StringBuilder sourceContents = new StringBuilder();
 		// put the whole original file in the buffer
 		boolean changed = false;
 		sourceContents.append(compilationUnitDeclaration.compilationResult.compilationUnit.getContents());
@@ -165,8 +165,8 @@ public class PushinCollector {
 			TypeReference sr = sourceTypeBinding.scope.referenceContext.superclass;
 			TypeReference[] trs = sourceTypeBinding.scope.referenceContext.superInterfaces;
 			List<ExactTypePattern> newParents = additionalParents.get(sourceTypeBinding);
-			StringBuffer extendsString = new StringBuffer();
-			StringBuffer implementsString = new StringBuffer();
+			StringBuilder extendsString = new StringBuilder();
+			StringBuilder implementsString = new StringBuilder();
 			if (newParents != null && newParents.size() > 0) {
 				for (ExactTypePattern newParent : newParents) {
 					ResolvedType newParentType = newParent.getExactType().resolve(world);
@@ -272,7 +272,7 @@ public class PushinCollector {
 	}
 
 	private String getOutputFileFor(CompilationUnitDeclaration unit) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		// Create the directory portion of the output location
 		if (specifiedOutputDirectory != null) {

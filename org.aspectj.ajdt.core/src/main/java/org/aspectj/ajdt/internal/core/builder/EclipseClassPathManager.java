@@ -90,7 +90,7 @@ public class EclipseClassPathManager extends ClassPathManager {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("EclipseClassPathManager: ");
+		StringBuilder buf = new StringBuilder("EclipseClassPathManager: ");
 		buf.append(nameEnv.toString());
 		return buf.toString();
 	}

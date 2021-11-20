@@ -309,7 +309,7 @@ public class SoftMessage implements IMessage {
 	}
 
 	public String toString() {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		result.append(null == getKind() ? "<null kind>" : getKind().toString());
 

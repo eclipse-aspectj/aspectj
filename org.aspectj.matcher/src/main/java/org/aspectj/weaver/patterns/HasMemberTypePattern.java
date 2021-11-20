@@ -162,7 +162,7 @@ public class HasMemberTypePattern extends TypePattern {
 
 	@Override
 	public String toString() {
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		if (signaturePattern.getKind() == Member.FIELD) {
 			buff.append("hasfield(");
 		} else {

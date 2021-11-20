@@ -67,10 +67,10 @@ import org.aspectj.apache.bcel.classfile.Utility;
 /**
  * Abstract super class for all possible java types, namely basic types such as int, object types like String and array types, e.g.
  * int[]
- * 
+ *
  * @version $Id: Type.java,v 1.14 2011/09/28 01:14:54 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * 
+ *
  *         modified: AndyClement 2-mar-05: Removed unnecessary static and optimized
  */
 public abstract class Type {
@@ -233,7 +233,7 @@ public abstract class Type {
 
 	/**
 	 * Convert signature to a Type object.
-	 * 
+	 *
 	 * @param signature signature string such as Ljava/lang/String;
 	 * @return type object
 	 */
@@ -292,7 +292,7 @@ public abstract class Type {
 
 	/**
 	 * Convert return value of a method (signature) to a Type object.
-	 * 
+	 *
 	 * @param signature signature string such as (Ljava/lang/String;)V
 	 * @return return type
 	 */
@@ -308,7 +308,7 @@ public abstract class Type {
 
 	/**
 	 * Convert arguments of a method (signature) to an array of Type objects.
-	 * 
+	 *
 	 * @param signature signature string such as (Ljava/lang/String;)V
 	 * @return array of argument types
 	 */
@@ -419,7 +419,7 @@ public abstract class Type {
 
 	/**
 	 * Convert runtime java.lang.Class to BCEL Type object.
-	 * 
+	 *
 	 * @param cl Java class
 	 * @return corresponding Type object
 	 */
@@ -463,7 +463,7 @@ public abstract class Type {
 	}
 
 	public static String getSignature(java.lang.reflect.Method meth) {
-		StringBuffer sb = new StringBuffer("(");
+		StringBuilder sb = new StringBuilder("(");
 		Class[] params = meth.getParameterTypes(); // avoid clone
 
 		for (Class param : params) {
@@ -476,7 +476,7 @@ public abstract class Type {
 	}
 
 	public static String getSignature(java.lang.reflect.Constructor<?> cons) {
-		StringBuffer sb = new StringBuffer("(");
+		StringBuilder sb = new StringBuilder("(");
 		Class<?>[] params = cons.getParameterTypes(); // avoid clone
 
 		for (Class<?> param : params) {

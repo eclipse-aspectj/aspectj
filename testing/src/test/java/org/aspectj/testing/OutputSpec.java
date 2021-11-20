@@ -104,7 +104,7 @@ public class OutputSpec {
 	}
 
 	private void createFailureMessage(String output, int lineNo, int sizeFound) {
-		StringBuffer failMessage = new StringBuffer();
+		StringBuilder failMessage = new StringBuilder();
 		failMessage.append("\n  expecting output:\n");
 		for (String line: expectedOutputLines) {
 			failMessage.append(line+"\n");

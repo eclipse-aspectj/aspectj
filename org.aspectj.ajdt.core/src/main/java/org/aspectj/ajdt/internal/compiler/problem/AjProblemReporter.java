@@ -456,7 +456,7 @@ public class AjProblemReporter extends ProblemReporter {
 	}
 
 	private String typesAsString(boolean isVarargs, TypeBinding[] types, boolean makeShort) {
-		StringBuffer buffer = new StringBuffer(10);
+		StringBuilder buffer = new StringBuilder(10);
 		for (int i = 0, length = types.length; i < length; i++) {
 			if (i != 0)
 				buffer.append(", "); //$NON-NLS-1$
@@ -661,7 +661,7 @@ public class AjProblemReporter extends ProblemReporter {
 			ex.fillInStackTrace();
 			StringWriter sw = new StringWriter();
 			ex.printStackTrace(new PrintWriter(sw));
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(CompilationAndWeavingContext.getCurrentContext());
 			sb.append(sw.toString());
 			problem = new PinpointedProblem(problem, sb.toString());

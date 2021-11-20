@@ -48,7 +48,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
     	IncrementalCase me = new IncrementalCase();
 		MessageHandler h = new MessageHandler();
 //		boolean result;
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (String arg : args) {
 			sb.append("\n###### results for " + arg);
 			sb.append("\n" + me.run(new File(arg), h) + ": " + h);
@@ -177,7 +177,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		log("verifyCompile -        def ", def, handler);
         log("verifyCompile -    command ", commandLine.toString(), handler);
 		log("verifyCompile -   messages ", compilerMessages, handler);
-        StringBuffer failures = new StringBuffer();
+        StringBuilder failures = new StringBuilder();
         if (def.expectFail == result) {
              failures.append("iteration " + iteration +
                 " expected to " + (def.expectFail ? "fail\n" : "pass"));
@@ -303,7 +303,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		}
 		boolean result = true;
 		final int[] exp = new int[expected.length];
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		for (int i = 0; i < exp.length; i++) {
 			String s = expected[i];

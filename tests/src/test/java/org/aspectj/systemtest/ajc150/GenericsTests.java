@@ -880,7 +880,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	 */
 	public void checkMethodsExist(String classname,String[] methods) {
 		Set<String> methodsFound = new HashSet<>();
-		StringBuffer debugString = new StringBuffer();
+		StringBuilder debugString = new StringBuilder();
 		try {
 			ClassLoader cl = new URLClassLoader(new URL[]{ajc.getSandboxDirectory().toURI().toURL()});
 			Class<?> clz = Class.forName(classname,false,cl);
@@ -906,7 +906,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 				fail("Couldn't find [" + string + "] in the set of methods in " + classname + " => " + debugString);
 			}
 		}
-		StringBuffer unexpectedMethods = new StringBuffer();
+		StringBuilder unexpectedMethods = new StringBuilder();
 		if (!methodsFound.isEmpty()) {
 			for (String element: methodsFound) {
 				unexpectedMethods.append("[").append(element).append("]");
@@ -959,7 +959,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 		JavaClass clazz = getClass(ajc,classname);
 		Attribute[] attrs = clazz.getAttributes();
 		int signatureCount = 0;
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (Attribute attribute : attrs) {
 			if (attribute.getName().equals("Signature")) {
 				signatureCount++;
@@ -979,7 +979,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 	private static String stringify(Class<?>[] clazzes) {
 		if (clazzes==null) return "";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < clazzes.length; i++) {
 			if (i>0) sb.append(",");
 			sb.append(clazzes[i].getName());

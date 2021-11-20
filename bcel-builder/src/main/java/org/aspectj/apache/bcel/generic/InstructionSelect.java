@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Select - Abstract super class for LOOKUPSWITCH and TABLESWITCH instructions.
- * 
+ *
  * @version $Id: InstructionSelect.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LOOKUPSWITCH
@@ -79,7 +79,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 
 	/**
 	 * (Match, target) pairs for switch. `Match' and `targets' must have the same length of course.
-	 * 
+	 *
 	 * @param match array of matching values
 	 * @param targets instruction targets
 	 * @param target default instruction target
@@ -119,11 +119,11 @@ public abstract class InstructionSelect extends InstructionBranch {
 	/**
 	 * Since this is a variable length instruction, it may shift the following instructions which then need to update their
 	 * position.
-	 * 
+	 *
 	 * Called by InstructionList.setPositions when setting the position for every instruction. In the presence of variable length
 	 * instructions `setPositions' performs multiple passes over the instruction list to calculate the correct (byte) positions and
 	 * offsets by calling this function.
-	 * 
+	 *
 	 * @param offset additional offset caused by preceding (variable length) instructions
 	 * @param max_offset the maximum offset that may be caused by these instructions
 	 * @return additional offset caused by possible change of this instruction's length
@@ -146,7 +146,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 
 	/**
 	 * Dump instruction as byte code to stream out.
-	 * 
+	 *
 	 * @param out Output stream
 	 */
 	public void dump(DataOutputStream out) throws IOException {
@@ -177,7 +177,7 @@ public abstract class InstructionSelect extends InstructionBranch {
 	 * @return mnemonic for instruction
 	 */
 	public String toString(boolean verbose) {
-		StringBuffer buf = new StringBuffer(super.toString(verbose));
+		StringBuilder buf = new StringBuilder(super.toString(verbose));
 
 		if (verbose) {
 			for (int i = 0; i < matchLength; i++) {

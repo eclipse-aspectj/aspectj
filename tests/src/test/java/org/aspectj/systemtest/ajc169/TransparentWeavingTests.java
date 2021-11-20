@@ -159,7 +159,7 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 		try {
 			JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), clazzname);
 			Field[] fs = jc.getFields();
-			StringBuffer fields = new StringBuffer();
+			StringBuilder fields = new StringBuilder();
 			for (Field f : fs) {
 				fields.append(f.getName()).append(" ");
 				if (f.getName().equals(name)) {
@@ -175,7 +175,7 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 	private Field checkForField(String clazzname, int modifiers, String name) throws Exception {
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), clazzname);
 		Field[] fs = jc.getFields();
-		StringBuffer fields = new StringBuffer();
+		StringBuilder fields = new StringBuilder();
 		for (Field f : fs) {
 			fields.append(f.getName()).append(" ");
 			if (f.getName().equals(name)) {
@@ -192,7 +192,7 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 	private Method checkForMethod(String clazzname, int modifiers, String name) throws Exception {
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), clazzname);
 		Method[] fs = jc.getMethods();
-		StringBuffer methods = new StringBuffer();
+		StringBuilder methods = new StringBuilder();
 		methods.append("\n");
 		for (Method f : fs) {
 			methods.append(f.getName()).append("\n");

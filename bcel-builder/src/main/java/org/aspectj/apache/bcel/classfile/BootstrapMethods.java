@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * Represents the BootstrapMethods attribute in Java 7 classes.
- * 
+ *
  * @author Andy Clement
  */
 public final class BootstrapMethods extends Attribute {
@@ -98,7 +98,7 @@ public final class BootstrapMethods extends Attribute {
 		file.readFully(data);
 		isInPackedState = true;
 	}
-	
+
 	public static class BootstrapMethod {
 		private int bootstrapMethodRef;
 		private int[] bootstrapArguments;
@@ -106,7 +106,7 @@ public final class BootstrapMethods extends Attribute {
 		BootstrapMethod(DataInputStream file) throws IOException {
 			this(file.readUnsignedShort(), readBootstrapArguments(file));
 		}
-		
+
 		private static int[] readBootstrapArguments(DataInputStream dis) throws IOException {
 			int numBootstrapMethods = dis.readUnsignedShort();
 			int[] bootstrapArguments = new int[numBootstrapMethods];
@@ -115,16 +115,16 @@ public final class BootstrapMethods extends Attribute {
 			}
 			return bootstrapArguments;
 		}
-		
+
 		public BootstrapMethod(int bootstrapMethodRef, int[] bootstrapArguments) {
 			this.bootstrapMethodRef = bootstrapMethodRef;
 			this.bootstrapArguments = bootstrapArguments;
 		}
-		
+
 		public int getBootstrapMethodRef() {
 			return bootstrapMethodRef;
 		}
-		
+
 		public int[] getBootstrapArguments() {
 			return bootstrapArguments;
 		}
@@ -137,15 +137,15 @@ public final class BootstrapMethods extends Attribute {
 				file.writeShort(bootstrapArgument);
 			}
 		}
-		
+
 		public final int getLength() {
 			return 2 /*bootstrapMethodRef*/+
 					2 /*number of arguments*/+
 					2 * bootstrapArguments.length;
 		}
-		
+
 	}
-	
+
 	// Unpacks the byte array into the table
 	private void unpack() {
 		if (isInPackedState) {
@@ -169,7 +169,7 @@ public final class BootstrapMethods extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -180,7 +180,7 @@ public final class BootstrapMethods extends Attribute {
 
 	/**
 	 * Dump line number table attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -210,8 +210,8 @@ public final class BootstrapMethods extends Attribute {
 	@Override
 	public final String toString() {
 		unpack();
-		StringBuffer buf = new StringBuffer();
-		StringBuffer line = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
+		StringBuilder line = new StringBuilder();
 
 		for (int i = 0; i < numBootstrapMethods; i++) {
 			BootstrapMethod bm = bootstrapMethods[i];
@@ -228,8 +228,8 @@ public final class BootstrapMethods extends Attribute {
 					line.append(arg).append("(").append(getConstantPool().getConstant(arg)).append(") ");
 				}
 			}
-			
-			
+
+
 			if (i < numBootstrapMethods - 1) {
 				line.append(", ");
 			}

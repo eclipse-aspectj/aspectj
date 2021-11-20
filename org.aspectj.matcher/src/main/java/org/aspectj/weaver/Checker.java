@@ -192,7 +192,7 @@ public class Checker extends ShadowMunger {
 				return msg;
 			}
 		}
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		while (curlyIndex >= 0) {
 			if (curlyIndex > 0) {
 				ret.append(msg.substring(pos, curlyIndex).replace("\\{", "{"));

@@ -41,7 +41,7 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	 * returns "declare warning: &lt;typepattern&gt;: &lt;message&gt;" or "declare error: &lt;typepattern&gt;: &lt;message&gt;"
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare ");
 		if (isError) {
 			buf.append("error: ");
@@ -123,7 +123,7 @@ public class DeclareTypeErrorOrWarning extends Declare {
 	 * returns "declare type warning" or "declare type error"
 	 */
 	public String getName() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare type ");
 		if (isError) {
 			buf.append("error");

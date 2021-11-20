@@ -799,7 +799,7 @@ abstract class WizardPane {
 	public static String stringFromStream(InputStream stream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
 
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int data;
 		while ((data = reader.read()) != -1) {
 			ret.append((char) data);
@@ -827,7 +827,7 @@ abstract class WizardPane {
 	public static String applyProperties(String text, Map<String,String> map) {
 		// ${name} -> map.get(name).toString()
 		int lastIndex = 0;
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		int startIndex;
 		while ((startIndex = text.indexOf("${", lastIndex)) != -1) {

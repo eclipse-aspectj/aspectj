@@ -889,7 +889,7 @@ class TestMaker  {
 		if (fileName.endsWith(".java")) {
 			fileName = fileName.substring(0, fileName.length() - 5);
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		String filePath = file.getParentFile().getAbsolutePath();
 		String dirPath = baseDir.getAbsolutePath();
 		String pack = null;
@@ -970,7 +970,7 @@ class TestMaker  {
 		} else if (null == dir) {
 			dir = new File(".");
 		}
-		StringBuffer testName = new StringBuffer();
+		StringBuilder testName = new StringBuilder();
 		int pr = spec.getBugId();
 		if (0 < pr) {
 			testName.append("PR#" + pr + " ");

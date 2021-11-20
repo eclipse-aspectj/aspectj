@@ -81,7 +81,7 @@ public class PointcutImpl implements Pointcut {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(getName());
 		sb.append("(");
 		AjType<?>[] ptypes = getParameterTypes();

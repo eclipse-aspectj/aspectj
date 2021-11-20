@@ -321,7 +321,7 @@ public class ConcreteAspectCodeGen {
 	 * @return string repr.
 	 */
 	private String stringify() {
-		StringBuffer sb = new StringBuffer("<concrete-aspect name='");
+		StringBuilder sb = new StringBuilder("<concrete-aspect name='");
 		sb.append(concreteAspect.name);
 		sb.append("' extends='");
 		sb.append(concreteAspect.extend);

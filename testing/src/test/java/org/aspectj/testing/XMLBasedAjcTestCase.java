@@ -429,7 +429,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	public String stringify(LocalVariableTable lvt, int slotIndex) {
 		LocalVariable lv[] = lvt.getLocalVariableTable();
 		LocalVariable lvEntry = lv[slotIndex];
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
 				.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
 		return sb.toString();
@@ -437,7 +437,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 
 	public String stringify(List<LocalVariable> l, int slotIndex) {
 		LocalVariable lvEntry = (LocalVariable) l.get(slotIndex);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(lvEntry.getSignature()).append(" ").append(lvEntry.getName()).append("(").append(lvEntry.getIndex())
 				.append(") start=").append(lvEntry.getStartPC()).append(" len=").append(lvEntry.getLength());
 		return sb.toString();
@@ -447,7 +447,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		if (lvt == null) {
 			return "";
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("LocalVariableTable.  Entries=#" + lvt.getTableLength()).append("\n");
 		LocalVariable lv[] = lvt.getLocalVariableTable();
 		for (LocalVariable lvEntry : lv) {

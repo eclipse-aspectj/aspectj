@@ -436,7 +436,7 @@ public class ProgramElement implements IProgramElement {
 				// not parameterized
 				return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 			} else {
-				StringBuffer nameBuff = new StringBuffer();
+				StringBuilder nameBuff = new StringBuilder();
 				int nestLevel = 0;
 				nameBuff.append("L");
 				for (int i = 0; i < name.length(); i++) {
@@ -448,7 +448,7 @@ public class ProgramElement implements IProgramElement {
 					case '<':
 						nameBuff.append("<");
 						nestLevel++;
-						StringBuffer innerBuff = new StringBuffer();
+						StringBuilder innerBuff = new StringBuilder();
 						while (nestLevel > 0) {
 							c = name.charAt(++i);
 							if (c == '<') {
@@ -459,7 +459,7 @@ public class ProgramElement implements IProgramElement {
 							}
 							if (c == ',' && nestLevel == 1) {
 								nameBuff.append(nameToSignature(innerBuff.toString()));
-								innerBuff = new StringBuffer();
+								innerBuff = new StringBuilder();
 							} else {
 								if (nestLevel > 0) {
 									innerBuff.append(c);
@@ -623,7 +623,7 @@ public class ProgramElement implements IProgramElement {
 	}
 
 	public String toSignatureString(boolean getFullyQualifiedArgTypes) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 
 		List<char[]> ptypes = getParameterTypes();

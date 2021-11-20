@@ -84,7 +84,7 @@ public class HandlerPointcut extends Pointcut {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("handler(");
 		buf.append(exceptionType.toString());
 		buf.append(")");

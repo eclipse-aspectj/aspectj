@@ -851,7 +851,7 @@ public class MessageUtil {
 		if (null == loc) {
 			return "((ISourceLocation) null)";
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		File sourceFile = loc.getSourceFile();
 		if (sourceFile != ISourceLocation.NO_FILE) {
@@ -901,7 +901,7 @@ public class MessageUtil {
 		Throwable thrown = message.getThrown();
 		ISourceLocation sl = message.getSourceLocation();
 		IMessage.Kind kind = message.getKind();
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append(kind.toString());
 		result.append(": ");
 		if (null != thrown) {
@@ -988,7 +988,7 @@ public class MessageUtil {
 		if (0 == holder.numMessages(null, false)) {
 			return "(0 messages)";
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (IMessage.Kind kind : IMessage.KINDS) {
 			int num = holder.numMessages(kind, false);
 			if (0 < num) {

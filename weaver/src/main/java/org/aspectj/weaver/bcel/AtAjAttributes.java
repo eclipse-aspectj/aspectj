@@ -856,7 +856,7 @@ public class AtAjAttributes {
 	 * @return a nicely formatted method string, for example: int X.foo(java.lang.String)
 	 */
 	public static String getMethodForMessage(AjAttributeMethodStruct methodstructure) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Method '");
 		sb.append(methodstructure.method.getReturnType().toString());
 		sb.append(" ").append(methodstructure.enclosingType).append(".").append(methodstructure.method.getName());
@@ -1533,7 +1533,7 @@ public class AtAjAttributes {
 	 * @return a readable representation of a method
 	 */
 	private static String methodToString(Method method) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(method.getName());
 		sb.append(method.getSignature());
 		return sb.toString();
@@ -1811,7 +1811,7 @@ public class AtAjAttributes {
 			args.add(st.nextToken());
 		}
 		if (args.size() != method.getArgumentTypes().length) {
-			StringBuffer shortString = new StringBuffer().append(lastbit(method.getReturnType().toString())).append(" ")
+			StringBuilder shortString = new StringBuilder().append(lastbit(method.getReturnType().toString())).append(" ")
 					.append(method.getName());
 			if (method.getArgumentTypes().length > 0) {
 				shortString.append("(");

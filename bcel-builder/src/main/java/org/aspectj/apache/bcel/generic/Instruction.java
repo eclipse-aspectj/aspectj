@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Abstract super class for all Java byte codes.
- * 
+ *
  * @version $Id: Instruction.java,v 1.10 2011/04/05 15:15:33 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -86,7 +86,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	/**
 	 * Use with caution, since 'BranchInstruction's have a 'target' reference which is not copied correctly (only basic types are).
 	 * This also applies for 'Select' instructions with their multiple branch targets.
-	 * 
+	 *
 	 * @return (shallow) copy of an instruction
 	 */
 	// GET RID OF THIS - make it throw an exception and track the callers
@@ -107,7 +107,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 
 	/**
 	 * Read an instruction bytecode from an input stream and return the appropriate object.
-	 * 
+	 *
 	 * @param file file to read from
 	 * @return instruction object being read
 	 */
@@ -439,7 +439,7 @@ public class Instruction implements Cloneable, Serializable, Constants {
 	 */
 	public String toString(boolean verbose) {
 		if (verbose) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(getName()).append("[").append(opcode).append("](size").append(Constants.iLen[opcode]).append(")");
 			return sb.toString();
 		} else {

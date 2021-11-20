@@ -702,7 +702,7 @@ public class ParserTestCase extends PatternsTestCase {
 		Set<String> keys = m.keySet();
 		List<String> orderedKeys = new ArrayList<>(keys);
 		Collections.sort(orderedKeys);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (Iterator<String> iterator = orderedKeys.iterator(); iterator.hasNext();) {
 			String object = (String) iterator.next();
 			sb.append(object).append("=").append(m.get(object));

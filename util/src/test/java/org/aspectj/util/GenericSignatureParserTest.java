@@ -216,7 +216,7 @@ public class GenericSignatureParserTest extends TestCase {
 	}
 
 	private String tokensToString(String[] tokens) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(tokens[0]);
 		for (int i = 1; i < tokens.length; i++) {
 			sb.append(",");

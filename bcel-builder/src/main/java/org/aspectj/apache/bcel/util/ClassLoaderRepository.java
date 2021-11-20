@@ -73,11 +73,11 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
 
 /**
  * The repository maintains information about which classes have been loaded.
- * 
+ *
  * It loads its data from the ClassLoader implementation passed into its constructor.
- * 
+ *
  * @see org.aspectj.apache.bcel.Repository
- * 
+ *
  * @version $Id: ClassLoaderRepository.java,v 1.13 2009/09/09 19:56:20 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author David Dixon-Peugh
@@ -334,7 +334,7 @@ public class ClassLoaderRepository implements Repository {
 	 * Produce a report on cache usage.
 	 */
 	public String report() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("BCEL repository report.");
 		if (useSharedCache)
 			sb.append(" (shared cache)");

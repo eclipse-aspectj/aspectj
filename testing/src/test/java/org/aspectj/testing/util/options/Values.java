@@ -680,7 +680,7 @@ public class Values {
             if (null == input) {
                 return "null";
             }
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (int i = 0; i < input.length; i++) {
                 if (i > 0) {

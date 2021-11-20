@@ -53,7 +53,7 @@ public class DeclareSoftImpl implements DeclareSoft {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("declare soft : ");
 		if (this.missingTypeName != null) {
 			sb.append(this.exceptionType.getName());

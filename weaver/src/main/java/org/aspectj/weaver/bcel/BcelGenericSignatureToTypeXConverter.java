@@ -52,7 +52,7 @@ public class BcelGenericSignatureToTypeXConverter {
 		// each type in the hierarchy may have type arguments
 
 		// first build the 'raw type' signature
-		StringBuffer sig = new StringBuffer();
+		StringBuilder sig = new StringBuilder();
 		sig.append(aClassTypeSignature.outerType.identifier.replace(';', ' ').trim());
 		for (int i = 0; i < aClassTypeSignature.nestedTypes.length; i++) {
 			sig.append("$");

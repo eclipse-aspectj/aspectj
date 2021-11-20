@@ -309,7 +309,7 @@ public class KindedPointcut extends Pointcut {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(kind.getSimpleName());
 		buf.append("(");
 		buf.append(signature.toString());

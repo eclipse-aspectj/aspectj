@@ -79,10 +79,10 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
  * Template class for building up a method. This is done by defining exception handlers, adding thrown exceptions, local variables
  * and attributes, whereas the 'LocalVariableTable' and 'LineNumberTable' attributes will be set automatically for the code. Use
  * stripAttributes() if you don't like this.
- * 
+ *
  * While generating code it may be necessary to insert NOP operations. You can use the `removeNOPs' method to get rid off them. The
  * resulting method object can be obtained via the `getMethod()' method.
- * 
+ *
  * @version $Id: MethodGen.java,v 1.17 2011/05/19 23:23:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @author <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
@@ -115,10 +115,10 @@ public class MethodGen extends FieldGenOrMethodGen {
 	 * Declare method. If the method is non-static the constructor automatically declares a local variable `$this' in slot 0. The
 	 * actual code is contained in the `il' parameter, which may further manipulated by the user. But he must take care not to
 	 * remove any instruction (handles) that are still referenced from this object.
-	 * 
+	 *
 	 * For example one may not add a local variable and later remove the instructions it refers to without causing havoc. It is safe
 	 * however if you remove that local variable, too.
-	 * 
+	 *
 	 * @param access_flags access qualifiers
 	 * @param return_type method type
 	 * @param arg_types argument types
@@ -164,7 +164,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 		// throw new ClassGenException("'void' is an illegal argument type for a method");
 		// }
 		// }
-		//	
+		//
 		// if(arg_names != null) { // Names for variables provided?
 		// if(size != arg_names.length)
 		// throw new ClassGenException("Mismatch in argument array lengths: " +
@@ -192,7 +192,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Instantiate from existing method.
-	 * 
+	 *
 	 * @param m method
 	 * @param class_name class name containing this method
 	 * @param cp constant pool
@@ -362,7 +362,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Adds a local variable to this method and assigns an index automatically.
-	 * 
+	 *
 	 * @param name variable name
 	 * @param type variable type
 	 * @param start from where the variable is valid, if this is null, it is valid from the start
@@ -424,7 +424,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	/*
 	 * If the range of the variable has not been set yet, it will be set to be valid from the start to the end of the instruction
 	 * list.
-	 * 
+	 *
 	 * @return array of declared local variables sorted by index
 	 */
 	public LocalVariableGen[] getLocalVariables() {
@@ -466,7 +466,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Give an instruction a line number corresponding to the source code line.
-	 * 
+	 *
 	 * @param ih instruction to tag
 	 * @return new line number object
 	 * @see LineNumber
@@ -517,7 +517,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	/**
 	 * Add an exception handler, i.e., specify region where a handler is active and an instruction where the actual handling is
 	 * done.
-	 * 
+	 *
 	 * @param start_pc Start of region (inclusive)
 	 * @param end_pc End of region (inclusive)
 	 * @param handler_pc Where handling is done
@@ -578,7 +578,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Add an exception possibly thrown by this method.
-	 * 
+	 *
 	 * @param class_name (fully qualified) name of exception
 	 */
 	public void addException(String class_name) {
@@ -629,7 +629,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	 * Add an attribute to the code. Currently, the JVM knows about the LineNumberTable, LocalVariableTable and StackMap attributes,
 	 * where the former two will be generated automatically and the latter is used for the MIDP only. Other attributes will be
 	 * ignored by the JVM but do no harm.
-	 * 
+	 *
 	 * @param a attribute to be added
 	 */
 	public void addCodeAttribute(Attribute a) {
@@ -674,7 +674,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 	/**
 	 * Get method object. Never forget to call setMaxStack() or setMaxStack(max), respectively, before calling this method (the same
 	 * applies for max locals).
-	 * 
+	 *
 	 * @return method object
 	 */
 	public Method getMethod() {
@@ -879,10 +879,10 @@ public class MethodGen extends FieldGenOrMethodGen {
 	public void setMaxLocals() {
 		setMaxLocals(false);
 	}
-	
+
 	/**
 	 * Compute maximum number of local variables.
-	 * 
+	 *
 	 * @param respectLocalVariableTable if true and the local variable table indicates more are in use
 	 * than the code suggests, respect the higher value from the local variable table data.
 	 */
@@ -966,7 +966,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Computes stack usage of an instruction list by performing control flow analysis.
-	 * 
+	 *
 	 * @return maximum stack depth used by method
 	 */
 	public static int getMaxStack(ConstantPool cp, InstructionList il, CodeExceptionGen[] et) {
@@ -1050,7 +1050,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Return string representation close to declaration format, `public static void main(String[]) throws IOException', e.g.
-	 * 
+	 *
 	 * @return String representation of the method.
 	 */
 	@Override
@@ -1060,7 +1060,7 @@ public class MethodGen extends FieldGenOrMethodGen {
 
 		signature = Utility.methodSignatureToString(signature, name, access, true, getLocalVariableTable(cp));
 
-		StringBuffer buf = new StringBuffer(signature);
+		StringBuilder buf = new StringBuilder(signature);
 
 		if (exceptionsThrown.size() > 0) {
 			for (String s : exceptionsThrown) {

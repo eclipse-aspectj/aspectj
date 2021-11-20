@@ -138,7 +138,7 @@ public class CompilationAndWeavingContext {
 				explanationStack.push(getFormatter(entry).formatEntry(entry.phaseId, data));
 			}
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		while (!explanationStack.isEmpty()) {
 			sb.append("when ");
 			sb.append(explanationStack.pop().toString());
@@ -240,7 +240,7 @@ public class CompilationAndWeavingContext {
 	private static class DefaultFormatter implements ContextFormatter {
 
 		public String formatEntry(int phaseId, Object data) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(PHASE_NAMES[phaseId]);
 			sb.append(" ");
 			if (data instanceof char[]) {

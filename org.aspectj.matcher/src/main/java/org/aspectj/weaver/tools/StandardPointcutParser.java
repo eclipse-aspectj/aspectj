@@ -485,7 +485,7 @@ public class StandardPointcutParser {
 	}
 
 	private String buildUserMessageFromParserException(String pc, ParserException ex) {
-		StringBuffer msg = new StringBuffer();
+		StringBuilder msg = new StringBuilder();
 		msg.append("Pointcut is not well-formed: expecting '");
 		msg.append(ex.getMessage());
 		msg.append("'");

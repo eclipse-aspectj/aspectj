@@ -317,7 +317,7 @@ public class ThisOrTargetAnnotationPointcut extends NameBindingPointcut {
 	 * @see java.lang.Object#toString()
 	 */
 	private void buildDeclarationText() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(isThis ? "@this(" : "@target(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);

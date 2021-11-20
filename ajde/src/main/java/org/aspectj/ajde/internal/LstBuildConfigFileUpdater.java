@@ -185,7 +185,7 @@ class LstBuildConfigFileUpdater {
 	 */
 	public void writeConfigFile(String filePath, List<String> fileContents) {
 		Set<String> contentsSet = new TreeSet<>(fileContents);
-		StringBuffer fileContentsSB = new StringBuffer();
+		StringBuilder fileContentsSB = new StringBuilder();
 		for (String s : contentsSet) {
 			fileContentsSB.append(s.toString());
 			fileContentsSB.append("\n");

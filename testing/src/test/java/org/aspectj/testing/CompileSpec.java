@@ -216,7 +216,7 @@ public class CompileSpec implements ITestStep {
 	public void setExtdirs(String extdirs) { this.extdirs = extdirs; }
 
 	protected String[] buildArgs() {
-		StringBuffer args = new StringBuffer();
+		StringBuilder args = new StringBuilder();
 		// add any set options, and then files to compile at the end
 		if (getAspectpath() != null) {
 			args.append("-aspectpath ");

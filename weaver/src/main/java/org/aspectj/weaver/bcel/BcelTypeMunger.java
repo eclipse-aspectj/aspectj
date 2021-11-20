@@ -616,7 +616,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 * Creates a nice signature for the ctor, something like "(int,Integer,String)"
 	 */
 	private String createReadableCtorSig(ResolvedType newParent, ConstantPool cpg, InvokeInstruction invokeSpecial) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		Type[] ctorArgs = invokeSpecial.getArgumentTypes(cpg);
 		sb.append(newParent.getClassName());
 		sb.append("(");
@@ -1338,7 +1338,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 	// Unlike toString() on a member, this does not include the declaring type
 	private String stringifyMember(ResolvedMember member) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(member.getReturnType().getName());
 		buf.append(' ');
 		buf.append(member.getName());

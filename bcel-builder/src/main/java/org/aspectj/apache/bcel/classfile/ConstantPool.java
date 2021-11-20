@@ -136,7 +136,7 @@ public class ConstantPool implements Node {
 	/**
 	 * Get string from constant pool and bypass the indirection of `ConstantClass' and `ConstantString' objects. I.e. these classes
 	 * have an index field that points to another entry of the constant pool of type `ConstantUtf8' which contains the real data.
-	 * 
+	 *
 	 * @param index Index in constant pool
 	 * @param tag Tag of expected constant, either ConstantClass or ConstantString
 	 * @return Contents of string reference
@@ -207,7 +207,7 @@ public class ConstantPool implements Node {
 			str = (constantToString(((ConstantCP) c).getClassIndex(), Constants.CONSTANT_Class) + "." + constantToString(
 					((ConstantCP) c).getNameAndTypeIndex(), Constants.CONSTANT_NameAndType));
 			break;
-			
+
 		case Constants.CONSTANT_InvokeDynamic:
 			ConstantInvokeDynamic cID = ((ConstantInvokeDynamic)c);
 			return "#"+cID.getBootstrapMethodAttrIndex()+"."+constantToString(cID.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
@@ -237,7 +237,7 @@ public class ConstantPool implements Node {
 
 	private static final String escape(String str) {
 		int len = str.length();
-		StringBuffer buf = new StringBuffer(len + 5);
+		StringBuilder buf = new StringBuilder(len + 5);
 		char[] ch = str.toCharArray();
 
 		for (int i = 0; i < len; i++) {
@@ -296,7 +296,7 @@ public class ConstantPool implements Node {
 		assert c.tag == Constants.CONSTANT_Utf8;
 		return (ConstantUtf8) c;
 	}
-	
+
 	public ConstantModule getConstantModule(int index) {
 		Constant c = getConstant(index);
 		assert c != null;
@@ -323,7 +323,7 @@ public class ConstantPool implements Node {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (int i = 1; i < poolSize; i++)
 			buf.append(i + ")" + pool[i] + "\n");
@@ -441,7 +441,7 @@ public class ConstantPool implements Node {
 
 	public int lookupFieldref(String searchClassname, String searchFieldname, String searchSignature) {
 		searchClassname = searchClassname.replace('.', '/');
-		String k = new StringBuffer().append(searchClassname).append(searchFieldname).append(searchSignature).toString();
+		String k = new StringBuilder().append(searchClassname).append(searchFieldname).append(searchSignature).toString();
 		Integer pos = fieldCache.get(k);
 		if (pos != null)
 			return pos;
@@ -621,7 +621,7 @@ public class ConstantPool implements Node {
 
 			return addNameAndType(u8.getValue(), u8_2.getValue());
 		}
-		
+
 		case Constants.CONSTANT_InvokeDynamic: {
 			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)c;
 			int index1 = cid.getBootstrapMethodAttrIndex();
@@ -631,7 +631,7 @@ public class ConstantPool implements Node {
 			int index2 = addNameAndType(name.getValue(), signature.getValue());
 			return addInvokeDynamic(index1,index2);
 		}
-		
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cmh = (ConstantMethodHandle)c;
 			return addMethodHandle(cmh.getReferenceKind(),addConstant(constants[cmh.getReferenceIndex()],cp));
@@ -650,7 +650,7 @@ public class ConstantPool implements Node {
 
 		case Constants.CONSTANT_Integer:
 			return addInteger(((ConstantInteger) c).getValue());
-			
+
 		case Constants.CONSTANT_MethodType:
 			ConstantMethodType cmt = (ConstantMethodType)c;
 			return addMethodType(addConstant(constants[cmt.getDescriptorIndex()],cp));
@@ -689,14 +689,14 @@ public class ConstantPool implements Node {
 			throw new RuntimeException("Unknown constant type " + c);
 		}
 	}
-	
+
 	public int addMethodHandle(byte referenceKind, int referenceIndex) {
 		adjustSize();
 		int ret = poolSize;
 		pool[poolSize++] = new ConstantMethodHandle(referenceKind, referenceIndex);
 		return ret;
 	}
-	
+
 	public int addMethodType(int descriptorIndex) {
 		adjustSize();
 		int ret = poolSize;
@@ -718,7 +718,7 @@ public class ConstantPool implements Node {
 		pool[poolSize++] = new ConstantMethodref(class_index, name_and_type_index);
 		return ret;
 	}
-	
+
 	public int addInvokeDynamic(int bootstrapMethodIndex, int constantNameAndTypeIndex) {
 		adjustSize();
 		int ret = poolSize;
@@ -768,7 +768,7 @@ public class ConstantPool implements Node {
 	}
 
 	public int lookupMethodref(String searchClassname, String searchMethodName, String searchSignature) {
-		String key = new StringBuffer().append(searchClassname).append(searchMethodName).append(searchSignature).toString();
+		String key = new StringBuilder().append(searchClassname).append(searchMethodName).append(searchSignature).toString();
 		Integer cached = methodCache.get(key);
 		if (cached != null)
 			return cached;

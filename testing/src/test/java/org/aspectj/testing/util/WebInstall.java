@@ -183,7 +183,7 @@ public class WebInstall {
         ms.invoke(null, new Object[] { args });
     }
     public static final String render(String[] args) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < args.length; i++) {
             if (0 < i) sb.append(", ");

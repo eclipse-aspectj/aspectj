@@ -675,7 +675,7 @@ public final class LazyClassGen {
 		}
 
 		if (needAttribute) {
-			StringBuffer signature = new StringBuffer();
+			StringBuilder signature = new StringBuilder();
 			// first, the type variables...
 			if (myType != null) {
 				TypeVariable[] tVars = myType.getTypeVariables();

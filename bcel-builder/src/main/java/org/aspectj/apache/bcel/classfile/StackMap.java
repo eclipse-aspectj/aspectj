@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
  * This class represents a stack map attribute used for preverification of Java classes for the <a href="http://java.sun.com/j2me/">
  * Java 2 Micro Edition</a> (J2ME). This attribute is used by the <a href="http://java.sun.com/products/cldc/">KVM</a> and contained
  * within the Code attribute of a method. See CLDC specification 5.3.1.2
- * 
+ *
  * @version $Id: StackMap.java,v 1.6 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code
@@ -77,11 +77,11 @@ public final class StackMap extends Attribute {
 
 	/*
 	 * @param name_index Index of name
-	 * 
+	 *
 	 * @param length Content length in bytes
-	 * 
+	 *
 	 * @param map Table of stack map entries
-	 * 
+	 *
 	 * @param constant_pool Array of constants
 	 */
 	public StackMap(int name_index, int length, StackMapEntry[] map, ConstantPool constant_pool) {
@@ -92,7 +92,7 @@ public final class StackMap extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index of name
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -111,7 +111,7 @@ public final class StackMap extends Attribute {
 
 	/**
 	 * Dump line number table attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -144,7 +144,7 @@ public final class StackMap extends Attribute {
 	 */
 	@Override
 	public final String toString() {
-		StringBuffer buf = new StringBuffer("StackMap(");
+		StringBuilder buf = new StringBuilder("StackMap(");
 
 		for (int i = 0; i < map_length; i++) {
 			buf.append(map[i].toString());
@@ -176,7 +176,7 @@ public final class StackMap extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override

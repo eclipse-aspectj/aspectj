@@ -65,7 +65,7 @@ public class InterTypeConstructorDeclarationImpl extends
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(java.lang.reflect.Modifier.toString(getModifiers()));
 		sb.append(" ");
 		sb.append(this.targetTypeName);

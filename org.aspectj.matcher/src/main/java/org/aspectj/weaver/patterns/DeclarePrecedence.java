@@ -47,7 +47,7 @@ public class DeclarePrecedence extends Declare {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare precedence: ");
 		buf.append(patterns);
 		buf.append(";");

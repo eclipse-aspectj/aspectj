@@ -117,7 +117,7 @@ public class TypeVariableReferenceType extends ReferenceType implements TypeVari
 	 */
 	@Override
 	public String getSignature() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("T");
 		sb.append(typeVariable.getName());
 		sb.append(";");

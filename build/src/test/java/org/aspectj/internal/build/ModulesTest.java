@@ -115,7 +115,7 @@ public class ModulesTest extends TestCase {
             }
         }
         if (!badModules.isEmpty()) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (Module module: badModules) {
                 System.err.println(module.toLongString());
                 sb.append("\n");

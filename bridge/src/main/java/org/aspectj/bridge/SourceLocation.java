@@ -131,7 +131,7 @@ public class SourceLocation implements ISourceLocation {
 
 	/** @return String {context\n}{file:}line{:column} */
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (null != context) {
 			sb.append(context);
 			sb.append(LangUtil.EOL);

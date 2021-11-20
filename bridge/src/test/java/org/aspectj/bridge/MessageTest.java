@@ -286,7 +286,7 @@ class KindTest {
 
     /** @return error if failed */
     String checkExpectedKind(IMessage m) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < KINDS.length; i++) {
             if (expected.get(i) != checkKindMethods(m, i)) {
                 String s = "expected " + expected.get(i)

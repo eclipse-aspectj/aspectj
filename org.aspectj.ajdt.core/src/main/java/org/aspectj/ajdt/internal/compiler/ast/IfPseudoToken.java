@@ -139,7 +139,7 @@ public class IfPseudoToken extends PseudoToken {
 
 
 		// create a more stable name 277508
-		StringBuffer ifSelector = new StringBuffer();
+		StringBuilder ifSelector = new StringBuilder();
 		ifSelector.append("ajc$if$");
 		if (nameSuffix == null || nameSuffix.length()==0) {
 			boolean computedName = false;

@@ -156,7 +156,7 @@ public class BasicEditor implements EditorAdapter {
                 return "ERROR: file \"" + filePath + "\" does not exist.";
             }
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            StringBuffer contents = new StringBuffer();
+            StringBuilder contents = new StringBuilder();
             String line = reader.readLine();
             int numLines = 0;
             while (line != null) {

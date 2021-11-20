@@ -439,7 +439,7 @@ public class AjcTask extends MatchingTask {
 	}
 
 	protected String validCommaList(String list, List valid, String label, int max) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(list, ",");
 		int num = 0;
 		while (st.hasMoreTokens()) {
@@ -1253,7 +1253,7 @@ public class AjcTask extends MatchingTask {
 	 * @throws BuildException if options conflict
 	 */
 	protected void verifyOptions() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (fork && isInIncrementalMode() && !isInIncrementalFileMode()) {
 			sb.append("can fork incremental only using tag file.\n");
 		}
@@ -1333,7 +1333,7 @@ public class AjcTask extends MatchingTask {
 		{
 			IMessage[] fails = holder.getMessages(IMessage.FAIL, true);
 			if (!LangUtil.isEmpty(fails)) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				String prefix = "fail due to ";
 				int numThrown = 0;
 				for (IMessage fail : fails) {

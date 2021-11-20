@@ -1301,7 +1301,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (buildConfig == null || buildConfig.getFullClasspath() == null) {
 			return "";
 		}
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		boolean first = true;
         for (String s : buildConfig.getFullClasspath()) {
             if (first) {
@@ -1393,7 +1393,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("AjBuildManager(");
 		buf.append(")");
 		return buf.toString();
@@ -1531,7 +1531,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 		@Override
 		public String formatEntry(int phaseId, Object data) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			if (phaseId == CompilationAndWeavingContext.BATCH_BUILD) {
 				sb.append("batch building ");
 			} else {

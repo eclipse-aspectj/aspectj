@@ -336,7 +336,7 @@ public class FileUtil {
 		if (null == infix) {
 			infix = File.pathSeparator;
 		}
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		boolean first = true;
         for (String path : paths) {
             if (null == path) {
@@ -1131,7 +1131,7 @@ public class FileUtil {
 	 */
 	public static String readAsString(File file) throws IOException {
 		BufferedReader r = new BufferedReader(new FileReader(file));
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		while (true) {
 			int ch = r.read();
 			if (ch == -1) {

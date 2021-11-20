@@ -113,7 +113,7 @@ public class WeaverMessageHandler implements IMessageHandler {
 				usedBinarySourceFileName);
 		problem.setSeeAlsoProblems(seeAlso);
 
-		StringBuffer details = new StringBuffer();
+		StringBuilder details = new StringBuilder();
 		// Stick more info in supplementary message info
 		if (message.getDetails() != null) {
 			details.append(message.getDetails());

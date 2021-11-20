@@ -76,7 +76,7 @@ public class EnumElementValue extends ElementValue {
 	 */
 	@Override
 	public String stringifyValue() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		ConstantUtf8 cu8 = (ConstantUtf8) cpool.getConstant(typeIdx, Constants.CONSTANT_Utf8);
 		sb.append(cu8.getValue());
 		cu8 = (ConstantUtf8) cpool.getConstant(valueIdx, Constants.CONSTANT_Utf8);

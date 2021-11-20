@@ -566,7 +566,7 @@ public class Ajc10 extends MatchingTask {
     /** utility to render String[] for logging */
     public static String render(String[] args) {
         if (null == args) return "";
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 		for (String arg : args) {
 			sb.append(arg);
 			sb.append(" ");

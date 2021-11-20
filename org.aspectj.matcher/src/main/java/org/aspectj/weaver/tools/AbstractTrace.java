@@ -95,7 +95,7 @@ public abstract class AbstractTrace implements Trace {
 	 * Formatting
 	 */
 	protected String formatMessage(String kind, String className, String methodName, Object thiz, Object[] args) {
-		StringBuffer message = new StringBuffer();
+		StringBuilder message = new StringBuilder();
 		Date now = new Date();
 		message.append(formatDate(now)).append(" ");
 		message.append(Thread.currentThread().getName()).append(" ");
@@ -116,7 +116,7 @@ public abstract class AbstractTrace implements Trace {
 	}
 
 	protected String formatMessage(String kind, String text, Throwable th) {
-		StringBuffer message = new StringBuffer();
+		StringBuilder message = new StringBuilder();
 		Date now = new Date();
 		message.append(formatDate(now)).append(" ");
 		message.append(Thread.currentThread().getName()).append(" ");
@@ -193,7 +193,7 @@ public abstract class AbstractTrace implements Trace {
 	 * @return the formated list
 	 */
 	protected String formatArgs(Object[] args) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < args.length; i++) {
 			sb.append(formatObj(args[i]));

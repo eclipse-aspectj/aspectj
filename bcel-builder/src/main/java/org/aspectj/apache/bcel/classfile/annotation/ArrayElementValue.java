@@ -62,7 +62,7 @@ public class ArrayElementValue extends ElementValue {
 
 	@Override
 	public String stringifyValue() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		for (int i = 0; i < evalues.length; i++) {
 			ElementValue element = evalues[i];

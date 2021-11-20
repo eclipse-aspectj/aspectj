@@ -167,7 +167,7 @@ public class SampleGatherer {
         Reader reader = null;
         try {
             String author = null;
-            StringBuffer sampleCode = new StringBuffer();
+            StringBuilder sampleCode = new StringBuilder();
             String anchorName = null;
             String anchorTitle = null;
             ArrayList<String> flags = new ArrayList<>();
@@ -747,7 +747,7 @@ class HTMLSamplesRenderer extends SamplesRenderer {
             }
         }
         // build up prefix
-        StringBuffer branchAnchor = new StringBuffer();
+        StringBuilder branchAnchor = new StringBuilder();
         for (int i = 0; i < firstDiff;) {
             branchAnchor.append(parts[i]);
             i++;
@@ -991,7 +991,7 @@ class SampleUtil {
         if (from.length != to.length) {
             throw new IllegalArgumentException("unmatched from/to");
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int LEN = source.length();
         int start = 0;
         for (int i = 0; i < LEN; i++) {

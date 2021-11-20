@@ -36,7 +36,7 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
     }
 
     protected String createToString(StringMaker sm) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(sm.makeModifiersString(getModifiers()));
         buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));
         buf.append(".");

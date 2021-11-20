@@ -95,7 +95,7 @@ public abstract class AbstractAnnotationAJ implements AnnotationAJ {
 	 * {@inheritDoc}
 	 */
 	public final String getValidTargets() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		for (Iterator<String> iter = supportedTargets.iterator(); iter.hasNext();) {
 			String evalue = iter.next();

@@ -45,7 +45,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 	 * {@inheritDoc}
 	 */
 	public String stringify() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("@").append(type.getClassName());
 		if (hasNameValuePairs()) {
 			sb.append("(");
@@ -58,7 +58,7 @@ public class StandardAnnotation extends AbstractAnnotationAJ {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Anno[" + getTypeSignature() + " " + (isRuntimeVisible ? "rVis" : "rInvis"));
 		if (nvPairs != null) {
 			sb.append(" ");

@@ -112,7 +112,7 @@ public class StructureUtil {
 	}
 
 	public static String genSignature(IProgramElement node) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		String accessibility = node.getAccessibility().toString();
 		if (!accessibility.equals("package")) {

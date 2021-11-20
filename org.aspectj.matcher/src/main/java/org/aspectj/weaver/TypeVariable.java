@@ -224,7 +224,7 @@ public class TypeVariable {
 	}
 
 	public String getDisplayName() {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append(name);
 		if (!getFirstBound().getName().equals("java.lang.Object")) {
 			ret.append(" extends ");
@@ -251,7 +251,7 @@ public class TypeVariable {
 	 * are parameterized types
 	 */
 	public String getSignature() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		sb.append(":");
 		if (superInterfaces.length == 0 || !superclass.getSignature().equals(UnresolvedType.OBJECT.getSignature())) {
@@ -271,7 +271,7 @@ public class TypeVariable {
 	 * @return signature for inclusion in an attribute, there must be no 'P' in it signatures
 	 */
 	public String getSignatureForAttribute() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		sb.append(":");
 		if (superInterfaces.length == 0 || !superclass.getSignature().equals(UnresolvedType.OBJECT.getSignature())) {

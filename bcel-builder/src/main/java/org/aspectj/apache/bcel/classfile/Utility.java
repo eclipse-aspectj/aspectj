@@ -74,10 +74,10 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * Utility functions that do not really belong to any class in particular.
- * 
+ *
  * @version $Id: Utility.java,v 1.14 2009/09/28 16:39:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * 
+ *
  *         modified: Andy Clement 2-mar-05 Removed unnecessary static and optimized
  */
 public abstract class Utility {
@@ -91,7 +91,7 @@ public abstract class Utility {
 
 	/**
 	 * Convert bit field of flags into string such as 'static final'.
-	 * 
+	 *
 	 * @param access_flags Access flags
 	 * @return String representation of flags
 	 */
@@ -101,16 +101,16 @@ public abstract class Utility {
 
 	/**
 	 * Convert bit field of flags into string such as 'static final'.
-	 * 
+	 *
 	 * Special case: Classes compiled with new compilers and with the 'ACC_SUPER' flag would be said to be "synchronized". This is
 	 * because SUN used the same value for the flags 'ACC_SUPER' and 'ACC_SYNCHRONIZED'.
-	 * 
+	 *
 	 * @param access_flags Access flags
 	 * @param for_class access flags are for class qualifiers ?
 	 * @return String representation of flags
 	 */
 	public static final String accessToString(int access_flags, boolean for_class) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		int p = 0;
 		for (int i = 0; p < Constants.MAX_ACC_FLAG; i++) { // Loop through known flags
@@ -136,7 +136,7 @@ public abstract class Utility {
 	/**
 	 * Disassemble a byte array of JVM byte codes starting from code line 'index' and return the disassembled string representation.
 	 * Decode only 'num' opcodes (including their operands), use -1 if you want to decompile everything.
-	 * 
+	 *
 	 * @param code byte code array
 	 * @param constant_pool Array of constants
 	 * @param index offset in `code' array <EM>(number of opcodes, not bytes!)</EM>
@@ -145,7 +145,7 @@ public abstract class Utility {
 	 * @return String representation of byte codes
 	 */
 	public static final String codeToString(byte[] code, ConstantPool constant_pool, int index, int length, boolean verbose) {
-		StringBuffer buf = new StringBuffer(code.length * 20); // Should be sufficient
+		StringBuilder buf = new StringBuilder(code.length * 20); // Should be sufficient
 		ByteSequence stream = new ByteSequence(code);
 
 		try {
@@ -182,7 +182,7 @@ public abstract class Utility {
 
 	/**
 	 * Shorten long class names, <em>java/lang/String</em> becomes <em>String</em>.
-	 * 
+	 *
 	 * @param str The long class name
 	 * @return Compacted class name
 	 */
@@ -193,7 +193,7 @@ public abstract class Utility {
 	/**
 	 * Shorten long class name <em>str</em>, i.e., chop off the <em>prefix</em>, if the class name starts with this string and the
 	 * flag <em>chopit</em> is true. Slashes <em>/</em> are converted to dots <em>.</em>.
-	 * 
+	 *
 	 * @param str The long class name
 	 * @param prefix The prefix the get rid off
 	 * @param chopit Flag that determines whether chopping is executed or not
@@ -217,7 +217,7 @@ public abstract class Utility {
 	/**
 	 * Shorten long class names, <em>java/lang/String</em> becomes <em>java.lang.String</em>, e.g.. If <em>chopit</em> is
 	 * <em>true</em> the prefix <em>java.lang</em> is also removed.
-	 * 
+	 *
 	 * @param str The long class name
 	 * @param chopit Flag that determines whether chopping is executed or not
 	 * @return Compacted class name
@@ -240,7 +240,7 @@ public abstract class Utility {
 	 */
 	public static final String methodSignatureToString(String signature, String name, String access, boolean chopit,
 			LocalVariableTable vars) throws ClassFormatException {
-		StringBuffer buf = new StringBuffer("(");
+		StringBuilder buf = new StringBuilder("(");
 		String type;
 		int index;
 		int var_index = (access.contains("static")) ? 0 : 1;
@@ -298,7 +298,7 @@ public abstract class Utility {
 
 	/**
 	 * Replace all occurences of <em>old</em> in <em>str</em> with <em>new</em>.
-	 * 
+	 *
 	 * @param str String to permute
 	 * @param old String to be replaced
 	 * @param new Replacement string
@@ -306,7 +306,7 @@ public abstract class Utility {
 	 */
 	public static final String replace(String str, String old, String new_) {
 		int index, old_index;
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		try {
 			index = str.indexOf(old);
@@ -332,7 +332,7 @@ public abstract class Utility {
 
 	/**
 	 * Converts signature to string with all class names compacted.
-	 * 
+	 *
 	 * @param signature to convert
 	 * @return Human readable signature
 	 */
@@ -381,7 +381,7 @@ public abstract class Utility {
 					int genericEnd = signature.indexOf('>');
 					// FIXME asc going to need a lot more work in here for generics
 					ResultHolder rh = signatureToStringInternal(signature.substring(genericStart + 1, genericEnd), chopit);
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					sb.append(signature.substring(1, genericStart));
 					sb.append("<").append(rh.getResult()).append(">");
 					ResultHolder retval = new ResultHolder(compactClassName(sb.toString(), chopit), genericEnd + 1);
@@ -399,10 +399,10 @@ public abstract class Utility {
 				return ResultHolder.BOOLEAN;
 
 			case '[': { // Array declaration
-				StringBuffer brackets;
+				StringBuilder brackets;
 				int consumedChars, n;
 
-				brackets = new StringBuffer(); // Accumulate []'s
+				brackets = new StringBuilder(); // Accumulate []'s
 				// Count opening brackets and look for optional size argument
 				for (n = 0; signature.charAt(n) == '['; n++) {
 					brackets.append("[]");
@@ -426,7 +426,7 @@ public abstract class Utility {
 
 	/**
 	 * Return type of method signature as a byte value as defined in <em>Constants</em>
-	 * 
+	 *
 	 * @param signature in format described above
 	 * @return type of method signature
 	 * @see Constants
@@ -453,11 +453,11 @@ public abstract class Utility {
 
 	/**
 	 * Convert bytes into hexidecimal string
-	 * 
+	 *
 	 * @return bytes as hexidecimal string, e.g. 00 FA 12 ...
 	 */
 	public static final String toHexString(byte[] bytes) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (int i = 0; i < bytes.length; i++) {
 			short b = byteToShort(bytes[i]);
@@ -480,7 +480,7 @@ public abstract class Utility {
 
 	/**
 	 * Return a string for an integer justified left or right and filled up with 'fill' characters if necessary.
-	 * 
+	 *
 	 * @param i integer to format
 	 * @param length length of desired string
 	 * @param left_justify format left or right
@@ -493,7 +493,7 @@ public abstract class Utility {
 
 	/**
 	 * Fillup char with up to length characters with char `fill' and justify it left or right.
-	 * 
+	 *
 	 * @param str string to format
 	 * @param length length of desired string
 	 * @param left_justify format left or right
@@ -520,7 +520,7 @@ public abstract class Utility {
 	 */
 	public static final String convertString(String label) {
 		char[] ch = label.toCharArray();
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (char c : ch) {
 			switch (c) {
@@ -550,7 +550,7 @@ public abstract class Utility {
 
 	/**
 	 * Converts a list of AnnotationGen objects into a set of attributes that can be attached to the class file.
-	 * 
+	 *
 	 * @param cp The constant pool gen where we can create the necessary name refs
 	 * @param annotations A list of AnnotationGen objects
 	 */
@@ -747,7 +747,7 @@ public abstract class Utility {
 
 	/**
 	 * Return type of signature as a byte value as defined in <em>Constants</em>
-	 * 
+	 *
 	 * @param signature in format described above
 	 * @return type of signature
 	 * @see Constants
@@ -816,7 +816,7 @@ public abstract class Utility {
 
 	/**
 	 * Disassemble a stream of byte codes and return the string representation.
-	 * 
+	 *
 	 * @param bytes stream of bytes
 	 * @param constant_pool Array of constants
 	 * @param verbose be verbose, e.g. print constant pool index
@@ -828,7 +828,7 @@ public abstract class Utility {
 		int index, vindex, constant;
 		int[] match, jump_table;
 		int no_pad_bytes = 0, offset;
-		StringBuffer buf = new StringBuffer(Constants.OPCODE_NAMES[opcode]);
+		StringBuilder buf = new StringBuilder(Constants.OPCODE_NAMES[opcode]);
 
 		/*
 		 * Special case: Skip (0-3) padding bytes, i.e., the following bytes are 4-byte-aligned
@@ -995,13 +995,13 @@ public abstract class Utility {
 					+ bytes.readUnsignedByte()); // Last byte is a reserved
 			// space
 			break;
-			
+
 		case Constants.INVOKEDYNAMIC://http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.invokedynamic
 			index = bytes.readUnsignedShort();
 			bytes.readUnsignedShort(); // zeroes
 			buf.append("\t" + constant_pool.constantToString(index) + (verbose ? " (" + index + ")" : ""));
 			break;
-			
+
 		// Operands are references to items in constant pool
 		case Constants.LDC_W:
 		case Constants.LDC2_W:
@@ -1076,13 +1076,13 @@ public abstract class Utility {
 
 	/**
 	 * Convert type to Java method signature, e.g. int[] f(java.lang.String x) becomes (Ljava/lang/String;)[I
-	 * 
+	 *
 	 * @param returnType what the method returns
 	 * @param argTypes what are the argument types
 	 * @return method signature for given type(s).
 	 */
 	public static String toMethodSignature(Type returnType, Type[] argTypes) {
-		StringBuffer buf = new StringBuffer("(");
+		StringBuilder buf = new StringBuilder("(");
 		int length = (argTypes == null) ? 0 : argTypes.length;
 		for (int i = 0; i < length; i++) {
 			buf.append(argTypes[i].getSignature());

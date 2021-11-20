@@ -553,7 +553,7 @@ public final class LazyMethodGen implements Traceable {
 	public String toShortString() {
 		String access = org.aspectj.apache.bcel.classfile.Utility.accessToString(getAccessFlags());
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		if (!access.equals("")) {
 			buf.append(access);

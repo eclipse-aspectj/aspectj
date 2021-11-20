@@ -229,7 +229,7 @@ public class BcelWorld extends World implements Repository {
 	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
 	 */
 	private String beautifyLocation(ISourceLocation isl) {
-		StringBuffer nice = new StringBuffer();
+		StringBuilder nice = new StringBuilder();
 		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().contains("no debug info available")) {
 			nice.append("no debug info available");
 		} else {
@@ -464,7 +464,7 @@ public class BcelWorld extends World implements Repository {
 
 		if (resolvedTypeFromTypeMap != null && !(resolvedTypeFromTypeMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
-			StringBuffer exceptionText = new StringBuffer();
+			StringBuilder exceptionText = new StringBuilder();
 			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
 			exceptionText.append("Signature=[" + signature + "] Found=[" + resolvedTypeFromTypeMap + "] Class=[" + resolvedTypeFromTypeMap.getClass() + "]");
 			throw new BCException(exceptionText.toString());
@@ -500,7 +500,7 @@ public class BcelWorld extends World implements Repository {
 
 		if (resolvedTypeFromTypeMap != null && !(resolvedTypeFromTypeMap instanceof ReferenceType)) {
 			// what on earth is it then? See pr 112243
-			StringBuffer exceptionText = new StringBuffer();
+			StringBuilder exceptionText = new StringBuilder();
 			exceptionText.append("Found invalid (not a ReferenceType) entry in the type map. ");
 			exceptionText.append("Signature=[" + signature + "] Found=[" + resolvedTypeFromTypeMap + "] Class=[" + resolvedTypeFromTypeMap.getClass() + "]");
 			throw new BCException(exceptionText.toString());
@@ -686,7 +686,7 @@ public class BcelWorld extends World implements Repository {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("BcelWorld(");
 		// buf.append(shadowMungerMap);
 		buf.append(")");

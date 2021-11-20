@@ -125,7 +125,7 @@ public class MemberImpl implements Member {
 	 * just deals with the parameter types.
 	 */
 	public static String typesToSignature(UnresolvedType[] paramTypes) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("(");
 		for (UnresolvedType paramType : paramTypes) {
 			buf.append(paramType.getSignature());
@@ -316,7 +316,7 @@ public class MemberImpl implements Member {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(returnType.getName());
 		buf.append(' ');
 		if (declaringType == null) {

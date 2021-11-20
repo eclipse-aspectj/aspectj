@@ -283,7 +283,7 @@ class HtmlDecorator {
 					String name = decl.toSignatureString();
 					int classEndIndex = contents.indexOf(name + "</B><DT>");
 					if (classEndIndex != -1) {
-						StringBuffer sb = new StringBuffer(contents.substring(secondClassStartIndex, classEndIndex));
+						StringBuilder sb = new StringBuilder(contents.substring(secondClassStartIndex, classEndIndex));
 						sb.replace(0, 5, "aspect");
 						fileContents.delete(secondClassStartIndex, classEndIndex);
 						fileContents.insert(secondClassStartIndex, sb.toString());
@@ -618,7 +618,7 @@ class HtmlDecorator {
 					parent = parent.getParent();
 					names.add(parent.toLinkLabelString());
 				}
-				StringBuffer sbuff = new StringBuffer();
+				StringBuilder sbuff = new StringBuilder();
 				for (int i = names.size() - 1; i >= 0; i--) {
 					String element = (String) names.get(i);
 					if (i == 0) {
@@ -634,7 +634,7 @@ class HtmlDecorator {
 
 				// need to replace " with quot; otherwise the links wont work
 				// for 'matches declare' relationship
-				StringBuffer sb = new StringBuffer(currDecl.toLabelString());
+				StringBuilder sb = new StringBuilder(currDecl.toLabelString());
 				int nextQuote = sb.toString().indexOf("\"");
 				while (nextQuote != -1) {
 					sb.deleteCharAt(nextQuote);
@@ -778,7 +778,7 @@ class HtmlDecorator {
 	 * @return String consisting of multiple "../" parts, one for each component part of the input <code>packagePath</code>.
 	 */
 	private static String getRelativePathFromHere(String packagePath) {
-		StringBuffer result = new StringBuffer("");
+		StringBuilder result = new StringBuilder("");
 		if (packagePath != null && (packagePath.contains("/"))) {
 			StringTokenizer sTok = new StringTokenizer(packagePath, "/", false);
 			while (sTok.hasMoreTokens()) {
@@ -839,7 +839,7 @@ class HtmlDecorator {
 	}
 
 	static String generateHREFName(IProgramElement decl) {
-		StringBuffer hrefLinkBuffer = new StringBuffer();
+		StringBuilder hrefLinkBuffer = new StringBuilder();
 		char[] declChars = decl.toLabelString().toCharArray();
 		for (char declChar : declChars) {
 			if (declChar == '"') {

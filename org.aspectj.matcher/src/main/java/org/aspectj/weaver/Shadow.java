@@ -657,7 +657,7 @@ public abstract class Shadow {
 	}
 
 	public String toResolvedString(World world) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(getKind());
 		sb.append("(");
 		Member m = getSignature();

@@ -258,7 +258,7 @@ public class Ajde {
 			if (LangUtil.isEmpty(mainClass)) {
 				showWarningMessage("No main class specified");
 			} else {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				List outputDirs = compilerConfig.getOutputLocationManager().getAllOutputLocations();
 				for (Object outputDir : outputDirs) {
 					File dir = (File) outputDir;

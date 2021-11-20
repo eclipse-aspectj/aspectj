@@ -1127,7 +1127,7 @@ public class ReferenceType extends ResolvedType {
 	private static String makeParameterizedSignature(ResolvedType aGenericType,
 			ResolvedType[] someParameters) {
 		String rawSignature = aGenericType.getErasureSignature();
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append(PARAMETERIZED_TYPE_IDENTIFIER);
 		ret.append(rawSignature.substring(1, rawSignature.length() - 1));
 		ret.append("<");
@@ -1140,7 +1140,7 @@ public class ReferenceType extends ResolvedType {
 
 	private static String makeDeclaredSignature(ResolvedType aGenericType,
 			UnresolvedType[] someParameters) {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		String rawSig = aGenericType.getErasureSignature();
 		ret.append(rawSig.substring(0, rawSig.length() - 1));
 		ret.append("<");

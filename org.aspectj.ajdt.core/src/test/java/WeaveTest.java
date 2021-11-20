@@ -237,7 +237,7 @@ public class WeaveTest {
 
 		for(int classcounter = 0; classcounter < NUMCLASSES; classcounter++) {
 
-			StringBuffer classfile = new StringBuffer(1000);
+			StringBuilder classfile = new StringBuilder(1000);
 
 			classfile.append("// Auto-generated" + NL);
 			classfile.append("package " + OUTPUT_PACKAGE + ";" + NL + NL);
@@ -281,7 +281,7 @@ public class WeaveTest {
 		}
 
 		if (INCLUDE_TEST_CLASSES) {
-			StringBuffer testFiles = new StringBuffer(1000);
+			StringBuilder testFiles = new StringBuilder(1000);
 
 			try {
 				testFiles.append("// Auto generated" + NL);
@@ -307,7 +307,7 @@ public class WeaveTest {
 				System.exit(-1);
 			}
 
-			testFiles = new StringBuffer(1000);
+			testFiles = new StringBuilder(1000);
 
 			try {
 				testFiles.append("// Auto generated" + NL);
@@ -334,7 +334,7 @@ public class WeaveTest {
 			}
 		}
 
-		StringBuffer buildList = new StringBuffer(100);
+		StringBuilder buildList = new StringBuilder(100);
 
 		for(int i = 0; i < NUMCLASSES; i++)
 			buildList.append("C" + i + ".java" + NL);
@@ -392,7 +392,7 @@ public class WeaveTest {
 
 	private static void createAllAspects(String adviceType, int pointcut) {
 
-		StringBuffer aspectFile = new StringBuffer(1000);
+		StringBuilder aspectFile = new StringBuilder(1000);
 
 		// Capitalises the first char in the adviceType String, and then adds "Advice" to it.
 		String adviceName = (char)(adviceType.charAt(0) - 32) + adviceType.substring(1) + "Advice";

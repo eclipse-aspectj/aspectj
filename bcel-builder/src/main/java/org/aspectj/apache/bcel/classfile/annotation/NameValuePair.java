@@ -68,7 +68,7 @@ public class NameValuePair {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(getNameString()).append("=").append(value.stringifyValue());
 		return sb.toString();
 	}

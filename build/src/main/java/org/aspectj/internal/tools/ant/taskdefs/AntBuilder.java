@@ -92,7 +92,7 @@ public class AntBuilder extends Builder {
 			target.setName(resultTargetName);
 
 			Result[] reqs = result.getRequired();
-			StringBuffer depends = new StringBuffer();
+			StringBuilder depends = new StringBuilder();
 			boolean first = true;
 			for (Result reqResult : reqs) {
 				if (!first) {
@@ -616,7 +616,7 @@ public class AntBuilder extends Builder {
 			} catch (BuildException e) {
 				throw e;
 			} catch (Throwable t) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append("classpath=");
 				sb.append(url);
 				throw new BuildException(sb.toString(), t);

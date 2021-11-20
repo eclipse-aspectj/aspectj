@@ -57,7 +57,7 @@ public class WeaveMessage extends Message {
 	 * @return new weaving message
 	 */
 	public static WeaveMessage constructWeavingMessage(WeaveMessageKind kind, String[] inserts) {
-		StringBuffer str = new StringBuffer(kind.getMessage());
+		StringBuilder str = new StringBuilder(kind.getMessage());
 		int pos = -1;
 		while ((pos = new String(str).indexOf("%")) != -1) {
 			int n = Character.getNumericValue(str.charAt(pos + 1));
@@ -77,7 +77,7 @@ public class WeaveMessage extends Message {
 	 */
 	public static WeaveMessage constructWeavingMessage(WeaveMessageKind kind, String[] inserts, String affectedtypename,
 			String aspectname) {
-		StringBuffer str = new StringBuffer(kind.getMessage());
+		StringBuilder str = new StringBuilder(kind.getMessage());
 		int pos = -1;
 		while ((pos = new String(str).indexOf("%")) != -1) {
 			int n = Character.getNumericValue(str.charAt(pos + 1));

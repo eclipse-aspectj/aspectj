@@ -177,7 +177,7 @@ public class LocalVariableTable extends Attribute {
 	 */
 	@Override
 	public final String toString() {
-		StringBuffer buf = new StringBuffer("");
+		StringBuilder buf = new StringBuilder("");
 		unpack();
 		for (int i = 0; i < localVariableTableLength; i++) {
 			buf.append(localVariableTable[i].toString());
