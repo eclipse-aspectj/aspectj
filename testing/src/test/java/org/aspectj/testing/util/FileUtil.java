@@ -267,7 +267,7 @@ public class FileUtil {
      *        return true;
      *     }}, true);</code></pre>
      * @param file root/starting point.  If a file, the only one visited.
-     * @param filter supplies boolean accept(File) method
+     * @param fileFilter supplies boolean accept(File) method
      * @param userRecursion - if true, do accept() on dirs; else, recurse
      * @return false if any fileFilter.accept(File) did.
      * @throws IllegalArgumentException if file or fileFilter is null
@@ -655,7 +655,6 @@ public class FileUtil {
      */
     protected static boolean deleteDirectory(File dir) {
         return ((null != dir)
-                && dir.exists()
                 && dir.isDirectory()
                 && FileUtil.descendFileTree(dir, DELETE_FILES, false)
                 && FileUtil.descendFileTree(dir, DELETE_DIRS, true)
@@ -675,7 +674,7 @@ public class FileUtil {
     protected static final FileFilter DELETE_DIRS = new FileFilter() {
             public boolean accept(File file) {
                 return ((null != file) && file.isDirectory()
-                        && file.exists() && file.delete());
+                        && file.delete());
             }
         };
     protected static final FileFilter DELETE_FILES = new FileFilter() {

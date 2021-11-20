@@ -175,7 +175,7 @@ public class BuildModuleTests extends TestCase {
 
     void checkSourceDirectory(File srcDir, String module) {
         final String label = "source dir " + srcDir + " (module " + module + ")";
-        assertTrue(label,  (srcDir.exists() && srcDir.isDirectory()));
+        assertTrue(label, srcDir.isDirectory());
         String license = getLicense(module);
 //        if (replacing) {
 //            if (replacing && true) {
