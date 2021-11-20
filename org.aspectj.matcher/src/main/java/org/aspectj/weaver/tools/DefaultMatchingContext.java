@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class DefaultMatchingContext implements MatchingContext {
 
-	private Map contextMap = new HashMap();
+	private Map<String, Object> contextMap = new HashMap<>();
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.weaver.tools.MatchingContext#hasContextParameter(java.lang.String)

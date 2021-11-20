@@ -57,9 +57,9 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 	public static ResolvedTypeMunger readField(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		ISourceLocation sloc = null;
 		ResolvedMember fieldSignature = ResolvedMemberImpl.readResolvedMember(s, context);
-		Set superMethodsCalled = readSuperMethodsCalled(s);
+		Set<ResolvedMember> superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);
-		List aliases = readInTypeAliases(s);
+		List<String> aliases = readInTypeAliases(s);
 		NewFieldTypeMunger munger = new NewFieldTypeMunger(fieldSignature, superMethodsCalled, aliases);
 		if (sloc != null) {
 			munger.setSourceLocation(sloc);

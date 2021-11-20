@@ -34,7 +34,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ReflectionBasedReferenceTypeDelegate createDelegate(ReferenceType forReferenceType, World inWorld,
 			ClassLoader usingClassLoader) {
 		try {
-			Class c = Class.forName(forReferenceType.getName(), false, usingClassLoader);
+			Class<?> c = Class.forName(forReferenceType.getName(), false, usingClassLoader);
 			ReflectionBasedReferenceTypeDelegate rbrtd = create15Delegate(forReferenceType, c, usingClassLoader, inWorld);
 			if (rbrtd != null) {
 				return rbrtd; // can be null if we didn't find the class the delegate logic loads
@@ -57,7 +57,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ReflectionBasedReferenceTypeDelegate create14Delegate(ReferenceType forReferenceType, World inWorld,
 			ClassLoader usingClassLoader) {
 		try {
-			Class c = Class.forName(forReferenceType.getName(), false, usingClassLoader);
+			Class<?> c = Class.forName(forReferenceType.getName(), false, usingClassLoader);
 			return new ReflectionBasedReferenceTypeDelegate(c, usingClassLoader, inWorld, forReferenceType);
 		} catch (ClassNotFoundException cnfEx) {
 			return null;
@@ -68,7 +68,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	private static ReflectionBasedReferenceTypeDelegate create15Delegate(ReferenceType forReferenceType, Class forClass,
 			ClassLoader usingClassLoader, World inWorld) {
 		try {
-			Class delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");
+			Class<?> delegateClass = Class.forName("org.aspectj.weaver.reflect.Java15ReflectionBasedReferenceTypeDelegate");
 			ReflectionBasedReferenceTypeDelegate ret = (ReflectionBasedReferenceTypeDelegate) delegateClass.getDeclaredConstructor().newInstance();
 			ret.initialize(forReferenceType, forClass, usingClassLoader, inWorld);
 			return ret;
@@ -92,8 +92,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	private static GenericSignatureInformationProvider createGenericSignatureProvider(World inWorld) {
 		try {
-			Class providerClass = Class.forName("org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider");
-			Constructor cons = providerClass.getConstructor(new Class[] { World.class });
+			Class<?> providerClass = Class.forName("org.aspectj.weaver.reflect.Java15GenericSignatureInformationProvider");
+			Constructor<?> cons = providerClass.getConstructor(new Class[] { World.class });
 			GenericSignatureInformationProvider ret = (GenericSignatureInformationProvider) cons
 					.newInstance(new Object[] { inWorld });
 			return ret;
@@ -204,7 +204,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 		}
 	}
 
-	private static ResolvedType toResolvedType(Class aClass, IReflectionWorld aWorld) {
+	private static ResolvedType toResolvedType(Class<?> aClass, IReflectionWorld aWorld) {
 		return aWorld.resolve(aClass);
 	}
 

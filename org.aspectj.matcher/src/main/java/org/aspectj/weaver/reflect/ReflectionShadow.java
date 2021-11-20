@@ -42,10 +42,10 @@ public class ReflectionShadow extends Shadow {
 	private Var[] argsVars = null;
 	private Var atThisVar = null;
 	private Var atTargetVar = null;
-	private Map atArgsVars = new HashMap();
-	private Map withinAnnotationVar = new HashMap();
-	private Map withinCodeAnnotationVar = new HashMap();
-	private Map annotationVar = new HashMap();
+	private Map<ResolvedType, Var[]> atArgsVars = new HashMap<>();
+	private Map<ResolvedType, Var> withinAnnotationVar = new HashMap<>();
+	private Map<ResolvedType, Var> withinCodeAnnotationVar = new HashMap<>();
+	private Map<ResolvedType, Var> annotationVar = new HashMap<>();
 	private AnnotationFinder annotationFinder;
 
 	public static Shadow makeExecutionShadow(World inWorld, java.lang.reflect.Member forMethod, MatchingContext withContext) {

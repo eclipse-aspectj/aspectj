@@ -549,7 +549,7 @@ public abstract class Shadow {
 
 	private void sortMungers() {
 
-		List sorted = PartialOrder.sort(mungers);
+		List<ShadowMunger> sorted = PartialOrder.sort(mungers);
 
 		// Bunch of code to work out whether to report xlints for advice that isn't ordered at this Joinpoint
 		possiblyReportUnorderedAdvice(sorted);
@@ -565,7 +565,7 @@ public abstract class Shadow {
 	}
 
 	// not quite optimal... but the xlint is ignore by default
-	private void possiblyReportUnorderedAdvice(List sorted) {
+	private void possiblyReportUnorderedAdvice(List<ShadowMunger> sorted) {
 		if (sorted != null && getIWorld().getLint().unorderedAdviceAtShadow.isEnabled() && mungers.size() > 1) {
 
 			// Stores a set of strings of the form 'aspect1:aspect2' which indicates there is no

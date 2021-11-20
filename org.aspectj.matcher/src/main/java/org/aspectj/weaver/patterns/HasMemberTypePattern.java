@@ -61,7 +61,7 @@ public class HasMemberTypePattern extends TypePattern {
 	private boolean hasField(ResolvedType type) {
 		// TODO what about ITDs
 		World world = type.getWorld();
-		for (Iterator iter = type.getFields(); iter.hasNext();) {
+		for (Iterator<ResolvedMember> iter = type.getFields(); iter.hasNext();) {
 			Member field = (Member) iter.next();
 			if (field.getName().startsWith(declareAtPrefix)) {
 				continue;
