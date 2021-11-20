@@ -300,7 +300,7 @@ public class SoftMessage implements IMessage {
 		if (null != sourceLocation) {
 			throw new IllegalStateException("cannot set line after creating source location");
 		}
-		this.line = Integer.valueOf(line);
+		this.line = Integer.parseInt(line);
 		SourceLocation.validLine(this.line);
 	}
 
