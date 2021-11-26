@@ -3,6 +3,12 @@
 
 <suite>
 
+	<!-- https://github.com/eclipse/org.aspectj/issues/105 -->
+	<ajc-test dir="bugs198/github_105" vm="8" title="ITD annotation with mandatory parameter via aspectpath">
+		<compile files="FooAnnotation.java BarAnnotation.java FooAspect.aj" options="-8" outjar="aspect.jar"/>
+		<compile files="Application.java" options="-8" aspectpath="aspect.jar"/>
+	</ajc-test>
+
 	<!-- Java 17 final, Java 16, 15 preview -->
 	<ajc-test dir="features197/java15" vm="17" title="sealed class with legal subclasses">
 		<compile files="Person.java Employee.java Manager.java" options="-17" />
