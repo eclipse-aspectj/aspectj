@@ -99,6 +99,11 @@
   <li>Document build profiles and properties in <i>docs/developer/BUILD.md</i></li>
   <li>Add a guide for setting up an AspectJ development environment in <i>docs/developer/IDE.md</i></li>
   <li>Allow JAR saving if <tt>-proceedOnError</tt> is specified</li>
+  <li>
+    Fix <a href="https://github.com/eclipse/org.aspectj/issues/105">issue #105</a>: Compilation fails when using an
+    aspect library via <tt>-aspectpath</tt> in combination with introducing an annotation via ITD. This was broken since
+    version 1.9.5 and fixed in 1.9.8.RC3.
+  </li>
 </ul>
 
 <p>
