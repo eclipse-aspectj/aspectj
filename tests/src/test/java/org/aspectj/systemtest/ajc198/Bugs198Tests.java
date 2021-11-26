@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc198;
 
+import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
@@ -17,6 +18,10 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
 	public void testGitHub_105() {
 		runTest("ITD annotation with mandatory parameter via aspectpath");
 	}
+
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(Bugs198Tests.class);
+  }
 
   @Override
   protected java.net.URL getSpecFile() {
