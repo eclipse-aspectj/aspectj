@@ -993,7 +993,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
-			if (checkClassFiles && f.exists() && f.isDirectory()) {
+			if (checkClassFiles && f.isDirectory()) {
 
 				// We should use here a list/set of directories we know have or have not changed - some kind of
 				// List<File> buildConfig.getClasspathEntriesWithChangedContents()
@@ -1045,7 +1045,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}
-			if (checkClassFiles && f.exists() && f.isDirectory()) {
+			if (checkClassFiles && f.isDirectory()) {
 
 				// We should use here a list/set of directories we know have or have not changed - some kind of
 				// List<File> buildConfig.getClasspathEntriesWithChangedContents()

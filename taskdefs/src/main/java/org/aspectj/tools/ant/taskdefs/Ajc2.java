@@ -465,7 +465,7 @@ public class Ajc2 extends Javac {
         File parent = argfile.getParentFile();
 
         // Sanity check
-        if (parent == null || !parent.exists() || !parent.isDirectory()) {
+        if (parent == null || !parent.isDirectory()) {
             return;
         }
 
