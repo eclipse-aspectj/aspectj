@@ -121,7 +121,7 @@ Before we release the staging repository though, we want to commit and tag the r
 git commit -am "Set version to 1.9.8.M2"
 
 # Tag release
-git tag V1_9_7_M2
+git tag V1_9_8_M2
 
 # Set new snapshot version, increasing the version number after a final release
 mvn versions:set -DnewVersion=1.9.8-SNAPSHOT
@@ -136,7 +136,7 @@ git commit -am "Set version to 1.9.8-SNAPSHOT"
 git push origin
 
 # Push the release tag to GitHub
-git push origin V1_9_7_M2
+git push origin V1_9_8_M2
 ```
 
 OK, the Git house-keeping is done. Now finally, let us enjoy the fruits of our work and release the staging repository
