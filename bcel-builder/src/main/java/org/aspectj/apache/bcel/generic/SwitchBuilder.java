@@ -54,7 +54,7 @@ package org.aspectj.apache.bcel.generic;
  * <http://www.apache.org/>.
  */
 
-/** 
+/**
  * SWITCH - Branch depending on int value, generates either LOOKUPSWITCH or
  * TABLESWITCH instruction, depending on whether the match values (int[]) can be
  * sorted with no gaps between the numbers.
@@ -74,7 +74,7 @@ public final class SwitchBuilder {
    * between the numbers, a TABLESWITCH instruction is generated, and
    * a LOOKUPSWITCH otherwise. The former may be more efficient, but
    * needs more space.
-   * 
+   *
    * Note, that the key array always will be sorted, though we leave
    * the original arrays unaltered.
    *
@@ -95,7 +95,7 @@ public final class SwitchBuilder {
       }
     else {
       sort(0, match_length - 1);
-      
+
       if(matchIsOrdered(max_gap)) {
 	fillup(max_gap, target);
 
@@ -109,7 +109,7 @@ public final class SwitchBuilder {
   public SwitchBuilder(int[] match, InstructionHandle[] targets, InstructionHandle target) {
     this(match, targets, target, 1);
   }
-  
+
   private final void fillup(int max_gap, InstructionHandle target) {
     int                 max_size = match_length + match_length * max_gap;
     int[]               m_vec    = new int[max_size];
@@ -121,7 +121,7 @@ public final class SwitchBuilder {
 
     for(int i=1; i < match_length; i++) {
       int prev = match[i-1];
-      int gap  = match[i] - prev; 
+      int gap  = match[i] - prev;
 
       for(int j=1; j < gap; j++) {
 	m_vec[count] = prev + j;
@@ -132,7 +132,7 @@ public final class SwitchBuilder {
       m_vec[count] = match[i];
       t_vec[count] = targets[i];
       count++;
-    }	
+    }
 
     match   = new int[count];
     targets = new InstructionHandle[count];

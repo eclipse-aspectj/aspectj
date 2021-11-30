@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * This class represents a constant pool reference to an interface method.
- * 
+ *
  * @version $Id: ConstantInterfaceMethodref.java,v 1.5 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

@@ -57,14 +57,14 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * Denotes basic type such as int.
- * 
+ *
  * @version $Id: BasicType.java,v 1.4 2008/08/28 00:05:57 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class BasicType extends Type {
 	/**
 	 * Constructor for basic types such as int, long, `void'
-	 * 
+	 *
 	 * @param type one of T_INT, T_BOOLEAN, ..., T_VOID
 	 * @see org.aspectj.apache.bcel.Constants
 	 */

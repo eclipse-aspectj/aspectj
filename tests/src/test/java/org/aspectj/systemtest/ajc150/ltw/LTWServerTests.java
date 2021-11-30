@@ -13,11 +13,11 @@ public class LTWServerTests extends XMLBasedAjcTestCase {
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ltw.xml");
 	}
-    
+
   	public void testServerWithHelloWorld () {
   		runTest("TestServer with HelloWorld");
   	}
-    
+
   	public void testServerWithParentAndChild () {
   		runTest("TestServer with Parent and Child");
   	}

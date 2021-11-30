@@ -54,7 +54,7 @@ package org.aspectj.apache.bcel.classfile;
  * <http://www.apache.org/>.
  */
 
-/** 
+/**
  * Thrown when the BCEL attempts to read a class file and determines
  * that the file is malformed or otherwise cannot be interpreted as a
  * class file.

@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.classfile.ConstantUtf8;
 
 /**
  * Super class for InvokeInstruction and FieldInstruction, since they have some methods in common!
- * 
+ *
  * @version $Id: FieldOrMethod.java,v 1.8 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

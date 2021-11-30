@@ -58,7 +58,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * Super class for the GET/PUTxxx family of instructions.
- * 
+ *
  * @version $Id: FieldInstruction.java,v 1.7 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

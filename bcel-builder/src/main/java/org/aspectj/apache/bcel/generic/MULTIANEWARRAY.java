@@ -62,11 +62,11 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * MULTIANEWARRAY - Create new mutidimensional array of references
- * 
+ *
  * <PRE>
  * Stack: ..., count1, [count2, ...] -&gt; ..., arrayref
  * </PRE>
- * 
+ *
  * @version $Id: MULTIANEWARRAY.java,v 1.4 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -80,7 +80,7 @@ public class MULTIANEWARRAY extends InstructionCP {
 
 	/**
 	 * Dump instruction as byte code to stream out.
-	 * 
+	 *
 	 * @param out Output stream
 	 */
 	public void dump(DataOutputStream out) throws IOException {
@@ -123,7 +123,7 @@ public class MULTIANEWARRAY extends InstructionCP {
 
 	/**
 	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
-	 * 
+	 *
 	 * @return Number of words consumed from stack by this instruction
 	 */
 	public int consumeStack(ConstantPool cpg) {

@@ -11,7 +11,7 @@ import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 
 public class Play {
-	
+
 	public static void printBytes(byte[] bs) {
 		StringBuilder sb = new StringBuilder("Bytes:"+bs.length+"[");
 		for (int i=0;i<bs.length;i++) {
@@ -21,7 +21,7 @@ public class Play {
 		sb.append("]");
 		System.out.println(sb);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		if (args==null || args.length==0 ) {
 			System.out.println("Specify a file");

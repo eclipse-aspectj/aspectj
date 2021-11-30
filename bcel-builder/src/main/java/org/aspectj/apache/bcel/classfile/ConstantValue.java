@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from <em>Attribute</em> and represents a constant value, i.e., a default value for initializing a class
  * field. This class is instantiated by the <em>Attribute.readAttribute()</em> method.
- * 
+ *
  * @version $Id: ConstantValue.java,v 1.6 2009/09/16 00:43:49 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute

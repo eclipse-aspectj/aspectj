@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
  * TABLESWITCH - Switch within given range of values, i.e., low..high
- * 
+ *
  * @version $Id: TABLESWITCH.java,v 1.5 2008/08/28 00:05:29 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
@@ -87,7 +87,7 @@ public class TABLESWITCH extends InstructionSelect {
 
 	/**
 	 * Dump instruction as byte code to stream out.
-	 * 
+	 *
 	 * @param out Output stream
 	 */
 	public void dump(DataOutputStream out) throws IOException {

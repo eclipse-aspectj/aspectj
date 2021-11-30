@@ -61,9 +61,9 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * Represents a module.
- * 
+ *
  * See http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.4.12
- * 
+ *
  * @author Andy Clement
  */
 public final class ConstantPackage extends Constant {

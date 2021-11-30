@@ -63,15 +63,15 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to the name and signature of a field or method.
- * 
+ *
  * http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.10
- * 
+ *
  * @author Andy Clement
  * @see Constant
  */
 public final class ConstantInvokeDynamic extends Constant {
 	private final int bootstrapMethodAttrIndex;
-	private final int nameAndTypeIndex; 
+	private final int nameAndTypeIndex;
 
 	ConstantInvokeDynamic(DataInputStream file) throws IOException {
 		this(file.readUnsignedShort(), file.readUnsignedShort());
@@ -101,15 +101,15 @@ public final class ConstantInvokeDynamic extends Constant {
 //	public final int getSignatureIndex() {
 //		return referenceIndex;
 //	}
-//	
+//
 //	public final String getSignature(ConstantPool cp) {
 //		return cp.constantToString(getSignatureIndex(), Constants.CONSTANT_Utf8);
 //	}
-	
+
 	public final int getNameAndTypeIndex() {
 		return nameAndTypeIndex;
 	}
-	
+
 	public final int getBootstrapMethodAttrIndex() {
 		return bootstrapMethodAttrIndex;
 	}

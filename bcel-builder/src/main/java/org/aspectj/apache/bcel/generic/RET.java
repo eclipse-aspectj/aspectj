@@ -61,11 +61,11 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * RET - Return from subroutine
- * 
+ *
  * <PRE>
  * Stack: ..., -&gt; ..., address
  * </PRE>
- * 
+ *
  * @version $Id: RET.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */

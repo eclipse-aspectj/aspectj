@@ -62,7 +62,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * This class represents a local variable within a method. It contains its scope, name, signature and index on the method's frame.
- * 
+ *
  * @version $Id: LocalVariable.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see LocalVariableTable
@@ -89,7 +89,7 @@ public final class LocalVariable implements Constants, Cloneable, Node {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param file Input stream
 	 * @throws IOException
 	 */
@@ -118,7 +118,7 @@ public final class LocalVariable implements Constants, Cloneable, Node {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	public void accept(ClassVisitor v) {
@@ -127,7 +127,7 @@ public final class LocalVariable implements Constants, Cloneable, Node {
 
 	/**
 	 * Dump local variable to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */

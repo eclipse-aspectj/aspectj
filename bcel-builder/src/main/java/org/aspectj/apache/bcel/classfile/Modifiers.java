@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.Constants;
  * Super class for all objects that have modifiers like private, final, ... I.e.
  * classes, fields, and methods.
  * was AccessFlags
- * 
+ *
  * @version $Id: Modifiers.java,v 1.2 2008/05/28 23:53:01 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -77,7 +77,7 @@ public abstract class Modifiers {
 	public final int getModifiers() {
 		return modifiers;
 	}
-	
+
 	public final void setModifiers(int modifiers) {
 		this.modifiers = modifiers;
 	}

@@ -15,7 +15,7 @@ public class LTWServer153Tests extends XMLBasedAjcTestCase {
 	protected URL getSpecFile() {
 	    return getClassResource("ajc153.xml");
 	}
-    
+
   	public void testHandleDuplicateConfiguration_pr157474 () {
   		runTest("TestServer with duplicate configuration");
   	}

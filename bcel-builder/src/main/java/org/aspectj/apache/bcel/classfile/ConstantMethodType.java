@@ -63,9 +63,9 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from the abstract <A HREF="org.aspectj.apache.bcel.classfile.Constant.html">Constant</A> class and
  * represents a reference to the name and signature of a field or method.
- * 
+ *
  * http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.9
- * 
+ *
  * @author Andy Clement
  * @see Constant
  */
@@ -98,7 +98,7 @@ public final class ConstantMethodType extends Constant {
 //	public final int getSignatureIndex() {
 //		return referenceIndex;
 //	}
-//	
+//
 //	public final String getSignature(ConstantPool cp) {
 //		return cp.constantToString(getSignatureIndex(), Constants.CONSTANT_Utf8);
 //	}

@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.Constants;
 
 /**
  * Abstract super class for instructions dealing with local variables.
- * 
+ *
  * @version $Id: InstructionLV.java,v 1.5 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -128,7 +128,7 @@ public class InstructionLV extends Instruction {
 
 	/**
 	 * Long output format:
-	 * 
+	 *
 	 * 'name of opcode' "[" 'opcode number' "]" "(" 'length of instruction' ")" "<" 'local variable index' ">"
 	 */
 	public String toString(boolean verbose) {

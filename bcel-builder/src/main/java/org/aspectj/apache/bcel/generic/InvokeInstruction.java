@@ -61,7 +61,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * Super class for the INVOKExxx family of instructions.
- * 
+ *
  * @version $Id: InvokeInstruction.java,v 1.6 2009/10/05 17:35:36 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
@@ -86,7 +86,7 @@ public class InvokeInstruction extends FieldOrMethod {
 
 	/**
 	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
-	 * 
+	 *
 	 * @return Number of words consumed from stack by this instruction
 	 */
 	public int consumeStack(ConstantPool cpg) {
@@ -100,7 +100,7 @@ public class InvokeInstruction extends FieldOrMethod {
 
 	/**
 	 * Also works for instructions whose stack effect depends on the constant pool entry they reference.
-	 * 
+	 *
 	 * @return Number of words produced onto stack by this instruction
 	 */
 	public int produceStack(ConstantPool cpg) {

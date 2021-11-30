@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from <em>Attribute</em> and denotes that this is a deprecated method. It is instantiated from the
  * <em>Attribute.readAttribute()</em> method.
- * 
+ *
  * @version $Id: Deprecated.java,v 1.5 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
@@ -92,7 +92,7 @@ public final class Deprecated extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index in constant pool to CONSTANT_Utf8
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -112,7 +112,7 @@ public final class Deprecated extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -122,7 +122,7 @@ public final class Deprecated extends Attribute {
 
 	/**
 	 * Dump source file attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */

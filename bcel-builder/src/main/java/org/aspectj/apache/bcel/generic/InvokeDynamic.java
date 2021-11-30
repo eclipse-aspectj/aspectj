@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 /**
  * INVOKEDYNAMIC
- * 
+ *
  * @author Andy Clement
  */
 public final class InvokeDynamic extends InvokeInstruction {
@@ -78,7 +78,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 		out.writeShort(index);
 		out.writeShort(0);
 	}
-	
+
 	public String toString(ConstantPool cp) {
 		return super.toString(cp) + " " + index;
 	}
@@ -94,7 +94,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 	public int hashCode() {
 		return opcode * 37 + index;
 	}
-	
+
 	public Type getReturnType(ConstantPool cp) {
 		return Type.getReturnType(getSignature(cp));
 	}
@@ -102,7 +102,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 	public Type[] getArgumentTypes(ConstantPool cp) {
 		return Type.getArgumentTypes(getSignature(cp));
 	}
-	
+
 	public String getSignature(ConstantPool cp) {
 		if (signature == null) {
 			ConstantInvokeDynamic cid = (ConstantInvokeDynamic)cp.getConstant(index);
@@ -111,7 +111,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 		}
 		return signature;
 	}
-	
+
 	@Override
 	public String getName(ConstantPool cp) {
 		if (name == null) {
@@ -121,7 +121,7 @@ public final class InvokeDynamic extends InvokeInstruction {
 		}
 		return name;
 	}
-	
+
 	public String getClassName(ConstantPool cp) {
 		throw new IllegalStateException("there is no classname for invokedynamic");
 	}

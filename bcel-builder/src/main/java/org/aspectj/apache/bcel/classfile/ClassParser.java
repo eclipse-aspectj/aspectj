@@ -76,14 +76,14 @@ import org.aspectj.apache.bcel.Constants;
  * further details about the structure of a bytecode file.
  *
  * @version $Id: ClassParser.java,v 1.6 2008/05/30 17:29:14 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class ClassParser {
   private DataInputStream file;
   private String          filename;
   private int             classnameIndex;
   private int             superclassnameIndex;
-  private int             major, minor; 
+  private int             major, minor;
   private int             accessflags;
   private int[]           interfaceIndices;
   private ConstantPool    cpool;
@@ -106,7 +106,7 @@ public final class ClassParser {
   }
 
   /** Parse class from given .class file */
-  public ClassParser(String file_name) throws IOException {    
+  public ClassParser(String file_name) throws IOException {
     this.filename = file_name;
     file = new DataInputStream(new BufferedInputStream(new FileInputStream(file_name),BUFSIZE));
   }
@@ -117,7 +117,7 @@ public final class ClassParser {
    * A <em>ClassFormatException</em> is raised, if the file is not a valid
    * .class file. (This does not include verification of the byte code as it
    * is performed by the java interpreter).
-   */    
+   */
   public JavaClass parse() throws IOException, ClassFormatException {
     /****************** Read headers ********************************/
     // Check magic tag of class file
@@ -136,7 +136,7 @@ public final class ClassParser {
     // Get interface information, i.e., implemented interfaces
     readInterfaces();
 
-    /****************** Read class fields and methods ***************/ 
+    /****************** Read class fields and methods ***************/
     // Read class fields, i.e., the variables of the class
     readFields();
 
@@ -150,13 +150,13 @@ public final class ClassParser {
     file.close();
 
     // Return the information we have gathered in a new object
-    JavaClass jc= new JavaClass(classnameIndex, superclassnameIndex, 
+    JavaClass jc= new JavaClass(classnameIndex, superclassnameIndex,
 			 filename, major, minor, accessflags,
 			 cpool, interfaceIndices, fields,
 			 methods, attributes);
     return jc;
   }
-  
+
   /** Read information about the attributes of the class */
   private final void readAttributes() {
 	  attributes = AttributeUtils.readAttributes(file,cpool);
@@ -172,14 +172,14 @@ public final class ClassParser {
       accessflags |= Constants.ACC_ABSTRACT;
 
     // don't police it like this... leave higher level verification code to check it.
-//    if(((access_flags & Constants.ACC_ABSTRACT) != 0) && 
+//    if(((access_flags & Constants.ACC_ABSTRACT) != 0) &&
 //       ((access_flags & Constants.ACC_FINAL)    != 0 ))
 //      throw new ClassFormatException("Class can't be both final and abstract");
 
     classnameIndex      = file.readUnsignedShort();
     superclassnameIndex = file.readUnsignedShort();
   }
-  
+
   private final void readConstantPool() throws IOException {
     try {
 		cpool = new ConstantPool(file);
@@ -192,7 +192,7 @@ public final class ClassParser {
 		}
 		throw cfe;
 	}
-  }    
+  }
 
   /** Read information about the fields of the class */
   private final void readFields() throws IOException, ClassFormatException {
@@ -204,16 +204,16 @@ public final class ClassParser {
     	for(int i=0; i < fieldCount; i++)
     		fields[i] = new Field(file, cpool);
     }
-  }    
+  }
 
-  /** Check whether the header of the file is ok. Of course, this has 
+  /** Check whether the header of the file is ok. Of course, this has
    *  to be the first action on successive file reads */
   private final void readID() throws IOException {
     int magic = 0xCAFEBABE;
-    if (file.readInt() != magic) 
+    if (file.readInt() != magic)
       throw new ClassFormatException(filename + " is not a Java .class file");
-  }   
-  
+  }
+
   private static final int[] NO_INTERFACES = new int[0];
 
   /** Read information about the interfaces implemented by this class */
@@ -226,8 +226,8 @@ public final class ClassParser {
 	    for(int i=0; i < interfacesCount; i++)
 	      interfaceIndices[i] = file.readUnsignedShort();
     }
-  }     
-  
+  }
+
   /** Read information about the methods of the class */
   private final void readMethods() throws IOException {
     int methodsCount = file.readUnsignedShort();
@@ -238,12 +238,12 @@ public final class ClassParser {
 	    for(int i=0; i < methodsCount; i++)
 	      methods[i] = new Method(file, cpool);
     }
-  }      
-  
+  }
+
   /** Read major and minor version of compiler which created the file */
   private final void readVersion() throws IOException {
     minor = file.readUnsignedShort();
     major = file.readUnsignedShort();
-  }    
-  
+  }
+
 }

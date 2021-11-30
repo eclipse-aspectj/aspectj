@@ -72,7 +72,7 @@ package org.aspectj.apache.bcel.generic;
  *       InstructionHandle[] targets = e.getTargets();
  *	 for(int i=0; i < targets.length; i++) {
  *	   InstructionTargeter[] targeters = targets[i].getTargeters();
- *     
+ *
  *	   for(int j=0; j < targeters.length; j++)
  *	     targeters[j].updateTarget(targets[i], new_target);
  *       }

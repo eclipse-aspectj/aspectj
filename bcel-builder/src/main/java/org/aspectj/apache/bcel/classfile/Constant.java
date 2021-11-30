@@ -63,7 +63,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * Abstract superclass for classes to represent the different constant types in the constant pool of a class file. The classes keep
  * closely to the JVM specification.
- * 
+ *
  * @version $Id: Constant.java,v 1.5 2009/09/10 15:35:04 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
