@@ -156,7 +156,7 @@ public class ClassPathManager {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		boolean start = true;
 		for (Entry entry : entries) {
 			if (start) {

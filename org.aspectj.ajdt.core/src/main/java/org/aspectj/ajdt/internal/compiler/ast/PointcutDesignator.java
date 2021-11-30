@@ -97,7 +97,7 @@ public class PointcutDesignator extends ASTNode {
 	}
 
 	public String getPointcutDeclarationText() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		PseudoToken[] toks = tokens.tokens;
 		for (int i = 0; i < (toks.length - 1); i++) {
 			sb.append(toks[i].getString());

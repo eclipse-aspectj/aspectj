@@ -111,7 +111,7 @@ public class Utility {
 	 * Ensure we report a nice source location - particular in the case where the source info is missing (binary weave).
 	 */
 	public static String beautifyLocation(ISourceLocation isl) {
-		StringBuffer nice = new StringBuffer();
+		StringBuilder nice = new StringBuilder();
 		if (isl == null || isl.getSourceFile() == null || isl.getSourceFile().getName().contains("no debug info available")) {
 			nice.append("no debug info available");
 		} else {

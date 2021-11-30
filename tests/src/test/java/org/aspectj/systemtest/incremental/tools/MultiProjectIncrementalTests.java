@@ -2208,7 +2208,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private String toString(List<ResolvedMember> list) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (ResolvedMember m : list) {
 			sb.append(m).append("\n");
 		}
@@ -2216,7 +2216,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private String typeListToString(List<String> list) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (String m : list) {
 			sb.append(m).append("\n");
 		}
@@ -2224,7 +2224,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private String toString(List<ResolvedMember> one, List<ResolvedMember> two, boolean shouldIncludeGenerics) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Through iterator\n");
 		for (ResolvedMember m : one) {
 			sb.append(m).append("\n");
@@ -2237,7 +2237,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	}
 
 	private String typeListsToString(List<String> one, List<String> two) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Through iterator\n");
 		for (String m : one) {
 			sb.append(">" + m).append("\n");
@@ -3901,7 +3901,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 	 */
 	private List<String> getRelatedElements(AsmManager model, IProgramElement programElement, int expected) {
 		List<String> relatedElements = getRelatedElements(model, programElement);
-		StringBuffer debugString = new StringBuffer();
+		StringBuilder debugString = new StringBuilder();
 		if (relatedElements != null) {
 			for (String element : relatedElements) {
 				debugString.append(model.getHierarchy().findElementForHandle(element).toLabelString()).append("\n");

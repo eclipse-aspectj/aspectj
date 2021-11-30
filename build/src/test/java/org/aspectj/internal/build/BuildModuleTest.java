@@ -107,7 +107,7 @@ public class BuildModuleTest extends TestCase {
 			if (!Util.delete(file)) {
 				File[] list = file.listFiles();
 				if (!Util.isEmpty(list)) {
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					sb.append("warning: BuildModuleTest unable to delete ");
 					sb.append(file.toString());
 					sb.append("\n"); // XXX platform

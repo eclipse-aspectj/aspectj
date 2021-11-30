@@ -148,7 +148,7 @@ public class AJInstaller extends MatchingTask {
 
     protected void writeContents(ZipOutputStream zOut) throws IOException {
         // write to a StringBuffer
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(contentsBytes);
         buf.append(NEWLINE);
 		for (String name : contentsNames) {
@@ -160,7 +160,7 @@ public class AJInstaller extends MatchingTask {
 
     protected void writeManifest(ZipOutputStream zOut) throws IOException {
         // write to a StringBuffer
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Manifest-Version: 1.0");
         buf.append(NEWLINE);
         buf.append("Main-Class: " + MAIN_CLASS);

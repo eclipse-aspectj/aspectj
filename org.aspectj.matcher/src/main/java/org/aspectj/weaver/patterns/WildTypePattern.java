@@ -569,7 +569,7 @@ public class WildTypePattern extends TypePattern {
 			throw new RuntimeException("bad name: " + namePatterns);
 		}
 		// System.out.println("get clean: " + this);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0, len = namePatterns.length; i < len; i++) {
 			NamePattern p = namePatterns[i];
 			String simpleName = p.maybeGetSimpleName();
@@ -1179,7 +1179,7 @@ public class WildTypePattern extends TypePattern {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buf.append('(');
 			buf.append(annotationPattern.toString());

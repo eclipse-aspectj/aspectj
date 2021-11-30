@@ -153,7 +153,7 @@ public class CompilationResult {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		buff.append("AspectJ Compilation Result:\n");
 		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size() + weaveMessages.size();
 		buff.append(totalMessages);

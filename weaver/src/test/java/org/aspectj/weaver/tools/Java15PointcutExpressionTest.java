@@ -295,7 +295,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 		  expected.remove(nextToken);
 	  }
 	  if (expected.size()>0) { // we have excess ones!
-		  StringBuffer excessTokens = new StringBuffer();
+		  StringBuilder excessTokens = new StringBuilder();
 		  for (String string : expected) {
 			  excessTokens.append(string).append(" ");
 		  }
@@ -313,7 +313,7 @@ public class Java15PointcutExpressionTest extends TestCase {
 		  expected.remove(nextToken);
 	  }
 	  if (expected.size()>0) { // we have excess ones!
-		  StringBuffer excessTokens = new StringBuffer();
+		  StringBuilder excessTokens = new StringBuilder();
 		  for (String string : expected) {
 			  excessTokens.append(string).append(" ");
 		  }

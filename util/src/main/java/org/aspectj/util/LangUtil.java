@@ -805,7 +805,7 @@ public class LangUtil {
 		if (LangUtil.isEmpty(in) || LangUtil.isEmpty(sought)) {
 			return in;
 		}
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		final int len = sought.length();
 		int start = 0;
 		int loc;

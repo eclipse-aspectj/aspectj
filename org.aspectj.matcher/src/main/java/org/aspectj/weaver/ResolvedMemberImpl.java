@@ -468,7 +468,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	 * @return the generic signature for the member that could be inserted into a class file
 	 */
 	public String getSignatureForAttribute() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (typeVariables != null) {
 			sb.append("<");
 			for (TypeVariable typeVariable : typeVariables) {
@@ -489,7 +489,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	}
 
 	public String getGenericSignature() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (typeVariables != null) {
 			sb.append("<");
 			for (TypeVariable typeVariable : typeVariables) {
@@ -912,7 +912,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 					&& typeVariableMap.containsKey(((UnresolvedTypeVariableReferenceType) parameterizedComponentSig)
 							.getTypeVariable().getName())) { // pr250632
 				// TODO ASC bah, this code is rubbish - i should fix it properly
-				StringBuffer newsig = new StringBuffer();
+				StringBuilder newsig = new StringBuilder();
 				newsig.append("[T");
 				newsig.append(((UnresolvedTypeVariableReferenceType) parameterizedComponentSig).getTypeVariable().getName());
 				newsig.append(";");
@@ -1080,7 +1080,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	}
 
 	public String getSignatureErased() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("(");
 		sb.append(getParameterSignatureErased());
 		sb.append(")");
@@ -1119,7 +1119,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	 * Useful for writing tests, returns *everything* we know about this member.
 	 */
 	public String toDebugString() {
-		StringBuffer r = new StringBuffer();
+		StringBuilder r = new StringBuilder();
 
 		// modifiers
 		int mods = modifiers;
@@ -1188,7 +1188,7 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 	public static boolean showParameterNames = true;
 
 	public String toGenericString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(getGenericReturnType().getSimpleName());
 		buf.append(' ');
 		buf.append(declaringType.getName());

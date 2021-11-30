@@ -36,7 +36,7 @@ public class DeclareErrorOrWarning extends Declare {
 	 * returns "declare warning: &lt;message&gt;" or "declare error: &lt;message&gt;"
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare ");
 		if (isError) {
 			buf.append("error: ");
@@ -118,7 +118,7 @@ public class DeclareErrorOrWarning extends Declare {
 	 * returns "declare warning" or "declare error"
 	 */
 	public String getName() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare ");
 		if (isError) {
 			buf.append("error");

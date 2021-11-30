@@ -255,7 +255,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 	}
 
 	private String stringify(List<String> l) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		for (String str : l) {
 			result.append(str);
 			result.append("\n");

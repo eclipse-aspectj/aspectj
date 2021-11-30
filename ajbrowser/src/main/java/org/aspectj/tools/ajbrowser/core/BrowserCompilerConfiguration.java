@@ -36,7 +36,7 @@ public class BrowserCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	public String getClasspath() {
-		StringBuffer classpath = new StringBuffer();
+		StringBuilder classpath = new StringBuilder();
 		String userPath = preferencesAdapter.getProjectPreference(PreferenceStoreConstants.BUILD_CLASSPATH);
 		if (userPath != null && userPath.trim().length() != 0) {
 			classpath.append(userPath);

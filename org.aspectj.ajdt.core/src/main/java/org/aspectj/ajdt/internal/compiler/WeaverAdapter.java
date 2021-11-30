@@ -199,7 +199,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		AjClassFile ajcf = new AjClassFile(key, result.getBytes());
 		lastReturnedResult.result().record(ajcf.fileName(), ajcf);
 		if (!weaverMessageHandler.isIgnoring(IMessage.INFO) || progressListener != null) {
-			StringBuffer msg = new StringBuffer();
+			StringBuilder msg = new StringBuilder();
 			msg.append(progressPhasePrefix).append(result.getClassName()).append(" (from ").append(nowProcessing.fileName())
 					.append(")");
 			weaverMessageHandler.handleMessage(MessageUtil.info(msg.toString()));

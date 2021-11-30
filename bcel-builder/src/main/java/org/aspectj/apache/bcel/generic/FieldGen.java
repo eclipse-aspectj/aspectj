@@ -75,7 +75,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeAnnos;
 /**
  * Template class for building up a field. The only extraordinary thing one can do is to add a constant value attribute to a field
  * (which must of course be compatible with the declared type).
- * 
+ *
  * @version $Id: FieldGen.java,v 1.11 2011/10/03 22:41:24 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Field
@@ -86,7 +86,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 	/**
 	 * Declare a field. If it is static (isStatic() == true) and has a basic type like int or String it may have an initial value
 	 * associated with it as defined by setInitValue().
-	 * 
+	 *
 	 * @param modifiers access qualifiers
 	 * @param type field type
 	 * @param name field name
@@ -101,7 +101,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 
 	/**
 	 * Instantiate from existing field.
-	 * 
+	 *
 	 * @param field Field object
 	 * @param cp constant pool (must contain the same entries as the field's constant pool)
 	 */
@@ -230,7 +230,7 @@ public class FieldGen extends FieldGenOrMethodGen {
 		String signature = type.toString();
 		String name = getName();
 
-		StringBuffer buf = new StringBuffer(access).append(signature).append(" ").append(name);
+		StringBuilder buf = new StringBuilder(access).append(signature).append(" ").append(name);
 		String value = getInitialValue();
 
 		if (value != null) {

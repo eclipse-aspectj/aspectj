@@ -135,7 +135,7 @@ public class LineReader extends LineNumberReader {
      * @return the String containing all lines skipped (delimited with RETURN)
      */
     public String readToBlankLine() throws IOException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String input;
         while (null != (input = nextLine(false))) { // get next empty line to restart
             sb.append(input);

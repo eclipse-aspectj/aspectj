@@ -1784,7 +1784,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 													.equals(newFieldTypeMunger.getSignature().getDeclaringType())) {
 
 										// report error on the aspect
-										StringBuffer sb = new StringBuffer();
+										StringBuilder sb = new StringBuilder();
 										sb.append("Cannot handle two aspects both attempting to use new style ITDs for the same named field ");
 										sb.append("on the same target type.  Please recompile at least one aspect with '-Xset:itdVersion=1'.");
 										sb.append(" Aspects involved: " + munger.getAspectType().getName() + " and "
@@ -2262,7 +2262,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				int count = ret.getParameterTypes().length;
 				String[] paramNames = new String[count];
 				for (int i = 0; i < count; i++) {
-					paramNames[i] = new StringBuffer("dim").append(i).toString();
+					paramNames[i] = new StringBuilder("dim").append(i).toString();
 				}
 				ret.setParameterNames(paramNames);
 				return ret;

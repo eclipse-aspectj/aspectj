@@ -52,7 +52,7 @@ public class AsmRelationshipUtils {
 	 * and a named pointcut called p() will return 'p()..'
 	 */
 	public static String genPointcutDetails(Pointcut pcd) {
-		StringBuffer details = new StringBuffer();
+		StringBuilder details = new StringBuilder();
 		if (pcd instanceof ReferencePointcut) {
 			ReferencePointcut rp = (ReferencePointcut) pcd;
 			details.append(rp.name).append(DOUBLE_DOTS);

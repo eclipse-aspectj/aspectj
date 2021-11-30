@@ -180,7 +180,7 @@ public class DirChangesTest extends TestCase {
                 actual[i] = null;
             }
 		}
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         {
             IMessage[] expNotFound = (IMessage[])
                 LangUtil.safeCopy(expected, new IMessage[0]);

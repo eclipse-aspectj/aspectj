@@ -361,7 +361,7 @@ public class TypeFactory {
 	 * something with sig "Pcom/Foo&lt;Ljava/lang/String;&gt;;" signature created = "PSomeType&lt;Pcom/Foo&lt;Ljava/lang/String;&gt;;&gt;;"
 	 */
 	public static UnresolvedType createUnresolvedParameterizedType(String baseTypeSignature, UnresolvedType[] arguments) {
-		StringBuffer parameterizedSig = new StringBuffer();
+		StringBuilder parameterizedSig = new StringBuilder();
 		parameterizedSig.append(ResolvedType.PARAMETERIZED_TYPE_IDENTIFIER);
 		parameterizedSig.append(baseTypeSignature.substring(1, baseTypeSignature.length() - 1));
 		if (arguments.length > 0) {

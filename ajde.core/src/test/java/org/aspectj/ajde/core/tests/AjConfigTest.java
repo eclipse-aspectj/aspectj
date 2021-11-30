@@ -145,7 +145,7 @@ public class AjConfigTest extends AjdeCoreTestCase {
 	public void testClasspath() {
 		String classpath = compilerConfig.getClasspath();
 		List<String> found = genAjBuildConfig().getClasspath();
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (Iterator<String> iterator = found.iterator(); iterator.hasNext();) {
 			String name = iterator.next();
 			sb.append(name);

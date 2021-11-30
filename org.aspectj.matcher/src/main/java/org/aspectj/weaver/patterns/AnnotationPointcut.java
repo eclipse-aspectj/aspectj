@@ -316,7 +316,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 	}
 
 	public void buildDeclarationText() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("@annotation(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);

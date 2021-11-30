@@ -386,7 +386,7 @@ public class AjdeInteractionTestbed extends TestCase {
 	 * Helper method for dumping info about which files were compiled and woven during the last build.
 	 */
 	public String printCompiledAndWovenFiles(String projectName) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (getCompiledFiles(projectName).size() == 0 && getWovenClasses(projectName).size() == 0) {
 			sb.append("No files were compiled or woven\n");
 		}

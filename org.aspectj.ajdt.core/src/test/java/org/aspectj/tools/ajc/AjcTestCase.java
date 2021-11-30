@@ -144,7 +144,7 @@ public abstract class AjcTestCase extends TestCase {
 		 */
 		public Message(int line, String srcFile, String text, ISourceLocation[] seeAlso) {
 			this.line = line;
-			StringBuffer srcFileName = new StringBuffer();
+			StringBuilder srcFileName = new StringBuilder();
 			if (srcFile != null) {
 				char[] chars = srcFile.toCharArray();
 				for (char c : chars) {
@@ -230,7 +230,7 @@ public abstract class AjcTestCase extends TestCase {
 		 */
 		@Override
 		public String toString() {
-			StringBuffer buff = new StringBuffer();
+			StringBuilder buff = new StringBuilder();
 			buff.append("message ");
 			if (sourceFileName != null) {
 				buff.append("in file ");
@@ -704,7 +704,7 @@ public abstract class AjcTestCase extends TestCase {
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 
 
-		StringBuffer command = new StringBuffer();
+		StringBuilder command = new StringBuilder();
 		command.append("java -classpath ");
 		command.append(cp.toString());
 		command.append(" ");

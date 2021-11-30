@@ -44,7 +44,7 @@ public class PinpointingMessageHandler implements IMessageHandler {
 			ex.fillInStackTrace();
 			StringWriter sw = new StringWriter();
 			ex.printStackTrace(new PrintWriter(sw));
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(CompilationAndWeavingContext.getCurrentContext());
 			sb.append(sw.toString());
 			IMessage pinpointedMessage = new PinpointedMessage(message,sb.toString());

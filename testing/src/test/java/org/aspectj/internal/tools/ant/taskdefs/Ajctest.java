@@ -1125,7 +1125,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
                     if (null == current) {
                         oneLine = "\nRESULT=\"ERROR\" null ACJTEST";
                     } else {
-                        StringBuffer sb = new StringBuffer("\n");
+                        StringBuilder sb = new StringBuilder("\n");
                         int errs = Ajctest.allErrors.size();
                         int allFails = errs
                             + current.ajdocStats.fails

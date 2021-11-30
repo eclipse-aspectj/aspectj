@@ -197,7 +197,7 @@ public final class TestUtil {
 		if ((null == entries) || (0 == entries.length)) {
 			return "";
 		}
-		StringBuffer path = new StringBuffer();
+		StringBuilder path = new StringBuilder();
 		boolean started = false;
 		for (Object entry : entries) {
 			if (null != entry) {

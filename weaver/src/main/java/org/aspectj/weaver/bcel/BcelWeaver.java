@@ -400,7 +400,7 @@ public class BcelWeaver {
 
 						if (filename.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile, false);
-							StringBuffer sb = new StringBuffer();
+							StringBuilder sb = new StringBuilder();
 							sb.append(inFile.getAbsolutePath());
 							sb.append("!");
 							sb.append(entry.getName());
@@ -472,7 +472,7 @@ public class BcelWeaver {
 		if (filename.endsWith(".class")) {
 			// System.err.println(
 			// "BCELWeaver: processing class from input directory "+classFile);
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(inPathDir.getAbsolutePath());
 			sb.append("!");
 			sb.append(filename);

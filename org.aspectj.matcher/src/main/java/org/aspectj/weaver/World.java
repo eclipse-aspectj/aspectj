@@ -1910,7 +1910,7 @@ public abstract class World implements Dump.INode {
 					MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms for " + joinpointCount
 							+ " joinpoint match calls):"));
 			for (String p : joinpointsPerPointcut.keySet()) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append("Time:" + (timePerPointcut.get(p) / 1000000) + "ms (jps:#" + joinpointsPerPointcut.get(p)
 						+ ") matching against " + p);
 				world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
@@ -1925,7 +1925,7 @@ public abstract class World implements Dump.INode {
 					MessageUtil.info("Pointcut fast matching cost (total=" + (totalTime / 1000000) + "ms for " + typeCount
 							+ " fast match calls):"));
 			for (String p : fastMatchTimesPerPointcut.keySet()) {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms (types:#" + fastMatchTypesPerPointcut.get(p)
 						+ ") fast matching against " + p);
 				world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
@@ -1962,7 +1962,7 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("Pointcut matching cost (total=" + (totalTime / 1000000) + "ms for " + joinpointCount
 									+ " joinpoint match calls):"));
 					for (String p : joinpointsPerPointcut.keySet()) {
-						StringBuffer sb = new StringBuffer();
+						StringBuilder sb = new StringBuilder();
 						sb.append("Time:" + (timePerPointcut.get(p) / 1000000) + "ms (jps:#" + joinpointsPerPointcut.get(p)
 								+ ") matching against " + p);
 						world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));
@@ -2000,7 +2000,7 @@ public abstract class World implements Dump.INode {
 							MessageUtil.info("Pointcut fast matching cost (total=" + (totalTime / 1000000) + "ms for " + typeCount
 									+ " fast match calls):"));
 					for (String p : fastMatchTimesPerPointcut.keySet()) {
-						StringBuffer sb = new StringBuffer();
+						StringBuilder sb = new StringBuilder();
 						sb.append("Time:" + (fastMatchTimesPerPointcut.get(p) / 1000000) + "ms (types:#"
 								+ fastMatchTypesPerPointcut.get(p) + ") fast matching against " + p);
 						world.getMessageHandler().handleMessage(MessageUtil.info(sb.toString()));

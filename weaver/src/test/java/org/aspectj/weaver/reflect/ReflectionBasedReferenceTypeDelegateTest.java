@@ -255,7 +255,7 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ReferenceType rawReflectType = (ReferenceType) world.resolve(javaUtilHashMap);
 		ResolvedMember[] rms1 = rawType.getDelegate().getDeclaredMethods();
 		ResolvedMember[] rms2 = rawReflectType.getDelegate().getDeclaredMethods();
-		StringBuffer errors = new StringBuffer();
+		StringBuilder errors = new StringBuilder();
 		Set one = new HashSet();
 		for (ResolvedMember item : rms1) {
 			one.add(item.toString());

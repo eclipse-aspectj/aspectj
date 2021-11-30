@@ -70,7 +70,7 @@ public class AsmElementFormatter {
 				node.setCorrespondingType(ad.returnType.toString()); // returnTypeToString(0));
 			}
 
-			StringBuffer details = new StringBuffer();
+			StringBuilder details = new StringBuilder();
 			if (ad.pointcutDesignator != null) {
 				details.append(AsmRelationshipUtils.genPointcutDetails(ad.pointcutDesignator.getPointcut()));
 			} else {
@@ -110,7 +110,7 @@ public class AsmElementFormatter {
 				node.setName(name + AsmRelationshipUtils.DECLARE_PARENTS);
 
 				String kindOfDP = null;
-				StringBuffer details = new StringBuffer("");
+				StringBuilder details = new StringBuilder("");
 				TypePattern[] newParents = dp.getParents().getTypePatterns();
 				for (int i = 0; i < newParents.length; i++) {
 					TypePattern tp = newParents[i];
@@ -248,7 +248,7 @@ public class AsmElementFormatter {
 	}
 
 	private String genDecaLabel(DeclareAnnotation deca) {
-		StringBuffer sb = new StringBuffer("");
+		StringBuilder sb = new StringBuilder("");
 		sb.append(deca.getPatternAsString());
 		sb.append(" : ");
 		sb.append(deca.getAnnotationString());

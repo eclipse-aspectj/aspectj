@@ -610,7 +610,7 @@ public class Module {
             final String DELIM = " \n\t\\<>\"=";
             StringTokenizer st = new StringTokenizer(line, DELIM, true);
             ArrayList<String> result = new ArrayList<>();
-            StringBuffer quote = new StringBuffer();
+            StringBuilder quote = new StringBuilder();
             boolean inQuote = false;
             while (st.hasMoreTokens()) {
                 String s = st.nextToken();

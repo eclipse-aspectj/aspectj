@@ -127,7 +127,7 @@ public class LinkCheck {
             long numChecked = me.checkedUrls.size();
             if (numChecked > 0) {
                 float cps = (float) duration  / (float) numChecked;
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("DONE. Checked " + numChecked);
                 sb.append(" URL's in " + duration);
                 sb.append(" seconds (" + cps);

@@ -98,7 +98,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("BuildConfig[" + (configFile == null ? "null" : configFile.getAbsoluteFile().toString()) + "] #Files="
 				+ files.size() + " AopXmls=#" + xmlfiles.size());
 		return sb.toString();

@@ -62,7 +62,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 	public String getClasspath() {
 		log("ICompilerConfiguration.getClasspath()");
 		// AJDT has all the output directories on it's classpath
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		List<File> allOutputPaths = getOutputLocationManager().getAllOutputLocations();
 		for (File dir: allOutputPaths) {
 			sb.append(File.pathSeparator + dir.getAbsolutePath());

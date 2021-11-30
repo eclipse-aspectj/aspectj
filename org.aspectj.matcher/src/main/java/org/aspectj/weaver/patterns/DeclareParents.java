@@ -76,7 +76,7 @@ public class DeclareParents extends Declare {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare parents: ");
 		buf.append(child);
 		buf.append(isExtends ? " extends " : " implements "); // extends and implements are treated equivalently

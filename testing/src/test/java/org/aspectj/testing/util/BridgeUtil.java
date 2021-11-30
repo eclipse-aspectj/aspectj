@@ -443,7 +443,7 @@ public class BridgeUtil {
         if (0 > numIncomplete) {
             numIncomplete = 0;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (RunValidator.NORMAL.runPassed(runStatus)) {
             sb.append("PASS ");
         } else {
@@ -500,7 +500,7 @@ public class BridgeUtil {
         if (null == runStatus) {
             return "((RunStatus) null)";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (RunValidator.NORMAL.runPassed(runStatus)) {
             sb.append("PASS ");
         } else {

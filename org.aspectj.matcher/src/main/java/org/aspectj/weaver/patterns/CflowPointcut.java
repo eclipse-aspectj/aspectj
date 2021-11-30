@@ -316,7 +316,7 @@ public class CflowPointcut extends Pointcut {
 	}
 
 	private String getKey(Pointcut p, ResolvedType a, String stackOrCounter) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(a.getName());
 		sb.append("::");
 		sb.append(p.toString());

@@ -324,7 +324,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	   * @return byte code signature
 	   */
 	  public static String getSignature(String type) {
-	    StringBuffer buf        = new StringBuffer();
+	    StringBuilder buf       = new StringBuilder();
 	    char[]       chars      = type.toCharArray();
 	    boolean      char_found = false, delim = false;
 	    int          index      = -1;
@@ -451,7 +451,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	   */
 	  public final static String methodTypeToSignature(String returnType, String[] methodArgs) throws ClassFormatException {
 
-	    StringBuffer buf = new StringBuffer("(");
+	    StringBuilder buf = new StringBuilder("(");
 
 	    if (methodArgs != null) {
 			for (String methodArg : methodArgs) {

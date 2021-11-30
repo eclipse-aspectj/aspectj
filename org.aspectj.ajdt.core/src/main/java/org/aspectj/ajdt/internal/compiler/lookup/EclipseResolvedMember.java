@@ -171,7 +171,7 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 					QualifiedNameReference qnr = (QualifiedNameReference) e;
 					if (qnr.binding instanceof FieldBinding) {
 						FieldBinding fb = (FieldBinding) qnr.binding;
-						StringBuffer sb = new StringBuffer();
+						StringBuilder sb = new StringBuilder();
 						sb.append(fb.declaringClass.signature());
 						sb.append(fb.name);
 						return sb.toString();

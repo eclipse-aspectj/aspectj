@@ -708,7 +708,7 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-bootclasspath")) {
 				if (args.size() > nextArgIndex) {
 					String bcpArg = args.get(nextArgIndex).getValue();
-					StringBuffer bcp = new StringBuffer();
+					StringBuilder bcp = new StringBuilder();
 					StringTokenizer strTok = new StringTokenizer(bcpArg, File.pathSeparator);
 					while (strTok.hasMoreTokens()) {
 						bcp.append(makeFile(strTok.nextToken()));
@@ -724,7 +724,7 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-classpath") || arg.equals("-cp")) {
 				if (args.size() > nextArgIndex) {
 					String cpArg = args.get(nextArgIndex).getValue();
-					StringBuffer cp = new StringBuffer();
+					StringBuilder cp = new StringBuilder();
 					StringTokenizer strTok = new StringTokenizer(cpArg, File.pathSeparator);
 					while (strTok.hasMoreTokens()) {
 						cp.append(makeFile(strTok.nextToken()));
@@ -756,7 +756,7 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-extdirs")) {
 				if (args.size() > nextArgIndex) {
 					String extdirsArg = args.get(nextArgIndex).getValue();
-					StringBuffer ed = new StringBuffer();
+					StringBuilder ed = new StringBuilder();
 					StringTokenizer strTok = new StringTokenizer(extdirsArg, File.pathSeparator);
 					while (strTok.hasMoreTokens()) {
 						ed.append(makeFile(strTok.nextToken()));

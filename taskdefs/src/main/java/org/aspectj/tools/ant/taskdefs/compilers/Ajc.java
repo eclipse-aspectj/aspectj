@@ -190,7 +190,7 @@ public class Ajc extends DefaultCompilerAdapter {
 
         // Same behavior as DefaultCompilerAdapter.logAndAddFilesToCompile
         attributes.log("Compilation args: " + cmd.toString(), Project.MSG_VERBOSE);
-        StringBuffer niceSourceList = new StringBuffer("File");
+        StringBuilder niceSourceList = new StringBuilder("File");
         if (compileList.length != 1) {
             niceSourceList.append("s");
         }

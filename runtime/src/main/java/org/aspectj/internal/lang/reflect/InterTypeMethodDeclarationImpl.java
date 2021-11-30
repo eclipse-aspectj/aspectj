@@ -101,7 +101,7 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(java.lang.reflect.Modifier.toString(getModifiers()));
 		sb.append(" ");
 		sb.append(getReturnType().toString());

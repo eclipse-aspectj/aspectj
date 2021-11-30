@@ -113,7 +113,7 @@ public class AnnotationGen {
 
 	@Override
 	public String toString() {
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		s.append("AnnotationGen:[" + getTypeName() + " #" + pairs.size() + " {");
 		for (int i = 0; i < pairs.size(); i++) {
 			s.append(pairs.get(i));
@@ -125,7 +125,7 @@ public class AnnotationGen {
 	}
 
 	public String toShortString() {
-		StringBuffer s = new StringBuffer();
+		StringBuilder s = new StringBuilder();
 		s.append("@").append(getTypeName());
 		if (pairs.size()!=0) {
 			s.append("(");

@@ -48,7 +48,7 @@ public class DeclareErrorOrWarningImpl implements DeclareErrorOrWarning {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("declare ");
 		sb.append(isError() ? "error : " : "warning : ");
 		sb.append(getPointcutExpression().asString());

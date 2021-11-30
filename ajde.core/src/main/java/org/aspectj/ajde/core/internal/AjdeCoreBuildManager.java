@@ -175,7 +175,7 @@ public class AjdeCoreBuildManager {
 			return "none";
 		}
 
-		StringBuffer formattedOptions = new StringBuffer();
+		StringBuilder formattedOptions = new StringBuilder();
 		for (Object option : options) {
 			String o = option.toString();
 			if (formattedOptions.length() > 0) {

@@ -660,7 +660,7 @@ public class PatternParser {
 	private Pointcut parseDesignatorPointcut(PointcutDesignatorHandler pcdHandler) {
 		eat("(");
 		int parenCount = 1;
-		StringBuffer pointcutBody = new StringBuffer();
+		StringBuilder pointcutBody = new StringBuilder();
 		while (parenCount > 0) {
 			if (maybeEat("(")) {
 				parenCount++;
@@ -1203,7 +1203,7 @@ public class PatternParser {
 	private ExactAnnotationTypePattern parseSimpleAnnotationName() {
 		// the @ has already been eaten...
 		ExactAnnotationTypePattern p;
-		StringBuffer annotationName = new StringBuffer();
+		StringBuilder annotationName = new StringBuilder();
 		annotationName.append(parseIdentifier());
 		while (maybeEat(".")) {
 			annotationName.append('.');
@@ -1243,7 +1243,7 @@ public class PatternParser {
 
 	public List<NamePattern> parseDottedNamePattern() {
 		List<NamePattern> names = new ArrayList<>();
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		IToken previous = null;
 		boolean justProcessedEllipsis = false; // Remember if we just dealt with an ellipsis (PR61536)
 		boolean justProcessedDot = false;
@@ -1329,7 +1329,7 @@ public class PatternParser {
 
 	// supported form 'a.b.c.d' or just 'a'
 	public String parseAnnotationNameValuePattern() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		IToken tok;
 		// int startPos =
 		tokenSource.peek().getStart();
@@ -1379,7 +1379,7 @@ public class PatternParser {
 	}
 
 	public NamePattern parseNamePattern() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		IToken previous = null;
 		IToken tok;
 		int startPos = tokenSource.peek().getStart();
@@ -1765,7 +1765,7 @@ public class PatternParser {
 	}
 
 	public String parsePossibleStringSequence(boolean shouldEnd) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 
 		IToken token = tokenSource.next();
 		if (token.getLiteralKind() == null) {

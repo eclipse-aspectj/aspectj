@@ -2403,7 +2403,7 @@ public class BcelShadow extends Shadow {
 				// rather than fail. If a bug is raised reporting unknown as a local variable name
 				// then investigate the joinpoint giving rise to the ResolvedMember and why it has
 				// no parameter names specified
-				argumentName = new StringBuffer("unknown").append(argNumber).toString();
+				argumentName = new StringBuilder("unknown").append(argNumber).toString();
 			} else {
 				argumentName = parameterNames.get(argNumber);
 			}

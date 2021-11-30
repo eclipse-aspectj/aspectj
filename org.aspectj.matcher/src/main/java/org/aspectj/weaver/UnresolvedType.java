@@ -451,7 +451,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			name = name.substring(lastDot + 1);
 		}
 		if (isParameterizedType()) {
-			StringBuffer sb = new StringBuffer(name);
+			StringBuilder sb = new StringBuilder(name);
 			sb.append("<");
 			for (int i = 0; i < (typeParameters.length - 1); i++) {
 				sb.append(typeParameters[i].getSimpleName());
@@ -636,13 +636,13 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			String name = signature.substring(1, signature.length() - 1).replace('/', '.');
 			return name;
 		case 'T':
-			StringBuffer nameBuff2 = new StringBuffer();
+			StringBuilder nameBuff2 = new StringBuilder();
 			int colon = signature.indexOf(";");
 			String tvarName = signature.substring(1, colon);
 			nameBuff2.append(tvarName);
 			return nameBuff2.toString();
 		case 'P': // it's one of our parameterized type sigs
-			StringBuffer nameBuff = new StringBuffer();
+			StringBuilder nameBuff = new StringBuilder();
 			// signature for parameterized types is e.g.
 			// List<String> -> Ljava/util/List<Ljava/lang/String;>;
 			// Map<String,List<Integer>> -> Ljava/util/Map<java/lang/String;Ljava/util/List<Ljava/lang/Integer;>;>;
@@ -656,7 +656,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 				case '<':
 					nameBuff.append("<");
 					paramNestLevel++;
-					StringBuffer innerBuff = new StringBuffer();
+					StringBuilder innerBuff = new StringBuilder();
 					while (paramNestLevel > 0) {
 						c = signature.charAt(++i);
 						if (c == '<') {
@@ -673,7 +673,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 							if (signature.charAt(i + 1) != '>') {
 								nameBuff.append(',');
 							}
-							innerBuff = new StringBuffer();
+							innerBuff = new StringBuilder();
 						}
 					}
 					nameBuff.append(">");
@@ -757,7 +757,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			// not parameterized
 			return new StringBuilder("L").append(name.replace('.', '/')).append(';').toString();
 		} else {
-			StringBuffer nameBuff = new StringBuffer();
+			StringBuilder nameBuff = new StringBuilder();
 			int nestLevel = 0;
 			nameBuff.append("P");
 			for (int i = 0; i < len; i++) {
@@ -769,7 +769,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 				case '<':
 					nameBuff.append("<");
 					nestLevel++;
-					StringBuffer innerBuff = new StringBuffer();
+					StringBuilder innerBuff = new StringBuilder();
 					while (nestLevel > 0) {
 						c = name.charAt(++i);
 						if (c == '<') {
@@ -779,7 +779,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 						}
 						if (c == ',' && nestLevel == 1) {
 							nameBuff.append(nameToSignature(innerBuff.toString()));
-							innerBuff = new StringBuffer();
+							innerBuff = new StringBuilder();
 						} else {
 							if (nestLevel > 0) {
 								innerBuff.append(c);
@@ -957,7 +957,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	}
 
 	public static UnresolvedType makeArray(UnresolvedType base, int dims) {
-		StringBuffer sig = new StringBuffer();
+		StringBuilder sig = new StringBuilder();
 		for (int i = 0; i < dims; i++) {
 			sig.append("[");
 		}

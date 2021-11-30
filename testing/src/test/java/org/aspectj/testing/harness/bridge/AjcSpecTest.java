@@ -118,7 +118,7 @@ public class AjcSpecTest extends TestCase {
 
 	/** @return normal form for list items */
 	static String normal(List list) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		boolean first = true;
 		for (Object o : list) {

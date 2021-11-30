@@ -36,7 +36,7 @@ public class MessageListXmlReader {
     private static final String INLINE_DOCTYPE;
     static {
         final String EOL = LangUtil.EOL;
-        final StringBuffer r = new StringBuffer();
+        final StringBuilder r = new StringBuilder();
 
         r.append("<!DOCTYPE ");
         r.append(MessageList.XMLNAME);

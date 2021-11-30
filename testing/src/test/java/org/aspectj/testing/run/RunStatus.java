@@ -423,7 +423,7 @@ public class RunStatus implements IRunStatus {
 	}
 
 	public String toLongString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(BridgeUtil.toShortString(this));
 		if ((null != children) && (0 < children.size())) {
 			String label = "### --------- " + name;

@@ -62,7 +62,7 @@ public class InterTypeFieldDeclarationImpl extends InterTypeDeclarationImpl
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(java.lang.reflect.Modifier.toString(getModifiers()));
 		sb.append(" ");
 		sb.append(getType().toString());

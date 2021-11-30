@@ -856,7 +856,7 @@ class BcelClassWeaver implements IClassWeaver {
 				checkForOverride(interfaceType, name, psig, rsig, bridgeToCandidate.getAccessFlags(),
 						clazz.getPackageName(), bm, overriddenMethodsCollector);
 				for (ResolvedMember overriddenMethod : overriddenMethodsCollector) {
-					String key = new StringBuffer().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
+					String key = new StringBuilder().append(overriddenMethod.getName()).append(overriddenMethod.getSignatureErased()).toString(); // pr237419
 					boolean alreadyHaveABridgeMethod = methodsSet.contains(key);
 					if (!alreadyHaveABridgeMethod) {
 						if (bridges== null) {
@@ -1103,7 +1103,7 @@ class BcelClassWeaver implements IClassWeaver {
 	private void reportMethodCtorWeavingMessage(LazyClassGen clazz, ResolvedMember member, DeclareAnnotation decaM,
 			int memberLineNumber) {
 		if (!getWorld().getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
-			StringBuffer parmString = new StringBuffer("(");
+			StringBuilder parmString = new StringBuilder("(");
 			UnresolvedType[] paramTypes = member.getParameterTypes();
 			for (int i = 0; i < paramTypes.length; i++) {
 				UnresolvedType type = paramTypes[i];
@@ -1118,7 +1118,7 @@ class BcelClassWeaver implements IClassWeaver {
 			}
 			parmString.append(")");
 			String methodName = member.getName();
-			StringBuffer sig = new StringBuffer();
+			StringBuilder sig = new StringBuilder();
 			sig.append(org.aspectj.apache.bcel.classfile.Utility.accessToString(member.getModifiers()));
 			sig.append(" ");
 			sig.append(member.getReturnType().toString());
@@ -1128,7 +1128,7 @@ class BcelClassWeaver implements IClassWeaver {
 			sig.append(methodName.equals("<init>") ? "new" : methodName);
 			sig.append(parmString);
 
-			StringBuffer loc = new StringBuffer();
+			StringBuilder loc = new StringBuilder();
 			if (clazz.getFileName() == null) {
 				loc.append("no debug info available");
 			} else {

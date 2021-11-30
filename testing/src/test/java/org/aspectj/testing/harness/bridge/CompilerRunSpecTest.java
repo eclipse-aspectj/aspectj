@@ -202,7 +202,7 @@ public class CompilerRunSpecTest extends TestCase {
         CRSOptions crsOptions = CompilerRun.Spec.testAccessToCRSOptions();
         Set options = crsOptions.compilerOptions();
         assertTrue(null != options);
-        StringBuffer notLoaded = new StringBuffer();
+        StringBuilder notLoaded = new StringBuilder();
 		for (Object option : options) {
 			Option compilerOption = (Option) option;
 			if (!(crsOptions.compilerIsLoadable(compilerOption))) {

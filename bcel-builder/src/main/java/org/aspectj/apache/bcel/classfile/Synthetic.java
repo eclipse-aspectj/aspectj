@@ -65,7 +65,7 @@ import org.aspectj.apache.bcel.Constants;
  * specification states "A class member that does not appear in the source code must be marked using a Synthetic attribute." It may
  * appear in the ClassFile attribute table, a field_info table or a method_info table. This class is intended to be instantiated
  * from the <em>Attribute.readAttribute()</em> method.
- * 
+ *
  * @version $Id: Synthetic.java,v 1.5 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
@@ -81,7 +81,7 @@ public final class Synthetic extends Attribute {
 		this(c.getNameIndex(), c.getLength(), c.getBytes(), c.getConstantPool());
 	}
 
-	//  
+	//
 	// public Synthetic(ConstantPoolGen cpool) {
 	// super(Constants.ATTR_SYNTHETIC, cpool.addUtf8("Synthetic"), 0, cpool);
 	// ConstantPoolGen cpg = myGen.getConstantPool();
@@ -102,7 +102,7 @@ public final class Synthetic extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index in constant pool to CONSTANT_Utf8
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -122,7 +122,7 @@ public final class Synthetic extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -132,7 +132,7 @@ public final class Synthetic extends Attribute {
 
 	/**
 	 * Dump source file attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -162,7 +162,7 @@ public final class Synthetic extends Attribute {
 	 */
 	@Override
 	public final String toString() {
-		StringBuffer buf = new StringBuffer("Synthetic");
+		StringBuilder buf = new StringBuilder("Synthetic");
 
 		if (length > 0)
 			buf.append(" " + Utility.toHexString(bytes));

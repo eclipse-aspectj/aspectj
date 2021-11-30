@@ -121,7 +121,7 @@ public class XMLWriter {
      * @throws IllegalArgumentException if list[i].toString() contains a comma
      */
     public static String flattenList(Object[] list) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (null != list) {
             boolean printed = false;
 			for (Object o : list) {
@@ -228,7 +228,7 @@ public class XMLWriter {
         if (0 < stack.size()) {
             indent += TAB;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(indent);
         sb.append("<");
         sb.append(name);

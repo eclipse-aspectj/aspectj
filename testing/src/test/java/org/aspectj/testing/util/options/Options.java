@@ -48,7 +48,7 @@ public class Options {
         if (0 == missed.length) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("missed values: [");
         for (int i = 0; i < missed.length; i++) {
             if (i > 0) {

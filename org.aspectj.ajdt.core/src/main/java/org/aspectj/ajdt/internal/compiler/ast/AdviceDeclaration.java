@@ -308,7 +308,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	}
 
 	private String buildArgNameRepresentation() {
-		StringBuffer args = new StringBuffer();
+		StringBuilder args = new StringBuilder();
 		int numArgsWeCareAbout = getDeclaredParameterCount();
 		if (this.arguments != null) {
 			for (int i = 0; i < numArgsWeCareAbout; i++) {

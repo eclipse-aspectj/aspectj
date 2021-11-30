@@ -411,7 +411,7 @@ public class LightXMLParser {
 
 	private void mapEntity(StringBuffer buf) throws Exception {
 		char c = this.NULL_CHAR;
-		StringBuffer keyBuf = new StringBuffer();
+		StringBuilder keyBuf = new StringBuilder();
 		while (true) {
 			c = this.getNextChar();
 			if (c == ';') {

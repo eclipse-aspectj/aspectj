@@ -118,7 +118,7 @@ public class AdviceImpl implements Advice {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (getName().length() > 0) {
 			sb.append("@AdviceName(\"");
 			sb.append(getName());

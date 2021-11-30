@@ -69,7 +69,7 @@ public class Bindings {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("Bindings(");
+		StringBuilder buf = new StringBuilder("Bindings(");
 		for (int i = 0, len = bindings.length; i < len; i++) {
 			if (i > 0)
 				buf.append(", ");

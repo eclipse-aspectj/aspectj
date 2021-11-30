@@ -286,7 +286,7 @@ public class AjCompilerOptions extends CompilerOptions {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer(super.toString());
+		StringBuilder buf = new StringBuilder(super.toString());
 		// now add AspectJ additional options
 		buf.append("\n\tAspectJ Specific Options:");
 		buf.append("\n\t- terminate after compilation: ").append(this.terminateAfterCompilation ? ENABLED : DISABLED); //$NON-NLS-1$

@@ -243,7 +243,7 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 		if (!resolved && formalName != null) {
 			return formalName;
 		}
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append("@").append(annotationType.toString());
 		ret.append("(").append(formalName).append(")");
 		return ret.toString();

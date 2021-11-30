@@ -511,7 +511,7 @@ public class AsmManager implements IStructureModel {
 			for (IRelationship ir : rels) {
 				List<String> targets = ir.getTargets();
 				for (String thid : targets) {
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					if (modelFilter == null || modelFilter.wantsHandleIds()) {
 						sb.append("Hid:" + (ctr++) + ":");
 					}
@@ -637,7 +637,7 @@ public class AsmManager implements IStructureModel {
 				// unexpected - time to give up
 				return "";
 			}
-			StringBuffer qualifiedTypeNameFromHandle = new StringBuffer();
+			StringBuilder qualifiedTypeNameFromHandle = new StringBuilder();
 			if (hasPackage != -1) {
 				int classfileLoc = handle.indexOf(HandleProviderDelimiter.CLASSFILE.getDelimiter(), hasPackage);
 				qualifiedTypeNameFromHandle.append(handle.substring(hasPackage + 1, classfileLoc));
@@ -1196,7 +1196,7 @@ public class AsmManager implements IStructureModel {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append("Model node summary:\n");
 			Enumeration<String> nodeKeys = nodeTypeCount.keys();
 			while (nodeKeys.hasMoreElements()) {

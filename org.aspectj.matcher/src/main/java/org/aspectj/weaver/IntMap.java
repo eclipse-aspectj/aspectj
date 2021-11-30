@@ -130,7 +130,7 @@ public class IntMap {
 	// ---- from object
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("[");
+		StringBuilder buf = new StringBuilder("[");
 		boolean seenFirst = false;
 		for (int i = 0, len = map.length; i < len; i++) {
 			if (map[i] != MISSING) {

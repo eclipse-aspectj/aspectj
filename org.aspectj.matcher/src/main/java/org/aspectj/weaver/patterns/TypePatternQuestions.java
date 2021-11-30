@@ -51,7 +51,7 @@ public class TypePatternQuestions {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("TypePatternQuestions{");
 		for (Map.Entry<Question,FuzzyBoolean> entry: questionsAndAnswers.entrySet()) {
 			Question question = (Question)entry.getKey();

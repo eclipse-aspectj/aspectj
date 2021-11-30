@@ -291,7 +291,7 @@ public class JoinPointSignature implements ResolvedMember {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(getReturnType().getName());
 		buf.append(' ');
 		buf.append(getDeclaringType().getName());

@@ -230,7 +230,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 				pipelineOutput = new Hashtable();
 			}
 			pipelineOutput.put("filesContainingAspects", Integer.toString(toWaitFor));
-			StringBuffer order = new StringBuffer();
+			StringBuilder order = new StringBuilder();
 			order.append("[");
 			for (int i = 0; i < units.length; i++) {
 				if (i != 0) {

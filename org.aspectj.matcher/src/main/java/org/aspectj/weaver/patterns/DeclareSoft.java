@@ -49,7 +49,7 @@ public class DeclareSoft extends Declare {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare soft: ");
 		buf.append(exception);
 		buf.append(": ");

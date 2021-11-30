@@ -249,7 +249,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			if (unitPackage == null) {
 				pkgName = "";
 			} else {
-				StringBuffer nameBuffer = new StringBuffer();
+				StringBuilder nameBuffer = new StringBuilder();
 				final char[][] importName = unitPackage.getImportName();
 				final int last = importName.length - 1;
 				for (int i = 0; i < importName.length; i++) {
@@ -357,7 +357,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			String packageString = packageDecl.toString();
 			ProgramElement packageDeclaration = new ProgramElement(activeStructureModel, packageString,
 					IProgramElement.Kind.PACKAGE_DECLARATION, makeLocation(packageDecl), 0, null, null);
-			StringBuffer packageSourceDeclaration = new StringBuffer();
+			StringBuilder packageSourceDeclaration = new StringBuilder();
 			packageSourceDeclaration.append("package ");
 			packageSourceDeclaration.append(packageString);
 			packageSourceDeclaration.append(";");
@@ -914,7 +914,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				if (star != 0 && (comment[star - 1] == '/') && (comment[star + 1] == '*')
 						&& (star - 2 < 0 || comment[star - 2] != '/')) {
 					boolean completed = false;
-					StringBuffer sb = new StringBuffer();
+					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < comment.length && !completed; i++) {
 						char curr = comment[i];
 						if (curr == '/' && sb.length() > 2 && sb.charAt(sb.length() - 1) == '*') {
@@ -985,7 +985,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			stack.push(null); // a little weird but does the job
 			return true;
 		}
-		StringBuffer argumentsSignature = new StringBuffer();
+		StringBuilder argumentsSignature = new StringBuilder();
 		argumentsSignature.append("(");
 		if (constructorDeclaration.arguments != null) {
 			for (int i = 0; i < constructorDeclaration.arguments.length; i++) {

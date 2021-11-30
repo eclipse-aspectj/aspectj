@@ -334,7 +334,7 @@ public class Main implements Config {
 			if (indexFile.exists()) {
 				BufferedReader indexFileReader = new BufferedReader(new FileReader(indexFile));
 				// StringBuffer greatly reduces the time it takes to remove generated tags
-				StringBuffer indexFileBuffer = new StringBuffer((int) indexFile.length());
+				StringBuilder indexFileBuffer = new StringBuilder((int) indexFile.length());
 				String line = indexFileReader.readLine();
 				while (line != null) {
 					int indexStart = line.indexOf(Config.DECL_ID_STRING);

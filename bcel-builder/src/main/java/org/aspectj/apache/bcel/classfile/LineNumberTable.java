@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class represents a table of line numbers for debugging purposes. This attribute is used by the <em>Code</em> attribute. It
  * contains pairs of PCs and line numbers.
- * 
+ *
  * @version $Id: LineNumberTable.java,v 1.8 2009/09/15 19:40:12 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Code changes: asc Feb06 Made unpacking lazy
@@ -94,7 +94,7 @@ public final class LineNumberTable extends Attribute {
 
 	/**
 	 * Construct object from file stream.
-	 * 
+	 *
 	 * @param name_index Index of name
 	 * @param length Content length in bytes
 	 * @param file Input stream
@@ -132,7 +132,7 @@ public final class LineNumberTable extends Attribute {
 	/**
 	 * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class. I.e., the
 	 * hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
-	 * 
+	 *
 	 * @param v Visitor object
 	 */
 	@Override
@@ -143,7 +143,7 @@ public final class LineNumberTable extends Attribute {
 
 	/**
 	 * Dump line number table attribute to file stream in binary format.
-	 * 
+	 *
 	 * @param file Output file stream
 	 * @throws IOException
 	 */
@@ -184,8 +184,8 @@ public final class LineNumberTable extends Attribute {
 	@Override
 	public final String toString() {
 		unpack();
-		StringBuffer buf = new StringBuffer();
-		StringBuffer line = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
+		StringBuilder line = new StringBuilder();
 
 		for (int i = 0; i < tableLength; i++) {
 			line.append(table[i].toString());
@@ -208,7 +208,7 @@ public final class LineNumberTable extends Attribute {
 
 	/**
 	 * Map byte code positions to source code lines.
-	 * 
+	 *
 	 * @param pos byte code offset
 	 * @return corresponding line in source code
 	 */

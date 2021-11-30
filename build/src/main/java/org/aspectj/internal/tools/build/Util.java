@@ -151,7 +151,7 @@ public class Util {
     }
 
     public static String path(String[] segments) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if ((null != segments)) {
             for (int i = 0; i < segments.length; i++) {
                 if (0 < i) {

@@ -72,7 +72,7 @@ public class TypePatternList extends PatternNode {
 
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("(");
 		for (int i = 0, len = typePatterns.length; i < len; i++) {
 			TypePattern type = typePatterns[i];

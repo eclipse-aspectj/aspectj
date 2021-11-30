@@ -45,7 +45,7 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		List<NameValuePair> nvPairs = bcelAnnotation.getValues();
 		sb.append("Anno[" + getTypeSignature() + " " + (isRuntimeVisible() ? "rVis" : "rInvis"));
 		if (nvPairs.size() > 0) {
@@ -104,7 +104,7 @@ public class BcelAnnotation extends AbstractAnnotationAJ {
 	 */
 	@Override
 	public String stringify() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("@").append(type.getClassName());
 		List<NameValuePair> values = bcelAnnotation.getValues();
 		if (values != null && values.size() != 0) {

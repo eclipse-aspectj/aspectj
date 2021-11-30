@@ -82,7 +82,7 @@ public class ReferencePointcut extends Pointcut {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if (onType != null) {
 			buf.append(onType);
 			buf.append(".");

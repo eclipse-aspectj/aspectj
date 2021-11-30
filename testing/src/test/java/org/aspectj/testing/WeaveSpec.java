@@ -137,7 +137,7 @@ public class WeaveSpec extends CompileSpec {
 	}
 
 	private String[] buildWeaveArgs() {
-		StringBuffer args = new StringBuffer();
+		StringBuilder args = new StringBuilder();
 		if (getOptions() != null) {
 			StringTokenizer strTok = new StringTokenizer(getOptions(),",");
 			while (strTok.hasMoreTokens()) {

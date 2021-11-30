@@ -318,7 +318,7 @@ public class GenericSignatureParser {
 		char[] chars = signatureString.toCharArray();
 		int index = 0;
 		List<String> tokens = new ArrayList<>();
-		StringBuffer identifier = new StringBuffer();
+		StringBuilder identifier = new StringBuilder();
 		boolean inParens = false;
 		boolean inArray = false;
 		boolean couldSeePrimitive = false;
@@ -327,32 +327,32 @@ public class GenericSignatureParser {
 			case '<':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add("<");
 				break;
 			case '>':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add(">");
 				break;
 			case ':':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add(":");
 				break;
 			case '/':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add("/");
 				couldSeePrimitive = false;
 				break;
 			case ';':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add(";");
 				couldSeePrimitive = true;
 				inArray = false;
@@ -360,7 +360,7 @@ public class GenericSignatureParser {
 			case '^':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				tokens.add("^");
 				break;
 			case '+':
@@ -375,7 +375,7 @@ public class GenericSignatureParser {
 			case '.':
 				if (identifier.length() > 0)
 					tokens.add(identifier.toString());
-				identifier = new StringBuffer();
+				identifier = new StringBuilder();
 				couldSeePrimitive = false;
 				tokens.add(".");
 				break;

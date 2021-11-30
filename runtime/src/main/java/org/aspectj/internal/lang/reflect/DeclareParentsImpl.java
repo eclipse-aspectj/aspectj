@@ -72,7 +72,7 @@ public class DeclareParentsImpl implements DeclareParents {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("declare parents : ");
 		sb.append(getTargetTypesPattern().asString());
 		sb.append(isExtends() ? " extends " : " implements ");

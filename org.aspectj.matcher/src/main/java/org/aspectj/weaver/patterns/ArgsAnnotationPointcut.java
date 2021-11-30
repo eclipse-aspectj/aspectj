@@ -235,7 +235,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 	 * @see java.lang.Object#toString()
 	 */
 	private void buildDeclarationText() {
-		StringBuffer buf = new StringBuffer("@args");
+		StringBuilder buf = new StringBuilder("@args");
 		buf.append(arguments.toString());
 		this.declarationText = buf.toString();
 	}

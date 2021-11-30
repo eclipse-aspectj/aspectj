@@ -66,7 +66,7 @@ public class DeclareParentsMixin extends DeclareParents {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("declare parents mixin: ");
 		buf.append(child);
 		buf.append(" implements ");

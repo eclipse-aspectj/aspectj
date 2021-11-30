@@ -260,7 +260,7 @@ class LoggingInvocationHandler implements InvocationHandler {
 	}
 
 	public static String render(Method method, Object[] args) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(render(method.getReturnType()));
 		sb.append(" ");
 		sb.append(method.getName());

@@ -942,7 +942,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		if ((bits & TagBits.AnnotationForType) != 0) {
 			s.add("TYPE");
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
 			String element = iter.next();

@@ -123,7 +123,7 @@ public class EclipseSourceLocation implements ISourceLocation {
 
     /** @return String {file:}line{:column} */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (getSourceFile() != ISourceLocation.NO_FILE) {
             sb.append(getSourceFile().getPath());

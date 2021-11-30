@@ -31,13 +31,13 @@ public class AnnotationNameValuePair {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name + "=" + val.toString());
 		return sb.toString();
 	}
 
 	public String stringify() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (!name.equals("value")) {
 			sb.append(name + "=");
 		}

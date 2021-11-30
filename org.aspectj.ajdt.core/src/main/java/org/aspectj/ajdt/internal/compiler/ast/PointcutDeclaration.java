@@ -146,7 +146,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 	}
 
 	private String buildArgNameRepresentation() {
-		StringBuffer args = new StringBuffer();
+		StringBuilder args = new StringBuilder();
 		if (this.arguments != null) {
 			for (int i = 0; i < this.arguments.length; i++) {
 				if (i != 0)

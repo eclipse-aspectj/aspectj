@@ -221,7 +221,7 @@ public class AsmRelationshipProvider {
 			} else {
 				IProgramElement programElement = model.getHierarchy().getRoot();
 				// =Foo/,<g(G.class[G
-				StringBuffer phantomHandle = new StringBuffer();
+				StringBuilder phantomHandle = new StringBuilder();
 
 				// =Foo
 				phantomHandle.append(programElement.getHandleIdentifier());

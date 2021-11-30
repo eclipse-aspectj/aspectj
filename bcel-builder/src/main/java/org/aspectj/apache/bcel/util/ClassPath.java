@@ -217,7 +217,7 @@ public class ClassPath implements Serializable {
 					list.add(ext_dir.toString() + File.separatorChar + extension);
 		}
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (Iterator<String> e = list.iterator(); e.hasNext();) {
 			buf.append(e.next());

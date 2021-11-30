@@ -221,7 +221,7 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	 * @see java.lang.Object#toString()
 	 */
 	private void buildDeclarationText() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("@within(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);

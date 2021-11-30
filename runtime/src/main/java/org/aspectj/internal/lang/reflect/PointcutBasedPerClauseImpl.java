@@ -35,7 +35,7 @@ public class PointcutBasedPerClauseImpl extends PerClauseImpl implements
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		switch(getKind()) {
 		case PERCFLOW: sb.append("percflow("); break;
 		case PERCFLOWBELOW: sb.append("percflowbelow("); break;

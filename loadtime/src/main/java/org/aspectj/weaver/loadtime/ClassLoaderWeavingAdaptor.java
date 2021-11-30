@@ -345,7 +345,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param definitions
 	 */
 	private void registerOptions(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
-		StringBuffer allOptions = new StringBuffer();
+		StringBuilder allOptions = new StringBuilder();
 		for (Definition definition : definitions) {
 			allOptions.append(definition.getWeaverOptions()).append(' ');
 		}
@@ -956,7 +956,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	@Override
 	protected String getDumpDir() {
 		if (dumpDirPerClassloader) {
-			StringBuffer dir = new StringBuffer();
+			StringBuilder dir = new StringBuilder();
 			dir.append("_ajdump").append(File.separator).append(weavingContext.getId());
 			return dir.toString();
 		} else {

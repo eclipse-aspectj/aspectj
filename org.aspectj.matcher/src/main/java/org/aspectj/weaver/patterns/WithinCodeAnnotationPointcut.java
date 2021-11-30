@@ -212,7 +212,7 @@ public class WithinCodeAnnotationPointcut extends NameBindingPointcut {
 	}
 
 	private void buildDeclarationText() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("@withincode(");
 		String annPatt = annotationTypePattern.toString();
 		buf.append(annPatt.startsWith("@") ? annPatt.substring(1) : annPatt);

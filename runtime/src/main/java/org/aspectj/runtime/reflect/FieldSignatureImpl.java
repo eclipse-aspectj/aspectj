@@ -39,7 +39,7 @@ public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSign
     }
 
     protected String createToString(StringMaker sm) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(sm.makeModifiersString(getModifiers()));
         if (sm.includeArgs) buf.append(sm.makeTypeName(getFieldType()));
         if (sm.includeArgs) buf.append(" ");

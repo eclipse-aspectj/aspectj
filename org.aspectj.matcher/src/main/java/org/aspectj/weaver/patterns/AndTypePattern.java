@@ -130,7 +130,7 @@ public class AndTypePattern extends TypePattern {
 
 	@Override
 	public String toString() {
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buff.append('(');
 			buff.append(annotationPattern.toString());
