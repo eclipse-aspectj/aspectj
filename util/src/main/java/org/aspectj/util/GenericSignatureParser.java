@@ -176,7 +176,7 @@ public class GenericSignatureParser {
 	private ClassTypeSignature parseClassTypeSignature() {
 		SimpleClassTypeSignature outerType = null;
 		SimpleClassTypeSignature[] nestedTypes = new SimpleClassTypeSignature[0];
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		String identifier = eatIdentifier();
 		ret.append(identifier);
 		while (maybeEat("/")) {
@@ -215,7 +215,7 @@ public class GenericSignatureParser {
 	 * Helper method to digest nested types, slightly more complex than necessary to cope with some android related
 	 * incorrect classes (see bug 406167)
 	 */
-	private SimpleClassTypeSignature[] parseNestedTypesHelper(StringBuffer ret) {
+	private SimpleClassTypeSignature[] parseNestedTypesHelper(StringBuilder ret) {
 		boolean brokenSignature = false;
 		SimpleClassTypeSignature[] nestedTypes;
 		List<SimpleClassTypeSignature> nestedTypeList = new ArrayList<>();

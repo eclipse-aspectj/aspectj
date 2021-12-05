@@ -1510,7 +1510,7 @@ public class LangUtil {
 
 			@Override
 			public String toString() {
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				append(sb, fromProcess, "process");
 				append(sb, fromOutPipe, " stdout");
 				append(sb, fromErrPipe, " stderr");
@@ -1522,7 +1522,7 @@ public class LangUtil {
 				}
 			}
 
-			private void append(StringBuffer sb, Throwable thrown, String label) {
+			private void append(StringBuilder sb, Throwable thrown, String label) {
 				if (null != thrown) {
 					sb.append("from " + label + ": ");
 					sb.append(LangUtil.renderExceptionShort(thrown));

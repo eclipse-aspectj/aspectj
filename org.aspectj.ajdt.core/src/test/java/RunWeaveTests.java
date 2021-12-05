@@ -146,7 +146,7 @@ public class RunWeaveTests {
 
 	private static void createCSV() {
 		String NL = System.getProperty("line.separator", "\n");
-		StringBuffer csv = new StringBuffer(1000);
+		StringBuilder csv = new StringBuilder(1000);
 
 		csv.append("Test Results");
 
@@ -219,10 +219,10 @@ public class RunWeaveTests {
 		return (getVMInfo() + "_" + getDateAndTime()).replace('.', '_') + ".csv";
 	}
 
-	private static StringBuffer getDateAndTime() {
+	private static StringBuilder getDateAndTime() {
 		Calendar c = Calendar.getInstance();
 
-		StringBuffer sb = new StringBuffer(15);
+		StringBuilder sb = new StringBuilder(15);
 		sb.append(c.get(Calendar.YEAR));
 		int month = (c.get(Calendar.MONTH)) + 1;
 		if(month < 10) sb.append(0);
@@ -247,8 +247,8 @@ public class RunWeaveTests {
 		return sb;
 	}
 
-	private static StringBuffer getVMInfo() {
-		StringBuffer sb = new StringBuffer(40);
+	private static StringBuilder getVMInfo() {
+		StringBuilder sb = new StringBuilder(40);
 
 		String vm = System.getProperty("java.vm.vendor");
 

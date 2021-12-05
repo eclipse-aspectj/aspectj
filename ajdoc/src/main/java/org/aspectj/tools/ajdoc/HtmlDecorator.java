@@ -168,7 +168,7 @@ class HtmlDecorator {
 		System.out.println("> Decorating " + file.getCanonicalPath() + "...");
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 
-		StringBuffer fileContents = new StringBuffer();
+		StringBuilder fileContents = new StringBuilder();
 		String line = reader.readLine();
 		while (line != null) {
 			fileContents.append(line + "\n");
@@ -327,7 +327,7 @@ class HtmlDecorator {
 		fos.close();
 	}
 
-	static void addAspectDocumentation(IProgramElement node, StringBuffer fileBuffer, int index) {
+	static void addAspectDocumentation(IProgramElement node, StringBuilder fileBuffer, int index) {
 		List<IProgramElement> pointcuts = new ArrayList<>();
 		List<IProgramElement> advice = new ArrayList<>();
 		List<IProgramElement> declares = new ArrayList<>();
@@ -381,7 +381,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static void insertDeclarationsSummary(StringBuffer fileBuffer, List decls, String kind, int index) {
+	static void insertDeclarationsSummary(StringBuilder fileBuffer, List decls, String kind, int index) {
 		if (!declsAboveVisibilityExist(decls))
 			return;
 
@@ -479,7 +479,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static void insertDeclarationsDetails(StringBuffer fileBuffer, List decls, String kind, int index) {
+	static void insertDeclarationsDetails(StringBuilder fileBuffer, List decls, String kind, int index) {
 		if (!declsAboveVisibilityExist(decls))
 			return;
 		int insertIndex = findDetailsIndex(fileBuffer, index);
@@ -535,7 +535,7 @@ class HtmlDecorator {
 	/**
 	 * TODO: don't place the summary first.
 	 */
-	static int findSummaryIndex(StringBuffer fileBuffer, int index) {
+	static int findSummaryIndex(StringBuilder fileBuffer, int index) {
 		String fbs = fileBuffer.toString();
 		String MARKER_1 = "<!-- =========== FIELD SUMMARY =========== -->";
 		String MARKER_2 = "<!-- ======== CONSTRUCTOR SUMMARY ======== -->";
@@ -550,7 +550,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static int findDetailsIndex(StringBuffer fileBuffer, int index) {
+	static int findDetailsIndex(StringBuilder fileBuffer, int index) {
 		String fbs = fileBuffer.toString();
 		String MARKER_1 = "<!-- ========= CONSTRUCTOR DETAIL ======== -->";
 		String MARKER_2 = "<!-- ============ FIELD DETAIL =========== -->";
@@ -569,7 +569,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static void decorateDocWithRel(IProgramElement node, StringBuffer fileContentsBuffer, int index, List targets,
+	static void decorateDocWithRel(IProgramElement node, StringBuilder fileContentsBuffer, int index, List targets,
 			HtmlRelationshipKind relKind) {
 		if (targets != null && !targets.isEmpty()) {
 			String adviceDoc = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>"
@@ -656,7 +656,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static void decorateMemberDocumentation(IProgramElement node, StringBuffer fileContentsBuffer, int index) {
+	static void decorateMemberDocumentation(IProgramElement node, StringBuilder fileContentsBuffer, int index) {
 		List<String> targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
 		decorateDocWithRel(node, fileContentsBuffer, index, targets, HtmlRelationshipKind.ADVISED_BY);
 

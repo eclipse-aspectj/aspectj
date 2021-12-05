@@ -104,7 +104,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 			throw new Error("did not get definitions");
 		}
 		MessageHandler compilerMessages = new MessageHandler();
-        StringBuffer commandLine = new StringBuffer();
+        StringBuilder commandLine = new StringBuilder();
 		for (int i = 1; result && (i < 10); i++) {
 			String fromSuffix = "." + i + "0.java";
 			// copy files, collecting as we go...
@@ -171,7 +171,7 @@ public class IncrementalCase { // XXX NOT bound to junit - bridge tests?
 		File sandboxClassesDir,
 		Definition def,
 		IMessageHolder compilerMessages,
-        StringBuffer commandLine,
+        StringBuilder commandLine,
 		IMessageHandler handler) {
         log("verifyCompile -  iteration ", iteration, handler);
 		log("verifyCompile -        def ", def, handler);

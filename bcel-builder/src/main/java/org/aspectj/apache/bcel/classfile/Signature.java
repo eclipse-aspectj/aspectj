@@ -183,7 +183,7 @@ public final class Signature extends Attribute {
 		return ch == 'T' || ch == 'L';
 	}
 
-	private static final void matchIdent(MyByteArrayInputStream in, StringBuffer buf) {
+	private static final void matchIdent(MyByteArrayInputStream in, StringBuilder buf) {
 		int ch;
 
 		if ((ch = in.read()) == -1)
@@ -234,7 +234,7 @@ public final class Signature extends Attribute {
 			in.unread();
 	}
 
-	private static final void matchGJIdent(MyByteArrayInputStream in, StringBuffer buf) {
+	private static final void matchGJIdent(MyByteArrayInputStream in, StringBuilder buf) {
 		int ch;
 
 		matchIdent(in, buf);
@@ -274,7 +274,7 @@ public final class Signature extends Attribute {
 
 	public static String translate(String s) {
 		// System.out.println("Sig:" + s);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		matchGJIdent(new MyByteArrayInputStream(s), buf);
 
