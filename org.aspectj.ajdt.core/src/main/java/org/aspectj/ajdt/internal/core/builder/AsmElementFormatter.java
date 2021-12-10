@@ -284,7 +284,7 @@ public class AsmElementFormatter {
 
 	private String handleSigForReference(TypeReference ref, TypeBinding tb, MethodScope scope) {
 		try {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			createHandleSigForReference(ref, tb, scope, sb);
 			return sb.toString();
 		} catch (Throwable t) {
@@ -299,7 +299,7 @@ public class AsmElementFormatter {
 	 * handle. Whether a type is qualified or unqualified in its source reference is actually reflected in the handle and this code
 	 * allows for that.
 	 */
-	private void createHandleSigForReference(TypeReference ref, TypeBinding tb, MethodScope scope, StringBuffer handleSig) {
+	private void createHandleSigForReference(TypeReference ref, TypeBinding tb, MethodScope scope, StringBuilder handleSig) {
 		if (ref instanceof Wildcard) {
 			Wildcard w = (Wildcard) ref;
 			if (w.bound == null) {

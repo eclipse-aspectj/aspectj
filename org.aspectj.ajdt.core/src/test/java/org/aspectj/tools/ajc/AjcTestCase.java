@@ -443,7 +443,7 @@ public abstract class AjcTestCase extends TestCase {
 		boolean infosEmpty = expected.isIgnoringInfoMessages() || missingInfos.isEmpty() && extraInfos.isEmpty();
 		if (!(missingFails.isEmpty() && missingWarnings.isEmpty() && missingErrors.isEmpty() && missingWeaves.isEmpty()
 				&& extraFails.isEmpty() && extraWarnings.isEmpty() && extraErrors.isEmpty() && extraWeaves.isEmpty() && infosEmpty)) {
-			StringBuffer failureReport = new StringBuffer(assertionFailedMessage);
+			StringBuilder failureReport = new StringBuilder(assertionFailedMessage);
 			failureReport.append("\n");
 			if (!expected.isIgnoringInfoMessages()) {
 				addMissing(failureReport, "info", missingInfos);
@@ -576,7 +576,7 @@ public abstract class AjcTestCase extends TestCase {
 			}
 		}
 		lastRunResult = null;
-		StringBuffer cp = new StringBuffer();
+		StringBuilder cp = new StringBuilder();
 		if (classpath != null) {
 			// allow replacing this special variable, rather than copying all files to allow tests of jars that don't end in .jar
 			cp.append(substituteSandbox(classpath));
@@ -587,7 +587,7 @@ public abstract class AjcTestCase extends TestCase {
 			cp.append(ajc.getSandboxDirectory().getAbsolutePath());
 			getAnyJars(ajc.getSandboxDirectory(), cp);
 		}
-		StringBuffer mp = new StringBuffer();
+		StringBuilder mp = new StringBuilder();
 		if (modulepath != null) {
 			mp.append(substituteSandbox(modulepath));
 			mp.append(File.pathSeparator);
@@ -983,7 +983,7 @@ public abstract class AjcTestCase extends TestCase {
 		}
 	}
 
-	private void addMissing(StringBuffer buff, String type, List<AjcTestCase.Message> messages) {
+	private void addMissing(StringBuilder buff, String type, List<AjcTestCase.Message> messages) {
 		if (!messages.isEmpty()) {
 			buff.append("Missing expected ");
 			buff.append(type);
@@ -996,7 +996,7 @@ public abstract class AjcTestCase extends TestCase {
 		}
 	}
 
-	private void addExtra(StringBuffer buff, String type, List messages) {
+	private void addExtra(StringBuilder buff, String type, List messages) {
 		if (!messages.isEmpty()) {
 			buff.append("Unexpected ");
 			buff.append(type);
@@ -1010,7 +1010,7 @@ public abstract class AjcTestCase extends TestCase {
 	}
 
 	// add any jars in the directory to the classpath
-	private void getAnyJars(File dir, StringBuffer buff) {
+	private void getAnyJars(File dir, StringBuilder buff) {
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.getName().endsWith(".jar")) {

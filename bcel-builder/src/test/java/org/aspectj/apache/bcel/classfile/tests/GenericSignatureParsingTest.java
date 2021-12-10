@@ -153,7 +153,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 
 	// These routines call BCEL to determine if it can correctly translate from one form to the other.
 	private void checkClassTypeSignature(String sig, String expected) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		int p = GenericSignatureParsingTest.readClassTypeSignatureFrom(sig,0,result,false);
 		assertTrue("Only swallowed "+p+" chars of this sig "+sig+" (len="+sig.length()+")",p==sig.length());
 		assertTrue("Expected '"+expected+"' but got '"+result.toString()+"'",result.toString().equals(expected));
@@ -204,7 +204,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	   *
 	   * FIXME asc this should also create some kind of object you can query for information about whether its parameterized, what the bounds are, etc...
 	   */
-	  public static final int readClassTypeSignatureFrom(String signature, int posn, StringBuffer result, boolean chopit) {
+	  public static final int readClassTypeSignatureFrom(String signature, int posn, StringBuilder result, boolean chopit) {
 		    int idx = posn;
 		    try {
 		      switch (signature.charAt(idx)) {
@@ -282,7 +282,7 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 
 
 	public static final String readClassTypeSignatureFrom(String signature) {
-	    StringBuffer sb = new StringBuffer();
+	    StringBuilder sb = new StringBuilder();
 		GenericSignatureParsingTest.readClassTypeSignatureFrom(signature,0,sb,false);
 		return sb.toString();
 	  }
