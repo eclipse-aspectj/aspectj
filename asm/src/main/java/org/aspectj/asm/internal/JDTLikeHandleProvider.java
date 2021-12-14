@@ -227,7 +227,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
 							if (suffixPosition != -1) {
-								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -279,7 +279,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							String existingHandle = object.getHandleIdentifier();
 							int suffixPosition = existingHandle.indexOf('!');
 							if (suffixPosition != -1) {
-								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -314,7 +314,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
 							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
-								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -334,7 +334,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 							int suffixPosition = existingHandle.lastIndexOf('!');
 							int lastSquareBracket = existingHandle.lastIndexOf('['); // type delimiter
 							if (suffixPosition != -1 && lastSquareBracket < suffixPosition) { // pr260384
-								count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
+								count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 							} else {
 								if (count == 1) {
 									count = 2;
@@ -383,7 +383,7 @@ public class JDTLikeHandleProvider implements IElementHandleProvider {
 					String existingHandle = object.getHandleIdentifier();
 					int suffixPosition = existingHandle.indexOf('!');
 					if (suffixPosition != -1) {
-						count = Integer.valueOf(existingHandle.substring(suffixPosition + 1)) + 1;
+						count = Integer.parseInt(existingHandle.substring(suffixPosition + 1)) + 1;
 					} else {
 						if (count == 1) {
 							count = 2;
