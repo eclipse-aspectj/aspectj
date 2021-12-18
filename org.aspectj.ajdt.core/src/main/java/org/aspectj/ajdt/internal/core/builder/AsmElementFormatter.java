@@ -16,6 +16,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.aspectj.ajdt.internal.compiler.ast.AdviceDeclaration;
 import org.aspectj.ajdt.internal.compiler.ast.DeclareDeclaration;
@@ -256,14 +257,11 @@ public class AsmElementFormatter {
 	}
 
 	private String genPrecedenceListLabel(TypePatternList list) {
-		String tpList = "";
+		StringJoiner tpList = new StringJoiner(", ");
 		for (int i = 0; i < list.size(); i++) {
-			tpList += genTypePatternLabel(list.get(i));
-			if (i < list.size() - 1) {
-				tpList += ", ";
-			}
+			tpList.add(genTypePatternLabel(list.get(i)));
 		}
-		return tpList;
+		return tpList.toString();
 	}
 
 	// private String genArguments(MethodDeclaration md) {

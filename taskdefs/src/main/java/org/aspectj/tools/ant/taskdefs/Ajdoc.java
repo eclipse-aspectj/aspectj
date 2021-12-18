@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -636,14 +636,13 @@ public class Ajdoc extends MatchingTask {
         }
         for (String title: groupMap.keySet()) {
             List<String> packages = groupMap.get(title);
-            String pkgstr = "";
-            for (Iterator<String> j = packages.iterator(); j.hasNext();) {
-                pkgstr += j.next();
-                if (j.hasNext()) pkgstr += ",";
+            StringJoiner pkgstr = new StringJoiner(",");
+            for (String aPackage : packages) {
+                pkgstr.add(aPackage);
             }
             cmd.createArgument().setValue("-group");
             cmd.createArgument().setValue(title);
-            cmd.createArgument().setValue(pkgstr);
+            cmd.createArgument().setValue(pkgstr.toString());
         }
         if (argfiles != null) {
 			for (File file : argfiles) {

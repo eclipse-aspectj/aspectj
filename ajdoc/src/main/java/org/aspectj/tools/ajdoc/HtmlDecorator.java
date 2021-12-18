@@ -572,8 +572,8 @@ class HtmlDecorator {
 	static void decorateDocWithRel(IProgramElement node, StringBuilder fileContentsBuffer, int index, List targets,
 			HtmlRelationshipKind relKind) {
 		if (targets != null && !targets.isEmpty()) {
-			String adviceDoc = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>"
-					+ "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + relKind.toString() + "</font></b></td><td>";
+			StringBuilder adviceDoc = new StringBuilder("<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>"
+					+ "<TD width=\"15%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + relKind.toString() + "</font></b></td><td>");
 
 			String relativePackagePath = getRelativePathFromHere(node.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);
 
@@ -644,15 +644,15 @@ class HtmlDecorator {
 				hrefLink += sbuff.toString() + ".html" + "#" + sb.toString();
 
 				if (!addedNames.contains(hrefName)) {
-					adviceDoc = adviceDoc + "<A HREF=\"" + hrefLink + "\"><tt>" + hrefName.replace('/', '.') + "</tt></A>";
+					adviceDoc.append("<A HREF=\"").append(hrefLink).append("\"><tt>").append(hrefName.replace('/', '.')).append("</tt></A>");
 
 					if (it.hasNext())
-						adviceDoc += ", ";
+						adviceDoc.append(", ");
 					addedNames.add(hrefName);
 				}
 			}
-			adviceDoc += "</TR></TD></TABLE>\n";
-			fileContentsBuffer.insert(index, adviceDoc);
+			adviceDoc.append("</TR></TD></TABLE>\n");
+			fileContentsBuffer.insert(index, adviceDoc.toString());
 		}
 	}
 
@@ -710,24 +710,29 @@ class HtmlDecorator {
 		}
 		if (targets == null)
 			return "";
-		String entry = "<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>";
+		StringBuilder entry = new StringBuilder("<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>");
 
 		IProgramElement.Kind kind = decl.getKind();
 		if (kind.equals(IProgramElement.Kind.ADVICE)) {
-			entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + HtmlRelationshipKind.ADVISES.toString()
-					+ "</b></font></td><td>";
+			entry.append("<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>")
+					.append(HtmlRelationshipKind.ADVISES)
+					.append("</b></font></td><td>");
 		} else if (kind.equals(IProgramElement.Kind.DECLARE_WARNING) || kind.equals(IProgramElement.Kind.DECLARE_ERROR)) {
-			entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + HtmlRelationshipKind.MATCHED_BY.toString()
-					+ "</b></font></td><td>";
+			entry.append("<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>")
+					.append(HtmlRelationshipKind.MATCHED_BY)
+					.append("</b></font></td><td>");
 		} else if (kind.isDeclareAnnotation()) {
-			entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + HtmlRelationshipKind.ANNOTATES.toString()
-					+ "</b></font></td><td>";
+			entry.append("<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>")
+					.append(HtmlRelationshipKind.ANNOTATES)
+					.append("</b></font></td><td>");
 		} else if (kind.equals(IProgramElement.Kind.DECLARE_SOFT)) {
-			entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + HtmlRelationshipKind.SOFTENS.toString()
-					+ "</b></font></td><td>";
+			entry.append("<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>")
+					.append(HtmlRelationshipKind.SOFTENS)
+					.append("</b></font></td><td>");
 		} else {
-			entry += "<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>" + HtmlRelationshipKind.DECLARED_ON.toString()
-					+ "</b></font></td><td>";
+			entry.append("<TD width=\"10%\" bgcolor=\"#FFD8B0\"><B><FONT COLOR=000000>")
+					.append(HtmlRelationshipKind.DECLARED_ON)
+					.append("</b></font></td><td>");
 		}
 
 		String relativePackagePath = getRelativePathFromHere(decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);
@@ -759,15 +764,15 @@ class HtmlDecorator {
 				}
 
 				if (!addedNames.contains(hrefName)) {
-					entry += "<A HREF=\"" + hrefLink + "\"><tt>" + hrefName.replace('/', '.') + "</tt></A>"; // !!! don't replace
+					entry.append("<A HREF=\"").append(hrefLink).append("\"><tt>").append(hrefName.replace('/', '.')).append("</tt></A>"); // !!! don't replace
 					if (it.hasNext())
-						entry += ", ";
+						entry.append(", ");
 					addedNames.add(hrefName);
 				}
 			}
 		}
-		entry += "</B></FONT></TD></TR></TABLE>\n</TR></TD>\n";
-		return entry;
+		entry.append("</B></FONT></TD></TR></TABLE>\n</TR></TD>\n");
+		return entry.toString();
 	}
 
 	/**
@@ -873,7 +878,7 @@ class HtmlDecorator {
 		if (comment == null)
 			return "";
 
-		String formattedComment = "";
+		StringBuilder formattedComment = new StringBuilder();
 		// strip the comment markers
 
 		int startIndex = comment.indexOf("/**");
@@ -909,12 +914,12 @@ class HtmlDecorator {
 				// if ( linkIndex != -1 ) {
 				// line = line.substring(0, linkIndex) + line.substring(linkIndex);
 				// }
-				formattedComment += line;
+				formattedComment.append(line);
 			}
 		} catch (IOException ioe) {
 			throw new Error("Couldn't format comment for declaration: " + decl.getName());
 		}
-		return formattedComment;
+		return formattedComment.toString();
 	}
 
 	static public IProgramElement[] getProgramElements(AsmManager model, String filename) {
