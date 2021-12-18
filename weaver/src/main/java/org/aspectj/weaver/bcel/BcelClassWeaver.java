@@ -1946,7 +1946,7 @@ class BcelClassWeaver implements IClassWeaver {
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.createDup_1(1));
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.SWAP);
 				catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.Throwable", "getMessage",
-						Type.getType(String.class), new Type[] {}, Constants.INVOKEVIRTUAL));
+						Type.getType(String.class), Type.NO_ARGS, Constants.INVOKEVIRTUAL));
 				catchBlockForLiteralLoadingFail.append(fact.createInvoke("java.lang.NoClassDefFoundError", "<init>", Type.VOID,
 						new Type[] { Type.getType(String.class) }, Constants.INVOKESPECIAL));
 				catchBlockForLiteralLoadingFail.append(InstructionFactory.ATHROW);

@@ -71,7 +71,7 @@ public class GenericSignatureParser {
 		this.inputString = sig;
 		tokenStream = tokenize(sig);
 		tokenIndex = 0;
-		FormalTypeParameter[] formals = new FormalTypeParameter[0];
+		FormalTypeParameter[] formals = FormalTypeParameter.NONE;
 		TypeSignature returnType = null;
 		// FormalTypeParameters-opt
 		if (maybeEat("<")) {

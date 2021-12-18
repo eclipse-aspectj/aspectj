@@ -1085,7 +1085,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				l.add(m);
 			}
 		}
-		return l.toArray(new ResolvedMember[0]);
+		return l.toArray(ResolvedMember.NONE);
 	}
 
 	public abstract ISourceContext getSourceContext();

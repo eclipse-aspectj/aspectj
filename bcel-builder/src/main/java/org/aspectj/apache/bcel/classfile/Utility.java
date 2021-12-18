@@ -709,7 +709,7 @@ public abstract class Utility {
 				newAttributes.add(new RuntimeInvisParamAnnos(riaIndex, riaData.length, riaData, cp));
 			}
 
-			return newAttributes.toArray(new Attribute[] {});
+			return newAttributes.toArray(Attribute.NoAttributes);
 		} catch (IOException e) {
 			System.err.println("IOException whilst processing parameter annotations");
 			e.printStackTrace();

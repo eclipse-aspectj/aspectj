@@ -1129,7 +1129,7 @@ public class AspectDeclaration extends TypeDeclaration {
 	}
 
 	private PerClause resolvePerClause() {
-		EclipseScope iscope = new EclipseScope(new FormalBinding[0], scope);
+		EclipseScope iscope = new EclipseScope(FormalBinding.NONE, scope);
 		perClause.resolve(iscope);
 		return perClause;
 	}

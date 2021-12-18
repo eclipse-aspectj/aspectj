@@ -25,8 +25,6 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
  */
 public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 
-	private static ResolvedMember[] NO_MEMBERS = new ResolvedMember[0];
-	private static ResolvedType[] NO_TYPES = new ResolvedType[0];
 	private boolean issuedCantFindTypeError = false;
 	private boolean issuedJoinPointWarning = false;
 	private boolean issuedMissingInterfaceWarning = false;
@@ -61,7 +59,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	@Override
 	public ResolvedMember[] getDeclaredFields() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_FIELDS);
-		return NO_MEMBERS;
+		return ResolvedMember.NONE;
 	}
 
 	/*
@@ -72,7 +70,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	@Override
 	public ResolvedMember[] getDeclaredMethods() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_METHODS);
-		return NO_MEMBERS;
+		return ResolvedMember.NONE;
 	}
 
 	@Override
@@ -84,13 +82,13 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	@Override
 	public ResolvedType[] getDeclaredInterfaces() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_INTERFACES);
-		return NO_TYPES;
+		return ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
 	}
 
 	@Override
 	public ResolvedMember[] getDeclaredPointcuts() {
 		raiseCantFindType(WeaverMessages.CANT_FIND_TYPE_POINTCUTS);
-		return NO_MEMBERS;
+		return ResolvedMember.NONE;
 	}
 
 	@Override

@@ -783,7 +783,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			Type fieldType = BcelWorld.makeBcelType(aspectType);
 			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, fieldType, NameMangler.perObjectInterfaceGet(aspectType),
-					new Type[0], new String[0], gen);
+					Type.NO_ARGS, new String[0], gen);
 			InstructionList il = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
 			il.append(InstructionConstants.ALOAD_0);
@@ -832,7 +832,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 		// "public com_blah_SecurityAspect ajc$com_blah_SecurityAspect$localAspectOf()"
 		Type fieldType = BcelWorld.makeBcelType(aspectType);
 		LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC | Modifier.STATIC, fieldType,
-				NameMangler.perTypeWithinLocalAspectOf(aspectType), new Type[0], new String[0], gen);
+				NameMangler.perTypeWithinLocalAspectOf(aspectType), Type.NO_ARGS, new String[0], gen);
 		InstructionList il = new InstructionList();
 		// PTWIMPL ?? Should check if it is null and throw
 		// NoAspectBoundException

@@ -38,7 +38,7 @@ public class GenericSignature {
 	}
 
 	public static class MethodTypeSignature {
-		public FormalTypeParameter[] formalTypeParameters = new FormalTypeParameter[0];
+		public FormalTypeParameter[] formalTypeParameters = FormalTypeParameter.NONE;
 		public TypeSignature[] parameters = new TypeSignature[0];
 		public TypeSignature returnType;
 		public FieldTypeSignature[] throwsSignatures = new FieldTypeSignature[0];

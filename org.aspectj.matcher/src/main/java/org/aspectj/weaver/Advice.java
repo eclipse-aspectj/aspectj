@@ -104,7 +104,7 @@ public abstract class Advice extends ShadowMunger {
 		if (signature != null) {
 			bindingParameterTypes = signature.getParameterTypes();
 		} else {
-			bindingParameterTypes = new UnresolvedType[0];
+			bindingParameterTypes = UnresolvedType.NONE;
 		}
 	}
 

@@ -160,8 +160,8 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 
 	public static ResolvedMember createStaticInitMember(Class forType, World inWorld) {
 		return new ResolvedMemberImpl(org.aspectj.weaver.Member.STATIC_INITIALIZATION, toResolvedType(forType,
-				(IReflectionWorld) inWorld), Modifier.STATIC, UnresolvedType.VOID, "<clinit>", new UnresolvedType[0],
-				new UnresolvedType[0]);
+				(IReflectionWorld) inWorld), Modifier.STATIC, UnresolvedType.VOID, "<clinit>", UnresolvedType.NONE,
+				UnresolvedType.NONE);
 	}
 
 	public static ResolvedMember createResolvedConstructor(Constructor aConstructor, World inWorld) {
@@ -181,7 +181,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 	public static ResolvedMember createResolvedField(Field aField, World inWorld) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.FIELD,
 				toResolvedType(aField.getDeclaringClass(), (IReflectionWorld) inWorld), aField.getModifiers(), toResolvedType(
-						aField.getType(), (IReflectionWorld) inWorld), aField.getName(), new UnresolvedType[0], aField);
+						aField.getType(), (IReflectionWorld) inWorld), aField.getName(), UnresolvedType.NONE, aField);
 		if (inWorld instanceof IReflectionWorld) {
 			ret.setAnnotationFinder(((IReflectionWorld) inWorld).getAnnotationFinder());
 		}

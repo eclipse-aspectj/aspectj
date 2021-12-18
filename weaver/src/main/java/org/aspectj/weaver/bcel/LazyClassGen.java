@@ -990,7 +990,7 @@ public final class LazyClassGen {
 				return gen;
 			}
 		}
-		LazyMethodGen clinit = new LazyMethodGen(Modifier.STATIC, Type.VOID, "<clinit>", new Type[0], NO_STRINGS, this);
+		LazyMethodGen clinit = new LazyMethodGen(Modifier.STATIC, Type.VOID, "<clinit>", Type.NO_ARGS, NO_STRINGS, this);
 		clinit.getBody().insert(InstructionConstants.RETURN);
 		methodGens.add(clinit);
 		return clinit;

@@ -250,7 +250,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	private ResolvedMember createGenericFieldMember(Field forField) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.FIELD,
 				getGenericResolvedType(), forField.getModifiers(), typeConverter.fromType(forField.getType()), forField.getName(),
-				new UnresolvedType[0], forField);
+				UnresolvedType.NONE, forField);
 		ret.setAnnotationFinder(this.annotationFinder);
 		ret.setGenericSignatureInformationProvider(new Java15GenericSignatureInformationProvider(this.getWorld()));
 		return ret;

@@ -423,15 +423,13 @@ class BcelMethod extends ResolvedMemberImpl {
 		bitflags |= HAS_ANNOTATIONS;
 	}
 
-	public static final AnnotationAJ[] NO_PARAMETER_ANNOTATIONS = new AnnotationAJ[] {};
-
 	public void addParameterAnnotation(int param, AnnotationAJ anno) {
 		ensureParameterAnnotationsRetrieved();
 		if (parameterAnnotations == NO_PARAMETER_ANNOTATIONXS) {
 			// First time we've added any, so lets set up the array
 			parameterAnnotations = new AnnotationAJ[getArity()][];
 			for (int i = 0; i < getArity(); i++) {
-				parameterAnnotations[i] = NO_PARAMETER_ANNOTATIONS;
+				parameterAnnotations[i] = AnnotationAJ.EMPTY_ARRAY;
 			}
 		}
 		int existingCount = parameterAnnotations[param].length;

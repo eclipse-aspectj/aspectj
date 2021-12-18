@@ -212,7 +212,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 */
 	public ResolvedType[] getAnnotationTypes() {
 		// no annotations in Java 1.4
-		return new ResolvedType[0];
+		return ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
 	}
 
 	/*
@@ -281,7 +281,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getDeclaredPointcuts()
 	 */
 	public ResolvedMember[] getDeclaredPointcuts() {
-		return new ResolvedMember[0];
+		return ResolvedMember.NONE;
 	}
 
 	/*
@@ -291,7 +291,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 */
 	public TypeVariable[] getTypeVariables() {
 		// no type variables in Java 1.4
-		return new TypeVariable[0];
+		return TypeVariable.NONE;
 	}
 
 	/*
