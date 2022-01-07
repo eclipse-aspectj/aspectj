@@ -78,7 +78,7 @@ public final class ConstantDynamic extends Constant {
 	}
 
 	public ConstantDynamic(int readUnsignedShort, int nameAndTypeIndex) {
-		super(Constants.CONSTANT_InvokeDynamic);
+		super(Constants.CONSTANT_Dynamic);
 		this.bootstrapMethodAttrIndex = readUnsignedShort;
 		this.nameAndTypeIndex = nameAndTypeIndex;
 	}
