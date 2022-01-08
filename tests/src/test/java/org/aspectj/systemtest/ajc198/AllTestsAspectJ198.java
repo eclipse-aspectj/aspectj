@@ -22,6 +22,9 @@ public class AllTestsAspectJ198 {
 		if (LangUtil.is9VMOrGreater()) {
 			suite.addTest(CompileWithReleaseTests.suite());
 		}
+		if (LangUtil.is11VMOrGreater()) {
+			suite.addTest(Bugs198Java11Tests.suite());
+		}
 		if (LangUtil.is17VMOrGreater()) {
 			suite.addTest(SanityTestsJava17.suite());
 			suite.addTest(Ajc198TestsJava.suite());
