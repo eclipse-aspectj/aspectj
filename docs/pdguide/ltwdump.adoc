@@ -20,7 +20,7 @@ configure the weaver to dump the input classes as well.
 
 For details of how to configure byte-code dumping, see the AspectJ
 Development Environment Guide section on
-xref:../devguide/ltw-configuration.html#configuring-load-time-weaving-with-aopxml-files[Configuring
+xref:../devguide/ltw.html#configuring-load-time-weaving-with-aopxml-files[Configuring
 Load-time Weaving]. Following is a simple example.
 
 [[ltwdump-examples]]

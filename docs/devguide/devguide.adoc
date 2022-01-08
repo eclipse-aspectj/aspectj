@@ -8,7 +8,7 @@ _Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Inco
 All rights reserved._
 
 This guide describes how to build and deploy AspectJ programs using the AspectJ tools and facilities. See also the
-xref:../progGuideDB/progguide.adoc[AspectJ Programming Guide], the documentation available with the AspectJ support
+xref:../progguide/progguide.adoc[AspectJ Programming Guide], the documentation available with the AspectJ support
 available for various integrated development environments (e.g. https://www.eclipse.org/ajdt/[Eclipse AJDT]), and the
 most-recent documentation available from the https://eclipse.org/aspectj[AspectJ project page].
 
@@ -16,18 +16,18 @@ most-recent documentation available from the https://eclipse.org/aspectj[AspectJ
 ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
 table of contents (TOC) can be wrong and the first section of each document missing completely.
 ////
-include::tools-intro.adoc[]
+include::tools-intro.adoc[Introduction to the AspectJ tools]
 
-include::ajc.adoc[]
+include::ajc.adoc[`ajc`, the AspectJ compiler/weaver]
 
-include::ajdoc.adoc[]
+include::ajdoc.adoc[`ajdoc`, the AspectJ API documentation generator]
 
-include::aj.adoc[]
+include::aj.adoc[`aj`, the AspectJ load-time weaving launcher]
 
-include::ajbrowser.adoc[]
+include::ajbrowser.adoc[AspectJ Browser]
 
-include::antsupport.adoc[]
+include::antsupport.adoc[AspectJ Ant Tasks]
 
-include::ltw.adoc[]
+include::ltw.adoc[Load-Time Weaving]
 
-include::compatibility.adoc[]
+include::compatibility.adoc[AspectJ version compatibility]

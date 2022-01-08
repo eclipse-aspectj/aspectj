@@ -49,7 +49,7 @@ each join point? This translates to `this()`, `target()`, `args()`,
 . Are there any advice or implementation limitations at issue? This
 involves knowing the few constraints on AspectJ imposed by Java bytecode
 as listed in the AspectJ Programming Guide section on
-xref:../progGuideDB/implementation.adoc#implementation[Implementation Notes].
+xref:../progguide/implementation.adoc#implementation[Implementation Notes].
 
 It's much faster to iterate a pointcut at compile-time using declare
 warning (even better, some errors are identified at parse-time in the

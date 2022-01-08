@@ -1,0 +1,30 @@
+= The AspectJ^TM^ Programming Guide
+
+:doctype: book
+
+_by the AspectJ Team_
+
+_Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Incorporated, 2003-2005 Contributors.
+All rights reserved._
+
+This programming guide describes the AspectJ language. A companion guide describes the tools which are part of the
+AspectJ development environment.
+
+* If you are completely new to AspectJ, please read the xref:gettingstarted.adoc#starting[getting started] chapter for a
+  broad overview of AspectJ programming.
+* If you are already familiar with AspectJ, but want a deeper understanding, you can learn more about the
+  xref:language.adoc#language[AspectJ language] and look at the examples in the chapter.
+* If you want a more formal definition of AspectJ, please refer to the xref:semantics.adoc#semantics[language semantics]
+  section.
+
+**Table of Contents**
+
+* xref:preface.adoc[Preface]
+* xref:gettingstarted.adoc[Getting Started with AspectJ]
+* xref:language.adoc[The AspectJ Language]
+* xref:examples.adoc[Examples]
+* xref:idioms.adoc[Idioms]
+* xref:pitfalls.adoc[Pitfalls]
+* xref:quickreference.adoc[AspectJ Quick Reference]
+* xref:semantics.adoc[Language Semantics]
+* xref:implementation.adoc[Implementation Notes]

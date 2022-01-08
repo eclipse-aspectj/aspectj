@@ -14,7 +14,7 @@ for AspectJ 5.
 
 |xref:#documentation[Documentation] |xref:../../faq/faq.adoc#faq[FAQ], link:quick5.pdf[Quick
 Reference (AspectJ 5)], link:quick.pdf[Quick Reference (1.2.1)],
-xref:../../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook],
+xref:../../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook],
 link:progguide/index.html[programming],
 link:devguide/index.html[development] and
 link:pdguide/index.html[problem diagnosis] guides,
@@ -44,7 +44,7 @@ reference for the AspectJ 5 language.
 |link:quick.pdf[AspectJ Quick Reference] |This is a two-page quick
 reference for the AspectJ language.
 
-|xref:../../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook] +
+|xref:../../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook] +
 (printable link:adk15notebook/printable.html[html]) |This describes the
 changes to the AspectJ language and tools introduced in the AspectJ 5
 Development Kit. These changes are additive, and are not yet reflected

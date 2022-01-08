@@ -6,9 +6,9 @@ This module contains the sources for the documentation delivered with
 the AspectJ distribution and for various internal, teaching, and online
 works:
 
-* `devGuideDB`: DocBook sources for the AspectJ Development Environment Guide
-* `progGuideDB`: DocBook sources for the AspectJ Programming Language Guide
-* `faq`: DocBook sources for the AspectJ Frequently Asked Questions
+* `devguide`: AsciiDoc sources for the AspectJ Development Environment Guide
+* `progguide`: AsciiDoc sources for the AspectJ Programming Language Guide
+* `faq`: AsciiDoc sources for the AspectJ Frequently Asked Questions
 * `sandbox`: a collection of sample AspectJ programs, tools built on the
   AspectJ API's, script snippets, and instructional trails, all intended
   to serve as sources for documentation. See xref:sandbox/readme-sandbox.adoc[].

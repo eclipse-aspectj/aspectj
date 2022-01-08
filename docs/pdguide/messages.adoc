@@ -19,9 +19,9 @@ summarizes some of the more relevant messages.
 The compiler offers `-verbose`, `-warning`, and `-XLint` options when
 invoked using the command-line, Ant, or embedded in an IDE. All options
 are listed in the AspectJ Development Environment Guide sections for
-xref:../devGuideDB/ajc.adoc#ajc[Ajc] and
-xref:../devGuideDB/antsupport.adoc#antTasks[Ant Tasks]. The
-xref:../devGuideDB/ltw.adoc#ltw[Load-time Weaving] section describes how to
+xref:../devguide/ajc.adoc#ajc[Ajc] and
+xref:../devguide/antsupport.adoc#antTasks[Ant Tasks]. The
+xref:../devguide/ltw.adoc#ltw[Load-time Weaving] section describes how to
 use XML configuration files and system properties to pass options to the
 weaver. (You can also pass options to the weaver using system properties
 in build- time weaving.) The `-verbose` option has the effect of
@@ -38,9 +38,9 @@ compiler and weaver messages.
 The tables below list some options, System Properties (for LTW only) and
 Java 5 annotations used to control AspectJ messages. The method of
 configuration depends on your environment so please refer to the
-relevant documentation for xref:../devGuideDB/ajc.adoc[ajc],
-xref:../devGuideDB/antsupport.adoc#antTasks[Ant] or
-xref:../devGuideDB/ltw.adoc#weaver-options[LTW].
+relevant documentation for xref:../devguide/ajc.adoc[ajc],
+xref:../devguide/antsupport.adoc#antTasks[Ant] or
+xref:../devguide/ltw.adoc#weaver-options[LTW].
 
 [cols=",",options="header",]
 |===
@@ -59,9 +59,9 @@ output .class files.)
 
 |`messageHolderClass`/ `-XmessageHolderClass:` |In Ant tasks and LTW
 respectively specify the class to receive all messages. See
-xref:../devGuideDB/antsupport.adoc#antTasks-iajc-options[iajc task
+xref:../devguide/antsupport.adoc#antTasks-iajc-options[iajc task
 options] or
-xref:../devGuideDB/ltw.adoc#weaver-options[Weaver Options].
+xref:../devguide/ltw.adoc#weaver-options[Weaver Options].
 |===
 
 [cols=",",options="header",]

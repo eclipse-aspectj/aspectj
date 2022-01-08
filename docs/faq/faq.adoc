@@ -2591,7 +2591,7 @@ JBuilder, and NetBeans through a common API, AJDE.
 *Q:* What are the new features of AspectJ 5?
 
 *A:* All the new features are documented in the
-xref:../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook] and the
+xref:../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook] and the
 link:devguide/index.html[AspectJ Development Environment Guide]. To
 summarize:
 
