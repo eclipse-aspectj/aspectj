@@ -12,6 +12,39 @@
 
   <profiles>
     <profile>
+      <id>create-docs-new</id>
+      <activation>
+        <property>
+          <name>createDocs__NEW</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctor-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-asciidoc</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <sourceDirectory>${project.basedir}</sourceDirectory>
+                  <outputDirectory>${project.build.directory}/html</outputDirectory>
+                  <preserveDirectories>true</preserveDirectories>
+                  <relativeBaseDir>true</relativeBaseDir>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>create-docs</id>
       <activation>
         <property>

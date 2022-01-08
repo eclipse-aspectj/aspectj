@@ -412,6 +412,19 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.2.0</version>
 				</plugin>
+				<plugin>
+					<groupId>org.asciidoctor</groupId>
+					<artifactId>asciidoctor-maven-plugin</artifactId>
+					<version>2.2.1</version>
+					<configuration>
+						<attributes>
+							<source-highlighter>coderay</source-highlighter>
+							<imagesdir>./images</imagesdir>
+							<toc>left</toc>
+							<icons>font</icons>
+						</attributes>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
