@@ -1,0 +1,27 @@
+= The AspectJ^TM^ 5 Development Kit Developer's Notebook
+
+:doctype: book
+
+_by the AspectJ Team_
+
+_Copyright (c) 2004, 2005 Contributors. All rights reserved._
+
+This guide describes the changes to the AspectJ language in AspectJ 5. These include support for Java 5 features,
+support for an annotation-based development style for aspects and new reflection and tools APIs. If you are new to
+AspectJ, we recommend you start by reading the programming guide.
+
+**Table of Contents**
+
+* xref:joinpointsignatures.adoc[Join Point Signatures]
+* xref:annotations.adoc[Annotations]
+* xref:generics.adoc[Generics]
+* xref:autoboxing.adoc[Autoboxing and Unboxing]
+* xref:covariance.adoc[Covariance]
+* xref:varargs.adoc[Varargs]
+* xref:enumeratedtypes.adoc[Enumerated Types]
+* xref:pertypewithin.adoc[The `pertypewithin` Aspect Instantiation Model]
+* xref:ataspectj.adoc[An Annotation Based Development Style]
+* xref:reflection.adoc[New Reflection Interfaces]
+* xref:miscellaneous.adoc[Other Changes in AspectJ 5]
+* xref:ltw.adoc[Load-Time Weaving]
+* xref:grammar.adoc[A Grammar for the AspectJ 5 Language]

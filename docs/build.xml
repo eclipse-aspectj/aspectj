@@ -286,7 +286,7 @@
 
     <target name="progguide" depends="init">
         <antcall target="build-guide">
-            <param name="guide.dir" value="progGuideDB" />
+            <param name="guide.dir" value="progguide" />
             <param name="guide.name" value="progguide" />
             <param name="xml-html-copy"
           	            value="dd_arrow.gif,aspects.gif,figureUML.gif,overview.gif,telecom.gif,aspectj-docs.css"/>
@@ -295,7 +295,7 @@
 
     <target name="adk15guide" depends="init">
         <antcall target="build-guide">
-            <param name="guide.dir" value="adk15ProgGuideDB" />
+            <param name="guide.dir" value="adk15notebook" />
             <param name="guide.name" value="adk15notebook" />
             <param name="xml-html-copy"
     	            value="dd_arrow.gif,aspectj-docs.css"/>
@@ -305,7 +305,7 @@
 
     <target name="devguide" depends="init">
 
-        <copy todir="${docs.src.dir}/devGuideDB" filtering="off">
+        <copy todir="${docs.src.dir}/devguide" filtering="off">
             <fileset dir="${devguide.icons.dir}"
                      includes="${include.devguide.icons}"
             />
@@ -315,11 +315,11 @@
             <param name="xml-html-copy"
                    value="dd_arrow.gif,aspectj-docs.css,ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
             />
-            <param name="guide.dir" value="devGuideDB" />
+            <param name="guide.dir" value="devguide" />
             <param name="guide.name" value="devguide" />
         </antcall>
         <delete quiet="on">
-            <fileset dir="${docs.src.dir}/devGuideDB"
+            <fileset dir="${docs.src.dir}/devguide"
                      includes="${include.devguide.icons}"
             />
         </delete>
@@ -327,7 +327,7 @@
 
     <target name="pdguide" depends="init">
 
-        <copy todir="${docs.src.dir}/pdGuideDB" filtering="off">
+        <copy todir="${docs.src.dir}/pdguide" filtering="off">
             <fileset dir="${devguide.icons.dir}"
                      includes="${include.pdguide.icons}"
             />
@@ -337,11 +337,11 @@
             <param name="xml-html-copy"
                    value="dd_arrow.gif,aspectj-docs.css,ajbrowser-building.gif,ajbrowser-options.gif,${include.pdguide.icons}"
             />
-            <param name="guide.dir" value="pdGuideDB" />
+            <param name="guide.dir" value="pdguide" />
             <param name="guide.name" value="pdguide" />
         </antcall>
         <delete quiet="on">
-            <fileset dir="${docs.src.dir}/pdGuideDB"
+            <fileset dir="${docs.src.dir}/pdguide"
                      includes="${include.pdguide.icons}"
             />
         </delete>
@@ -399,15 +399,15 @@
         <!-- NPE in fop task when building programming guide.
         see patch at https://bugs.eclipse.org/bugs/show_bug.cgi?id=81654
         <antcall target="build-pdf">
-            <param name="guide.dir" value="progGuideDB" />
+            <param name="guide.dir" value="progguide" />
             <param name="guide.name" value="progguide" />
         </antcall>
 		-->
         <antcall target="build-pdf">
-            <param name="guide.dir" value="adk15ProgGuideDB" />
+            <param name="guide.dir" value="adk15notebook" />
             <param name="guide.name" value="adk15notebook" />
         </antcall>
-        <copy todir="${docs.src.dir}/devGuideDB" filtering="off">
+        <copy todir="${docs.src.dir}/devguide" filtering="off">
             <fileset dir="${devguide.icons.dir}"
                      includes="${include.devguide.icons}"
             />
@@ -417,7 +417,7 @@
             <param name="xml-html-copy"
                    value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
             />
-            <param name="guide.dir" value="devGuideDB" />
+            <param name="guide.dir" value="devguide" />
             <param name="guide.name" value="devguide" />
         </antcall>
     </target>

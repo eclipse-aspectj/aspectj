@@ -86,7 +86,7 @@ Bugzilla
 
 This release contains nearly 400 bug fixes and enhancements since the
 1.2.1 release. Major updates to the language are documented in the
-xref:../../adk15ProgGuideDB/adk15notebook.adoc[AspectJ 5 Developer's Notebook]. There are
+xref:../../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook]. There are
 also a number of enhancements to accompanying tools documented in the
 link:devguide/index.html[Developer's Guide]
 

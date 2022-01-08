@@ -1,0 +1,44 @@
+= The AspectJ^TM^ Problem Diagnosis Guide
+
+:doctype: book
+
+_by the AspectJ Team_
+
+_Copyright (c) 2006 IBM Corporation and others. 2006 Contributors. All rights reserved._
+
+This guide describes how to configure the AspectJ compiler/weaver to provide
+information for diagnosing problems in the input programs, the
+compiler/weaver or its configuration.
+
+The AspectJ compiler and weaver can provide lots of information for diagnosing
+problems in building AspectJ programs. For problems in the input program,
+there are a number of default warning and error messages, as well as many
+configurable "lint" messages, all of which can be emitted normally,
+logged using standard facilities, or intercepted programmatically.
+These are discussed in xref:messages.adoc#messages[Messages]. Since most errors
+relate to writing pointcuts incorrectly, there is a section on
+xref:pointcuts.adoc#pointcuts[Debugging Pointcuts].
+
+For problems with the compiler/weaver itself there are three facilities
+that enable the AspectJ developers to resolve bugs even when it is
+too hard to deliver a reproducible test case:
+
+* xref:trace.adoc#trace[Tracing] can be enabled to track progress up to the time of a failure;
+* xref:ajcore.adoc#ajcore[AspectJ Core Files] can give a relatively complete picture of the state of
+  the world at the time of a failure; and
+* xref:ltwdump.adoc#ltwdump[Dumping classes during load-time weaving] is a way to capture both input and output classes during load-time weaving.
+
+This guide describes how to configure messages to get the right information
+and how to configure traces, dumps, and core files. Although the compiler/weaver
+operates in roughly three modes (from the command-line, embedded in an IDE,
+and enabled as load-time weaving), the principles are basically the same for
+all modes. The differences lie in how to set up diagnostics and what
+information is likely to be relevant.
+
+**Table of Contents**
+
+* xref:messages.adoc[Messages]
+* xref:pointcuts.adoc[Debugging Pointcuts]
+* xref:trace.adoc[Tracing]
+* xref:ajcore.adoc[AspectJ Core Files]
+* xref:ltwdump.adoc[Dumping classes during load-time weaving]
