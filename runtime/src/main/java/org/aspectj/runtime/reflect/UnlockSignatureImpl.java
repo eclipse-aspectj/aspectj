@@ -17,9 +17,9 @@ import java.lang.reflect.Modifier;
 import org.aspectj.lang.reflect.UnlockSignature;
 
 class UnlockSignatureImpl extends SignatureImpl implements UnlockSignature {
-    private Class parameterType;
+    private Class<?> parameterType;
 
-    UnlockSignatureImpl(Class c) {
+    UnlockSignatureImpl(Class<?> c) {
         super(Modifier.STATIC, "unlock", c);
         parameterType = c;
     }

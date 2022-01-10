@@ -81,7 +81,7 @@ public class CFlowStack {
     }
 
     public void pop() {
-        Stack s = getThreadStack();
+        Stack<?> s = getThreadStack();
         s.pop();
         if (s.isEmpty()) {
         	stackProxy.removeThreadStack();
@@ -89,7 +89,7 @@ public class CFlowStack {
     }
 
     public Object peek() {
-        Stack stack = getThreadStack();
+        Stack<?> stack = getThreadStack();
         if (stack.isEmpty()) throw new org.aspectj.lang.NoAspectBoundException();
         return (Object)stack.peek();
     }
@@ -106,13 +106,13 @@ public class CFlowStack {
     }
 
     public CFlow peekCFlow() {
-        Stack stack = getThreadStack();
+        Stack<?> stack = getThreadStack();
         if (stack.isEmpty()) return null;
         return (CFlow)stack.peek();
     }
 
     public CFlow peekTopCFlow() {
-        Stack stack = getThreadStack();
+        Stack<?> stack = getThreadStack();
         if (stack.isEmpty()) return null;
         return (CFlow)stack.elementAt(0);
     }

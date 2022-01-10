@@ -21,10 +21,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	private Method method;
-	Class returnType;
+	Class<?> returnType;
 
-	MethodSignatureImpl(int modifiers, String name, Class declaringType, Class[] parameterTypes, String[] parameterNames,
-			Class[] exceptionTypes, Class returnType) {
+	MethodSignatureImpl(int modifiers, String name, Class<?> declaringType, Class[] parameterTypes, String[] parameterNames,
+			Class[] exceptionTypes, Class<?> returnType) {
 		super(modifiers, name, declaringType, parameterTypes, parameterNames, exceptionTypes);
 		this.returnType = returnType;
 	}
@@ -62,12 +62,12 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	 */
 	public Method getMethod() {
 		if (method == null) {
-			Class dtype = getDeclaringType();
+			Class<?> dtype = getDeclaringType();
 			try {
 				method = dtype.getDeclaredMethod(getName(), getParameterTypes());
 			} catch (NoSuchMethodException nsmEx) {
 				// pr154427 - search
-				Set searched = new HashSet();
+				Set<Class<?>> searched = new HashSet<>();
 				searched.add(dtype); // avoids another getDeclaredMethod() on dtype
 				method = search(dtype, getName(), getParameterTypes(), searched);
 			}
@@ -84,7 +84,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	 * @param searched a set of types already searched to avoid looking at anything twice
 	 * @return the method if found, or null if not found
 	 */
-	private Method search(Class type, String name, Class[] params, Set searched) {
+	private Method search(Class<?> type, String name, Class[] params, Set<Class<?>> searched) {
 		if (type == null) {
 			return null;
 		}
@@ -102,7 +102,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 		}
 		Class[] superinterfaces = type.getInterfaces();
 		if (superinterfaces != null) {
-			for (Class superinterface : superinterfaces) {
+			for (Class<?> superinterface : superinterfaces) {
 				m = search(superinterface, name, params, searched);
 				if (m != null) {
 					return m;

@@ -19,11 +19,11 @@ import java.lang.reflect.Field;
 import org.aspectj.lang.reflect.FieldSignature;
 
 public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSignature {
-    Class fieldType;
+    Class<?> fieldType;
 	private Field field;
 
-    FieldSignatureImpl(int modifiers, String name, Class declaringType,
-        Class fieldType)
+    FieldSignatureImpl(int modifiers, String name, Class<?> declaringType,
+        Class<?> fieldType)
     {
         super(modifiers, name, declaringType);
         this.fieldType = fieldType;

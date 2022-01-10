@@ -25,10 +25,10 @@ abstract class SignatureImpl implements Signature {
     int modifiers = -1;
     String name;
     String declaringTypeName;
-    Class declaringType;
+    Class<?> declaringType;
     Cache stringCache;
 
-    SignatureImpl(int modifiers, String name, Class declaringType) {
+    SignatureImpl(int modifiers, String name, Class<?> declaringType) {
         this.modifiers = modifiers;
         this.name = name;
         this.declaringType = declaringType;
@@ -82,7 +82,7 @@ abstract class SignatureImpl implements Signature {
     	return declaringTypeName;
     }
 
-    String fullTypeName(Class type) {
+    String fullTypeName(Class<?> type) {
         if (type == null) return "ANONYMOUS";
         if (type.isArray()) return fullTypeName(type.getComponentType()) + "[]";
         return type.getName().replace('$', '.');
@@ -94,7 +94,7 @@ abstract class SignatureImpl implements Signature {
         return name.substring(dot+1);
     }
 
-    String shortTypeName(Class type) {
+    String shortTypeName(Class<?> type) {
         if (type == null) return "ANONYMOUS";
         if (type.isArray()) return shortTypeName(type.getComponentType()) + "[]";
         return stripPackageName(type.getName()).replace('$', '.');
@@ -157,7 +157,7 @@ abstract class SignatureImpl implements Signature {
         return Integer.parseInt(s, 16);
     }
 
-    Class extractType(int n) {
+    Class<?> extractType(int n) {
         String s = extractString(n);
         return Factory.makeClass(s,getLookupClassLoader());
     }
@@ -207,7 +207,7 @@ abstract class SignatureImpl implements Signature {
 
 	// separate implementation so we don't need SoftReference to hold the field...
 	private static final class CacheImpl implements Cache {
-		private java.lang.ref.SoftReference toStringCacheRef;
+		private java.lang.ref.SoftReference<String[]> toStringCacheRef;
 
 		public CacheImpl() {
 			makeCache();
@@ -235,7 +235,7 @@ abstract class SignatureImpl implements Signature {
 
 		private String[] makeCache() {
 			String[] array = new String[3];
-			toStringCacheRef = new java.lang.ref.SoftReference(array);
+			toStringCacheRef = new java.lang.ref.SoftReference<>(array);
 			return array;
 		}
 

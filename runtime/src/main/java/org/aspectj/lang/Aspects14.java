@@ -133,22 +133,22 @@ public class Aspects14 {
 
     // -- aspectOf
 
-    private static Method getSingletonOrThreadAspectOf(Class aspectClass) throws NoSuchMethodException {
+    private static Method getSingletonOrThreadAspectOf(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(ASPECTOF, EMPTY_CLASS_ARRAY);
         return checkAspectOf(method, aspectClass);
     }
 
-    private static Method getPerObjectAspectOf(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerObjectAspectOf(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(ASPECTOF, PEROBJECT_CLASS_ARRAY);
         return checkAspectOf(method, aspectClass);
     }
 
-    private static Method getPerTypeWithinAspectOf(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerTypeWithinAspectOf(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(ASPECTOF, PERTYPEWITHIN_CLASS_ARRAY);
         return checkAspectOf(method, aspectClass);
     }
 
-    private static Method checkAspectOf(Method method, Class aspectClass) throws NoSuchMethodException {
+    private static Method checkAspectOf(Method method, Class<?> aspectClass) throws NoSuchMethodException {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
@@ -160,22 +160,22 @@ public class Aspects14 {
 
     // -- hasAspect
 
-    private static Method getSingletonOrThreadHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getSingletonOrThreadHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, EMPTY_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method getPerObjectHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerObjectHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, PEROBJECT_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method getPerTypeWithinHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerTypeWithinHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, PERTYPEWITHIN_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method checkHasAspect(Method method, Class aspectClass) throws NoSuchMethodException {
+    private static Method checkHasAspect(Method method, Class<?> aspectClass) throws NoSuchMethodException {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())
