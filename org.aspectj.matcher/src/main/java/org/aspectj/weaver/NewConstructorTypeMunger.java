@@ -89,9 +89,9 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 		ResolvedMember sig = ResolvedMemberImpl.readResolvedMember(s, context);
 		ResolvedMember syntheticCtor = ResolvedMemberImpl.readResolvedMember(s, context);
 		ResolvedMember explicitCtor = ResolvedMemberImpl.readResolvedMember(s, context);
-		Set superMethodsCalled = readSuperMethodsCalled(s);
+		Set<ResolvedMember> superMethodsCalled = readSuperMethodsCalled(s);
 		sloc = readSourceLocation(s);
-		List typeVarAliases = readInTypeAliases(s);
+		List<String> typeVarAliases = readInTypeAliases(s);
 		ResolvedTypeMunger munger = new NewConstructorTypeMunger(sig, syntheticCtor, explicitCtor, superMethodsCalled,
 				typeVarAliases);
 		if (sloc != null) {

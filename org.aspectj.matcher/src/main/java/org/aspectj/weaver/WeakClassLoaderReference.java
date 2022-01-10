@@ -36,10 +36,10 @@ public class WeakClassLoaderReference{
 
 	protected final int hashcode;
 
-	private final WeakReference loaderRef;
+	private final WeakReference<ClassLoader> loaderRef;
 
 	public WeakClassLoaderReference(ClassLoader loader) {
-		loaderRef = new WeakReference(loader);
+		loaderRef = new WeakReference<>(loader);
 		if(loader == null){
 			// Bug: 363962
 			// Check that ClassLoader is not null, for instance when loaded from BootStrapClassLoader

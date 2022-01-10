@@ -101,7 +101,7 @@ public class ResolvedPointcutDefinition extends ResolvedMemberImpl {
 		if (isParameterized && (typeVariables.length != typeParameters.length)) {
 			throw new IllegalStateException("Wrong number of type parameters supplied");
 		}
-		Map typeMap = new HashMap();
+		Map<String, UnresolvedType> typeMap = new HashMap<>();
 		boolean typeParametersSupplied = typeParameters != null && typeParameters.length > 0;
 		if (typeVariables != null) {
 			// If no 'replacements' were supplied in the typeParameters array then collapse

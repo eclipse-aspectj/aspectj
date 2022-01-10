@@ -354,8 +354,8 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 
 	public static class Handler implements Member {
 
-		private Class decClass;
-		private Class exType;
+		private Class<?> decClass;
+		private Class<?> exType;
 
 		public Handler(Class decClass, Class exType) {
 			this.decClass = decClass;

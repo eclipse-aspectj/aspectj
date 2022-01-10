@@ -139,7 +139,7 @@ public class AnnotationPointcut extends NameBindingPointcut {
 			if (rMember.isAnnotatedElsewhere()) {
 				if (kind == Shadow.FieldGet || kind == Shadow.FieldSet) {
 					// FIXME asc should include supers with getInterTypeMungersIncludingSupers ?
-					List mungers = rMember.getDeclaringType().resolve(shadow.getIWorld()).getInterTypeMungers();
+					List<ConcreteTypeMunger> mungers = rMember.getDeclaringType().resolve(shadow.getIWorld()).getInterTypeMungers();
 					for (Object munger : mungers) {
 						ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
 						if (typeMunger.getMunger() instanceof NewFieldTypeMunger) {
