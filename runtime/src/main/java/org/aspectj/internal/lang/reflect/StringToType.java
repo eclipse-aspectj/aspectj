@@ -48,7 +48,7 @@ public class StringToType {
 		} catch (ClassNotFoundException e) {
 			// could be a type variable
 			TypeVariable[] tVars = classScope.getTypeParameters();
-			for (TypeVariable tVar : tVars) {
+			for (TypeVariable<?> tVar : tVars) {
 				if (tVar.getName().equals(typeName)) {
 					return tVar;
 				}
@@ -57,11 +57,11 @@ public class StringToType {
 		}
 	}
 
-	private static Type makeParameterizedType(String typeName, Class classScope)
+	private static Type makeParameterizedType(String typeName, Class<?> classScope)
 	throws ClassNotFoundException {
 		int paramStart = typeName.indexOf('<');
 		String baseName = typeName.substring(0, paramStart);
-		final Class baseClass = Class.forName(baseName,false,classScope.getClassLoader());
+		final Class<?> baseClass = Class.forName(baseName,false,classScope.getClassLoader());
 		int paramEnd = typeName.lastIndexOf('>');
 		String params = typeName.substring(paramStart+1,paramEnd);
 		final Type[] typeParams = commaSeparatedListToTypeArray(params,classScope);

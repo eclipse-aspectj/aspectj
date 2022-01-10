@@ -35,7 +35,7 @@ import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.lang.reflect.UnlockSignature;
 
 public final class Factory {
-	Class lexicalClass;
+	Class<?> lexicalClass;
 	ClassLoader lookupClassLoader;
 	String filename;
 	int count;
@@ -43,7 +43,7 @@ public final class Factory {
 	private static final Class[] NO_TYPES = new Class[0];
 	private static final String[] NO_STRINGS = new String[0];
 
-	static Hashtable prims = new Hashtable();
+	static Hashtable<String, Class<?>> prims = new Hashtable<>();
 	static {
 		prims.put("void", Void.TYPE);
 		prims.put("boolean", Boolean.TYPE);
@@ -56,10 +56,10 @@ public final class Factory {
 		prims.put("double", Double.TYPE);
 	}
 
-	static Class makeClass(String s, ClassLoader loader) {
+	static Class<?> makeClass(String s, ClassLoader loader) {
 		if (s.equals("*"))
 			return null;
-		Class ret = (Class)prims.get(s);
+		Class<?> ret = (Class)prims.get(s);
 		if (ret != null)
 			return ret;
 		try {
@@ -246,7 +246,7 @@ public final class Factory {
 					.getReturnType());
 			kind = JoinPoint.METHOD_EXECUTION;
 		} else if (member instanceof Constructor) {
-			Constructor cons = (Constructor) member;
+			Constructor<?> cons = (Constructor<?>) member;
 			sig = new ConstructorSignatureImpl(cons.getModifiers(), cons.getDeclaringClass(), cons.getParameterTypes(),
 					new String[cons.getParameterTypes().length], cons.getExceptionTypes());
 			kind = JoinPoint.CONSTRUCTOR_EXECUTION;
@@ -282,7 +282,7 @@ public final class Factory {
 
 	public MethodSignature makeMethodSig(String modifiers, String methodName, String declaringType, String paramTypes,
 			String paramNames, String exceptionTypes, String returnType) {
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
 		return makeMethodSig(modifiers, methodName, declaringTypeClass, paramTypes, paramNames, exceptionTypes, returnType);
 	}
 
@@ -308,7 +308,7 @@ public final class Factory {
 		for (int i = 0; i < numParams; i++)
 			exceptionTypeClasses[i] = makeClass(st.nextToken(), lookupClassLoader);
 
-		Class returnTypeClass = makeClass(returnType, lookupClassLoader);
+		Class<?> returnTypeClass = makeClass(returnType, lookupClassLoader);
 
 		MethodSignatureImpl ret = new MethodSignatureImpl(modifiersAsInt, methodName, declaringTypeClass, paramTypeClasses,
 				paramNamesArray, exceptionTypeClasses, returnTypeClass);
@@ -334,7 +334,7 @@ public final class Factory {
 			String exceptionTypes) {
 		int modifiersAsInt = Integer.parseInt(modifiers, 16);
 
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
 
 		StringTokenizer st = new StringTokenizer(paramTypes, ":");
 		int numParams = st.countTokens();
@@ -376,8 +376,8 @@ public final class Factory {
 
 	public FieldSignature makeFieldSig(String modifiers, String name, String declaringType, String fieldType) {
 		int modifiersAsInt = Integer.parseInt(modifiers, 16);
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
-		Class fieldTypeClass = makeClass(fieldType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> fieldTypeClass = makeClass(fieldType, lookupClassLoader);
 
 		FieldSignatureImpl ret = new FieldSignatureImpl(modifiersAsInt, name, declaringTypeClass, fieldTypeClass);
 		ret.setLookupClassLoader(lookupClassLoader);
@@ -400,7 +400,7 @@ public final class Factory {
 			String exceptionTypes, String returnType) {
 		int modifiersAsInt = Integer.parseInt(modifiers, 16);
 
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
 
 		StringTokenizer st = new StringTokenizer(paramTypes, ":");
 		int numParams = st.countTokens();
@@ -421,7 +421,7 @@ public final class Factory {
 			exceptionTypeClasses[i] = makeClass(st.nextToken(), lookupClassLoader);
 		;
 
-		Class returnTypeClass = makeClass(returnType, lookupClassLoader);
+		Class<?> returnTypeClass = makeClass(returnType, lookupClassLoader);
 
 		AdviceSignatureImpl ret = new AdviceSignatureImpl(modifiersAsInt, name, declaringTypeClass, paramTypeClasses,
 				paramNamesArray, exceptionTypeClasses, returnTypeClass);
@@ -445,7 +445,7 @@ public final class Factory {
 
 	public InitializerSignature makeInitializerSig(String modifiers, String declaringType) {
 		int modifiersAsInt = Integer.parseInt(modifiers, 16);
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
 
 		InitializerSignatureImpl ret = new InitializerSignatureImpl(modifiersAsInt, declaringTypeClass);
 		ret.setLookupClassLoader(lookupClassLoader);
@@ -465,10 +465,10 @@ public final class Factory {
 	}
 
 	public CatchClauseSignature makeCatchClauseSig(String declaringType, String parameterType, String parameterName) {
-		Class declaringTypeClass = makeClass(declaringType, lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass(declaringType, lookupClassLoader);
 
 		StringTokenizer st = new StringTokenizer(parameterType, ":");
-		Class parameterTypeClass = makeClass(st.nextToken(), lookupClassLoader);
+		Class<?> parameterTypeClass = makeClass(st.nextToken(), lookupClassLoader);
 
 		st = new StringTokenizer(parameterName, ":");
 		String parameterNameForReturn = st.nextToken();
@@ -491,7 +491,7 @@ public final class Factory {
 	}
 
 	public LockSignature makeLockSig() {
-		Class declaringTypeClass = makeClass("Ljava/lang/Object;", lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass("Ljava/lang/Object;", lookupClassLoader);
 		LockSignatureImpl ret = new LockSignatureImpl(declaringTypeClass);
 		ret.setLookupClassLoader(lookupClassLoader);
 		return ret;
@@ -510,7 +510,7 @@ public final class Factory {
 	}
 
 	public UnlockSignature makeUnlockSig() {
-		Class declaringTypeClass = makeClass("Ljava/lang/Object;", lookupClassLoader);
+		Class<?> declaringTypeClass = makeClass("Ljava/lang/Object;", lookupClassLoader);
 		UnlockSignatureImpl ret = new UnlockSignatureImpl(declaringTypeClass);
 		ret.setLookupClassLoader(lookupClassLoader);
 		return ret;

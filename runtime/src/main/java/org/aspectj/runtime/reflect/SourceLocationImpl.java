@@ -17,11 +17,11 @@ package org.aspectj.runtime.reflect;
 import org.aspectj.lang.reflect.SourceLocation;
 
 class SourceLocationImpl implements SourceLocation {
-    Class withinType;
+    Class<?> withinType;
     String fileName;
     int line;
 
-    SourceLocationImpl(Class withinType, String fileName, int line) {
+    SourceLocationImpl(Class<?> withinType, String fileName, int line) {
         this.withinType = withinType;
         this.fileName = fileName;
         this.line = line;

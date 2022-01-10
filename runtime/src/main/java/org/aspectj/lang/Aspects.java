@@ -157,22 +157,22 @@ public class Aspects {
 
     // -- hasAspect
 
-    private static Method getSingletonOrThreadHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getSingletonOrThreadHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, EMPTY_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method getPerObjectHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerObjectHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, PEROBJECT_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method getPerTypeWithinHasAspect(Class aspectClass) throws NoSuchMethodException {
+    private static Method getPerTypeWithinHasAspect(Class<?> aspectClass) throws NoSuchMethodException {
         Method method = aspectClass.getDeclaredMethod(HASASPECT, PERTYPEWITHIN_CLASS_ARRAY);
         return checkHasAspect(method, aspectClass);
     }
 
-    private static Method checkHasAspect(Method method, Class aspectClass) throws NoSuchMethodException {
+    private static Method checkHasAspect(Method method, Class<?> aspectClass) throws NoSuchMethodException {
         method.setAccessible(true);
         if (!method.isAccessible()
             || !Modifier.isPublic(method.getModifiers())

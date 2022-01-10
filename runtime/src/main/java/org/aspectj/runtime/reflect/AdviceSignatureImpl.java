@@ -20,12 +20,12 @@ import java.util.StringTokenizer;
 import org.aspectj.lang.reflect.AdviceSignature;
 
 class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
-    Class returnType;
+    Class<?> returnType;
 	private Method adviceMethod = null;
 
-    AdviceSignatureImpl(int modifiers, String name, Class declaringType,
+    AdviceSignatureImpl(int modifiers, String name, Class<?> declaringType,
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes,
-        Class returnType)
+        Class<?> returnType)
     {
         super(modifiers, name, declaringType, parameterTypes, parameterNames,
             exceptionTypes);

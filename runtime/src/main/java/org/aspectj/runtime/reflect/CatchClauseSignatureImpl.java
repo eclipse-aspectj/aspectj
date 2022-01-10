@@ -17,11 +17,11 @@ package org.aspectj.runtime.reflect;
 import org.aspectj.lang.reflect.CatchClauseSignature;
 
 class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSignature {
-    Class parameterType;
+    Class<?> parameterType;
     String parameterName;
 
-    CatchClauseSignatureImpl(Class declaringType,
-        Class parameterType, String parameterName)
+    CatchClauseSignatureImpl(Class<?> declaringType,
+        Class<?> parameterType, String parameterName)
     {
         super(0, "catch", declaringType);
         this.parameterType = parameterType;

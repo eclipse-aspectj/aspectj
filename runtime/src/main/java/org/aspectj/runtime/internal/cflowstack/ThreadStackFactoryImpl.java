@@ -16,8 +16,8 @@ import java.util.Stack;
 
 public class ThreadStackFactoryImpl implements ThreadStackFactory {
 
-	private static class ThreadStackImpl extends ThreadLocal implements ThreadStack {
-		public Object initialValue() {
+	private static class ThreadStackImpl extends ThreadLocal<Stack> implements ThreadStack {
+		public Stack initialValue() {
 		  return new Stack();
 		}
 		public Stack getThreadStack() {
@@ -32,9 +32,9 @@ public class ThreadStackFactoryImpl implements ThreadStackFactory {
 		return new ThreadStackImpl();
 	}
 
-	private static class ThreadCounterImpl extends ThreadLocal implements ThreadCounter {
+	private static class ThreadCounterImpl extends ThreadLocal<ThreadCounterImpl.Counter> implements ThreadCounter {
 
-		public Object initialValue() {
+		public Counter initialValue() {
 		  return new Counter();
 		}
 		public Counter getThreadCounter() {

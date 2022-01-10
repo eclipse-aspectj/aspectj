@@ -87,10 +87,10 @@ class StringMaker {
         return name.substring(dot+1);
     }
 
-    String makeTypeName(Class type, String typeName, boolean shortName) {
+    String makeTypeName(Class<?> type, String typeName, boolean shortName) {
         if (type == null) return "ANONYMOUS";
         if (type.isArray()) {
-        	Class componentType = type.getComponentType();
+        	Class<?> componentType = type.getComponentType();
         	return makeTypeName(componentType, componentType.getName(), shortName) + "[]";
         }
         if (shortName) {
@@ -100,11 +100,11 @@ class StringMaker {
         }
     }
 
-    public String makeTypeName(Class type) {
+    public String makeTypeName(Class<?> type) {
         return makeTypeName(type, type.getName(),shortTypeNames);
     }
 
-    public String makePrimaryTypeName(Class type, String typeName) {
+    public String makePrimaryTypeName(Class<?> type, String typeName) {
         return makeTypeName(type, typeName, shortPrimaryTypeNames);
     }
 

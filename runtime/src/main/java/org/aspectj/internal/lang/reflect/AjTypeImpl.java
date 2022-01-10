@@ -120,7 +120,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public AjType<? super T> getSupertype() {
 		Class<? super T> superclass = clazz.getSuperclass();
-		return superclass==null ? null : (AjType<? super T>) new AjTypeImpl(superclass);
+		return superclass==null ? null : (AjType<? super T>) new AjTypeImpl<>(superclass);
 	}
 
 	/* (non-Javadoc)
@@ -149,15 +149,15 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public AjType<?> getEnclosingType() {
 		Class<?> enc = clazz.getEnclosingClass();
-		return enc != null ? new AjTypeImpl(enc) : null;
+		return enc != null ? new AjTypeImpl<>(enc) : null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaringType()
 	 */
 	public AjType<?> getDeclaringType() {
-		Class dec = clazz.getDeclaringClass();
-		return dec != null ? new AjTypeImpl(dec) : null;
+		Class<?> dec = clazz.getDeclaringClass();
+		return dec != null ? new AjTypeImpl<>(dec) : null;
 	}
 
 	public PerClause getPerClause() {
@@ -463,7 +463,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAdvice(org.aspectj.lang.reflect.AdviceType)
 	 */
-	private Advice[] getDeclaredAdvice(Set ofAdviceTypes) {
+	private Advice[] getDeclaredAdvice(Set<AdviceKind> ofAdviceTypes) {
 		if (declaredAdvice == null) initDeclaredAdvice();
 		List<Advice> adviceList = new ArrayList<>();
 		for (Advice a : declaredAdvice) {
@@ -488,7 +488,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAdvice(org.aspectj.lang.reflect.AdviceType)
 	 */
-	private Advice[] getAdvice(Set ofAdviceTypes) {
+	private Advice[] getAdvice(Set<AdviceKind> ofAdviceTypes) {
 		if (advice == null) initAdvice();
 		List<Advice> adviceList = new ArrayList<>();
 		for (Advice a : advice) {
@@ -1071,7 +1071,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof AjTypeImpl)) return false;
-		AjTypeImpl other = (AjTypeImpl) obj;
+		AjTypeImpl<?> other = (AjTypeImpl<?>) obj;
 		return other.clazz.equals(clazz);
 	}
 

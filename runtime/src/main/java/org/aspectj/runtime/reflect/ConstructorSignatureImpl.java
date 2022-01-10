@@ -19,9 +19,9 @@ import java.lang.reflect.Constructor;
 import org.aspectj.lang.reflect.ConstructorSignature;
 
 class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorSignature {
-	private Constructor constructor;
+    private Constructor<?> constructor;
 
-    ConstructorSignatureImpl(int modifiers, Class declaringType,
+    ConstructorSignatureImpl(int modifiers, Class<?> declaringType,
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes)
     {
         super(modifiers, "<init>", declaringType, parameterTypes, parameterNames, exceptionTypes);
