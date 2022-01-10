@@ -117,11 +117,11 @@ class LstBuildConfigFileUpdater {
 
 	public void writeConfigFile(String filePath, List<BuildConfigNode> files, List<BuildConfigNode> importedNodes) {
 		// Set contentsSet = new TreeSet(fileContents);
-		String fileContentsString = "";
+		StringBuilder fileContentsString = new StringBuilder();
 		// List filesToWrite = null;
 		Set<String> includedFiles = new HashSet<>();
 		for (BuildConfigNode node : importedNodes) {
-			fileContentsString += '@' + node.getResourcePath() + "\n";
+			fileContentsString.append('@').append(node.getResourcePath()).append("\n");
 			String parentPath = new File(filePath).getParent();
 			String importedFilePath = parentPath + File.separator + node.getResourcePath();
 			includedFiles.addAll(getIncludedFiles(importedFilePath, parentPath));
@@ -129,15 +129,15 @@ class LstBuildConfigFileUpdater {
 
 		for (BuildConfigNode node : files) {
 			if (node.getName().endsWith(".lst") && !node.getResourcePath().startsWith("..")) {
-				fileContentsString += '@';
-				fileContentsString += node.getResourcePath() + "\n";
+				fileContentsString.append('@');
+				fileContentsString.append(node.getResourcePath()).append("\n");
 			} else {
 				if (!includedFiles.contains(node.getResourcePath())) {
-					fileContentsString += node.getResourcePath() + "\n";
+					fileContentsString.append(node.getResourcePath()).append("\n");
 				}
 			}
 		}
-		writeFile(fileContentsString, filePath);
+		writeFile(fileContentsString.toString(), filePath);
 	}
 
 	private List<String> getIncludedFiles(String path, String rootPath) {

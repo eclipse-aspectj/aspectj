@@ -74,11 +74,11 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
 
 	@Override
 	public void setProjectMultivalPreference(String name, List values) {
-		String valuesString = "";
+		StringBuilder valuesString = new StringBuilder();
 		for (Object value : values) {
-			valuesString += (String) value + ';';
+			valuesString.append((String)value).append(';');
 		}
-		properties.setProperty(name, valuesString);
+		properties.setProperty(name, valuesString.toString());
 		saveProperties();
 	}
 
