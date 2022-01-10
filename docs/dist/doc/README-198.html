@@ -89,12 +89,12 @@
 
 <ul>
   <li>
-    The AspectJ compiler <tt>ajc</tt> (contained in the <tt>aspectjtools</tt> library) no longer works on JDKs 8 to 10. The minimum
-    compile-time requirement is now JDK 11 due to upstream changes in the Eclipse Java Compiler (subset of JDT Core),
-    which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3 when compiling plain
-    Java code or using plain Java ITD constructs which do not require the AspectJ runtime <tt>aspectjrt</tt>, but the compiler
-    itself needs JDK 11+. Just like in previous AspectJ versions, both the runtime <tt>aspectjrt</tt> and the load-time weaver
-    <tt>aspectjweaver</tt> still only require JRE 8+.
+    The AspectJ compiler <tt>ajc</tt> (contained in the <tt>aspectjtools</tt> library) no longer works on JDKs 8 to 10.
+    The minimum compile-time requirement is now JDK 11 due to upstream changes in the Eclipse Java Compiler (subset of
+    JDT Core), which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3 when
+    compiling plain Java code or using plain Java ITD constructs which do not require the AspectJ runtime
+    <tt>aspectjrt</tt>, but the compiler itself needs JDK 11+. Just like in previous AspectJ versions, both the runtime
+    <tt>aspectjrt</tt> and the load-time weaver <tt>aspectjweaver</tt> still only require JRE 8+.
   </li>
   <li>Document build profiles and properties in <i>docs/developer/BUILD.md</i></li>
   <li>Add a guide for setting up an AspectJ development environment in <i>docs/developer/IDE.md</i></li>
@@ -103,6 +103,16 @@
     Fix <a href="https://github.com/eclipse/org.aspectj/issues/105">issue #105</a>: Compilation fails when using an
     aspect library via <tt>-aspectpath</tt> in combination with introducing an annotation via ITD. This was broken since
     version 1.9.5 and fixed in 1.9.8.RC3.
+  </li>
+  <li>
+    Fix <a href="https://github.com/eclipse/org.aspectj/issues/68">issue #68</a>: Correctly process class files
+    containing <a href="https://openjdk.java.net/jeps/309">dynamic class-file constants (JEP 309)</a>, which were
+    introduced in Java 11 and broken in AspectJ ever since their introduction in 1.9.2. Java itself currently does not
+    use "condy" and neither do other widespread JVM languages. Byte code engineering libraries like ASM or Byte Buddy
+    and some instrumentation tools like JaCoCo can however produce condy code. Therefore, in order to create a
+    regression test, we actually had to
+    <a href="https://github.com/eclipse/org.aspectj/blob/de63b63d/tests/bugs198/github_68/Generator.java#L50-L61">
+      craft a condy class with ASM</a>.
   </li>
 </ul>
 
