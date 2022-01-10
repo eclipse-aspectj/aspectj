@@ -78,8 +78,6 @@ import org.aspectj.weaver.tools.Traceable;
  */
 public final class LazyMethodGen implements Traceable {
 
-	private static final AnnotationAJ[] NO_ANNOTATIONAJ = new AnnotationAJ[] {};
-
 	private int modifiers;
 	private Type returnType;
 	private final String name;
@@ -305,7 +303,7 @@ public final class LazyMethodGen implements Traceable {
 						newParameterAnnotations[i] = new AnnotationAJ[1];
 						newParameterAnnotations[i][0] = anno;
 					} else {
-						newParameterAnnotations[i] = NO_ANNOTATIONAJ;
+						newParameterAnnotations[i] = AnnotationAJ.EMPTY_ARRAY;
 					}
 				}
 			} else {
@@ -336,7 +334,7 @@ public final class LazyMethodGen implements Traceable {
 	public AnnotationAJ[] getAnnotations() {
 		initialize();
 		if (memberView == null && newAnnotations!=null && newAnnotations.size()!=0) {
-			return newAnnotations.toArray(new AnnotationAJ[0]);
+			return newAnnotations.toArray(AnnotationAJ.EMPTY_ARRAY);
 		}
 		return null;
 	}
@@ -618,7 +616,7 @@ public final class LazyMethodGen implements Traceable {
 		if (enclosingClass != null && enclosingClass.getType() != null) {
 			context = enclosingClass.getType().getSourceContext();
 		}
-		List<AjAttribute> as = Utility.readAjAttributes(getClassName(), attributes.toArray(new Attribute[] {}), context, null, weaverVersion,
+		List<AjAttribute> as = Utility.readAjAttributes(getClassName(), attributes.toArray(Attribute.NoAttributes), context, null, weaverVersion,
 				new BcelConstantPoolReader(this.enclosingClass.getConstantPool()));
 		if (!as.isEmpty()) {
 			out.println("    " + as.get(0)); // XXX assuming exactly one

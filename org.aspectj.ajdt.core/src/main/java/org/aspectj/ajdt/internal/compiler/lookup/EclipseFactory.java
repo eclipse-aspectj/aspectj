@@ -291,7 +291,7 @@ public class EclipseFactory {
 			// act of resolution here may cause recursion problems since the parameters may
 			// be type variables that we haven't fixed up yet.
 			if (arguments == null) {
-				arguments = new UnresolvedType[0];
+				arguments = UnresolvedType.NONE;
 				// for pr384398
 				if (!hasAnyArguments(ptb)) {
 					return UnresolvedType.forRawTypeName(getName(binding));

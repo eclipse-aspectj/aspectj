@@ -59,7 +59,7 @@ public class TypeAnnotationAccessVar extends BcelVar {
 		Type jlClass = BcelWorld.makeBcelType(UnresolvedType.JL_CLASS);
 		Type jlaAnnotation = BcelWorld.makeBcelType(UnresolvedType.ANNOTATION);
 		il.append(target.createLoad(fact));
-		il.append(fact.createInvoke("java/lang/Object", "getClass", jlClass, new Type[] {}, Constants.INVOKEVIRTUAL));
+		il.append(fact.createInvoke("java/lang/Object", "getClass", jlClass, Type.NO_ARGS, Constants.INVOKEVIRTUAL));
 		il.append(fact.createConstant(new ObjectType(toType.getName())));
 		il.append(fact.createInvoke("java/lang/Class", "getAnnotation", jlaAnnotation, new Type[] { jlClass },
 				Constants.INVOKEVIRTUAL));

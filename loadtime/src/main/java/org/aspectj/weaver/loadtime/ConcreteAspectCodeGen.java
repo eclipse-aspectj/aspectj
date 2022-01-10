@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import static org.aspectj.apache.bcel.generic.Type.NO_ARGS;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +77,6 @@ import org.aspectj.weaver.patterns.TypePattern;
 public class ConcreteAspectCodeGen {
 
 	private final static String[] EMPTY_STRINGS = new String[0];
-	private final static Type[] EMPTY_TYPES = new Type[0];
 
 	/**
 	 * Concrete aspect definition we build for
@@ -427,17 +428,17 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// default constructor
-		LazyMethodGen init = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, "<init>", EMPTY_TYPES, EMPTY_STRINGS, cg);
+		LazyMethodGen init = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, "<init>", NO_ARGS, EMPTY_STRINGS, cg);
 		InstructionList cbody = init.getBody();
 		cbody.append(InstructionConstants.ALOAD_0);
 
-		cbody.append(cg.getFactory().createInvoke(parentName, "<init>", Type.VOID, EMPTY_TYPES, Constants.INVOKESPECIAL));
+		cbody.append(cg.getFactory().createInvoke(parentName, "<init>", Type.VOID, NO_ARGS, Constants.INVOKESPECIAL));
 		cbody.append(InstructionConstants.RETURN);
 		cg.addMethodGen(init);
 
 		for (Definition.Pointcut abstractPc : concreteAspect.pointcuts) {
 			// TODO AV - respect visibility instead of opening up as public?
-			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, EMPTY_TYPES, EMPTY_STRINGS, cg);
+			LazyMethodGen mg = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, abstractPc.name, NO_ARGS, EMPTY_STRINGS, cg);
 			SimpleElementValue svg = new SimpleElementValue(ElementValue.STRING, cg.getConstantPool(), abstractPc.expression);
 			List<NameValuePair> elems = new ArrayList<>();
 			elems.add(new NameValuePair("value", svg, cg.getConstantPool()));
@@ -547,7 +548,7 @@ public class ConcreteAspectCodeGen {
 
 		String nameComponent = da.declareAnnotationKind.name().toLowerCase();
 		String declareName = new StringBuilder("ajc$declare_at_").append(nameComponent).append("_").append(decCounter).toString();
-		LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, Type.NO_ARGS, EMPTY_STRINGS, cg);
+		LazyMethodGen declareMethod = new LazyMethodGen(Modifier.PUBLIC, Type.VOID, declareName, NO_ARGS, EMPTY_STRINGS, cg);
 		InstructionList declareMethodBody = declareMethod.getBody();
 		declareMethodBody.append(InstructionFactory.RETURN);
 		declareMethod.addAnnotation(constructedAnnotation);
@@ -909,7 +910,7 @@ public class ConcreteAspectCodeGen {
 		}
 
 		// Time to construct the method itself:
-		LazyMethodGen advice = new LazyMethodGen(Modifier.PUBLIC, returnType, adviceName, paramTypes.toArray(new Type[0]), EMPTY_STRINGS, cg);
+		LazyMethodGen advice = new LazyMethodGen(Modifier.PUBLIC, returnType, adviceName, paramTypes.toArray(NO_ARGS), EMPTY_STRINGS, cg);
 
 		InstructionList adviceBody = advice.getBody();
 

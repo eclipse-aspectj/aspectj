@@ -308,7 +308,7 @@ public class IfPointcut extends Pointcut {
 				}
 			}
 
-			ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[]) args.toArray(new Expr[0])));
+			ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[]) args.toArray(Expr.NONE)));
 
 			// Remember...
 			ifLastMatchedShadowId = shadow.shadowId;

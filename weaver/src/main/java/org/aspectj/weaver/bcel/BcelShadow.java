@@ -2047,7 +2047,7 @@ public class BcelShadow extends Shadow {
 
 			if (isPer) {
 				entrySuccessInstructions.append(fact.createInvoke(munger.getConcreteAspect().getName(),
-						NameMangler.PERCFLOW_PUSH_METHOD, Type.VOID, new Type[] {}, Constants.INVOKESTATIC));
+						NameMangler.PERCFLOW_PUSH_METHOD, Type.VOID, Type.NO_ARGS, Constants.INVOKESTATIC));
 			} else {
 				BcelVar[] cflowStateVars = munger.getExposedStateAsBcelVars(false);
 
@@ -2059,7 +2059,7 @@ public class BcelShadow extends Shadow {
 					entrySuccessInstructions.append(Utility.createGet(fact, cflowField));
 					// arrayVar.appendLoad(entrySuccessInstructions, fact);
 					entrySuccessInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "inc", Type.VOID,
-							new Type[] {}, Constants.INVOKEVIRTUAL));
+							Type.NO_ARGS, Constants.INVOKEVIRTUAL));
 				} else {
 					BcelVar arrayVar = genTempVar(UnresolvedType.OBJECTARRAY);
 
@@ -2097,10 +2097,10 @@ public class BcelShadow extends Shadow {
 				exitInstructions.append(Utility.createGet(fact, cflowField));
 				if (munger.getKind() != AdviceKind.PerCflowEntry && munger.getKind() != AdviceKind.PerCflowBelowEntry
 						&& munger.getExposedStateAsBcelVars(false).length == 0) {
-					exitInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "dec", Type.VOID, new Type[] {},
+					exitInstructions.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "dec", Type.VOID, Type.NO_ARGS,
 							Constants.INVOKEVIRTUAL));
 				} else {
-					exitInstructions.append(fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "pop", Type.VOID, new Type[] {},
+					exitInstructions.append(fact.createInvoke(NameMangler.CFLOW_STACK_TYPE, "pop", Type.VOID, Type.NO_ARGS,
 							Constants.INVOKEVIRTUAL));
 				}
 				return exitInstructions;

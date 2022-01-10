@@ -398,7 +398,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		if (pointcuts.size() == 0) {
 			this.pointcuts = ResolvedPointcutDefinition.NO_POINTCUTS;
 		} else {
-			this.pointcuts = pointcuts.toArray(new ResolvedPointcutDefinition[0]);
+			this.pointcuts = pointcuts.toArray(ResolvedPointcutDefinition.NO_POINTCUTS);
 		}
 
 		resolveAnnotationDeclares(l);
@@ -459,7 +459,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * until *after* the pointcuts have been resolved.
 	 */
 	private void resolveAnnotationDeclares(List<AjAttribute> attributeList) {
-		FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+		FormalBinding[] bindings = FormalBinding.NONE;
 		IScope bindingScope = new BindingScope(getResolvedTypeX(), getResolvedTypeX().getSourceContext(), bindings);
 		for (AjAttribute a : attributeList) {
 			if (a instanceof AjAttribute.DeclareAttribute) {
@@ -836,7 +836,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public GenericSignature.FormalTypeParameter[] getAllFormals() {
 		ensureGenericSignatureUnpacked();
 		if (formalsForResolution == null) {
-			return new GenericSignature.FormalTypeParameter[0];
+			return FormalTypeParameter.NONE;
 		} else {
 			return formalsForResolution;
 		}

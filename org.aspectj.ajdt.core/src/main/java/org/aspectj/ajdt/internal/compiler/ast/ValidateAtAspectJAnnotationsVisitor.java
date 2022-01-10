@@ -280,7 +280,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			if (perClause != null && !perClause.equals("")) {
 				ISourceContext context = new EclipseSourceContext(unit.compilationResult, pcLoc[0]);
 				Pointcut pc = new PatternParser(perClause, context).maybeParsePerClause();
-				FormalBinding[] bindings = new FormalBinding[0];
+				FormalBinding[] bindings = FormalBinding.NONE;
 				if (pc != null)
 					pc.resolve(new EclipseScope(bindings, typeDecl.scope));
 			}
@@ -430,9 +430,9 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 
 	private FormalBinding[] buildFormalAdviceBindingsFrom(MethodDeclaration mDecl) {
 		if (mDecl.arguments == null)
-			return new FormalBinding[0];
+			return FormalBinding.NONE;
 		if (mDecl.binding == null)
-			return new FormalBinding[0];
+			return FormalBinding.NONE;
 		EclipseFactory factory = EclipseFactory.fromScopeLookupEnvironment(mDecl.scope);
 		String extraArgName = maybeGetExtraArgName();
 		if (extraArgName == null)

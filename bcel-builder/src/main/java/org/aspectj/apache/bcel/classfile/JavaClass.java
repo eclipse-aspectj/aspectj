@@ -88,10 +88,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
 public class JavaClass extends Modifiers implements Cloneable, Node {
 
 	private static final String[] NoInterfaceNames = new String[0];
-	private static final Field[] NoFields = new Field[0];
-	private static final Method[] NoMethod = new Method[0];
 	private static final int[] NoInterfaceIndices = new int[0];
-	private static final Attribute[] NoAttributes = new Attribute[0];
 
 	private String fileName;
 	private String packageName;
@@ -141,9 +138,9 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 		this.modifiers = access_flags;
 		this.cpool = cpool;
 		this.interfaces = interfaces;
-		this.fields = (fields == null ? NoFields : fields);
-		this.methods = (methods == null ? NoMethod : methods);
-		this.attributes = (attributes == null ? NoAttributes : attributes);
+		this.fields = (fields == null ? Field.NoFields : fields);
+		this.methods = (methods == null ? Method.NoMethods : methods);
+		this.attributes = (attributes == null ? Attribute.NoAttributes : attributes);
 		annotationsOutOfDate = true;
 
 		// Get source file name if available
@@ -294,7 +291,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 					accumulatedAnnotations.addAll(runtimeAnnotations.getAnnotations());
 				}
 			}
-			annotations = accumulatedAnnotations.toArray(new AnnotationGen[] {});
+			annotations = accumulatedAnnotations.toArray(AnnotationGen.NO_ANNOTATIONS);
 			annotationsOutOfDate = false;
 		}
 		return annotations;

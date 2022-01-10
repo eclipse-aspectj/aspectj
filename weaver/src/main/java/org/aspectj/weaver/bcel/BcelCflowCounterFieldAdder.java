@@ -56,7 +56,7 @@ public class BcelCflowCounterFieldAdder extends BcelTypeMunger {
 
 		setup.append(fact.createNew(new ObjectType(NameMangler.CFLOW_COUNTER_TYPE)));
 		setup.append(InstructionFactory.createDup(1));
-		setup.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "<init>", Type.VOID, new Type[0], Constants.INVOKESPECIAL));
+		setup.append(fact.createInvoke(NameMangler.CFLOW_COUNTER_TYPE, "<init>", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));
 
 		setup.append(Utility.createSet(fact, cflowCounterField));
 		clinit.getBody().insert(setup);

@@ -147,7 +147,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			return null;
 		}
 
-		EclipseScope scope = new EclipseScope(new FormalBinding[0], classScope);
+		EclipseScope scope = new EclipseScope(FormalBinding.NONE, classScope);
 
 		declareDecl.resolve(scope);
 		return declareDecl;

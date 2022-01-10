@@ -140,7 +140,7 @@ public class AjcMemberMaker {
 		// public static a.X ajc$createAspectInstance(java.lang.String)
 		ResolvedMemberImpl rm = new ResolvedMemberImpl(Member.METHOD, declaringType, PUBLIC_STATIC, declaringType, // return value
 				NameMangler.PERTYPEWITHIN_CREATEASPECTINSTANCE_METHOD,
-				new UnresolvedType[] { UnresolvedType.forSignature("Ljava/lang/String;") }, new UnresolvedType[] {});
+				new UnresolvedType[] { UnresolvedType.forSignature("Ljava/lang/String;") }, UnresolvedType.NONE);
 		return rm;
 	}
 

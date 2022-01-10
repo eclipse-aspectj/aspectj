@@ -273,7 +273,7 @@ final class BcelField extends ResolvedMemberImpl {
 			GenericSignature.ClassSignature genericTypeSig = bcelObjectType.getGenericClassTypeSignature();
 
 			GenericSignature.FormalTypeParameter[] parentFormals = bcelObjectType.getAllFormals();
-			GenericSignature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? new GenericSignature.FormalTypeParameter[0]
+			GenericSignature.FormalTypeParameter[] typeVars = ((genericTypeSig == null) ? GenericSignature.FormalTypeParameter.NONE
 					: genericTypeSig.formalTypeParameters);
 			GenericSignature.FormalTypeParameter[] formals = new GenericSignature.FormalTypeParameter[parentFormals.length
 					+ typeVars.length];

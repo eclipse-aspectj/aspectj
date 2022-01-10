@@ -20,6 +20,7 @@ import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
 import org.aspectj.apache.bcel.classfile.LocalVariableTable;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
@@ -124,7 +125,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		// memory.
 		try {
 			JavaClass jc = bcelRepository.loadClass(onMember.getDeclaringClass());
-			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
+			org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[] anns = AnnotationGen.NO_ANNOTATIONS;
 			if (onMember instanceof Method) {
 				org.aspectj.apache.bcel.classfile.Method bcelMethod = jc.getMethod((Method) onMember);
 				if (bcelMethod == null) {
@@ -147,7 +148,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			bcelRepository.clear();
 			// OPTIMIZE make constant 0 size array for sharing
 			if (anns == null)
-				anns = new org.aspectj.apache.bcel.classfile.annotation.AnnotationGen[0];
+				anns = AnnotationGen.NO_ANNOTATIONS;
 			// convert to our Annotation type
 			for (org.aspectj.apache.bcel.classfile.annotation.AnnotationGen ann : anns) {
 				if (ann.getTypeSignature().equals(ofType.getSignature())) {

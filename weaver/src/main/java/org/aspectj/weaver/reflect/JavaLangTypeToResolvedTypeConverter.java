@@ -94,7 +94,7 @@ public class JavaLangTypeToResolvedTypeConverter {
 			Type[] bounds = tv.getBounds();
 			ResolvedType[] resBounds = fromTypes(bounds);
 			ResolvedType upperBound = resBounds[0];
-			ResolvedType[] additionalBounds = new ResolvedType[0];
+			ResolvedType[] additionalBounds = ResolvedType.EMPTY_RESOLVED_TYPE_ARRAY;
 			if (resBounds.length > 1) {
 				additionalBounds = new ResolvedType[resBounds.length - 1];
 				System.arraycopy(resBounds, 1, additionalBounds, 0, additionalBounds.length);

@@ -357,7 +357,7 @@ public class MessageUtil {
 	 */
 	public static IMessage[] getMessagesExcept(IMessageHolder holder, final IMessage.Kind kind, final boolean orGreater) {
 		if ((null == holder) || (null == kind)) {
-			return new IMessage[0];
+			return IMessage.RA_IMessage;
 		}
 
 		IMessageHandler selector = new IMessageHandler() {

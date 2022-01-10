@@ -111,7 +111,7 @@ public class StandardShadow extends Shadow {
 		Kind kind = Shadow.StaticInitialization;
 		if (clinit == -1) {
 			Member clinitMember = new ResolvedMemberImpl(org.aspectj.weaver.Member.STATIC_INITIALIZATION, forType, Modifier.STATIC,
-					UnresolvedType.VOID, "<clinit>", new UnresolvedType[0], new UnresolvedType[0]);
+					UnresolvedType.VOID, "<clinit>", UnresolvedType.NONE, UnresolvedType.NONE);
 			return new StandardShadow(inWorld, kind, clinitMember, null, forType, null, withContext);
 		} else {
 			return new StandardShadow(inWorld, kind, members[clinit], null, forType, null, withContext);

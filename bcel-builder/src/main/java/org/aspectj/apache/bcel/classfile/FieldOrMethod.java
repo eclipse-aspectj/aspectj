@@ -177,7 +177,7 @@ public abstract class FieldOrMethod extends Modifiers implements Node {
 			if (accumulatedAnnotations.size() == 0) {
 				annotations = AnnotationGen.NO_ANNOTATIONS;
 			} else {
-				annotations = accumulatedAnnotations.toArray(new AnnotationGen[] {});
+				annotations = accumulatedAnnotations.toArray(AnnotationGen.NO_ANNOTATIONS);
 			}
 		}
 		return annotations;

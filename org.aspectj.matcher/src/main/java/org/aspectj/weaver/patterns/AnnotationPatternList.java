@@ -30,13 +30,13 @@ public class AnnotationPatternList extends PatternNode {
 	private AnnotationTypePattern[] typePatterns;
 	int ellipsisCount = 0;
 
-	public static final AnnotationPatternList EMPTY = new AnnotationPatternList(new AnnotationTypePattern[] {});
+	public static final AnnotationPatternList EMPTY = new AnnotationPatternList(AnnotationTypePattern.NONE);
 
 	public static final AnnotationPatternList ANY = new AnnotationPatternList(
 			new AnnotationTypePattern[] { AnnotationTypePattern.ELLIPSIS });
 
 	public AnnotationPatternList() {
-		typePatterns = new AnnotationTypePattern[0];
+		typePatterns = AnnotationTypePattern.NONE;
 		ellipsisCount = 0;
 	}
 
@@ -50,7 +50,7 @@ public class AnnotationPatternList extends PatternNode {
 	}
 
 	public AnnotationPatternList(List<AnnotationTypePattern> l) {
-		this((AnnotationTypePattern[]) l.toArray(new AnnotationTypePattern[0]));
+		this((AnnotationTypePattern[]) l.toArray(AnnotationTypePattern.NONE));
 	}
 
 	protected AnnotationTypePattern[] getAnnotationPatterns() {

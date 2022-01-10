@@ -558,7 +558,7 @@ public class AtAjAttributes {
 				// struct.ajAttributes.add(new AjAttribute.WeaverVersionInfo());
 				AjAttribute.Aspect aspectAttribute = new AjAttribute.Aspect(perClause);
 				struct.ajAttributes.add(aspectAttribute);
-				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+				FormalBinding[] bindings = FormalBinding.NONE;
 				final IScope binding;
 				binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 
@@ -717,7 +717,7 @@ public class AtAjAttributes {
 				}
 				if (fieldType.isInterface()) {
 					TypePattern parent = parseTypePattern(fieldType.getName(), struct);
-					FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+					FormalBinding[] bindings = FormalBinding.NONE;
 					IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 					// first add the declare implements like
 					List<TypePattern> parents = new ArrayList<>(1);
@@ -970,7 +970,7 @@ public class AtAjAttributes {
 		}
 
 		// Create the declare parents that will add the interfaces to matching targets
-		FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+		FormalBinding[] bindings = FormalBinding.NONE;
 		IScope binding = new BindingScope(struct.enclosingType, struct.context, bindings);
 		// how do we mark this as a decp due to decmixin?
 		DeclareParents dp = new DeclareParentsMixin(targetTypePattern, newParents);
@@ -990,7 +990,7 @@ public class AtAjAttributes {
 			// TODO check for overlapping interfaces. Eg. A implements I, I extends J - if they specify interfaces={I,J} we dont
 			// want to do any methods twice
 			ResolvedMember[] methods = typeForDelegation.getMethodsWithoutIterator(true, false, false).toArray(
-					new ResolvedMember[0]);
+                    ResolvedMember.NONE);
 			for (ResolvedMember resolvedMember : methods) {
 				ResolvedMember method = resolvedMember;
 				if (method.isAbstract()) {
@@ -1033,7 +1033,7 @@ public class AtAjAttributes {
 				if (argumentNames != null) {
 					struct.unparsedArgumentNames = argumentNames;
 				}
-				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+				FormalBinding[] bindings = FormalBinding.NONE;
 				try {
 					bindings = extractBindings(struct);
 				} catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -1082,7 +1082,7 @@ public class AtAjAttributes {
 			NameValuePair afterAdvice = getAnnotationElement(after, VALUE);
 			if (afterAdvice != null) {
 				// this/target/args binding
-				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+				FormalBinding[] bindings = FormalBinding.NONE;
 				String argumentNames = getArgNamesValue(after);
 				if (argumentNames != null) {
 					struct.unparsedArgumentNames = argumentNames;
@@ -1172,7 +1172,7 @@ public class AtAjAttributes {
 			// this/target/args binding
 			// exclude the return binding from the pointcut binding since it is
 			// an extraArg binding
-			FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+			FormalBinding[] bindings = FormalBinding.NONE;
 			try {
 				bindings = (returned == null ? extractBindings(struct) : extractBindings(struct, returned));
 			} catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -1262,7 +1262,7 @@ public class AtAjAttributes {
 			// this/target/args binding
 			// exclude the throwned binding from the pointcut binding since it
 			// is an extraArg binding
-			FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+			FormalBinding[] bindings = FormalBinding.NONE;
 			try {
 				bindings = (thrownFormal == null ? extractBindings(struct) : extractBindings(struct, thrownFormal));
 			} catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -1317,7 +1317,7 @@ public class AtAjAttributes {
 				if (argumentNames != null) {
 					struct.unparsedArgumentNames = argumentNames;
 				}
-				FormalBinding[] bindings = new org.aspectj.weaver.patterns.FormalBinding[0];
+				FormalBinding[] bindings = FormalBinding.NONE;
 				try {
 					bindings = extractBindings(struct);
 				} catch (UnreadableDebugInfoException unreadableDebugInfoException) {
@@ -1579,7 +1579,7 @@ public class AtAjAttributes {
 			}
 		}
 
-		return bindings.toArray(new FormalBinding[] {});
+		return bindings.toArray(FormalBinding.NONE);
 	}
 
 	// FIXME alex deal with exclude index

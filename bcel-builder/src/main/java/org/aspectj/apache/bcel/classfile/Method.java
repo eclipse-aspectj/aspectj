@@ -228,8 +228,8 @@ public final class Method extends FieldOrMethod {
 			AnnotationGen[] invisibleOnes = null;
 			for (int i = 0; i < parameterCount; i++) {
 				int count = 0;
-				visibleOnes = new AnnotationGen[0];
-				invisibleOnes = new AnnotationGen[0];
+				visibleOnes = AnnotationGen.NO_ANNOTATIONS;
+				invisibleOnes = AnnotationGen.NO_ANNOTATIONS;
 				if (parameterAnnotationsVis != null) {
 					visibleOnes = parameterAnnotationsVis.getAnnotationsOnParameter(i);
 					count += visibleOnes.length;
