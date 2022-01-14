@@ -80,7 +80,7 @@ public class SimpleAOPParser {
 		return sap.m_definition;
 	}
 
-	private void startElement(String qName, Map attrMap) throws Exception {
+	private void startElement(String qName, Map<String, Object> attrMap) throws Exception {
 		if (ASPECT_ELEMENT.equals(qName)) {
 			String name = (String) attrMap.get(NAME_ATTRIBUTE);
 			String scopePattern = replaceXmlAnd((String) attrMap
@@ -233,7 +233,7 @@ public class SimpleAOPParser {
 		}
 	}
 
-	private String getWithinAttribute(Map attributes) {
+	private String getWithinAttribute(Map<String, Object> attributes) {
 		return replaceXmlAnd((String) attributes.get(WITHIN_ATTRIBUTE));
 	}
 
@@ -253,7 +253,7 @@ public class SimpleAOPParser {
 	private static void traverse(SimpleAOPParser sap, LightXMLParser xml)
 			throws Exception {
 		sap.startElement(xml.getName(), xml.getAttributes());
-		Iterable childrens = xml.getChildrens();
+		Iterable<LightXMLParser> childrens = xml.getChildrens();
 		for (Object children : childrens) {
 			LightXMLParser child = (LightXMLParser) children;
 			traverse(sap, child);

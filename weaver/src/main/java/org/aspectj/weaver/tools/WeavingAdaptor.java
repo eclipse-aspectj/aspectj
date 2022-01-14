@@ -566,7 +566,7 @@ public class WeavingAdaptor implements IMessageContext {
 		return wcp.getBytes();
 	}
 
-	private void registerAspectLibraries(List aspectPath) {
+	private void registerAspectLibraries(List<String> aspectPath) {
 		// System.err.println("? WeavingAdaptor.registerAspectLibraries(" + aspectPath + ")");
 		for (Object o : aspectPath) {
 			String libName = (String) o;
