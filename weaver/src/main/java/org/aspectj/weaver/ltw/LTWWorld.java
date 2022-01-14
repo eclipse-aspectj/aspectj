@@ -177,17 +177,17 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 		return ReflectionWorld.resolve(this, aClass);
 	}
 
-	private static Map makeConcurrentMap() {
+	private static Map<?, ?> makeConcurrentMap() {
 		if (concurrentMapClass != null) {
 			try {
 				return (Map) concurrentMapClass.getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 			// fall through if exceptions
 		}
-		return Collections.synchronizedMap(new HashMap());
+		return Collections.synchronizedMap(new HashMap<>());
 	}
 
-	private static Class makeConcurrentMapClass() {
+	private static Class<?> makeConcurrentMapClass() {
 		String betterChoices[] = { "java.util.concurrent.ConcurrentHashMap",
 				"edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap",
 				"EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap" };
@@ -215,7 +215,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	// One type is completed at a time, if multiple need doing then they
 	// are queued up
 	private boolean typeCompletionInProgress = false;
-	private List/* ResolvedType */typesForCompletion = new ArrayList();
+	private List<ResolvedType> typesForCompletion = new ArrayList<>();
 
 	@Override
 	protected void completeBinaryType(ResolvedType ret) {

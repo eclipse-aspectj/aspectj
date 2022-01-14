@@ -87,7 +87,7 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 		return b;
 	}
 
-	private Class defineClass(String name, byte[] bytes /* ClassPathManager.ClassFile classFile */) throws IOException {
+	private Class<?> defineClass(String name, byte[] bytes /* ClassPathManager.ClassFile classFile */) throws IOException {
 		String packageName = getPackageName(name);
 		if (packageName != null) {
 			Package pakkage = getPackage(packageName);

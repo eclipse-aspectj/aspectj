@@ -386,7 +386,7 @@ public class BcelWeaver {
 				inJar = new JarFile(inFile);
 				try {
 					addManifest(inJar.getManifest());
-					Enumeration entries = inJar.entries();
+					Enumeration<JarEntry> entries = inJar.entries();
 
 					while (entries.hasMoreElements()) {
 						JarEntry entry = (JarEntry) entries.nextElement();
@@ -878,7 +878,7 @@ public class BcelWeaver {
 		return true;
 	}
 
-	private Pointcut findFirstPointcutIn(Pointcut toSearch, Class toLookFor) {
+	private Pointcut findFirstPointcutIn(Pointcut toSearch, Class<?> toLookFor) {
 		if (toSearch instanceof NotPointcut) {
 			return null;
 		}
@@ -946,7 +946,7 @@ public class BcelWeaver {
 
 			manifest = new Manifest();
 
-			Map attributes = manifest.getMainAttributes();
+			Attributes attributes = manifest.getMainAttributes();
 			attributes.put(Name.MANIFEST_VERSION, WEAVER_MANIFEST_VERSION);
 			attributes.put(CREATED_BY, WEAVER_CREATED_BY);
 		}
@@ -1254,7 +1254,7 @@ public class BcelWeaver {
 		// if a piece of advice hasn't matched anywhere and we are in -1.5 mode,
 		// put out a warning
 		if (world.isInJava5Mode() && world.getLint().adviceDidNotMatch.isEnabled()) {
-			List l = world.getCrosscuttingMembersSet().getShadowMungers();
+			List<ShadowMunger> l = world.getCrosscuttingMembersSet().getShadowMungers();
 			Set<AdviceLocation> alreadyWarnedLocations = new HashSet<>();
 
 			for (Object o : l) {

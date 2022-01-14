@@ -165,7 +165,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 					anns = bcelMethod.getAnnotations();
 				}
 			} else if (onMember instanceof Constructor) {
-				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor) onMember);
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor<?>) onMember);
 				anns = bcelCons.getAnnotations();
 			} else if (onMember instanceof Field) {
 				org.aspectj.apache.bcel.classfile.Field bcelField = jc.getField((Field) onMember);
@@ -235,7 +235,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 						anns = bcelMethod.getAnnotations();
 					}
 				} else if (onMember instanceof Constructor) {
-					org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor) onMember);
+					org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor<?>) onMember);
 					anns = bcelCons.getAnnotations();
 				} else if (onMember instanceof Field) {
 					org.aspectj.apache.bcel.classfile.Field bcelField = jc.getField((Field) onMember);
@@ -311,7 +311,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 				lvt = bcelMethod.getLocalVariableTable();
 				numVars = bcelMethod.getArgumentTypes().length;
 			} else if (forMember instanceof Constructor) {
-				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor) forMember);
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor<?>) forMember);
 				lvt = bcelCons.getLocalVariableTable();
 				numVars = bcelCons.getArgumentTypes().length;
 			}
@@ -361,7 +361,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 					anns = bcelMethod.getParameterAnnotations();
 				}
 			} else if (onMember instanceof Constructor) {
-				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor) onMember);
+				org.aspectj.apache.bcel.classfile.Method bcelCons = jc.getMethod((Constructor<?>) onMember);
 				anns = bcelCons.getParameterAnnotations();
 			} else if (onMember instanceof Field) {
 				// anns = null;
@@ -391,7 +391,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		if (onMember instanceof Method) {
 			anns = ((Method) ao).getParameterAnnotations();
 		} else if (onMember instanceof Constructor) {
-			anns = ((Constructor) ao).getParameterAnnotations();
+			anns = ((Constructor<?>) ao).getParameterAnnotations();
 		} else if (onMember instanceof Field) {
 			// anns = null;
 		}

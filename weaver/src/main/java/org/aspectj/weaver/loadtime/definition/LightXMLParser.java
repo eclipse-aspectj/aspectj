@@ -20,7 +20,7 @@ public class LightXMLParser {
 
 	private final static char NULL_CHAR = '\0';
 	private Map<String, Object> attributes;
-	private ArrayList children;
+	private ArrayList<LightXMLParser> children;
 	private String name;
 	private char pushedBackChar;
 	private Reader reader;
@@ -38,7 +38,7 @@ public class LightXMLParser {
 	public LightXMLParser() {
 		this.name = null;
 		this.attributes = new HashMap<>();
-		this.children = new ArrayList();
+		this.children = new ArrayList<>();
 	}
 
 	public ArrayList getChildrens() {
@@ -53,7 +53,7 @@ public class LightXMLParser {
 		this.pushedBackChar = NULL_CHAR;
 		this.attributes = new HashMap<>();
 		this.name = null;
-		this.children = new ArrayList();
+		this.children = new ArrayList<>();
 		this.reader = reader;
 
 		while (true) {

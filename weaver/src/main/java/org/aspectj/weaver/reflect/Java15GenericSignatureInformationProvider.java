@@ -43,7 +43,7 @@ public class Java15GenericSignatureInformationProvider implements
 		if (member instanceof Method) {
 			pTypes = ((Method)member).getGenericParameterTypes();
 		} else if (member instanceof Constructor) {
-			pTypes = ((Constructor)member).getGenericParameterTypes();
+			pTypes = ((Constructor<?>)member).getGenericParameterTypes();
 		}
 		return typeConverter.fromTypes(pTypes);
 	}
@@ -60,7 +60,7 @@ public class Java15GenericSignatureInformationProvider implements
 		} else if (member instanceof Method) {
 			return typeConverter.fromType(((Method)member).getGenericReturnType());
 		} else if (member instanceof Constructor) {
-			return typeConverter.fromType(((Constructor)member).getDeclaringClass());
+			return typeConverter.fromType(((Constructor<?>)member).getDeclaringClass());
 		} else {
 			throw new IllegalStateException("unexpected member type: " + member);
 		}
@@ -86,7 +86,7 @@ public class Java15GenericSignatureInformationProvider implements
 		if (member instanceof Method) {
 			return ((Method)member).isVarArgs();
 		} else if (member instanceof Constructor) {
-			return ((Constructor)member).isVarArgs();
+			return ((Constructor<?>)member).isVarArgs();
 		} else {
 			return false;
 		}
