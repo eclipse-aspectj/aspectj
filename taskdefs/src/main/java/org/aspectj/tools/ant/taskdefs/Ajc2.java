@@ -75,7 +75,7 @@ public class Ajc2 extends Javac {
      * The file is a line-delimited list of arguments
      * these arguments are inserted into the argument list
      */
-    private List argfiles;
+    private List<Argfile> argfiles;
 
 
     /* ----------------------------------------------------------------------
@@ -239,7 +239,7 @@ public class Ajc2 extends Javac {
     public Argfile createArgfile() {
         Argfile argfile = new Argfile();
         if (argfiles == null) {
-            argfiles = new ArrayList();
+            argfiles = new ArrayList<>();
         }
         argfiles.add(argfile);
         return argfile;
@@ -408,11 +408,11 @@ public class Ajc2 extends Javac {
      * @see org.apache.tools.ant.taskdefs.Javac#scanDir
      */
     protected void scanDir(File srcDir, File destDir, String files[]) {
-        List newFiles = new ArrayList();
+        List<File> newFiles = new ArrayList<>();
 
         // Add the files listed in the argfiles to the includes
-        List newIncludes = new ArrayList();
-        List newArguments = new ArrayList();
+        List<File> newIncludes = new ArrayList<>();
+        List<String> newArguments = new ArrayList<>();
         if (argfiles != null) {
 			for (Object o : argfiles) {
 				File argfile = ((Argfile) o).getFile();
@@ -457,7 +457,7 @@ public class Ajc2 extends Javac {
         }
     }
 
-    private void expandArgfile(File argfile, List includes, List arguments) {
+    private void expandArgfile(File argfile, List<File> includes, List<String> arguments) {
 
         log("argfile:" + argfile, Project.MSG_VERBOSE);
 

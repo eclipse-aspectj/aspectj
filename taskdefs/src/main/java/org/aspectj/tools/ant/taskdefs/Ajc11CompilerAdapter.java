@@ -63,8 +63,8 @@ public class Ajc11CompilerAdapter implements CompilerAdapter {
     public static final String CLEAN = "build.compiler.clean";
 
     /** track whether we re-called <code>javac.execute()</code> */
-    private static final ThreadLocal inSelfCall = new ThreadLocal() {
-        public Object initialValue() {
+    private static final ThreadLocal<Boolean> inSelfCall = new ThreadLocal<Boolean>() {
+        public Boolean initialValue() {
             return Boolean.FALSE;
         }
     };

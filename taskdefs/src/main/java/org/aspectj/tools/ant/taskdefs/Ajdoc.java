@@ -155,7 +155,7 @@ public class Ajdoc extends MatchingTask {
 
     public void setSourcefiles(String list) {
         (sourcefiles == null ?
-         sourcefiles = new ArrayList() :
+         sourcefiles = new ArrayList<>() :
          sourcefiles).addAll(strings(list));
     }
 
