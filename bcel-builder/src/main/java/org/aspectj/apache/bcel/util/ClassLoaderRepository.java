@@ -94,16 +94,17 @@ public class ClassLoaderRepository implements Repository {
 	// For fast translation of the classname *intentionally not static*
 	private SoftHashMap /* <String,URL> */nameMap = new SoftHashMap(new HashMap(), false);
 
-	public static boolean useSharedCache = System.getProperty("org.aspectj.apache.bcel.useSharedCache", "true").equalsIgnoreCase("true");
+	public static boolean useSharedCache =
+		System.getProperty("org.aspectj.apache.bcel.useSharedCache", "true").equalsIgnoreCase("true");
 
-	//Cache not found classes as well to prevent unnecessary file I/O operations
-	public static final boolean useUnavailableClassesCache =
+	// Cache not found classes as well to prevent unnecessary file I/O operations
+	public static boolean useUnavailableClassesCache =
 		System.getProperty("org.aspectj.apache.bcel.useUnavailableClassesCache", "false").equalsIgnoreCase("true");
-	//Ignore cache clear requests to not build up the cache over and over again
-	public static final boolean ignoreCacheClearRequests =
+	// Ignore cache clear requests to not build up the cache over and over again
+	public static boolean ignoreCacheClearRequests =
 		System.getProperty("org.aspectj.apache.bcel.ignoreCacheClearRequests", "false").equalsIgnoreCase("true");
 
-	//Second cache for the unavailable classes
+	// Second cache for the unavailable classes
 	private static Set<String> unavailableClasses = new HashSet<String>();
 
 	private static int cacheHitsShared = 0;
@@ -113,6 +114,7 @@ public class ClassLoaderRepository implements Repository {
 	private int classesLoadedCount = 0;
 	private int misses = 0;
 	private int cacheHitsLocal = 0;
+	private int unavailableClassesCacheHits = 0;
 	private int missLocalEvicted = 0; // Misses in local cache access due to reference GC
 
 	public ClassLoaderRepository(java.lang.ClassLoader loader) {
@@ -290,26 +292,26 @@ public class ClassLoaderRepository implements Repository {
 	}
 
 	/**
-	 * Lookup a JavaClass object from the Class Name provided.
+	 * Lookup a JavaClass object from the classname provided.
 	 */
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
-
-		//Quick evaluation of unavailable classes to prevent unnecessary file I/O
-		if (useUnavailableClassesCache && unavailableClasses.contains(className))
+		// Quick evaluation of unavailable classes to prevent unnecessary file I/O
+		if (useUnavailableClassesCache && unavailableClasses.contains(className)) {
+			unavailableClassesCacheHits++;
 			throw new ClassNotFoundException(className + " not found.");
+		}
 
-		// translate to a URL
 		long time = System.currentTimeMillis();
 		java.net.URL url = toURL(className);
 		timeManipulatingURLs += (System.currentTimeMillis() - time);
 		if (url == null) {
-			if (useUnavailableClassesCache)
+			if (useUnavailableClassesCache) {
 				unavailableClasses.add(className);
+			}
 			throw new ClassNotFoundException(className + " not found - unable to determine URL");
 		}
 
 		JavaClass clazz = null;
-
 		// Look in the appropriate cache
 		if (useSharedCache) {
 			clazz = findClassShared(url);
@@ -386,7 +388,7 @@ public class ClassLoaderRepository implements Repository {
 	 */
 	public long[] reportStats() {
 		return new long[] { timeSpentLoading, timeManipulatingURLs, classesLoadedCount, cacheHitsShared, missSharedEvicted,
-				cacheHitsLocal, missLocalEvicted, sharedCache.size() };
+				cacheHitsLocal, missLocalEvicted, sharedCache.size(), unavailableClassesCacheHits };
 	}
 
 	/**
@@ -400,6 +402,7 @@ public class ClassLoaderRepository implements Repository {
 		cacheHitsShared = 0;
 		missSharedEvicted = 0;
 		missLocalEvicted = 0;
+		unavailableClassesCacheHits = 0;
 		misses = 0;
 		clear();
 	}
@@ -411,10 +414,12 @@ public class ClassLoaderRepository implements Repository {
 	/** Clear all entries from the local cache */
 	public void clear() {
 		if (!ignoreCacheClearRequests) {
-			if (useSharedCache)
+			if (useSharedCache) {
 				sharedCache.clear();
-			else
+			} else {
 				localCache.clear();
+			}
+			unavailableClasses.clear();
 		}
 	}
 

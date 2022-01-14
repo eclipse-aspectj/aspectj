@@ -10,6 +10,8 @@ import junit.framework.TestCase;
 
 /*
  * Tests create a simple classloader repository configuration and check sharing of information.
+ * 
+ * @author Andy Clement
  */
 public class ClassloaderRepositoryTest extends TestCase {
 
@@ -66,6 +68,88 @@ public class ClassloaderRepositoryTest extends TestCase {
 				    reportSharedCacheHits(rep1)==0);
 		} finally {
 			ClassLoaderRepository.useSharedCache=true;
+		}
+	}
+
+	// ClassLoaderRepository.ignoreCacheClearRequests
+	public void testIgnoreCacheClearRequests() throws Exception {
+		ClassLoaderRepository.useSharedCache = false;
+		try {
+			// the 'normal' flow with ignore in default of false
+			ClassLoaderRepository.ignoreCacheClearRequests = false;
+			try {
+				ClassLoaderRepository repository = setupRepository();
+				repository.loadClass("java.lang.String");
+				long localCacheHits = repository.reportStats()[5];
+				assertEquals(0, localCacheHits);
+				repository.clear();
+				repository.loadClass("java.lang.String");
+				localCacheHits = repository.reportStats()[5];
+				assertEquals(0, localCacheHits); // cache was cleared, so no hit
+			} finally {
+				ClassLoaderRepository.ignoreCacheClearRequests = false;
+			}
+			// with ignore cache clear turned on
+			ClassLoaderRepository.ignoreCacheClearRequests = true;
+			try {
+				ClassLoaderRepository repository = setupRepository();
+				repository.loadClass("java.lang.String");
+				long localCacheHits = repository.reportStats()[5];
+				assertEquals(0, localCacheHits);
+				repository.clear();
+				repository.loadClass("java.lang.String");
+				localCacheHits = repository.reportStats()[5];
+				assertEquals(1, localCacheHits);
+			} finally {
+				ClassLoaderRepository.ignoreCacheClearRequests = false;
+			}
+		} finally {
+			ClassLoaderRepository.useSharedCache = true;
+		}
+	}
+
+	// ClassLoaderRepository.useUnavailableClassesCache
+	public void testUnavailableClassesCache() throws Exception {
+		ClassLoaderRepository.useUnavailableClassesCache = false;
+		try {
+			ClassLoaderRepository repository = setupRepository();
+			attemptLoadThatWillFail(repository);
+			for (int i = 0; i < 1000; i++) {
+				attemptLoadThatWillFail(repository);
+			}
+			assertEquals(0, repository.reportStats()[8]);
+		} finally {
+			ClassLoaderRepository.useUnavailableClassesCache = false; // back to default
+		}
+		
+		ClassLoaderRepository.useUnavailableClassesCache = true;
+		try {
+			ClassLoaderRepository repository = setupRepository();
+			assertNotNull(repository.loadClass("java.lang.String"));
+			attemptLoadThatWillFail(repository);
+			for (int i = 0; i < 1000; i++) {
+				attemptLoadThatWillFail(repository);
+			}
+			assertEquals(1000,repository.reportStats()[8]);
+		} finally {
+			ClassLoaderRepository.useUnavailableClassesCache = false;
+		}
+		// If checking the report stats for time spent manipulating URLs it will be massively reduced
+	}
+
+	private ClassLoaderRepository setupRepository() throws Exception {
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		ClassLoader res = new URLClassLoader(new URL[] {}, cl);
+		ClassLoaderRepository rep = new ClassLoaderRepository(res);
+		return rep;
+	}
+
+	private void attemptLoadThatWillFail(ClassLoaderRepository repository) {
+		try {
+			repository.loadClass("this.is.made.up");
+			throw new IllegalStateException("Should not have found 'this.is.made.up'");
+		} catch (ClassNotFoundException cnfe) {
+			// ... expected ...
 		}
 	}
 

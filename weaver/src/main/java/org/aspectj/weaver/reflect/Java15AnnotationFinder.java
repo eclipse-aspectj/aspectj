@@ -49,8 +49,8 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	private World world;
 	private static boolean useCachingClassLoaderRepository;
 
-	//Use single instance of Repository and ClassLoader
-	public static final boolean useSingleInstances =
+	// Use single instance of Repository and ClassLoader
+	public static boolean useSingleInstances =
 		System.getProperty("org.aspectj.apache.bcel.useSingleRepositoryInstance", "false").equalsIgnoreCase("true");
 
 	static {
@@ -66,24 +66,26 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 	}
 
 	public void setClassLoader(ClassLoader aLoader) {
-		//Set class loader ref
-		if (useSingleInstances && staticClassLoaderRef == null)
+		// Set class loader ref
+		if (useSingleInstances && staticClassLoaderRef == null) {
 			staticClassLoaderRef = new BcelWeakClassLoaderReference(aLoader);
-		else
+		} else {
 			this.classLoaderRef = new BcelWeakClassLoaderReference(aLoader);
-
-		//Set repository
-		if (useCachingClassLoaderRepository) {
-			if (useSingleInstances && staticBcelRepository == null)
-				staticBcelRepository = new ClassLoaderRepository(getClassLoader());
-			else
-				this.bcelRepository = new ClassLoaderRepository(classLoaderRef);
 		}
-		else {
-			if (useSingleInstances && staticBcelRepository == null)
+
+		// Set repository
+		if (useCachingClassLoaderRepository) {
+			if (useSingleInstances && staticBcelRepository == null) {
+				staticBcelRepository = new ClassLoaderRepository(getClassLoader());
+			} else {
+				this.bcelRepository = new ClassLoaderRepository(classLoaderRef);
+			}
+		} else {
+			if (useSingleInstances && staticBcelRepository == null) {
 				staticBcelRepository = new NonCachingClassLoaderRepository(getClassLoader());
-			else
+			} else {
 				this.bcelRepository = new NonCachingClassLoaderRepository(classLoaderRef);
+			}
 		}
 	}
 
