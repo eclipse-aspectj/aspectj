@@ -45,6 +45,22 @@
   supported by AJC. Previously, the option existed (inherited by ECJ) but did not work correctly.
 </p>
 
+<p>
+  The following new properties can improve performance, e.g. Spring start-up time:
+</p>
+<ul>
+  <li><tt>org.aspectj.apache.bcel.useSingleRepositoryInstance</tt></li>
+  <li><tt>org.aspectj.apache.bcel.useUnavailableClassesCache</tt></li>
+  <li><tt>org.aspectj.apache.bcel.ignoreCacheClearRequests</tt></li>
+</ul>
+<p>
+  For now, they all default to <tt>false</tt> for backward compatibility. This might change in a future Aspect release,
+  if user feedback is positive and no negative side effects are found. Please try using them as much as you can and
+  report back questions (to the AspectJ users mailing list) or problems (as a GitHub issue), if any. Thanks to Stefan
+  Starke for his contribution. See also <a href="https://github.com/eclipse/org.aspectj/pull/37">PR #37</a>.
+</p>
+
+
 <h2>Code examples</h2>
 
 <p>
@@ -78,7 +94,6 @@
   </li>
   <li>Document build profiles and properties in <i>docs/developer/BUILD.md</i></li>
   <li>Add a guide for setting up an AspectJ development environment in <i>docs/developer/IDE.md</i></li>
-  <li>Allow JAR saving if <tt>-proceedOnError</tt> is specified</li>
   <li>
     Fix <a href="https://github.com/eclipse/org.aspectj/issues/105">issue #105</a>: Compilation fails when using an
     aspect library via <tt>-aspectpath</tt> in combination with introducing an annotation via ITD. This was broken since
@@ -93,6 +108,15 @@
     regression test, we actually had to
     <a href="https://github.com/eclipse/org.aspectj/blob/de63b63d/tests/bugs198/github_68/Generator.java#L50-L61">
       craft a condy class with ASM</a>.
+  </li>
+  <li>
+    Fix <a href="https://github.com/eclipse/org.aspectj/issues/115">issue #115</a>: In annotation-style pointcuts,
+    <tt>if(false)</tt> and <tt>if(true)</tt> now work as expected and do not require a boolean return value and body for
+    the <tt>@Pointcut</tt> method.
+  </li>
+  <li>
+    Thanks to Andrey Turbanov for several clean code contributions and to Dmitry Mikhaylov for fixing a potential
+    concurrency problem.
   </li>
 </ul>
 
