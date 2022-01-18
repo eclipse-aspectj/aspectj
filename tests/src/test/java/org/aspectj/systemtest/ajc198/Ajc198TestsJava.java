@@ -35,6 +35,14 @@ public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA build, but final JDK version
 		checkVersion("PersonAspect", Constants.MAJOR_17, 0 /*Constants.PREVIEW_MINOR_VERSION*/);
 	}
+	
+	public void testAnnotationStyleSpecialIfClauses() {
+		runTest("annotation style A");
+	}
+
+	public void testAnnotationStylePointcutInheritanceWithIfClauses() {
+		runTest("annotation style B");
+	}
 
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);

@@ -100,4 +100,26 @@
 		<compile files="Buffers.java" options="--release 8"/>
 	</ajc-test>
 
+	<ajc-test dir="bugs198/github_115" title="annotation style A">
+		<compile files="A.java" options="-1.5">
+			<message kind="warning" line="28" text="advice defined in Azpect has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<run class="A">
+			<stdout>
+				<line text="Azpect.before"/>
+				<line text="A.main"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs198/github_115" title="annotation style B">
+		<compile files="B.java" options="-1.5"/>
+		<run class="B">
+			<stdout>
+				<line text="Azpect.before"/>
+				<line text="B.main"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
