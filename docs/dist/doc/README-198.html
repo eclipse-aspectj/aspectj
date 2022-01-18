@@ -37,16 +37,6 @@
   <li>Sealed classes (final in Java 17, previews in Java 15, 16 and AspectJ 1.9.7)</li>
   <li>Pattern matching for <tt>switch</tt></li>
 </ul>
-<p>
-  For features marked as preview on a given JDK, you need to compile with <tt>ajc --enable-preview</tt> and run with
-  <tt>java --enable-preview</tt> on that JDK.
-</p>
-<p>
-  Please note that you cannot run code compiled with preview features on any other JDK than the one used for
-  compilation. For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This
-  is a JVM limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16.
-  You still need to recompile, no matter what.
-</p>
 
 <h2>Improvements</h2>
 
@@ -74,16 +64,6 @@
     </a>
   </li>
 </ul>
-
-<h2>Using LTW on Java 16+</h2>
-
-<p>
-  Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
-  <a href="https://openjdk.java.net/jeps/396">JEP 396 (Strongly Encapsulate JDK Internals by Default)</a>. Therefore,
-  you need to set the JVM parameter <tt>--add-opens java.base/java.lang=ALL-UNNAMED</tt> in order to enable aspect
-  weaving. This is due to the fact that the weaver uses internal APIs for which we have not found an adequate
-  replacement yet when defining classes in different classloaders.
-</p>
 
 <h2>Other changes and bug fixes</h2>
 
@@ -116,8 +96,35 @@
   </li>
 </ul>
 
+<h2>AspectJ usage hints</h2>
+
+<h3>Use LTW on Java 16+</h3>
+
 <p>
-  Available: 1.9.8 available DD-MMM-2021
+  Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
+  <a href="https://openjdk.java.net/jeps/396">JEP 396 (Strongly Encapsulate JDK Internals by Default)</a>. Therefore,
+  you need to set the JVM parameter <tt>--add-opens java.base/java.lang=ALL-UNNAMED</tt> in order to enable aspect
+  weaving. This is due to the fact that the weaver uses internal APIs for which we have not found an adequate
+  replacement yet when defining classes in different classloaders.
+</p>
+
+<h3>Compile with Java preview features</h3>
+
+<p>
+  For features marked as preview on a given JDK, you need to compile with <tt>ajc --enable-preview</tt> and run with
+  <tt>java --enable-preview</tt> on that JDK.
+</p>
+<p>
+  Please note that you cannot run code compiled with preview features on any other JDK than the one used for
+  compilation. For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This
+  is a JVM limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16.
+  You still need to recompile, no matter what.
+</p>
+
+<hr>
+
+<p>
+  <b>Available:</b> 1.9.8 available DD-MMM-2022
 </p>
 
 </body>
