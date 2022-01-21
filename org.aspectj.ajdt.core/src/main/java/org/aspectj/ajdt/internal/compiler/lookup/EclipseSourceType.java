@@ -1147,13 +1147,12 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 			} else {
 				kind = null;
 			}
-		} else if (binding instanceof SourceTypeBinding) {
+		} else if (binding instanceof SourceTypeBinding && ((SourceTypeBinding)binding).scope != null) {
 			SourceTypeBinding sourceSc = (SourceTypeBinding) binding;
 			if (sourceSc.scope.referenceContext instanceof AspectDeclaration) {
 				// code style
 				kind = ((AspectDeclaration) sourceSc.scope.referenceContext).perClause.getKind();
-			} else { // if (sourceSc.scope.referenceContext instanceof
-				// TypeDeclaration) {
+			} else { // if (sourceSc.scope.referenceContext instanceof TypeDeclaration) {
 				// if @Aspect: perFromSuper, else if @Aspect(..) get from anno
 				// value, else null
 				kind = getPerClauseForTypeDeclaration((sourceSc.scope.referenceContext));
