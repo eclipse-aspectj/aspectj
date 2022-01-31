@@ -37,7 +37,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class StackMapAdder {
 
-	public static byte[] addStackMaps(World world, byte[] data) {
+	public static byte[] addStackMaps(World world, String classname, byte[] data) {
 		try {
 			ClassReader cr = new ClassReader(data);
 			ClassWriter cw = new AspectJConnectClassWriter(cr, world);
@@ -46,9 +46,10 @@ public class StackMapAdder {
 			return cw.toByteArray();
 		} catch (Throwable t) {
 			// If in here fixing an error about version, change the ASMX in class above!
-			System.err.println("AspectJ Internal Error: unable to add stackmap attributes. " + t.getMessage());
+			System.err.println("AspectJ Internal Error: unable to add stackmap attributes to class '"+classname+"'. " + t.getMessage());
 			t.printStackTrace();
 			AsmDetector.isAsmAround = false;
+			AsmDetector.reasonAsmIsMissing = t;
 			return data;
 		}
 	}
