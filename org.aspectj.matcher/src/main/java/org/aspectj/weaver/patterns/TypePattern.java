@@ -268,7 +268,7 @@ public abstract class TypePattern extends PatternNode {
 
 	/**
 	 * This is called during concretization of pointcuts, it is used by BindingTypePattern to return a new BindingTypePattern with a
-	 * formal index appropiate for the advice, rather than for the lexical declaration, i.e. this handles transforamtions through
+	 * formal index appropriate for the advice, rather than for the lexical declaration, i.e. this handles transformations through
 	 * named pointcuts.
 	 *
 	 * <pre>
