@@ -19,23 +19,26 @@ public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 
 	public void testSealedClassWithLegalSubclasses() {
 		runTest("sealed class with legal subclasses");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA build, but final JDK version
-		checkVersion("Employee", Constants.MAJOR_17, 0 /*Constants.PREVIEW_MINOR_VERSION*/);
-		checkVersion("Manager", Constants.MAJOR_17, 0 /*Constants.PREVIEW_MINOR_VERSION*/);
+		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
+		// build, but final JDK version
+		checkVersion("Employee", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
+		checkVersion("Manager", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
 	}
 
 	public void testSealedClassWithIllegalSubclass() {
 		runTest("sealed class with illegal subclass");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA build, but final JDK version
-		checkVersion("Person", Constants.MAJOR_17, 0 /*Constants.PREVIEW_MINOR_VERSION*/);
+		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
+		// build, but final JDK version
+		checkVersion("Person", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
 	}
 
 	public void testWeaveSealedClass() {
 		runTest("weave sealed class");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA build, but final JDK version
-		checkVersion("PersonAspect", Constants.MAJOR_17, 0 /*Constants.PREVIEW_MINOR_VERSION*/);
+		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
+		// build, but final JDK version
+		checkVersion("PersonAspect", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
 	}
-	
+
 	public void testAnnotationStyleSpecialIfClauses() {
 		runTest("annotation style A");
 	}
@@ -44,13 +47,25 @@ public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 		runTest("annotation style B");
 	}
 
-  public static Test suite() {
-    return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);
-  }
+	public void testAnnotationStyleSpecialIfClauses2_gh120() {
+		runTest("annotation style C");
+	}
 
-  @Override
-  protected java.net.URL getSpecFile() {
-    return getClassResource("ajc198.xml");
-  }
+	public void testAnnotationStyleSpecialIfClauses3_gh120() {
+		runTest("annotation style D");
+	}
+
+	public void testAnnotationStyleNegatedIf_gh122() {
+		runTest("annotation style negated if");
+	}
+
+	public static Test suite() {
+		return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);
+	}
+
+	@Override
+	protected java.net.URL getSpecFile() {
+		return getClassResource("ajc198.xml");
+	}
 
 }

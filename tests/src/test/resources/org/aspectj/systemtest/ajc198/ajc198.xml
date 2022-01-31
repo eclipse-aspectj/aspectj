@@ -122,4 +122,35 @@
 		</run>
 	</ajc-test>
 
+	<ajc-test dir="bugs198/github_120" title="annotation style C">
+		<compile files="C.java" options="-1.5"/>
+		<run class="C">
+			<stdout>
+				<line text="check if() pointcut running on C(1)"/>
+				<line text="Azpect1.beforeAdvice executing"/>
+				<line text="C.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs198/github_120" title="annotation style D">
+		<compile files="D.java" options="-1.5"/>
+		<run class="D">
+			<stdout>
+				<line text="advice running"/>
+				<line text="D.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs198/github_122" title="annotation style negated if">
+		<compile files="E.java" options="-1.5"/>
+		<run class="E">
+			<stdout>
+				<line text="advice running"/>
+				<line text="E.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
