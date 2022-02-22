@@ -84,6 +84,12 @@
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
+							<!--
+								Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
+								profile is active or the property is overridden manually to be false. See property definitions in parent
+								POM for default case and release profile.
+							-->
+							<skip>${maven.javadoc.skip}</skip>
 							<classifier>sources</classifier>
 							<!--<failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>-->
 							<includeGroupIds>org.aspectj,org.ow2.asm</includeGroupIds>
