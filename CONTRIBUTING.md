@@ -11,7 +11,8 @@ AspectJ is a maven project, as such it should import cleanly into your IDE. The 
 Simply run the maven project importer and point it at the root of the cloned AspectJ repository. This will import all of the AspectJ
 modules.
 
-Each module comes with its own testsuites however there is a module called `run-all-junit-tests` - within there is a file `RunTheseBeforeYouCommitTests` which you can launch as a JUnit test (rightclick -> RunAs -> Junit Test).
+Each module comes with its own test suite, however there is a module called `run-all-junit-tests` - within there is a 
+file `RunTheseBeforeYouCommitTests` which you can launch as a JUnit test (rightclick -> RunAs -> Junit Test).
 This will run a few thousand tests to verify your IDE import.
 
 Some tests are conditional based on the JDK you are using in your IDE since they are exercising features only available in recent Java.
@@ -20,7 +21,12 @@ A JRE will likely not suffice because tools like javadoc will be invoked from th
 
 #### IntelliJ
 
-TODO
+Create a new project on the welcome screen with the `Get from VCS` button or within the IDE from `File | New | 
+Project from version control…` IntelliJ will recognize AspectJ as a multi-module maven project and import it as such.
+To build, create a run/debug configuration with the command line set to `clean install` and other settings as 
+appropriate. If you have multiple JDKs installed, on the `Runner` tab select the desired JDK for the build, set 
+`JAVA_HOME` to match, and uncheck `Skip Tests`. Before running the build, select the profile matching your JDK in 
+the maven pane (or put on the command line in your run/debug configuration with `-P`).
 
 
 ### Developing tests

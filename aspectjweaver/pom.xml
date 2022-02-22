@@ -46,10 +46,9 @@
 	</scm>
 
 	<properties>
-		<!-- By default, do not deploy artifacts - but deploy this public one -->
+        <!-- Override defaults: always sign and deploy this required artifact -->
+        <maven.gpg.skip>false</maven.gpg.skip>
 		<maven.deploy.skip>false</maven.deploy.skip>
-		<!-- By default, do not sign artifacts - but sign this public one -->
-		<maven.gpg.skip>false</maven.gpg.skip>
 	</properties>
 
 	<build>
@@ -344,7 +343,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore>true</ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
