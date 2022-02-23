@@ -90,6 +90,17 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<!--
+			Used for tests setting system properties, e.g. for AJC, when we need to avoid polluting the global
+			system properties namespace with settings potentially influencing other tests.
+			See https://github.com/bmuskalla/scoped-system-properties.
+		-->
+		<dependency>
+			<groupId>io.github.bmuskalla</groupId>
+			<artifactId>scoped-system-properties</artifactId>
+			<version>1.1.0</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!--
 			The tests need these during runtime, even though no direct usage is in our classes.

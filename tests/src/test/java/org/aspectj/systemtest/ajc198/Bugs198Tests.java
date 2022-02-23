@@ -7,6 +7,8 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc198;
 
+import io.bmuskalla.system.properties.PropertyEnvironment;
+import io.bmuskalla.system.properties.ScopedSystemProperties;
 import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -15,9 +17,9 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs198Tests extends XMLBasedAjcTestCase {
 
-	public void testGitHub_105() {
-		runTest("ITD annotation with mandatory parameter via aspectpath");
-	}
+  public void testGitHub_105() {
+    runTest("ITD annotation with mandatory parameter via aspectpath");
+  }
 
   public void testAnnotationStyleSpecialIfClauses() {
     runTest("annotation style A");
@@ -37,6 +39,13 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
 
   public void testAnnotationStyleNegatedIf_gh122() {
     runTest("annotation style negated if");
+  }
+
+  public void testGitHub_125() {
+    try (PropertyEnvironment env = ScopedSystemProperties.newPropertyEnvironment()) {
+      env.setProperty("org.aspectj.weaver.openarchives", "20");
+      runTest("compiler can re-open closed JARs");
+    }
   }
 
   public static Test suite() {
