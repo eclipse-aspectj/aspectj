@@ -39,26 +39,6 @@ public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 		checkVersion("PersonAspect", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
 	}
 
-	public void testAnnotationStyleSpecialIfClauses() {
-		runTest("annotation style A");
-	}
-
-	public void testAnnotationStylePointcutInheritanceWithIfClauses() {
-		runTest("annotation style B");
-	}
-
-	public void testAnnotationStyleSpecialIfClauses2_gh120() {
-		runTest("annotation style C");
-	}
-
-	public void testAnnotationStyleSpecialIfClauses3_gh120() {
-		runTest("annotation style D");
-	}
-
-	public void testAnnotationStyleNegatedIf_gh122() {
-		runTest("annotation style negated if");
-	}
-
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);
 	}

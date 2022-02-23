@@ -19,6 +19,26 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
 		runTest("ITD annotation with mandatory parameter via aspectpath");
 	}
 
+  public void testAnnotationStyleSpecialIfClauses() {
+    runTest("annotation style A");
+  }
+
+  public void testAnnotationStylePointcutInheritanceWithIfClauses() {
+    runTest("annotation style B");
+  }
+
+  public void testAnnotationStyleSpecialIfClauses2_gh120() {
+    runTest("annotation style C");
+  }
+
+  public void testAnnotationStyleSpecialIfClauses3_gh120() {
+    runTest("annotation style D");
+  }
+
+  public void testAnnotationStyleNegatedIf_gh122() {
+    runTest("annotation style negated if");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs198Tests.class);
   }
