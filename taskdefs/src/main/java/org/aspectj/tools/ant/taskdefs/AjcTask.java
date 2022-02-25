@@ -233,20 +233,20 @@ public class AjcTask extends MatchingTask {
 	private static final String USAGE_SUBSTRING = "AspectJ-specific options";
 
 	/** valid -X[...] options other than -Xlint variants */
-	private static final List VALID_XOPTIONS;
+	private static final List<String> VALID_XOPTIONS;
 
 	/** valid warning (-warn:[...]) variants */
-	private static final List VALID_WARNINGS;
+	private static final List<String> VALID_WARNINGS;
 
 	/** valid debugging (-g:[...]) variants */
-	private static final List VALID_DEBUG;
+	private static final List<String> VALID_DEBUG;
 
 	/**
 	 * -Xlint variants (error, warning, ignore)
 	 *
 	 * @see org.aspectj.weaver.Lint
 	 */
-	private static final List VALID_XLINT;
+	private static final List<String> VALID_XLINT;
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
@@ -286,7 +286,7 @@ public class AjcTask extends MatchingTask {
 			String editorClassName = System.getProperty(COMMAND_EDITOR_NAME);
 			if (null != editorClassName) {
 				ClassLoader cl = AjcTask.class.getClassLoader();
-				Class editorClass = cl.loadClass(editorClassName);
+				Class<?> editorClass = cl.loadClass(editorClassName);
 				editor = (ICommandEditor) editorClass.getDeclaredConstructor().newInstance();
 			}
 		} catch (Throwable t) {
@@ -318,7 +318,7 @@ public class AjcTask extends MatchingTask {
 	private Path aspectpath;
 	private Path argfiles;
 	private Path inxmlfiles;
-	private List ignored;
+	private List<String> ignored;
 	private Path sourceRoots;
 	private File xweaveDir;
 	private String xdoneSignal;
@@ -326,7 +326,7 @@ public class AjcTask extends MatchingTask {
 	private List<CompilerArg> compilerArgs;
 
 	// ----- added by adapter - integrate better?
-	private List /* File */adapterFiles;
+	private List<File> adapterFiles;
 	private String[] adapterArguments;
 
 	private IMessageHolder messageHolder;
@@ -388,7 +388,7 @@ public class AjcTask extends MatchingTask {
 	public void reset() { // XXX possible to reset MatchingTask?
 		// need declare for "all fields initialized in ..."
 		adapterArguments = null;
-		adapterFiles = new ArrayList();
+		adapterFiles = new ArrayList<>();
 		compilerArgs = null;
 		argfiles = null;
 		inxmlfiles = null;
@@ -407,7 +407,7 @@ public class AjcTask extends MatchingTask {
 		forkclasspath = null;
 		inIncrementalMode = false;
 		inIncrementalFileMode = false;
-		ignored = new ArrayList();
+		ignored = new ArrayList<>();
 		injars = null;
 		inpath = null;
 		listFileArgs = false;
@@ -864,7 +864,7 @@ public class AjcTask extends MatchingTask {
 	 */
 	public void setMessageHolderClass(String className) {
 		try {
-			Class mclass = Class.forName(className);
+			Class<?> mclass = Class.forName(className);
 			IMessageHolder holder = (IMessageHolder) mclass.getDeclaredConstructor().newInstance();
 			setMessageHolder(holder);
 		} catch (Throwable t) {
@@ -888,7 +888,7 @@ public class AjcTask extends MatchingTask {
 	 */
 	public void setCommandEditorClass(String className) { // skip Ant interface?
 		try {
-			Class mclass = Class.forName(className);
+			Class<?> mclass = Class.forName(className);
 			setCommandEditor((ICommandEditor) mclass.getDeclaredConstructor().newInstance());
 		} catch (Throwable t) {
 			String m = "unable to instantiate command editor: " + className;
@@ -1178,7 +1178,7 @@ public class AjcTask extends MatchingTask {
 			outjarFixedup = true;
 		}
 
-		ArrayList result = new ArrayList(cmd.extractArguments());
+		ArrayList<String> result = new ArrayList(cmd.extractArguments());
 		addListArgs(result);
 
 		String[] command = (String[]) result.toArray(new String[0]);
@@ -2032,7 +2032,7 @@ public class AjcTask extends MatchingTask {
 		// }
 
 		List extractArguments() {
-			List result = new ArrayList();
+			List<String> result = new ArrayList<>();
 			String[] cmds = command.getArguments();
 			if (!LangUtil.isEmpty(cmds)) {
 				result.addAll(Arrays.asList(cmds));

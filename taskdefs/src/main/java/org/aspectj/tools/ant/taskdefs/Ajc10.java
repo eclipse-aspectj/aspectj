@@ -63,7 +63,7 @@ public class Ajc10 extends MatchingTask {
     private Path bootclasspath;
     private Path extdirs;
     private Path srcdir;
-    private List argfiles;
+    private List<File> argfiles;
     private boolean fork;
     private boolean failonerror;
     private boolean verbose;
@@ -197,7 +197,7 @@ public class Ajc10 extends MatchingTask {
 
     public void setArgfile(File argfile) { // ajc-only eajc-also docDone
         if (argfiles == null) {
-            argfiles = new Vector();
+            argfiles = new Vector<>();
         }
         argfiles.add(argfile);
     }
@@ -205,7 +205,7 @@ public class Ajc10 extends MatchingTask {
     public void setArgfiles(String argfiles) { // ajc-only eajc-also docDone
         StringTokenizer tok = new StringTokenizer(argfiles, ", ", false);
         if (tok.hasMoreTokens() && this.argfiles == null) {
-            this.argfiles = new Vector();
+            this.argfiles = new Vector<>();
         }
         while (tok.hasMoreTokens()) {
             this.argfiles.add(project.resolveFile(tok.nextToken().trim()));
