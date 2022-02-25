@@ -153,4 +153,18 @@
 		</run>
 	</ajc-test>
 
+	<ajc-test dir="bugs198/github_125" title="compiler can re-open closed JARs">
+		<!--
+			Here the Java test sets system property org.aspectj.weaver.openarchives to 20 in order to provoke
+			open JAR limit exhaustion
+		-->
+		<compile files="Application.java" options="-1.5" />
+		<run class="Application">
+			<stdout>
+				<line text="Before advice"/>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
