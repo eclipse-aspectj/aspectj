@@ -1510,8 +1510,7 @@ public class BcelShadow extends Shadow {
 		if (foundMember == null) {
 			// check the ITD'd dooberries
 			List<ConcreteTypeMunger> mungers = relevantType.resolve(world).getInterTypeMungers();
-			for (Object munger : mungers) {
-				ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) munger;
+			for (ConcreteTypeMunger typeMunger : mungers) {
 				if (typeMunger.getMunger() instanceof NewMethodTypeMunger
 						|| typeMunger.getMunger() instanceof NewConstructorTypeMunger) {
 					ResolvedMember fakerm = typeMunger.getSignature();

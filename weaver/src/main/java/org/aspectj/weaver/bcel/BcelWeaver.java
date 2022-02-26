@@ -1257,8 +1257,7 @@ public class BcelWeaver {
 			List<ShadowMunger> l = world.getCrosscuttingMembersSet().getShadowMungers();
 			Set<AdviceLocation> alreadyWarnedLocations = new HashSet<>();
 
-			for (Object o : l) {
-				ShadowMunger element = (ShadowMunger) o;
+			for (ShadowMunger element : l) {
 				// This will stop us incorrectly reporting deow checkers:
 				if (element instanceof BcelAdvice) {
 					BcelAdvice ba = (BcelAdvice) element;

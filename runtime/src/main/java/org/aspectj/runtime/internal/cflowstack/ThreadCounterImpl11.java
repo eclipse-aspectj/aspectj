@@ -48,8 +48,7 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 					Thread t = (Thread)e.nextElement();
 					if (!t.isAlive()) dead_stacks.add(t);
 				}
-				for (Object dead_stack : dead_stacks) {
-					Thread t = (Thread) dead_stack;
+				for (Thread t : dead_stacks) {
 					counters.remove(t);
 				}
 				change_count = 0;

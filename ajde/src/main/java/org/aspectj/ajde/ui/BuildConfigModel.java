@@ -112,8 +112,8 @@ public class BuildConfigModel {
 		}
 
 		if (node != null && node.getChildren() != null) {
-			for (Object element : node.getChildren()) {
-				BuildConfigNode foundNode = findNodeForSourceLineHelper((BuildConfigNode) element, sourceFilePath, lineNumber);
+			for (BuildConfigNode element : node.getChildren()) {
+				BuildConfigNode foundNode = findNodeForSourceLineHelper(element, sourceFilePath, lineNumber);
 				if (foundNode != null)
 					return foundNode;
 			}

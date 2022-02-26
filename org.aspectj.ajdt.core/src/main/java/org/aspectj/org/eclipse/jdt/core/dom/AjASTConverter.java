@@ -658,10 +658,10 @@ public class AjASTConverter extends ASTConverter {
 		} else if (declare instanceof DeclareParents) {
 			DeclareParents dp = (DeclareParents) declare;
 			declareDeclaration = new org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration(this.ast, dp.isExtends());
-			org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = convert(dp.getChild());
+			AbstractTypePattern pNode = convert(dp.getChild());
 			if (pNode instanceof AbstractTypePattern) {
 				((DeclareParentsDeclaration) declareDeclaration)
-						.setChildTypePattern((AbstractTypePattern) pNode);
+						.setChildTypePattern(pNode);
 			}
 			TypePattern[] weaverTypePatterns = dp.getParents().getTypePatterns();
 			List typePatterns = ((DeclareParentsDeclaration) declareDeclaration).parentTypePatterns();
@@ -680,10 +680,10 @@ public class AjASTConverter extends ASTConverter {
 			declareDeclaration = new DeclareSoftDeclaration(this.ast);
 			DeclareSoft ds = (DeclareSoft) declare;
 			((DeclareSoftDeclaration) declareDeclaration).setPointcut(convert(ds.getPointcut()));
-			org.aspectj.org.eclipse.jdt.core.dom.PatternNode pNode = convert(ds.getException());
+			AbstractTypePattern pNode = convert(ds.getException());
 			if (pNode instanceof AbstractTypePattern) {
 				((DeclareSoftDeclaration) declareDeclaration)
-						.setTypePattern((AbstractTypePattern) pNode);
+						.setTypePattern(pNode);
 			}
 		}
 

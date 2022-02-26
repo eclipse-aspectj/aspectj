@@ -148,8 +148,7 @@ public class StandardPointcutParser {
 	 */
 	private StandardPointcutParser(Set<PointcutPrimitive> supportedPointcutKinds, World world) {
 		supportedPrimitives = supportedPointcutKinds;
-		for (Object supportedPointcutKind : supportedPointcutKinds) {
-			PointcutPrimitive element = (PointcutPrimitive) supportedPointcutKind;
+		for (PointcutPrimitive element : supportedPointcutKinds) {
 			if ((element == PointcutPrimitive.IF) || (element == PointcutPrimitive.CFLOW)
 					|| (element == PointcutPrimitive.CFLOW_BELOW)) {
 				throw new UnsupportedOperationException("Cannot handle if, cflow, and cflowbelow primitives");

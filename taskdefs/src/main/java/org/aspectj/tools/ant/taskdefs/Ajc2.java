@@ -414,8 +414,8 @@ public class Ajc2 extends Javac {
         List<File> newIncludes = new ArrayList<>();
         List<String> newArguments = new ArrayList<>();
         if (argfiles != null) {
-			for (Object o : argfiles) {
-				File argfile = ((Argfile) o).getFile();
+			for (Argfile o : argfiles) {
+				File argfile = o.getFile();
 				expandArgfile(argfile, newIncludes, newArguments);
 			}
         }
@@ -442,8 +442,8 @@ public class Ajc2 extends Javac {
         }
 
         // Add the new included files
-		for (Object newInclude : newIncludes) {
-			newFiles.add((File) newInclude);
+		for (File newInclude : newIncludes) {
+			newFiles.add(newInclude);
 		}
 
         // This is the same behavior found in Javac

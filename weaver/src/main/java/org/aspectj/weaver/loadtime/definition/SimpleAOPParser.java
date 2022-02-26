@@ -254,8 +254,7 @@ public class SimpleAOPParser {
 			throws Exception {
 		sap.startElement(xml.getName(), xml.getAttributes());
 		Iterable<LightXMLParser> childrens = xml.getChildrens();
-		for (Object children : childrens) {
-			LightXMLParser child = (LightXMLParser) children;
+		for (LightXMLParser child : childrens) {
 			traverse(sap, child);
 		}
 		sap.endElement(xml.getName());
