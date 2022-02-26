@@ -146,7 +146,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		this.arc = arc;
 	}
 
- 	public void stack$AroundClosure(AroundClosure arc) {
+ 	public synchronized void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
 		if (arcs == null) {
 			arcs = new Stack<>();
@@ -158,7 +158,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		}
  	}
 
-	public Object proceed() throws Throwable {
+	public synchronized Object proceed() throws Throwable {
 		// when called from a before advice, but be a no-op
 		if (arcs == null) {
 			if (arc == null) {
@@ -171,7 +171,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		}
 	}
 
-	public Object proceed(Object[] adviceBindings) throws Throwable {
+	public synchronized Object proceed(Object[] adviceBindings) throws Throwable {
 		// when called from a before advice, but be a no-op
 		AroundClosure ac = null;
 		if (arcs == null) {
