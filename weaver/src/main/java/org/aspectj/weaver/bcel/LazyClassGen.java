@@ -165,9 +165,8 @@ public final class LazyClassGen {
 	}
 
 	void addInlinedSourceFileInfo(String fullpath, int highestLineNumber) {
-		Object o = inlinedFiles.get(fullpath);
-		if (o != null) {
-			InlinedSourceFileInfo info = (InlinedSourceFileInfo) o;
+		InlinedSourceFileInfo info = inlinedFiles.get(fullpath);
+		if (info != null) {
 			if (info.highestLineNumber < highestLineNumber) {
 				info.highestLineNumber = highestLineNumber;
 			}

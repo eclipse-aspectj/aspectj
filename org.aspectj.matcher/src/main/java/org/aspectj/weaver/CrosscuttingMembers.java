@@ -343,25 +343,15 @@ public class CrosscuttingMembers {
 		Set<Object> theseTypeMungers = new HashSet<>();
 		Set<Object> otherTypeMungers = new HashSet<>();
 		if (!careAboutShadowMungers) {
-			for (Object o : typeMungers) {
-				if (o instanceof ConcreteTypeMunger) {
-					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
-					if (!typeMunger.existsToSupportShadowMunging()) {
-						theseTypeMungers.add(typeMunger);
-					}
-				} else {
-					theseTypeMungers.add(o);
+			for (ConcreteTypeMunger typeMunger : typeMungers) {
+				if (!typeMunger.existsToSupportShadowMunging()) {
+					theseTypeMungers.add(typeMunger);
 				}
 			}
 
-			for (Object o : other.typeMungers) {
-				if (o instanceof ConcreteTypeMunger) {
-					ConcreteTypeMunger typeMunger = (ConcreteTypeMunger) o;
-					if (!typeMunger.existsToSupportShadowMunging()) {
-						otherTypeMungers.add(typeMunger);
-					}
-				} else {
-					otherTypeMungers.add(o);
+			for (ConcreteTypeMunger typeMunger : other.typeMungers) {
+				if (!typeMunger.existsToSupportShadowMunging()) {
+					otherTypeMungers.add(typeMunger);
 				}
 			}
 		} else {

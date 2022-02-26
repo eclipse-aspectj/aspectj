@@ -276,8 +276,8 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 
 	private void notifyConfigChanged() {
-		for (Object element : listeners) {
-			((BuildConfigListener) element).currConfigChanged(currConfigFilePath);
+		for (BuildConfigListener element : listeners) {
+			element.currConfigChanged(currConfigFilePath);
 		}
 	}
 

@@ -95,11 +95,10 @@ public class EmacsStructureModelManager {
 
 		private void printDecls(IProgramElement node) {
 			print("(");
-			for (Object nodeObject : node.getChildren()) {
+			for (IProgramElement child : node.getChildren()) {
 				// this ignores relations on the compile unit
 				// throw new RuntimeException("unimplemented");
 				// if (nodeObject instanceof IProgramElement) {
-				IProgramElement child = (IProgramElement) nodeObject;
 				printDecl(child, true);
 				// }
 				// else if (nodeObject instanceof LinkNode) {
@@ -179,13 +178,10 @@ public class EmacsStructureModelManager {
 				if (it3.hasNext()) {
 					while (it3.hasNext()) {
 						// this ignores relations on the compile unit
-						Object nodeObject = it3.next();
-						if (nodeObject instanceof IProgramElement) {
-							IProgramElement currNode = (IProgramElement) nodeObject;
-							if (// !currNode.isStmntKind() &&
-							!currNode.getKind().equals("<undefined>")) {
-								printDecl(currNode, true);
-							}
+						IProgramElement currNode = it3.next();
+						if (// !currNode.isStmntKind() &&
+						!currNode.getKind().equals("<undefined>")) {
+							printDecl(currNode, true);
 						}
 					}
 				}

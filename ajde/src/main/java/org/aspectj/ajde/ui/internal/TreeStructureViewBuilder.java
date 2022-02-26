@@ -125,8 +125,7 @@ public class TreeStructureViewBuilder {
 			}
 		}
 		if (node.getChildren() != null) {
-			for (Object element : node.getChildren()) {
-				IProgramElement IProgramElement = (IProgramElement)element;
+			for (IProgramElement IProgramElement : node.getChildren()) {
 				if (acceptNode(IProgramElement, properties)) {
 					children.add(createViewNode(IProgramElement, properties));
 				}

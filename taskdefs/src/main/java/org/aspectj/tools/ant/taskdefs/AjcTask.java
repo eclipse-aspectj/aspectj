@@ -1570,8 +1570,7 @@ public class AjcTask extends MatchingTask {
 			}
 		}
 		if (0 < adapterFiles.size()) {
-            for (Object adapterFile : adapterFiles) {
-                File file = (File) adapterFile;
+            for (File file : adapterFiles) {
                 if (file.canRead() && FileUtil.hasSourceSuffix(file)) {
                     list.add(file.getAbsolutePath());
                 }

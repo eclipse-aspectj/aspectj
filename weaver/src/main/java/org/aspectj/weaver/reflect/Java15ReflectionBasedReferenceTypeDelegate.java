@@ -269,8 +269,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 				parser = new InternalUseOnlyPointcutParser(classLoaderReference.getClassLoader());
 			}
 			Set<PointcutDesignatorHandler> additionalPointcutHandlers = world.getRegisteredPointcutHandlers();
-			for (Object additionalPointcutHandler : additionalPointcutHandlers) {
-				PointcutDesignatorHandler handler = (PointcutDesignatorHandler) additionalPointcutHandler;
+			for (PointcutDesignatorHandler handler : additionalPointcutHandlers) {
 				parser.registerPointcutDesignatorHandler(handler);
 			}
 
