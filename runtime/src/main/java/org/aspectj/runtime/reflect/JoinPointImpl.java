@@ -140,7 +140,8 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	// will either be using arc or arcs but not both. arcs being non-null
 	// indicates it is in use (even if an empty stack)
 	private AroundClosure arc = null;
-	private Stack<AroundClosure> arcs = null;
+	private final Stack<AroundClosure> arcs = new Stack<>();
+  private int currentArcIndex = -1;
 
 	public void set$AroundClosure(AroundClosure arc) {
 		this.arc = arc;
@@ -148,36 +149,35 @@ class JoinPointImpl implements ProceedingJoinPoint {
 
  	public synchronized void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
-		if (arcs == null) {
-			arcs = new Stack<>();
-		}
-		if (arc==null) {
-			this.arcs.pop();
-		} else {
+		if (arc != null) {
 			this.arcs.push(arc);
+			currentArcIndex++;
 		}
- 	}
+	}
 
 	public synchronized Object proceed() throws Throwable {
 		// when called from a before advice, but be a no-op
-		if (arcs == null) {
+		if (currentArcIndex < 0) {
 			if (arc == null) {
 				return null;
 			} else {
 				return arc.run(arc.getState());
 			}
 		} else {
-			return arcs.peek().run(arcs.peek().getState());
+			final AroundClosure ac = arcs.get(currentArcIndex--);
+			final Object result = ac.run(ac.getState());
+			currentArcIndex++;
+			return result;
 		}
 	}
 
 	public synchronized Object proceed(Object[] adviceBindings) throws Throwable {
 		// when called from a before advice, but be a no-op
 		AroundClosure ac = null;
-		if (arcs == null) {
+		if (currentArcIndex < 0) {
 			ac = arc;
 		} else {
-			ac = arcs.peek();
+				ac = arcs.get(currentArcIndex);
 		}
 
 		if (ac == null) {
@@ -254,7 +254,10 @@ class JoinPointImpl implements ProceedingJoinPoint {
 			// state[i] = adviceBindings[formalIndex];
 			// }
 			// }
-			return ac.run(state);
+			currentArcIndex--;
+			final Object result = ac.run(state);
+			currentArcIndex++;
+			return result;
 		}
 	}
 
