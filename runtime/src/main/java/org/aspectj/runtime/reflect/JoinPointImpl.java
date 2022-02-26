@@ -13,13 +13,14 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.util.Stack;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.internal.AroundClosure;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class JoinPointImpl implements ProceedingJoinPoint {
 	static class StaticPartImpl implements JoinPoint.StaticPart {
@@ -137,20 +138,19 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	}
 
 	// To proceed we need a closure to proceed on. Generated code
-	// will either be using arc or arcs but not both. arcs being non-null
-	// indicates it is in use (even if an empty stack)
+	// will either be using arc or arcs but not both.
 	private AroundClosure arc = null;
-	private final Stack<AroundClosure> arcs = new Stack<>();
-  private int currentArcIndex = -1;
+	private final List<AroundClosure> arcs = new ArrayList<>();
+	private int currentArcIndex = -1;
 
 	public void set$AroundClosure(AroundClosure arc) {
 		this.arc = arc;
 	}
 
- 	public synchronized void stack$AroundClosure(AroundClosure arc) {
+	public synchronized void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
 		if (arc != null) {
-			this.arcs.push(arc);
+			this.arcs.add(arc);
 			currentArcIndex++;
 		}
 	}
@@ -158,11 +158,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	public synchronized Object proceed() throws Throwable {
 		// when called from a before advice, but be a no-op
 		if (currentArcIndex < 0) {
-			if (arc == null) {
-				return null;
-			} else {
-				return arc.run(arc.getState());
-			}
+			return arc == null ? null : arc.run(arc.getState());
 		} else {
 			final AroundClosure ac = arcs.get(currentArcIndex--);
 			final Object result = ac.run(ac.getState());
@@ -173,12 +169,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 
 	public synchronized Object proceed(Object[] adviceBindings) throws Throwable {
 		// when called from a before advice, but be a no-op
-		AroundClosure ac = null;
-		if (currentArcIndex < 0) {
-			ac = arc;
-		} else {
-				ac = arcs.get(currentArcIndex);
-		}
+		AroundClosure ac = currentArcIndex < 0 ? arc : arcs.get(currentArcIndex);
 
 		if (ac == null) {
 			return null;
