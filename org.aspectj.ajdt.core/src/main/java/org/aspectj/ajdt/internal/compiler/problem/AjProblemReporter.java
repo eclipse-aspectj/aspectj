@@ -546,7 +546,7 @@ public class AjProblemReporter extends ProblemReporter {
 			} else {
 				weaverType = factory.fromEclipse(type.superclass());
 			}
-			Set checked = new HashSet();
+			Set<ResolvedType> checked = new HashSet<>();
 			for (ConcreteTypeMunger m : weaverType.getInterTypeMungersIncludingSupers()) {
 				ResolvedType theAspect = m.getAspectType();
 				if (!checked.contains(theAspect)) {
@@ -561,7 +561,7 @@ public class AjProblemReporter extends ProblemReporter {
 						} else if (theAspect instanceof ReferenceType) {
 							// ResolvedMember rm = factory.makeResolvedMember(fieldDecl.binding);
 							String fname = new String(fieldDecl.name);
-							Collection/* ResolvedMember */privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
+							Collection<ResolvedMember> privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
 							// On an incremental compile the information is in the bcel delegate
 							if (privvies != null) {
 								for (Object privvy : privvies) {

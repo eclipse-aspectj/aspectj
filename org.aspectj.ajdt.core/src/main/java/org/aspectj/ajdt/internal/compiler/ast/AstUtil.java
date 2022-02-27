@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
@@ -217,7 +218,7 @@ public class AstUtil {
 	}
 
 	public static List getAjSyntheticAttribute() {
-		List ret = new ArrayList(1);
+		List<IAttribute> ret = new ArrayList<>(1);
 		ret.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
 		return ret;
 	}

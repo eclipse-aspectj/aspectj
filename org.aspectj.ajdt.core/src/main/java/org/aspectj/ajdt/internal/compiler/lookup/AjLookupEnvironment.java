@@ -115,7 +115,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 	 * interfaces targetted by ITDs that have to be implemented by accessing the topMostImplementor of the interface, yet the aspect
 	 * where the ITD originated is not in the world
 	 */
-	private final Map dangerousInterfaces = new HashMap();
+	private final Map<ResolvedType, String> dangerousInterfaces = new HashMap<>();
 
 	public AjLookupEnvironment(ITypeRequestor typeRequestor, CompilerOptions options, ProblemReporter problemReporter,
 			INameEnvironment nameEnvironment) {
@@ -700,7 +700,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// dangerous interface -
 			// report a problem if it is.
 			for (Object o : dangerousInterfaces.entrySet()) {
-				Map.Entry entry = (Map.Entry) o;
+				Map.Entry<ResolvedType, String> entry = (Map.Entry) o;
 				ResolvedType interfaceType = (ResolvedType) entry.getKey();
 				if (onType.isTopmostImplementor(interfaceType)) {
 					factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
@@ -1413,7 +1413,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		}
 	}
 
-	private final List pendingTypesToFinish = new ArrayList();
+	private final List<BinaryTypeBinding> pendingTypesToFinish = new ArrayList<>();
 	boolean inBinaryTypeCreationAndWeaving = false;
 	boolean processingTheQueue = false;
 

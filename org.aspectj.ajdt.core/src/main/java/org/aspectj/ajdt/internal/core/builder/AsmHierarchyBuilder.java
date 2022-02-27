@@ -125,7 +125,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		filename = new String(currCompilationResult.fileName);
 		lineseps = currCompilationResult.lineSeparatorPositions;
 		LangUtil.throwIaxIfNull(currCompilationResult, "result");
-		stack = new Stack();
+		stack = new Stack<>();
 		packageDecl = null;
 		this.buildConfig = buildConfig;
 		internalBuild(cuDeclaration, structureModel);
@@ -171,7 +171,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			// -- remove duplicates before adding (XXX use them instead?)
 			if (addToNode != null && addToNode.getChildren() != null) {
-				for (ListIterator itt = addToNode.getChildren().listIterator(); itt.hasNext();) {
+				for (ListIterator<IProgramElement> itt = addToNode.getChildren().listIterator(); itt.hasNext();) {
 					IProgramElement child = (IProgramElement) itt.next();
 					ISourceLocation childLoc = child.getSourceLocation();
 					if (null == childLoc) {
@@ -214,7 +214,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 		}
 		if (sourceFolderNode == null) {
-			sourceFolderNode = new ProgramElement(structureModel, sourceFolder, IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			sourceFolderNode = new ProgramElement(structureModel, sourceFolder, IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<>());
 			root.addChild(sourceFolderNode);
 		}
 		return sourceFolderNode;
@@ -272,7 +272,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 			if (pkgNode == null) {
 				// note packages themselves have no source location
-				pkgNode = new ProgramElement(activeStructureModel, pkgName, IProgramElement.Kind.PACKAGE, new ArrayList());
+				pkgNode = new ProgramElement(activeStructureModel, pkgName, IProgramElement.Kind.PACKAGE, new ArrayList<>());
 				rootForSource.addChild(pkgNode);
 			}
 			addToNode = pkgNode;
@@ -531,7 +531,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.genLabelAndKind(methodDeclaration, peNode); // will set the
 		// name
 		genBytecodeInfo(methodDeclaration, peNode);
-		List namedPointcuts = genNamedPointcuts(methodDeclaration);
+		List<ReferencePointcut> namedPointcuts = genNamedPointcuts(methodDeclaration);
 		// if (shouldAddUsesPointcut)
 		// addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
 
@@ -651,8 +651,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * @param methodDeclaration
 	 * @return all of the named pointcuts referenced by the PCD of this declaration
 	 */
-	private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
-		List pointcuts = new ArrayList();
+	private List<ReferencePointcut> genNamedPointcuts(MethodDeclaration methodDeclaration) {
+		List<ReferencePointcut> pointcuts = new ArrayList<>();
 		if (methodDeclaration instanceof AdviceDeclaration) {
 			if (((AdviceDeclaration) methodDeclaration).pointcutDesignator != null) {
 				addAllNamed(((AdviceDeclaration) methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
@@ -670,7 +670,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * @param pointcuts
 	 *            accumulator for named pointcuts
 	 */
-	private void addAllNamed(Pointcut pointcut, List pointcuts) {
+	private void addAllNamed(Pointcut pointcut, List<ReferencePointcut> pointcuts) {
 		if (pointcut == null) {
 			return;
 		}

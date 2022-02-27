@@ -17,6 +17,7 @@ import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IProgressListener;
 import org.aspectj.bridge.MessageUtil;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
@@ -30,7 +31,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Iterator {
 
 	private final AbstractCompilerAdapter compilerAdapter;
-	private Iterator resultIterator;
+	private Iterator<InterimCompilationResult> resultIterator;
 	private int classFileIndex = 0;
 	private InterimCompilationResult nowProcessing;
 	private InterimCompilationResult lastReturnedResult;
@@ -225,7 +226,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		compilerAdapter.acceptResult(result.result());
 	}
 
-	private boolean removeFromMap(Map aMap, char[] key) {
+	private boolean removeFromMap(Map<char[], ClassFile> aMap, char[] key) {
 		// jdt uses char[] as a key in the hashtable, which is not very useful as equality is based on being
 		// the same array, not having the same content.
 		// String skey = new String(key);
