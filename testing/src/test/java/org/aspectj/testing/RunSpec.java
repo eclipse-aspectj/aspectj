@@ -36,6 +36,7 @@ public class RunSpec implements ITestStep {
 	private String options;
 	private String cpath;
 	private String mpath;
+	private String orderedStdout;
 	private String orderedStderr;
 	private AjcTest myTest;
 	private OutputSpec stdErrSpec;
@@ -78,7 +79,7 @@ public class RunSpec implements ITestStep {
 				stdErrSpec.matchAgainst(rr.getStdErr(), orderedStderr);
 			}
 			if (stdOutSpec != null) {
-				stdOutSpec.matchAgainst(rr.getStdOut());
+				stdOutSpec.matchAgainst(rr.getStdOut(), orderedStdout);
 			}
 		} finally {
 			restoreProperties();
@@ -169,6 +170,10 @@ public class RunSpec implements ITestStep {
 
 	public void setOrderedStderr(String orderedStderr) {
 		this.orderedStderr = orderedStderr;
+	}
+
+	public void setOrderedStdout(String orderedStdout) {
+		this.orderedStdout = orderedStdout;
 	}
 
 	public String getClassToRun() {
