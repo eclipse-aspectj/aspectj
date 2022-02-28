@@ -79,6 +79,18 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		}
 	}
 
+	static class InheritableThreadLocalAroundClosureStack extends InheritableThreadLocal<Stack<AroundClosure>> {
+		@Override
+		protected Stack<AroundClosure> initialValue() {
+			return new Stack<>();
+		}
+
+		@Override
+		protected Stack<AroundClosure> childValue(Stack<AroundClosure> parentValue) {
+			return (Stack<AroundClosure>) parentValue.clone();
+		}
+	}
+
 	Object _this;
 	Object target;
 	Object[] args;
@@ -140,7 +152,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	// will either be using arc or arcs but not both. arcs being non-null
 	// indicates it is in use (even if an empty stack)
 	private AroundClosure arc = null;
-	private Stack<AroundClosure> arcs = null;
+	private InheritableThreadLocalAroundClosureStack arcs = null;
 
 	public void set$AroundClosure(AroundClosure arc) {
 		this.arc = arc;
@@ -149,12 +161,12 @@ class JoinPointImpl implements ProceedingJoinPoint {
  	public void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
 		if (arcs == null) {
-			arcs = new Stack<>();
+			arcs = new InheritableThreadLocalAroundClosureStack();
 		}
 		if (arc==null) {
-			this.arcs.pop();
+			this.arcs.get().pop();
 		} else {
-			this.arcs.push(arc);
+			this.arcs.get().push(arc);
 		}
  	}
 
@@ -167,7 +179,8 @@ class JoinPointImpl implements ProceedingJoinPoint {
 				return arc.run(arc.getState());
 			}
 		} else {
-			return arcs.peek().run(arcs.peek().getState());
+			final AroundClosure ac = arcs.get().peek();
+			return ac.run(ac.getState());
 		}
 	}
 
@@ -177,7 +190,7 @@ class JoinPointImpl implements ProceedingJoinPoint {
 		if (arcs == null) {
 			ac = arc;
 		} else {
-			ac = arcs.peek();
+			ac = arcs.get().peek();
 		}
 
 		if (ac == null) {
