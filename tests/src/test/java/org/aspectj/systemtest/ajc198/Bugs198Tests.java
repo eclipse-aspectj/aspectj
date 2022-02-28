@@ -49,7 +49,19 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
   }
 
   public void testAsyncProceedNestedAroundAdvice_gh128() {
-    runTest("asynchronous proceed for nested around-advice chain");
+    runTest("asynchronous proceed for nested around-advice (@AspectJ)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceThreadPool_gh128() {
+    runTest("asynchronous proceed for nested around-advice (@AspectJ, thread pool)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceNative_gh128() {
+    runTest("asynchronous proceed for nested around-advice (native)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceNativeThreadPool_gh128() {
+    runTest("asynchronous proceed for nested around-advice (native, thread pool)");
   }
 
   public static Test suite() {
