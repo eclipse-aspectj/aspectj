@@ -48,6 +48,10 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
     }
   }
 
+  public void testAsyncProceedNestedAroundAdvice_gh128() {
+    runTest("asynchronous proceed for nested around-advice chain");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs198Tests.class);
   }
