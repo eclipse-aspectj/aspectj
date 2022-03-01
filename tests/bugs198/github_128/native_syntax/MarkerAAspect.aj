@@ -1,6 +1,5 @@
-public aspect MarkerANativeAspect {
-  declare precedence : MarkerANativeAspect, MarkerBNativeAspect;
-  public static int proceedTimes = 1;
+public aspect MarkerAAspect {
+  declare precedence : MarkerAAspect, MarkerBAspect;
 
   Object around() : @annotation(MarkerA) && execution(* *(..)) {
     System.out.println(">> Outer intercept");

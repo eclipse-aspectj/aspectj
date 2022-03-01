@@ -1,8 +1,4 @@
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-public aspect MarkerBNativeAspect {
+public aspect MarkerBAspect {
   Object around() : @annotation(MarkerB) && execution(* *(..)) {
     Runnable runnable = new Runnable() {
       @Override
