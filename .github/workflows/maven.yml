@@ -12,11 +12,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # No automatic builds for Dependabot PRs
+    # Caveat: cannot start 'if:' expression with '!', hence '!= true'
+    if: startsWith(github.actor, 'dependabot') != true
+
     strategy:
       fail-fast: false
       matrix:
         java: [ 11, 14, 17 ]
+
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
