@@ -45,6 +45,7 @@ Ensure you run this with a JDK - the more recent the better since some tests wil
 * [Getting started with AspectJ](https://www.eclipse.org/aspectj/doc/released/progguide/starting.html)
 * [Programming Guide](https://www.eclipse.org/aspectj/doc/released/progguide/index.html)
 * [READMEs for each version of AspectJ](docs/dist/doc)
+* [AspectJ Java version compatibility](docs/dist/doc/JavaVersionCompatibility.md)
 
 ## Documentation for AspectJ developers
 
