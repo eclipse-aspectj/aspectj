@@ -95,76 +95,9 @@
 		</run>
 	</ajc-test>
 
-	<!-- Javac/ECJ 9+ compiler option, but belated implementation in AJC 1.9.7 -->
+	<!-- Javac/ECJ 9+ compiler option, but belated implementation in AJC 1.9.8 -->
 	<ajc-test dir="features198/compiler_release" vm="9" title="compile to older JDK release">
 		<compile files="Buffers.java" options="--release 8"/>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_115" title="annotation style A">
-		<compile files="A.java" options="-1.5">
-			<message kind="warning" line="28" text="advice defined in Azpect has not been applied [Xlint:adviceDidNotMatch]"/>
-		</compile>
-		<run class="A">
-			<stdout>
-				<line text="Azpect.before"/>
-				<line text="A.main"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_115" title="annotation style B">
-		<compile files="B.java" options="-1.5"/>
-		<run class="B">
-			<stdout>
-				<line text="Azpect.before"/>
-				<line text="B.main"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_120" title="annotation style C">
-		<compile files="C.java" options="-1.5"/>
-		<run class="C">
-			<stdout>
-				<line text="check if() pointcut running on C(1)"/>
-				<line text="Azpect1.beforeAdvice executing"/>
-				<line text="C.run() executing"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_120" title="annotation style D">
-		<compile files="D.java" options="-1.5"/>
-		<run class="D">
-			<stdout>
-				<line text="advice running"/>
-				<line text="D.run() executing"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_122" title="annotation style negated if">
-		<compile files="E.java" options="-1.5"/>
-		<run class="E">
-			<stdout>
-				<line text="advice running"/>
-				<line text="E.run() executing"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<ajc-test dir="bugs198/github_125" title="compiler can re-open closed JARs">
-		<!--
-			Here the Java test sets system property org.aspectj.weaver.openarchives to 20 in order to provoke
-			open JAR limit exhaustion
-		-->
-		<compile files="Application.java" options="-1.5" />
-		<run class="Application">
-			<stdout>
-				<line text="Before advice"/>
-				<line text="Hello world!"/>
-			</stdout>
-		</run>
 	</ajc-test>
 
 </suite>

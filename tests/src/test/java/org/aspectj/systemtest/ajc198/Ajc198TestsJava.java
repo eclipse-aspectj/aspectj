@@ -17,35 +17,29 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava17OrLater;
  */
 public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 
-	public void testSealedClassWithLegalSubclasses() {
-		runTest("sealed class with legal subclasses");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
-		// build, but final JDK version
-		checkVersion("Employee", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
-		checkVersion("Manager", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
-	}
+  public void testSealedClassWithLegalSubclasses() {
+    runTest("sealed class with legal subclasses");
+    checkVersion("Employee", Constants.MAJOR_17, Constants.MINOR_17);
+    checkVersion("Manager", Constants.MAJOR_17, Constants.MINOR_17);
+  }
 
-	public void testSealedClassWithIllegalSubclass() {
-		runTest("sealed class with illegal subclass");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
-		// build, but final JDK version
-		checkVersion("Person", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
-	}
+  public void testSealedClassWithIllegalSubclass() {
+    runTest("sealed class with illegal subclass");
+    checkVersion("Person", Constants.MAJOR_17, Constants.MINOR_17);
+  }
 
-	public void testWeaveSealedClass() {
-		runTest("weave sealed class");
-		// TODO: replace 0 by Constants.PREVIEW_MINOR_VERSION after no longer using EA
-		// build, but final JDK version
-		checkVersion("PersonAspect", Constants.MAJOR_17, 0 /* Constants.PREVIEW_MINOR_VERSION */);
-	}
+  public void testWeaveSealedClass() {
+    runTest("weave sealed class");
+    checkVersion("PersonAspect", Constants.MAJOR_17, Constants.MINOR_17);
+  }
 
-	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);
-	}
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(Ajc198TestsJava.class);
+  }
 
-	@Override
-	protected java.net.URL getSpecFile() {
-		return getClassResource("ajc198.xml");
-	}
+  @Override
+  protected java.net.URL getSpecFile() {
+    return getClassResource("ajc198.xml");
+  }
 
 }

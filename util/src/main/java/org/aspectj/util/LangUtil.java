@@ -194,6 +194,10 @@ public class LangUtil {
 		return 18 <= vmVersion;
 	}
 
+	public static boolean is19VMOrGreater() {
+		return 19 <= vmVersion;
+	}
+
 	/**
 	 * Shorthand for "if null, throw IllegalArgumentException"
 	 *

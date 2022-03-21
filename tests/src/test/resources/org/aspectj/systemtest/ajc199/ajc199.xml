@@ -1,0 +1,177 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+
+<suite>
+
+	<!-- Java 18 final: no new features, only 2nd preview for "JEP 420: Pattern Matching for switch (Second Preview)" -->
+	<ajc-test dir="features199/java18" vm="18" title="dummy Java 18">
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features198/java17" vm="18" title="switch pattern matching error">
+		<compile files="SwitchPatternError.java" options="--enable-preview -18">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features198/java17" vm="18" title="switch pattern matching java">
+		<compile files="SwitchPatternOK.java" options="--enable-preview -18" />
+		<run class="SwitchPatternOK" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features198/java17" vm="18" title="switch pattern matching aspect">
+		<compile files="SwitchPatternAspect.aj" options="--enable-preview -18" />
+		<run class="Application" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error">
+		<compile files="SwitchPatternPreview2Error.java" options="--enable-preview -18">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 java">
+		<compile files="SwitchPatternPreview2OK.java" options="--enable-preview -18" />
+		<run class="SwitchPatternOK" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 aspect">
+		<compile files="SwitchPatternPreview2Aspect.aj" options="--enable-preview -18" />
+		<run class="Application" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_115" title="annotation style A">
+		<compile files="A.java" options="-1.5">
+			<message kind="warning" line="28" text="advice defined in Azpect has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<run class="A">
+			<stdout>
+				<line text="Azpect.before"/>
+				<line text="A.main"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_115" title="annotation style B">
+		<compile files="B.java" options="-1.5"/>
+		<run class="B">
+			<stdout>
+				<line text="Azpect.before"/>
+				<line text="B.main"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_120" title="annotation style C">
+		<compile files="C.java" options="-1.5"/>
+		<run class="C">
+			<stdout>
+				<line text="check if() pointcut running on C(1)"/>
+				<line text="Azpect1.beforeAdvice executing"/>
+				<line text="C.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_120" title="annotation style D">
+		<compile files="D.java" options="-1.5"/>
+		<run class="D">
+			<stdout>
+				<line text="advice running"/>
+				<line text="D.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_122" title="annotation style negated if">
+		<compile files="E.java" options="-1.5"/>
+		<run class="E">
+			<stdout>
+				<line text="advice running"/>
+				<line text="E.run() executing"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_125" title="compiler can re-open closed JARs">
+		<!--
+			Here the Java test sets system property org.aspectj.weaver.openarchives to 20 in order to provoke
+			open JAR limit exhaustion
+		-->
+		<compile files="Application.java" options="-1.5" />
+		<run class="Application">
+			<stdout>
+				<line text="Before advice"/>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

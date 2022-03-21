@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 11, 17 ]
+        java: [ 11, 17, 18-ea ]
 
     runs-on: ubuntu-latest
 

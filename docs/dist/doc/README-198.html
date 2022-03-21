@@ -73,7 +73,8 @@
       Cross-compilation to legacy JDK
     </a>:
     An example class which only works correctly on JDK 8 when compiled with <tt>--release 8</tt> due to API changes in
-    the JDK. Simply <tt>-source 8 -target 8</tt> would not be enough in this case.</li>
+    the JDK. Simply <tt>-source 8 -target 8</tt> would not be enough in this case.
+  </li>
   <li>
     <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17">
       Pattern matching for switch
@@ -108,12 +109,6 @@
     regression test, we actually had to
     <a href="https://github.com/eclipse/org.aspectj/blob/de63b63d/tests/bugs198/github_68/Generator.java#L50-L61">
       craft a condy class with ASM</a>.
-  </li>
-  <li>
-    Improvements for <tt>if()</tt> pointcuts in annotation syntax, see issues
-    <a href="https://github.com/eclipse/org.aspectj/issues/115">#115</a>,
-    <a href="https://github.com/eclipse/org.aspectj/issues/120">#120</a>,
-    <a href="https://github.com/eclipse/org.aspectj/issues/122">#122</a>.
   </li>
   <li>
     Thanks to Andrey Turbanov for several clean code contributions and to Dmitry Mikhaylov for fixing a potential
