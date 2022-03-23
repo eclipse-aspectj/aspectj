@@ -84,7 +84,7 @@ public abstract class AjcTestCase extends TestCase {
 	// does not need to be on the classpath.
 	public static final String DEFAULT_FULL_LTW_CLASSPATH_ENTRIES =
 		Ajc.outputFolders("testing-client")
-				+ pathSeparator + CLASSPATH_JUNIT
+			+ pathSeparator + CLASSPATH_JUNIT
 			+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "testing-client.jar"
 			;
 
@@ -92,12 +92,12 @@ public abstract class AjcTestCase extends TestCase {
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
 		DEFAULT_FULL_LTW_CLASSPATH_ENTRIES +
 		Ajc.outputFolders("bridge", "util", "loadtime", "weaver", "asm", "runtime", "org.aspectj.matcher")
-				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
-				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
-				+ pathSeparator + CLASSPATH_ASM
-				// hmmm, this next one should perhaps point to an aj-build jar...
-				+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "aspectjrt.jar"
-			;
+			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
+			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
+			+ pathSeparator + CLASSPATH_ASM
+			// hmmm, this next one should perhaps point to an aj-build jar...
+			+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "aspectjrt.jar"
+		;
 
 	/*
 	 * Save reference to real stderr and stdout before starting redirection
@@ -587,11 +587,11 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	public RunResult run(String className, String moduleName, String[] args, String vmargs, final String classpath, String modulepath, boolean useLTW, boolean useFullLTW) {
 
-		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				args[i] = substituteSandbox(args[i]);
-			}
-		}
+		if (args == null)
+			args = new String[0];
+		for (int i = 0; i < args.length; i++)
+			args[i] = substituteSandbox(args[i]);
+
 		lastRunResult = null;
 		StringBuilder cp = new StringBuilder();
 		if (classpath != null) {
@@ -642,8 +642,11 @@ public abstract class AjcTestCase extends TestCase {
 				.map(path -> new File(path).getAbsolutePath())
 				.collect(Collectors.joining(pathSeparator));
 			try {
-				String command = "java " + vmargs + " -classpath " + cp + pathSeparator + defaultCpAbsolute + " -javaagent:" + javaagent + " " + className;
-
+				String command =
+					"java " + vmargs +
+					" -classpath " + cp + pathSeparator + defaultCpAbsolute +
+					" -javaagent:" + javaagent + " " +
+					className + " " + String.join(" ", args);
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
