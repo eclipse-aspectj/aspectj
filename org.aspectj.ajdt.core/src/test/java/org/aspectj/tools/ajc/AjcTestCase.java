@@ -80,14 +80,21 @@ public abstract class AjcTestCase extends TestCase {
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("JUnit library not found on classpath"));
 
-	// see Ajc and AntSpec
-	public static final String DEFAULT_CLASSPATH_ENTRIES =
-			Ajc.outputFolders("bridge","util","loadtime","weaver","asm","testing-client","runtime","org.aspectj.matcher")
+	// In 'useFullLTW' mode, aspectjweaver.jar is a Java agent. Therefore, what is contained in there
+	// does not need to be on the classpath.
+	public static final String DEFAULT_FULL_LTW_CLASSPATH_ENTRIES =
+		Ajc.outputFolders("testing-client")
 				+ pathSeparator + CLASSPATH_JUNIT
+			+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "testing-client.jar"
+			;
+
+	// See Ajc and AntSpec
+	public static final String DEFAULT_CLASSPATH_ENTRIES =
+		DEFAULT_FULL_LTW_CLASSPATH_ENTRIES +
+		Ajc.outputFolders("bridge", "util", "loadtime", "weaver", "asm", "runtime", "org.aspectj.matcher")
 				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
 				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
 				+ pathSeparator + CLASSPATH_ASM
-				+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "testing-client.jar"
 				// hmmm, this next one should perhaps point to an aj-build jar...
 				+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "aspectjrt.jar"
 			;
@@ -631,7 +638,7 @@ public abstract class AjcTestCase extends TestCase {
 			File directory = new File (".");
 			String absPath = directory.getAbsolutePath();
 			String javaagent = absPath + separator + ".." + separator + "lib" + separator + "aspectj" + separator + "lib" + separator + "aspectjweaver.jar";
-			String defaultCpAbsolute = Arrays.stream(DEFAULT_CLASSPATH_ENTRIES.split(pathSeparator))
+			String defaultCpAbsolute = Arrays.stream(DEFAULT_FULL_LTW_CLASSPATH_ENTRIES.split(pathSeparator))
 				.map(path -> new File(path).getAbsolutePath())
 				.collect(Collectors.joining(pathSeparator));
 			try {
