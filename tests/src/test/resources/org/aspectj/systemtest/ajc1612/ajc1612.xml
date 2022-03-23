@@ -24,7 +24,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 2">
      <compile files="Hello.java JavaHelper.java"/>
-     <run class="Hello" ltw="aop2.xml">
+     <run class="Hello" ltw="aop2.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="World"/>
@@ -42,7 +42,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 3">
      <compile files="Hello.java JavaHelper.java"/>
-     <run class="Hello" ltw="aop3.xml">
+     <run class="Hello" ltw="aop3.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="World"/>
@@ -60,7 +60,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 4">
      <compile files="Hello.java JavaHelper.java"/>
-     <run class="Hello" ltw="aop4.xml">
+     <run class="Hello" ltw="aop4.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="World"/>
@@ -79,7 +79,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 5">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop5.xml">
+     <run class="Hello2" ltw="aop5.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="in advice: s=world"/>
@@ -91,7 +91,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 6">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop6.xml">
+     <run class="Hello2" ltw="aop6.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="in advice: s=world"/>
@@ -103,7 +103,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 7">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop7.xml">
+     <run class="Hello2" ltw="aop7.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="in advice4: s=world at execution(int Hello2.say2(String))"/>
@@ -115,7 +115,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 8">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop8.xml">
+     <run class="Hello2" ltw="aop8.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="in advice6: s=world at execution(int Hello2.say2(String))"/>
@@ -127,7 +127,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 9">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop9.xml">
+     <run class="Hello2" ltw="aop9.xml" usefullltw="true">
        <stdout>
            <line text="in around advice: s=hello at execution(void Hello2.say1(String))"/>
        </stdout>
@@ -136,7 +136,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 10">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop10.xml">
+     <run class="Hello2" ltw="aop10.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="in around2 advice: s=world at execution(int Hello2.say2(String))"/>
@@ -146,7 +146,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 11">
      <compile files="Hello2.java JavaHelper.java"/>
-     <run class="Hello2" ltw="aop11.xml">
+     <run class="Hello2" ltw="aop11.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="abcde"/>
@@ -156,7 +156,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 12">
      <compile files="Hello3.java JavaHelper.java"/>
-     <run class="Hello3" ltw="aop12.xml">
+     <run class="Hello3" ltw="aop12.xml" usefullltw="true">
        <stdout>
            <line text="hello"/>
            <line text="around4 running"/>
@@ -168,7 +168,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice 13">
      <compile files="Hello2.java JavaHelper2.java"/>
-     <run class="Hello2" ltw="aop13.xml">
+     <run class="Hello2" ltw="aop13.xml" usefullltw="true">
        <stdout>
            <line text="in advice"/>
            <line text="hello"/>

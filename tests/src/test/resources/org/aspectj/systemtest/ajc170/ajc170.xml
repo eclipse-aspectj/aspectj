@@ -134,7 +134,7 @@
 
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method">
      <compile files="Hello.java Anno.java" options="-1.5"/>
-     <run class="Hello" ltw="aop.xml">
+     <run class="Hello" ltw="aop.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="World"/>
@@ -147,7 +147,7 @@
 
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method 2">
      <compile files="Hello.java Anno2.java" options="-1.5"/>
-     <run class="Hello" ltw="aop2.xml">
+     <run class="Hello" ltw="aop2.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="World"/>

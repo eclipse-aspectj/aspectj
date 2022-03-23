@@ -6174,7 +6174,7 @@
            <line text="RecoveryNotSelf.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
      </run>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop-notself.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop-notself.xml" usefullltw="true">
        <stdout>
            <line text="RecoveryNotSelf.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
@@ -6184,7 +6184,7 @@
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using -XterminateAfterCompilation and LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java" options="-1.5"/>
      <compile files="accounts/recovery/Recovery.aj" options="-1.5 -XterminateAfterCompilation"/>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop.xml" usefullltw="true">
        <stdout>
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
@@ -6194,7 +6194,7 @@
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java" options="-1.5"/>
      <compile files="accounts/recovery/Recovery.aj" options="-1.5"/>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop.xml" usefullltw="true">
        <stdout>
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
@@ -6204,7 +6204,7 @@
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call not self using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java" options="-1.5"/>
      <compile files="accounts/recovery/RecoveryNotSelf.aj" options="-1.4"/>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop-notself.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop-notself.xml" usefullltw="true">
        <stdout>
            <line text="RecoveryNotSelf.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
@@ -6214,7 +6214,7 @@
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call self and not self using LTW">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java" options="-1.5"/>
      <compile files="accounts/recovery/Recovery.aj, accounts/recovery/RecoveryNotSelf.aj" options="-1.5"/>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop-selfandnotself.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop-selfandnotself.xml" usefullltw="true">
        <stdout>
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
            <line text="RecoveryNotSelf.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
@@ -6225,7 +6225,7 @@
    <ajc-test dir="bugs150/pr119657" title="IllegalAccessError with around advice on interface method call using LTW and -XnoInline">
      <compile files="services/account/StockQuoteServiceTest.java, services/accountdata/StockAccount.java, services/stockquote/StockQuoteService.java, services/stockquote/StockQuoteServiceImpl.java, services/account/AccountReport.java" options="-1.5"/>
      <compile files="accounts/recovery/Recovery.aj" options="-1.5"/>
-     <run class="services.account.StockQuoteServiceTest" ltw="aop-noinline.xml">
+     <run class="services.account.StockQuoteServiceTest" ltw="aop-noinline.xml" usefullltw="true">
        <stdout>
            <line text="Recovery.around() call(float services.stockquote.StockQuoteService.getQuote(String))"/>
        </stdout>
@@ -6235,7 +6235,7 @@
    <ajc-test dir="bugs150/pr121385" title="override protected pointcut in aop.xml concrete aspect">
      <compile files="Hello.java" options="-1.5"/>
      <compile files="World.aj, ConcreteWorld.aj" options="-1.4"/>
-     <run class="Hello" ltw="aop.xml">
+     <run class="Hello" ltw="aop.xml" usefullltw="true">
        <stdout>
            <line text="around start!"/>
            <line text="Hello"/>

@@ -168,7 +168,7 @@ public class Ajc152Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void testLTWGeneratedAspectAbstractMethod_pr125480() {
-		runTest("aop.xml aspect inheriting abstract method ");
+		runTest("aop.xml aspect inheriting abstract method");
 	}
 
 	public void testLTWGeneratedAspectAbstractMethod_pr125480_2() {
