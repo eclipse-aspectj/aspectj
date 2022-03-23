@@ -36,6 +36,9 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 
+import static java.io.File.pathSeparator;
+import static java.io.File.separator;
+
 /**
  * The Ajc class is intended for use as part of a unit-test suite, it drives the AspectJ compiler and lets you check the compilation
  * results. Compilations run in a sandbox that is created in C:\temp\ajcSandbox or /tmp/ajcSandbox depending on your platform.
@@ -51,13 +54,13 @@ public class Ajc {
 	private static final String BUILD_OUTPUT_FOLDER = "target";
 
 	public static final String outputFolder(String module) {
-		return File.pathSeparator + ".." +File.separator + module + File.separator + BUILD_OUTPUT_FOLDER + File.separator + "classes";
+		return pathSeparator + ".." + separator + module + separator + BUILD_OUTPUT_FOLDER + separator + "classes";
 	}
 
 	public static final String outputFolders(String... modules) {
 		StringBuilder s = new StringBuilder();
 		for (String module: modules) {
-			s.append(File.pathSeparator + ".." +File.separator + module + File.separator + BUILD_OUTPUT_FOLDER + File.separator + "classes");
+			s.append(pathSeparator + ".." + separator + module + separator + BUILD_OUTPUT_FOLDER + separator + "classes");
 		}
 		return s.toString();
 	}
@@ -67,7 +70,7 @@ public class Ajc {
 		outputFolder("testing-client")
 			+ outputFolder("runtime")
 			+ outputFolder("bcel-builder")
-			+ File.pathSeparator + ".." + File.separator + "lib" + File.separator + "junit" + File.separator + "junit.jar"
+			+ File.pathSeparator + ".." + separator + "lib" + separator + "junit" + separator + "junit.jar"
 			+ outputFolder("bridge")
 			+ outputFolder("loadtime")
 			+ outputFolder("weaver")
@@ -321,17 +324,17 @@ public class Ajc {
 						hasOutdir = true;
 					}
 					boolean isOutjar = args[i].equals("-outjar");
-					StringTokenizer strTok = new StringTokenizer(args[++i], File.pathSeparator);
+					StringTokenizer strTok = new StringTokenizer(args[++i], pathSeparator);
 					while (strTok.hasMoreTokens()) {
 						File f = new File(strTok.nextToken());
 						buff.append(adjustFileOrDir(f, copyThisTime, isOutjar).getAbsolutePath());
 						if (strTok.hasMoreTokens())
-							buff.append(File.pathSeparator);
+							buff.append(pathSeparator);
 					}
 					newArgs[i] = buff.toString();
 					if (args[i - 1].equals("-classpath")) {
 						hasClasspath = true;
-						newArgs[i] = newArgs[i] + File.pathSeparator + TESTER_PATH + File.pathSeparator
+						newArgs[i] = newArgs[i] + pathSeparator + TESTER_PATH + pathSeparator
 								+ getSandboxDirectory().getAbsolutePath();
 					}
 				} else {
@@ -348,7 +351,7 @@ public class Ajc {
 			newArgs = new String[oldArgs.length + 2];
 			System.arraycopy(oldArgs, 0, newArgs, 0, oldArgs.length);
 			newArgs[oldArgs.length] = "-classpath";
-			newArgs[oldArgs.length + 1] = TESTER_PATH + File.pathSeparator + getSandboxDirectory().getAbsolutePath();
+			newArgs[oldArgs.length + 1] = TESTER_PATH + pathSeparator + getSandboxDirectory().getAbsolutePath();
 		}
 		if (!hasOutdir) {
 			String[] oldArgs = newArgs;
@@ -366,7 +369,7 @@ public class Ajc {
 		if (!from.isAbsolute()) {
 			ret = new File(sandbox, from.getPath());
 			File fromParent = from.getParentFile();
-			String relativeToPath = (fromParent != null) ? (fromParent.getPath() + File.separator) : "";
+			String relativeToPath = (fromParent != null) ? (fromParent.getPath() + separator) : "";
 			if (baseDir != null) {
 				from = new File(baseDir, from.getPath());
 				//				if (ensureDirsExist) {
