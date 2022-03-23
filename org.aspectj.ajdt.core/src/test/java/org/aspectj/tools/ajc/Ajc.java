@@ -38,6 +38,7 @@ import org.aspectj.util.FileUtil;
 
 import static java.io.File.pathSeparator;
 import static java.io.File.separator;
+import static org.aspectj.tools.ajc.AjcTestCase.CLASSPATH_JUNIT;
 
 /**
  * The Ajc class is intended for use as part of a unit-test suite, it drives the AspectJ compiler and lets you check the compilation
@@ -70,7 +71,7 @@ public class Ajc {
 		outputFolder("testing-client")
 			+ outputFolder("runtime")
 			+ outputFolder("bcel-builder")
-			+ File.pathSeparator + ".." + separator + "lib" + separator + "junit" + separator + "junit.jar"
+			+ pathSeparator + CLASSPATH_JUNIT
 			+ outputFolder("bridge")
 			+ outputFolder("loadtime")
 			+ outputFolder("weaver")

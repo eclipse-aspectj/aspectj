@@ -73,11 +73,17 @@ public abstract class AjcTestCase extends TestCase {
 			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/"))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("ASM library not found on classpath"));
+	public static final String CLASSPATH_JUNIT =
+		Arrays.stream(System.getProperty("java.class.path")
+			.split(pathSeparator))
+			.filter(path -> path.replace('\\', '/').contains("/junit/junit/"))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("JUnit library not found on classpath"));
 
 	// see Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
 			Ajc.outputFolders("bridge","util","loadtime","weaver","asm","testing-client","runtime","org.aspectj.matcher")
-				+ pathSeparator + ".." + separator + "lib" + separator + "junit" + separator + "junit.jar"
+				+ pathSeparator + CLASSPATH_JUNIT
 				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
 				+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
 				+ pathSeparator + CLASSPATH_ASM
