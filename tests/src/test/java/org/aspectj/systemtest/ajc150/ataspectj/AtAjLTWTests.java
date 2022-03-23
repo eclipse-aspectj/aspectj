@@ -121,11 +121,12 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 	public void testLTWDumpClosure() {
 		runTest("LTW DumpTest closure");
 
-		File f = new File("_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
+		// Test runs with 'usefullltw="true"' -> dump files are created in the sandbox directory
+		File f = new File(ajc.getSandboxDirectory() + "/_ajdump/ataspectj/DumpTestTheDump$AjcClosure1.class");
 		assertTrue("Missing dump file " + f.getAbsolutePath(), f.exists());
 
-		// tidy up...
-		f = new File("_ajdump");
+		// tidy up... (should not be necessary in sandbox directory, but does not hurt)
+		f = new File(ajc.getSandboxDirectory() + "/_ajdump");
 		FileUtil.deleteContents(f);
 		f.delete();
 	}
