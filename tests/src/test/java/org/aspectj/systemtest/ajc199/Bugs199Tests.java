@@ -44,6 +44,23 @@ public class Bugs199Tests extends XMLBasedAjcTestCase {
     }
   }
 
+  public void testAsyncProceedNestedAroundAdvice_gh128() {
+    runTest("asynchronous proceed for nested around-advice (@AspectJ)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceThreadPool_gh128() {
+    // TODO: future improvement, see https://github.com/eclipse/org.aspectj/issues/141
+    // runTest("asynchronous proceed for nested around-advice (@AspectJ, thread pool)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceNative_gh128() {
+    runTest("asynchronous proceed for nested around-advice (native)");
+  }
+
+  public void testAsyncProceedNestedAroundAdviceNativeThreadPool_gh128() {
+    runTest("asynchronous proceed for nested around-advice (native, thread pool)");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs199Tests.class);
   }

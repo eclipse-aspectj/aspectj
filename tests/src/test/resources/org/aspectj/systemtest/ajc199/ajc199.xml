@@ -174,4 +174,320 @@
 		</run>
 	</ajc-test>
 
+  <ajc-test dir="bugs199/github_128" title="asynchronous proceed for nested around-advice (@AspectJ)">
+ 		<compile files="Application.java MarkerA.java MarkerB.java annotation_syntax/MarkerAAspect.aj annotation_syntax/MarkerBAspect.aj" options="-1.8" />
+ 		<run class="Application" options="1,1">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,1">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="1,2">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,2">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 	</ajc-test>
+
+ 	<ajc-test dir="bugs199/github_128" title="asynchronous proceed for nested around-advice (@AspectJ, thread pool)">
+ 		<compile files="Application.java MarkerA.java MarkerB.java annotation_syntax/MarkerAAspect.aj annotation_syntax/MarkerBAspect.aj" options="-1.8" />
+ 		<run class="Application" options="1,1,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,1,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="1,2,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,2,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 	</ajc-test>
+
+ 	<ajc-test dir="bugs199/github_128" title="asynchronous proceed for nested around-advice (native)">
+ 		<compile files="Application.java MarkerA.java MarkerB.java native_syntax/MarkerAAspect.aj native_syntax/MarkerBAspect.aj" options="-1.8" />
+ 		<run class="Application" options="1,1">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,1">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="1,2">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,2">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 	</ajc-test>
+
+ 	<ajc-test dir="bugs199/github_128" title="asynchronous proceed for nested around-advice (native, thread pool)">
+ 		<compile files="Application.java MarkerA.java MarkerB.java native_syntax/MarkerAAspect.aj native_syntax/MarkerBAspect.aj" options="-1.8" />
+ 		<run class="Application" options="1,1,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,1,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="1,2,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 			</stdout>
+ 		</run>
+ 		<run class="Application" options="2,2,true">
+ 			<stdout ordered="no">
+ 				<line text=">> Outer intercept"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="  >> Outer proceed"/>
+ 				<line text="    >> Inner intercept"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="    &lt;&lt; Inner intercept"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="  &lt;&lt; Outer proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="      >> Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="        Doing something"/>
+ 				<line text="      &lt;&lt; Inner proceed"/>
+ 				<line text="&lt;&lt; Outer intercept"/>
+ 			</stdout>
+ 		</run>
+ 	</ajc-test>
+
 </suite>
