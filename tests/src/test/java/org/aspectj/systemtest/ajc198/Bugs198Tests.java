@@ -53,7 +53,8 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
   }
 
   public void testAsyncProceedNestedAroundAdviceThreadPool_gh128() {
-    runTest("asynchronous proceed for nested around-advice (@AspectJ, thread pool)");
+    // TODO: future improvement, see https://github.com/eclipse/org.aspectj/issues/141
+    // runTest("asynchronous proceed for nested around-advice (@AspectJ, thread pool)");
   }
 
   public void testAsyncProceedNestedAroundAdviceNative_gh128() {
