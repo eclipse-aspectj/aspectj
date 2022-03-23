@@ -221,7 +221,7 @@
 			<line text="Main.test1" />
 			<line text="Main.test2" />
 		</stdout>
-		<stderr>
+		<stderr ordered="no">
 			<line text="info AspectJ Weaver Version" />
 			<line text="info register classloader" />
 			<line text="info using" />
@@ -229,6 +229,33 @@
 			<line text="debug weaving 'ConcreteAspect'" />
 			<line text="debug generating class 'ConcreteAspect'" />
 			<line text="debug weaving 'Main'" />
+
+			<!-- In full LTW mode with weaver option '-debug' in aop.xml, the weaver prints this -->
+			<line text="debug cannot weave 'org.aspectj.lang.Signature'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.Factory'" />
+			<line text="debug cannot weave 'org.aspectj.lang.JoinPoint$StaticPart'" />
+			<line text="debug cannot weave 'org.aspectj.lang.JoinPoint$EnclosingStaticPart'" />
+			<line text="debug cannot weave 'org.aspectj.lang.JoinPoint'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.MethodSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.CodeSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.MemberSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.ConstructorSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.FieldSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.AdviceSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.CatchClauseSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.LockSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.UnlockSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.InitializerSignature'" />
+			<line text="debug cannot weave 'org.aspectj.lang.reflect.SourceLocation'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.MethodSignatureImpl'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.CodeSignatureImpl'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.MemberSignatureImpl'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.SignatureImpl'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.SignatureImpl$Cache'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.JoinPointImpl$StaticPartImpl'" />
+			<line text="debug cannot weave 'org.aspectj.runtime.reflect.SourceLocationImpl'" />
+			<line text="debug cannot weave 'org.aspectj.lang.NoAspectBoundException'" />
+
 			<line text="AbstractSuperAspect.before_test1" />
 		</stderr>
 	</run>
@@ -244,7 +271,7 @@
 			text="this affected type is not exposed to the weaver: TestITDMethod" />
 	</compile>
 	<run class="TestITDMethod" options="test"
-		ltw="aop-abstractaspect.xml">
+		ltw="aop-abstractaspect.xml" usefullltw="true">
 		<stdout>
 			<line text="TestITDMethod.main" />
 		</stdout>

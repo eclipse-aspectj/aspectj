@@ -13,7 +13,7 @@
 
  <ajc-test dir="bugs1612/xmldefs" title="xml defined advice">
      <compile files="Hello.java JavaHelper.java"/>
-     <run class="Hello" ltw="aop.xml">
+     <run class="Hello" ltw="aop.xml" usefullltw="true">
        <stdout>
            <line text="Hello"/>
            <line text="in advice"/>
