@@ -37,7 +37,7 @@ public class Bugs199Tests extends XMLBasedAjcTestCase {
     runTest("annotation style negated if");
   }
 
-  public void testGitHub_125() {
+  public void testCompilerCanReopenClosedJARs_gh125() {
     try (PropertyEnvironment env = ScopedSystemProperties.newPropertyEnvironment()) {
       env.setProperty("org.aspectj.weaver.openarchives", "20");
       runTest("compiler can re-open closed JARs");
