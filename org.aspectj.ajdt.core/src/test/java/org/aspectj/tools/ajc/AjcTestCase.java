@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
@@ -623,9 +624,12 @@ public abstract class AjcTestCase extends TestCase {
 
 			File directory = new File (".");
 			String absPath = directory.getAbsolutePath();
-			String javaagent= absPath+separator+".."+separator+"aj-build"+separator+"dist"+separator+"tools"+separator+"lib"+separator+"aspectjweaver.jar";
+			String javaagent = absPath + separator + ".." + separator + "lib" + separator + "aspectj" + separator + "lib" + separator + "aspectjweaver.jar";
+			String defaultCpAbsolute = Arrays.stream(DEFAULT_CLASSPATH_ENTRIES.split(pathSeparator))
+				.map(path -> new File(path).getAbsolutePath())
+				.collect(Collectors.joining(pathSeparator));
 			try {
-				String command ="java " +vmargs+ " -classpath " + cp +" -javaagent:"+javaagent + " " + className ;
+				String command = "java " + vmargs + " -classpath " + cp + pathSeparator + defaultCpAbsolute + " -javaagent:" + javaagent + " " + className;
 
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
