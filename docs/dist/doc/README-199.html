@@ -39,6 +39,17 @@
 
 <h2>Improvements</h2>
 
+<p>
+  In annotation style aspects, asynchronous <tt>proceed()</tt> calls in <tt>@Around</tt> advice now works in threads
+  created from within the advice. Previously, this was only working in native syntax aspects. There is still a
+  limitation with regard to asynchronous proceed, if you do not create the thread in the advice but want to use e.g.
+  an <tt>ExecutorService</tt> with its own thread pool. This still is not working in annotation style aspects, only in
+  native syntax ones.
+</p>
+<p>
+  See <a href="https://github.com/eclipse/org.aspectj/issues/128">issue #128</a> and
+  <a href="https://github.com/eclipse/org.aspectj/pull/132">pull request #132</a> for more details.
+</p>
 <h2>Code examples</h2>
 
 <p>
@@ -54,6 +65,11 @@
   <li>
     <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/features199/java18">
       Pattern matching for switch, preview 2
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/bugs199/github_128">
+      Asynchronous proceed in native vs. annotation style syntax
     </a>
   </li>
 </ul>
