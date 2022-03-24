@@ -89,6 +89,18 @@ As mentioned in the introduction, AspectJ features its own Ant task, which is de
 [this chapter](https://www.eclipse.org/aspectj/doc/next/devguide/printable.html#antTasks) of the Development Environment
 Guide.
 
+### Command line
+
+If you wish to install AspectJ in a separate directory and use it from the command line without any extra build tools,
+feel free to download the **AspectJ installer**. It is and executable JAR installer. It requires Java and possibly admin
+rights, if e.g. under Windows you want to install AspectJ to _C:/Program Files/AspectJ_. You execute it from a command
+prompt via `java -jar installer-<version>.jar` and select your installation options. Then you add `<ASPECTJ_HOME>/bin`
+to your path and are good to go. You can now call tools like the Aspectj compiler `ajc`, the AspectJ documentation
+generator `ajdoc` (similar to Javadoc) or the AspectJ Browser `ajbrowser` from the command line.
+
+You can find older installer versions until 1.9.6 on the [AspectJ website](https://www.eclipse.org/aspectj/downloads.php),
+more recent ones are currently being hosted on the [AspectJ.dev website](https://aspectj.dev/maven/org/aspectj/installer/).
+
 ## Biased recommendation
 
 Feel free to be skeptical, because the author has both IDE and build tool biases, but I am recommending Maven as a build
