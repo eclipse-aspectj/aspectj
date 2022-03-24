@@ -73,6 +73,12 @@ public abstract class AjcTestCase extends TestCase {
 			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/"))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("ASM library not found on classpath"));
+	public static final String CLASSPATH_JDT_CORE =
+		Arrays.stream(System.getProperty("java.class.path")
+			.split(pathSeparator))
+			.filter(path -> path.replace('\\', '/').contains("/org/aspectj/org.eclipse.jdt.core/"))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("AspectJ JDT Core library not found on classpath"));
 	public static final String CLASSPATH_JUNIT =
 		Arrays.stream(System.getProperty("java.class.path")
 			.split(pathSeparator))
@@ -90,10 +96,11 @@ public abstract class AjcTestCase extends TestCase {
 
 	// See Ajc and AntSpec
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
-		DEFAULT_FULL_LTW_CLASSPATH_ENTRIES +
-		Ajc.outputFolders("bridge", "util", "loadtime", "weaver", "asm", "runtime", "org.aspectj.matcher")
+		DEFAULT_FULL_LTW_CLASSPATH_ENTRIES
+			+ Ajc.outputFolders("bridge", "util", "loadtime", "weaver", "asm", "runtime", "org.aspectj.matcher", "bcel-builder")
 			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
 			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
+			+ pathSeparator + CLASSPATH_JDT_CORE
 			+ pathSeparator + CLASSPATH_ASM
 			// hmmm, this next one should perhaps point to an aj-build jar...
 			+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "aspectjrt.jar"
