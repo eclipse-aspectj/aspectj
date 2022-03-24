@@ -21,50 +21,6 @@ public class Bugs198Tests extends XMLBasedAjcTestCase {
     runTest("ITD annotation with mandatory parameter via aspectpath");
   }
 
-  public void testAnnotationStyleSpecialIfClauses() {
-    runTest("annotation style A");
-  }
-
-  public void testAnnotationStylePointcutInheritanceWithIfClauses() {
-    runTest("annotation style B");
-  }
-
-  public void testAnnotationStyleSpecialIfClauses2_gh120() {
-    runTest("annotation style C");
-  }
-
-  public void testAnnotationStyleSpecialIfClauses3_gh120() {
-    runTest("annotation style D");
-  }
-
-  public void testAnnotationStyleNegatedIf_gh122() {
-    runTest("annotation style negated if");
-  }
-
-  public void testGitHub_125() {
-    try (PropertyEnvironment env = ScopedSystemProperties.newPropertyEnvironment()) {
-      env.setProperty("org.aspectj.weaver.openarchives", "20");
-      runTest("compiler can re-open closed JARs");
-    }
-  }
-
-  public void testAsyncProceedNestedAroundAdvice_gh128() {
-    runTest("asynchronous proceed for nested around-advice (@AspectJ)");
-  }
-
-  public void testAsyncProceedNestedAroundAdviceThreadPool_gh128() {
-    // TODO: future improvement, see https://github.com/eclipse/org.aspectj/issues/141
-    // runTest("asynchronous proceed for nested around-advice (@AspectJ, thread pool)");
-  }
-
-  public void testAsyncProceedNestedAroundAdviceNative_gh128() {
-    runTest("asynchronous proceed for nested around-advice (native)");
-  }
-
-  public void testAsyncProceedNestedAroundAdviceNativeThreadPool_gh128() {
-    runTest("asynchronous proceed for nested around-advice (native, thread pool)");
-  }
-
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs198Tests.class);
   }

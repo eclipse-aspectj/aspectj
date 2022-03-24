@@ -95,7 +95,7 @@
                 options="-1.5"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dump.xml"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
         <compile
                 files="ataspectj/EmptyAspect.aj"
@@ -123,7 +123,7 @@
         <compile
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestAroundAspect.aj"
                 options="-1.5"/>
-        <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpclosure.xml"/>
+        <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpclosure.xml" usefullltw="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest proxy">
@@ -163,7 +163,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-silent.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -182,7 +182,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verbose.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -207,7 +207,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verboseandshow.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -233,7 +233,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-messagehandler.xml">
         	<stdout>
 				<line text="MessageHolder.MessageHolder()"/>
@@ -290,7 +290,7 @@
             files="ataspectj/ConcreteAtAspectTest.java,ataspectj/TestHelper.java"
             options="-1.5 -XterminateAfterCompilation"
             />
-        <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml"/>
+        <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml" usefullltw="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="ConcreteAspect">
@@ -298,7 +298,7 @@
             files="ataspectj/ConcreteAspectTest.aj,ataspectj/TestHelper.java"
             options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
-        <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
+        <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml" usefullltw="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="ConcretePrecedenceAspect">
@@ -306,7 +306,7 @@
             files="ataspectj/ConcretePrecedenceAspectTest.java,ataspectj/TestHelper.java"
             options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
-        <run class="ataspectj.ConcretePrecedenceAspectTest" ltw="ataspectj/aop-concreteprecedenceaspect.xml"/>
+        <run class="ataspectj.ConcretePrecedenceAspectTest" ltw="ataspectj/aop-concreteprecedenceaspect.xml" usefullltw="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectNotInInclude">

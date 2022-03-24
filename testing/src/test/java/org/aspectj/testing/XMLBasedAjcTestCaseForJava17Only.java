@@ -20,21 +20,21 @@ public abstract class XMLBasedAjcTestCaseForJava17Only extends XMLBasedAjcTestCa
 	@Override
 	public void setUp() throws Exception {
 		// Activate this block after upgrading to JDT Core Java 18
-		/*
 		throw new IllegalStateException(
 			"These tests need a Java 17 level AspectJ compiler " +
 				"(e.g. because they use version-specific preview features). " +
 				"This compiler does not support preview features of a previous version anymore."
 		);
-		*/
 		// Activate this block before upgrading to JDT Core Java 18
+		/*
 		if (!LangUtil.is17VMOrGreater() || LangUtil.is18VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 17 only " +
 				"(e.g. because they use version-specific preview features)"
 			);
-		}
 		super.setUp();
+		}
+		*/
 	}
 
 }

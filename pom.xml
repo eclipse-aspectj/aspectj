@@ -5,7 +5,7 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.9-SNAPSHOT</version>
+	<version>1.9.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
@@ -21,7 +21,7 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-		<jdt.core.version>1.9.9-SNAPSHOT</jdt.core.version>
+		<jdt.core.version>1.9.9</jdt.core.version>
 		<asm.version>9.2</asm.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
@@ -205,6 +205,20 @@
 			</activation>
 			<properties>
 				<jvm.arg.addOpens>--add-opens java.base/java.lang=ALL-UNNAMED</jvm.arg.addOpens>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk-18-to-xx</id>
+			<activation>
+				<jdk>[18,)</jdk>
+			</activation>
+			<properties>
+				<!--
+					JEP 411: Deprecate the Security Manager for Removal, see https://openjdk.java.net/jeps/411.
+					As of Java 18, the new API for blocking System.exit is not available yet, see
+					https://bugs.openjdk.java.net/browse/JDK-8199704.
+				-->
+				<jvm.arg.addOpens>-Djava.security.manager=allow</jvm.arg.addOpens>
 			</properties>
 		</profile>
 		<profile>

@@ -118,7 +118,7 @@
    <ajc-test dir="bugs154/pr148381/simple" title="argNames does not work - simple">
      <!-- this compile is just to get code.jar into the sandbox, all the code is already precompiled in code.jar -->
      <compile options="-1.5" files="PerformanceMonitor.java" classpath="code.jar"/>
-     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml">
+     <run class="test.Main" classpath="code.jar" ltw="META-INF/aop.xml" usefullltw="true">
        <stdout>
          <line text="This method was intercepted by the advice: Main.foo()"/>
        </stdout>
@@ -212,7 +212,7 @@
    <!-- now loadtime weaving -->
    <ajc-test dir="bugs154/pr209019/case3" title="various issues with ltw and around advice - 4">
      <compile options="-1.5" files="A.java,AbstractDurationMethod.java,Runner.java"/>
-     <run class="Runner" ltw="aop.xml">
+     <run class="Runner" ltw="aop.xml" usefullltw="true">
        <stdout>
          <line text="Proceeded at joinpoint call(Object a.b.A.m3())"/>
          <line text="Proceeded at joinpoint call(Object a.b.A.m2())"/>

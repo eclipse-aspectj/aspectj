@@ -19,7 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 11, 17 ]
+        # TODO: switch from 18-ea to 18, as soon as Temurin offers the download on https://adoptium.net/releases.html
+        java: [ 11, 17, 18-ea ]
 
     runs-on: ubuntu-latest
 

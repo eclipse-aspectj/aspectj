@@ -600,6 +600,9 @@ public class JavaRun implements IAjcRun {
 	public static class Spec extends AbstractRunSpec {
 		static {
 			try {
+				// TODO: Deprecate the Security Manager for Removal, see https://openjdk.java.net/jeps/411.
+				//       As of Java 18, the new API for blocking System.exit is not available yet, see
+				//       https://bugs.openjdk.java.net/browse/JDK-8199704.
 				System.setSecurityManager(RunSecurityManager.ME);
 			} catch (Throwable t) {
 				System.err.println("JavaRun: Security manager set - no System.exit() protection");

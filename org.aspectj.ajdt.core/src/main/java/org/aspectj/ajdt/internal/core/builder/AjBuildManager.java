@@ -1321,7 +1321,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 */
 	private String checkRtJar(AjBuildConfig buildConfig) {
 		// omitting dev info
-		if (Version.getText().equals(Version.DEVELOPMENT) || Version.getText().endsWith("BUILD-SNAPSHOT")) {
+		if (Version.getText().equals(Version.DEVELOPMENT) || Version.getText().endsWith("-SNAPSHOT")) {
 			// in the development version we can't do this test usefully
 			// MessageUtil.info(holder, "running development version of aspectj compiler");
 			return null;
@@ -1359,7 +1359,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                         }
                     }
                     // assume that users of development aspectjrt.jar know what they're doing
-                    if (version != null && (Version.DEVELOPMENT.equals(version) || version.endsWith("BUILD-SNAPSHOT"))) {
+                    if (version != null && (Version.DEVELOPMENT.equals(version) || version.endsWith("-SNAPSHOT"))) {
                         // MessageUtil.info(holder,
                         // "running with development version of aspectjrt.jar in " +
                         // p.getAbsolutePath());

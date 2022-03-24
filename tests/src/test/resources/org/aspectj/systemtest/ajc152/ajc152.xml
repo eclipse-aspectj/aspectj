@@ -448,10 +448,10 @@
       </run>
     </ajc-test>
 
-    <ajc-test dir="bugs152/pr125480" title="aop.xml aspect inheriting abstract method ">
+    <ajc-test dir="bugs152/pr125480" title="aop.xml aspect inheriting abstract method">
         <compile files="HelloWorld.java"/>
         <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
-        <run class="HelloWorld" ltw="aop-tracing.xml">
+        <run class="HelloWorld" ltw="aop-tracing.xml" usefullltw="true">
           <stdout>
             <line text="advice running"/>
             <line text="Hello World!"/>
@@ -462,7 +462,7 @@
     <ajc-test dir="bugs152/pr125480/case2" title="aop.xml aspect inheriting abstract method - code style">
         <compile files="HelloWorld.java"/>
         <compile files="AbstractMethods.aj, ConcreteMethods.aj" options="-1.5"/>
-        <run class="HelloWorld" ltw="aop-tracing.xml">
+        <run class="HelloWorld" ltw="aop-tracing.xml" usefullltw="true">
           <stdout>
             <line text="advice running"/>
             <line text="Hello World!"/>
@@ -600,7 +600,7 @@
     <ajc-test dir="bugs152/pr142165" title="broken concretization">
       <compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/>
-      <run class="C" ltw="aop.xml">
+      <run class="C" ltw="aop.xml" usefullltw="true">
         <stderr>
           <line text="warning at Type 'AA' (no debug info available)::0 no match for this type name: SomeType [Xlint:invalidAbsoluteTypeName]"/>
           <line text="foo running"/>
@@ -611,7 +611,7 @@
     <ajc-test dir="bugs152/pr142165" title="broken concretization - 2">
       <compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/>
-      <run class="C" ltw="aop2.xml">
+      <run class="C" ltw="aop2.xml" usefullltw="true">
         <stderr>
            <line text="foo running"/>
         </stderr>
@@ -621,7 +621,7 @@
     <ajc-test dir="bugs152/pr142165" title="broken concretization - 3">
       <compile files="C.java" options="-1.5"/>
       <compile files="A.java" options="-1.5"/>
-      <run class="C" ltw="aop3.xml">
+      <run class="C" ltw="aop3.xml" usefullltw="true">
         <stderr>
            <line text="advice"/>
            <line text="foo running"/>
