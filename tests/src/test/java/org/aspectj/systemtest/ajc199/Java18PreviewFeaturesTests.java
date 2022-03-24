@@ -34,28 +34,24 @@ public class Java18PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava18Only
     checkVersion("S", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
   }
 
-  // TODO:
-  //   JDT Core does not seem to have implemented JEP 420 yet,
-  //   see https://bugs.eclipse.org/bugs/show_bug.cgi?id=576746.
-  //   Therefore, deactivate the special tests for now.
-/*
-  public void testSwitchPatternMatchingPreview2Error() {
-    runTest("switch pattern matching preview 2 error");
+  public void testSwitchPatternMatchingPreview2Error1() {
+    runTest("switch pattern matching preview 2 error 1");
+  }
+
+  public void testSwitchPatternMatchingPreview2Error2() {
+    runTest("switch pattern matching preview 2 error 2");
   }
 
   public void testSwitchPatternMatchingPreview2Java() {
     runTest("switch pattern matching preview 2 java");
-    checkVersion("SwitchPatternOK", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview2OK", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
   }
 
   public void testSwitchPatternMatchingPreview2Aspect() {
     runTest("switch pattern matching preview 2 aspect");
-    checkVersion("SwitchPatternAspect", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview2Aspect", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
     checkVersion("Application", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
   }
-*/
 
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Java18PreviewFeaturesTests.class);

@@ -58,18 +58,34 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18 preview -->
-	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error">
-		<compile files="SwitchPatternPreview2Error.java" options="--enable-preview -18">
+	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error 1">
+		<compile files="SwitchPatternPreview2Error1.java" options="--enable-preview -18">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview2Error1.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18 preview -->
+	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error 2">
+		<compile files="SwitchPatternPreview2Error2.java" options="--enable-preview -18">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternPreview2Error2.java" text="This case label is dominated by one of the preceding case label"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18 preview -->
 	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 java">
 		<compile files="SwitchPatternPreview2OK.java" options="--enable-preview -18" />
-		<run class="SwitchPatternOK" vmargs="--enable-preview">
+		<run class="SwitchPatternPreview2OK" vmargs="--enable-preview">
+      <message></message>
 			<stdout>
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+<!--
 				<line text="null" />
 				<line text="int 123" />
 				<line text="long 999" />
@@ -82,6 +98,7 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
+-->
 			</stdout>
 		</run>
 	</ajc-test>
@@ -91,6 +108,13 @@
 		<compile files="SwitchPatternPreview2Aspect.aj" options="--enable-preview -18" />
 		<run class="Application" vmargs="--enable-preview">
 			<stdout>
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+<!--
 				<line text="null" />
 				<line text="int 123" />
 				<line text="long 999" />
@@ -103,6 +127,7 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
+-->
 			</stdout>
 		</run>
 	</ajc-test>
