@@ -515,4 +515,13 @@
  		</run>
  	</ajc-test>
 
+	<ajc-test dir="bugs199/add_exports" title="use --add-exports" vm="9">
+		<compile files="Application.java" options="-11 --add-exports java.base/sun.security.x509=ALL-UNNAMED" />
+		<run class="Application" vmargs="--add-exports java.base/sun.security.x509=ALL-UNNAMED">
+			<stdout>
+				<line text="java.security.cert.CertificateParsingException: java.io.IOException"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

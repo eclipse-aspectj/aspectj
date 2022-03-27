@@ -61,6 +61,10 @@ public class Bugs199Tests extends XMLBasedAjcTestCase {
     runTest("asynchronous proceed for nested around-advice (native, thread pool)");
   }
 
+  public void testAddExports() {
+    runTest("use --add-exports");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs199Tests.class);
   }

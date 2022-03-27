@@ -1044,7 +1044,9 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			for (int i = 0; i < cps.size(); i++) {
 				classpaths[i] = cps.get(i);
 			}
-			FileSystem fileSystem = getLibraryAccess(classpaths, filenames);
+			//FileSystem fileSystem = getLibraryAccess(classpaths, filenames);
+			// TODO: This will probably fail other tests, it is just an experiment
+			FileSystem fileSystem = buildConfig.getBuildArgParser().getLibraryAccess();
 			environment = new StatefulNameEnvironment(fileSystem, state.getClassNameToFileMap(), state);
 			state.setFileSystem(fileSystem);
 			state.setNameEnvironment(environment);
