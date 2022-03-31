@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
 
-import static org.aspectj.util.LangUtil.is9VMOrGreater;
+import static org.aspectj.util.LangUtil.is16VMOrGreater;
 
 /**
  * @author Adrian Colyer
@@ -75,7 +75,7 @@ public class RunSpec implements ITestStep {
 			// The reason for setting this parameter for Java 9+ instead of 16+ is that it helps to avoid the JVM printing
 			// unwanted illegal access warnings during weaving in 'useFullLTW' mode, either making existing tests fail or
 			// having to assert on the warning messages.
-			vmargs += is9VMOrGreater() ? " --add-opens java.base/java.lang=ALL-UNNAMED" : "";
+			vmargs += is16VMOrGreater() ? " --add-opens java.base/java.lang=ALL-UNNAMED" : "";
 
 			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), getModuleToRun(), args, vmargs, getClasspath(), getModulepath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 
