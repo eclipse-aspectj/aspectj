@@ -742,7 +742,7 @@
         </compile>
         <compile files="AbstractSuperAspect.aj" options="-1.4"/>
         <compile files="TestAdvice.aj" options="-1.4"/>
-        <run class="HelloWorld" ltw="aop-advice.xml" usefullltw="true">
+        <run class="HelloWorld" ltw="aop-advice.xml">
         	<stdout>
                 <line text="? ConcreteAspectWithAdvice()"/>
                 <line text="? void HelloWorld.main(String[])"/>
@@ -773,7 +773,7 @@
         <compile files="TestITD.aj">
             <message line="3" kind="warning" text="this affected type is not exposed to the weaver: AbstractSuperAspectWithInterface"/>
         </compile>
-        <run class="HelloWorld" ltw="aop-itd.xml" usefullltw="true">
+        <run class="HelloWorld" ltw="aop-itd.xml">
         	<stdout>
                 <line text="? void TestITD.interfaceMethod()"/>
                 <line text="? void HelloWorld.main(String[])"/>
@@ -789,7 +789,7 @@
         <compile files="HelloWorld.java"/>
         <compile files="AbstractSuperAspect.aj" options="-1.4"/>
         <compile files="TestAroundClosure.aj" options="-1.4"/>
-        <run class="HelloWorld" ltw="aop-aroundclosure.xml" usefullltw="true">
+        <run class="HelloWorld" ltw="aop-aroundclosure.xml">
         	<stdout>
                 <line text="&gt; ConcreteAspectWithAroundClosure()"/>
                 <line text="&lt; ConcreteAspectWithAroundClosure()"/>
@@ -804,7 +804,7 @@
     <ajc-test dir="bugs153/pr149096" title="Weave concrete sub-aspect with cflow">
 		<compile files="SimpleTracing.aj" outjar="out.jar"/>
 		<compile files="TestMain.aj"/>
-		<run class="TestMain" ltw="aop-pr149096.xml" usefullltw="true"/>
+		<run class="TestMain" ltw="aop-pr149096.xml"/>
     </ajc-test>
 
 	<ajc-test dir="bugs153/pr158957" title="NPE with LTW, pointcut library and missing aspect dependency" keywords="ltw">

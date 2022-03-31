@@ -15,7 +15,7 @@
    <ajc-test dir="bugs162/pr246918" title="ltw perclause">
      <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
      <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
-     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop1.xml" usefullltw="true">
+     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop1.xml">
        <stderr>
          <line text="advice fired class Code"/>
          <line text="advice fired class Dode"/>
@@ -26,7 +26,7 @@
    <ajc-test dir="bugs162/pr246918" title="ltw perclause - 2">
      <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
      <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
-     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop2.xml" usefullltw="true">
+     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop2.xml">
        <stderr>
          <line text="advice fired class Dode"/>
        </stderr>
@@ -36,7 +36,7 @@
    <ajc-test dir="bugs162/pr246918" title="ltw perclause - 3">
      <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
      <compile options="-1.5 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
-     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop3.xml" usefullltw="true">
+     <run class="Code" classpath="aspects.jar,code.jar" ltw="aop3.xml">
        <stderr>
          <line text="advice fired class Dode"/>
        </stderr>

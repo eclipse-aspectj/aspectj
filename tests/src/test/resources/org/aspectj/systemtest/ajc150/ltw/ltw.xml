@@ -215,7 +215,7 @@
 	<compile files="AbstractSuperAspect.aj" outjar="aspect.jar"
 		options="-1.4">
 	</compile>
-	<run class="Main" ltw="aop-defineaspect.xml" usefullltw="true">
+	<run class="Main" ltw="aop-defineaspect.xml">
 		<stdout>
 			<line text="Main.main" />
 			<line text="Main.test1" />
