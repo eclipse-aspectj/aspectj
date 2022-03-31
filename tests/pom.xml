@@ -122,7 +122,10 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<configuration combine.self="override">
 						<testFailureIgnore>false</testFailureIgnore>
-						<argLine>${jvm.arg.addOpens}</argLine>
+						<argLine>
+							${jvm.arg.addOpens}
+							${jvm.arg.allowSecurityManager}
+						</argLine>
 						<includes>
 							<include>**/TestsModuleTests*</include>
 						</includes>

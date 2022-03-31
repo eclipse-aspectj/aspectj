@@ -5,7 +5,7 @@
 	<ajc-test dir="bugs1810/508661" title="various ltw">
 		<compile options="-1.8" files="CacheMethodResult.java A_yes.java B_no.java Run.java" outjar="classes.jar"/>
 		<compile options="-1.8 -Xlint:ignore" files="CacheMethodResultAspect.java" outjar="aspects.jar"/>
-		<run class="Run" ltw="aop.xml" usefullltw="true">
+		<run class="Run" ltw="aop.xml">
 			<stdout>
 				<line text="around: void A_yes.m()"/>
 				<line text="A_yes.m()"/>

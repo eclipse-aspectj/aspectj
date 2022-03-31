@@ -56,7 +56,7 @@
     <ajc-test dir="bugs164/pr266220" title="generics and aop.xml">
         <compile files="Code.java"/>
         <compile files="Isolator.java" outjar="aspects.jar" options="-1.5"/>
-        <run class="Code" classpath="aspects.jar" ltw="aop.xml" usefullltw="true">
+        <run class="Code" classpath="aspects.jar" ltw="aop.xml">
           <stdout>
             <line text="execution(void Code.main(String[]))"/>
             <line text="execution(void Code.run())"/>
