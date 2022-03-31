@@ -515,4 +515,76 @@
  		</run>
  	</ajc-test>
 
+	<ajc-test dir="bugs199/github_145/add_exports" title="use --add-exports" vm="9">
+		<compile
+			files="Application.java"
+			options="-9 --add-exports java.base/sun.security.x509=ALL-UNNAMED"
+		/>
+		<run
+			class="Application"
+			vmargs="--add-exports java.base/sun.security.x509=ALL-UNNAMED"
+		>
+			<stdout>
+				<line text="java.security.cert.CertificateParsingException: java.io.IOException"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_145" title="use --add-reads" vm="9">
+		<compile
+			files="add_modules/my.module/module-info.java add_modules/my.module/my/module/Modular.java"
+			options="-9"
+			outjar="my.module.jar"
+		/>
+		<compile
+			files="add_reads/other.module/module-info.java add_reads/other.module/other/module/Application.java"
+			options="-9 --add-reads other.module=my.module --add-exports my.module/my.module=other.module"
+			modulepath="$sandbox/my.module.jar"
+			outjar="other.module.jar"
+		/>
+		<run
+			class="other.module.Application"
+			vmargs="--add-reads other.module=my.module"
+			modulepath="$sandbox/my.module.jar:$sandbox/other.module.jar"
+		>
+			<stdout>
+				<line text="One modular class can use another one"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_145/add_modules" title="use --add-modules" vm="9">
+		<compile
+			files="my.module/module-info.java my.module/my/module/Modular.java"
+			options="-9"
+			outjar="my.module.jar"
+		/>
+		<compile
+			files="NonModular.java"
+			options="-9 --add-modules my.module --add-exports my.module/my.module=ALL-UNNAMED"
+			modulepath="$sandbox/my.module.jar"
+		/>
+		<run class="NonModular" modulepath="$sandbox/my.module.jar">
+			<stdout>
+				<line text="Non-modular class can use modular one"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs199/github_145/add_modules" title="use --add-modules with non-public JDK module" vm="9">
+		<!--
+			Javac, AJC: no errors. ECJ: "invalid module name: jdk.charsets"
+
+			This is because ECJ does not add internal JDK modules as root modules, but AJC does. This was not so much
+			intentional in AJC, but simply due to the hacky implementation. Anyway, it works and makes AJC more
+			Javac-compliant than ECJ, which is nice.
+		-->
+		<compile files="UseJDKExtendedCharsets.java" options="-9 --add-modules jdk.charsets --add-exports jdk.charsets/sun.nio.cs.ext=ALL-UNNAMED" />
+		<run class="UseJDKExtendedCharsets" vmargs="-ea --add-modules jdk.charsets --add-exports jdk.charsets/sun.nio.cs.ext=ALL-UNNAMED">
+			<stdout>
+				<line text="ISO-2022-JP"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

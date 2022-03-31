@@ -1045,6 +1045,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				classpaths[i] = cps.get(i);
 			}
 			FileSystem fileSystem = getLibraryAccess(classpaths, filenames);
+
+			// Use upstream method to generate '--add-reads', '--add-exports' info and copy it into our FileSystem instance.
+			// See https://github.com/eclipse/org.aspectj/issues/145.
+			FileSystem fileSystemTemp = buildConfig.getBuildArgParser().getLibraryAccess();
+			fileSystem.moduleUpdates = fileSystemTemp.moduleUpdates;
+			fileSystemTemp.cleanup();
+
 			environment = new StatefulNameEnvironment(fileSystem, state.getClassNameToFileMap(), state);
 			state.setFileSystem(fileSystem);
 			state.setNameEnvironment(environment);

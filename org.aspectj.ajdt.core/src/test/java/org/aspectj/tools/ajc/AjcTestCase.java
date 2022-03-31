@@ -256,29 +256,16 @@ public abstract class AjcTestCase extends TestCase {
 		public String toString() {
 			StringBuilder buff = new StringBuilder();
 			buff.append("message ");
-			if (sourceFileName != null) {
-				buff.append("in file ");
-				buff.append(sourceFileName);
-				buff.append(" ");
-			}
-			if (line != -1) {
-				buff.append("on line ");
-				buff.append(line);
-				buff.append(" ");
-			}
-			if (text != null) {
-				buff.append("containing text '");
-				buff.append(text);
-				buff.append("' ");
-			}
+			if (sourceFileName != null)
+				buff.append("in file ").append(sourceFileName).append(" ");
+			if (line != -1)
+				buff.append("on line ").append(line).append(" ");
+			if (text != null)
+				buff.append("containing text '").append(text).append("' ");
 			if (seeAlsos != null) {
 				buff.append("\n\twith see alsos:");
-				for (ISourceLocation seeAlso : seeAlsos) {
-					buff.append("\t\t");
-					buff.append(seeAlso.getSourceFile().getPath());
-					buff.append(":");
-					buff.append(seeAlso.getLine());
-				}
+				for (ISourceLocation seeAlso : seeAlsos)
+					buff.append("\t\t").append(seeAlso.getSourceFile().getPath()).append(":").append(seeAlso.getLine());
 			}
 			return buff.toString();
 		}
@@ -483,12 +470,10 @@ public abstract class AjcTestCase extends TestCase {
 			addExtra(failureReport, "error", extraErrors);
 			addExtra(failureReport, "fail", extraFails);
 			addExtra(failureReport, "weaveInfo", extraWeaves);
-			failureReport.append("\ncommand was: 'ajc");
+			failureReport.append("\nCommand: 'ajc");
 			String[] args = result.getArgs();
-			for (String arg : args) {
-				failureReport.append(" ");
-				failureReport.append(arg);
-			}
+			for (String arg : args)
+				failureReport.append(" ").append(arg);
 			String report = failureReport.toString();
 			System.err.println(failureReport);
 			fail(assertionFailedMessage + "'\n" + report);
@@ -603,8 +588,7 @@ public abstract class AjcTestCase extends TestCase {
 		StringBuilder cp = new StringBuilder();
 		if (classpath != null) {
 			// allow replacing this special variable, rather than copying all files to allow tests of jars that don't end in .jar
-			cp.append(substituteSandbox(classpath));
-			cp.append(pathSeparator);
+			cp.append(substituteSandbox(classpath)).append(pathSeparator);
 		}
 		if (moduleName == null) {
 			// When running modules, we want more control so don't try to be helpful by adding all jars
@@ -612,10 +596,8 @@ public abstract class AjcTestCase extends TestCase {
 			getAnyJars(ajc.getSandboxDirectory(), cp);
 		}
 		StringBuilder mp = new StringBuilder();
-		if (modulepath != null) {
-			mp.append(substituteSandbox(modulepath));
-			mp.append(pathSeparator);
-		}
+		if (modulepath != null)
+			mp.append(substituteSandbox(modulepath)).append(pathSeparator);
 
 		URLClassLoader sandboxLoader;
 		ClassLoader parentLoader = getClass().getClassLoader().getParent();
@@ -637,7 +619,8 @@ public abstract class AjcTestCase extends TestCase {
 			URL[] sandboxUrls = getURLs(cp.toString());
 			sandboxLoader = createWeavingClassLoader(sandboxUrls, aspectjLoader);
 			// sandboxLoader = createWeavingClassLoader(sandboxUrls,testLoader);
-		} else if(useFullLTW  && useLTW) {
+		}
+		else if(useFullLTW  && useLTW) {
 			if(vmargs == null){
 				vmargs ="";
 			}
@@ -654,6 +637,8 @@ public abstract class AjcTestCase extends TestCase {
 					" -classpath " + cp + pathSeparator + defaultCpAbsolute +
 					" -javaagent:" + javaagent + " " +
 					className + " " + String.join(" ", args);
+				if (Ajc.verbose)
+					System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -667,7 +652,8 @@ public abstract class AjcTestCase extends TestCase {
 				e.printStackTrace();
 			}
 			return lastRunResult;
-		} else if (moduleName != null) {
+		}
+		else if (moduleName != null) {
 			// CODE FOR RUNNING MODULES
 			if(vmargs == null){
 				vmargs ="";
@@ -679,13 +665,11 @@ public abstract class AjcTestCase extends TestCase {
 				if (mp.indexOf("$runtime") != -1) {
 					mp = mp.replace(mp.indexOf("$runtime"),"$runtime".length(),TestUtil.aspectjrtPath().toString());
 				}
-				if (cp.indexOf("aspectjrt")==-1) {
+				if (cp.indexOf("aspectjrt") == -1)
 					cp.append(TestUtil.aspectjrtPath().getPath()).append(pathSeparator);
-				}
-				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " -p "+mp+" --module "+moduleName   ;
-				if (Ajc.verbose) {
-					System.out.println("Command is "+command);
-				}
+				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " + vmargs + (cp.length() == 0 ? "" : " -classpath " + cp) + " -p " + mp + " --module " + moduleName;
+				if (Ajc.verbose)
+					System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -699,7 +683,16 @@ public abstract class AjcTestCase extends TestCase {
 				e.printStackTrace();
 			}
 			return lastRunResult;
-		} else if (vmargs!=null && (vmargs.contains("--enable-preview") || vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") || vmargs.contains("--add-reads"))) {
+		}
+		else if (
+			vmargs != null && (
+				vmargs.contains("--enable-preview") ||
+				vmargs.contains("--add-modules") ||
+				vmargs.contains("--limit-modules") ||
+				vmargs.contains("--add-reads") ||
+				vmargs.contains("--add-exports")
+			)
+		) {
 			// If --add-modules supplied, need to fork the test
 			try {
 				//				if (mp.indexOf("$runtime") != -1) {
@@ -709,9 +702,8 @@ public abstract class AjcTestCase extends TestCase {
 					cp.append(pathSeparator).append(TestUtil.aspectjrtPath().getPath());
 				}
 				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " " + className   ;
-				if (Ajc.verbose) {
-					System.out.println("\nCommand is "+command);
-				}
+				if (Ajc.verbose)
+					System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -725,7 +717,8 @@ public abstract class AjcTestCase extends TestCase {
 				e.printStackTrace();
 			}
 			return lastRunResult;
-		} else {
+		}
+		else {
 			cp.append(DEFAULT_CLASSPATH_ENTRIES);
 			URL[] urls = getURLs(cp.toString());
 			sandboxLoader = new URLClassLoader(urls, parentLoader);
@@ -733,16 +726,13 @@ public abstract class AjcTestCase extends TestCase {
 		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
 		ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
 
-
 		StringBuilder command = new StringBuilder();
-		command.append("java -classpath ");
-		command.append(cp.toString());
-		command.append(" ");
-		command.append(className);
-		for (String arg : args) {
-			command.append(" ");
-			command.append(arg);
-		}
+		command.append("java -classpath ").append(cp).append(" ").append(className);
+		for (String arg : args)
+			command.append(" ").append(arg);
+		if (Ajc.verbose)
+			System.out.println("\nCommand: '" + command + "'\n");
+
 		//		try {
 		//			// Enable the security manager
 		//			Policy.setPolicy(new MyPolicy());
@@ -1015,27 +1005,17 @@ public abstract class AjcTestCase extends TestCase {
 
 	private void addMissing(StringBuilder buff, String type, List<AjcTestCase.Message> messages) {
 		if (!messages.isEmpty()) {
-			buff.append("Missing expected ");
-			buff.append(type);
-			buff.append(" messages:\n");
-			for (Message message : messages) {
-				buff.append("\t");
-				buff.append(message.toString());
-				buff.append("\n");
-			}
+			buff.append("Missing expected ").append(type).append(" messages:\n");
+			for (Message message : messages)
+				buff.append("\t").append(message.toString()).append("\n");
 		}
 	}
 
 	private void addExtra(StringBuilder buff, String type, List messages) {
 		if (!messages.isEmpty()) {
-			buff.append("Unexpected ");
-			buff.append(type);
-			buff.append(" messages:\n");
-			for (Object message : messages) {
-				buff.append("\t");
-				buff.append(message.toString());
-				buff.append("\n");
-			}
+			buff.append("Unexpected ").append(type).append(" messages:\n");
+			for (Object message : messages)
+				buff.append("\t").append(message.toString()).append("\n");
 		}
 	}
 
@@ -1043,12 +1023,10 @@ public abstract class AjcTestCase extends TestCase {
 	private void getAnyJars(File dir, StringBuilder buff) {
 		File[] files = dir.listFiles();
 		for (File file : files) {
-			if (file.getName().endsWith(".jar")) {
-				buff.append(pathSeparator);
-				buff.append(file.getAbsolutePath());
-			} else if (file.isDirectory()) {
+			if (file.getName().endsWith(".jar"))
+				buff.append(pathSeparator).append(file.getAbsolutePath());
+			else if (file.isDirectory())
 				getAnyJars(file, buff);
-			}
 		}
 	}
 

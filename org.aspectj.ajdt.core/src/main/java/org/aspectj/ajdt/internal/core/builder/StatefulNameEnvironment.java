@@ -27,6 +27,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFormatExcepti
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModule;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IModuleAwareNameEnvironment;
+import org.aspectj.org.eclipse.jdt.internal.compiler.env.IUpdatableModule;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.aspectj.util.FileUtil;
 
@@ -149,6 +150,16 @@ public class StatefulNameEnvironment implements IModuleAwareNameEnvironment {
 	@Override
 	public IModule getModule(char[] moduleName) {
 		return baseEnvironment.getModule(moduleName);
+	}
+
+	@Override
+	public void applyModuleUpdates(IUpdatableModule module, IUpdatableModule.UpdateKind kind) {
+		baseEnvironment.applyModuleUpdates(module, kind);
+	}
+
+	@Override
+	public char[][] getUniqueModulesDeclaringPackage(char[][] packageName, char[] moduleName) {
+		return baseEnvironment.getUniqueModulesDeclaringPackage(packageName, moduleName);
 	}
 
 	@Override
