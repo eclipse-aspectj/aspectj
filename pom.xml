@@ -196,6 +196,7 @@
 			</activation>
 			<properties>
 				<jvm.arg.addOpens/>
+				<jvm.arg.allowSecurityManager/>
 			</properties>
 		</profile>
 		<profile>
@@ -205,6 +206,7 @@
 			</activation>
 			<properties>
 				<jvm.arg.addOpens>--add-opens java.base/java.lang=ALL-UNNAMED</jvm.arg.addOpens>
+				<jvm.arg.allowSecurityManager/>
 			</properties>
 		</profile>
 		<profile>
@@ -218,7 +220,7 @@
 					As of Java 18, the new API for blocking System.exit is not available yet, see
 					https://bugs.openjdk.java.net/browse/JDK-8199704.
 				-->
-				<jvm.arg.addOpens>-Djava.security.manager=allow</jvm.arg.addOpens>
+				<jvm.arg.allowSecurityManager>-Djava.security.manager=allow</jvm.arg.allowSecurityManager>
 			</properties>
 		</profile>
 		<profile>
@@ -268,7 +270,10 @@
 					<version>2.22.2</version>
 					<configuration>
 						<!--<testFailureIgnore>true</testFailureIgnore>-->
-						<argLine>${jvm.arg.addOpens}</argLine>
+						<argLine>
+							${jvm.arg.addOpens}
+							${jvm.arg.allowSecurityManager}
+						</argLine>
 						<excludes>
 							<exclude>**/*ModuleTests.java</exclude>
 						</excludes>

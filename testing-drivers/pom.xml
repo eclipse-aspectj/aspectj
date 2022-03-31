@@ -55,7 +55,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <testFailureIgnore>false</testFailureIgnore>
-          <argLine>${jvm.arg.addOpens}</argLine>
+          <argLine>
+            ${jvm.arg.addOpens}
+            ${jvm.arg.allowSecurityManager}
+          </argLine>
           <excludes>
             <exclude>**/*AjcTestSpecAsTest*</exclude>
           </excludes>

@@ -110,11 +110,15 @@ Other existing profiles, which developers are less likely to actively use becaus
     profile is inactive by default, because in the context of a Maven build it would cause all tests to be run twice
     (during module build and again when running the big suite), hence the profile name.
 
-  * `jdk-8-to-15` - Activated automatically on JDKs 8-15, setting property `jvm.arg.addOpens` to an empty value, because
-    it is only needed on JDK 16+, see next bullet point.
+  * `jdk-8-to-15` - Activated automatically on JDKs 8-15, setting properties `jvm.arg.addOpens` and
+    `jvm.arg.allowSecurityManager` to empty values, because they are only needed on JDK 16+ or 18+, respectively. See
+    next bullet point.
 
   * `jdk-16-to-xx` - Activated automatically on JDKs 16+, setting property `jvm.arg.addOpens` to value
     `--add-opens java.base/java.lang=ALL-UNNAMED`, which is needed in order to run LTW tests.
+
+  * `jdk-18-to-xx` - Activated automatically on JDKs 18+, setting property `jvm.arg.allowSecurityManager` to value
+    `-Djava.security.manager=allow`, which is needed by some tests in order to override `System.exit`.
 
 ### Build properties
 
