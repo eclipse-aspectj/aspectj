@@ -212,7 +212,7 @@ public class CompilationResult {
 			buff.append(weaveMessage.toString());
 			buff.append("\n");
 		}
-		buff.append("\ncommand was: 'ajc");
+		buff.append("\nCommand: 'ajc");
 		for (String arg : args) {
 			buff.append(' ');
 			buff.append(arg);

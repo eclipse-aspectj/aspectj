@@ -483,7 +483,7 @@ public abstract class AjcTestCase extends TestCase {
 			addExtra(failureReport, "error", extraErrors);
 			addExtra(failureReport, "fail", extraFails);
 			addExtra(failureReport, "weaveInfo", extraWeaves);
-			failureReport.append("\ncommand was: 'ajc");
+			failureReport.append("\nCommand: 'ajc");
 			String[] args = result.getArgs();
 			for (String arg : args) {
 				failureReport.append(" ");
@@ -654,6 +654,8 @@ public abstract class AjcTestCase extends TestCase {
 					" -classpath " + cp + pathSeparator + defaultCpAbsolute +
 					" -javaagent:" + javaagent + " " +
 					className + " " + String.join(" ", args);
+				if (Ajc.verbose)
+					System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -683,9 +685,8 @@ public abstract class AjcTestCase extends TestCase {
 					cp.append(TestUtil.aspectjrtPath().getPath()).append(pathSeparator);
 				}
 				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " -p "+mp+" --module "+moduleName   ;
-				if (Ajc.verbose) {
-					System.out.println("Command is "+command);
-				}
+				if (Ajc.verbose)
+							System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -717,9 +718,8 @@ public abstract class AjcTestCase extends TestCase {
 					cp.append(pathSeparator).append(TestUtil.aspectjrtPath().getPath());
 				}
 				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " " + className   ;
-				if (Ajc.verbose) {
-					System.out.println("\nCommand is "+command);
-				}
+				if (Ajc.verbose)
+							System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
 				ProcessBuilder pb = new ProcessBuilder(tokenizeCommand(command));
 				pb.directory( new File(ajc.getSandboxDirectory().getAbsolutePath()));
@@ -751,6 +751,8 @@ public abstract class AjcTestCase extends TestCase {
 			command.append(" ");
 			command.append(arg);
 		}
+		if (Ajc.verbose)
+				System.out.println("\nCommand: '" + command + "'\n");
 		//		try {
 		//			// Enable the security manager
 		//			Policy.setPolicy(new MyPolicy());
