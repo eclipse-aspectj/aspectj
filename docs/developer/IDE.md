@@ -99,7 +99,8 @@ to your path and are good to go. You can now call tools like the Aspectj compile
 generator `ajdoc` (similar to Javadoc) or the AspectJ Browser `ajbrowser` from the command line.
 
 You can find older installer versions until 1.9.6 on the [AspectJ website](https://www.eclipse.org/aspectj/downloads.php),
-more recent ones are currently being hosted on the [AspectJ.dev website](https://aspectj.dev/maven/org/aspectj/installer/).
+more recent ones are attached to AspectJ [GitHub releases](https://github.com/eclipse/org.aspectj/releases) as
+_aspectj-*jar_.
 
 ## Biased recommendation
 

@@ -81,20 +81,6 @@
 				<updatePolicy>never</updatePolicy>
 			</releases>
 		</repository>
-		<repository>
-			<id>aspectj-dev</id>
-			<name>AspectJ artifacts on aspectj.dev</name>
-			<url>https://aspectj.dev/maven</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -121,20 +107,6 @@
 			<id>ossrh-snapshots</id>
 			<name>Sonatype OSSRH snapshots</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>aspectj-dev</id>
-			<name>AspectJ artifacts on aspectj.dev</name>
-			<url>https://aspectj.dev/maven</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>true</enabled>
