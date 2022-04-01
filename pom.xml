@@ -319,13 +319,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<!--
-						TODO: Replace by release in which
-						  - https://issues.apache.org/jira/browse/MSHADE-252,
-						  - https://issues.apache.org/jira/browse/MSHADE-391,
-						  - https://issues.apache.org/jira/browse/MSHADE-366 are fixed.
-					-->
-					<version>3.2.4.MSHADE-252-391</version>
+					<version>3.3.0</version>
 					<configuration>
 						<createSourcesJar>true</createSourcesJar>
 						<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -362,6 +356,10 @@
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>3.1.1</version>
 				</plugin>
+				<!--
+					TODO: MSHADE-36 is in Maven Shade 3.3.0 -> it should be possible to include the dependency-reduced POM there
+					      directly. So maybe, we can rid of Flatten Maven Plugin.
+				-->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>flatten-maven-plugin</artifactId>
