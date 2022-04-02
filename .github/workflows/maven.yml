@@ -55,6 +55,33 @@ jobs:
         # Also install (not just package) for subsequent build steps
         run: ./mvnw -B --file pom.xml -DskipTests install
 
+      - name: Attach aspectjrt to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjrt-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjrt/target/aspectjrt-*.jar
+            aspectjrt/target/flattened-pom.xml
+
+      - name: Attach aspectjweaver to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjweaver-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjweaver/target/aspectjweaver-*.jar
+            aspectjweaver/target/flattened-pom.xml
+
+      - name: Attach aspectjtools to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjtools-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjtools/target/aspectjtools-*.jar
+            aspectjtools/target/flattened-pom.xml
+
       - name: Create docs
         run: ./mvnw -B --file pom.xml -DskipTests process-resources -pl docs -P create-docs
 
