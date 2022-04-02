@@ -474,10 +474,6 @@ To use testing client jar in tests,
 	  </antcall>
 	</target>
 
-	<target name="ajbrowser-all" >
-    	<build-module-all module="ajbrowser"/>
-    </target>
-
 	<target name="ajdoc-all">
     	<build-module-all module="ajdoc"/>
     </target>

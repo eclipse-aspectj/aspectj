@@ -33,7 +33,7 @@
     <!-- ========================================================================== -->
     <target name="init" depends="init.product"
      description="caller must define jdk.tools.jar and product.dir or run from product.dir">
-      <echo message="init ant-examples.xml"/> 
+      <echo message="init ant-examples.xml"/>
       <!-- directory produced during test install -->
       <property name="ajx.base.dir"
             location="${productTest.output.dir}/ajx-output"/>
@@ -90,14 +90,14 @@
       <mkdir dir="${noclass.dir}"/>
       <delete dir="${noclass.dir}"/>
       <mkdir dir="${noclass.dir}"/>
-      <javac srcdir="." 
-           includes="${noclass}.java" 
+      <javac srcdir="."
+           includes="${noclass}.java"
             destdir="${noclass.dir}"
         failonerror="true"/>
       <delete file="${noclass}.java"/>
       <echo message=" todo check file: ${noclass}.java"/>
       <java classname="${noclass}"
-          failonerror="true" 
+          failonerror="true"
           classpath="${noclass.dir}"/>
     </target>
 
@@ -107,7 +107,7 @@
     <target name="Ajx" depends="init.taskdefs"
        description="for {example}, compile {list}, doc {list}, and run {class}">
        <echo message="##### START Ajx example=${example} list=${list} class=${class}" />
-        <property name="exdir" 
+        <property name="exdir"
                  value="${ajx.base.dir}/${example}"/>
         <property name="expect.exdir" value="${ajx.expect.dir}/${example}"/>
         <mkdir  dir="${exdir}/classes"/>
@@ -121,9 +121,9 @@
         <mkdir  dir="${exdir}/docs"/>
 
         <echo message="##################### Ajx ajc ${list}"/>
-        <ajc 
+        <ajc
             destdir="${exdir}/classes"
-           argfile="${list}" 
+           argfile="${list}"
         failonerror="false" >
           <classpath>
             <pathelement location="${product.rt.jar}" />
@@ -132,7 +132,7 @@
         </ajc>
         <!-- copying resources, etc. as javac does todo weak -->
         <copy todir="${exdir}/classes">
-            <fileset dir="${srcDir}" 
+            <fileset dir="${srcDir}"
                 includes="**/*.properties,**/*.gif,**/*.jpg,**/*.props" />
         </copy>
 
@@ -142,11 +142,11 @@
             verbose="yes"
             sourcepath="${product.examples.dir}"
             destdir="${exdir}/docs"
-           argfile="${list}" 
+           argfile="${list}"
            classpath="${product.rt.jar}${PS}${jdk.tools.jar}"
         failonerror="false" >
-         <!-- internalclasspath 
-           internalclasspath="${taskdef.classpath}" 
+         <!-- internalclasspath
+           internalclasspath="${taskdef.classpath}"
          is required now - but still not producing docs
           <classpath>
             <pathelement location="${product.rt.jar}" />
@@ -157,7 +157,7 @@
         <echo message="##################### Ajx run ${class} START - output in ${exdir}/output/out.txt"/>
         <java classname="${class}"
                  output="${exdir}/output/out.txt"
-                   fork="yes"  
+                   fork="yes"
             failonerror="false" >
             <!-- fork because ajc does a System.exit -->
           <classpath>
@@ -197,12 +197,6 @@
       <antcall target="Ajx">
         <param name="list"    value="${tools.src.dir}/tools.lst"/>
         <param name="example" value="source-tools-all"/>
-        <param name="class"   value="${noclass}"/>
-        <param name="srcDir"  value="${tools.src.dir}"/>
-      </antcall>
-      <antcall target="Ajx">
-        <param name="list"    value="${tools.src.dir}/ajbrowser.lst"/>
-        <param name="example" value="source-tools-ajbrowser"/>
         <param name="class"   value="${noclass}"/>
         <param name="srcDir"  value="${tools.src.dir}"/>
       </antcall>
@@ -289,7 +283,7 @@
         <param name="class"   value="telecom.TimingSimulation"/>
         <param name="srcDir"  value="."/>
       </antcall>
-    <!-- timeserver not in product - todo check 
+    <!-- timeserver not in product - todo check
       <antcall target="Ajx">
         <param name="list"    value="timeserver/abort.lst"/>
         <param name="example" value="timeserver-abort"/>

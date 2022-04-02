@@ -406,11 +406,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>ajbrowser</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
 			<artifactId>ajde</artifactId>
 			<version>${project.version}</version>
 		</dependency>

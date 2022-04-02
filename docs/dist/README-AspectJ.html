@@ -149,20 +149,14 @@
 
 <UL>
   <li>the <a href="bin"><CODE>&lt;aspectj install dir&gt;/bin</CODE></a>
-      directory has scripts for 
+      directory has scripts for
        <ul>
 	 <li><CODE>ajc</CODE>: the compiler for the AspectJ language</li>
-
-     <!-- XXX removed references to ajdoc and ajdb -->
-	 <li><CODE>ajbrowser</CODE>: a graphical editor for 
-	 compiling programs with <CODE>ajc</CODE> 
-	 and navigating the crosscutting structure of those programs</li>
-       </ul>
 
   <li>the directory <a href="lib"><CODE>&lt;aspectj install dir&gt;/lib</CODE></a>
       has the AspectJ binaries,
        <ul>
-	 <li><CODE><a href="lib/aspectjtools.jar">aspectjtools.jar</a></CODE>: libraries for 
+	 <li><CODE><a href="lib/aspectjtools.jar">aspectjtools.jar</a></CODE>: libraries for
 	 <code>ajc</code>, <code>ajbrowser</code>, and the Ant tasks</li>
 
 	 <li><CODE>aspectjrt.jar</CODE>: runtime library for AspectJ programs</li>
@@ -185,9 +179,9 @@
 
 <h3>2 Install Procedure</h3>
 
-<p>The AspectJ tools <code>ajc</code> and <code>ajbrowser</code> are
-Java programs that can be run indirectly from the scripts or 
-directly from <code>aspectjtools.jar</code>.  
+<p>The AspectJ tool <code>ajc</code> is a
+Java program that can be run indirectly from the scripts or
+directly from <code>aspectjtools.jar</code>.
 The <code>aspectjrt.jar</code> needs to be on the classpath
 when compiling or running programs compiled
 by <code>ajc</code>.  This procedure shows ways to do that.
@@ -196,11 +190,11 @@ by <code>ajc</code>.  This procedure shows ways to do that.
 <p>After finishing automatic installation, we recommend that the
 following steps to complete your installation:</p>
 
-  <p><b>2.1 Add <CODE>&lt;aspectj install dir&gt;/lib/aspectjrt.jar</CODE> 
+  <p><b>2.1 Add <CODE>&lt;aspectj install dir&gt;/lib/aspectjrt.jar</CODE>
       to your class path</b></p>
 
 <blockquote>
-  <p>This small .jar file contains classes required to compile programs 
+  <p>This small .jar file contains classes required to compile programs
   with the ajc compiler, and to run programs compiled with the ajc
   compiler.  You must have these classes somewhere on your class path
   when running programs compiled with ajc.  For detailed instructions
@@ -236,21 +230,7 @@ to create short launch scripts to start ajc easily (section 3).</p>
 
 <p>If you did not use the automatic installation process or the
 default launch scripts do not work on your system, you may wish to
-create short launch scripts to start ajc easily.  </p>
-
-<p>You can also run the <code>aspectjtools.jar</code> directly
-using java's -jar option:
-
-<blockquote>
-<CODE>C:\jdk1.3\bin\java.exe -jar D:\aspectj\lib\aspectjtools.jar %*</CODE>
-</blockquote>
-
-<p>With no arguments or only argument list (.lst) files, this will launch
-<code>ajbrowser</code>, the GUI structure browser; otherwise, it will
-run <code>ajc</code>, the AspectJ compiler.  This means that 
-if your browser is set up to run jar files, clicking a link
-to <a href="lib/aspectjtools.jar">lib/aspectjtools.jar</a> will 
-launch <code>ajbrowser</code>.
+create short launch scripts to start ajc easily.</p>
 
 <p> You can also create scripts like those created by the installer.
 These scripts use full paths that are system dependent so you will

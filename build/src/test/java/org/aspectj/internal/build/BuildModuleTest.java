@@ -58,7 +58,7 @@ public class BuildModuleTest extends TestCase {
     private static final String[] SKIPS
         //= {};
        = {"aspectjtools", "ajdoc", "aspectj5rt", "run-all-junit-tests",
-        "ajbrowser", "testing", "testing-drivers", "org.aspectj.ajdt.core", "weaver"};
+        "testing", "testing-drivers", "org.aspectj.ajdt.core", "weaver"};
 
     private static final String SKIP_MESSAGE =
         "BuildModuleTest: Define \"run.build.tests\" as a system "
@@ -183,11 +183,6 @@ public class BuildModuleTest extends TestCase {
         if (null != dupError) {
             fail(dupError);
         }
-    }
-    public void testAjbrowser() {
-        checkBuild("ajbrowser",
-            "org.aspectj.tools.ajbrowser.Main",
-            new String[] {"-noExit", "-version"}); // compiler version
     }
     public void testTestingUtils() {
         checkBuild("testing-util");

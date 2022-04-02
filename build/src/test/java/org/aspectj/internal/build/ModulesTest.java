@@ -44,7 +44,7 @@ public class ModulesTest extends TestCase {
 
     static {
         String[] names = {
-        "ajbrowser", "ajde", "ajdoc", "asm",
+        "ajde", "ajdoc", "asm",
         "bridge", "loadtime", "org.aspectj.ajdt.core",
         "runtime", "taskdefs", "testing-client", "testing-util",
         "tests", "util", "weaver"};

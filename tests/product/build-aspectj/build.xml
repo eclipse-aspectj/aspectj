@@ -112,7 +112,6 @@
 	 	</path>
 
 	 	<path id="tools.roots">
-	 		<pathelement path="${aspectj.src}/ajbrowser/src"/>
 	 		<pathelement path="${aspectj.src}/ajde/src"/>
 	 		<pathelement path="${aspectj.src}/asm/src"/>
 	 		<pathelement path="${aspectj.src}/bridge/src"/>

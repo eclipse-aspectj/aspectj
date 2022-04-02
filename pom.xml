@@ -127,7 +127,6 @@
 		<module>org.aspectj.matcher</module>
 		<module>asm</module>
 		<module>testing-client</module>
-		<module>ajbrowser</module>
 		<module>runtime</module>
 		<module>bcel-builder</module>
 		<module>weaver</module>

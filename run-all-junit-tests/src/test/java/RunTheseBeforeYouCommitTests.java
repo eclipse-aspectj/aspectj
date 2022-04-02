@@ -50,7 +50,6 @@ public class RunTheseBeforeYouCommitTests {
 		suite.addTest(WeaverModuleTests.suite());
 		suite.addTest(TaskdefsModuleTests.suite());
 		suite.addTest(MatcherModuleTests.suite());
-//		suite.addTest(AjbrowserModuleTests.suite()); // There are none so far...
 //		suite.addTest(LibModuleTests.suite()); // anyone using this?
 		suite.addTest(AjdtCoreModuleTests.suite());
 

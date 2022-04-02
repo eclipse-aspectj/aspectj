@@ -39,9 +39,6 @@ public class IconRegistry extends AbstractIconRegistry {
     private final Icon BUILD = makeIcon("actions/build.gif");
     private final Icon DEBUG = makeIcon("actions/debug.gif");
     private final Icon EXECUTE = makeIcon("actions/execute.gif");
-    private final Icon AJBROWSER = makeIcon("structure/advice.gif");
-	private final Icon AJBROWSER_ENABLED = makeIcon("actions/browserEnabled.gif");
-	private final Icon AJBROWSER_DISABLED = makeIcon("actions/browserDisabled.gif");
 	private final Icon STRUCTURE_VIEW = makeIcon("actions/structureView.gif");
 
 	private final Icon HIDE_ASSOCIATIONS = makeIcon("actions/hideAssociations.gif");
@@ -85,9 +82,6 @@ public class IconRegistry extends AbstractIconRegistry {
     public Icon getErrorIcon() { return ERROR; }
     public Icon getWarningIcon() { return WARNING; }
     public Icon getInfoIcon() { return INFO; }
-    public Icon getAJBrowserIcon() { return AJBROWSER; }
-    public Icon getAJBrowserEnabledIcon() { return AJBROWSER_ENABLED; }
-    public Icon getAJBrowserDisabledIcon() { return AJBROWSER_DISABLED; }
 	public Icon getPopupIcon() { return POPUP; }
 	public Icon getFilterIcon() { return FILTER; }
 	public Icon getOrderIcon() { return ORDER; }
