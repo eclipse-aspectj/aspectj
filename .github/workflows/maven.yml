@@ -39,8 +39,58 @@ jobs:
           ./mvnw -B --version
           ant -version
 
+      - name: Set up cache for ~./m2/repository
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/aspectj
+          key: maven-${{ runner.os }}-java-${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-java-${{ matrix.java }}-
+            maven-${{ runner.os }}-
+            maven-
+
       - name: Compile + package code
-        run: ./mvnw -B --file pom.xml -DskipTests package
+        # Also install (not just package) for subsequent build steps
+        run: ./mvnw -B --file pom.xml -DskipTests install
+
+      - name: Attach aspectjrt to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjrt-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjrt/target/aspectjrt-*.jar
+            aspectjrt/target/flattened-pom.xml
+
+      - name: Attach aspectjweaver to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjweaver-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjweaver/target/aspectjweaver-*.jar
+            aspectjweaver/target/flattened-pom.xml
+
+      - name: Attach aspectjtools to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectjtools-java${{ matrix.java }}
+          # Binary, source, javadoc JARs + flattened POM
+          path: |
+            aspectjtools/target/aspectjtools-*.jar
+            aspectjtools/target/flattened-pom.xml
+
+      - name: Create docs
+        run: ./mvnw -B --file pom.xml -DskipTests process-resources -pl docs -P create-docs
+
+      - name: Attach docs to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectj-docs-java${{ matrix.java }}
+          # Re-zip docs directory instead of wrapping existing distribution archive into another zip archive
+          path: aj-build/dist/docs/
 
       - name: Run Tests
         # Tests in module ajde call Swing/AWT classes. Without frame buffer they throw
