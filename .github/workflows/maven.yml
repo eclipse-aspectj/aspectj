@@ -39,6 +39,18 @@ jobs:
           ./mvnw -B --version
           ant -version
 
+      - name: Set up cache for ~./m2/repository
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/aspectj
+          key: maven-${{ runner.os }}-java-${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-java-${{ matrix.java }}-
+            maven-${{ runner.os }}-
+            maven-
+
       - name: Compile + package code
         run: ./mvnw -B --file pom.xml -DskipTests package
 
