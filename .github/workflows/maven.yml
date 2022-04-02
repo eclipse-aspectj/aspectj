@@ -52,7 +52,18 @@ jobs:
             maven-
 
       - name: Compile + package code
-        run: ./mvnw -B --file pom.xml -DskipTests package
+        # Also install (not just package) for subsequent build steps
+        run: ./mvnw -B --file pom.xml -DskipTests install
+
+      - name: Create docs
+        run: ./mvnw -B --file pom.xml -DskipTests process-resources -pl docs -P create-docs
+
+      - name: Attach docs to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: aspectj-docs-java${{ matrix.java }}
+          # Re-zip docs directory instead of wrapping existing distribution archive into another zip archive
+          path: aj-build/dist/docs/
 
       - name: Run Tests
         # Tests in module ajde call Swing/AWT classes. Without frame buffer they throw
