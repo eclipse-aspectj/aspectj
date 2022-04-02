@@ -11,8 +11,8 @@ the AspectJ Compiler _ajc_ from the command line.
 
 Please refer to the [AspectJ Development Environment Guide](https://www.eclipse.org/aspectj/doc/next/devguide/printable.html)
 for more details about on-board AspectJ tools, such as _ajc_ (compiler), _ajdoc_ (aspect-enriched Javadoc), _aj_
-(load-time weaving helper), AspectJ Browser (simple visualisation tool for cross-cutting aspect structure) as well as
-basic information about load-time weaving configuration and the built-in Ant task for AspectJ.
+(load-time weaving helper) as well as basic information about load-time weaving configuration and the built-in Ant task
+for AspectJ.
 
 ## IDE support
 
@@ -95,8 +95,8 @@ If you wish to install AspectJ in a separate directory and use it from the comma
 feel free to download the **AspectJ installer**. It is and executable JAR installer. It requires Java and possibly admin
 rights, if e.g. under Windows you want to install AspectJ to _C:/Program Files/AspectJ_. You execute it from a command
 prompt via `java -jar installer-<version>.jar` and select your installation options. Then you add `<ASPECTJ_HOME>/bin`
-to your path and are good to go. You can now call tools like the Aspectj compiler `ajc`, the AspectJ documentation
-generator `ajdoc` (similar to Javadoc) or the AspectJ Browser `ajbrowser` from the command line.
+to your path and are good to go. You can now call tools like the Aspectj compiler `ajc` or the AspectJ documentation
+generator `ajdoc` (similar to Javadoc) from the command line.
 
 You can find older installer versions until 1.9.6 on the [AspectJ website](https://www.eclipse.org/aspectj/downloads.php),
 more recent ones are attached to AspectJ [GitHub releases](https://github.com/eclipse/org.aspectj/releases) as

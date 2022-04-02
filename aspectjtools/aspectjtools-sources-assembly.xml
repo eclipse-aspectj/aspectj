@@ -48,10 +48,6 @@
 
 		<!-- Tools -->
 		<fileSet>
-			<directory>../ajbrowser/src/main/java</directory>
-			<outputDirectory>.</outputDirectory>
-		</fileSet>
-		<fileSet>
 			<directory>../ajde/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
@@ -81,4 +77,3 @@
 	</fileSets>
 
 </assembly>
-

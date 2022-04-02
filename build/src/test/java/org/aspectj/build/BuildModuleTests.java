@@ -86,9 +86,6 @@ public class BuildModuleTests extends TestCase {
             fail("" + UnknownFileCheck.STATIC_ERRORS);
         }
     }
-    public void testLicense_ajbrowser() {
-        checkLicense("ajbrowser");
-    }
     public void testLicense_ajde() {
         checkLicense("ajde");
     }
@@ -308,4 +305,3 @@ public class BuildModuleTests extends TestCase {
 
     }
 }
-

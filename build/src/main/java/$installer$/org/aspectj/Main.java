@@ -1331,8 +1331,6 @@ class InstallPane extends WizardPane {
 					LaunchScriptMaker lsm = new LaunchScriptMaker(context);
 					lsm.writeScript("ajc");
 					lsm.writeScript("ajdoc");
-					//lsm.writeScript("ajdb");
-					lsm.writeScript("ajbrowser");
 
 					// Moved to the bin dir in 1.2.1
 					// we should now come back and make the generation of this

@@ -85,13 +85,6 @@
 
 		<!-- tools -->
 		<fileSet>
-			<directory>../ajbrowser/target/classes</directory>
-			<outputDirectory>.</outputDirectory>
-			<excludes>
-				<exclude>META-INF/maven/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
 			<directory>../ajde/target/classes</directory>
 			<outputDirectory>.</outputDirectory>
 			<excludes>
@@ -129,4 +122,3 @@
 	</fileSets>
 
 </assembly>
-

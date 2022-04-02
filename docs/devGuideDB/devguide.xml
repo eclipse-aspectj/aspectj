@@ -7,7 +7,6 @@
 <!ENTITY ajc              SYSTEM "ajc.xml">
 <!ENTITY ajdoc            SYSTEM "ajdoc.xml">
 <!ENTITY antsupport       SYSTEM "antsupport.xml">
-<!ENTITY ajbrowser        SYSTEM "ajbrowser.xml">
 <!ENTITY compatibility    SYSTEM "compatibility.xml">
 <!ENTITY ltw              SYSTEM "ltw.xml">
 <!ENTITY tools-intro      SYSTEM "tools-intro.xml">
@@ -25,9 +24,9 @@
     </authorgroup>
 
       <legalnotice>
-        <para>Copyright (c) 1998-2001 Xerox Corporation, 
+        <para>Copyright (c) 1998-2001 Xerox Corporation,
          2002 Palo Alto Research Center, Incorporated,
-         2003-2005 Contributors.  
+         2003-2005 Contributors.
          All rights reserved.
         </para>
       </legalnotice>
@@ -35,13 +34,13 @@
     <abstract>
       <para>
         This guide describes how to build and deploy AspectJ programs
-          using the AspectJ tools and facilities.  See also 
+          using the AspectJ tools and facilities.  See also
               <ulink url="../progguide/index.html">The
-        				AspectJ Programming Guide</ulink>,       				
+        				AspectJ Programming Guide</ulink>,
               the documentation available with the AspectJ support available for
-		        various integrated development environments (e.g., 
-              <ulink url="http://eclipse.org/ajdt">Eclipse AJDT</ulink>), 
-              and the most-recent documentation available from 
+		        various integrated development environments (e.g.,
+              <ulink url="http://eclipse.org/ajdt">Eclipse AJDT</ulink>),
+              and the most-recent documentation available from
               the AspectJ project page, at
               	<ulink url="http://eclipse.org/aspectj">
               				http://eclipse.org/aspectj</ulink>.
@@ -52,29 +51,27 @@
 
 <chapter id="command-line-tools" xreflabel="AspectJ command-line tools">
     <title>AspectJ command-line tools</title>
-    
+
     <sect1 id="ajc-ref-top">
         <title><literal>ajc</literal>, the AspectJ compiler/weaver</title>
-      &ajc;        
+      &ajc;
     </sect1>
     <sect1 id="ajdoc-ref-top">
         <title><literal>ajdoc</literal>, the AspectJ documentation tool</title>
         <para><literal>ajdoc</literal> produces JavaDoc-style documentation
         including crosscutting information.</para>
-      &ajdoc;        
+      &ajdoc;
     </sect1>
     <sect1 id="aj-ref-top">
         <title><literal>aj</literal>, the AspectJ load-time weaving script</title>
         <para><literal>aj</literal> launches programs,
             configuring basic load-time weaving.</para>
-      &aj;        
+      &aj;
     </sect1>
 </chapter>
-  
-  &ajbrowser;
+
   &antsupport;
   &ltw;
   &compatibility;
 
 </book>
-

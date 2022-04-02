@@ -54,7 +54,6 @@
            a compiler (<literal>ajc</literal>),
            a debugger (<literal>ajdb</literal>),
            a documentation generator (<literal>ajdoc</literal>),
-           a program structure browser (<literal>ajbrowser</literal>),
            and integration with
             Eclipse, Sun-ONE/Netbeans, GNU Emacs/XEmacs,
             JBuilder, and Ant.
@@ -2021,16 +2020,7 @@ ajc -bootclasspath c:\jdk1.2\jre\lib\rt.jar \
             modularizing crosscutting concerns while still having immediate
             access to what aspects affect a class.
           </para>
-          <para>For example, the
-            <ulink url="devguide/index.html">
-              Development Environment Guide</ulink>
-            <ulink url="devguide/ajbrowser.html">
-              ajbrowser section</ulink>.
-          shows that you can list or navigate
-          between method and advice affecting that method and between a type
-          and declarations in an aspect on that type.  (The IDE support may
-          have more features than <literal>ajbrowser</literal>, depending
-          on the IDE.
+          <para>
           See <xref linkend="q:integrateWithDevTools"/> for more
             information on which Java development environments are
             supported.)
@@ -4543,15 +4533,11 @@ java -javaagent:aspectjweaver.jar -classpath "aspects.jar:${CLASSPATH}" ..
             weaver, asm, org.eclipse.jdt.core, org.aspectj.ajdt.core,
             and runtime.
             </para></listitem>
-            <listitem><para>For ajbrowser: the compiler modules, plus
-            ajbrowser, ajdoc, taskdefs, and ajde.
-            </para></listitem>
             <listitem><para>For the AspectJ distribution, the ajbrowser modules,
 				plus aspectj5rt and org.aspectj.lib.
             </para></listitem>
             <listitem><para>For the test harness (or to run the release build
-				scripts and tests): the ajbrowser modules, plus
-            testing, testing-client, and testing-drivers.
+				scripts and tests): testing, testing-client, and testing-drivers.
             </para></listitem>
             <listitem><para>To run the test suite: the test harness modules, plus
             tests.
@@ -5045,16 +5031,6 @@ cd build
             <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT">
                         http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT
             </ulink>).
-          </para>
-          <para>
-        Bug reports on ajbrowser should have version
-	information for both Java and AspectJ, and
-	(most importantly) clear steps for reproducing the bug.
-        You may submit ajbrowser bugs against the IDE component of AspectJ
-        via the web form
-            <ulink url="http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ">
-                        http://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ
-            </ulink>.
           </para>
           <para>
 	One of the benefits of open-source is that you can

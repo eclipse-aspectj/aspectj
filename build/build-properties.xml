@@ -109,7 +109,7 @@
 		<property file="${aspectj.modules.build.dir}/junit-patterns.properties"/>
 
 		<property name="aspectj.tools.modules.13"
-			value="ajbrowser,ajde,ajde.core,ajdoc,asm,bridge,loadtime,org.aspectj.ajdt.core,runtime,taskdefs,util,weaver"/>
+			value="ajde,ajde.core,ajdoc,asm,bridge,loadtime,org.aspectj.ajdt.core,runtime,taskdefs,util,weaver"/>
 		<property name="aspectj.tools.modules.15"
 			value="loadtime5,aspectj5rt,weaver5"/>
 		<condition property="aspectj.tools.modules"

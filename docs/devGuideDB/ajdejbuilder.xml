@@ -84,18 +84,20 @@ r<refentry>
 		<para>
         To run the project select "Run Project" from the AspectJ toolbar, or
         click &lt;ctrl&gt;F12 while the editor pane is active.  Note that the
-        "AspectJ Runtime" library must be added to your project in order to 
-        run.  If the library is not added you will see a         "java.lang.NoClassDefFoundError: org/aspectj/lang/Signature" error.		The library is created automatically for you from the runtime
+        "AspectJ Runtime" library must be added to your project in order to
+        run.  If the library is not added you will see a
+        "java.lang.NoClassDefFoundError: org/aspectj/lang/Signature" error.
+		The library is created automatically for you from the runtime
 		in "jbuilderdir/lib/ext".  You can also create a new  library
-		to use the runtime from a different location. If you have not added the 
+		to use the runtime from a different location. If you have not added the
 		library to the "Required Libraries" of your project it will be added
 		automatically when you restart JBuilder.
     </para>
 		<para>
-	JBuilder7 users please note: when you set up a run/debug configuration 
-	you must select the "Build Target" (at the bottom of the 
-	"Runtime Properties" dialog) to be "&lt;None&gt;".  This will ensure 
-	that the Java compiler is not invoked on your AspectJ sources 
+	JBuilder7 users please note: when you set up a run/debug configuration
+	you must select the "Build Target" (at the bottom of the
+	"Runtime Properties" dialog) to be "&lt;None&gt;".  This will ensure
+	that the Java compiler is not invoked on your AspectJ sources
 	before running or debugging the project.
     </para>
 	</refsect1>
@@ -105,7 +107,7 @@ r<refentry>
 			<imagedata fileref="jbuilder-structureNavigation.gif" />
 		</imageobject>
 		<para>
-        Navigation of program structure is provided by the <xref linkend="ajbrowser">AspectJ Browser</xref>, so apart from a JBuilder
+        Navigation of program structure is provided by the AspectJ Browser, so apart from a JBuilder
         look and feel, the extra navigation AspectJ allows work as described
         there.  In particular, you can use views with labels 1, 2 and 4 of the
         second screenshot to navigate structure using the blue links, and you
@@ -117,7 +119,7 @@ r<refentry>
 		<title>Manipulating Build Configurations</title>
 		<para>
             Build configurations can be manipulated adding, removing, and
-            editing build configuration files.  The <xref linkend="ajbrowser">AspectJ Browser</xref> is used to select the
+            editing build configuration files.  The AspectJ Browser is used to select the
             current build configuration.  Configurations are represented by
             ".lst" files which are described in the <xref linkend="ajc">ajc</xref> documentation.
         </para>

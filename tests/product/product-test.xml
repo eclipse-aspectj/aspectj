@@ -31,14 +31,14 @@
 <!-- This only runs from ../../test-product.xml b/c it uses comparefiles w/o defining it -->
 <project name="product-test" default="test" basedir=".">
 
-    &aspectj_initProduct; 
+    &aspectj_initProduct;
 
     <!-- ========================================================================== -->
     <!-- Init                                                                       -->
     <!-- ========================================================================== -->
     <target name="init" depends="init.product,productTest.expect.dir"
      description="init values - launch from install dir or set product.dir variable">
-      <echo message="init product-test.xml"/> 
+      <echo message="init product-test.xml"/>
       <property name="productTest.classes.dir"
             location="${productTest.output.dir}/classes"/>
       <property name="script.expect.dir"
@@ -64,11 +64,11 @@
     <!-- ========================================================================== -->
     <!-- Run product tests                                                          -->
     <!-- ========================================================================== -->
-    <target name="test" 
+    <target name="test"
          depends="test.examples.buildscript,test.script.telecom,test.tools.sources"
      description="run available tests"/>
 
-    <target name="test.script.telecom" 
+    <target name="test.script.telecom"
          depends="init,productTest.dir,product.dir,
                   productTest.expect.bat.dir,productTest.output.dir"
      description="ajc/ajdoc/java/ajdb telecom example using bat scripts">
@@ -138,11 +138,11 @@
      </exec>
      <comparefiles lhsFile="${ajdb.out}"
                    rhsFile="${expect.ajdb.out}"/>
-   </target>    
+   </target>
 
    <!-- todo: also depends on jdk.tools.jar -->
    <!-- todo: ignore as duplicating examples/build.xml -->
-   <target name="test.examples.antscript" 
+   <target name="test.examples.antscript"
          depends="init,productTest.dir,product.dir,
                   product.taskdefs.jar,product.rt.jar,
                   product.tools.jar"
@@ -151,18 +151,18 @@
      <ant antfile="${productTest.dir}/ant-example.xml"
                dir="${product.examples.dir}"
             output="${productTest.output.dir}/ant-example.ant.txt">
-       <property name="PS"            
+       <property name="PS"
                 value="${path.separator}"/>
-       <property name="product.dir"  
+       <property name="product.dir"
                 value="${product.dir}"/>
-       <property name="jdk.tools.jar" 
+       <property name="jdk.tools.jar"
              location="${jdk.tools.jar}"/>
-        <property name="jdk.dir" 
+        <property name="jdk.dir"
              location="${jdk.dir}"/>
      </ant>
    </target>
 
-   <target name="test.examples.buildscript" 
+   <target name="test.examples.buildscript"
          depends="init,product.dir,
                   product.taskdefs.jar,product.rt.jar,
                   product.tools.jar"
@@ -184,14 +184,14 @@
        <param name="example.target" value="nonGui" />
      </antcall>
 
-     <!-- OutOfMemory if including all 
+     <!-- OutOfMemory if including all
      <antcall target="antcall.test.examples.buildscript.norun">
        <param name="example.target" value="all" />
      </antcall>
      -->
    </target>
 
-   <target name="antcall.test.examples.buildscript.norun" 
+   <target name="antcall.test.examples.buildscript.norun"
          depends="init,product.dir,
                   product.taskdefs.jar,product.rt.jar,
                   product.tools.jar"
@@ -202,14 +202,14 @@
            target="${example.target}"
               dir="${product.examples.dir}"
            output="${productTest.output.dir}/example-build.${example.target}.txt" >
-       <property name="JAVA_HOME" 
-             location="${jdk.dir}"/> 
-       <property name="norun" 
-             location="skipRunning"/> 
+       <property name="JAVA_HOME"
+             location="${jdk.dir}"/>
+       <property name="norun"
+             location="skipRunning"/>
      </ant>
    </target>
 
-   <target name="antcall.test.examples.buildscript" 
+   <target name="antcall.test.examples.buildscript"
          depends="init,product.dir,
                   product.taskdefs.jar,product.rt.jar,
                   product.tools.jar"
@@ -220,18 +220,18 @@
            target="${example.target}"
               dir="${product.examples.dir}"
            output="${productTest.output.dir}/example-build.${example.target}.txt" >
-       <property name="JAVA_HOME" 
-             location="${jdk.dir}"/> 
+       <property name="JAVA_HOME"
+             location="${jdk.dir}"/>
      </ant>
    </target>
 
 
    <!-- see also more recent devenv/dev/bin/aj/testToolsSrc.sh -->
-   <target name="test.tools.sources" 
+   <target name="test.tools.sources"
         depends="init,product.tools.jar,product.src.dir"
     description="test source dist using ajc, ajdoc (todo remove - see ant-example)">
 
-     <property name="tools.source.out"   
+     <property name="tools.source.out"
            location="${productTest.output.dir}/source-tools"/>
      <property name="test.source.classes.dir"
            location="${productTest.output.dir}/source-tools"/>
@@ -251,9 +251,6 @@
      </antcall>
      <antcall target="build.source.call">
        <param name="target.name" value="ajde" />
-     </antcall>
-     <antcall target="build.source.call">
-       <param name="target.name" value="ajbrowser" />
      </antcall>
      <antcall target="build.source.call">
        <param name="target.name" value="ajdoc" />
@@ -290,4 +287,3 @@
    </target>
 
 </project>
-
