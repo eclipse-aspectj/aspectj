@@ -130,11 +130,13 @@ public class BcelWorld extends World implements Repository {
 	@Override
 	public void reportMatch(ShadowMunger munger, Shadow shadow) {
 		if (getCrossReferenceHandler() != null) {
-			getCrossReferenceHandler().addCrossReference(munger.getSourceLocation(), // What is being applied
-					shadow.getSourceLocation(), // Where is it being applied
-					determineRelKind(munger).getName(), // What kind of advice?
-					((Advice) munger).hasDynamicTests() // Is a runtime test being stuffed in the code?
-					);
+			final IRelationship.Kind kind = determineRelKind(munger);
+			getCrossReferenceHandler().addCrossReference(
+				munger.getSourceLocation(),           // What is being applied?
+				shadow.getSourceLocation(),           // Where is it being applied?
+				kind == null ? null : kind.getName(), // What kind of advice?
+				((Advice) munger).hasDynamicTests()   // Is a runtime test being stuffed in the code?
+			);
 		}
 
 		if (!getMessageHandler().isIgnoring(IMessage.WEAVEINFO)) {
