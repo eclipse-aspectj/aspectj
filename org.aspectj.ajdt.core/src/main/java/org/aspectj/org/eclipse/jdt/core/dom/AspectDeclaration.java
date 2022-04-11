@@ -209,10 +209,10 @@ public class AspectDeclaration extends AjTypeDeclaration {
 	public List getAdvice() {
 		// ajh02: method added
 		List bd = bodyDeclarations();
-		List advice = new ArrayList();
+		List<AdviceDeclaration> advice = new ArrayList<>();
 		for (Object decl : bd) {
 			if (decl instanceof AdviceDeclaration) {
-				advice.add(decl);
+				advice.add((AdviceDeclaration)decl);
 			}
 		}
 		return advice;

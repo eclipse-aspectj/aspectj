@@ -116,7 +116,7 @@ public class IncrementalStateManager {
 			}
 			CompilationResultDestinationManager outputManager = ajbc.getCompilationResultDestinationManager();
 			if (outputManager != null) {
-				List outputDirs = outputManager.getAllOutputLocations();
+				List<File> outputDirs = outputManager.getAllOutputLocations();
 				for (Object o : outputDirs) {
 					File dir = (File) o;
 					if (dir.equals(location)) {

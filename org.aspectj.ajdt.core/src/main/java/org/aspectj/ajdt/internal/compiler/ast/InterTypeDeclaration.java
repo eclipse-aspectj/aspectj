@@ -26,6 +26,7 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
@@ -304,7 +305,7 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 		Shadow.Kind kind,
 		boolean weaveBody)
 	{
-		List l = new ArrayList(1);
+		List<IAttribute> l = new ArrayList<>(1);
 		l.add(new EclipseAttributeAdapter(
 				new AjAttribute.EffectiveSignatureAttribute(sig, kind, weaveBody)));
 		return l;
@@ -318,12 +319,12 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 
 	@Override
 	protected int generateInfoAttributes(ClassFile classFile) {
-		List l;
+		List<IAttribute> l;
 		Shadow.Kind kind = getShadowKindForBody();
 		if (kind != null) {
 			l = makeEffectiveSignatureAttribute(munger.getSignature(), kind, true);
 		} else {
-			l = new ArrayList(0);
+			l = new ArrayList<>(0);
 		}
 		addDeclarationStartLineAttribute(l,classFile);
 
@@ -358,13 +359,13 @@ public abstract class InterTypeDeclaration extends AjMethodDeclaration {
 			if (onType instanceof ParameterizedSingleTypeReference) {
 				ParameterizedSingleTypeReference paramRef = (ParameterizedSingleTypeReference) onType;
 				TypeReference[] rb = paramRef.typeArguments;
-				typeVariableAliases = new ArrayList();
+				typeVariableAliases = new ArrayList<>();
 				for (TypeReference typeReference : rb) {
 					typeVariableAliases.add(CharOperation.toString(typeReference.getTypeName()));
 				}
 			} else if (onType instanceof ParameterizedQualifiedTypeReference) {
 				ParameterizedQualifiedTypeReference paramRef = (ParameterizedQualifiedTypeReference) onType;
-				typeVariableAliases = new ArrayList();
+				typeVariableAliases = new ArrayList<>();
 				for (int j = 0; j < paramRef.typeArguments.length; j++) {
 					TypeReference[] rb = paramRef.typeArguments[j];
 					for (int i = 0; rb!=null && i < rb.length; i++) {

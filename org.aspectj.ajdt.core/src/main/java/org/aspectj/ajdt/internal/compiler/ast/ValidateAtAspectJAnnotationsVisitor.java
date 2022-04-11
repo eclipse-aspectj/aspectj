@@ -81,7 +81,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	// afterThrowingAdviceSig, aroundAdviceSig };
 
 	private final CompilationUnitDeclaration unit;
-	private final Stack typeStack = new Stack();
+	private final Stack<TypeDeclaration> typeStack = new Stack<>();
 	private AspectJAnnotations ajAnnotations;
 
 	public ValidateAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
@@ -365,8 +365,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	 * @param arguments
 	 * @return argument names (possibly empty)
 	 */
-	private List toArgumentNames(Argument[] arguments) {
-		List names = new ArrayList();
+	private List<String> toArgumentNames(Argument[] arguments) {
+		List<String> names = new ArrayList<>();
 		if (arguments == null) {
 			return names;
 		} else {

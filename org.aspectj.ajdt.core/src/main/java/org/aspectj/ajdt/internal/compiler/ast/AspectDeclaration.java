@@ -30,6 +30,7 @@ import org.aspectj.ajdt.internal.compiler.lookup.PrivilegedHandler;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Clinit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
@@ -431,14 +432,14 @@ public class AspectDeclaration extends TypeDeclaration {
 	 * methods are able to masquerade as any join point (a field set, field get or method call). The effective signature attribute
 	 * is 'unwrapped' in BcelClassWeaver.matchInvokeInstruction()
 	 */
-	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, List additionalAttributes, BodyGenerator gen) {
+	private void generateMethod(ClassFile classFile, MethodBinding methodBinding, List<EclipseAttributeAdapter> additionalAttributes, BodyGenerator gen) {
 		// EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(this.scope);
 		classFile.generateMethodInfoHeader(methodBinding);
 		int methodAttributeOffset = classFile.contentsOffset;
 
 		int attributeNumber;
 		if (additionalAttributes != null) { // mini optimization
-			List attrs = new ArrayList();
+			List<IAttribute> attrs = new ArrayList<>();
 			attrs.addAll(AstUtil.getAjSyntheticAttribute());
 			attrs.addAll(additionalAttributes);
 			attributeNumber = classFile.generateMethodInfoAttributes(methodBinding, attrs);

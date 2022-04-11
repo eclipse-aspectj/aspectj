@@ -41,7 +41,7 @@ public class EmacsStructureModelManager {
 
 		try {
 			// Set fileSet = StructureModelManager.INSTANCE.getStructureModel().getFileMap().entrySet();
-			Set fileSet = model.getHierarchy().getFileMapEntrySet();
+			Set<Map.Entry<String, IProgramElement>> fileSet = model.getHierarchy().getFileMapEntrySet();
 			for (Object o : fileSet) {
 				IProgramElement peNode = (IProgramElement) ((Map.Entry) o).getValue();
 				dumpStructureToFile(peNode);

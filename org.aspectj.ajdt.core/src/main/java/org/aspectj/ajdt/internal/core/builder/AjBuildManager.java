@@ -787,7 +787,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			model.setConfigFile(buildConfig.getConfigFile().getAbsolutePath());
 			kind = IProgramElement.Kind.FILE_LST;
 		}
-		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList()));
+		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList<>()));
 
 		model.setFileMap(new HashMap<>());
 		// setStructureModel(model);
@@ -825,7 +825,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
-		List cp = buildConfig.getFullClasspath(); // pr145693
+		List<String> cp = buildConfig.getFullClasspath(); // pr145693
 		// buildConfig.getBootclasspath();
 		// cp.addAll(buildConfig.getClasspath());
 		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
@@ -1499,7 +1499,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private void populateCompilerOptionsFromLintSettings(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
 		BcelWorld world = this.state.getBcelWorld();
 		IMessage.Kind swallowedExceptionKind = world.getLint().swallowedExceptionInCatchBlock.getKind();
-		Map optionsMap = new HashMap();
+		Map<String, String> optionsMap = new HashMap<>();
 		optionsMap.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock, swallowedExceptionKind == null ? "ignore"
 				: swallowedExceptionKind.toString());
 		forCompiler.options.set(optionsMap);
@@ -1545,7 +1545,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				sb.append("incrementally building ");
 			}
 			AjBuildConfig config = (AjBuildConfig) data;
-			List classpath = config.getClasspath();
+			List<String> classpath = config.getClasspath();
 			sb.append("with classpath: ");
             for (Object o : classpath) {
                 sb.append(o.toString());

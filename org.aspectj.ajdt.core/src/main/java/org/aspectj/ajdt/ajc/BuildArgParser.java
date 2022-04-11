@@ -342,7 +342,7 @@ public class BuildArgParser extends Main {
 		options.put(CompilerOptions.OPTION_SourceFileAttribute, CompilerOptions.GENERATE);
 	}
 
-	private Collection collectSourceRootFiles(File dir) {
+	private Collection<File> collectSourceRootFiles(File dir) {
 		return Arrays.asList(FileUtil.listFiles(dir, FileUtil.aspectjSourceFileFilter));
 	}
 
@@ -383,7 +383,7 @@ public class BuildArgParser extends Main {
 	 * in order to prevent wierd bootstrap issues (refer to bug#39959).
 	 */
 	public List getClasspath(AjcConfigParser parser) {
-		List ret = new ArrayList();
+		List<String> ret = new ArrayList<>();
 
 		// if (parser.bootclasspath == null) {
 		// addClasspath(System.getProperty("sun.boot.class.path", ""), ret);
@@ -399,7 +399,7 @@ public class BuildArgParser extends Main {
 
 		if (parser.classpath == null) {
 			addClasspath(System.getProperty("java.class.path", ""), ret);
-			List fixedList = new ArrayList();
+			List<String> fixedList = new ArrayList<>();
 			for (Object o : ret) {
 				String entry = (String) o;
 				if (!entry.endsWith("aspectjtools.jar")) {
@@ -419,7 +419,7 @@ public class BuildArgParser extends Main {
 		return checkedClasspaths;
 	}
 
-	private void addExtDirs(String extdirs, List classpathCollector) {
+	private void addExtDirs(String extdirs, List<String> classpathCollector) {
 		StringTokenizer tokenizer = new StringTokenizer(extdirs, File.pathSeparator);
 		while (tokenizer.hasMoreTokens()) {
 			// classpathCollector.add(tokenizer.nextToken());
@@ -451,7 +451,7 @@ public class BuildArgParser extends Main {
 		private String modulepath = null;
 		private String modulesourcepath = null;
 		private String extdirs = null;
-		private List unparsedArgs = new ArrayList();
+		private List<String> unparsedArgs = new ArrayList<>();
 		private AjBuildConfig buildConfig;
 		private IMessageHandler handler;
 		private String moduleInfoArgument;
