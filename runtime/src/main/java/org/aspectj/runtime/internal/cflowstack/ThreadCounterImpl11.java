@@ -34,7 +34,7 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 	private synchronized Counter getThreadCounter() {
 		if (Thread.currentThread() != cached_thread) {
 			cached_thread = Thread.currentThread();
-			cached_counter = (Counter)counters.get(cached_thread);
+			cached_counter = counters.get(cached_thread);
 			if (cached_counter == null) {
 				cached_counter = new Counter();
 				counters.put(cached_thread, cached_counter);
@@ -45,7 +45,7 @@ public class ThreadCounterImpl11 implements ThreadCounter {
 			if (change_count > Math.max(MIN_COLLECT_AT, COLLECT_AT/size)) {
 				List<Thread> dead_stacks = new ArrayList<>();
 				for (Enumeration<Thread> e = counters.keys(); e.hasMoreElements(); ) {
-					Thread t = (Thread)e.nextElement();
+					Thread t = e.nextElement();
 					if (!t.isAlive()) dead_stacks.add(t);
 				}
 				for (Thread t : dead_stacks) {

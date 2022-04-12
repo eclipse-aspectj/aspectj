@@ -21,7 +21,7 @@ public class ThreadStackFactoryImpl implements ThreadStackFactory {
 		  return new Stack();
 		}
 		public Stack getThreadStack() {
-			return (Stack)get();
+			return get();
 		}
 		public void removeThreadStack() {
 			this.remove();
@@ -38,7 +38,7 @@ public class ThreadStackFactoryImpl implements ThreadStackFactory {
 		  return new Counter();
 		}
 		public Counter getThreadCounter() {
-			return (Counter)get();
+			return get();
 		}
 
 		public void removeThreadCounter() {

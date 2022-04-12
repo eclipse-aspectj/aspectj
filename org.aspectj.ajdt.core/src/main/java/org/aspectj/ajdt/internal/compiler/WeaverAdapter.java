@@ -93,13 +93,13 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 		if (nowProcessing == null) {
 			if (!resultIterator.hasNext())
 				return false;
-			nowProcessing = (InterimCompilationResult) resultIterator.next();
+			nowProcessing = resultIterator.next();
 			classFileIndex = 0;
 		}
 		while (nowProcessing.unwovenClassFiles().length == 0) {
 			if (!resultIterator.hasNext())
 				return false;
-			nowProcessing = (InterimCompilationResult) resultIterator.next();
+			nowProcessing = resultIterator.next();
 		}
 		if (classFileIndex < nowProcessing.unwovenClassFiles().length) {
 			return true;
@@ -107,11 +107,11 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 			classFileIndex = 0;
 			if (!resultIterator.hasNext())
 				return false;
-			nowProcessing = (InterimCompilationResult) resultIterator.next();
+			nowProcessing = resultIterator.next();
 			while (nowProcessing.unwovenClassFiles().length == 0) {
 				if (!resultIterator.hasNext())
 					return false;
-				nowProcessing = (InterimCompilationResult) resultIterator.next();
+				nowProcessing = resultIterator.next();
 			}
 		}
 		return true;

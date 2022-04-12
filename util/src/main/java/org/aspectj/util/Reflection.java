@@ -118,9 +118,9 @@ public class Reflection {
 				// not URL, zip, or dir - unsure what to do
 			}
 		}
-        File[] dirRa = (File[]) dirs.toArray(new File[0]);
-        File[] libRa = (File[]) libs.toArray(new File[0]);
-        URL[] urlRa = (URL[]) urls.toArray(new URL[0]);
+        File[] dirRa = dirs.toArray(new File[0]);
+        File[] libRa = libs.toArray(new File[0]);
+        URL[] urlRa = urls.toArray(new URL[0]);
         runMainInSameVM(urlRa, libRa, dirRa, className, args);
     }
 

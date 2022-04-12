@@ -110,7 +110,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, false, TypePatternList.EMPTY);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, false, TypePatternList.EMPTY);
 
 	}
 
@@ -127,7 +127,7 @@ public class WildTypePattern extends TypePattern {
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams,
 			TypePattern upperBound, TypePattern[] additionalInterfaceBounds, TypePattern lowerBound) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
 		this.upperBound = upperBound;
 		this.lowerBound = lowerBound;
@@ -135,7 +135,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
 	}
 

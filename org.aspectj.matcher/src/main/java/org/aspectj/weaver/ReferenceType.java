@@ -1034,7 +1034,7 @@ public class ReferenceType extends ResolvedType {
 		// If we are raw, we have a generic type - we should ensure it uses the
 		// same delegate
 		if (isRawType() && getGenericType() != null) {
-			ReferenceType genType = (ReferenceType) getGenericType();
+			ReferenceType genType = getGenericType();
 			if (genType.getDelegate() != delegate) { // avoids circular updates
 				genType.setDelegate(delegate);
 			}

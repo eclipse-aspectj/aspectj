@@ -564,8 +564,7 @@ public class AjProblemReporter extends ProblemReporter {
 							Collection<ResolvedMember> privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
 							// On an incremental compile the information is in the bcel delegate
 							if (privvies != null) {
-								for (Object privvy : privvies) {
-									ResolvedMember priv = (ResolvedMember) privvy;
+								for (ResolvedMember priv : privvies) {
 									if (priv.getName().equals(fname)) {
 										return;
 									}

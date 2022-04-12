@@ -172,7 +172,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// -- remove duplicates before adding (XXX use them instead?)
 			if (addToNode != null && addToNode.getChildren() != null) {
 				for (ListIterator<IProgramElement> itt = addToNode.getChildren().listIterator(); itt.hasNext();) {
-					IProgramElement child = (IProgramElement) itt.next();
+					IProgramElement child = itt.next();
 					ISourceLocation childLoc = child.getSourceLocation();
 					if (null == childLoc) {
 						// XXX ok, packages have null source locations
@@ -413,7 +413,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -482,11 +482,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 		}
 
-		IProgramElement ipe = (IProgramElement)stack.peek();
+		IProgramElement ipe = stack.peek();
 		if (ipe!=null) {
 			// With AspectJ 1.8.9 the type structure must be slightly different as the guard
 			// is required (the null is due to a default constructor).
-			((IProgramElement) stack.peek()).addChild(peNode);
+			stack.peek().addChild(peNode);
 		}
 		stack.push(peNode);
 		return true;
@@ -597,7 +597,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 							.equals("main(java.lang.String[])"))
 					&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
 					&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
-				((IProgramElement) stack.peek()).setRunnable(true);
+				stack.peek().setRunnable(true);
 			}
 		}
 
@@ -763,7 +763,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				npe.printStackTrace();
 			}
 		}
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 	}
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
@@ -791,7 +791,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// create Source signature for import
 			peNode.setSourceSignature(genSourceSignature(importRef));
 
-			IProgramElement containingTypeElement = (IProgramElement) stack.peek();
+			IProgramElement containingTypeElement = stack.peek();
 			ProgramElement imports = getImportReferencesRoot();
 			imports.addChild(0, peNode);
 			stack.push(peNode);
@@ -800,7 +800,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private ProgramElement getImportReferencesRoot() {
-		IProgramElement element = (IProgramElement) stack.peek();
+		IProgramElement element = stack.peek();
 		boolean hasPackageDeclaration = (element.getChildren().get(0)).getKind().isPackageDeclaration();
 		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
@@ -870,7 +870,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setFormalComment(generateJavadocComment(fieldDeclaration));
 		// peNode.setBytecodeSignature(new String(fieldDeclaration.binding.type.signature()));
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -1022,7 +1022,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -1101,7 +1101,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				makeLocation(initializer), initializer.modifiers, null, null);
 		// "",
 		// new ArrayList());
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		initializer.block.traverse(this, scope);
 		stack.pop();

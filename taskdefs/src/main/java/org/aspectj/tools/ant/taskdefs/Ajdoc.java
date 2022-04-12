@@ -169,7 +169,7 @@ public class Ajdoc extends MatchingTask {
 
         Enumeration<FileSet> e = fileSets.elements();
         while (e.hasMoreElements()) {
-            FileSet fs = (FileSet) e.nextElement();
+            FileSet fs = e.nextElement();
             if (!fs.hasPatterns() && !fs.hasSelectors()) {
                 fs = (FileSet) fs.clone();
                 fs.createInclude().setName("**/*.java");

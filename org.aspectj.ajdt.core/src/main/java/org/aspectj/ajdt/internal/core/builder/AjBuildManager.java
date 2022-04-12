@@ -734,7 +734,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                     if (!outputDirsToAspects.containsKey(outputDir)) {
                         outputDirsToAspects.put(outputDir, new ArrayList<>());
                     }
-                    ((List) outputDirsToAspects.get(outputDir)).add(aspectName);
+                    outputDirsToAspects.get(outputDir).add(aspectName);
                 }
 			}
 		}

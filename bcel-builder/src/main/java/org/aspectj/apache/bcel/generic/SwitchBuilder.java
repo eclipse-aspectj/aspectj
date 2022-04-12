@@ -84,8 +84,8 @@ public final class SwitchBuilder {
    * @param max_gap maximum gap that may between case branches
    */
   public SwitchBuilder(int[] match, InstructionHandle[] targets,InstructionHandle target, int max_gap) {
-    this.match   = (int[])match.clone();
-    this.targets = (InstructionHandle[])targets.clone();
+    this.match   = match.clone();
+    this.targets = targets.clone();
 
     if((match_length = match.length) < 2) // (almost) empty switch, or just default
       if (match.length==0) {

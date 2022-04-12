@@ -214,7 +214,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private boolean insideAspect() {
 		if (typeStack.empty())
 			return false;
-		TypeDeclaration typeDecl = (TypeDeclaration) typeStack.peek();
+		TypeDeclaration typeDecl = typeStack.peek();
 		return isAspect(typeDecl);
 	}
 
@@ -401,8 +401,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			UnresolvedType[] paramTypes = new UnresolvedType[bindings.length];
 			for (int i = 0; i < paramTypes.length; i++)
 				paramTypes[i] = bindings[i].getType();
-			ResolvedPointcutDefinition resPcutDef = new ResolvedPointcutDefinition(factory.fromBinding(((TypeDeclaration) typeStack
-					.peek()).binding), methodDeclaration.modifiers, "anonymous", paramTypes, pc);
+			ResolvedPointcutDefinition resPcutDef = new ResolvedPointcutDefinition(factory.fromBinding(typeStack.peek().binding),
+					methodDeclaration.modifiers, "anonymous", paramTypes, pc);
 			AjAttribute attr = new AjAttribute.PointcutDeclarationAttribute(resPcutDef);
 			((AjMethodDeclaration) methodDeclaration).addAttribute(new EclipseAttributeAdapter(attr));
 		} catch (ParserException pEx) {
@@ -500,7 +500,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	private void convertToPointcutDeclaration(MethodDeclaration methodDeclaration, ClassScope scope) {
-		TypeDeclaration typeDecl = (TypeDeclaration) typeStack.peek();
+		TypeDeclaration typeDecl = typeStack.peek();
 		if (typeDecl.binding != null) {
 			if (!typeDecl.binding.isClass()) {
 				methodDeclaration.scope.problemReporter().signalError(methodDeclaration.sourceStart, methodDeclaration.sourceEnd,
@@ -547,7 +547,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 			pcDecl.pointcutDesignator = (pc == null) ? null : new PointcutDesignator(pc);
 			pcDecl.setGenerateSyntheticPointcutMethod();
-			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
+			TypeDeclaration onType = typeStack.peek();
 			pcDecl.postParse(onType);
 			// EclipseFactory factory =
 			// EclipseFactory.fromScopeLookupEnvironment

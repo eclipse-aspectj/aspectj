@@ -77,7 +77,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 			Collection<UnresolvedType> parentPatterns = dp.getParents().getExactTypes();
 			StringBuilder parents = new StringBuilder();
 			for (Iterator<UnresolvedType> iter = parentPatterns.iterator(); iter.hasNext();) {
-				UnresolvedType urt = ((UnresolvedType) iter.next());
+				UnresolvedType urt = iter.next();
 				parents.append(urt.getName());
 				if (iter.hasNext()) {
 					parents.append(", ");

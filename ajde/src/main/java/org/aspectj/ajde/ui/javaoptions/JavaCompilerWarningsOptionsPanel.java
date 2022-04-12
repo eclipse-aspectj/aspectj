@@ -107,7 +107,7 @@ public class JavaCompilerWarningsOptionsPanel extends OptionsPanel {
 		panel.add(label,BorderLayout.WEST);
 
 		JComboBox warnings = new JComboBox(ignoreOrWarning);
-		String value = (String) javaBuildOptions.getJavaBuildOptionsMap().get(javaOptionToSet);
+		String value = javaBuildOptions.getJavaBuildOptionsMap().get(javaOptionToSet);
 		if (value.equals(JavaOptions.IGNORE)) {
 			warnings.setSelectedIndex(0);
 		} else {

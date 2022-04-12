@@ -143,8 +143,8 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 		int len = m.size();
 		ResolvedMember[] ret = new ResolvedMember[len];
 		int index = 0;
-		for (Object o : m) {
-			ret[index++] = (ResolvedMember) o;
+		for (ResolvedMember o : m) {
+			ret[index++] = o;
 		}
 		return ret;
 	}

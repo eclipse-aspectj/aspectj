@@ -83,7 +83,7 @@ public class ConcreteCflowPointcut extends Pointcut {
 		}
 		int[] indices = new int[slots.size()];
 		for (int i = 0; i < indices.length; i++) {
-			indices[i] = ((Slot) slots.get(i)).formalIndex;
+			indices[i] = slots.get(i).formalIndex;
 		}
 		return indices;
 	}

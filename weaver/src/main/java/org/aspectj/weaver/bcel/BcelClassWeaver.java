@@ -2380,7 +2380,7 @@ class BcelClassWeaver implements IClassWeaver {
 					ShadowRange oldRange = (ShadowRange) old;
 					if (oldRange.getStart() == src) {
 						BcelShadow oldShadow = oldRange.getShadow();
-						BcelShadow freshEnclosing = oldShadow.getEnclosingShadow() == null ? null : (BcelShadow) shadowMap
+						BcelShadow freshEnclosing = oldShadow.getEnclosingShadow() == null ? null : shadowMap
 								.get(oldShadow.getEnclosingShadow());
 						BcelShadow freshShadow = oldShadow.copyInto(recipient, freshEnclosing);
 						ShadowRange freshRange = new ShadowRange(recipient.getBody());

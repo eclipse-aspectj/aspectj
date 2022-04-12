@@ -59,7 +59,7 @@ public final class Factory {
 	static Class<?> makeClass(String s, ClassLoader loader) {
 		if (s.equals("*"))
 			return null;
-		Class<?> ret = (Class)prims.get(s);
+		Class<?> ret = prims.get(s);
 		if (ret != null)
 			return ret;
 		try {

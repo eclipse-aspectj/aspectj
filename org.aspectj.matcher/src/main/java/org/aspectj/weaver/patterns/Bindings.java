@@ -109,10 +109,7 @@ public class Bindings {
 	}
 
 	public Bindings copy() {
-		// int len = bindings.length;
-		// boolean[] a = new boolean[len];
-		// System.arraycopy(bindings, 0, a, 0, len);
-		return new Bindings((BindingPattern[]) bindings.clone());
+		return new Bindings(bindings.clone());
 	}
 
 	public void checkAllBound(IScope scope) {

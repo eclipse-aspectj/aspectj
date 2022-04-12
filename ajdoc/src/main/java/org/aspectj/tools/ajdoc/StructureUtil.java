@@ -107,7 +107,7 @@ public class StructureUtil {
 
 	public static String getPackageDeclarationFromFile(AsmManager model, File file) {
 		IProgramElement fileNode = model.getHierarchy().findElementForSourceFile(file.getAbsolutePath());
-		String packageName = ((IProgramElement) fileNode.getChildren().get(0)).getPackageName();
+		String packageName = fileNode.getChildren().get(0).getPackageName();
 		return packageName;
 	}
 
@@ -143,7 +143,7 @@ public class StructureUtil {
 			for (int i = 0; i < node.getParameterTypes().size(); i++) {
 				sb.append(String.valueOf(node.getParameterTypes().get(i)));
 				sb.append(' ');
-				sb.append((String) node.getParameterNames().get(i));
+				sb.append(node.getParameterNames().get(i));
 				if (i < node.getParameterTypes().size() - 1) {
 					sb.append(", ");
 				}

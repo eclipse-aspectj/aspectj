@@ -89,7 +89,7 @@ public class JavaOtherOptionsPanel extends OptionsPanel {
 		characterEncoding.setPreferredSize(new Dimension(150, 21));
 		panel.add(characterEncoding,BorderLayout.EAST);
 
-		String option = (String) javaBuildOptions.getJavaBuildOptionsMap().get(
+		String option = javaBuildOptions.getJavaBuildOptionsMap().get(
 				JavaOptions.CHARACTER_ENCODING);
 		if (option != null) {
 			characterEncoding.setText(option);
