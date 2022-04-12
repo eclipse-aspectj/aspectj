@@ -39,11 +39,11 @@ public class ThreadStackImpl11 implements ThreadStack {
 			if (change_count > Math.max(MIN_COLLECT_AT, COLLECT_AT/size)) {
 				Stack<Thread> dead_stacks = new Stack<>();
 				for (Enumeration<Thread> e = stacks.keys(); e.hasMoreElements(); ) {
-					Thread t = (Thread)e.nextElement();
+					Thread t = e.nextElement();
 					if (!t.isAlive()) dead_stacks.push(t);
 				}
 				for (Enumeration<Thread> e = dead_stacks.elements(); e.hasMoreElements(); ) {
-					Thread t = (Thread)e.nextElement();
+					Thread t = e.nextElement();
 					stacks.remove(t);
 				}
 				change_count = 0;

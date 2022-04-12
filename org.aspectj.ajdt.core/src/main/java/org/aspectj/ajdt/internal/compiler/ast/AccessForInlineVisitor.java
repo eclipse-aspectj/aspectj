@@ -237,7 +237,7 @@ public class AccessForInlineVisitor extends ASTVisitor {
 		ResolvedMember m = world.makeResolvedMember(binding);
 		ResolvedMember superAccessMember = AjcMemberMaker.superAccessMethod(inAspect.typeX, m);
 		if (inAspect.superAccessForInline.containsKey(superAccessMember)) {
-			return ((SuperAccessMethodPair) inAspect.superAccessForInline.get(superAccessMember)).accessMethod;
+			return inAspect.superAccessForInline.get(superAccessMember).accessMethod;
 		}
 		MethodBinding ret = world.makeMethodBinding(superAccessMember);
 		inAspect.superAccessForInline.put(superAccessMember, new SuperAccessMethodPair(m, ret));

@@ -91,7 +91,7 @@ public class CFlowStack {
     public Object peek() {
         Stack<?> stack = getThreadStack();
         if (stack.isEmpty()) throw new org.aspectj.lang.NoAspectBoundException();
-        return (Object)stack.peek();
+        return stack.peek();
     }
 
     public Object get(int index) {

@@ -90,7 +90,7 @@ public class IfPointcut extends Pointcut {
 				if ((extraParameterFlags & Advice.ConstantValue) != 0) {
 					return FuzzyBoolean.YES;
 				} else {
-					return FuzzyBoolean.NO;   
+					return FuzzyBoolean.NO;
 				}
 			}
 		}
@@ -274,10 +274,10 @@ public class IfPointcut extends Pointcut {
 						args.add(shadow.getThisEnclosingJoinPointStaticPartVar());
 					} else {
 
-						if (state.size() == 0 || currentStateIndex > state.size()) { // if 'we have nothing else to bind from in the state object' 
+						if (state.size() == 0 || currentStateIndex > state.size()) { // if 'we have nothing else to bind from in the state object'
 							String[] paramNames = testMethod.getParameterNames();
 							StringBuilder errorParameter = new StringBuilder();
-							
+
 							// Support a single special situation: where the if() pointcut takes a parameter bound elsewhere
 							// in the pointcut but the advice does not bind it. For example:
 							//
@@ -299,7 +299,7 @@ public class IfPointcut extends Pointcut {
 									continue;
 								}
 							}
-							
+
 							if (paramNames != null) {
 								errorParameter.append(testMethod.getParameterTypes()[i].getName()).append(" ");
 								errorParameter.append(paramNames[i]);
@@ -334,7 +334,7 @@ public class IfPointcut extends Pointcut {
 				}
 			}
 
-			ret = Test.makeAnd(ret, Test.makeCall(testMethod, (Expr[]) args.toArray(Expr.NONE)));
+			ret = Test.makeAnd(ret, Test.makeCall(testMethod, args.toArray(Expr.NONE)));
 
 			// Remember...
 			ifLastMatchedShadowId = shadow.shadowId;
@@ -381,7 +381,7 @@ public class IfPointcut extends Pointcut {
 			if (def != null) {
 				ResolvedType aspect = inAspect.getWorld().resolve(def.getDeclaringType());
 				for (Iterator<ResolvedMember> memberIter = aspect.getMethods(true, true); memberIter.hasNext();) {
-					ResolvedMember method = (ResolvedMember) memberIter.next();
+					ResolvedMember method = memberIter.next();
 					if (def.getName().equals(method.getName())
 							&& def.getParameterTypes().length == method.getParameterTypes().length) {
 						boolean sameSig = true;

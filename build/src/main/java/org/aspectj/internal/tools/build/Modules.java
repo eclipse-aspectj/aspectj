@@ -47,7 +47,7 @@ public class Modules {
         if (null == name) {
             return null;
         }
-        Module result = (Module) modules.get(name);
+        Module result = modules.get(name);
         if (null == result) {
             File moduleDir = new File(baseDir, name);
             if (!Util.canReadDir(moduleDir)) {

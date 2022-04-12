@@ -120,7 +120,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 */
 	public AjType<? super T> getSupertype() {
 		Class<? super T> superclass = clazz.getSuperclass();
-		return superclass==null ? null : (AjType<? super T>) new AjTypeImpl<>(superclass);
+		return superclass==null ? null : new AjTypeImpl<>(superclass);
 	}
 
 	/* (non-Javadoc)

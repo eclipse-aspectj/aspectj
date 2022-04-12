@@ -230,7 +230,7 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 					typeCompletionInProgress = false;
 				}
 				while (typesForCompletion.size() != 0) {
-					ResolvedType rt = (ResolvedType) typesForCompletion.get(0);
+					ResolvedType rt = typesForCompletion.get(0);
 					completeHierarchyForType(rt);
 					typesForCompletion.remove(0);
 				}

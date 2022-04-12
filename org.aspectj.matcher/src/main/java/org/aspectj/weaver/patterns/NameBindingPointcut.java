@@ -40,7 +40,7 @@ public abstract class NameBindingPointcut extends Pointcut {
 		ResolvedType myType = type.getExactType().resolve(world);
 		if (myType.isParameterizedType()) {
 			// unchecked warning already issued...
-			myType = (ResolvedType) myType.getRawType();
+			myType = myType.getRawType();
 		}
 		return Test.makeInstanceof(var, myType.resolve(world));
 	}

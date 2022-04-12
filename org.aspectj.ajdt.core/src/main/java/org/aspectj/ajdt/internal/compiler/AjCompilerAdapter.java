@@ -273,8 +273,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private List<InterimCompilationResult> getBinarySourcesFrom(Map<String, List<UnwovenClassFile>> binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
 		List<InterimCompilationResult> ret = new ArrayList<>();
-		for (Object o : binarySourceEntries.keySet()) {
-			String sourceFileName = (String) o;
+		for (String sourceFileName : binarySourceEntries.keySet()) {
 			List<UnwovenClassFile> unwovenClassFiles = binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
 			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
@@ -286,16 +285,14 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	private void notifyRequestor() {
-		for (Object o : resultsPendingWeave) {
-			InterimCompilationResult iresult = (InterimCompilationResult) o;
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
 		}
 	}
 
 	private void weave() throws IOException {
 		// ensure weaver state is set up correctly
-		for (Object o : resultsPendingWeave) {
-			InterimCompilationResult iresult = (InterimCompilationResult) o;
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
 				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}

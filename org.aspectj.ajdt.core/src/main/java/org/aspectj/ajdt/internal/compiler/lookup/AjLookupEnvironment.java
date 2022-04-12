@@ -699,9 +699,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// Check if the type we are looking at is the topMostImplementor of a
 			// dangerous interface -
 			// report a problem if it is.
-			for (Object o : dangerousInterfaces.entrySet()) {
-				Map.Entry<ResolvedType, String> entry = (Map.Entry) o;
-				ResolvedType interfaceType = (ResolvedType) entry.getKey();
+			for (Map.Entry<ResolvedType, String> entry : dangerousInterfaces.entrySet()) {
+				ResolvedType interfaceType = entry.getKey();
 				if (onType.isTopmostImplementor(interfaceType)) {
 					factory.showMessage(IMessage.ERROR, onType + ": " + entry.getValue(), onType.getSourceLocation(), null);
 				}
@@ -1442,7 +1441,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			if (pendingTypesToFinish.size() > 0) {
 				processingTheQueue = true;
 				while (!pendingTypesToFinish.isEmpty()) {
-					BinaryTypeBinding nextVictim = (BinaryTypeBinding) pendingTypesToFinish.remove(0);
+					BinaryTypeBinding nextVictim = pendingTypesToFinish.remove(0);
 					// During this call we may recurse into this method and add
 					// more entries to the pendingTypesToFinish list.
 					weaveInterTypeDeclarations(nextVictim);

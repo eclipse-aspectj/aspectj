@@ -400,8 +400,7 @@ public class BuildArgParser extends Main {
 		if (parser.classpath == null) {
 			addClasspath(System.getProperty("java.class.path", ""), ret);
 			List<String> fixedList = new ArrayList<>();
-			for (Object o : ret) {
-				String entry = (String) o;
+			for (String entry : ret) {
 				if (!entry.endsWith("aspectjtools.jar")) {
 					fixedList.add(entry);
 				}

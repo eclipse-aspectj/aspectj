@@ -59,7 +59,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	public TypePatternList(List<TypePattern> l) {
-		this((TypePattern[]) l.toArray(new TypePattern[0]));
+		this(l.toArray(new TypePattern[0]));
 	}
 
 	public int size() {

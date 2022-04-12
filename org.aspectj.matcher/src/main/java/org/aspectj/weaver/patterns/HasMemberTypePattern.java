@@ -62,7 +62,7 @@ public class HasMemberTypePattern extends TypePattern {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator<ResolvedMember> iter = type.getFields(); iter.hasNext();) {
-			Member field = (Member) iter.next();
+			Member field = iter.next();
 			if (field.getName().startsWith(declareAtPrefix)) {
 				continue;
 			}
@@ -82,7 +82,7 @@ public class HasMemberTypePattern extends TypePattern {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator<ResolvedMember> iter = type.getMethods(true, true); iter.hasNext();) {
-			Member method = (Member) iter.next();
+			Member method = iter.next();
 			if (method.getName().startsWith(declareAtPrefix)) {
 				continue;
 			}

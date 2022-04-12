@@ -231,10 +231,8 @@ public class Lint {
 		setFromProperties(p);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void setFromProperties(Properties properties) {
-		for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-			Map.Entry entry = (Map.Entry) objectObjectEntry;
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			Kind kind = kinds.get(entry.getKey());
 			if (kind == null) {
 				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, entry.getKey()));
