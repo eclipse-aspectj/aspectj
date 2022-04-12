@@ -149,7 +149,7 @@ public abstract class World implements Dump.INode {
 
 	public int infoMessagesEnabled = 0; // 0=uninitialized, 1=no, 2=yes
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(World.class);
 
 	private boolean errorThreshold;
 	private boolean warningThreshold;

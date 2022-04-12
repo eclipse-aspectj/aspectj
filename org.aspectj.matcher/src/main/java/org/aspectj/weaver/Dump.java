@@ -63,7 +63,7 @@ public class Dump {
 
 	private static boolean preserveOnNextReset = false;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Dump.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(Dump.class);
 
 	/**
 	 * for testing only, so that we can verify dump contents after compilation has completely finished

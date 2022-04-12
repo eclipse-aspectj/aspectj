@@ -48,7 +48,7 @@ public class Aj implements ClassPreProcessor {
 	 */
 	private static ReferenceQueue adaptorQueue = new ReferenceQueue();
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
 
 	public Aj() {
 		this(null);

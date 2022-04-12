@@ -94,7 +94,7 @@ public class BcelWorld extends World implements Repository {
 	private WeavingXmlConfig xmlConfiguration;
 	private List<TypeDelegateResolver> typeDelegateResolvers;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWorld.class);
 
 	public BcelWorld() {
 		this("");
