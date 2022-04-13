@@ -614,7 +614,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	private void setOption(String optionKey, String lintValue, Map<String,String> lintOptionsAccumulator) {
 		if (lintOptionsMap!=null && lintOptionsMap.containsKey(optionKey)) {
-			String v = lintOptionsMap.get(lintOptionsMap);
+			String v = lintOptionsMap.get(optionKey);
 			if (AJLINT_IGNORE.equals(v)) {
 				lintValue = AjCompilerOptions.IGNORE;
 			} else if (AJLINT_WARN.equals(v)) {
