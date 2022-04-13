@@ -340,8 +340,8 @@ public class CrosscuttingMembers {
 		// if we dont care about shadow mungers then ignore those
 		// typeMungers which are created to help with the implementation
 		// of shadowMungers
-		Set<Object> theseTypeMungers = new HashSet<>();
-		Set<Object> otherTypeMungers = new HashSet<>();
+		Set<ConcreteTypeMunger> theseTypeMungers = new HashSet<>();
+		Set<ConcreteTypeMunger> otherTypeMungers = new HashSet<>();
 		if (!careAboutShadowMungers) {
 			for (ConcreteTypeMunger typeMunger : typeMungers) {
 				if (!typeMunger.existsToSupportShadowMunging()) {
@@ -367,17 +367,17 @@ public class CrosscuttingMembers {
 		} else {
 			boolean shouldOverwriteThis = false;
 			boolean foundInequality = false;
-			for (Iterator<Object> iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
-				Object thisOne = iter.next();
+			for (Iterator<ConcreteTypeMunger> iter = theseTypeMungers.iterator(); iter.hasNext() && !foundInequality;) {
+				ConcreteTypeMunger thisOne = iter.next();
 				boolean foundInOtherSet = false;
-				for (Object otherOne : otherTypeMungers) {
+				for (ConcreteTypeMunger otherOne : otherTypeMungers) {
 					if (thisOne instanceof ConcreteTypeMunger) {
-						if (((ConcreteTypeMunger) thisOne).shouldOverwrite()) {
+						if (thisOne.shouldOverwrite()) {
 							shouldOverwriteThis = true;
 						}
 					}
 					if (thisOne instanceof ConcreteTypeMunger && otherOne instanceof ConcreteTypeMunger) {
-						if (((ConcreteTypeMunger) thisOne).equivalentTo(otherOne)) {
+						if (thisOne.equivalentTo(otherOne)) {
 							foundInOtherSet = true;
 						} else if (thisOne.equals(otherOne)) {
 							foundInOtherSet = true;

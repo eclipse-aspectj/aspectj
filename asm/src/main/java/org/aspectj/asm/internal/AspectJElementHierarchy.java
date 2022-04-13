@@ -100,7 +100,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 		this.fileMap = fileMap;
 	}
 
-	public Object findInFileMap(Object key) {
+	public IProgramElement findInFileMap(String key) {
 		return fileMap.get(key);
 	}
 
@@ -331,7 +331,7 @@ public class AspectJElementHierarchy implements IHierarchy {
 			} else {
 				String correctedPath = asm.getCanonicalFilePath(new File(sourceFile));
 				// StructureNode node = (StructureNode)getFileMap().get(correctedPath);//findFileNode(filePath, model);
-				IProgramElement node = (IProgramElement) findInFileMap(correctedPath);// findFileNode(filePath, model);
+				IProgramElement node = findInFileMap(correctedPath);// findFileNode(filePath, model);
 				if (node != null) {
 					return node;
 				} else {

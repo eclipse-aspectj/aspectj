@@ -83,9 +83,8 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * @param ext the list of modifier and annotation nodes
 	 * (element type: <code>IExtendedModifiers</code>)
 	 */
-	void printModifiers(List ext) {
-		for (Object o : ext) {
-			ASTNode p = (ASTNode) o;
+	void printModifiers(List<ASTNode> ext) {
+		for (ASTNode p : ext) {
 			p.accept(this);
 			this.buffer.append(" ");//$NON-NLS-1$
 		}

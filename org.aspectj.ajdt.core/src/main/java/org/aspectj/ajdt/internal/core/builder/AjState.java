@@ -974,7 +974,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	 * @param outputLocs the output locations that should be ignored if they occur on the paths being compared
 	 * @return true if a change is detected that requires a full build
 	 */
-	private boolean changedAndNeedsFullBuild(List oldPath, List newPath, boolean checkClassFiles, List<File> outputLocs,
+	private boolean changedAndNeedsFullBuild(List<File> oldPath, List<File> newPath, boolean checkClassFiles, List<File> outputLocs,
 			Set<String> alreadyAnalysedPaths, int pathid) {
 		if (oldPath.size() != newPath.size()) {
 			return true;
@@ -983,13 +983,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (!oldPath.get(i).equals(newPath.get(i))) {
 				return true;
 			}
-			Object o = oldPath.get(i); // String on classpath, File on other paths
-			File f = null;
-			if (o instanceof String) {
-				f = new File((String) o);
-			} else {
-				f = (File) o;
-			}
+			File f = oldPath.get(i);
 			if (f.exists() && !f.isDirectory() && (f.lastModified() >= lastSuccessfulBuildTime)) {
 				return true;
 			}

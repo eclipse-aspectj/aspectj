@@ -45,7 +45,7 @@ public interface IHierarchy extends Serializable {
 		setFileMap((Map<String, IProgramElement>) fileMap);
 	}
 
-	Object findInFileMap(Object key);
+	IProgramElement findInFileMap(String key);
 
 	Set<Map.Entry<String, IProgramElement>> getFileMapEntrySet();
 

@@ -536,9 +536,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setMakeReflectable(global.isMakeReflectable());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void join(Collection local, Collection global) {
-		for (Object next : global) {
+	<T> void join(Collection<T> local, Collection<T> global) {
+		for (T next : global) {
 			if (!local.contains(next)) {
 				local.add(next);
 			}

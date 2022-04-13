@@ -68,6 +68,7 @@ import org.aspectj.weaver.bcel.BcelAnnotation;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.FakeAnnotation;
 import org.aspectj.weaver.bcel.LazyClassGen;
+import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
 
@@ -757,7 +758,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 				}
 			}
 
-			List<Object> forRemoval = new ArrayList<>();
+			List<Declare> forRemoval = new ArrayList<>();
 			// now lets loop over and over until we have done all we can
 			while ((anyNewAnnotations || anyNewParents) && (!decpToRepeat.isEmpty() || !decaToRepeat.isEmpty())) {
 				anyNewParents = anyNewAnnotations = false;

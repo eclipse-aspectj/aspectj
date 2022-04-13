@@ -576,8 +576,8 @@ public abstract class Shadow {
 			// Compare every pair of advice mungers
 			for (int i = max - 1; i >= 0; i--) {
 				for (int j = 0; j < i; j++) {
-					Object a = mungers.get(i);
-					Object b = mungers.get(j);
+					ShadowMunger a = mungers.get(i);
+					ShadowMunger b = mungers.get(j);
 
 					// Make sure they are the right type
 					if (a instanceof Advice && b instanceof Advice) {

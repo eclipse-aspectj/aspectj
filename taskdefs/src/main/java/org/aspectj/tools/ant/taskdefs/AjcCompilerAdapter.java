@@ -12,6 +12,7 @@
 
 package org.aspectj.tools.ant.taskdefs;
 
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.taskdefs.compilers.CompilerAdapter;
 import org.apache.tools.ant.BuildException;
@@ -40,7 +41,7 @@ public class AjcCompilerAdapter implements CompilerAdapter {
         if (null == javac) {
             throw new IllegalArgumentException("null javac");
         }
-        Object task = javac.getProject().createTask("ajc");
+        Task task = javac.getProject().createTask("ajc");
         String err = null;
         if (null == task) {
             err = "ajc not defined - put ajc taskdef library on classpath";

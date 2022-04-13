@@ -489,7 +489,7 @@ public class AjProblemReporter extends ProblemReporter {
 			AspectDeclaration ad = (AspectDeclaration) typeDecl.enclosingType;
 			if (ad.concreteName != null) {
 				List<Declare> declares = ad.concreteName.declares;
-				for (Object dec : declares) {
+				for (Declare dec : declares) {
 					if (dec instanceof DeclareParents) {
 						DeclareParents decp = (DeclareParents) dec;
 						TypePattern[] newparents = decp.getParents().getTypePatterns();
