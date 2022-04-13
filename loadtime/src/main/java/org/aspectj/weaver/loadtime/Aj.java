@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.security.ProtectionDomain;
@@ -46,7 +47,7 @@ public class Aj implements ClassPreProcessor {
 	 * should tidy up the adaptor map and remove the adaptor (weaver) from the map we are maintaining from adaptorkey &gt; adaptor
 	 * (weaver)
 	 */
-	private static ReferenceQueue adaptorQueue = new ReferenceQueue();
+	private static ReferenceQueue<ClassLoader> adaptorQueue = new ReferenceQueue<>();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Aj.class);
 
@@ -198,11 +199,11 @@ public class Aj implements ClassPreProcessor {
 				System.err.println("Weaver adaptors before queue processing:");
 				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
 				Set<AdaptorKey> keys = m.keySet();
-				for (Object object : keys) {
+				for (AdaptorKey object : keys) {
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
 			}
-			Object o = adaptorQueue.poll();
+			Reference<?> o = adaptorQueue.poll();
 			while (o != null) {
 				if (displayProgress)
 					System.err.println("Processing referencequeue entry " + o);
@@ -221,7 +222,7 @@ public class Aj implements ClassPreProcessor {
 				System.err.println("Weaver adaptors after queue processing:");
 				Map<AdaptorKey,ExplicitlyInitializedClassLoaderWeavingAdaptor> m = WeaverContainer.weavingAdaptors;
 				Set<AdaptorKey> keys = m.keySet();
-				for (Object object : keys) {
+				for (AdaptorKey object : keys) {
 					System.err.println(object + " = " + WeaverContainer.weavingAdaptors.get(object));
 				}
 			}
@@ -242,7 +243,7 @@ public class Aj implements ClassPreProcessor {
 	 */
 	public static void checkQ() {
 		synchronized (adaptorQueue) {
-			Object o = adaptorQueue.poll();
+			Reference<?> o = adaptorQueue.poll();
 			while (o != null) {
 				AdaptorKey wo = (AdaptorKey) o;
 				// boolean removed =

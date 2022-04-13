@@ -1166,7 +1166,7 @@ public class AjcTask extends MatchingTask {
 	// package-private for testing
 	String[] makeCommand() {
 		if (0 < ignored.size()) {
-            for (Object o : ignored) {
+            for (String o : ignored) {
                 logVerbose("ignored: " + o);
             }
 		}

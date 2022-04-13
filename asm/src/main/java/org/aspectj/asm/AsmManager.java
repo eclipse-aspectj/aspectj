@@ -551,7 +551,7 @@ public class AsmManager implements IStructureModel {
 		Set<String> deletedNodes = new HashSet<>();
 		for (File fileForCompilation : files) {
 			String correctedPath = getCanonicalFilePath(fileForCompilation);
-			IProgramElement progElem = (IProgramElement) hierarchy.findInFileMap(correctedPath);
+			IProgramElement progElem = hierarchy.findInFileMap(correctedPath);
 			if (progElem != null) {
 				// Found it, let's remove it
 				if (dumpDeltaProcessing) {

@@ -839,7 +839,7 @@ abstract class WizardPane {
 			buf.append(text.substring(lastIndex, startIndex));
 			String key = text.substring(startIndex + 2, endIndex);
 			lastIndex = endIndex + 1;
-			Object replaceText = (map == null ? null : map.get(key));
+			String replaceText = (map == null ? null : map.get(key));
 			//System.out.println("key: " + key + " -> " + replaceText);
 			if (replaceText == null) {
 				replaceText = "NOT_FOUND";

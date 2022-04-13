@@ -678,14 +678,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
         }
 	}
 
-	private ByteArrayOutputStream getOutxmlContents(List aspectNames) {
+	private ByteArrayOutputStream getOutxmlContents(List<String> aspectNames) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		ps.println("<aspectj>");
 		ps.println("<aspects>");
 		if (aspectNames != null) {
-            for (Object aspectName : aspectNames) {
-                String name = (String) aspectName;
+            for (String name : aspectNames) {
                 ps.println("<aspect name=\"" + name + "\"/>");
             }
 		}
@@ -719,9 +718,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			outputDirsToAspects.put(outputDir, aspectNames);
 		} else {
-			List outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
-            for (Object dir : outputDirs) {
-                File outputDir = (File) dir;
+			List<File> outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
+            for (File outputDir : outputDirs) {
                 outputDirsToAspects.put(outputDir, new ArrayList<>());
             }
 			if (aspectNamesToFileNames != null) {
