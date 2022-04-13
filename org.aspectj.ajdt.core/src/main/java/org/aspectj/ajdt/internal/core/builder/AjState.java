@@ -706,10 +706,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (value == null) {
 				return null;
 			}
-			if (value.get() != null) {
-				return value.get();
-			}
-			return null;
+			return value.get();
 		}
 	}
 
