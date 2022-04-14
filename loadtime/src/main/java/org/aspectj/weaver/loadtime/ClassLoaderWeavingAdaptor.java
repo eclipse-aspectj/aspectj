@@ -1131,7 +1131,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 	static Method defineClassMethod;
-	private static String lock = "lock";
+	private static final Object lock = new Object();
 
 
 //    /*
