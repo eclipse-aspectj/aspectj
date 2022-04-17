@@ -115,7 +115,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj != null && (obj instanceof BinarySourceFile)) {
+			if (obj instanceof BinarySourceFile) {
 				BinarySourceFile other = (BinarySourceFile) obj;
 				return (binSrc.equals(other.binSrc));
 			}

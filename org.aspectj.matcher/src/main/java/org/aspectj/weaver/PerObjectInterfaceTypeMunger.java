@@ -27,7 +27,7 @@ public class PerObjectInterfaceTypeMunger extends ResolvedTypeMunger {
 	private TypePattern lazyTestTypePattern;
 
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof PerObjectInterfaceTypeMunger)) {
+		if (!(other instanceof PerObjectInterfaceTypeMunger)) {
 			return false;
 		}
 		PerObjectInterfaceTypeMunger o = (PerObjectInterfaceTypeMunger) other;
