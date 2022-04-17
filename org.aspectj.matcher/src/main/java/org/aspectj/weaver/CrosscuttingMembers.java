@@ -188,7 +188,7 @@ public class CrosscuttingMembers {
 		String signatureToLookFor = typeToExpose.getSignature();
 		for (ConcreteTypeMunger cTM : typeMungers) {
 			ResolvedTypeMunger rTM = cTM.getMunger();
-			if (rTM != null && rTM instanceof ExposeTypeMunger) {
+			if (rTM instanceof ExposeTypeMunger) {
 				String exposedType = ((ExposeTypeMunger) rTM).getExposedTypeSignature();
 				if (exposedType.equals(signatureToLookFor)) {
 					return; // dont need to bother

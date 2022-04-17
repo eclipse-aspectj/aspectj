@@ -485,7 +485,7 @@ public class AjProblemReporter extends ProblemReporter {
 		// don't output unused type warnings for aspects!
 		if (typeDecl instanceof AspectDeclaration)
 			return;
-		if (typeDecl.enclosingType != null && (typeDecl.enclosingType instanceof AspectDeclaration)) {
+		if (typeDecl.enclosingType instanceof AspectDeclaration) {
 			AspectDeclaration ad = (AspectDeclaration) typeDecl.enclosingType;
 			if (ad.concreteName != null) {
 				List<Declare> declares = ad.concreteName.declares;
@@ -609,7 +609,7 @@ public class AjProblemReporter extends ProblemReporter {
 			Argument arg = (Argument) localDecl;
 			if (arg.binding != null && arg.binding.declaringScope != null) {
 				ReferenceContext context = arg.binding.declaringScope.referenceContext();
-				if (context != null && context instanceof PointcutDeclaration)
+				if (context instanceof PointcutDeclaration)
 					return;
 			}
 		}

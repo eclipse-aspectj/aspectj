@@ -83,9 +83,8 @@ public class ProceedVisitor extends ASTVisitor {
 
 	boolean isRef(Expression expr, Binding binding) {
 		//System.err.println("isRef: " + expr + ", " + binding);
-		return expr != null
-			&& expr instanceof NameReference
-			&& isRef((NameReference) expr, binding);
+		return expr instanceof NameReference
+				&& isRef((NameReference)expr, binding);
 	}
 
 	public void endVisit(SingleNameReference ref, BlockScope scope) {
