@@ -29,7 +29,7 @@ public interface IStateListener {
 
 	void detectedClassChangeInThisDir(File f);
 
-	void aboutToCompareClasspaths(List oldClasspath, List newClasspath);
+	void aboutToCompareClasspaths(List<String> oldClasspath, List<String> newClasspath);
 
 	void pathChangeDetected();
 

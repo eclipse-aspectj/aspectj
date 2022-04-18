@@ -527,7 +527,7 @@ public class AjdeInteractionTestbed extends TestCase {
 			pathChange = true;
 		}
 
-		public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {
+		public void aboutToCompareClasspaths(List<String> oldClasspath, List<String> newClasspath) {
 		}
 
 		public void detectedClassChangeInThisDir(File f) {
