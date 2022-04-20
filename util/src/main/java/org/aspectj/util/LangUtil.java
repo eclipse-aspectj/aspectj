@@ -41,10 +41,10 @@ public class LangUtil {
 
 	public static final String JRT_FS = "jrt-fs.jar";
 
-	private static double vmVersion;
+	private static final double vmVersion = parseVmVersion();
 
 	/**
-	 * @return the vm version (1.1, 1.2, 1.3, 1.4, etc)
+	 * @return the vm version (1.8, 9, 10, 11, etc)
 	 */
 	public static String getVmVersionString() {
 		return Double.toString(vmVersion);
@@ -70,7 +70,7 @@ public class LangUtil {
 		EOL = eol;
 	}
 
-	static {
+	private static double parseVmVersion() {
 		// http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
 		// http://openjdk.java.net/jeps/223 "New Version-String Scheme"
 		try {
@@ -85,7 +85,7 @@ public class LangUtil {
 				new RuntimeException(
 						"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version")
 				.printStackTrace(System.err);
-				vmVersion = 1.5;
+				return 1.8;
 			} else {
 				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)*
 				// Care about the first set of digits and second set if first digit is 1
@@ -93,22 +93,22 @@ public class LangUtil {
 					List<Integer> numbers = getFirstNumbers(vm);
 					if (numbers.get(0) == 1) {
 						// Old school for 1.0 > 1.8
-						vmVersion = numbers.get(0)+(numbers.get(1)/10d);
+						return numbers.get(0)+(numbers.get(1)/10d);
 					} else {
 						// numbers.get(0) is the major version (9 and above)
 						// Note here the number will be 9 (or 10), *not* 1.9 or 1.10
-						vmVersion = numbers.get(0);
+						return numbers.get(0);
 					}
 				} catch (Throwable t) {
 					// Give up
-					vmVersion = 1.5;
+					return 1.8;
 				}
 			}
 		} catch (Throwable t) {
 			new RuntimeException(
 					"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version", t)
 			.printStackTrace(System.err);
-			vmVersion = 1.5;
+			return 1.8;
 		}
 	}
 
