@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  */
 public class LangUtil {
 
-	public static final String EOL;
+	public static final String EOL = System.lineSeparator();
 
 	public static final String JRT_FS = "jrt-fs.jar";
 
@@ -52,22 +52,6 @@ public class LangUtil {
 
 	public static double getVmVersion() {
 		return vmVersion;
-	}
-
-	static {
-		StringWriter buf = new StringWriter();
-		PrintWriter writer = new PrintWriter(buf);
-		writer.println("");
-		String eol = "\n";
-		try {
-			buf.close();
-			StringBuffer sb = buf.getBuffer();
-			if (sb != null) {
-				eol = buf.toString();
-			}
-		} catch (Throwable t) {
-		}
-		EOL = eol;
 	}
 
 	static {
