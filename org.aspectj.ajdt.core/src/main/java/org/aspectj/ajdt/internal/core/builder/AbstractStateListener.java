@@ -24,7 +24,7 @@ public abstract class AbstractStateListener implements IStateListener {
 
 	public void detectedClassChangeInThisDir(File f) {	}
 
-	public void aboutToCompareClasspaths(List oldClasspath, List newClasspath) {	}
+	public void aboutToCompareClasspaths(List<String> oldClasspath, List<String> newClasspath) {	}
 
 	public void pathChangeDetected() {	}
 
