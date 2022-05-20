@@ -85,6 +85,12 @@ is the one I want to recomment because of its good documentation, active develop
 or become for the Gradle ecosystem what AspectJ Maven is for the Maven one. At the time of writing this, the most recent
 milestone is [6.1.0-m3](https://docs.freefair.io/gradle-plugins/6.1.0-m3/reference/). 
 
+### Mill
+
+If you want to build your AspectJ projects with the [Mill Build Tool](https://github.com/com-lihaoyi/mill), you can use the [mill-aspectj](https://github.com/lefou/mill-aspectj) plugin. 
+It's actively maintained and its author Tobias Roeser is also the maintainer of Mill. 
+It supports all important settings of AspectJ and is even providing convenience options for polyglot projects, e.g. it features an option for out-of-the-box chained compilation with Zinc (for Java/Scala) and AspectJ (for weaving aspects) in the same module.
+
 ### Ant
 
 As mentioned in the introduction, AspectJ features its own Ant task, which is described in
