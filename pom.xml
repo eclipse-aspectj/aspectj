@@ -325,7 +325,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.4.0</version>
 				</plugin>
 				<!--
 					TODO: MSHADE-36 is in Maven Shade 3.3.0 -> it should be possible to include the dependency-reduced POM there
