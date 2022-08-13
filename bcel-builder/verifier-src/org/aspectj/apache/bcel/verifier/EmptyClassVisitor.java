@@ -117,7 +117,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
  *
  * @see DescendingVisitor
  * @version $Id: EmptyClassVisitor.java,v 1.3 2009/09/15 19:40:22 aclement Exp $
- * 
+ *
  */
 public class EmptyClassVisitor implements ClassVisitor {
   protected EmptyClassVisitor() { }
@@ -148,6 +148,8 @@ public void visitConstantMethodHandle(ConstantMethodHandle obj) {}
 public void visitConstantMethodType(ConstantMethodType obj) {}
   @Override
 public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {}
+  @Override
+public void visitConstantDynamic(ConstantDynamic obj) {}
   @Override
 public void visitConstantNameAndType(ConstantNameAndType obj) {}
   @Override
@@ -214,7 +216,7 @@ public void visitRuntimeInvisibleParameterAnnotations(RuntimeInvisParamAnnos att
 public void visitAnnotationDefault(AnnotationDefault attribute) {}
   @Override
 public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {}
-  	 
+
   // J8:
   @Override
 public void visitRuntimeVisibleTypeAnnotations(RuntimeVisTypeAnnos attribute) {}
@@ -235,5 +237,5 @@ public void visitModuleMainClass(ModuleMainClass attribute) {}
   @Override public void visitConstantDynamic(ConstantDynamic attribute) {}
   @Override public void visitNestHost(NestHost attribute) { }
   @Override public void visitNestMembers(NestMembers attribute) { }
- 
+
 }

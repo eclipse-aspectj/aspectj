@@ -381,13 +381,17 @@ public class DescendingVisitor implements ClassVisitor {
 	}
 
 	@Override
-	public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {
-		throw new IllegalStateException("nyi");
+	public void visitConstantInvokeDynamic(ConstantInvokeDynamic constant) {
+		stack.push(constant);
+		constant.accept(visitor);
+		stack.pop();
 	}
 
 	@Override
 	public void visitConstantDynamic(ConstantDynamic obj) {
-		throw new IllegalStateException("nyi");
+		stack.push(obj);
+		obj.accept(visitor);
+		stack.pop();
 	}
 
 	@Override
