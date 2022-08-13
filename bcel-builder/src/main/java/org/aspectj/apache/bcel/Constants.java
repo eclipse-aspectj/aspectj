@@ -185,7 +185,7 @@ public interface Constants {
 
 	String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
-			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic",
+			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","CONSTANT_Dynamic","CONSTANT_InvokeDynamic",
 			// J9:
 			"CONSTANT_Module", "CONSTANT_Package"};
 

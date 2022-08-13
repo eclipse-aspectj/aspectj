@@ -212,6 +212,10 @@ public class ConstantPool implements Node {
 			ConstantInvokeDynamic cID = ((ConstantInvokeDynamic)c);
 			return "#"+cID.getBootstrapMethodAttrIndex()+"."+constantToString(cID.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
 
+		case Constants.CONSTANT_Dynamic:
+			ConstantDynamic cD = ((ConstantDynamic)c);
+			return "#"+cD.getBootstrapMethodAttrIndex()+"."+constantToString(cD.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cMH = ((ConstantMethodHandle)c);
 			return cMH.getReferenceKind()+":"+constantToString(cMH.getReferenceIndex(),Constants.CONSTANT_Methodref);
@@ -326,7 +330,7 @@ public class ConstantPool implements Node {
 		StringBuilder buf = new StringBuilder();
 
 		for (int i = 1; i < poolSize; i++)
-			buf.append(i + ")" + pool[i] + "\n");
+			buf.append(i).append(") ").append(pool[i]).append("\n");
 
 		return buf.toString();
 	}
@@ -632,6 +636,16 @@ public class ConstantPool implements Node {
 			return addInvokeDynamic(index1,index2);
 		}
 
+		case Constants.CONSTANT_Dynamic: {
+			ConstantDynamic cd = (ConstantDynamic)c;
+			int index1 = cd.getBootstrapMethodAttrIndex();
+			ConstantNameAndType cnat = (ConstantNameAndType)constants[cd.getNameAndTypeIndex()];
+			ConstantUtf8 name = (ConstantUtf8) constants[cnat.getNameIndex()];
+			ConstantUtf8 signature = (ConstantUtf8) constants[cnat.getSignatureIndex()];
+			int index2 = addNameAndType(name.getValue(), signature.getValue());
+			return addConstantDynamic(index1,index2);
+		}
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cmh = (ConstantMethodHandle)c;
 			return addMethodHandle(cmh.getReferenceKind(),addConstant(constants[cmh.getReferenceIndex()],cp));
@@ -723,6 +737,12 @@ public class ConstantPool implements Node {
 		adjustSize();
 		int ret = poolSize;
 		pool[poolSize++] = new ConstantInvokeDynamic(bootstrapMethodIndex, constantNameAndTypeIndex);
+		return ret;
+	}
+	public int addConstantDynamic(int bootstrapMethodIndex, int constantNameAndTypeIndex) {
+		adjustSize();
+		int ret = poolSize;
+		pool[poolSize++] = new ConstantDynamic(bootstrapMethodIndex, constantNameAndTypeIndex);
 		return ret;
 	}
 
