@@ -477,7 +477,7 @@ public class FileUtil {
         throws IOException {
         String path = in.getCanonicalPath();
         String parentPath = parent.getCanonicalPath();
-        if (!path.startsWith(parentPath)) {
+        if (!in.getCanonicalFile().toPath().startsWith(parentPath)) {
             throw new Error("not parent: " + parentPath + " of " + path);
         } else {
             path = path.substring(1+parentPath.length());
