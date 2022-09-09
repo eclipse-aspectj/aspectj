@@ -159,7 +159,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 				try {
 					fileFound = f.getCanonicalPath();
 					String toRemove = base.getCanonicalPath();
-					if (!fileFound.startsWith(toRemove)) {
+					if (!f.getCanonicalFile().toPath().startsWith(toRemove)) {
 						throw new RuntimeException("eh? " + fileFound + "   " + toRemove);
 					}
 					collectionPoint.add(fileFound.substring(toRemove.length() + 1));// +1 captures extra separator
