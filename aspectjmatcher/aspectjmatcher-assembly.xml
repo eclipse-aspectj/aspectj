@@ -12,6 +12,13 @@
 
 	<fileSets>
 		<fileSet>
+			<directory>../docs/dist</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>LICENSE-AspectJ.html</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../util/target/classes</directory>
 			<outputDirectory>.</outputDirectory>
 			<excludes>
@@ -35,4 +42,3 @@
 	</fileSets>
 
 </assembly>
-
