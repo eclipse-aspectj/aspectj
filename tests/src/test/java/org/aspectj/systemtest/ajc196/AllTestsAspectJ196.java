@@ -26,7 +26,7 @@ public class AllTestsAspectJ196 {
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
 		/*
 		if (LangUtil.is14VMOrGreater() && !LangUtil.is15VMOrGreater()) {
-			suite.addTest(Ajc196PreviewFeaturesTests.suite());
+			suite.addTest(Java14PreviewFeaturesTests.suite());
 		}
 		*/
 		return suite;

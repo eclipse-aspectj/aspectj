@@ -23,9 +23,12 @@ public class AllTestsAspectJ199 {
 			suite.addTest(SanityTestsJava18.suite());
 			suite.addTest(Ajc199TestsJava.suite());
 		}
+		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
+		/*
 		if (LangUtil.is18VMOrGreater() && !LangUtil.is19VMOrGreater()) {
 			suite.addTest(Java18PreviewFeaturesTests.suite());
 		}
+		*/
 		return suite;
 	}
 }

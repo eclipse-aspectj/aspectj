@@ -57,6 +57,8 @@ public class LangUtil {
 	static {
 		// http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
 		// http://openjdk.java.net/jeps/223 "New Version-String Scheme"
+		// TODO: Use java.lang.Runtime class (since Java 9, now AspectJ needs Java 11+ due to JDT Core anyway)
+		final String JAVA_VERSION_NOT_FOUND = "System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version";
 		try {
 			String vm = System.getProperty("java.version"); // JLS 20.18.7
 			if (vm == null) {
@@ -66,15 +68,12 @@ public class LangUtil {
 				vm = System.getProperty("java.vm.version");
 			}
 			if (vm == null) {
-				new RuntimeException(
-						"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version")
-				.printStackTrace(System.err);
+				new RuntimeException(JAVA_VERSION_NOT_FOUND).printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
-				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)*
 				// Care about the first set of digits and second set if first digit is 1
 				try {
-					List<Integer> numbers = getFirstNumbers(vm);
+					List<Integer> numbers = getJavaMajorMinor(vm);
 					if (numbers.get(0) == 1) {
 						// Old school for 1.0 > 1.8
 						vmVersion = numbers.get(0)+(numbers.get(1)/10d);
@@ -89,18 +88,19 @@ public class LangUtil {
 				}
 			}
 		} catch (Throwable t) {
-			new RuntimeException(
-					"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version", t)
-			.printStackTrace(System.err);
+			new RuntimeException(JAVA_VERSION_NOT_FOUND, t).printStackTrace(System.err);
 			vmVersion = 1.5;
 		}
 	}
 
-	private static List<Integer> getFirstNumbers(String vm) {
+	private static List<Integer> getJavaMajorMinor(String vm) {
 		List<Integer> result = new ArrayList<>();
-		StringTokenizer st = new StringTokenizer(vm,".-_");
+		// Can be something like '1.5', '11.0.16.1', '19+36-2238'
+		StringTokenizer st = new StringTokenizer(vm,".-_+");
 		try {
 			result.add(Integer.parseInt(st.nextToken()));
+			// FIXME: The minor will be wrong for version strings like '19+36-2238'.
+			// The minor is only relevant for Java <= 1.8. Even so, this is super ugly.
 			result.add(Integer.parseInt(st.nextToken()));
 		} catch (Exception e) {
 			// NoSuchElementException if no more tokens
