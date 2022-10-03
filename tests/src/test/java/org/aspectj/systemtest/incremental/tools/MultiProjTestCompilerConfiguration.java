@@ -67,13 +67,14 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		for (File dir: allOutputPaths) {
 			sb.append(File.pathSeparator + dir.getAbsolutePath());
 		}
-		String cp = sb.toString() + File.pathSeparator + new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator
-				+ System.getProperty("sun.boot.class.path") + File.pathSeparator + "../runtime/target/classes" + File.pathSeparator
-				+ this.classPath + File.pathSeparator + System.getProperty("aspectjrt.path") + File.pathSeparator
-				+ "../lib/junit/junit.jar" + "c:/batik/batik-1.6/lib/batik-util.jar;"
-				+ "c:/batik/batik-1.6/lib/batik-awt-util.jar;" + "c:/batik/batik-1.6/lib/batik-dom.jar;"
-				+ "c:/batik/batik-1.6/lib/batik-svggen.jar;" + File.pathSeparator + ".." + File.separator + "lib" + File.separator
-				+ "test" + File.separator + "aspectjrt.jar";
+		String cp = sb + File.pathSeparator
+			+ new File(AjdeInteractionTestbed.testdataSrcDir) + File.pathSeparator
+			+ System.getProperty("sun.boot.class.path") + File.pathSeparator
+			+ "../runtime/target/classes" + File.pathSeparator
+			+ this.classPath + File.pathSeparator
+			+ System.getProperty("aspectjrt.path") + File.pathSeparator
+			+ "../lib/junit/junit.jar" + File.pathSeparator
+			+ ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
 		verifyClasspath(cp);
 		if (LangUtil.is9VMOrGreater()) {
 			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
