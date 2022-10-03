@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Contributors
+ * Copyright (c) 2022 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava18OrLater;
 
 /*
  * Some very trivial tests that help verify things are OK.
- * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -17 option
+ * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -18 option
  * to check code generation and modification with that version specified.
  *
  * @author Alexander Kriegisch
