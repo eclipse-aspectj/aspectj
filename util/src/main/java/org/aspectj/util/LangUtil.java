@@ -96,16 +96,17 @@ public class LangUtil {
 	private static List<Integer> getJavaMajorMinor(String vm) {
 		List<Integer> result = new ArrayList<>();
 		// Can be something like '1.5', '11.0.16.1', '19+36-2238'
-		StringTokenizer st = new StringTokenizer(vm,".-_+");
+		StringTokenizer st = new StringTokenizer(vm.replaceFirst("[+].*", ""), ".-_");
 		try {
 			result.add(Integer.parseInt(st.nextToken()));
-			// FIXME: The minor will be wrong for version strings like '19+36-2238'.
-			// The minor is only relevant for Java <= 1.8. Even so, this is super ugly.
 			result.add(Integer.parseInt(st.nextToken()));
 		} catch (Exception e) {
 			// NoSuchElementException if no more tokens
 			// NumberFormatException if not a number
 		}
+		// Always add a default minor, just in case a caller expects it
+		if (result.size() == 1)
+			result.add(0);
 		return result;
 	}
 
