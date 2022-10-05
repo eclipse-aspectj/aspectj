@@ -55,7 +55,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<!-- declared with throws exception -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 2">
 		<compile files="Target2.java" options="-1.5 -showWeaveInfo">
@@ -69,7 +69,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<!-- already annotated with another annotation -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 3">
 		<compile files="Target3.java" options="-1.5 -showWeaveInfo">
@@ -85,26 +85,26 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<!-- already annotated with the same annotation -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 4">
 		<compile files="Target4.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="Type 'Target4' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
 			<!--  warning turned off as it gets confusing - when the itd on the interface is hit by a deca -->
-			<!-- 
+			<!--
 			<message kind="warning" text="java.lang.String Target4.hello() - already has an annotation of type Tagged, cannot add a second instance [Xlint:elementAlreadyAnnotated]"/>
 			-->
 		</compile>
 		<run class="Target4">
 		<stdout>
 		<line text="1"/>
-		<line text="@Tagged(value=31)" vm="1.5,1.6,1.7,1.8,9,10,11,12,13"/>
-		<line text="@Tagged(31)" vm="14+"/>
+		<line text="@Tagged(value=31)" vm="1.5-13"/>
+		<line text="@Tagged(31)" vm="14-"/>
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr413378" title="super itd ctor">
 		<compile files="Code.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Type 'Child' (Code.java) has intertyped constructor from 'MyTest' (Code.java:'void Child.&lt;init&gt;(java.lang.String, int)')"/>
@@ -116,7 +116,7 @@
 		</stdout>
 		</run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 1">
 	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
@@ -134,7 +134,7 @@
  	    </stderr>
       </run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 2">
 	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
@@ -153,7 +153,7 @@
  	    </stderr>
       </run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 3">
 	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
@@ -171,7 +171,7 @@
  	    </stderr>
       </run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 4">
 	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
@@ -190,7 +190,7 @@
  	    </stderr>
       </run>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 5">
 	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
