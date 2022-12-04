@@ -15,8 +15,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs1919Tests extends XMLBasedAjcTestCase {
 
-  public void testDummyBug() {
-    //runTest("dummy Java 19 bug");
+  public void testDeclareAnnotationWithSourceRetention() {
+    runTest("declare annotation with SOURCE retention");
   }
 
   public static Test suite() {
