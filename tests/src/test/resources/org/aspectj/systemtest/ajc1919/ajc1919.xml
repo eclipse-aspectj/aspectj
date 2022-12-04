@@ -162,8 +162,14 @@
 		</run>
 	</ajc-test>
 
-	<!-- Currently, there are no bugfixes with tests in this AspectJ vesion -->
-	<ajc-test dir="bugs1919/github_99999" vm="19" title="dummy Java 19">
-	</ajc-test>
+	<!-- Weaver error when declaring annotation with SOURCE retention, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=366085 -->
+	 <ajc-test dir="bugs1919/366085" vm="1.5" title="declare annotation with SOURCE retention">
+		 <compile files="Application.java DeclareAnnotationsAspect.aj ToString.java Marker.java" options="-1.5 -showWeaveInfo">
+			 <message kind="weave" text="'Application' (Application.java:1) is annotated with @Marker type annotation from 'DeclareAnnotationsAspect'"/>
+			 <message kind="weave" text="'public void Application.new(int)' (Application.java:4) is annotated with @Marker constructor annotation from 'DeclareAnnotationsAspect'"/>
+			 <message kind="weave" text="'public int Application.getNumber()' (Application.java:8) is annotated with @Marker method annotation from 'DeclareAnnotationsAspect'"/>
+			 <message kind="weave" text="'public int number' of type 'Application' (Application.java) is annotated with @Marker field annotation from 'DeclareAnnotationsAspect'"/>
+		 </compile>
+		</ajc-test>
 
 </suite>

@@ -380,6 +380,8 @@ public class DeclareAnnotation extends Declare {
 				int idx = 0;
 				if (annos.length > 0
 						&& annos[0].getType().getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
+					if (annos.length < 2)
+						continue;
 					idx = 1;
 				}
 				annotation = annos[idx];
@@ -441,6 +443,8 @@ public class DeclareAnnotation extends Declare {
 					int idx = 0;
 					if (annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
 						idx = 1;
+						if (annoTypes.length < 2)
+							continue;
 					}
 					annotationType = annoTypes[idx];
 					break;
