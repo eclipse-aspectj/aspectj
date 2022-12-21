@@ -42,24 +42,24 @@
   <li>Structured concurrency (incubator)</li>
 </ul>
 
-Please note that the upstream Eclipse Java Compiler (ECJ) which the AspectJ Compiler (AJC) is a fork of still has some
-open issues concerning Java 19 preview feature support, see the list in
-<a href="https://github.com/eclipse/org.aspectj/issues/184#issuecomment-1272254940">this comment</a>. AJC therefore
-inherits the same problems for the specific cases described in the linked issues.
+<p>
+  Please note that the upstream Eclipse Java Compiler (ECJ) which the AspectJ Compiler (AJC) is a fork of still has some
+  open issues concerning Java 19 preview feature support, see the list in
+  <a href="https://github.com/eclipse/org.aspectj/issues/184#issuecomment-1272254940">this comment</a>. AJC therefore
+  inherits the same problems for the specific cases described in the linked issues.
+</p>
 
 <h2>Improvements</h2>
 
-<p>
-  In annotation style aspects, asynchronous <tt>proceed()</tt> calls in <tt>@Around</tt> advice now works in threads
-  created from within the advice. Previously, this was only working in native syntax aspects. There is still a
-  limitation with regard to asynchronous proceed, if you do not create the thread in the advice but want to use e.g.
-  an <tt>ExecutorService</tt> with its own thread pool. This still is not working in annotation style aspects, only in
-  native syntax ones.
-</p>
-<p>
-  See <a href="https://github.com/eclipse/org.aspectj/issues/128">issue #128</a> and
-  <a href="https://github.com/eclipse/org.aspectj/pull/132">pull request #132</a> for more details.
-</p>
+<ul>
+  <li>
+    Improve condy (constant dynamic) support. Together with some custom compilation or weaving options, this helps to
+    avoid a problem when using JaCoCo together with AspectJ, see
+    <a href="https://github.com/eclipse/org.aspectj/issues/170#issuecomment-1214163297">this comment in #170</a> for
+    more details.
+  </li>
+</ul>
+
 <h2>Code examples</h2>
 
 <p>
@@ -78,13 +78,8 @@ inherits the same problems for the specific cases described in the linked issues
     </a>
   </li>
   <li>
-    <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/features199/java18">
+    <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/features1919/java19">
       Pattern matching for switch (preview 3), record patterns (preview 1)
-    </a>
-  </li>
-  <li>
-    <a href="https://github.com/eclipse/org.aspectj/tree/master/tests/bugs199/github_128">
-      Asynchronous proceed in native vs. annotation style syntax
     </a>
   </li>
   <li>
@@ -99,17 +94,17 @@ inherits the same problems for the specific cases described in the linked issues
 
 <ul>
   <li>
-    Fix a bug which led to <tt>NullPointerException</tt>s if too many JAR archives were on the classpath. Too many here
-    means the value system property <tt>org.aspectj.weaver.openarchives</tt> (1,000 by default). The AspectJ compiler is
-    meant to close archives upon cache exhaustion and then re-open them if it needs them again later. Re-opening was
-    broken, now the compiler works reliably even for cache sizes as small as 20. See issue
-    <a href="https://github.com/eclipse/org.aspectj/issues/125">#125</a>.
+    Fix (or rather work around) an old bug occurring when compiling or weaving code using ITD to declare annotations
+    with <tt>SOURCE</tt> retention on types, methods, constructors or fields. While declaring such annotations does not
+    make sense to begin with, at least the AspectJ weaver or compiler should handle the situation gracefully, which now
+    it does by simply ignoring errors caused by it. See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=366085">
+    Bugzilla #366085</a> and <a href="https://github.com/eclipse/org.aspectj/pull/196">pull request #196</a>. Better
+    than this workaround would be for the compiler or weaver to actually print a warning when meeting source level
+    annotations in declare statements. Hence, follow-up issue
+    <a href="https://github.com/eclipse/org.aspectj/issues/201">#201</a> was created.
   </li>
   <li>
-    Improvements for <tt>if()</tt> pointcuts in annotation syntax, see issues
-    <a href="https://github.com/eclipse/org.aspectj/issues/115">#115</a>,
-    <a href="https://github.com/eclipse/org.aspectj/issues/120">#120</a>,
-    <a href="https://github.com/eclipse/org.aspectj/issues/122">#122</a>.
+    Remove legacy AspectJ Browser code and documentation.
   </li>
   <li>
     Thanks to Andrey Turbanov for several clean code contributions.
@@ -155,7 +150,7 @@ inherits the same problems for the specific cases described in the linked issues
 <hr>
 
 <p>
-  <b>Available:</b> 1.9.19 on DD-MMM-2022
+  <b>Available:</b> 1.9.19 on 21-Dec-2022
 </p>
 
 </body>
