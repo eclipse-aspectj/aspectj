@@ -1,0 +1,169 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+  Java 19: no new final language features, only preview/incubator ones:
+    - "JEP 427: Pattern Matching for switch (Third Preview)" (syntax change, introducing 'when')
+    - "JEP 405: Record Patterns (Preview)"
+    - "JEP 425: Virtual Threads (Preview)" (API only)
+    - "JEP 428: Structured Concurrency (Incubator)" (API only)
+-->
+<suite>
+
+	<!-- Java ?? final, Java 17, 18, 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="switch pattern matching preview 3 java">
+		<compile files="SwitchPatternPreview3OK.java" options="--enable-preview -19" />
+		<run class="SwitchPatternPreview3OK" vmargs="--enable-preview">
+      <message></message>
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18, 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="switch pattern matching preview 3 aspect">
+		<compile files="SwitchPatternPreview3Aspect.aj" options="--enable-preview -19" />
+		<run class="Application" vmargs="--enable-preview">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18, 19 preview -->
+	<ajc-test dir="features198/java17" vm="19" title="switch pattern matching error">
+		<compile files="SwitchPatternError.java" options="--enable-preview -19">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18, 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="switch pattern matching preview 3 error 1">
+		<compile files="SwitchPatternPreview3Error1.java" options="--enable-preview -19">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 17, 18, 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="switch pattern matching preview 3 error 2">
+		<compile files="SwitchPatternPreview3Error2.java" options="--enable-preview -19">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case label"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns">
+    <compile files="RecordPatternsPreview1OK.java" options="--enable-preview -19"/>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns error">
+		<compile files="RecordPatternsPreview1Error.java" options="--enable-preview -19">
+			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
+			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns exhaustiveness 1">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="--enable-preview -19"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="--enable-preview">
+			<stdout>
+				<line text="y"/>
+				<line text="a"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns exhaustiveness aspect">
+		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="--enable-preview -19"/>
+		<!--
+			TODO: Remove redundant default clause when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455
+				has been fixed. But even with the default clause, it generates wrong byte code and throws runtime error:
+				NoSuchMethodError: 'I Pair.x()'
+		-->
+		<!--run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="-XXX-enable-preview">
+			<stdout>
+				<line text="y"/>
+				<line text="a"/>
+				<line text="Pair[x=C@000, y=D@000]"/>
+			</stdout>
+		</run-->
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns aspect">
+		<compile files="RecordPatternsPreview1Aspect.aj" options="--enable-preview -19"/>
+		<run class="RecordPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout>
+				<line text="9"/>
+				<line text="14"/>
+				<line text="Doing something with Point[x=2, y=7]"/>
+				<line text="Upper-left color: RED"/>
+				<line text="Upper-left color: RED"/>
+				<line text="Upper-left x coordinate: 1"/>
+				<line text="Doing something with Rectangle[upperLeft=ColoredPoint[p=Point[x=1, y=6], c=RED], lowerRight=ColoredPoint[p=Point[x=4, y=6], c=BLUE]]"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns exhaustiveness error">
+		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="--enable-preview -19">
+			<message kind="error" file="RecordPatternsPreview1ExhaustivenessError.java" text="An enhanced switch statement should be exhaustive; a default label expected"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java ?? final, Java 19 preview -->
+	<ajc-test dir="features1919/java19" vm="19" title="record patterns exhaustiveness 2">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="--enable-preview -19"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK2" vmargs="--enable-preview">
+			<stdout>
+				<line text="Bob 12"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Currently, there are no bugfixes with tests in this AspectJ vesion -->
+	<ajc-test dir="bugs1919/github_99999" vm="19" title="dummy Java 19">
+	</ajc-test>
+
+</suite>

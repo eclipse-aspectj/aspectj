@@ -11,9 +11,10 @@
 package org.aspectj.ajdt.internal.core.builder;
 
 import org.aspectj.bridge.IProgressListener;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * @author colyer
@@ -26,8 +27,8 @@ public class AjBuildNotifier extends BuildNotifier implements IProgressListener 
 	 * @param monitor
 	 * @param project
 	 */
-	public AjBuildNotifier(IProgressMonitor monitor, IProject project) {
-		super(monitor, project);
+	public AjBuildNotifier(IProgressMonitor monitor, int buildKind, BooleanSupplier interruptSupplier) {
+		super(monitor, buildKind, interruptSupplier);
 	}
 
 	/* (non-Javadoc)

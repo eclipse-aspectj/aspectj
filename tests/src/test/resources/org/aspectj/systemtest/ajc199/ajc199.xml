@@ -3,10 +3,6 @@
 
 <suite>
 
-	<!-- Java 18 final: no new features, only 2nd preview for "JEP 420: Pattern Matching for switch (Second Preview)" -->
-	<ajc-test dir="features199/java18" vm="18" title="dummy Java 18">
-	</ajc-test>
-
 	<!-- Java ?? final, Java 17, 18 preview -->
 	<ajc-test dir="features198/java17" vm="18" title="switch pattern matching error">
 		<compile files="SwitchPatternError.java" options="--enable-preview -18">
