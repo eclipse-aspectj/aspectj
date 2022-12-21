@@ -42,6 +42,49 @@ public class Java19PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava19Only
     runTest("switch pattern matching preview 3 error 2");
   }
 
+  public void testRecordPatternsPreview1OK() {
+    // See https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450
+    runTest("record patterns");
+  }
+
+  public void testRecordPatternsPreview1Error() {
+    // See https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450
+    runTest("record patterns error");
+  }
+
+  public void testRecordPatternsPreview1ExhaustivenessOK1() {
+    // Falsely throws 'An enhanced switch statement should be exhaustive; a default label expected' twice,
+    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455
+    // TODO: activate when fixed
+    System.out.println("TODO: activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed");
+    //runTest("record patterns exhaustiveness 1");
+  }
+
+  public void testRecordPatternsPreview1Aspect() {
+    runTest("record patterns aspect");
+  }
+
+  public void testRecordPatternsPreview1ExhaustivenessAspect() {
+    // TODO: Remove redundant default clauses in RecordPatternsPreview1Aspect when
+    //   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed. Furthermore, activate '<run />'
+    //   action for XML test case in order to not just compile but also run the code.
+    System.out.println("TODO: fully activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed");
+    runTest("record patterns exhaustiveness aspect");
+  }
+
+  public void testRecordPatternsPreview1ExhaustivenessError() {
+    // See https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455
+    runTest("record patterns exhaustiveness error");
+  }
+
+  public void testRecordPatternsPreview1ExhaustivenessOK2() {
+    // Falsely throws 'An enhanced switch statement should be exhaustive; a default label expected',
+    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/398
+    // TODO: activate when fixed
+    System.out.println("TODO: activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/398 has been fixed");
+    //runTest("record patterns exhaustiveness 2");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Java19PreviewFeaturesTests.class);
   }
