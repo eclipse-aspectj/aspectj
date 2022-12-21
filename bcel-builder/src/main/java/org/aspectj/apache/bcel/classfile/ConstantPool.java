@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.Const;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.generic.ArrayType;
 import org.aspectj.apache.bcel.generic.ObjectType;
@@ -294,7 +293,7 @@ public class ConstantPool implements Node {
 		 * This is a redundant measure as the ConstantPoolGen should have already
 		 * reported an error back in the situation.
 		 */
-		final int size = Math.min(poolSize, Const.MAX_CP_ENTRIES);
+		final int size = Math.min(poolSize, Constants.MAX_CP_ENTRIES);
 		file.writeShort(size);
 		for (int i = 1; i < size; i++)
 			if (pool[i] != null)
@@ -425,17 +424,17 @@ public class ConstantPool implements Node {
 
 	private void adjustSize() {
     // 3 extra spaces are needed as some entries may take 3 slots
-    if (poolSize + 3 >= Const.MAX_CP_ENTRIES + 1) {
+    if (poolSize + 3 >= Constants.MAX_CP_ENTRIES + 1) {
       throw new IllegalStateException(
         "The number of constants " + (poolSize + 3) +
-        " is over the size of the constant pool: " + Const.MAX_CP_ENTRIES
+        " is over the size of the constant pool: " + Constants.MAX_CP_ENTRIES
       );
     }
     if (poolSize + 3 >= pool.length) {
 			Constant[] cs = pool;
 			int size = cs.length + 8;
 			// the constant array shall not exceed the size of the constant pool
-			size = Math.min(size, Const.MAX_CP_ENTRIES + 1);
+			size = Math.min(size, Constants.MAX_CP_ENTRIES + 1);
 			pool = new Constant[size];
 			System.arraycopy(cs, 0, pool, 0, cs.length);
 		}
