@@ -42,6 +42,7 @@ public class DeclareAnnotation extends Declare {
 	public static final Kind AT_METHOD = new Kind(3, "method");
 	public static final Kind AT_CONSTRUCTOR = new Kind(4, "constructor");
 	public static final Kind AT_REMOVE_FROM_FIELD = new Kind(5, "removeFromField");
+	private static final String AJC_DECLARE_ANNOTATION = "Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;";
 
 	private Kind kind;
 	// for declare @type
@@ -350,43 +351,52 @@ public class DeclareAnnotation extends Declare {
 
 	public void copyAnnotationTo(ResolvedType onType) {
 		ensureAnnotationDiscovered();
+		if (annotation == null)
+			return;
 		if (!onType.hasAnnotation(annotation.getType())) {
 			onType.addAnnotation(annotation);
 		}
 	}
 
+	/**
+	 * @return declared annotation; can be null for annotations with SOURCE retention, which of course are not present in
+	 * the byte code
+	 */
 	public AnnotationAJ getAnnotation() {
 		ensureAnnotationDiscovered();
 		return annotation;
 	}
 
 	/**
-	 * The annotation specified in the declare @type is stored against a simple method of the form "ajc$declare_<NN>", this method
-	 * finds that method and retrieves the annotation
+	 * The annotation specified in the declare @type is stored against a simple method of the form "ajc$declare_<NN>",
+	 * this method finds that method and retrieves the annotation.
+	 * <p>
+	 * Caveat: Nothing will be found for annotations with SOURCE retention, which of course are not present in the byte
+	 * code.
 	 */
 	private void ensureAnnotationDiscovered() {
-		if (annotation != null) {
+		if (annotation != null)
 			return;
-		}
 		String annotationMethod = annotationMethods.get(0);
 		for (Iterator<ResolvedMember> iter = containingAspect.getMethods(true, true); iter.hasNext();) {
 			ResolvedMember member = iter.next();
-			if (member.getName().equals(annotationMethod)) {
-				AnnotationAJ[] annos = member.getAnnotations();
-				if (annos == null) {
-					// if weaving broken code, this can happen
-					return;
-				}
-				int idx = 0;
-				if (annos.length > 0
-						&& annos[0].getType().getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
-					if (annos.length < 2)
-						continue;
-					idx = 1;
-				}
-				annotation = annos[idx];
-				break;
+			if (!member.getName().equals(annotationMethod))
+				continue;
+			AnnotationAJ[] annos = member.getAnnotations();
+			// If weaving broken code, annos can be null or empty
+			if (annos == null || annos.length == 0)
+				return;
+			int idx = 0;
+			if (annos[0].getType().getSignature().equals(AJC_DECLARE_ANNOTATION)) {
+				// @ajcDeclareAnnotation marker annotations should always come in pairs with the actual declared annotations.
+				// If the second annotation is not found, it means that it has SOURCE retention and the annotation declaration
+				// is to be ignored.
+				if (annos.length < 2)
+					break;
+				idx = 1;
 			}
+			annotation = annos[idx];
+			break;
 		}
 	}
 
@@ -427,29 +437,32 @@ public class DeclareAnnotation extends Declare {
 	}
 
 	/**
-	 * @return the type of the annotation
+	 * @return the type of the annotation; can be null for annotations with SOURCE retention, which of course are not
+	 * present in the byte code
 	 */
 	public ResolvedType getAnnotationType() {
-		if (annotationType == null) {
-			String annotationMethod = annotationMethods.get(0);
-			for (Iterator<ResolvedMember> iter = containingAspect.getMethods(true, true); iter.hasNext();) {
-				ResolvedMember member = iter.next();
-				if (member.getName().equals(annotationMethod)) {
-					ResolvedType[] annoTypes = member.getAnnotationTypes();
-					if (annoTypes == null) {
-						// if weaving broken code, this can happen
-						return null;
-					}
-					int idx = 0;
-					if (annoTypes[0].getSignature().equals("Lorg/aspectj/internal/lang/annotation/ajcDeclareAnnotation;")) {
-						idx = 1;
-						if (annoTypes.length < 2)
-							continue;
-					}
-					annotationType = annoTypes[idx];
+		if (annotationType != null)
+			return annotationType;
+		String annotationMethod = annotationMethods.get(0);
+		for (Iterator<ResolvedMember> iter = containingAspect.getMethods(true, true); iter.hasNext(); ) {
+			ResolvedMember member = iter.next();
+			if (!member.getName().equals(annotationMethod))
+				continue;
+			ResolvedType[] annoTypes = member.getAnnotationTypes();
+			// If weaving broken code, annoTypes can be null or empty
+			if (annoTypes == null || annoTypes.length == 0)
+				return null;
+			int idx = 0;
+			if (annoTypes[0].getSignature().equals(AJC_DECLARE_ANNOTATION)) {
+				// @ajcDeclareAnnotation marker annotations should always come in pairs with the actual declared annotations.
+				// If the second annotation is not found, it means that it has SOURCE retention and the annotation declaration
+				// is to be ignored.
+				if (annoTypes.length < 2)
 					break;
-				}
+				idx = 1;
 			}
+			annotationType = annoTypes[idx];
+			break;
 		}
 		return annotationType;
 	}
@@ -459,7 +472,7 @@ public class DeclareAnnotation extends Declare {
 	 */
 	public boolean isAnnotationAllowedOnField() {
 		ensureAnnotationDiscovered();
-		return annotation.allowedOnField();
+		return annotation != null && annotation.allowedOnField();
 	}
 
 	public String getPatternAsString() {
