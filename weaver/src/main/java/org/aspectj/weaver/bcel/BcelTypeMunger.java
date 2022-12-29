@@ -1436,8 +1436,13 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionList body = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
 
-			// getfield
+			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITORENTER (beginning of 'try')
 			body.append(InstructionConstants.ALOAD_0);
+			body.append(InstructionConstants.MONITORENTER);
+
+			// The JVM spec requires us add an exception handler ensuring MONITOREXIT in case of an exception inside the
+			// synchronized block, see https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-3.html#jvms-3.14.
+			InstructionHandle tryStart = body.append(InstructionConstants.ALOAD_0);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 			InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
 			body.append(ifNonNull);
@@ -1487,9 +1492,33 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 			}
 
-			// if not null use the instance we've got
+			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITOREXIT (end of 'try')
 			InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);
 			ifNonNull.setTarget(ifNonNullElse);
+			body.append(InstructionConstants.MONITOREXIT);
+
+			// There was no error in the 'synchronized(this)' block -> jump to first instruction after exception handler
+			InstructionBranch gotoAfterTryCatch = new InstructionBranch(Constants.GOTO, null);
+			InstructionHandle tryEnd = body.append(gotoAfterTryCatch);
+
+			// Exception handler (logical 'catch') for the 'synchronized(this)' block ensures that MONITOREXIT is also called
+			// in case of an error
+			InstructionHandle catchStart = body.append(InstructionConstants.ALOAD_0);
+			body.append(InstructionConstants.MONITOREXIT);
+			InstructionHandle catchEnd = body.append(InstructionConstants.ATHROW);
+
+			// Add exception handler for 'synchronized(this)' block
+			mg.addExceptionHandler(tryStart, tryEnd.getPrev(), catchStart, null, false);
+
+			// CAVEAT: Add an extra, self-referential exception handler entry. I.e., the handler handles its own exceptions.
+			// According to https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-3.html#jvms-3.14, this is required, and
+			// Javac also creates code like this, which is why we are mimicking it.
+			mg.addExceptionHandler(catchStart, catchEnd.getPrev(), catchStart, null, false);
+
+			// if not null use the instance we've got
+			InstructionHandle afterTryCatch = body.append(InstructionConstants.ALOAD_0);
+			// Tell 'gotoAfterTryCatch' where to find the first statement after the exception handler
+			gotoAfterTryCatch.setTarget(afterTryCatch);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 
 			// args
