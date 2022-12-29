@@ -67,6 +67,12 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("casee");
 	}
 
+	// multiple instances causing factory invocation multiple times (but is cached), concurrent case
+	// see https://github.com/eclipse/org.aspectj/issues/198
+	public void testCaseEConcurrent() {
+		runTest("casee_concurrent");
+	}
+
 	// Factory method directly takes the type specified in the Mixin target (strongly typed)
 	public void testCaseF() {
 		runTest("casef");
