@@ -19,6 +19,9 @@ public class Bugs1919Tests extends XMLBasedAjcTestCase {
     runTest("declare annotation with SOURCE retention");
   }
 
+  public void testsSwitchWith_Integer_MAX_VALUE() {
+    runTest("switch with Integer.MAX_VALUE case");
+  }
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1919Tests.class);
   }
