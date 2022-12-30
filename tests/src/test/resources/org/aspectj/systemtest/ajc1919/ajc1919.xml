@@ -172,4 +172,17 @@
 		</compile>
 	</ajc-test>
 
+	<!-- RuntimeException in BcelWeaver, see https://github.com/eclipse/org.aspectj/issues/190 -->
+	<ajc-test dir="bugs1919/github_190" vm="1.5" title="switch with Integer.MAX_VALUE case">
+		<compile files="SwitchCaseWith_Integer_MAX_VALUE.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="Join point 'method-execution(java.lang.String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))'"/>
+    </compile>
+		<run class="SwitchCaseWith_Integer_MAX_VALUE">
+			<stdout>
+				<line text="execution(String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))"/>
+				<line text="CASE_1"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
