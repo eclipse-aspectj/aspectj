@@ -124,8 +124,8 @@ public class TABLESWITCH extends InstructionSelect {
 		indices = new int[matchLength];
 		targets = new InstructionHandle[matchLength];
 
-		for (int i = low; i <= high; i++) {
-			match[i - low] = i;
+		for (int i = 0; i < matchLength; i++) {
+			match[i] = low + i;
 		}
 
 		for (int i = 0; i < matchLength; i++) {
