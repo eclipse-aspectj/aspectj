@@ -22,6 +22,11 @@ public class Bugs1919Tests extends XMLBasedAjcTestCase {
   public void testsSwitchWith_Integer_MAX_VALUE() {
     runTest("switch with Integer.MAX_VALUE case");
   }
+
+  public void testsParenthesisedExpressionWithAjKeyword() {
+    runTest("parenthesised expression with AspectJ keyword");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1919Tests.class);
   }
