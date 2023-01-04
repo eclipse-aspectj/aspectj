@@ -185,4 +185,23 @@
 		</run>
 	</ajc-test>
 
+	<!--
+		'Syntax error, insert "Expression" to complete Expression' when compiling parenthesised expressions
+		containing AspectJ keywords, e.g. '(before)', see https://github.com/eclipse/org.aspectj/issues/20
+	-->
+	<ajc-test dir="bugs1919/github_20" vm="1.5" title="parenthesised expression with AspectJ keyword">
+		<compile files="ParenthesisedAJKeywords.java" options="-1.8 -showWeaveInfo"/>
+		<run class="ParenthesisedAJKeywords">
+			<stdout>
+				<line text="before"/>
+				<line text="after"/>
+				<line text="around"/>
+				<line text="aspect"/>
+				<line text="pointcut"/>
+				<line text="declare"/>
+				<line text="privileged"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
