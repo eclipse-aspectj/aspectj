@@ -27,6 +27,10 @@ public class Bugs1919Tests extends XMLBasedAjcTestCase {
     runTest("parenthesised expression with AspectJ keyword");
   }
 
+  public void testInterfaceInnerAspectImplicitlyStatic() {
+    runTest("inner aspect of interface is implicitly static");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1919Tests.class);
   }

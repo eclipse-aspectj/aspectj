@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
@@ -230,7 +231,12 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private void validateAspectDeclaration(TypeDeclaration typeDecl) {
 		if (typeStack.size() > 1) {
 			// it's a nested aspect
-			if (!Modifier.isStatic(typeDecl.modifiers)) {
+			if (
+				!Modifier.isStatic(typeDecl.modifiers) &&
+				// Inner classes/aspects of interfaces are implicitly static,
+				// see https://github.com/eclipse/org.aspectj/issues/162
+				(typeDecl.enclosingType.modifiers & ClassFileConstants.AccInterface) == 0
+			) {
 				typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart, typeDecl.sourceEnd,
 						"inner aspects must be static");
 				return;

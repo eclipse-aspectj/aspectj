@@ -155,7 +155,12 @@ public class AspectDeclaration extends TypeDeclaration {
 		}
 
 		if (this.enclosingType != null) {
-			if (!Modifier.isStatic(modifiers)) {
+			if (
+				!Modifier.isStatic(modifiers) &&
+				// Inner classes/aspects of interfaces are implicitly static,
+				// see https://github.com/eclipse/org.aspectj/issues/162
+				(this.enclosingType.modifiers & ClassFileConstants.AccInterface) == 0
+			) {
 				scope.problemReporter().signalError(sourceStart, sourceEnd, "inner aspects must be static");
 				ignoreFurtherInvestigation = true;
 				return;
