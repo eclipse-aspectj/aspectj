@@ -204,4 +204,22 @@
 		</run>
 	</ajc-test>
 
+	<!--
+		'inner aspects must be static' when compiling an interface with an inner aspect which was not explicitly declared
+		static, see https://github.com/eclipse/org.aspectj/issues/162
+	-->
+	<ajc-test dir="bugs1919/github_162" vm="1.5" title="inner aspect of interface is implicitly static">
+		<compile files="InterfaceWithInnerClass.java" options="-1.5 -showWeaveInfo">
+			<message kind="weave" text="method-execution(int InterfaceWithInnerClass$ImplicitlyStatic.getNumber())' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
+			<message kind="weave" text="method-execution(void InterfaceWithInnerClass$ImplicitlyStatic.main(java.lang.String[]))' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
+		</compile>
+		<run class="InterfaceWithInnerClass$ImplicitlyStatic">
+			<stdout>
+				<line text="execution(void InterfaceWithInnerClass.ImplicitlyStatic.main(String[]))"/>
+				<line text="execution(int InterfaceWithInnerClass.ImplicitlyStatic.getNumber())"/>
+				<line text="11"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
