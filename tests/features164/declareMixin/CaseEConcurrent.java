@@ -39,9 +39,11 @@ public class CaseEConcurrent {
   // the byte code, e.g. with JDK tool 'javap -v'.
   /*
   public void doSomething() {
-    synchronized (this) {
-      if (id == null)
-        id = "doing something";
+    if (id == null) {
+      synchronized (this) {
+        if (id == null)
+          id = "doing something";
+      }
     }
     callMe(id);
   }

@@ -1436,6 +1436,26 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionList body = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
 
+			// Create a delegate method body which basically looks as follows:
+			//
+			// public void methodOne() {
+			//   if (this.ajc$instance$MyAspect$MyMixin == null) {
+			//     synchronized(this) {
+			//       if (this.ajc$instance$MyAspect$MyMixin == null) {
+			//         this.ajc$instance$MyAspect$MyMixin = MyAspect.aspectOf().createImplementation(this);
+			//       }
+			//     }
+			//   }
+			//   this.ajc$instance$MyAspect$MyMixin.methodOne();
+			// }
+
+			// Before synchronising on 'this', perform a preliminary null check on the delegate field. Only if it is null,
+			// it makes sense to synchronise, then check for null again and initialise the delegate, if null.
+			body.append(InstructionConstants.ALOAD_0);
+			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+			InstructionBranch outerIfNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+			body.append(outerIfNonNull);
+
 			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITORENTER (beginning of 'try')
 			body.append(InstructionConstants.ALOAD_0);
 			body.append(InstructionConstants.MONITORENTER);
@@ -1444,8 +1464,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// synchronized block, see https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-3.html#jvms-3.14.
 			InstructionHandle tryStart = body.append(InstructionConstants.ALOAD_0);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
-			InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
-			body.append(ifNonNull);
+			InstructionBranch innerIfNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+			body.append(innerIfNonNull);
 
 			// Create and store a new instance
 			body.append(InstructionConstants.ALOAD_0); // 'this' is where we'll store the field value
@@ -1494,7 +1514,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITOREXIT (end of 'try')
 			InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);
-			ifNonNull.setTarget(ifNonNullElse);
+			innerIfNonNull.setTarget(ifNonNullElse);
 			body.append(InstructionConstants.MONITOREXIT);
 
 			// There was no error in the 'synchronized(this)' block -> jump to first instruction after exception handler
@@ -1519,6 +1539,8 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionHandle afterTryCatch = body.append(InstructionConstants.ALOAD_0);
 			// Tell 'gotoAfterTryCatch' where to find the first statement after the exception handler
 			gotoAfterTryCatch.setTarget(afterTryCatch);
+			// The outer delegate field null check should also jump to the same place, if the delegate field is not null
+			outerIfNonNull.setTarget(afterTryCatch);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 
 			// args
