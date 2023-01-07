@@ -156,25 +156,30 @@
 
 	<ajc-test dir="bugs183/442425" title="anno style decp">
 		<compile options="-1.8" files="EntityController.java IEntityController.java MyAnnotatedController.java EntityControllerAspect.java EntityMongoController.java">
-			<message kind="error" line="23" text="Type mismatch: cannot convert from MyAnnotatedController&lt;String&gt; to IEntityController&lt;String&gt;"/>
-			<message kind="error" line="30" text="Cannot infer type arguments for MyAnnotatedController&lt;&gt;"/>
+			<!--
+				NOTE: As explained in https://bugs.eclipse.org/bugs/show_bug.cgi?id=442425#c2, @DeclareParents will add the
+				raw form of the parent to the target class, not the generic one. Therefore, without additional casts AJC would
+				throw the following two errors:
+			-->
+			<!--<message kind="error" line="26" text="Type mismatch: cannot convert from MyAnnotatedController&lt;String&gt; to IEntityController&lt;String&gt;"/>-->
+			<!--<message kind="error" line="38" text="Cannot infer type arguments for MyAnnotatedController&lt;&gt;"/>-->
 		</compile>
-		<!--
-		<run class="de.scrum_master.app.MyAnnotatedController">
-		<stdout>
-		<line text="Doing something"/>
-		<line text="public static void de.scrum_master.app.MyAnnotatedController.main(java.lang.String[])"/>
-		<line text="public void de.scrum_master.app.MyAnnotatedController.doSomething()"/>
-		<line text="public java.lang.Object de.scrum_master.app.MyAnnotatedController.getEntity()"/>
-		<line text="public void de.scrum_master.app.MyAnnotatedController.setEntity(java.lang.Object)"/>
-		<line text="Entity value = foo"/>
-		<line text="Entity value = 123"/>
-		</stdout>
+		<run class="MyAnnotatedController">
+			<stdout ordered="no">
+				<line text="Doing something"/>
+				<line text="public static void MyAnnotatedController.main(java.lang.String[])"/>
+				<line text="public void MyAnnotatedController.doSomething()"/>
+				<!-- Object, not generic type -->
+				<line text="public java.lang.Object MyAnnotatedController.getEntity()"/>
+				<!-- Object, not generic type -->
+				<line text="public void MyAnnotatedController.setEntity(java.lang.Object)"/>
+				<line text="Entity value = foo"/>
+				<line text="Entity value = 123"/>
+			</stdout>
 		</run>
-		-->
 	</ajc-test>
 
-	<ajc-test dir="bugs183/443477" title="verifyerror">
+  <ajc-test dir="bugs183/443477" title="verifyerror">
 	  <compile options="-1.7" files="Coo.java"/>
 	  <run class="Coo"/>
 	</ajc-test>

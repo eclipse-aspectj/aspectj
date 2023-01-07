@@ -78,10 +78,10 @@ public class Ajc183Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	public void testVerifyError_443447() {
 		runTest("verifyerror");
 	}
-//
-//	public void testAnnoStyleDecp_442425() {
-//		runTest("anno style decp");
-//	}
+
+	public void testAnnoStyleDecp_442425() {
+		runTest("anno style decp");
+	}
 
 	// ---
 
