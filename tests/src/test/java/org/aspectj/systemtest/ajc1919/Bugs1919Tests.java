@@ -31,6 +31,22 @@ public class Bugs1919Tests extends XMLBasedAjcTestCase {
     runTest("inner aspect of interface is implicitly static");
   }
 
+  public void testExactArrayTypeMatchCompiledTogether() {
+    runTest("exact array type matching, aspect compiled together with target class");
+  }
+
+  public void testExactArrayTypeMatchCompiledSeparately() {
+    runTest("exact array type matching, aspect compiled separately from target class");
+  }
+
+  public void testFuzzyArrayTypeMatchCompiledTogether() {
+    runTest("fuzzy array type matching, aspect compiled together with target class");
+  }
+
+  public void testFuzzyArrayTypeMatchCompiledSeparately() {
+    runTest("fuzzy array type matching, aspect compiled separately from target class");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1919Tests.class);
   }
