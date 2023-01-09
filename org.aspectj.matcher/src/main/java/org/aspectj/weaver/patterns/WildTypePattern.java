@@ -234,6 +234,7 @@ public class WildTypePattern extends TypePattern {
 		annotationPattern.resolve(type.getWorld());
 
 		return matchesExactlyByName(targetTypeName, type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
+				&& matchesArray(type)
 				&& matchesBounds(type, STATIC)
 				&& annotationPattern.matches(annotatedType, type.temporaryAnnotationTypes).alwaysTrue();
 	}
@@ -368,7 +369,7 @@ public class WildTypePattern extends TypePattern {
 			}
 		}
 
-		return innerMatchesExactly(targetTypeName, isAnonymous, isNested);
+		return innerMatchesExactly(targetTypeName.substring(0, targetTypeName.length() - dim * 2), isAnonymous, isNested);
 	}
 
 	private int lastIndexOfDotOrDollar(String string) {

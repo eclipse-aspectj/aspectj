@@ -161,6 +161,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		return signature.length() > 0 && signature.charAt(0) == '[';
 	}
 
+	public final int getDimensions() {
+		return signature.replaceAll("^(\\[*).*", "$1").length();
+	}
+
 	/**
 	 * Equality is checked based on the underlying signature.
 	 */
@@ -169,7 +173,8 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 		if (!(other instanceof UnresolvedType)) {
 			return false;
 		}
-		return signature.equals(((UnresolvedType) other).signature);
+		final UnresolvedType unresolvedOther = (UnresolvedType) other;
+		return signature.equals(unresolvedOther.signature) && getDimensions() == unresolvedOther.getDimensions();
 	}
 
 	/**
@@ -178,7 +183,10 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	 */
 	@Override
 	public int hashCode() {
-		return signature.hashCode();
+		int result = 17;
+		result = 37 * result + signature.hashCode();
+		result = 37 * result + getDimensions();
+		return result;
 	}
 
 	protected UnresolvedType(String signature) {
