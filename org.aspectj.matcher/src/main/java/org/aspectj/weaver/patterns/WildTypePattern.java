@@ -326,11 +326,7 @@ public class WildTypePattern extends TypePattern {
 					numDimensionsInTargetType++;
 					targetTypeName = targetTypeName.substring(index + 1);
 				}
-				if (numDimensionsInTargetType == dim) {
-					return true;
-				} else {
-					return false;
-				}
+        return numDimensionsInTargetType == dim;
 			}
 		}
 
