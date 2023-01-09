@@ -229,8 +229,12 @@
 	<ajc-test dir="bugs1919/github_24" vm="1.5" title="exact array type matching, aspect compiled together with target class">
 		<compile files="ExactlyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
 			<!-- Even before the bugfix, in this case weaving worked as expected -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())'"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())'"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
+			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
+			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
 		</compile>
 		<run class="MaybeMissingClass">
 			<stdout>
@@ -238,6 +242,14 @@
 				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 				<line text="MaybeMissingClass.f2"/>
 				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+				<line text="MaybeMissingClass.f3"/>
+				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+				<line text="MaybeMissingClass.f4"/>
+				<line text="execution(int MaybeMissingClass.f4())"/>
+				<line text="MaybeMissingClass.f5"/>
+				<line text="execution(int[] MaybeMissingClass.f5())"/>
+				<line text="MaybeMissingClass.f6"/>
+				<line text="execution(int[][] MaybeMissingClass.f6())"/>
 			</stdout>
 		</run>
 	</ajc-test>
@@ -249,16 +261,16 @@
 	<ajc-test dir="bugs1919/github_24" vm="1.5" title="exact array type matching, aspect compiled separately from target class">
 		<compile files="ExactlyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
 			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
-			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
-			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
-			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
-			<message kind="warning" text="advice defined in ExactlyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 			<message kind="warning" text="advice defined in ExactlyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
 		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
 			<!-- Before the bugfix, f1 would be woven twice, f2 not at all-->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())'"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())'"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
+			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
+			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
 		</compile>
 		<run class="MaybeMissingClass" classpath="aspect.jar">
 			<stdout>
@@ -266,6 +278,14 @@
 				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 				<line text="MaybeMissingClass.f2"/>
 				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+				<line text="MaybeMissingClass.f3"/>
+				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+				<line text="MaybeMissingClass.f4"/>
+				<line text="execution(int MaybeMissingClass.f4())"/>
+				<line text="MaybeMissingClass.f5"/>
+				<line text="execution(int[] MaybeMissingClass.f5())"/>
+				<line text="MaybeMissingClass.f6"/>
+				<line text="execution(int[][] MaybeMissingClass.f6())"/>
 			</stdout>
 		</run>
 	</ajc-test>
@@ -277,8 +297,12 @@
 	<ajc-test dir="bugs1919/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled together with target class">
 		<compile files="FuzzilyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
 			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())'"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())'"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
+			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
+			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
 		</compile>
 		<run class="MaybeMissingClass">
 			<stdout>
@@ -286,6 +310,14 @@
 				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 				<line text="MaybeMissingClass.f2"/>
 				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+				<line text="MaybeMissingClass.f3"/>
+				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+				<line text="MaybeMissingClass.f4"/>
+				<line text="execution(int MaybeMissingClass.f4())"/>
+				<line text="MaybeMissingClass.f5"/>
+				<line text="execution(int[] MaybeMissingClass.f5())"/>
+				<line text="MaybeMissingClass.f6"/>
+				<line text="execution(int[][] MaybeMissingClass.f6())"/>
 			</stdout>
 		</run>
 	</ajc-test>
@@ -297,12 +329,15 @@
 	<ajc-test dir="bugs1919/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled separately from target class">
 		<compile files="FuzzilyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
 			<message kind="warning" text="advice defined in FuzzilyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
-			<message kind="warning" text="advice defined in FuzzilyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
 		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
 			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())'"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())'"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
+			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
+			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
 		</compile>
 		<run class="MaybeMissingClass" classpath="aspect.jar">
 			<stdout>
@@ -310,6 +345,14 @@
 				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 				<line text="MaybeMissingClass.f2"/>
 				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
+				<line text="MaybeMissingClass.f3"/>
+				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
+				<line text="MaybeMissingClass.f4"/>
+				<line text="execution(int MaybeMissingClass.f4())"/>
+				<line text="MaybeMissingClass.f5"/>
+				<line text="execution(int[] MaybeMissingClass.f5())"/>
+				<line text="MaybeMissingClass.f6"/>
+				<line text="execution(int[][] MaybeMissingClass.f6())"/>
 			</stdout>
 		</run>
 	</ajc-test>
