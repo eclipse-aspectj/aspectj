@@ -90,6 +90,10 @@ public abstract class TypePattern extends PatternNode {
 		return false;
 	}
 
+	public int getDimensions() {
+		return 0;
+	}
+
 	protected TypePattern(boolean includeSubtypes) {
 		this(includeSubtypes, false);
 	}
@@ -158,6 +162,10 @@ public abstract class TypePattern extends PatternNode {
 	protected abstract boolean matchesExactly(ResolvedType type);
 
 	protected abstract boolean matchesExactly(ResolvedType type, ResolvedType annotatedType);
+
+	protected boolean matchesArray(ResolvedType type) {
+		return type.getDimensions() == getDimensions();
+	}
 
 	protected boolean matchesSubtypes(ResolvedType type) {
 		// System.out.println("matching: " + this + " to " + type);
@@ -355,6 +363,3 @@ public abstract class TypePattern extends PatternNode {
 	}
 
 }
-
-
-

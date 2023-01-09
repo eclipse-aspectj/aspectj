@@ -95,6 +95,10 @@ public class ExactTypePattern extends TypePattern {
 		return type.isArray();
 	}
 
+	public int getDimensions() {
+		return type.getDimensions();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -122,6 +126,9 @@ public class ExactTypePattern extends TypePattern {
 
 	@Override
 	protected boolean matchesExactly(ResolvedType matchType) {
+		if (!matchesArray(matchType)) {
+			return false;
+		}
 		boolean typeMatch = this.type.equals(matchType);
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
@@ -150,6 +157,9 @@ public class ExactTypePattern extends TypePattern {
 
 	@Override
 	protected boolean matchesExactly(ResolvedType matchType, ResolvedType annotatedType) {
+		if (!matchesArray(matchType)) {
+			return false;
+		}
 		boolean typeMatch = this.type.equals(matchType);
 		if (!typeMatch && (matchType.isParameterizedType() || matchType.isGenericType())) {
 			typeMatch = this.type.equals(matchType.getRawType());
