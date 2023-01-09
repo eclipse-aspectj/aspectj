@@ -296,7 +296,7 @@ public class WildTypePattern extends TypePattern {
 
 	@Override
 	public boolean isArray() {
-		return dim > 1;
+		return dim > 0;
 	}
 
 	/**
