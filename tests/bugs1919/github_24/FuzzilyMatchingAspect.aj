@@ -1,25 +1,39 @@
 public aspect FuzzilyMatchingAspect {
-  after() : execution(public MaybeMissing* MaybeMissing*.*()) {
+
+  pointcut returnRefTypeSimpleOrArray() : execution(public MaybeMissing* MaybeMissing*.*());
+  pointcut return1DimRefTypeArray() : execution(public MaybeMissing*[] MaybeMissing*.*());
+  pointcut return2DimRefTypeArray() : execution(public MaybeMissing*[][] MaybeMissing*.*());
+
+  // Return type 'MaybeMissing*' also matches array types due to the '*' at the end.
+  // Therefore, explicitly exclude array pointcuts in order to only match the method returning the simple type.
+  after() : returnRefTypeSimpleOrArray() && !return1DimRefTypeArray() && !return2DimRefTypeArray() {
     System.out.println(thisJoinPoint);
   }
 
-  after() : execution(public MaybeMissing*[] MaybeMissing*.*()) {
+  after() : return1DimRefTypeArray() {
     System.out.println(thisJoinPoint);
   }
 
-  after() : execution(public MaybeMissing*[][] MaybeMissing*.*()) {
+  after() : return2DimRefTypeArray() {
     System.out.println(thisJoinPoint);
   }
 
-  after() : execution(public in* MaybeMissing*.*()) {
+  pointcut returnPrimitiveTypeSimpleOrArray() : execution(public in* MaybeMissing*.*());
+  pointcut return1DimPrimitiveTypeArray() : execution(public in*[] MaybeMissing*.*());
+  pointcut return2DimPrimitiveTypeArray() : execution(public in*[][] MaybeMissing*.*());
+
+  // Return type 'in*' also matches array types due to the '*' at the end.
+  // Therefore, explicitly exclude array pointcuts in order to only match the method returning the simple type.
+  after() : returnPrimitiveTypeSimpleOrArray() && !return1DimPrimitiveTypeArray() && !return2DimPrimitiveTypeArray() {
     System.out.println(thisJoinPoint);
   }
 
-  after() : execution(public in*[] MaybeMissing*.*()) {
+  after() : return1DimPrimitiveTypeArray() {
     System.out.println(thisJoinPoint);
   }
 
-  after() : execution(public in*[][] MaybeMissing*.*()) {
+  after() : return2DimPrimitiveTypeArray() {
     System.out.println(thisJoinPoint);
   }
+
 }

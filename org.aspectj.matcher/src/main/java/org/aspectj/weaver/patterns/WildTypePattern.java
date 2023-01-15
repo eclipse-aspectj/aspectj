@@ -1172,7 +1172,7 @@ public class WildTypePattern extends TypePattern {
 		StringBuilder buf = new StringBuilder();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buf.append('(');
-			buf.append(annotationPattern.toString());
+			buf.append(annotationPattern);
 			buf.append(' ');
 		}
 		for (int i = 0, len = namePatterns.length; i < len; i++) {
@@ -1183,16 +1183,16 @@ public class WildTypePattern extends TypePattern {
 				if (i > 0) {
 					buf.append(".");
 				}
-				buf.append(name.toString());
+				buf.append(name);
 			}
 		}
 		if (upperBound != null) {
 			buf.append(" extends ");
-			buf.append(upperBound.toString());
+			buf.append(upperBound);
 		}
 		if (lowerBound != null) {
 			buf.append(" super ");
-			buf.append(lowerBound.toString());
+			buf.append(lowerBound);
 		}
 		if (typeParameters != null && typeParameters.size() != 0) {
 			buf.append("<");
@@ -1201,6 +1201,9 @@ public class WildTypePattern extends TypePattern {
 		}
 		if (includeSubtypes) {
 			buf.append('+');
+		}
+		for (int i = 0; i < getDimensions(); i++) {
+			buf.append("[]");
 		}
 		if (isVarArgs) {
 			buf.append("...");
@@ -1271,7 +1274,11 @@ public class WildTypePattern extends TypePattern {
 		for (NamePattern namePattern : namePatterns) {
 			result = 37 * result + namePattern.hashCode();
 		}
+		result = 37 * result + (includeSubtypes ? 1 : 0);
+		result = 37 * result + dim;
+		result = 37 * result + (isVarArgs ? 1 : 0);
 		result = 37 * result + annotationPattern.hashCode();
+		result = 37 * result + typeParameters.hashCode();
 		if (upperBound != null) {
 			result = 37 * result + upperBound.hashCode();
 		}
