@@ -83,6 +83,11 @@ public class AnyWithAnnotationTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return true;
+	}
+
+	@Override
 	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		AnyWithAnnotationTypePattern ret = new AnyWithAnnotationTypePattern(this.annotationPattern.parameterizeWith(
 				typeVariableMap, w));

@@ -61,6 +61,11 @@ public class AnyTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return true;
+	}
+
+	@Override
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(ANY_KEY);
 	}

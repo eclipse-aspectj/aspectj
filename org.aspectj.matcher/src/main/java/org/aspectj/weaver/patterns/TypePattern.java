@@ -163,9 +163,7 @@ public abstract class TypePattern extends PatternNode {
 
 	protected abstract boolean matchesExactly(ResolvedType type, ResolvedType annotatedType);
 
-	protected boolean matchesArray(ResolvedType type) {
-		return type.getDimensions() == getDimensions();
-	}
+	protected abstract boolean matchesArray(UnresolvedType type);
 
 	protected boolean matchesSubtypes(ResolvedType type) {
 		// System.out.println("matching: " + this + " to " + type);

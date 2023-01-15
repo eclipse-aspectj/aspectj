@@ -69,6 +69,11 @@ public class NotTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return !negatedPattern.matchesArray(type);
+	}
+
+	@Override
 	public boolean matchesStatically(ResolvedType type) {
 		return !negatedPattern.matchesStatically(type);
 	}

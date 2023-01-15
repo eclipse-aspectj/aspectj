@@ -69,6 +69,11 @@ public class AndTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return left.matchesArray(type) && right.matchesArray(type);
+	}
+
+	@Override
 	public void setIsVarArgs(boolean isVarArgs) {
 		this.isVarArgs = isVarArgs;
 		left.setIsVarArgs(isVarArgs);

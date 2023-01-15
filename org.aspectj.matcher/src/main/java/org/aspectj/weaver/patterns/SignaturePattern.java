@@ -465,7 +465,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	 * Matches on name, declaring type, return type, parameter types, throws types
 	 */
 	private FuzzyBoolean matchesExactlyMethod(JoinPointSignature aMethod, World world, boolean subjectMatch) {
-		if (aMethod.getReturnType().getDimensions() != returnType.getDimensions()) {
+		if (!returnType.matchesArray(aMethod.getReturnType())) {
 			return FuzzyBoolean.NO;
 		}
 		if (parametersCannotMatch(aMethod)) {

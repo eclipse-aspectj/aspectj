@@ -233,7 +233,7 @@ public class WildTypePattern extends TypePattern {
 		// Ensure the annotation pattern is resolved
 		annotationPattern.resolve(type.getWorld());
 
-		return matchesExactlyByName(targetTypeName, type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
+		return matchesExactlyByName(targetTypeName.replaceFirst("(\\[\\])+$", ""), type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
 				&& matchesArray(type)
 				&& matchesBounds(type, STATIC)
 				&& annotationPattern.matches(annotatedType, type.temporaryAnnotationTypes).alwaysTrue();
@@ -250,6 +250,12 @@ public class WildTypePattern extends TypePattern {
 			return typeParameters.matches(aType.getResolvedTypeParameters(), staticOrDynamic).alwaysTrue();
 		}
 		return true;
+	}
+
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return type.getDimensions() == getDimensions() ||
+			 getDimensions() == 0 && namePatterns.length > 0 && namePatterns[namePatterns.length-1].toString().endsWith("*");
 	}
 
 	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
@@ -318,19 +324,6 @@ public class WildTypePattern extends TypePattern {
 			return innerMatchesExactly(targetTypeName, isAnonymous, isNested);
 		}
 
-		if (isNamePatternStar()) {
-			// we match if the dimensions match
-			int numDimensionsInTargetType = 0;
-			if (dim > 0) {
-				int index;
-				while ((index = targetTypeName.indexOf('[')) != -1) {
-					numDimensionsInTargetType++;
-					targetTypeName = targetTypeName.substring(index + 1);
-				}
-        return numDimensionsInTargetType == dim;
-			}
-		}
-
 		// if our pattern is length 1, then known matches are exact matches
 		// if it's longer than that, then known matches are prefixes of a sort
 		if (namePatterns.length == 1) {
@@ -369,7 +362,7 @@ public class WildTypePattern extends TypePattern {
 			}
 		}
 
-		return innerMatchesExactly(targetTypeName.substring(0, targetTypeName.length() - dim * 2), isAnonymous, isNested);
+		return innerMatchesExactly(targetTypeName, isAnonymous, isNested);
 	}
 
 	private int lastIndexOfDotOrDollar(String string) {
