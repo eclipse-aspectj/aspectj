@@ -10,17 +10,19 @@
 package org.aspectj.weaver.patterns;
 
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import junit.framework.TestCase;
 
 import org.aspectj.weaver.Shadow;
+
+import static org.aspectj.weaver.patterns.LogicalPointcutStructure.*;
 
 /**
  * Testing the pointcut rewriter.
  *
  * @author Adrian Colyer
  * @author Andy Clement
+ * @author Alexander Kriegisch
  */
 public class PointcutRewriterTest extends TestCase {
 
@@ -60,157 +62,112 @@ public class PointcutRewriterTest extends TestCase {
 		Pointcut notNotNOT = getPointcut("!!!this(Foo)");
 		assertEquals("!this(Foo)", prw.rewrite(notNotNOT).toString());
 		Pointcut and = getPointcut("!(this(Foo) && this(Goo))");
-		assertEquals("(!this(Foo) || !this(Goo))", prw.rewrite(and, true).toString());
+		assertEquals(OR(NOT("this(Foo)"), NOT("this(Goo)")), fromPointcut(prw.rewrite(and, true)));
 		Pointcut or = getPointcut("!(this(Foo) || this(Goo))");
-		assertEquals("(!this(Foo) && !this(Goo))", prw.rewrite(or, true).toString());
+		assertEquals(AND(NOT("this(Foo)"), NOT("this(Goo)")), fromPointcut(prw.rewrite(or, true)));
 		Pointcut nestedNot = getPointcut("!(this(Foo) && !this(Goo))");
-		assertEquals("(!this(Foo) || this(Goo))", prw.rewrite(nestedNot, true).toString());
+		assertEquals(OR(NOT("this(Foo)"), "this(Goo)"), fromPointcut(prw.rewrite(nestedNot, true)));
 	}
 
 	public void testPullUpDisjunctions() {
-		Pointcut aAndb = getPointcut("this(Foo) && this(Goo)");
-		assertEquals("Unchanged", aAndb, prw.rewrite(aAndb));
-		Pointcut aOrb = getPointcut("this(Foo) || this(Moo)");
-		assertEquals("Unchanged", aOrb, prw.rewrite(aOrb));
-
-		Pointcut leftOr = getPointcut("this(Foo) || (this(Goo) && this(Boo))");
-		assertEquals("or%anyorder%this(Foo)%and%anyorder%this(Boo)%this(Goo)", prw.rewrite(leftOr));
-		// assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(leftOr).toString());
-
-		Pointcut rightOr = getPointcut("(this(Goo) && this(Boo)) || this(Foo)");
-		// assertEquals("(this(Foo) || (this(Boo) && this(Goo)))",prw.rewrite(rightOr).toString());
-		assertEquals("or%anyorder%this(Foo)%and%anyorder%this(Goo)%this(Boo)", prw.rewrite(rightOr));
-
-		Pointcut leftAnd = getPointcut("this(Foo) && (this(Goo) || this(Boo))");
-		// assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(leftAnd).toString());
-		assertEquals("or%anyorder%and%anyorder%this(Boo)%this(Foo)%and%anyorder%this(Foo)%this(Goo)", prw.rewrite(leftAnd));
-
-		Pointcut rightAnd = getPointcut("(this(Goo) || this(Boo)) && this(Foo)");
-		// assertEquals("((this(Boo) && this(Foo)) || (this(Foo) && this(Goo)))",prw.rewrite(rightAnd).toString());
-		assertEquals("or%anyorder%and%anyorder%this(Boo)%this(Foo)%and%anyorder%this(Foo)%this(Goo)", prw.rewrite(rightAnd));
-
-		Pointcut nestedOrs = getPointcut("this(Foo) || this(Goo) || this(Boo)");
-		// assertEquals("((this(Boo) || this(Foo)) || this(Goo))",prw.rewrite(nestedOrs).toString());
-		assertEquals("or%anyorder%this(Goo)%or%anyorder%this(Boo)%this(Foo)", prw.rewrite(nestedOrs));
-
-		Pointcut nestedAnds = getPointcut("(this(Foo) && (this(Boo) && (this(Goo) || this(Moo))))");
-		// t(F) && (t(B) && (t(G) || t(M)))
-		// ==> t(F) && ((t(B) && t(G)) || (t(B) && t(M)))
-		// ==> (t(F) && (t(B) && t(G))) || (t(F) && (t(B) && t(M)))
-		// assertEquals("(((this(Boo) && this(Foo)) && this(Goo)) || ((this(Boo) && this(Foo)) && this(Moo)))",
-		// prw.rewrite(nestedAnds).toString());
 		assertEquals(
-				"or%anyorder%and%anyorder%and%anyorder%this(Boo)%this(Foo)%this(Goo)%and%anyorder%and%anyorder%this(Boo)%this(Foo)%this(Moo)",
-				prw.rewrite(nestedAnds));
+			AND("this(Foo)", "this(Goo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) && this(Goo)")))
+		);
+		assertEquals(
+			OR("this(Foo)", "this(Moo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) || this(Moo)")))
+		);
+
+		assertEquals(
+			OR("this(Foo)", AND("this(Goo)", "this(Boo)")),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) || (this(Goo) && this(Boo))")))
+		);
+		assertEquals(
+			OR(AND("this(Goo)", "this(Boo)"), "this(Foo)"),
+			fromPointcut(prw.rewrite(getPointcut("(this(Goo) && this(Boo)) || this(Foo)")))
+		);
+		// The previous two are semantically identical
+		assertEquals(
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) || (this(Goo) && this(Boo))"))),
+			fromPointcut(prw.rewrite(getPointcut("(this(Goo) && this(Boo)) || this(Foo)")))
+		);
+
+		assertEquals(
+			OR(AND("this(Foo)", "this(Goo)"), AND("this(Foo)", "this(Boo)")),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) && (this(Goo) || this(Boo))")))
+		);
+		assertEquals(
+			OR(AND("this(Foo)", "this(Goo)"), AND("this(Foo)", "this(Boo)")),
+			fromPointcut(prw.rewrite(getPointcut("(this(Goo) || this(Boo)) && this(Foo)")))
+		);
+		// The previous two are semantically identical
+		assertEquals(
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) && (this(Goo) || this(Boo))"))),
+			fromPointcut(prw.rewrite(getPointcut("(this(Goo) || this(Boo)) && this(Foo)")))
+		);
+
+		assertEquals(
+			OR("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) || this(Goo) || this(Boo)")))
+		);
+		assertEquals(
+			OR("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Boo) || this(Goo) || this(Foo)")))
+		);
+		assertEquals(
+			OR("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Boo) || this(Foo) || this(Goo)")))
+		);
+
+		assertEquals(
+			AND("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Foo) && this(Goo) && this(Boo)")))
+		);
+		assertEquals(
+			AND("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Boo) && this(Goo) && this(Foo)")))
+		);
+		assertEquals(
+			AND("this(Foo)", "this(Goo)", "this(Boo)"),
+			fromPointcut(prw.rewrite(getPointcut("this(Boo) && this(Foo) && this(Goo)")))
+		);
+
+		assertEquals(
+			OR(AND("this(Foo)", "this(Boo)", "this(Moo)"), AND("this(Foo)", "this(Boo)", "this(Goo)")),
+			fromPointcut(prw.rewrite(getPointcut("(this(Foo) && (this(Boo) && (this(Goo) || this(Moo))))")))
+		);
 	}
 
-	/**
-	 * spec is reverse polish notation with operators and, or , not, anyorder, delimiter is "%" (not whitespace).
-	 *
-	 * @param spec
-	 * @param pc
-	 */
-	private void assertEquals(String spec, Pointcut pc) {
-		StringTokenizer strTok = new StringTokenizer(spec, "%");
-		String[] tokens = new String[strTok.countTokens()];
-		for (int i = 0; i < tokens.length; i++) {
-			tokens[i] = strTok.nextToken();
-		}
-		tokenIndex = 0;
-		assertTrue(spec, equals(pc, tokens));
+/*
+	public void testSplitOutWithins() {
+		Pointcut simpleExecution = getPointcut("execution(* *.*(..))");
+		assertEquals("Unchanged", simpleExecution, prw.rewrite(simpleExecution));
+		Pointcut simpleWithinCode = getPointcut("withincode(* *.*(..))");
+		assertEquals("Unchanged", simpleWithinCode, prw.rewrite(simpleWithinCode));
+		Pointcut execution = getPointcut("execution(@Foo Foo (@Goo org.xyz..*).m*(Foo,Boo))");
+		assertEquals("(within((@(Goo) org.xyz..*)) && execution(@(Foo) Foo m*(Foo, Boo)))", prw.rewrite(execution).toString());
+		Pointcut withincode = getPointcut("withincode(@Foo Foo (@Goo org.xyz..*).m*(Foo,Boo))");
+		assertEquals("(within((@(Goo) org.xyz..*)) && withincode(@(Foo) Foo m*(Foo, Boo)))", prw.rewrite(withincode).toString());
+		Pointcut notExecution = getPointcut("!execution(Foo BankAccount+.*(..))");
+		assertEquals("(!within(BankAccount+) || !execution(Foo *(..)))", prw.rewrite(notExecution).toString());
+		Pointcut andWithincode = getPointcut("withincode(Foo.new(..)) && this(Foo)");
+		assertEquals("((within(Foo) && withincode(new(..))) && this(Foo))", prw.rewrite(andWithincode).toString());
+		Pointcut orExecution = getPointcut("this(Foo) || execution(Goo Foo.moo(Baa))");
+		assertEquals("((within(Foo) && execution(Goo moo(Baa))) || this(Foo))", prw.rewrite(orExecution).toString());
 	}
-
-	private int tokenIndex = 0;
-
-	private boolean equals(Pointcut pc, String[] tokens) {
-		if (tokens[tokenIndex].equals("and")) {
-			tokenIndex++;
-			if (!(pc instanceof AndPointcut)) {
-				return false;
-			}
-			AndPointcut apc = (AndPointcut) pc;
-			Pointcut left = apc.getLeft();
-			Pointcut right = apc.getRight();
-			if (tokens[tokenIndex].equals("anyorder")) {
-				tokenIndex++;
-				int restorePoint = tokenIndex;
-				boolean leftMatchFirst = equals(left, tokens) && equals(right, tokens);
-				if (leftMatchFirst) {
-					return true;
-				}
-				tokenIndex = restorePoint;
-				boolean rightMatchFirst = equals(right, tokens) && equals(left, tokens);
-				return rightMatchFirst;
-			} else {
-				return equals(left, tokens) && equals(right, tokens);
-			}
-		} else if (tokens[tokenIndex].equals("or")) {
-			tokenIndex++;
-			if (!(pc instanceof OrPointcut)) {
-				return false;
-			}
-			OrPointcut opc = (OrPointcut) pc;
-			Pointcut left = opc.getLeft();
-			Pointcut right = opc.getRight();
-			if (tokens[tokenIndex].equals("anyorder")) {
-				tokenIndex++;
-				int restorePoint = tokenIndex;
-				boolean leftMatchFirst = equals(left, tokens) && equals(right, tokens);
-				if (leftMatchFirst) {
-					return true;
-				}
-				tokenIndex = restorePoint;
-				boolean rightMatchFirst = equals(right, tokens) && equals(left, tokens);
-				return rightMatchFirst;
-			} else {
-				return equals(left, tokens) && equals(right, tokens);
-			}
-
-		} else if (tokens[tokenIndex].equals("not")) {
-			if (!(pc instanceof NotPointcut)) {
-				return false;
-			}
-			tokenIndex++;
-			NotPointcut np = (NotPointcut) pc;
-			return equals(np.getNegatedPointcut(), tokens);
-		} else {
-			return tokens[tokenIndex++].equals(pc.toString());
-		}
-	}
-
-	// public void testSplitOutWithins() {
-	// Pointcut simpleExecution = getPointcut("execution(* *.*(..))");
-	// assertEquals("Unchanged",simpleExecution,prw.rewrite(simpleExecution));
-	// Pointcut simpleWithinCode = getPointcut("withincode(* *.*(..))");
-	// assertEquals("Unchanged",simpleWithinCode,prw.rewrite(simpleWithinCode));
-	// Pointcut execution = getPointcut("execution(@Foo Foo (@Goo org.xyz..*).m*(Foo,Boo))");
-	// assertEquals("(within((@(Goo) org.xyz..*)) && execution(@(Foo) Foo m*(Foo, Boo)))",
-	// prw.rewrite(execution).toString());
-	// Pointcut withincode = getPointcut("withincode(@Foo Foo (@Goo org.xyz..*).m*(Foo,Boo))");
-	// assertEquals("(within((@(Goo) org.xyz..*)) && withincode(@(Foo) Foo m*(Foo, Boo)))",
-	// prw.rewrite(withincode).toString());
-	// Pointcut notExecution = getPointcut("!execution(Foo BankAccount+.*(..))");
-	// assertEquals("(!within(BankAccount+) || !execution(Foo *(..)))",
-	// prw.rewrite(notExecution).toString());
-	// Pointcut andWithincode = getPointcut("withincode(Foo.new(..)) && this(Foo)");
-	// assertEquals("((within(Foo) && withincode(new(..))) && this(Foo))",
-	// prw.rewrite(andWithincode).toString());
-	// Pointcut orExecution = getPointcut("this(Foo) || execution(Goo Foo.moo(Baa))");
-	// assertEquals("((within(Foo) && execution(Goo moo(Baa))) || this(Foo))",
-	// prw.rewrite(orExecution).toString());
-	// }
+*/
 
 	public void testRemoveDuplicatesInAnd() {
 		Pointcut dupAnd = getPointcut("this(Foo) && this(Foo)");
 		assertEquals("this(Foo)", prw.rewrite(dupAnd).toString());
 		Pointcut splitdupAnd = getPointcut("(this(Foo) && target(Boo)) && this(Foo)");
-		assertEquals("(target(Boo) && this(Foo))", prw.rewrite(splitdupAnd).toString());
+		assertEquals(AND("target(Boo)", "this(Foo)"), fromPointcut(prw.rewrite(splitdupAnd)));
 	}
 
 	public void testNotRemoveNearlyDuplicatesInAnd() {
 		Pointcut toAndto = getPointcut("this(Object+) && this(Object)");
-		// Pointcut rewritten =
-		prw.rewrite(toAndto);
+		assertEquals(AND("this(Object+)", "this(Object)"), fromPointcut(prw.rewrite(toAndto)));
 	}
 
 	public void testAAndNotAinAnd() {
@@ -308,10 +265,9 @@ public class PointcutRewriterTest extends TestCase {
 
 	public void testKindSetOfThis() {
 		Pointcut p = getPointcut("this(Foo)");
-		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object o : matches) {
-			Shadow.Kind kind = (Shadow.Kind) o;
-			assertFalse("No kinds that don't have a this", kind.neverHasThis());
+		Set<Shadow.Kind> matches = Shadow.toSet(p.couldMatchKinds());
+		for (Shadow.Kind o : matches) {
+			assertFalse("No kinds that don't have a this", o.neverHasThis());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].neverHasThis()) {
@@ -321,9 +277,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@this(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object match : matches) {
-			Shadow.Kind kind = (Shadow.Kind) match;
-			assertFalse("No kinds that don't have a this", kind.neverHasThis());
+		for (Shadow.Kind match : matches) {
+			assertFalse("No kinds that don't have a this", match.neverHasThis());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].neverHasThis()) {
@@ -334,10 +289,9 @@ public class PointcutRewriterTest extends TestCase {
 
 	public void testKindSetOfTarget() {
 		Pointcut p = getPointcut("target(Foo)");
-		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object o : matches) {
-			Shadow.Kind kind = (Shadow.Kind) o;
-			assertFalse("No kinds that don't have a target", kind.neverHasTarget());
+		Set<Shadow.Kind> matches = Shadow.toSet(p.couldMatchKinds());
+		for (Shadow.Kind o : matches) {
+			assertFalse("No kinds that don't have a target", o.neverHasTarget());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].neverHasTarget()) {
@@ -347,9 +301,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@target(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object match : matches) {
-			Shadow.Kind kind = (Shadow.Kind) match;
-			assertFalse("No kinds that don't have a target", kind.neverHasTarget());
+		for (Shadow.Kind match : matches) {
+			assertFalse("No kinds that don't have a target", match.neverHasTarget());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].neverHasTarget()) {
@@ -360,32 +313,31 @@ public class PointcutRewriterTest extends TestCase {
 
 	public void testKindSetOfArgs() {
 		Pointcut p = getPointcut("args(..)");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 		// + @
 		p = getPointcut("@args(..)");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetOfAnnotation() {
 		Pointcut p = getPointcut("@annotation(Foo)");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetOfWithin() {
 		Pointcut p = getPointcut("within(*)");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 		// + @
 		p = getPointcut("@within(Foo)");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetOfWithinCode() {
 		Pointcut p = getPointcut("withincode(* foo(..))");
-		Set matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object o : matches) {
-			Shadow.Kind kind = (Shadow.Kind) o;
+		Set<Shadow.Kind> matches = Shadow.toSet(p.couldMatchKinds());
+		for (Shadow.Kind o : matches) {
 			assertFalse("No kinds that are themselves enclosing",
-					(kind.isEnclosingKind() && kind != Shadow.ConstructorExecution && kind != Shadow.Initialization));
+					(o.isEnclosingKind() && o != Shadow.ConstructorExecution && o != Shadow.Initialization));
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].isEnclosingKind()) {
@@ -397,9 +349,8 @@ public class PointcutRewriterTest extends TestCase {
 		// + @
 		p = getPointcut("@withincode(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
-		for (Object match : matches) {
-			Shadow.Kind kind = (Shadow.Kind) match;
-			assertFalse("No kinds that are themselves enclosing", kind.isEnclosingKind());
+		for (Shadow.Kind match : matches) {
+			assertFalse("No kinds that are themselves enclosing", match.isEnclosingKind());
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].isEnclosingKind()) {
@@ -410,41 +361,41 @@ public class PointcutRewriterTest extends TestCase {
 
 	public void testKindSetOfIf() {
 		Pointcut p = new IfPointcut(null, 0);
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 		p = IfPointcut.makeIfTruePointcut(Pointcut.CONCRETE);
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 		p = IfPointcut.makeIfFalsePointcut(Pointcut.CONCRETE);
-		assertTrue("Nothing", p.couldMatchKinds() == Shadow.NO_SHADOW_KINDS_BITS);
+		assertEquals("Nothing", p.couldMatchKinds(), Shadow.NO_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetOfCflow() {
 		Pointcut p = getPointcut("cflow(this(Foo))");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 		// [below]
 		p = getPointcut("cflowbelow(this(Foo))");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetInNegation() {
 		Pointcut p = getPointcut("!execution(new(..))");
-		assertTrue("All kinds", p.couldMatchKinds() == Shadow.ALL_SHADOW_KINDS_BITS);
+		assertEquals("All kinds", p.couldMatchKinds(), Shadow.ALL_SHADOW_KINDS_BITS);
 	}
 
 	public void testKindSetOfOr() {
 		Pointcut p = getPointcut("execution(new(..)) || get(* *)");
-		Set matches = Shadow.toSet(p.couldMatchKinds());
+		Set<Shadow.Kind> matches = Shadow.toSet(p.couldMatchKinds());
 		assertEquals("2 kinds", 2, matches.size());
 		assertTrue("ConstructorExecution", matches.contains(Shadow.ConstructorExecution));
 		assertTrue("FieldGet", matches.contains(Shadow.FieldGet));
 	}
 
 	public void testOrderingInAnd() {
-		Pointcut bigLongPC = getPointcut("cflow(this(Foo)) && @args(X) && args(X) && @this(Foo) && @target(Boo) && this(Moo) && target(Boo) && @annotation(Moo) && @withincode(Boo) && withincode(new(..)) && set(* *)&& @within(Foo) && within(Foo)");
+		Pointcut bigLongPC = getPointcut("cflow(this(Foo)) && @args(X) && args(X) && @this(Foo) && @target(Boo) && this(Moo) && target(Boo) && @annotation(Moo) && @withincode(Boo) && withincode(new(..)) && set(* *) && @within(Foo) && within(Foo)");
 		checkMultipleRewrite(bigLongPC);
-		Pointcut rewritten = prw.rewrite(bigLongPC);
 		assertEquals(
-				"((((((((((((within(Foo) && @within(Foo)) && set(* *)) && withincode(new(..))) && @withincode(Boo)) && target(Boo)) && this(Moo)) && @annotation(Moo)) && @this(Foo)) && @target(Boo)) && args(X)) && @args(X)) && cflow(this(Foo)))",
-				rewritten.toString());
+			AND("cflow(this(Foo))", "@args(X)", "args(X)", "@target(Boo)", "@this(Foo)", "@annotation(Moo)", "this(Moo)", "target(Boo)", "@withincode(Boo)", "withincode(new(..))", "set(* *)", "@within(Foo)", "within(Foo)"),
+			fromPointcut(prw.rewrite(bigLongPC))
+		);
 	}
 
 	public void testOrderingInSimpleOr() {
