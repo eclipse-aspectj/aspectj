@@ -252,6 +252,7 @@
 
     <ajc-test dir="bugs162/pr240693" title="privileged generics">
         <compile files="PayloadClass.java SomeInterface.java GenericClassInAdvice.java" options="-1.5">
+          <message kind="warning" text="advice defined in GenericClassInAdvice has not been applied [Xlint:adviceDidNotMatch]"/>
         </compile>
     </ajc-test>
 
