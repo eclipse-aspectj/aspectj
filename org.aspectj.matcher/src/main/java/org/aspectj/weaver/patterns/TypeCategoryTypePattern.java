@@ -68,6 +68,11 @@ public class TypeCategoryTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return true;
+	}
+
+	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return FuzzyBoolean.fromBoolean(isRightCategory(type));
 	}

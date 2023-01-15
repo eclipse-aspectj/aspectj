@@ -73,6 +73,11 @@ public class OrTypePattern extends TypePattern {
 		return left.matchesExactly(type, annotatedType) || right.matchesExactly(type, annotatedType);
 	}
 
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return left.matchesArray(type) || right.matchesArray(type);
+	}
+
 	public boolean matchesStatically(ResolvedType type) {
 		return left.matchesStatically(type) || right.matchesStatically(type);
 	}

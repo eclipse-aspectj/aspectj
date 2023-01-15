@@ -177,6 +177,11 @@ public class ExactTypePattern extends TypePattern {
 		return (typeMatch && annMatch);
 	}
 
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return type.getDimensions() == getDimensions();
+	}
+
 	public UnresolvedType getType() {
 		return type;
 	}
