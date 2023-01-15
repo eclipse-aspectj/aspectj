@@ -83,6 +83,8 @@
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:14)"/>
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:17)"/>
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:20)"/>
+       <!-- TODO: Activate 'Iffy2.advice6()' pointcut after pointcut parsing problem has been fixed. -->
+       <!--<message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:XX)"/>-->
      </compile>
    </ajc-test>
 
