@@ -78,6 +78,7 @@
 
    <ajc-test dir="bugs165/pr272233" title="funky pointcut 2">
      <compile files="Iffy2.java" options="-1.5 -showWeaveInfo">
+       <message kind="warning" text="arrays cannot have a void type, but found 'void[]' in pointcut [Xlint:arrayCannotBeVoid]"/>
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:8)"/>
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:11)"/>
        <message kind="weave" text="advised by before advice from 'Iffy2' (Iffy2.java:14)"/>
