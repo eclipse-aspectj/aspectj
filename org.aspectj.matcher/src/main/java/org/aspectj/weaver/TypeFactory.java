@@ -152,7 +152,7 @@ public class TypeFactory {
 				return new UnresolvedType(signature, signatureErasure, typeParams);
 			}
 			// can't replace above with convertSigToType - leads to stackoverflow
-		} else if ((firstChar == '?' || firstChar == '*') && signature.length()==1) {
+		} else if (firstChar == '*' && signature.length()==1) {
 			return WildcardedUnresolvedType.QUESTIONMARK;
 		} else if (firstChar == '+') {
 			// ? extends ...
