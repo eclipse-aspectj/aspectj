@@ -1196,7 +1196,7 @@ public class WildTypePattern extends TypePattern {
 		}
 		if (typeParameters != null && typeParameters.size() != 0) {
 			buf.append("<");
-			buf.append(typeParameters.toString());
+			buf.append(typeParameters.toString().replaceFirst("^.(.*).$", "$1"));
 			buf.append(">");
 		}
 		if (includeSubtypes) {
