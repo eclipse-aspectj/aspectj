@@ -676,7 +676,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 						if (paramNestLevel > 0) {
 							innerBuff.append(c);
 						}
-						if (c == ';' && paramNestLevel == 1) {
+						if ((c == ';' || c == '*') && paramNestLevel == 1) {
 							nameBuff.append(signatureToName(innerBuff.toString()));
 							if (signature.charAt(i + 1) != '>') {
 								nameBuff.append(',');
