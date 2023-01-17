@@ -110,6 +110,9 @@ public abstract class CommonWorldTests extends TestCase {
 		ResolvedType[] primitives = world.resolve(primitiveTypes);
 		for (ResolvedType ty : primitives) {
 			UnresolvedType tx = UnresolvedType.forSignature("[" + ty.getSignature());
+			// 'void[]' is an illegal type -> skip
+			if (tx.getSignature().equals("[V"))
+				continue;
 			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
 			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
@@ -128,6 +131,9 @@ public abstract class CommonWorldTests extends TestCase {
 			for (ResolvedType ty1 : primitives) {
 				isCoerceableFromTest(aty, ty1, false);
 				tx = UnresolvedType.forSignature("[" + ty1.getSignature());
+				// 'void[]' is an illegal type -> skip
+				if (tx.getSignature().equals("[V"))
+					continue;
 				ResolvedType aty1 = getWorld().resolve(tx, true);
 				assertTrue("Couldnt find type " + tx, !aty1.isMissing());
 				if (ty.equals(ty1)) {
@@ -142,6 +148,9 @@ public abstract class CommonWorldTests extends TestCase {
 		// double dimension arrays
 		for (ResolvedType ty : primitives) {
 			UnresolvedType tx = UnresolvedType.forSignature("[[" + ty.getSignature());
+			// 'void[][]' is an illegal type -> skip
+			if (tx.getSignature().equals("[[V"))
+				continue;
 			ResolvedType aty = world.resolve(tx, true);
 			assertTrue("Couldnt find type " + tx, !aty.isMissing());
 			modifiersTest(aty, Modifier.PUBLIC | Modifier.FINAL);
@@ -160,6 +169,9 @@ public abstract class CommonWorldTests extends TestCase {
 			for (ResolvedType ty1 : primitives) {
 				isCoerceableFromTest(aty, ty1, false);
 				tx = UnresolvedType.forSignature("[[" + ty1.getSignature());
+				// 'void[][]' is an illegal type -> skip
+				if (tx.getSignature().equals("[[V"))
+					continue;
 				ResolvedType aty1 = getWorld().resolve(tx, true);
 				assertTrue("Couldnt find type " + tx, !aty1.isMissing());
 				if (ty.equals(ty1)) {
