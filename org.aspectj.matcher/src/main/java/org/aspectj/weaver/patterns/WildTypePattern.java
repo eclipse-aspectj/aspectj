@@ -14,6 +14,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -25,6 +26,7 @@ import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.AjAttribute;
+import org.aspectj.weaver.ArrayReferenceType;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BoundedReferenceType;
 import org.aspectj.weaver.CompressingDataOutputStream;
@@ -39,6 +41,7 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
+import org.aspectj.weaver.WildcardedUnresolvedType;
 import org.aspectj.weaver.World;
 
 /**
@@ -233,7 +236,8 @@ public class WildTypePattern extends TypePattern {
 		// Ensure the annotation pattern is resolved
 		annotationPattern.resolve(type.getWorld());
 
-		return matchesExactlyByName(targetTypeName.replaceFirst("(\\[\\])+$", ""), type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
+		return matchesExactlyByName(targetTypeName.replaceFirst("(\\[\\])+$", ""), type.isAnonymous(), type.isNested())
+				&& matchesParameters(type, STATIC)
 				&& matchesArray(type)
 				&& matchesBounds(type, STATIC)
 				&& annotationPattern.matches(annotatedType, type.temporaryAnnotationTypes).alwaysTrue();
@@ -242,6 +246,9 @@ public class WildTypePattern extends TypePattern {
 	// we've matched against the base (or raw) type, but if this type pattern specifies parameters or
 	// type variables we need to make sure we match against them too
 	private boolean matchesParameters(ResolvedType aType, MatchKind staticOrDynamic) {
+		// For array reference types, match type parameters on component type, not on array type itself
+		if (aType instanceof ArrayReferenceType)
+			aType = aType.getResolvedComponentType();
 		if (!isGeneric && typeParameters.size() > 0) {
 			if (!aType.isParameterizedType()) {
 				return false;
