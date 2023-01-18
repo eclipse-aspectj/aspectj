@@ -37,6 +37,11 @@ public class BCException extends RuntimeException {
 		this.thrown = thrown;
 	}
 
+	// TODO: Is it really necessary to re-invent stack trace printing here? Can these methods simply go away?
+	// The only doubtful "benefit" is that the causing exception's stack trace is printed fully instead of shortened.
+	// But OTOH, the JVM just omits the lines which were present in the original stack trace above already, so there is
+	// really no extra information here.
+
 	public void printStackTrace() {
 		printStackTrace(System.err);
 	}
@@ -49,15 +54,13 @@ public class BCException extends RuntimeException {
 		super.printStackTrace(s);
 		if (null != thrown) {
 			s.print("Caused by: ");
-			s.print(thrown.getClass().getName());
-			String message = thrown.getMessage();
-			if (null != message) {
-				s.print(": ");
-				s.print(message);
-			}
-			s.println();
 			thrown.printStackTrace(s);
 		}
+		// Flush PrintWriter in case the JVM exits before the stack trace was printed. Otherwise, when e.g. calling
+		// UnresolvedType.signatureToName from a main method or a test directly and a BCException is thrown, nothing but
+		//   Exception in thread "main"
+		// would be printed without flushing the PrintWriter, because the JVM exits immediately.
+		s.flush();
 	}
 
 }
