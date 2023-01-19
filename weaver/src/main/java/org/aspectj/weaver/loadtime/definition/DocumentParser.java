@@ -111,8 +111,11 @@ public class DocumentParser extends DefaultHandler {
 	}
 
 	public static Definition parse(final URL url) throws Exception {
-		if (CACHE && parsedFiles.containsKey(url.toString())) {
-			return parsedFiles.get(url.toString());
+		if (CACHE) {
+			Definition cached = parsedFiles.get(url.toString());
+			if (cached != null) {
+				return cached;
+			}
 		}
 		Definition def = null;
 

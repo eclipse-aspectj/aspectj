@@ -368,8 +368,9 @@ public class EclipseFactory {
 	 */
 	private UnresolvedType fromTypeVariableBinding(TypeVariableBinding aTypeVariableBinding) {
 		// first, check for recursive call to this method for the same tvBinding
-		if (typeVariableBindingsInProgress.containsKey(aTypeVariableBinding)) {
-			return typeVariableBindingsInProgress.get(aTypeVariableBinding);
+		UnresolvedType alreadyInProgress = typeVariableBindingsInProgress.get(aTypeVariableBinding);
+		if (alreadyInProgress != null) {
+			return alreadyInProgress;
 		}
 
 		// Check if its a type variable binding that we need to recover to an alias...
@@ -382,8 +383,9 @@ public class EclipseFactory {
 			}
 		}
 
-		if (typeVariablesForThisMember.containsKey(new String(aTypeVariableBinding.sourceName))) {
-			return typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
+		UnresolvedType typeVarForThis = typeVariablesForThisMember.get(new String(aTypeVariableBinding.sourceName));
+		if (typeVarForThis != null) {
+			return typeVarForThis;
 		}
 
 		// Create the UnresolvedTypeVariableReferenceType for the type variable

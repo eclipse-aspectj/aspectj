@@ -336,9 +336,7 @@ public class ExactTypePattern extends TypePattern {
 		if (type.isTypeVariableReference()) {
 			TypeVariableReference t = (TypeVariableReference) type;
 			String key = t.getTypeVariable().getName();
-			if (typeVariableMap.containsKey(key)) {
-				newType = typeVariableMap.get(key);
-			}
+			newType = typeVariableMap.getOrDefault(key, type);
 		} else if (type.isParameterizedType()) {
 			newType = w.resolve(type).parameterize(typeVariableMap);
 		}

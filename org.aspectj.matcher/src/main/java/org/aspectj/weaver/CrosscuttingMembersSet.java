@@ -154,10 +154,10 @@ public class CrosscuttingMembersSet {
 	}
 
 	public void addAdviceLikeDeclares(ResolvedType aspectType) {
-		if (!members.containsKey(aspectType)) {
+		CrosscuttingMembers xcut = members.get(aspectType);
+		if (xcut == null) {
 			return;
 		}
-		CrosscuttingMembers xcut = members.get(aspectType);
 		xcut.addDeclares(aspectType.collectDeclares(true));
 	}
 

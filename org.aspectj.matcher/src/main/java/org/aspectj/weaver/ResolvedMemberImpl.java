@@ -881,11 +881,8 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 			boolean inParameterizedType, World w) {
 		if (aType instanceof TypeVariableReference) {
 			String variableName = ((TypeVariableReference) aType).getTypeVariable().getName();
-			if (!typeVariableMap.containsKey(variableName)) {
-				return aType; // if the type variable comes from the method (and
-				// not the type) thats OK
-			}
-			return typeVariableMap.get(variableName);
+			// if the type variable comes from the method (and not the type) that's OK
+			return typeVariableMap.getOrDefault(variableName, aType);
 		} else if (aType.isParameterizedType()) {
 			if (inParameterizedType) {
 				if (w != null) {

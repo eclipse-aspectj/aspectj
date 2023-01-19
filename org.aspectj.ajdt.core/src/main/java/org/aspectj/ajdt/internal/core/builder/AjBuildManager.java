@@ -697,7 +697,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/**
 	 * Returns a map where the keys are File objects corresponding to all the output directories and the values are a list of
-	 * aspects which are sent to that ouptut directory
+	 * aspects which are sent to that output directory
 	 */
 	private Map<File, List<String>> findOutputDirsForAspects() {
 		Map<File, List<String>> outputDirsToAspects = new HashMap<>();
@@ -729,10 +729,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                     char[] fileName = entry.getValue();
                     File outputDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForClass(
                             new File(new String(fileName)));
-                    if (!outputDirsToAspects.containsKey(outputDir)) {
-                        outputDirsToAspects.put(outputDir, new ArrayList<>());
-                    }
-                    outputDirsToAspects.get(outputDir).add(aspectName);
+                    outputDirsToAspects.computeIfAbsent(outputDir, f -> new ArrayList<>())
+                            .add(aspectName);
                 }
 			}
 		}
@@ -1243,9 +1241,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 					if (state.getAspectNamesToFileNameMap() == null) {
 						state.initializeAspectNamesToFileNameMap();
 					}
-					if (!state.getAspectNamesToFileNameMap().containsKey(name)) {
-						state.getAspectNamesToFileNameMap().put(name, fileContainingAspect);
-					}
+					state.getAspectNamesToFileNameMap().putIfAbsent(name, fileContainingAspect);
 				}
 			}
 		};

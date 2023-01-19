@@ -885,9 +885,10 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		List<ResolvedType> newParents = declareParents.findMatchingNewParents(resolvedSourceType, false);
 		if (!newParents.isEmpty()) {
 			for (ResolvedType parent : newParents) {
-				if (dangerousInterfaces.containsKey(parent)) {
+				String dangerous = dangerousInterfaces.get(parent);
+				if (dangerous != null) {
 					ResolvedType onType = factory.fromEclipse(sourceType);
-					factory.showMessage(IMessage.ERROR, onType + ": " + dangerousInterfaces.get(parent),
+					factory.showMessage(IMessage.ERROR, onType + ": " + dangerous,
 							onType.getSourceLocation(), null);
 				}
 				if (Modifier.isFinal(parent.getModifiers())) {
