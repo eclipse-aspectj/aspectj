@@ -47,6 +47,10 @@ public class Bugs1919Tests extends XMLBasedAjcTestCase {
     runTest("fuzzy array type matching, aspect compiled separately from target class");
   }
 
+  public void test_GitHub_214() {
+    runTest("ArrayIndexOutOfBoundsException with Xlint unorderedAdviceAtShadow=warning");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1919Tests.class);
   }

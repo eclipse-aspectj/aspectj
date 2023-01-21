@@ -357,4 +357,32 @@
 		</run>
 	</ajc-test>
 
+	<!--
+		https://github.com/eclipse/org.aspectj/issues/214
+		https://github.com/mojohaus/aspectj-maven-plugin/issues/164
+		Problem with multiple, subsequent weaving steps and '-Xlint:warning' or '-Xlint:unorderedAdviceAtShadow=warning'
+			java.lang.ArrayIndexOutOfBoundsException: 1
+			[ERROR] at org.aspectj.weaver.bcel.BcelShadow.prepareForMungers(BcelShadow.java:379)
+			[ERROR] at org.aspectj.weaver.Shadow.implement(Shadow.java:546)
+	-->
+	<ajc-test dir="bugs1919/github_214" vm="1.5" title="ArrayIndexOutOfBoundsException with Xlint unorderedAdviceAtShadow=warning">
+		<compile files="FirstAspect.java MarkerOne.java" options="-1.8 -showWeaveInfo -Xlint:warning" outjar="first-aspect.jar">
+			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
+			<message kind="warning" text="advice defined in FirstAspect has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<compile files="Application.java MarkerTwo.java" options="-1.5 -showWeaveInfo -Xlint:warning" classpath="first-aspect.jar" outjar="application.jar"/>
+		<compile files="SecondAspect.java" options="-1.5 -showWeaveInfo -Xlint:warning" aspectpath="first-aspect.jar" inpath="application.jar" outjar="second-aspect.jar">
+			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
+			<message kind="warning" text="at this shadow method-execution(void Application.greet(java.lang.String)) no precedence is specified between advice applying from aspect FirstAspect and aspect SecondAspect [Xlint:unorderedAdviceAtShadow]"/>
+			<message kind="warning" text="can not implement lazyTjp at joinpoint method-execution(void Application.greet(java.lang.String)) because of advice conflicts, see secondary locations to find conflicting advice [Xlint:multipleAdviceStoppingLazyTjp]"/>
+			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by around advice from 'SecondAspect'"/>
+			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by before advice from 'FirstAspect'"/>
+		</compile>
+		<run class="Application" classpath="second-aspect.jar first-aspect.jar">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
