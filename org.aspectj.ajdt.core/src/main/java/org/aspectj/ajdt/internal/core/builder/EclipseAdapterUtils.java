@@ -29,17 +29,17 @@ public class EclipseAdapterUtils {
 
 	// XXX some cut-and-paste from eclipse sources
 	public static String makeLocationContext(ICompilationUnit compilationUnit, IProblem problem) {
-		// extra from the source the innacurate token
-		// and "highlight" it using some underneath ^^^^^
-		// put some context around too.
+		// Extract the erroneous token plus some context around it from the beginning of the first to the end of the last
+		// problematic line. Usually, it will be a single line, but not necessarily. After extraction, highlight the
+		// erroneous token, "underlining" it withthe appropriate number of carets ('^').
+		//
+		// This code assumes, that the console font is fixed size.
 
-		// this code assumes that the font used in the console is fixed size
-
-		// sanity .....
+		// Sanity checks
 		int startPosition = problem.getSourceStart();
 		int endPosition = problem.getSourceEnd();
 
-		if ((startPosition > endPosition) || ((startPosition <= 0) && (endPosition <= 0)) || compilationUnit == null)
+		if (startPosition > endPosition || startPosition <= 0 && endPosition <= 0 || compilationUnit == null)
 			//return Util.bind("problem.noSourceInformation"); //$NON-NLS-1$
 			return "(no source information available)";
 
@@ -53,57 +53,74 @@ public class EclipseAdapterUtils {
 		// (the code still works but the display is not optimal !)
 
 		// compute the how-much-char we are displaying around the inaccurate token
-		int begin = startPosition >= source.length ? source.length - 1 : startPosition;
-		if (begin == -1)
-			return "(no source information available)"; // Dont like this - why does it occur? pr152835
-		int relativeStart = 0;
-		int end = endPosition >= source.length ? source.length - 1 : endPosition;
-		int relativeEnd = 0;
-		label: for (relativeStart = 0;; relativeStart++) {
-			if (begin == 0)
-				break label;
-			if ((source[begin - 1] == '\n') || (source[begin - 1] == '\r'))
-				break label;
-			begin--;
-		}
-		label: for (relativeEnd = 0;; relativeEnd++) {
-			if ((end + 1) >= source.length)
-				break label;
-			if ((source[end + 1] == '\r') || (source[end + 1] == '\n')) {
-				break label;
-			}
-			end++;
-		}
-		// extract the message form the source
-		char[] extract = new char[end - begin + 1];
-		System.arraycopy(source, begin, extract, 0, extract.length);
-		char c;
-		// remove all SPACE and TAB that begin the error message...
+		int contextStart = startPosition >= source.length ? source.length - 1 : startPosition;
+		if (contextStart == -1)
+			return "(no source information available)"; // Don't like this - why does it occur? pr152835
+		int contextEnd = endPosition >= source.length ? source.length - 1 : endPosition;
+		int problemLength = contextEnd - contextStart + 1;
 		int trimLeftIndex = 0;
-		while ((((c = extract[trimLeftIndex++]) == TAB) || (c == SPACE)) && trimLeftIndex < extract.length) {
+		char c;
+		while (
+			trimLeftIndex <= problemLength &&
+			((c = source[contextStart + trimLeftIndex]) == TAB || c == SPACE)
+		) {
+			trimLeftIndex++;
+		}
+		contextStart += trimLeftIndex;
+		problemLength -= trimLeftIndex;
+
+		// Find the beginning of the first line containing the problem (contextStart)
+		// as well as the relative problem start offset (problemStartOffset) from there
+		int problemStartOffset;
+		for (problemStartOffset = 0; ; problemStartOffset++) {
+			if (contextStart == 0)
+				break;
+			if ((c = source[contextStart - 1]) == '\n' || c == '\r')
+				break;
+			contextStart--;
+		}
+
+		// Find the end of the last line containing the problem (contextEnd)
+		// as well as the relative problem end offset (problemEndOffset) from there
+		int problemEndOffset;
+		for (problemEndOffset = 0; ; problemEndOffset--) {
+			if (contextEnd + 1 >= source.length)
+				break;
+			if ((c = source[contextEnd + 1]) == '\r' || c == '\n')
+				break;
+			contextEnd++;
+		}
+
+		// Extract the problematic lines of code from the source
+		char[] extract = new char[contextEnd - contextStart + 1];
+		System.arraycopy(source, contextStart, extract, 0, extract.length);
+
+		// Dedent (left-trim) the first line, i.e. remove leading spaces and tabs
+		trimLeftIndex = 0;
+		while (
+			trimLeftIndex < extract.length &&
+			((c = extract[trimLeftIndex]) == TAB || c == SPACE)
+		) {
+			trimLeftIndex++;
 		}
 		if (trimLeftIndex >= extract.length)
-			return new String(extract) + "\n";
-		System.arraycopy(extract, trimLeftIndex - 1, extract = new char[extract.length - trimLeftIndex + 1], 0, extract.length);
-		relativeStart -= trimLeftIndex;
-		// buffer spaces and tabs in order to reach the error position
-		int pos = 0;
-		char[] underneath = new char[extract.length]; // can't be bigger
-		for (int i = 0; i <= relativeStart; i++) {
-			if (extract[i] == TAB) {
-				underneath[pos++] = TAB;
-			} else {
-				underneath[pos++] = SPACE;
-			}
-		}
-		// mark the error position
-		for (int i = startPosition + trimLeftIndex; // AMC if we took stuff off the start, take it into account!
-		i <= (endPosition >= source.length ? source.length - 1 : endPosition); i++)
-			underneath[pos++] = MARK;
-		// resize underneathto remove 'null' chars
-		System.arraycopy(underneath, 0, underneath = new char[pos], 0, pos);
+			return new String(extract) + "\n"; // TODO: Shouldn't it return "" or "\n"?
+		System.arraycopy(extract, trimLeftIndex, extract = new char[extract.length - trimLeftIndex], 0, extract.length);
+		problemStartOffset -= trimLeftIndex;
 
-		return new String(extract) + "\n" + new String(underneath); //$NON-NLS-2$ //$NON-NLS-1$
+		// Insert spaces to reach the error position
+		int pos = 0;
+		char[] underline = new char[extract.length]; // can't be bigger
+		for (int i = 0; i < problemStartOffset; i++)
+			underline[pos++] = SPACE;
+		// Underline the error position with a '^^^^^' character sequence
+		for (int i = 0; i < problemLength; i++)
+			underline[pos++] = MARK;
+
+		// Resize to remove trailing NUL characters
+		System.arraycopy(underline, 0, underline = new char[problemStartOffset + problemLength], 0, pos);
+
+		return new String(extract) + "\n" + new String(underline); //$NON-NLS-2$ //$NON-NLS-1$
 	}
 
 	/**
