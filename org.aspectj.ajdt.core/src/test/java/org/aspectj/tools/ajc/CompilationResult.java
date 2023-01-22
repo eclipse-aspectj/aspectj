@@ -155,69 +155,53 @@ public class CompilationResult {
 	public String toString() {
 		StringBuilder buff = new StringBuilder();
 		buff.append("AspectJ Compilation Result:\n");
+
 		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size() + weaveMessages.size();
-		buff.append(totalMessages);
-		buff.append(" messages");
+		buff.append(totalMessages).append(" messages");
 		if (totalMessages > 0) {
-			buff.append(" (");
-			buff.append(infoMessages.size());
-			buff.append(" info, ");
-			buff.append(warningMessages.size());
-			buff.append(" warning, ");
-			buff.append(errorMessages.size());
-			buff.append(" error, ");
-			buff.append(failMessages.size());
-			buff.append(" fail, )");
-			buff.append(weaveMessages.size());
-			buff.append(" weaveInfo");
+			buff
+				.append(" (")
+				.append(infoMessages.size()).append(" info, ")
+				.append(warningMessages.size()).append(" warning, ")
+				.append(errorMessages.size()).append(" error, ")
+				.append(failMessages.size()).append(" fail, ")
+				.append(weaveMessages.size()).append(" weaveInfo")
+				.append(")");
 		}
 		buff.append("\n");
+
 		int msgNo = 1;
-		for (IMessage failMessage : failMessages) {
-			buff.append("[fail ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(failMessage.toString());
-			buff.append("\n");
-		}
+		for (IMessage failMessage : failMessages)
+			indentWithPrefix(buff, "[fail " + msgNo++ + "] ", failMessage.toString());
 		msgNo = 1;
-		for (IMessage errorMessage : errorMessages) {
-			buff.append("[error ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(errorMessage.toString());
-			buff.append("\n");
-		}
+		for (IMessage errorMessage : errorMessages)
+			indentWithPrefix(buff, "[error " + msgNo++ + "] ", errorMessage.toString());
 		msgNo = 1;
-		for (IMessage warningMessage : warningMessages) {
-			buff.append("[warning ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(warningMessage.toString());
-			buff.append("\n");
-		}
+		for (IMessage warningMessage : warningMessages)
+			indentWithPrefix(buff, "[warning " + msgNo++ + "] ", warningMessage.toString());
 		msgNo = 1;
-		for (IMessage infoMessage : infoMessages) {
-			buff.append("[info ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(infoMessage.toString());
-			buff.append("\n");
-		}
+		for (IMessage infoMessage : infoMessages)
+			indentWithPrefix(buff, "[info " + msgNo++ + "] ", infoMessage.toString());
 		msgNo = 1;
-		for (IMessage weaveMessage : weaveMessages) {
-			buff.append("[weaveInfo ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(weaveMessage.toString());
-			buff.append("\n");
-		}
+		for (IMessage weaveMessage : weaveMessages)
+			indentWithPrefix(buff, "[weaveInfo " + msgNo++ + "] ", weaveMessage.toString());
+
 		buff.append("\nCommand: 'ajc");
-		for (String arg : args) {
-			buff.append(' ');
-			buff.append(arg);
-		}
+		for (String arg : args)
+			buff.append(' ').append(arg);
 		buff.append("'\n");
+
 		return buff.toString();
+	}
+
+	private void indentWithPrefix(StringBuilder buffer, String prefix, String message) {
+		String[] lines = message.split("\n|\r\n|\r");
+		boolean firstLine = true;
+		for (String line : lines) {
+			buffer.append(prefix);
+			if (firstLine)
+				prefix = prefix.replaceAll(".", " ");
+			buffer.append(line).append('\n');
+		}
 	}
 }
