@@ -153,13 +153,13 @@ public class CompilationResult {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder buff = new StringBuilder();
-		buff.append("AspectJ Compilation Result:\n");
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("AspectJ Compilation Result:\n");
 
 		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size() + weaveMessages.size();
-		buff.append(totalMessages).append(" messages");
+		buffer.append(totalMessages).append(" messages");
 		if (totalMessages > 0) {
-			buff
+			buffer
 				.append(" (")
 				.append(infoMessages.size()).append(" info, ")
 				.append(warningMessages.size()).append(" warning, ")
@@ -168,40 +168,28 @@ public class CompilationResult {
 				.append(weaveMessages.size()).append(" weaveInfo")
 				.append(")");
 		}
-		buff.append("\n");
+		buffer.append("\n");
 
-		int msgNo = 1;
-		for (IMessage failMessage : failMessages)
-			indentWithPrefix(buff, "[fail " + msgNo++ + "] ", failMessage.toString());
-		msgNo = 1;
-		for (IMessage errorMessage : errorMessages)
-			indentWithPrefix(buff, "[error " + msgNo++ + "] ", errorMessage.toString());
-		msgNo = 1;
-		for (IMessage warningMessage : warningMessages)
-			indentWithPrefix(buff, "[warning " + msgNo++ + "] ", warningMessage.toString());
-		msgNo = 1;
-		for (IMessage infoMessage : infoMessages)
-			indentWithPrefix(buff, "[info " + msgNo++ + "] ", infoMessage.toString());
-		msgNo = 1;
-		for (IMessage weaveMessage : weaveMessages)
-			indentWithPrefix(buff, "[weaveInfo " + msgNo++ + "] ", weaveMessage.toString());
+		printMessagesToBuffer(buffer, "fail", failMessages);
+		printMessagesToBuffer(buffer, "error", errorMessages);
+		printMessagesToBuffer(buffer, "warning", warningMessages);
+		printMessagesToBuffer(buffer, "info", infoMessages);
+		printMessagesToBuffer(buffer, "weaveInfo", weaveMessages);
 
-		buff.append("\nCommand: 'ajc");
+		buffer.append("\nCommand: 'ajc");
 		for (String arg : args)
-			buff.append(' ').append(arg);
-		buff.append("'\n");
+			buffer.append(' ').append(arg);
+		buffer.append("'\n");
 
-		return buff.toString();
+		return buffer.toString();
 	}
 
-	private void indentWithPrefix(StringBuilder buffer, String prefix, String message) {
-		String[] lines = message.split("\n|\r\n|\r");
-		boolean firstLine = true;
-		for (String line : lines) {
-			buffer.append(prefix);
-			if (firstLine)
-				prefix = prefix.replaceAll(".", " ");
-			buffer.append(line).append('\n');
-		}
+	private void printMessagesToBuffer(StringBuilder buffer, String messageType, Iterable<IMessage> messages) {
+		int msgNo = 1;
+		for (IMessage message : messages)
+			buffer
+				.append("[").append(messageType).append(" ").append(msgNo++).append("] ")
+				.append(message.toString().replaceAll("\r\n|\n|\r", "\n  "))
+				.append('\n');
 	}
 }
