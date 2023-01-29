@@ -61,7 +61,9 @@
 	     <line text="register aspect AspectD"/>
 	     <line text="deactivating aspect 'AspectD' as it requires type 'a.b.c.Anno2' which cannot be found on the classpath"/>
 	     <line text="Join point 'method-execution(void Code.main(java.lang.String[]))' in Type 'Code' (Code.java:7) advised by before advice from 'AspectC'"/>
+	     <line text="see also:"/>
 	     <line text="Join point 'staticinitialization(void Code.&lt;clinit&gt;())' in Type 'Code' (Code.java) advised by before advice from 'AspectB'"/>
+	     <line text="see also:"/>
 	     <line text="processing reweavable"/>
 	     <line text="processing reweavable"/>
 	     </stderr>
