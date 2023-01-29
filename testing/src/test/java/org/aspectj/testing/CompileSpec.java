@@ -329,7 +329,7 @@ public class CompileSpec implements ITestStep {
 			} else if (kind.equals("abort")) {
 				fails.add(exMsg.toMessage());
 			} else if (kind.equals("weave")) {
-				weaveInfos.add(exMsg.toMessage());
+				weaveInfos.add(exMsg.toWeaveMessage());
 			} else if (kind.equals("usage")) {
 				weaveInfos.add(exMsg.toMessage());
 			}
