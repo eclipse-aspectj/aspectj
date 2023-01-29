@@ -138,4 +138,12 @@ public class HandlerPointcut extends Pointcut {
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
+
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.exceptionType != null)
+			this.exceptionType.traverse(visitor, ret);
+		return ret;
+	}
 }
