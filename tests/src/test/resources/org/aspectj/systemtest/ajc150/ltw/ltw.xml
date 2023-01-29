@@ -23,10 +23,10 @@
 			<line text="Main.test2" />
 		</stdout>
 		<stderr>
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line text="see also:" />
+			<line text="Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="see also:" />
 			<line text="Aspect1.before_test1" />
 			<line text="Aspect2.before_test2" />
 		</stderr>
@@ -249,8 +249,8 @@
 			<line text="TestITDMethod.main" />
 		</stdout>
 		<stderr>
-			<line
-				text="weaveinfo Type 'TestITDMethod' (TestITDMethod.java) has intertyped method from 'AbstractAspect' (AbstractAspect.aj:'void TestITDMethod.test()')" />
+			<line text="Type 'TestITDMethod' (TestITDMethod.java) has intertyped method from 'AbstractAspect' (AbstractAspect.aj:'void TestITDMethod.test()')" />
+			<line text="see also:" />
 			<line text="AbstractAspect_TestITDMethod.test" />
 		</stderr>
 	</run>
@@ -359,12 +359,12 @@
 			<line text="T call" />
 		</stdout>
 		<stderr>
-			<line
-				text="weaveinfo Join point 'method-call(void util.A.foo())' in Type 'child.Executor' (Executor.aj:18) advised by before advice from 'child.Advisor' (Advisor.aj:20)" />
-			<line
-				text="weaveinfo Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)" />
-			<line
-				text="weaveinfo Extending interface set for type 'child.Advisor' (Advisor.aj) to include 'util.T' (Advisor.aj)" />
+			<line text="Join point 'method-call(void util.A.foo())' in Type 'child.Executor' (Executor.aj:18) advised by before advice from 'child.Advisor' (Advisor.aj:20)" />
+			<line text="see also:" />
+			<line text="Extending interface set for type 'util.A' (A.aj) to include 'util.T' (Advisor.aj)" />
+			<line text="see also:" />
+			<line text="Extending interface set for type 'child.Advisor' (Advisor.aj) to include 'util.T' (Advisor.aj)" />
+			<line text="see also:" />
 		</stderr>
 	</run>
 </ajc-test>
@@ -464,10 +464,10 @@
 			<line text="Main.test2" />
 		</stdout>
 		<stderr>
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line text="see also:" />
+			<line text="Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="see also:" />
 			<line text="Aspect1.before_test1" />
 			<line text="Aspect2.before_test2" />
 		</stderr>
@@ -491,10 +491,10 @@
 			<line text="Main.test2" />
 		</stdout>
 		<stderr>
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
-			<line
-				text="weaveinfo Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="Join point 'method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
+			<line text="see also:" />
+			<line text="Join point 'method-execution(void Main.test2())' in Type 'Main' (Main.java:21) advised by before advice from 'Aspect2' (Aspect2.aj:16)" />
+			<line text="see also:" />
 			<line text="Aspect1.before_test1" />
 			<line text="Aspect2.before_test2" />
 		</stderr>
