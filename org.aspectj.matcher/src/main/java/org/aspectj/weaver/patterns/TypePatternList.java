@@ -549,8 +549,10 @@ public class TypePatternList extends PatternNode {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (TypePattern typePattern : typePatterns) {
-			typePattern.traverse(visitor, ret);
+		if (typePatterns != null) {
+			for (TypePattern typePattern : typePatterns) {
+				typePattern.traverse(visitor, ret);
+			}
 		}
 		return ret;
 	}

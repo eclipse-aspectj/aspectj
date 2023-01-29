@@ -70,6 +70,13 @@ public class DeclareErrorOrWarning extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.pointcut != null)
+			this.pointcut.traverse(visitor, ret);
+		return ret;
+	}
+
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.ERROR_OR_WARNING);
 		s.writeBoolean(isError);

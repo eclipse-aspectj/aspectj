@@ -40,6 +40,13 @@ public class DeclarePrecedence extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.patterns != null)
+			this.patterns.traverse(visitor, ret);
+		return ret;
+	}
+
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclarePrecedence ret = new DeclarePrecedence(this.patterns.parameterizeWith(typeVariableBindingMap, w));
 		ret.copyLocationFrom(this);

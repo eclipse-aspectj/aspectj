@@ -980,6 +980,23 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.annotationPattern != null)
+			this.annotationPattern.traverse(visitor, ret);
+		if (this.returnType != null)
+			this.returnType.traverse(visitor, ret);
+		if (this.declaringType != null)
+			this.declaringType.traverse(visitor, ret);
+		if (this.name != null)
+			this.name.traverse(visitor, ret);
+		if (this.parameterTypes != null)
+			this.parameterTypes.traverse(visitor, ret);
+		if (this.throwsPattern != null)
+			this.throwsPattern.traverse(visitor, ret);
+		return ret;
+	}
+
 	public boolean isExactDeclaringTypePattern() {
 		return isExactDeclaringTypePattern;
 	}
