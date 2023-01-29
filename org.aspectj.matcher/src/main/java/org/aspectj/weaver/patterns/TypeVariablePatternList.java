@@ -75,8 +75,10 @@ public class TypeVariablePatternList extends PatternNode {
 
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (TypeVariablePattern pattern : patterns) {
-			pattern.traverse(visitor, ret);
+		if (patterns != null) {
+			for (TypeVariablePattern pattern : patterns) {
+				pattern.traverse(visitor, ret);
+			}
 		}
 		return ret;
 	}

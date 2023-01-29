@@ -116,6 +116,15 @@ public class DeclareAnnotation extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.signaturePattern != null && this.signaturePattern instanceof SignaturePattern)
+			((SignaturePattern) this.signaturePattern).traverse(visitor, ret);
+		if (this.typePattern != null)
+			this.typePattern.traverse(visitor, ret);
+		return ret;
+	}
+
 	@Override
 	public void resolve(IScope scope) {
 		if (!scope.getWorld().isInJava5Mode()) {

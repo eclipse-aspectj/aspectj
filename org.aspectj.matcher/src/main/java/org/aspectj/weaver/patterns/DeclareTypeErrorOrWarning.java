@@ -75,6 +75,13 @@ public class DeclareTypeErrorOrWarning extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.typePattern != null)
+			this.typePattern.traverse(visitor, ret);
+		return ret;
+	}
+
 	public void write(CompressingDataOutputStream s) throws IOException {
 		s.writeByte(Declare.TYPE_ERROR_OR_WARNING);
 		s.writeBoolean(isError);
