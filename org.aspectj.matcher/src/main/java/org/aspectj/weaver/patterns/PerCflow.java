@@ -52,6 +52,14 @@ public class PerCflow extends PerClause {
 		return visitor.visit(this, data);
 	}
 
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.entry != null)
+			this.entry.traverse(visitor, ret);
+		return ret;
+	}
+
 	public int couldMatchKinds() {
 		return Shadow.ALL_SHADOW_KINDS_BITS;
 	}

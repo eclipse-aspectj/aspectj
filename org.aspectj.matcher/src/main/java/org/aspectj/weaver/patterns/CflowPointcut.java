@@ -352,4 +352,11 @@ public class CflowPointcut extends Pointcut {
 		return visitor.visit(this, data);
 	}
 
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.entry != null)
+			this.entry.traverse(visitor, ret);
+		return ret;
+	}
 }

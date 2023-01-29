@@ -489,6 +489,16 @@ public class IfPointcut extends Pointcut {
 		return visitor.visit(this, data);
 	}
 
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.partiallyConcretized != null)
+			this.partiallyConcretized.traverse(visitor, ret);
+		if (this.residueSource != null)
+			this.residueSource.traverse(visitor, ret);
+		return ret;
+	}
+
 	public static class IfFalsePointcut extends IfPointcut {
 
 		public IfFalsePointcut() {
