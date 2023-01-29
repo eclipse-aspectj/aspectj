@@ -195,8 +195,10 @@ public class AndTypePattern extends TypePattern {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		left.traverse(visitor, ret);
-		right.traverse(visitor, ret);
+		if (this.left != null)
+			this.left.traverse(visitor, ret);
+		if (this.right != null)
+			this.right.traverse(visitor, ret);
 		return ret;
 	}
 

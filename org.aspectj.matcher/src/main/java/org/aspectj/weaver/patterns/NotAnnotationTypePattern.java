@@ -126,7 +126,8 @@ public class NotAnnotationTypePattern extends AnnotationTypePattern {
 
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		negatedPattern.traverse(visitor, ret);
+		if (this.negatedPattern != null)
+			this.negatedPattern.traverse(visitor, ret);
 		return ret;
 	}
 

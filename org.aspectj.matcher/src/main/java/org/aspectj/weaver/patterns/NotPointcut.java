@@ -133,7 +133,8 @@ public class NotPointcut extends Pointcut {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		this.body.traverse(visitor, ret);
+		if (this.body != null)
+			this.body.traverse(visitor, ret);
 		return ret;
 	}
 
