@@ -108,8 +108,12 @@ public class EclipseSourceLocation implements ISourceLocation {
 
     public String getContext() {
         if (null == context) {
-            ICompilationUnit compilationUnit = result.compilationUnit;
-            IProblem[] problems = result.problems;
+            ICompilationUnit compilationUnit = null;
+            IProblem[] problems = null;
+            if (result != null) {
+                compilationUnit = result.compilationUnit;
+                problems = result.problems;
+            }
             if ((null == compilationUnit) || (null == problems)
                 || (1 != problems.length)) { // ?? which of n>1 problems?
                 context = NO_CONTEXT;

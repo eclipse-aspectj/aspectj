@@ -23,12 +23,18 @@ public class ExpectedMessageSpec {
 
 	private String kind = "error";
 	private int line = -1;
+	private int aspectLine = -1;
 	private String text;
 	private String file;
+	private String aspectFile;
 	private String details;
 
 	public AjcTestCase.Message toMessage() {
-		return new AjcTestCase.Message(line,file,text,null);
+		return new AjcTestCase.Message(line, file, text, null);
+	}
+
+	public AjcTestCase.Message toWeaveMessage() {
+		return new AjcTestCase.Message(line, file, aspectLine, aspectFile, text, null);
 	}
 
 	/**
@@ -56,6 +62,18 @@ public class ExpectedMessageSpec {
 		this.file = file;
 	}
 	/**
+	 * @return Returns the aspect file.
+	 */
+	public String getAspectFile() {
+		return aspectFile;
+	}
+	/**
+	 * @param aspectFile The aspect file to set.
+	 */
+	public void setAspectFile(String aspectFile) {
+		this.aspectFile = aspectFile;
+	}
+	/**
 	 * @return Returns the kind.
 	 */
 	public String getKind() {
@@ -78,6 +96,18 @@ public class ExpectedMessageSpec {
 	 */
 	public void setLine(int line) {
 		this.line = line;
+	}
+	/**
+	 * @return Returns the asperct line.
+	 */
+	public int getAspectLine() {
+		return aspectLine;
+	}
+	/**
+	 * @param aspectLine The aspect line to set.
+	 */
+	public void setAspectLine(int aspectLine) {
+		this.aspectLine = aspectLine;
 	}
 	/**
 	 * @return Returns the text.

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.WeaveMessage;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.LangUtil;
 
@@ -134,8 +135,10 @@ public abstract class AjcTestCase extends TestCase {
 	 */
 	public static class Message {
 		private int line = -1;
+		private int aspectLine = -1;
 		private String text;
 		private String sourceFileName;
+		private String aspectFileName;
 		private ISourceLocation[] seeAlsos;
 		public boolean careAboutOtherMessages = true;
 
@@ -172,18 +175,27 @@ public abstract class AjcTestCase extends TestCase {
 		 * </p>
 		 */
 		public Message(int line, String srcFile, String text, ISourceLocation[] seeAlso) {
+			this(line, srcFile, -1, null, text, seeAlso);
+		}
+
+		public Message(int line, String srcFile, int aspectLine, String aspectFile, String text, ISourceLocation[] seeAlso) {
 			this.line = line;
 			StringBuilder srcFileName = new StringBuilder();
 			if (srcFile != null) {
 				char[] chars = srcFile.toCharArray();
 				for (char c : chars) {
-					if ((c == '\\') || (c == '/')) {
-						srcFileName.append(separator);
-					} else {
-						srcFileName.append(c);
-					}
+					srcFileName.append((c == '\\' || c == '/') ? separator : c);
 				}
 				this.sourceFileName = srcFileName.toString();
+			}
+			this.aspectLine = aspectLine;
+			StringBuilder aspectFileName = new StringBuilder();
+			if (aspectFile != null) {
+				char[] chars = aspectFile.toCharArray();
+				for (char c : chars) {
+					aspectFileName.append((c == '\\' || c == '/') ? separator : c);
+				}
+				this.aspectFileName = aspectFileName.toString();
 			}
 			this.text = text;
 			if (this.text != null && text.startsWith("*")) {
@@ -211,33 +223,41 @@ public abstract class AjcTestCase extends TestCase {
 		 */
 		public boolean matches(IMessage message) {
 			ISourceLocation loc = message.getSourceLocation();
-			if ((loc == null) && ((line != -1) || (sourceFileName != null))) {
+			if ((loc == null) && ((line != -1) || (sourceFileName != null)))
 				return false;
-			}
 			if (line != -1) {
-				if (loc.getLine() != line) {
+				if (loc.getLine() != line)
 					return false;
-				}
 			}
 			if (sourceFileName != null) {
-				if (!loc.getSourceFile().getPath().endsWith(sourceFileName)) {
+				if (!loc.getSourceFile().getPath().endsWith(sourceFileName))
 					return false;
+			}
+			if (message instanceof WeaveMessage) {
+				List<ISourceLocation> extraLocations = message.getExtraSourceLocations();
+				loc = extraLocations.size() > 0 ? extraLocations.get(0) : null;
+				if ((loc == null) && ((aspectLine != -1) || (aspectFileName != null)))
+					return false;
+				if (aspectLine != -1) {
+					if (loc.getLine() != aspectLine)
+						return false;
+				}
+				if (aspectFileName != null) {
+					if (!loc.getSourceFile().getPath().endsWith(aspectFileName))
+						return false;
 				}
 			}
 			if (text != null) {
-				if (!message.getMessage().contains(text)) {
+				if (!message.getMessage().contains(text))
 					return false;
-				}
 			}
 			if (seeAlsos != null) {
 				List<ISourceLocation> extraLocations = message.getExtraSourceLocations();
-				if (extraLocations.size() != seeAlsos.length) {
+				if (extraLocations.size() != seeAlsos.length)
 					return false;
-				}
 				for (ISourceLocation seeAlso : seeAlsos) {
-					if (!hasAMatch(extraLocations, seeAlso)) {
+					if (!hasAMatch(extraLocations, seeAlso))
 						return false;
-					}
 				}
 			}
 			return true;
