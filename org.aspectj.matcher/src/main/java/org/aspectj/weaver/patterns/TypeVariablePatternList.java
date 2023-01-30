@@ -73,6 +73,7 @@ public class TypeVariablePatternList extends PatternNode {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
 		if (patterns != null) {
