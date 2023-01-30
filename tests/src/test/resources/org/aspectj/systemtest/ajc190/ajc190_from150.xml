@@ -5017,6 +5017,7 @@
    <ajc-test dir="java5/generics/pointcuts" title="annotation patterns with parameterized types">
      <compile files="ParameterizedTypesInAnnotationPatterns.aj" options="-1.9">
          <message kind="error" line="5" text="is not an annotation type"/>
+         <message kind="error" line="8" text="no static initialization join points for parameterized types, use raw type instead"/>
      </compile>
    </ajc-test>
 
