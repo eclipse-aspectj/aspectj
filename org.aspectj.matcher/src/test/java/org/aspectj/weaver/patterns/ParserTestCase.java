@@ -290,7 +290,7 @@ public class ParserTestCase extends PatternsTestCase {
 	public void testParseAllowedSuperInTypeVariable() {
 		PatternParser parser = new PatternParser("T super Number+");
 		TypeVariablePattern tv = parser.parseTypeVariable();
-		TypeVariablePattern expected = new TypeVariablePattern("T", new ExactTypePattern(UnresolvedType.OBJECT, false, false),
+		TypeVariablePattern expected = new TypeVariablePattern("T", new ExactTypePattern(UnresolvedType.OBJECT, false, false, null),
 				null, new PatternParser("Number+").parseTypePattern());
 		assertEquals("Expected type variable T super Number+", expected, tv);
 	}

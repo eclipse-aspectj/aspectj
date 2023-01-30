@@ -299,7 +299,7 @@ public class WildAnnotationTypePattern extends AnnotationTypePattern {
 				if (fullyQualifiedName != null && fullyQualifiedName.contains(".")) {
 					ResolvedType resolvedType = world.resolve(UnresolvedType.forName(fullyQualifiedName));
 					if (resolvedType != null && !resolvedType.isMissing()) {
-						typePattern = new ExactTypePattern(resolvedType, false, false);
+						typePattern = new ExactTypePattern(resolvedType, false, false, null);
 					}
 				}
 			}

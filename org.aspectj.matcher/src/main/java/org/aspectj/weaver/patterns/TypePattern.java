@@ -360,4 +360,13 @@ public abstract class TypePattern extends PatternNode {
 		return false;
 	}
 
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (annotationPattern != null)
+			annotationPattern.traverse(visitor, ret);
+		if (typeParameters != null)
+			typeParameters.traverse(visitor, ret);
+		return ret;
+	}
 }
