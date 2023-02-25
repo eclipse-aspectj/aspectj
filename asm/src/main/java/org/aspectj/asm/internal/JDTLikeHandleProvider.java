@@ -20,11 +20,13 @@ import org.aspectj.bridge.ISourceLocation;
 
 /**
  * Creates JDT-like handles, for example
- *
- * method with string argument: &lt;tjp{Demo.java[Demo~main~\[QString; method with generic argument:
- * &lt;pkg{MyClass.java[MyClass~myMethod~QList\&lt;QString;&gt;; an aspect: &lt;pkg*A1.aj}A1 advice with Integer arg:
- * &lt;pkg*A8.aj}A8&amp;afterReturning&amp;QInteger; method call: &lt;pkg*A10.aj[C~m1?method-call(void pkg.C.m2())
- *
+ * <ul>
+ *   <li>method with string argument: {@code <tjp}<code>{</code>{@code Demo.java[Demo~main~\[QString;}</li>
+ *   <li>method with generic argument: {@code <pkg}<code>{</code>{@code MyClass.java[MyClass~myMethod~QList\<QString;>;}</li>
+ *   <li>aspect: {@code <pkg*A1.aj}<code>}</code>{@code A1}</li>
+ *   <li>advice with Integer arg: {@code <pkg*A8.aj}<code>}</code>{@code A8&afterReturning&QInteger;}</li>
+ *   <li>method call: {@code <pkg*A10.aj[C~m1?method-call(void pkg.C.m2())}</li>
+ * </ul>
  */
 public class JDTLikeHandleProvider implements IElementHandleProvider {
 

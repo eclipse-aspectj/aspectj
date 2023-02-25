@@ -125,31 +125,31 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement ipe = null;
 		ipe = findElementAtLine(top.getRoot(), 4);// public java.util.List<String> Ship.i(List<String>[][] u)
-		assertEquals("<{Handles.java'Handles)Ship.i)\\[\\[QList\\<QString;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles°Ship.i°\\[\\[QList\\<QString;>;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 7);// public java.util.List<String> Ship.i(Set<String>[][] u)
-		assertEquals("<{Handles.java'Handles)Ship.i)\\[\\[QSet\\<QString;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles°Ship.i°\\[\\[QSet\\<QString;>;", ipe.getHandleIdentifier());
 
 		// public java.util.Set<String> i(java.util.Set<String>[][] u)
 		ipe = findElementAtLine(top.getRoot(), 10);
-		assertEquals("<{Handles.java'Handles~i~\\[\\[Qjava.util.Set\\<QString;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i~\\[\\[Qjava.util.Set\\<QString;>;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 13);// public java.util.Set<String> i(java.util.Set<String>[][] u,int i) {
-		assertEquals("<{Handles.java'Handles~i~\\[\\[Qjava.util.Set\\<QString;>;~I", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i~\\[\\[Qjava.util.Set\\<QString;>;~I", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 16);// public java.util.Set<String> i2(java.util.Set<? extends
 		// Collection<String>>[][] u) {
-		assertEquals("<{Handles.java'Handles~i2~\\[\\[Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i2~\\[\\[Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 19);// public java.util.Set<String> i3(java.util.Set<? extends
 		// Collection<String[]>>[][] u)
-		assertEquals("<{Handles.java'Handles~i3~\\[\\[Qjava.util.Set\\<+QCollection\\<\\[QString;>;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i3~\\[\\[Qjava.util.Set\\<+QCollection\\<\\[QString;>;>;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 22);
-		assertEquals("<{Handles.java'Handles~i4~Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i4~Qjava.util.Set\\<+QCollection\\<QString;>;>;", ipe.getHandleIdentifier());
 
 		ipe = findElementAtLine(top.getRoot(), 25);
-		assertEquals("<{Handles.java'Handles~i5~Qjava.util.Set\\<*>;", ipe.getHandleIdentifier());
+		assertEquals("<{Handles.java>Handles~i5~Qjava.util.Set\\<*>;", ipe.getHandleIdentifier());
 
 	}
 

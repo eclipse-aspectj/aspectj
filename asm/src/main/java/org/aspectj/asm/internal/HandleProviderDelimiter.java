@@ -17,35 +17,52 @@ import org.aspectj.asm.IProgramElement;
  */
 public class HandleProviderDelimiter {
 
-	// taken from JavaElement
+	// TODO:
+	//   Keep constants in sync between
+	//     - org.eclipse.jdt.internal.core.JavaElement (JDT Core),
+	//     - org.eclipse.ajdt.core.javaelements.AspectElement (AJDT Core),
+	//     - org.aspectj.asm.internal.HandleProviderDelimiter (AspectJ).
+	//   The reason is that JDT Core introduces new delimiters for new Java language constructs once in a while.
+	//   This led to clashes with existing AJDT symbols in the past already, which consequently had to be changed
+	//   to use other characters. Therefore, manual synchronisation with JDT Core is necessary.
+
+	// Taken from org.eclipse.jdt.internal.core.JavaElement (JDT Core)
+	public static final HandleProviderDelimiter ESCAPE = new HandleProviderDelimiter('\\');
 	public static final HandleProviderDelimiter JAVAPROJECT = new HandleProviderDelimiter('=');
+	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
 	public static final HandleProviderDelimiter PACKAGEFRAGMENT = new HandleProviderDelimiter('<');
 	public static final HandleProviderDelimiter FIELD = new HandleProviderDelimiter('^');
 	public static final HandleProviderDelimiter METHOD = new HandleProviderDelimiter('~');
 	public static final HandleProviderDelimiter INITIALIZER = new HandleProviderDelimiter('|');
 	public static final HandleProviderDelimiter COMPILATIONUNIT = new HandleProviderDelimiter('{');
 	public static final HandleProviderDelimiter CLASSFILE = new HandleProviderDelimiter('(');
+	public static final HandleProviderDelimiter JEM_MODULAR_CLASSFILE = new HandleProviderDelimiter('\'');
 	public static final HandleProviderDelimiter TYPE = new HandleProviderDelimiter('[');
+	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%');
 	public static final HandleProviderDelimiter IMPORTDECLARATION = new HandleProviderDelimiter('#');
 	public static final HandleProviderDelimiter COUNT = new HandleProviderDelimiter('!');
-	public static final HandleProviderDelimiter ESCAPE = new HandleProviderDelimiter('\\');
-	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%');
-	public static final HandleProviderDelimiter PACKAGEFRAGMENTROOT = new HandleProviderDelimiter('/');
 	// these below are not currently used because no iprogramelement.kind
 	// equivalent
 	public static final HandleProviderDelimiter LOCALVARIABLE = new HandleProviderDelimiter('@');
 	public static final HandleProviderDelimiter TYPE_PARAMETER = new HandleProviderDelimiter(']');
+	public static final HandleProviderDelimiter ANNOTATION = new HandleProviderDelimiter('}');
+	public static final HandleProviderDelimiter LAMBDA_EXPRESSION = new HandleProviderDelimiter(')');
+	public static final HandleProviderDelimiter LAMBDA_METHOD = new HandleProviderDelimiter('&');
+	public static final HandleProviderDelimiter STRING = new HandleProviderDelimiter('"');
+	public static final HandleProviderDelimiter MODULE = new HandleProviderDelimiter('`');
+	public static final HandleProviderDelimiter DELIMITER_ESCAPE = new HandleProviderDelimiter('=');
 
-	// AspectJ specific ones
+	// Taken from org.aspectj.asm.internal.HandleProviderDelimiter (AspectJ)
 	public static final HandleProviderDelimiter ASPECT_CU = new HandleProviderDelimiter('*');
-	public static final HandleProviderDelimiter ADVICE = new HandleProviderDelimiter('&');
-	public static final HandleProviderDelimiter ASPECT_TYPE = new HandleProviderDelimiter('\'');
+	public static final HandleProviderDelimiter ADVICE = new HandleProviderDelimiter('§');
+	public static final HandleProviderDelimiter ASPECT_TYPE = new HandleProviderDelimiter('>');
 	public static final HandleProviderDelimiter CODEELEMENT = new HandleProviderDelimiter('?');
 	public static final HandleProviderDelimiter ITD_FIELD = new HandleProviderDelimiter(',');
-	public static final HandleProviderDelimiter ITD = new HandleProviderDelimiter(')');
-	public static final HandleProviderDelimiter DECLARE = new HandleProviderDelimiter('`');
-	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('"');
+	public static final HandleProviderDelimiter ITD_METHOD = new HandleProviderDelimiter('°');
+	public static final HandleProviderDelimiter DECLARE = new HandleProviderDelimiter('´');
+	public static final HandleProviderDelimiter POINTCUT = new HandleProviderDelimiter('©');
 
+	// Special delimiter for phantom handles
 	public static final HandleProviderDelimiter PHANTOM = new HandleProviderDelimiter(';');
 
 	private static char empty = ' ';
@@ -99,7 +116,7 @@ public class HandleProviderDelimiter {
 			return ITD_FIELD.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.INTER_TYPE_METHOD) || kind.equals(IProgramElement.Kind.INTER_TYPE_CONSTRUCTOR)
 				|| kind.equals(IProgramElement.Kind.INTER_TYPE_PARENT)) {
-			return ITD.getDelimiter();
+			return ITD_METHOD.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.CONSTRUCTOR) || kind.equals(IProgramElement.Kind.METHOD)) {
 			return METHOD.getDelimiter();
 		} else if (kind.equals(IProgramElement.Kind.FIELD) || kind.equals(IProgramElement.Kind.ENUM_VALUE)) {

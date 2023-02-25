@@ -1,15 +1,15 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-  pkg  [package] 
+<root>  [java source file]
+  pkg  [package]
     A.aj  [java source file] TEST_SANDBOX\A.aj:1:
-      import declarations  [import reference] 
+      import declarations  [import reference]
       A  [aspect] TEST_SANDBOX\A.aj:3:
         before(): pointcutInClass..  [advice] TEST_SANDBOX\A.aj:5:
         pointcutInAspect()  [pointcut] TEST_SANDBOX\A.aj:8:
         before(): pointcutInAspect..  [advice] TEST_SANDBOX\A.aj:10:
         aMethod()  [method] TEST_SANDBOX\A.aj:13:
     C.aj  [java source file] TEST_SANDBOX\C.aj:1:
-      import declarations  [import reference] 
+      import declarations  [import reference]
       C  [class] TEST_SANDBOX\C.aj:3:
         pointcutInClass()  [pointcut] TEST_SANDBOX\C.aj:5:
         cMethod()  [method] TEST_SANDBOX\C.aj:7:
