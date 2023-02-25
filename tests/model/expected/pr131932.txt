@@ -1,8 +1,8 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-    [package] 
+<root>  [java source file]
+    [package]
     pr131932.aj  [java source file] TEST_SANDBOX\pr131932.aj:1:
-        [import reference] 
+        [import reference]
         java.util.List  [import reference] TEST_SANDBOX\pr131932.aj:1:
       Slide74  [aspect] TEST_SANDBOX\pr131932.aj:3:
         Bar  [class] TEST_SANDBOX\pr131932.aj:13:
@@ -13,12 +13,12 @@
       Foo  [class] TEST_SANDBOX\pr131932.aj:19:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <*pr131932.aj'Slide74,Bar.children (declared on) <*pr131932.aj'Slide74[Bar
-(targets=2) <*pr131932.aj'Slide74[Bar (aspect declarations) <*pr131932.aj'Slide74)Bar.getFirst
-(targets=2) <*pr131932.aj'Slide74[Bar (aspect declarations) <*pr131932.aj'Slide74,Bar.children
-(targets=1) <*pr131932.aj'Slide74)Foo.Foo_new)QList\<QT;>; (declared on) <*pr131932.aj[Foo
-(targets=1) <*pr131932.aj'Slide74)Bar.getFirst (declared on) <*pr131932.aj'Slide74[Bar
-(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj'Slide74)Foo.Foo_new)QList\<QT;>;
+(targets=1) <*pr131932.aj>Slide74,Bar.children (declared on) <*pr131932.aj>Slide74[Bar
+(targets=2) <*pr131932.aj>Slide74[Bar (aspect declarations) <*pr131932.aj>Slide74°Bar.getFirst
+(targets=2) <*pr131932.aj>Slide74[Bar (aspect declarations) <*pr131932.aj>Slide74,Bar.children
+(targets=1) <*pr131932.aj>Slide74°Foo.Foo_new°QList\<QT;>; (declared on) <*pr131932.aj[Foo
+(targets=1) <*pr131932.aj>Slide74°Bar.getFirst (declared on) <*pr131932.aj>Slide74[Bar
+(targets=1) <*pr131932.aj[Foo (aspect declarations) <*pr131932.aj>Slide74°Foo.Foo_new°QList\<QT;>;
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=2

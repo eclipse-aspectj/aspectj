@@ -141,6 +141,8 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			// String tempDir = expect.readLine();
 			String expectedLine = null;
 			while ((expectedLine = expect.readLine()) != null) {
+				// Remove trailing whitespace
+				expectedLine = expectedLine.replaceAll("[\t ]+$", "");
 				fileContents.add(expectedLine);
 			}
 			List<String> expectedFileContents = new ArrayList<>(fileContents);
@@ -150,6 +152,8 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			String foundLine = null;
 			List<String> foundFileContents = new ArrayList<>();
 			while ((foundLine = found.readLine()) != null) {
+				// Remove trailing whitespace
+				foundLine = foundLine.replaceAll("[\t ]+$", "");
 				// int i = foundLine.indexOf(sandboxDir);
 				// if (i == -1) {
 				// int j = foundLine.indexOf("(targets=");

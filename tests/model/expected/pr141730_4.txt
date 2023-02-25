@@ -1,9 +1,9 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-  bar  [package] 
+<root>  [java source file]
+  bar  [package]
     MyBar.aj  [java source file] TEST_SANDBOX\MyBar.aj:1:
       bar  [package declaration] TEST_SANDBOX\MyBar.aj:1:
-        [import reference] 
+        [import reference]
         foo.*  [import reference] TEST_SANDBOX\MyBar.aj:3:
       MyBar  [aspect] TEST_SANDBOX\MyBar.aj:5:
         before(): <anonymous pointcut>  [advice] TEST_SANDBOX\MyBar.aj:7:
@@ -15,18 +15,18 @@
         declare @field: int *Foo.* : @MyAnnotation  [declare @field] TEST_SANDBOX\MyBar.aj:16:
     MyAnnotation.java  [java source file] TEST_SANDBOX\MyAnnotation.java:1:
       bar  [package declaration] TEST_SANDBOX\MyAnnotation.java:1:
-        [import reference] 
+        [import reference]
       MyAnnotation  [annotation] TEST_SANDBOX\MyAnnotation.java:3:
     NewClass.java  [java source file] TEST_SANDBOX\NewClass.java:1:
       bar  [package declaration] TEST_SANDBOX\NewClass.java:1:
-        [import reference] 
+        [import reference]
       NewClass  [class] TEST_SANDBOX\NewClass.java:3:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <bar*MyBar.aj'MyBar`declare \@type (annotates) {MyFoo.java
-(targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj'MyBar`declare \@type
-(targets=1) <bar*MyBar.aj'MyBar`declare parents (declared on) /;<foo(MyFoo.class[MyFoo
-(targets=1) /;<foo(MyFoo.class[MyFoo (aspect declarations) <bar*MyBar.aj'MyBar`declare parents
+(targets=1) <bar*MyBar.aj>MyBar´declare \@type (annotates) {MyFoo.java
+(targets=1) {MyFoo.java (annotated by) <bar*MyBar.aj>MyBar´declare \@type
+(targets=1) <bar*MyBar.aj>MyBar´declare parents (declared on) /;<foo(MyFoo.class[MyFoo
+(targets=1) /;<foo(MyFoo.class[MyFoo (aspect declarations) <bar*MyBar.aj>MyBar´declare parents
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 import reference=4

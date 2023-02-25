@@ -1,20 +1,20 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-    [package] 
+<root>  [java source file]
+    [package]
     C.java  [java source file] TEST_SANDBOX\C.java:1:
-        [import reference] 
+        [import reference]
       C  [class] TEST_SANDBOX\C.java:3:
         method1()  [method] TEST_SANDBOX\C.java:5:
           field-get(java.io.PrintStream java.lang.System.out)  [code] TEST_SANDBOX\C.java:6:
-  binaries  [source folder] 
-      [package] 
+  binaries  [source folder]
+      [package]
       AspectInDefaultPackage.class  [file] TEST_SANDBOX\simple.jar!\AspectInDefaultPackage.class:1:
         AspectInDefaultPackage  [aspect] TEST_SANDBOX\simple.jar!\AspectInDefaultPackage.class:1:
           declare warning: "There should be n.."  [declare warning] TEST_SANDBOX\simple.jar!\AspectInDefaultPackage.class:4:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) /binaries<(AspectInDefaultPackage.class'AspectInDefaultPackage`declare warning (matched by) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
-(targets=1) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) /binaries<(AspectInDefaultPackage.class'AspectInDefaultPackage`declare warning
+(targets=1) /binaries<(AspectInDefaultPackage.class>AspectInDefaultPackage´declare warning (matched by) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out)
+(targets=1) <{C.java[C~method1?field-get(java.io.PrintStream java.lang.System.out) (matches declare) /binaries<(AspectInDefaultPackage.class>AspectInDefaultPackage´declare warning
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=1

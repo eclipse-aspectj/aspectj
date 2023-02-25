@@ -146,14 +146,14 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		checkWasFullBuild();
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		IProgramElement ipe = null;
-		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java'Remover`declare \\@field", false);
+		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java>Remover´declare \\@field", false);
 		System.out.println(ipe);
 		assertTrue(ipe.isAnnotationRemover());
 		String[] annos = ipe.getRemovedAnnotationTypes();
 		assertEquals(1, annos.length);
 		assertEquals("a.Anno", annos[0]);
 		assertNull(ipe.getAnnotationType());
-		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java'Remover`declare \\@field!2", false);
+		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java>Remover´declare \\@field!2", false);
 		System.out.println(ipe);
 		assertFalse(ipe.isAnnotationRemover());
 		assertEquals("a.Anno", ipe.getAnnotationType());
@@ -835,7 +835,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		IProgramElement ipe = model.findElementForHandleOrCreate(
-				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass'MyInnerInnerAspect", false);
+				"=PR278496_4<foo{MyOtherClass.java[MyOtherClass[MyInnerClass>MyInnerInnerAspect", false);
 		assertNotNull(ipe);
 	}
 
@@ -1026,7 +1026,7 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		// check handle to anonymous inner:
 		IProgramElement ipe = model.findElementForHandleOrCreate(
-				"=pr278496_8<generics*DeleteActionAspect.aj'DeleteActionAspect~main~\\[QString;[", false);
+				"=pr278496_8<generics*DeleteActionAspect.aj>DeleteActionAspect~main~\\[QString;[", false);
 		assertNotNull(ipe);
 	}
 }

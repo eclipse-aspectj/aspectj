@@ -1,9 +1,9 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-  foo  [package] 
+<root>  [java source file]
+  foo  [package]
     MyFoo.java  [java source file] TEST_SANDBOX\MyFoo.java:1:
       foo  [package declaration] TEST_SANDBOX\MyFoo.java:1:
-        [import reference] 
+        [import reference]
       MyFoo  [class] TEST_SANDBOX\MyFoo.java:3:
         callMain()  [method] TEST_SANDBOX\MyFoo.java:5:
           method-call(void foo.MyFoo.main())  [code] TEST_SANDBOX\MyFoo.java:6:
