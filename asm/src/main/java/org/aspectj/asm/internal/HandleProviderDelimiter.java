@@ -36,7 +36,7 @@ public class HandleProviderDelimiter {
 	public static final HandleProviderDelimiter INITIALIZER = new HandleProviderDelimiter('|');
 	public static final HandleProviderDelimiter COMPILATIONUNIT = new HandleProviderDelimiter('{');
 	public static final HandleProviderDelimiter CLASSFILE = new HandleProviderDelimiter('(');
-	public static final HandleProviderDelimiter JEM_MODULAR_CLASSFILE = new HandleProviderDelimiter('\'');
+	public static final HandleProviderDelimiter MODULAR_CLASSFILE = new HandleProviderDelimiter('\'');
 	public static final HandleProviderDelimiter TYPE = new HandleProviderDelimiter('[');
 	public static final HandleProviderDelimiter PACKAGEDECLARATION = new HandleProviderDelimiter('%');
 	public static final HandleProviderDelimiter IMPORTDECLARATION = new HandleProviderDelimiter('#');
