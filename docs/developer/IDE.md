@@ -32,6 +32,7 @@ projects using AspectJ Maven Plugin.
 #### AspectJ Development Tools (AJDT)
 
 Use an update site corresponding to your Eclipse version (minimal version listed):
+* Eclipse 2022-12 (4.26), AspectJ 1.9.19, Java 19: https://download.eclipse.org/tools/ajdt/426/dev/update
 * Eclipse 2022-03 (4.23), AspectJ 1.9.19, Java 19: https://download.eclipse.org/tools/ajdt/423/dev/update
 * Eclipse 2021-09 (4.21), AspectJ 1.9.8, Java 17: https://download.eclipse.org/tools/ajdt/421/dev/update
 * Eclipse 2021-03 (4.19), AspectJ 1.9.7, Java 16: https://download.eclipse.org/tools/ajdt/419/dev/update
