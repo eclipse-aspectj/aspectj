@@ -45,6 +45,7 @@ Use an update site corresponding to your Eclipse version (minimal version listed
 The connector between AspectJ Maven Plugin and AJDT has not been maintained by the AspectJ team for some years, but
 there is a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with the following
 update sites:
+  * Eclipse 2022-12 (4.26): https://aspectj.dev/eclipse/m2eclipse-ajdt/eclipse-2022-12/
   * Eclipse 2020-12 (4.18): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2020-12/
   * Eclipse 2019-06 (4.12): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2019-06/
 
