@@ -102,8 +102,10 @@ public interface Constants {
 	short MINOR_18 = 0;
 	short MAJOR_19 = 63;
 	short MINOR_19 = 0;
-//	short MAJOR_20 = 64;
-//	short MINOR_20 = 0;
+	short MAJOR_20 = 64;
+	short MINOR_20 = 0;
+//	short MAJOR_21 = 65;
+//	short MINOR_21 = 0;
 
 	int PREVIEW_MINOR_VERSION = 65535;
 

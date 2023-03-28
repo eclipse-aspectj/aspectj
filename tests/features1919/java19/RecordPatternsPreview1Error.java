@@ -1,5 +1,5 @@
 /**
- * This was not working as expected in ECJ after the initial Java 19 merge the JDT Core main line,
+ * This was not working as expected in ECJ after the initial Java 19 merge from the JDT Core main line,
  * see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450.
  */
 public class RecordPatternsPreview1Error {
