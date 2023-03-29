@@ -226,8 +226,8 @@ public class ClassPath implements Serializable {
 				buf.append(File.pathSeparatorChar);
 		}
 
-		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem
-		if (vm_version.matches("^(9|10|11|12|13|14|15|16|17|18|19).*")) {
+		// On Java 9+, sun.boot.class.path won't be set. System classes are accessible through JRT filesystem.
+		if (vm_version.matches("^(9|[1-9][0-9]+).*")) {
 			buf.insert(0, File.pathSeparatorChar);
 			buf.insert(0, System.getProperty("java.home") + File.separator + "lib" + File.separator + JRT_FS);
 		}
