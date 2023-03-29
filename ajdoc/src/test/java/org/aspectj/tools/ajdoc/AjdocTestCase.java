@@ -167,7 +167,8 @@ public abstract class AjdocTestCase extends TestCase {
 			!sourceLevel.equals("1.7") &&
 			!sourceLevel.equals("1.8") &&
 			!sourceLevel.equals("1.9") &&
-			!sourceLevel.equals("10")) {
+			!sourceLevel.startsWith("10") &&
+			!sourceLevel.startsWith("11")) {
 			fail("need to pass ajdoc '1.3' > '1.9' as the source level");
 		}
 		String[] args = new String[6 + inputFiles.length + ajOptions.length];
@@ -199,7 +200,8 @@ public abstract class AjdocTestCase extends TestCase {
 			!sourceLevel.equals("1.8") &&
 			!sourceLevel.equals("1.9") &&
 			!sourceLevel.startsWith("9") &&
-			!sourceLevel.startsWith("10")) {
+			!sourceLevel.startsWith("10") &&
+			!sourceLevel.startsWith("11")) {
 			fail("need to pass suitable version to ajdoc as the source level");
 		}
 		if (inputFiles.length == 0) {

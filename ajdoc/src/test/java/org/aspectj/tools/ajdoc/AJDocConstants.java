@@ -13,6 +13,6 @@ package org.aspectj.tools.ajdoc;
  */
 public class AJDocConstants {
 
-	public final static String VERSION = "1.7";
+	public final static String VERSION = "11";
 
 }
