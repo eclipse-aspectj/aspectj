@@ -42,7 +42,7 @@
 	<ajc-test dir="features1920/java20" vm="20" title="switch pattern matching preview 4 error">
 		<compile files="SwitchPatternPreview4Error.java" options="--enable-preview -20">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
@@ -77,7 +77,7 @@
 	<ajc-test dir="features198/java17" vm="20" title="switch pattern matching error">
 		<compile files="SwitchPatternError.java" options="--enable-preview -20">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
@@ -85,7 +85,7 @@
 	<ajc-test dir="features1919/java19" vm="20" title="switch pattern matching preview 3 error 1">
 		<compile files="SwitchPatternPreview3Error1.java" options="--enable-preview -20">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
@@ -93,7 +93,7 @@
 	<ajc-test dir="features1919/java19" vm="20" title="switch pattern matching preview 3 error 2">
 		<compile files="SwitchPatternPreview3Error2.java" options="--enable-preview -20">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
