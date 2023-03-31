@@ -7,7 +7,7 @@
 	<ajc-test dir="features198/java17" vm="18" title="switch pattern matching error">
 		<compile files="SwitchPatternError.java" options="--enable-preview -18">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
@@ -57,7 +57,7 @@
 	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error 1">
 		<compile files="SwitchPatternPreview2Error1.java" options="--enable-preview -18">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview2Error1.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview2Error1.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
@@ -65,7 +65,7 @@
 	<ajc-test dir="features199/java18" vm="18" title="switch pattern matching preview 2 error 2">
 		<compile files="SwitchPatternPreview2Error2.java" options="--enable-preview -18">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview2Error2.java" text="This case label is dominated by one of the preceding case label"/>
+			<message kind="error" file="SwitchPatternPreview2Error2.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
