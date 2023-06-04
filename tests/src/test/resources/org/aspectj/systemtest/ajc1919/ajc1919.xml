@@ -370,7 +370,7 @@
 			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 			<message kind="warning" text="advice defined in FirstAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="Application.java MarkerTwo.java" options="-1.5 -showWeaveInfo -Xlint:warning" classpath="first-aspect.jar" outjar="application.jar"/>
+		<compile files="Application.java MarkerTwo.java" options="-1.5 -showWeaveInfo -Xlint:warning" classpath="$sandbox/first-aspect.jar" outjar="application.jar"/>
 		<compile files="SecondAspect.java" options="-1.5 -showWeaveInfo -Xlint:warning" aspectpath="first-aspect.jar" inpath="application.jar" outjar="second-aspect.jar">
 			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 			<message kind="warning" text="at this shadow method-execution(void Application.greet(java.lang.String)) no precedence is specified between advice applying from aspect FirstAspect and aspect SecondAspect [Xlint:unorderedAdviceAtShadow]"/>
@@ -378,8 +378,10 @@
 			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by around advice from 'SecondAspect'"/>
 			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by before advice from 'FirstAspect'"/>
 		</compile>
-		<run class="Application" classpath="second-aspect.jar first-aspect.jar">
+		<run class="Application" classpath="$sandbox/second-aspect.jar,$sandbox/first-aspect.jar">
 			<stdout>
+				<line text="FirstAspect: execution(void Application.greet(String))"/>
+				<line text="SecondAspect: execution(void Application.greet(String))"/>
 				<line text="Hello world!"/>
 			</stdout>
 		</run>
