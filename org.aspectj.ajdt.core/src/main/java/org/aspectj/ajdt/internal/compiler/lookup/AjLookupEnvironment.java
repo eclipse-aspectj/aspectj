@@ -1472,6 +1472,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
   }
 
   private static boolean hasAspectDeclarations(CompilationUnitDeclaration unit) {
+    if (unit.types == null)
+      return false;
     for (int j = 0; j < unit.types.length; j++) {
       if (unit.types[j] instanceof AspectDeclaration) {
         return true;
