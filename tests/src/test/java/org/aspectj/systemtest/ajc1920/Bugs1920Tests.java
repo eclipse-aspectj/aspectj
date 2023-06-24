@@ -15,8 +15,15 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs1920Tests extends XMLBasedAjcTestCase {
 
-  public void testDummyJava20() {
-    //runTest("dummy Java 20");
+  /**
+   * Add correct annotations to multiple ITD methods with the same name and same number of arguments, i.e. copy the
+   * annotations correctly from the aspect into the target class instead of falsely always copying the annotations (if
+   * any) from the first ITD method found.
+   * <p>
+   * See <a href="https://github.com/eclipse-aspectj/aspectj/issues/246">GitHub issue 246</a>.
+   */
+  public void test_GitHub_246() {
+    runTest("add correct annotations to multiple ITD methods with the same name and same number of arguments");
   }
 
   public static Test suite() {

@@ -176,4 +176,16 @@
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/246 -->
+	<ajc-test dir="bugs1920/github_246" vm="8" title="add correct annotations to multiple ITD methods with the same name and same number of arguments">
+		<compile files="First.java Second.java App.java ITDAspect.aj" options="-8"/>
+		<run class="App">
+			<stdout>
+				<line text="[@First(), @Second()] public void App.foo(java.lang.Object)"/>
+				<line text="[@First()] public void App.foo(java.lang.String)"/>
+				<line text="[@Second()] public int App.foo(int)"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
