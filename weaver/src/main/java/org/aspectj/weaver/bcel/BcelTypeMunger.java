@@ -1593,7 +1593,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			System.err.println("Member we are looking for: " + lookingFor);
 		}
 
-		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
+		ResolvedMember[] aspectMethods = aspectType.getDeclaredMethods();
 		UnresolvedType[] lookingForParams = lookingFor.getParameterTypes();
 
 		ResolvedMember realMember = null;
@@ -1602,47 +1602,38 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (member.getName().equals(lookingFor.getName())) {
 				UnresolvedType[] memberParams = member.getGenericParameterTypes();
 				if (memberParams.length == lookingForParams.length) {
-					if (debug) {
+					if (debug)
 						System.err.println("Reviewing potential candidates: " + member);
-					}
 					boolean matchOK = true;
+
 					// Check that all method/ctor params all match, although only the erasure
-						for (int j = 0; j < memberParams.length && matchOK; j++) {
-							ResolvedType pMember = memberParams[j].resolve(world);
-							ResolvedType pLookingFor = lookingForParams[j].resolve(world);
+					for (int j = 0; j < memberParams.length && matchOK; j++) {
+						ResolvedType pMember = memberParams[j].resolve(world);
+						ResolvedType pLookingFor = lookingForParams[j].resolve(world);
 
-							if (pMember.isTypeVariableReference()) {
-								pMember = ((TypeVariableReference) pMember).getTypeVariable().getFirstBound().resolve(world);
-							}
-							if (pMember.isParameterizedType() || pMember.isGenericType()) {
-								pMember = pMember.getRawType().resolve(aspectType.getWorld());
-							}
+						if (pMember.isTypeVariableReference())
+							pMember = ((TypeVariableReference) pMember).getTypeVariable().getFirstBound().resolve(world);
+						if (pMember.isParameterizedType() || pMember.isGenericType())
+							pMember = pMember.getRawType().resolve(aspectType.getWorld());
 
-							if (pLookingFor.isTypeVariableReference()) {
-								pLookingFor = ((TypeVariableReference) pLookingFor).getTypeVariable().getFirstBound()
-										.resolve(world);
-							}
-							if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType()) {
-								pLookingFor = pLookingFor.getRawType().resolve(world);
-							}
+						if (pLookingFor.isTypeVariableReference())
+							pLookingFor = ((TypeVariableReference) pLookingFor).getTypeVariable().getFirstBound().resolve(world);
+						if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType())
+							pLookingFor = pLookingFor.getRawType().resolve(world);
 
-							if (debug) {
-								System.err.println("Comparing parameter " + j + "   member=" + pMember + "   lookingFor="
-										+ pLookingFor);
-							}
-							if (!pMember.equals(pLookingFor)) {
-								matchOK = false;
-							}
-						}
-					if (matchOK) {
-						realMember = member;
+						if (debug)
+							System.err.println("Comparing parameter " + j + "   member=" + pMember + "   lookingFor=" + pLookingFor);
+						if (!pMember.equals(pLookingFor))
+							matchOK = false;
 					}
+
+					if (matchOK)
+						realMember = member;
 				}
 			}
 		}
-		if (debug && realMember == null) {
+		if (debug && realMember == null)
 			System.err.println("Didn't find a match");
-		}
 		return realMember;
 	}
 
