@@ -1606,12 +1606,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 						System.err.println("Reviewing potential candidates: " + member);
 					}
 					boolean matchOK = true;
-					// If not related to a ctor ITD then the name is enough to
-					// confirm we have the
-					// right one. If it is ctor related we need to check the
-					// params all match, although
-					// only the erasure.
-					if (isCtorRelated) {
+					// Check that all method/ctor params all match, although only the erasure
 						for (int j = 0; j < memberParams.length && matchOK; j++) {
 							ResolvedType pMember = memberParams[j].resolve(world);
 							ResolvedType pLookingFor = lookingForParams[j].resolve(world);
@@ -1639,7 +1634,6 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 								matchOK = false;
 							}
 						}
-					}
 					if (matchOK) {
 						realMember = member;
 					}
