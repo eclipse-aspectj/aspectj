@@ -10,4 +10,14 @@ public aspect ITDAspect {
   public int App.foo(int parameter) {
     return parameter + 3;
   }
+
+  public void App.foo(String... parameters) { }
+
+  @Second
+  public int App.foo(int... parameters) {
+    int sum = 0;
+    for (int parameter : parameters)
+      sum += parameter;
+    return sum;
+  }
 }

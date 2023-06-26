@@ -208,4 +208,12 @@ public class ArrayReferenceType extends ReferenceType {
 			return false;
 		}
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof ArrayReferenceType)
+			return componentType.equals(((ArrayReferenceType) other).componentType);
+		return super.equals(other);
+	}
+
 }
