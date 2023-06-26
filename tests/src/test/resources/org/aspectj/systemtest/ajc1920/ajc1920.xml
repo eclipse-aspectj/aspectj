@@ -181,8 +181,10 @@
 		<compile files="First.java Second.java App.java ITDAspect.aj" options="-8"/>
 		<run class="App">
 			<stdout>
-				<line text="[@First(), @Second()] public void App.foo(java.lang.Object)"/>
+				<line text="[@Second()] public int App.foo(int[])"/>
 				<line text="[@First()] public void App.foo(java.lang.String)"/>
+				<line text="[] public void App.foo(java.lang.String[])"/>
+				<line text="[@First(), @Second()] public void App.foo(java.lang.Object)"/>
 				<line text="[@Second()] public int App.foo(int)"/>
 			</stdout>
 		</run>
