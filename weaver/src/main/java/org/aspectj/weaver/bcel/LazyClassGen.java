@@ -753,11 +753,14 @@ public final class LazyClassGen {
 		// are required (unless turning off the verifier)
 		if ((myGen.getMajor() == Constants.MAJOR_1_6 && world.shouldGenerateStackMaps()) || myGen.getMajor() > Constants.MAJOR_1_6) {
 			if (!AsmDetector.isAsmAround) {
-				throw new BCException(
-					"Unable to find ASM classes (" + AsmDetector.CLASS_READER + ", " + AsmDetector.CLASS_VISITOR + ") " +
-						"for stackmap generation. Stackmap generation for woven code is required to avoid verify errors " +
-						"on a Java 1.7 or higher runtime.", AsmDetector.reasonAsmIsMissing
-				);
+				// Fix https://github.com/eclipse-aspectj/aspectj/issues/251, using "replace('Ä', 'Ö')" to avoid non-relocated
+				// class names to be embedded into the error message during compile time, making it end up in the class constant
+				// pool unwantedly, as this clashes with post-compile ASM package relocation.
+				final String errorMessage = "Unable to find ASM classes (" +
+					AsmDetector.CLASS_READER.replace('Ä', 'Ö') + ", " + AsmDetector.CLASS_VISITOR.replace('Ä', 'Ö') + ") " +
+					"for stackmap generation. Stackmap generation for woven code is required to avoid verify errors " +
+					"on a Java 1.7 or higher runtime.";
+				throw new BCException(errorMessage, AsmDetector.reasonAsmIsMissing);
 			}
 			wovenClassFileData = StackMapAdder.addStackMaps(world, myGen.getClassName(), wovenClassFileData);
 		}
