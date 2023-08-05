@@ -190,4 +190,17 @@
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/250 -->
+	<ajc-test dir="bugs1920/github_250" vm="8" title="correctly handle overloaded private methods in aspects">
+		<compile files="MyAspect.aj" options="-8"/>
+		<run class="MyAspect">
+			<stdout>
+				<line text="execution(void Application.doSomething())"/>
+				<line text="1 / one"/>
+				<line text="execution(void Application.doSomething())"/>
+				<line text="2"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
