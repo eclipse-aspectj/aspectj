@@ -23,7 +23,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public class AroundInlineMungerTestAspects {
 
     public static class OpenBase {
-        protected void superMethod() {}
+        protected String superMethod(String s) {
+            return s;
+        }
     }
 
     public static class OpenSubBase extends OpenBase {}
@@ -43,7 +45,7 @@ public class AroundInlineMungerTestAspects {
         public Object around1(ProceedingJoinPoint jp) throws Throwable {
             aroundCount++;
             priv(1, 2L, 3);
-            super.superMethod();
+            super.superMethod("x");
             new Open.Inner().priv();//fails to be wrapped so this advice will not be inlined but previous call were still prepared
             return jp.proceed();
         }
@@ -64,7 +66,7 @@ public class AroundInlineMungerTestAspects {
         @SuppressAjWarnings
         public Object around2(ProceedingJoinPoint jp) throws Throwable {
             aroundCount++;
-            super.superMethod();
+            super.superMethod("x");
             new Open.Inner().priv();//fails to be wrapped so next calls won't be prepared but previous was
             priv(1, 2L, 3);
             return jp.proceed();

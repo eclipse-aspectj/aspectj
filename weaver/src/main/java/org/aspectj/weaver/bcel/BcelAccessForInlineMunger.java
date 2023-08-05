@@ -101,7 +101,11 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	 */
 	@Override
 	public ResolvedMember getMatchingSyntheticMember(Member member) {
-		ResolvedMember rm = inlineAccessors.get(member.getName());// + member.getSignature());
+    String name = member.getName();
+    String signature = name.startsWith("ajc$superDispatch$")
+      ? member.getSignature()
+      : member.getSignature().replaceFirst("\\([^;]+;", "(");
+    ResolvedMember rm = inlineAccessors.get(name + signature);
 //		System.err.println("lookup for " + member.getName() + ":" + member.getSignature() + " = "
 //				+ (rm == null ? "" : rm.getName()));
 		return rm;
@@ -229,7 +233,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForMethod(ResolvedMember resolvedMember) {
 		String accessorName = NameMangler.inlineAccessMethodForMethod(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		String key = accessorName;// new StringBuilder(accessorName).append(resolvedMember.getSignature()).toString();
+		String key = accessorName + resolvedMember.getSignature();
 		ResolvedMember inlineAccessor = inlineAccessors.get(key);
 //		System.err.println(key + " accessor=" + inlineAccessor);
 		if (inlineAccessor == null) {
@@ -272,7 +276,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForSuperDispatch(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.superDispatchMethod(aspectType, resolvedMember.getName());
 
-		String key = accessor;
+		String key = accessor + resolvedMember.getSignature();
 		ResolvedMember inlineAccessor = inlineAccessors.get(key);
 
 		if (inlineAccessor == null) {
@@ -316,7 +320,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForFieldGet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldGet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		String key = accessor;
+		String key = accessor + "()" + resolvedMember.getSignature();
 		ResolvedMember inlineAccessor = inlineAccessors.get(key);
 
 		if (inlineAccessor == null) {
@@ -357,7 +361,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	private ResolvedMember createOrGetInlineAccessorForFieldSet(ResolvedMember resolvedMember) {
 		String accessor = NameMangler.inlineAccessMethodForFieldSet(resolvedMember.getName(), resolvedMember.getDeclaringType(),
 				aspectType);
-		String key = accessor;
+		String key = accessor + "(" + resolvedMember.getSignature() + ")V";
 		ResolvedMember inlineAccessor = inlineAccessors.get(key);
 
 		if (inlineAccessor == null) {
