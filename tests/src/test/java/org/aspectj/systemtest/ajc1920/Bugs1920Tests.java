@@ -26,6 +26,15 @@ public class Bugs1920Tests extends XMLBasedAjcTestCase {
     runTest("add correct annotations to multiple ITD methods with the same name and same number of arguments");
   }
 
+  /**
+   * Make sure to create one {@code ajc$inlineAccessMethod} for identically named (overloaded) private aspect methods.
+   * <p>
+   * See <a href="https://github.com/eclipse-aspectj/aspectj/issues/250">GitHub issue 250</a>.
+   */
+  public void test_GitHub_250() {
+    runTest("correctly handle overloaded private methods in aspects");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1920Tests.class);
   }
