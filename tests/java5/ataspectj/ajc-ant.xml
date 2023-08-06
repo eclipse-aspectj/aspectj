@@ -107,7 +107,7 @@
     </target>
 
     <target name="ltwlog.LTWLog">
-        <javac target="1.5" destdir="${aj.sandbox}" classpathref="aj.path"
+        <javac target="1.8" destdir="${aj.sandbox}" classpathref="aj.path"
             srcdir="${basedir}"
             includes="ataspectj/ltwlog/*"
             debug="true">
