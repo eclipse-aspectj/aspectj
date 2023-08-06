@@ -20,7 +20,7 @@ public class AsmDetector {
 	public static final String CLASS_READER = "org.objectweb.asm.ClassReader";
 	public static final String CLASS_VISITOR = "org.objectweb.asm.ClassVisitor";
 	public static boolean isAsmAround;
-	public static Throwable reasonAsmIsMissing;
+	public static Throwable rootCause;
 
 	static {
 		try {
@@ -30,7 +30,7 @@ public class AsmDetector {
 			isAsmAround = true;
 		} catch (Exception e) {
 			isAsmAround = false;
-			reasonAsmIsMissing = e;
+			rootCause = e;
 		}
 		//System.out.println(isAsmAround ? "ASM detected" : "No ASM found");
 	}

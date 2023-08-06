@@ -49,7 +49,7 @@ public class StackMapAdder {
 			System.err.println("AspectJ Internal Error: unable to add stackmap attributes to class '"+classname+"'. " + t.getMessage());
 			t.printStackTrace();
 			AsmDetector.isAsmAround = false;
-			AsmDetector.reasonAsmIsMissing = t;
+			AsmDetector.rootCause = t;
 			return data;
 		}
 	}
