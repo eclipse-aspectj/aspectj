@@ -15,6 +15,38 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs1920Tests extends XMLBasedAjcTestCase {
 
+  public void testSwitchWith_Integer_MAX_VALUE() {
+    runTest("switch with Integer.MAX_VALUE case");
+  }
+
+  public void testParenthesisedExpressionWithAjKeyword() {
+    runTest("parenthesised expression with AspectJ keyword");
+  }
+
+  public void testInterfaceInnerAspectImplicitlyStatic() {
+    runTest("inner aspect of interface is implicitly static");
+  }
+
+  public void testExactArrayTypeMatchCompiledTogether() {
+    runTest("exact array type matching, aspect compiled together with target class");
+  }
+
+  public void testExactArrayTypeMatchCompiledSeparately() {
+    runTest("exact array type matching, aspect compiled separately from target class");
+  }
+
+  public void testFuzzyArrayTypeMatchCompiledTogether() {
+    runTest("fuzzy array type matching, aspect compiled together with target class");
+  }
+
+  public void testFuzzyArrayTypeMatchCompiledSeparately() {
+    runTest("fuzzy array type matching, aspect compiled separately from target class");
+  }
+
+  public void test_GitHub_214() {
+    runTest("ArrayIndexOutOfBoundsException with Xlint unorderedAdviceAtShadow=warning");
+  }
+
   /**
    * Add correct annotations to multiple ITD methods with the same name and same number of arguments, i.e. copy the
    * annotations correctly from the aspect into the target class instead of falsely always copying the annotations (if
