@@ -99,8 +99,9 @@ mvn versions:commit
 #     try 'export GPG_TTY=$(tty)' before running the command.
 #   - Maven Javadoc plugin
 #   - Nexus Staging Maven plugin
+# The 'create-docs profile will make sure to generate AspectJ docs to be included in the installer. 
 # Optionally, use '-DskipTests=true', if you ran all tests before.
-mvn -P release clean deploy
+mvn -P release,create-docs clean deploy
 ```
 
 If this command was successful, it means we have created a staging repository on Sonatype OSSRH, uploaded all artifacts
