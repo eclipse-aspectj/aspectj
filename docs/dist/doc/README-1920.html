@@ -53,14 +53,19 @@
 
 <ul>
   <li>
-      Since Java 9 and the introduction of the Java Module System, the upstream Eclipse Java Compiler (ECJ) and Eclipse
-      Java Development Tools (JDT) had gone through some internal changes, enabling both the compiler and the IDE to
-      handle new Java language features. In AspectJ, some of those internal changes have not been properly upgraded for
-      quite a while, but this is now fixed. However, it might <b>require you to recompile your aspects and
-      projects/classes using them.</b> Otherwise, you might get problems in Eclipse IDE or under certain circumstances
-      even when running newly compiled aspects in older AspectJ versions and vice versa. You are on the safe side if you
-      simply rebuild your projects. We are sorry for the inconvenience, but we have to follow upstream ECJ and JDT
-      changes.
+    Since Java 9 and the introduction of the Java Module System, the upstream Eclipse Java Compiler (ECJ) and Eclipse
+    Java Development Tools (JDT) had gone through some internal changes, enabling both the compiler and the IDE to
+    handle new Java language features. In AspectJ, some of those internal changes have not been properly upgraded for
+    quite a while, but this is now fixed. However, it might <b>require you to recompile your aspects and
+    projects/classes using them.</b> Otherwise, you might get problems in Eclipse IDE or under certain circumstances
+    even when running newly compiled aspects in older AspectJ versions and vice versa. You are on the safe side if you
+    simply rebuild your projects. We are sorry for the inconvenience, but we have to follow upstream ECJ and JDT
+    changes.
+  </li>
+  <li>
+    Along with fixing <a href="https://github.com/eclipse-aspectj/aspectj/issues/24">GitHub bug 24</a>, the syntax for
+    array type matching has been improved considerably. You can find some examples
+    <a href="https://github.com/eclipse-aspectj/aspectj/tree/master/tests/bugs1920/github_24">here</a>.
   </li>
 </ul>
 
@@ -147,7 +152,7 @@
 <hr>
 
 <p>
-  <b>Available:</b> 1.9.20 on 27###-Mar-2023
+  <b>Available:</b> 1.9.20 on 16-Aug-2023
 </p>
 
 </body>
