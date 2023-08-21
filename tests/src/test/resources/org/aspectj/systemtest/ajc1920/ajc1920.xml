@@ -418,4 +418,15 @@
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/spring-projects/spring-framework/issues/27761 -->
+	<ajc-test dir="bugs1921/gh_spring_27761" vm="8" title="do not match bridge methods">
+		<compile files="RepositoryAspect.aj" inpath="JpaRepository_bridge_first.jar" options="-8"/>
+		<run class="RepositoryAspect">
+			<stdout>
+				<line text="execution(List RepositoryImpl.saveAll(Iterable))"/>
+				<line text="Saving [One, Two, Three]"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
