@@ -67,6 +67,18 @@ public class Bugs1920Tests extends XMLBasedAjcTestCase {
     runTest("correctly handle overloaded private methods in aspects");
   }
 
+  /**
+   * If one generic method overrides another one with a narrower return type, avoid matching bridge methods.
+   * <p>
+   * See <a href="https://github.com/spring-projects/spring-framework/issues/27761">Spring GitHub issue 27761</a>.
+   * <p>
+   * This test uses an ASM-modified class file reproducing the problem seen in Spring in plain AspectJ. Before the
+   * bugfix, it fails with <b>"advice defined in RepositoryAspect has not been applied [Xlint:adviceDidNotMatch]".</b>
+   */
+  public void test_Spring_GitHub_27761() {
+    runTest("do not match bridge methods");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1920Tests.class);
   }
