@@ -420,7 +420,12 @@
 
 	<!-- https://github.com/spring-projects/spring-framework/issues/27761 -->
 	<ajc-test dir="bugs1921/gh_spring_27761" vm="8" title="do not match bridge methods">
-		<compile files="RepositoryAspect.aj" inpath="JpaRepository_bridge_first.jar" options="-8"/>
+		<!-- (1) Use ASM to generate JpaRepository class with reordered methods -->
+		<compile files="JpaRepositoryDump.java" options="-8"/>
+		<run class="JpaRepositoryDump" options="$sandbox"/>
+		<file deletefile="JpaRepositoryDump.class"/>
+		<!-- (2) Use AJC to compile the remaining classes and run the test -->
+		<compile files="RepositoryAspect.aj" options="-8"/>
 		<run class="RepositoryAspect">
 			<stdout>
 				<line text="execution(List RepositoryImpl.saveAll(Iterable))"/>

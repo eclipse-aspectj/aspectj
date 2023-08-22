@@ -3,12 +3,15 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-class JpaRepositoryDump implements Opcodes {
+public class JpaRepositoryDump implements Opcodes {
   public static void main(String[] args) throws IOException {
-    try (FileOutputStream outputStream = new FileOutputStream("JpaRepository.class")) {
+    // Write class file to test sandbox directory
+    String classFile = args[0] + File.separator + "JpaRepository.class";
+    try (FileOutputStream outputStream = new FileOutputStream(classFile)) {
       outputStream.write(dump());
     }
   }
