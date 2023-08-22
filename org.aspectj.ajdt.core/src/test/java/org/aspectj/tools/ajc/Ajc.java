@@ -38,6 +38,7 @@ import org.aspectj.util.FileUtil;
 
 import static java.io.File.pathSeparator;
 import static java.io.File.separator;
+import static org.aspectj.tools.ajc.AjcTestCase.CLASSPATH_ASM;
 import static org.aspectj.tools.ajc.AjcTestCase.CLASSPATH_JUNIT;
 
 /**
@@ -72,6 +73,7 @@ public class Ajc {
 			+ outputFolder("runtime")
 			+ outputFolder("bcel-builder")
 			+ pathSeparator + CLASSPATH_JUNIT
+			+ pathSeparator + CLASSPATH_ASM
 			+ outputFolder("bridge")
 			+ outputFolder("loadtime")
 			+ outputFolder("weaver")
