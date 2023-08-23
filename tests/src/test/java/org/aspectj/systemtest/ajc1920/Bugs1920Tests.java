@@ -79,6 +79,15 @@ public class Bugs1920Tests extends XMLBasedAjcTestCase {
     runTest("do not match bridge methods");
   }
 
+  /**
+   * In 1.9.20, a regression bug occurred, matching negated types like '!void' and '!String' incorrectly.
+   * <p>
+   * See <a href="https://github.com/eclipse-aspectj/aspectj/issues/257">GitHub issue 257</a>.
+   */
+  public void test_GitHub_257() {
+    runTest("handle negated type patterns correctly");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1920Tests.class);
   }

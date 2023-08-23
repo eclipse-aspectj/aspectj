@@ -434,4 +434,45 @@
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/257 -->
+	<ajc-test dir="bugs1921/gh_257" vm="8" title="handle negated type patterns correctly">
+		<compile files="NegatedTypeAspect.aj" options="-8"/>
+		<run class="NegatedTypeAspect">
+			<stdout>
+				<line text="[SETTER] execution(void Person.setId(int))"/>
+				<line text="[SETTER] execution(void Person.setFirstName(String))"/>
+				<line text="[SETTER] execution(void Person.setLastName(String))"/>
+				<line text="Person(id=11, lastName='Curie', firstName='Marie')"/>
+				<line text="[GETTER] execution(int Person.getId())"/>
+				<line text="[NON-STRING GETTER] execution(int Person.getId())"/>
+				<line text="[NON-STRING-ARRAY GETTER] execution(int Person.getId())"/>
+				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(int Person.getId())"/>
+				<line text="[GETTER] execution(String Person.getFirstName())"/>
+				<line text="[NON-STRING-ARRAY GETTER] execution(String Person.getFirstName())"/>
+				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String Person.getFirstName())"/>
+				<line text="[GETTER] execution(String Person.getLastName())"/>
+				<line text="[NON-STRING-ARRAY GETTER] execution(String Person.getLastName())"/>
+				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String Person.getLastName())"/>
+				<line text="Marie Curie"/>
+				<line text="[SETTER] execution(void Person.setFullName(String))"/>
+				<line text="[SETTER] execution(void Person.setId(int))"/>
+				<line text="Person(id=22, lastName='Einstein', firstName='Albert')"/>
+				<line text="Einstein, Albert"/>
+				<line text="[NON-STRING GETTER] execution(void Person.getVoid())"/>
+				<line text="[NON-STRING-ARRAY GETTER] execution(void Person.getVoid())"/>
+				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(void Person.getVoid())"/>
+				<line text="[GETTER] execution(String[] Person.getStringArray())"/>
+				<line text="[NON-STRING GETTER] execution(String[] Person.getStringArray())"/>
+				<line text="[STRING-ARRAY GETTER] execution(String[] Person.getStringArray())"/>
+				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String[] Person.getStringArray())"/>
+				<line text="[Hello, world]"/>
+				<line text="[GETTER] execution(String[][] Person.getStringArrayArray())"/>
+				<line text="[NON-STRING GETTER] execution(String[][] Person.getStringArrayArray())"/>
+				<line text="[NON-STRING-ARRAY GETTER] execution(String[][] Person.getStringArrayArray())"/>
+				<line text="[[Hello, world], [Hallo, Welt]]"/>
+				<line text="AspectJ rules!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
