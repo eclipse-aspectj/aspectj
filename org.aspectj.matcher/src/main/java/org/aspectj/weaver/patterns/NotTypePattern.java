@@ -70,7 +70,12 @@ public class NotTypePattern extends TypePattern {
 
 	@Override
 	protected boolean matchesArray(UnresolvedType type) {
-		return !negatedPattern.matchesArray(type);
+		// '!String' should match anything but String, no matter if it is an array or not,
+		// e.g. int, void, int[], String[], String[][].
+		//
+		// '!String[]' should match anything but String[], no matter if it is an array or not,
+		// e.g. int, void, int[], String, String[][].
+		return true;
 	}
 
 	@Override
