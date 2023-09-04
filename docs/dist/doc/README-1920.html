@@ -17,6 +17,28 @@
 <body>
 <div align="right"><small>&copy; Copyright 2023 Contributors. All rights reserved.</small></div>
 
+<h1>AspectJ 1.9.20.1</h1>
+
+<p>
+  This is a bugfix release for 1.9.20, fixing two problems:
+  <ul>
+    <li>
+      <a href="https://github.com/eclipse-aspectj/aspectj/issues/257">Regression bug 257</a> introduced in 1.9.20 would
+      match negated type patterns like <tt>!void</tt> or <tt>!String[]</tt> incorrectly.
+    </li>
+    <li>
+      <a href="https://github.com/spring-projects/spring-framework/issues/27761">Spring issue 27761</a> describes a
+      problem where AspectJ, when used by Spring AOP, in rare cases falsely considered bridge methods for overridden
+      generic methods for matching, leading to falsely negative matching results. See also
+      <a href="https://github.com/eclipse-aspectj/aspectj/issues/256">AspectJ tracker issue 256</a>).
+    </li>
+  </ul>
+</p>
+<p>
+  The list of issues addressed for 1.9.20.1 can be found
+  <a href="https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20.1">here</a>.
+</p>
+
 <h1>AspectJ 1.9.20</h1>
 
 <p>

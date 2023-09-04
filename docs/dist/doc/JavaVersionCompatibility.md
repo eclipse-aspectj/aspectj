@@ -7,7 +7,7 @@ be easily concluded from the AspectJ version number anymore, and we are sorry fo
 
 AspectJ version | Java version | Comments
 ----------------|--------------|--------
-1.9.20 | 20
+1.9.20 - 1.9.20.1 | 20
 1.9.19 | 19
 1.9.9 - 1.9.9.1 | 18
 1.9.8 | 17 | AspectJ compiler requires JDK 11+ during build time. During runtime, AspectJ still only requires Java 8+ for both compile-time and load-time weaving. Pure Java code can be compiled down to as old as 1.3 byte code level.
