@@ -148,11 +148,17 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.CONNECTING_TYPE_HIERARCHY,
 					units[i].compilationResult.fileName);
-			units[i].scope.connectTypeHierarchy();
+			units[i].scope.connectTypeHierarchy1();
 			CompilationAndWeavingContext.leavingPhase(tok);
 		}
-		stepCompleted = CONNECT_TYPE_HIERARCHY;
-
+		stepCompleted = CONNECT_TYPE_HIERARCHY1;
+		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
+			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.CONNECTING_TYPE_HIERARCHY,
+					units[i].compilationResult.fileName);
+			units[i].scope.connectTypeHierarchy2();
+			CompilationAndWeavingContext.leavingPhase(tok);
+		}
+		stepCompleted = CONNECT_TYPE_HIERARCHY2;
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.BUILDING_FIELDS_AND_METHODS,
 					units[i].compilationResult.fileName);
