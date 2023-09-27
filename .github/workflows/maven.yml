@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         # Check for available Temurin releases on https://adoptium.net/releases.html
-        java: [ 11, 17, 21 ]
+        java: [ 17, 21-ea ]
 
     runs-on: ubuntu-latest
 
