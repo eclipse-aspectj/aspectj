@@ -582,8 +582,9 @@ public class WildTypePattern extends TypePattern {
 		if (newNamePatterns.length == 1) {
 			String simpleName = newNamePatterns[0].maybeGetSimpleName();
 			if (simpleName != null) {
-				if (typeVariableMap.containsKey(simpleName)) {
-					String newName = ((ReferenceType) typeVariableMap.get(simpleName)).getName().replace('$', '.');
+				UnresolvedType unresolvedType = typeVariableMap.get(simpleName);
+				if (unresolvedType != null) {
+					String newName = ((ReferenceType) unresolvedType).getName().replace('$', '.');
 					StringTokenizer strTok = new StringTokenizer(newName, ".");
 					newNamePatterns = new NamePattern[strTok.countTokens()];
 					int index = 0;

@@ -1045,8 +1045,9 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 						for (int j = 0; j < ptypes.length; j++) {
 							if (ptypes[j] instanceof TypeVariableReferenceType) {
 								TypeVariableReferenceType tvrt = (TypeVariableReferenceType) ptypes[j];
-								if (typeVariableMap.containsKey(tvrt.getTypeVariable().getName())) {
-									newPTypes[j] = typeVariableMap.get(tvrt.getTypeVariable().getName());
+								UnresolvedType newPType = typeVariableMap.get(tvrt.getTypeVariable().getName());
+								if (newPType != null) {
+									newPTypes[j] = newPType;
 								} else {
 									newPTypes[j] = ptypes[j];
 								}

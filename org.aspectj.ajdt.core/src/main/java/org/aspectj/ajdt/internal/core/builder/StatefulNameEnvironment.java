@@ -63,8 +63,9 @@ public class StatefulNameEnvironment implements IModuleAwareNameEnvironment {
 		if (seenOnPreviousBuild != null) {
 			return new NameEnvironmentAnswer(seenOnPreviousBuild, null);
 		}
-		if (this.inflatedClassFilesCache.containsKey(name)) {
-			return this.inflatedClassFilesCache.get(name);
+		NameEnvironmentAnswer cached = this.inflatedClassFilesCache.get(name);
+		if (cached != null) {
+			return cached;
 		} else {
 			File fileOnDisk = classesFromName.get(name);
 			// System.err.println("find: " + name + " found: " + cf);

@@ -179,10 +179,11 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			alreadyResolvedMembers.put(binding, m);
 		}
 
-		if (inAspect.accessForInline.containsKey(m)) {
-			return (FieldBinding) inAspect.accessForInline.get(m);
+		FieldBinding ret = (FieldBinding) inAspect.accessForInline.get(m);
+		if (ret != null) {
+			return ret;
 		}
-		FieldBinding ret = new InlineAccessFieldBinding(inAspect, binding, m);
+		ret = new InlineAccessFieldBinding(inAspect, binding, m);
 		inAspect.accessForInline.put(m, ret);
 		return ret;
 	}
@@ -216,9 +217,11 @@ public class AccessForInlineVisitor extends ASTVisitor {
 			// runtime this will be satisfied by the super).
 			m = world.makeResolvedMember(binding, receiverType);
 		}
-		if (inAspect.accessForInline.containsKey(m))
-			return (MethodBinding) inAspect.accessForInline.get(m);
-		MethodBinding ret = world.makeMethodBinding(AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m));
+		MethodBinding ret = (MethodBinding) inAspect.accessForInline.get(m);
+		if (ret != null) {
+			return ret;
+		}
+		ret = world.makeMethodBinding(AjcMemberMaker.inlineAccessMethodForMethod(inAspect.typeX, m));
 		inAspect.accessForInline.put(m, ret);
 		return ret;
 	}
@@ -236,8 +239,9 @@ public class AccessForInlineVisitor extends ASTVisitor {
 	private MethodBinding getSuperAccessMethod(MethodBinding binding) {
 		ResolvedMember m = world.makeResolvedMember(binding);
 		ResolvedMember superAccessMember = AjcMemberMaker.superAccessMethod(inAspect.typeX, m);
-		if (inAspect.superAccessForInline.containsKey(superAccessMember)) {
-			return inAspect.superAccessForInline.get(superAccessMember).accessMethod;
+		SuperAccessMethodPair pair = inAspect.superAccessForInline.get(superAccessMember);
+		if (pair != null) {
+			return pair.accessMethod;
 		}
 		MethodBinding ret = world.makeMethodBinding(superAccessMember);
 		inAspect.superAccessForInline.put(superAccessMember, new SuperAccessMethodPair(m, ret));

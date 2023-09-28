@@ -1427,8 +1427,9 @@ public abstract class World implements Dump.INode {
 		 */
 		public int compareByPrecedence(ResolvedType firstAspect, ResolvedType secondAspect) {
 			PrecedenceCacheKey key = new PrecedenceCacheKey(firstAspect, secondAspect);
-			if (cachedResults.containsKey(key)) {
-				return cachedResults.get(key);
+			Integer cachedOrder = cachedResults.get(key);
+			if (cachedOrder != null) {
+				return cachedOrder;
 			} else {
 				int order = 0;
 				DeclarePrecedence orderer = null; // Records the declare

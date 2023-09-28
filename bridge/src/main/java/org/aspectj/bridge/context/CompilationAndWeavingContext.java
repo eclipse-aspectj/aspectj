@@ -196,11 +196,7 @@ public class CompilationAndWeavingContext {
 
 	private static ContextFormatter getFormatter(ContextStackEntry entry) {
 		Integer key = entry.phaseId;
-		if (formatterMap.containsKey(key)) {
-			return formatterMap.get(key);
-		} else {
-			return defaultFormatter;
-		}
+		return formatterMap.getOrDefault(key, defaultFormatter);
 	}
 
 	private static class ContextTokenImpl implements ContextToken {
