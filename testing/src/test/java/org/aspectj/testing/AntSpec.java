@@ -212,9 +212,19 @@ public class AntSpec implements ITestStep {
 			AjcTestCase.fail(failMessage + "error when invoking target :" + t.toString());
 		}
 
+		// J12: Line can start with e.g. "OpenJDK 64-Bit Server VM" or "Java HotSpot(TM) 64-Bit Server VM".
+		// J21: Line can start with e.g. "[0.016s][warning][cds]".
+		// Therefore, we have to match a substring instead of a whole line.
+		// Even worse, before J21, the warning appears on stdErr, but in J21+, it appears on stdOut.
+		final String regexArchivedNonSystemClasses = "[^\n]+( warning:|\\[warning]\\[cds]) " +
+			"Archived non-system classes are disabled because the java.system.class.loader property is specified " +
+			".*org.aspectj.weaver.loadtime.WeavingURLClassLoader[^\n]+\n?";
+
 		/* See if stdout/stderr matches test specification */
 		if (m_stdOutSpec != null) {
-			m_stdOutSpec.matchAgainst(stdout.toString());
+			String stdout2 = stdout.toString();
+			stdout2 = stdout2.replaceAll(regexArchivedNonSystemClasses, "");
+			m_stdOutSpec.matchAgainst(stdout2);
 		}
 		if (m_stdErrSpec != null) {
 			String stderr2 = stderr.toString();
@@ -236,9 +246,7 @@ public class AntSpec implements ITestStep {
 				stderr2 = stderr2.replaceAll("WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations\n","");
 				stderr2 = stderr2.replaceAll("WARNING: All illegal access operations will be denied in a future release\n","");
 			}
-			// J12: Line can start with e.g."OpenJDK 64-Bit Server VM" or "Java HotSpot(TM) 64-Bit Server VM". Therefore,
-			// we have to match a substring instead of a whole line
-			stderr2 = stderr2.replaceAll("[^\n]+ warning: Archived non-system classes are disabled because the java.system.class.loader property is specified .*org.aspectj.weaver.loadtime.WeavingURLClassLoader[^\n]+\n?","");
+			stderr2 = stderr2.replaceAll(regexArchivedNonSystemClasses, "");
 			m_stdErrSpec.matchAgainst(stderr2);
 		}
 	}
