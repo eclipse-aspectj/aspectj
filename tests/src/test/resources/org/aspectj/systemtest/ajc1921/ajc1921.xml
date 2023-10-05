@@ -1,19 +1,31 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <!--
-  Java 20: no new final language features, only preview/incubator ones:
-    - "JEP 432:	Record Patterns (Second Preview)" (###)
-    - "JEP 433:	Pattern Matching for switch (Fourth Preview)" (###)
-    - "JEP 429:	Scoped Values (Incubator)" (API only)
-    - "JEP 436:	Virtual Threads (Second Preview)" (API only)
-    - "JEP 437:	Structured Concurrency (Second Incubator)" (API only)
+	JDK 21 (https://openjdk.org/projects/jdk/21/):
+		Language features:
+			JEP 430: String Templates (Preview)
+			JEP 440: Record Patterns
+			JEP 441: Pattern Matching for switch
+			JEP 443: Unnamed Patterns and Variables (Preview)
+			JEP 445: Unnamed Classes and Instance Main Methods (Preview)
+		API or JVM only:
+			JEP 431: Sequenced Collections
+			JEP 439: Generational ZGC
+			JEP 442: Foreign Function & Memory API (Third Preview)
+			JEP 444: Virtual Threads
+			JEP 446: Scoped Values (Preview)
+			JEP 448: Vector API (Sixth Incubator)
+			JEP 449: Deprecate the Windows 32-bit x86 Port for Removal
+			JEP 451: Prepare to Disallow the Dynamic Loading of Agents
+			JEP 452: Key Encapsulation Mechanism API
+			JEP 453: Structured Concurrency (Preview)
 -->
 <suite>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 java">
-		<compile files="SwitchPatternPreview4OK.java" options="--enable-preview -21" />
-		<run class="SwitchPatternPreview4OK" vmargs="--enable-preview">
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="switch pattern matching preview 4 java">
+		<compile files="SwitchPatternPreview4OK.java" options="-21" />
+		<run class="SwitchPatternPreview4OK" vmargs="">
 			<message></message>
 			<stdout>
 				<line text="null" />
@@ -28,28 +40,32 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
+				<!-- TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed. -->
+				<!--
 				<line text="absolute value 1: -1" />
 				<line text="other integer: 0" />
 				<line text="positive integer: 42" />
 				<line text="other integer: -99" />
 				<line text="positive integer: 123" />
 				<line text="value unavailable: null" />
+				-->
+				<line text="42" />
 			</stdout>
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 error">
-		<compile files="SwitchPatternPreview4Error.java" options="--enable-preview -21">
+		<compile files="SwitchPatternPreview4Error.java" options="-21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 aspect">
-		<compile files="SwitchPatternPreview3Aspect.aj" options="--enable-preview -21" />
-		<run class="Application" vmargs="--enable-preview">
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="switch pattern matching preview 3 aspect">
+		<compile files="SwitchPatternPreview3Aspect.aj" options="-21" />
+		<run class="Application" vmargs="">
 			<stdout>
 				<line text="null" />
 				<line text="int 123" />
@@ -63,55 +79,58 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
+				<!-- TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed. -->
+				<!--
 				<line text="absolute value 1: -1" />
 				<line text="other integer: 0" />
 				<line text="positive integer: 42" />
 				<line text="other integer: -99" />
 				<line text="positive integer: 123" />
 				<line text="value unavailable: null" />
+				-->
 			</stdout>
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features198/java17" vm="21" title="switch pattern matching error">
-		<compile files="SwitchPatternError.java" options="--enable-preview -21">
+		<compile files="SwitchPatternError.java" options="-21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 1">
-		<compile files="SwitchPatternPreview3Error1.java" options="--enable-preview -21">
-			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-			<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case labels"/>
+		<compile files="SwitchPatternPreview3Error1.java" options="-21">
+			<!-- No more error message as of Java 21 -->
+			<!--<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case labels"/>-->
 		</compile>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 2">
-		<compile files="SwitchPatternPreview3Error2.java" options="--enable-preview -21">
+		<compile files="SwitchPatternPreview3Error2.java" options="-21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns">
-		<compile files="RecordPatternsPreview1OK.java" options="--enable-preview -21"/>
+		<compile files="RecordPatternsPreview1OK.java" options="-21"/>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns error">
-		<compile files="RecordPatternsPreview1Error.java" options="--enable-preview -21">
+		<compile files="RecordPatternsPreview1Error.java" options="-21">
 			<!-- https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27) -->
 			<!--
 			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
 			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
 			-->
 		</compile>
-		<run class="RecordPatternsPreview1Error" vmargs="--enable-preview">
+		<run class="RecordPatternsPreview1Error" vmargs="">
 			<stdout>
 				<line text="I'm a box"/>
 				<line text="I'm a box"/>
@@ -119,10 +138,10 @@
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 1">
-		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="--enable-preview -21"/>
-		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="--enable-preview">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="-21"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="">
 			<stdout>
 				<line text="y"/>
 				<line text="a"/>
@@ -130,11 +149,11 @@
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness aspect">
-		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="--enable-preview -21"/>
+		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="-21"/>
 		<!-- TODO: Remove redundant default clauses when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed -->
-		<run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="--enable-preview">
+		<run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="">
 			<stdout>
 				<line text="y"/>
 				<line text="a"/>
@@ -143,10 +162,10 @@
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns aspect">
-		<compile files="RecordPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
-		<run class="RecordPatternsPreview1Aspect" vmargs="--enable-preview">
+		<compile files="RecordPatternsPreview1Aspect.aj" options="-21"/>
+		<run class="RecordPatternsPreview1Aspect" vmargs="">
 			<stdout>
 				<line text="9"/>
 				<line text="14"/>
@@ -159,318 +178,19 @@
 		</run>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness error">
-		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="--enable-preview -21">
+		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="-21">
 			<message kind="error" file="RecordPatternsPreview1ExhaustivenessError.java" text="An enhanced switch statement should be exhaustive; a default label expected"/>
 		</compile>
 	</ajc-test>
 
-	<!-- Java ?? final, Java 19, 20 preview -->
+	<!-- Java 21 final, Java 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 2">
-		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="--enable-preview -21"/>
-		<run class="RecordPatternsPreview1ExhaustivenessOK2" vmargs="--enable-preview">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="-21"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK2" vmargs="">
 			<stdout>
 				<line text="Bob 12"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!-- RuntimeException in BcelWeaver, see https://github.com/eclipse/org.aspectj/issues/190 -->
-	<ajc-test dir="bugs1920/github_190" vm="1.5" title="switch with Integer.MAX_VALUE case">
-		<compile files="SwitchCaseWith_Integer_MAX_VALUE.java" options="-1.5 -showWeaveInfo">
-			<message kind="weave" text="Join point 'method-execution(java.lang.String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))'"/>
-		 </compile>
-		<run class="SwitchCaseWith_Integer_MAX_VALUE">
-			<stdout>
-				<line text="execution(String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))"/>
-				<line text="CASE_1"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		'Syntax error, insert "Expression" to complete Expression' when compiling parenthesised expressions
-		containing AspectJ keywords, e.g. '(before)', see https://github.com/eclipse/org.aspectj/issues/20
-	-->
-	<ajc-test dir="bugs1920/github_20" vm="1.5" title="parenthesised expression with AspectJ keyword">
-		<compile files="ParenthesisedAJKeywords.java" options="-1.5 -showWeaveInfo"/>
-		<run class="ParenthesisedAJKeywords">
-			<stdout>
-				<line text="before"/>
-				<line text="after"/>
-				<line text="around"/>
-				<line text="aspect"/>
-				<line text="pointcut"/>
-				<line text="declare"/>
-				<line text="privileged"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		'inner aspects must be static' when compiling an interface with an inner aspect which was not explicitly declared
-		static, see https://github.com/eclipse/org.aspectj/issues/162
-	-->
-	<ajc-test dir="bugs1920/github_162" vm="1.5" title="inner aspect of interface is implicitly static">
-		<compile files="InterfaceWithInnerClass.java" options="-1.5 -showWeaveInfo">
-			<message kind="weave" text="method-execution(int InterfaceWithInnerClass$ImplicitlyStatic.getNumber())' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
-			<message kind="weave" text="method-execution(void InterfaceWithInnerClass$ImplicitlyStatic.main(java.lang.String[]))' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
-		</compile>
-		<run class="InterfaceWithInnerClass$ImplicitlyStatic">
-			<stdout>
-				<line text="execution(void InterfaceWithInnerClass.ImplicitlyStatic.main(String[]))"/>
-				<line text="execution(int InterfaceWithInnerClass.ImplicitlyStatic.getNumber())"/>
-				<line text="11"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		When compiling aspect and target class together, matching works as expected,
-		see https://github.com/eclipse/org.aspectj/issues/24
-	-->
-	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled together with target class">
-		<compile files="ExactlyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
-			<!-- Even before the bugfix, in this case weaving worked as expected -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
-			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
-			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
-		</compile>
-		<run class="MaybeMissingClass">
-			<stdout>
-				<line text="MaybeMissingClass.f1"/>
-				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-				<line text="MaybeMissingClass.f2"/>
-				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-				<line text="MaybeMissingClass.f3"/>
-				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-				<line text="MaybeMissingClass.f4"/>
-				<line text="execution(int MaybeMissingClass.f4())"/>
-				<line text="MaybeMissingClass.f5"/>
-				<line text="execution(int[] MaybeMissingClass.f5())"/>
-				<line text="MaybeMissingClass.f6"/>
-				<line text="execution(int[][] MaybeMissingClass.f6())"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		When compiling aspect and target class separately, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
-	-->
-	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled separately from target class">
-		<compile files="ExactlyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
-			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
-			<message kind="warning" text="advice defined in ExactlyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
-		</compile>
-		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
-			<!-- Before the bugfix, f1 would be woven twice, f2 not at all-->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
-			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
-			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
-		</compile>
-		<run class="MaybeMissingClass" classpath="aspect.jar">
-			<stdout>
-				<line text="MaybeMissingClass.f1"/>
-				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-				<line text="MaybeMissingClass.f2"/>
-				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-				<line text="MaybeMissingClass.f3"/>
-				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-				<line text="MaybeMissingClass.f4"/>
-				<line text="execution(int MaybeMissingClass.f4())"/>
-				<line text="MaybeMissingClass.f5"/>
-				<line text="execution(int[] MaybeMissingClass.f5())"/>
-				<line text="MaybeMissingClass.f6"/>
-				<line text="execution(int[][] MaybeMissingClass.f6())"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		When compiling aspect and target class together, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
-	-->
-	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled together with target class">
-		<compile files="FuzzilyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
-			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
-			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
-			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
-		</compile>
-		<run class="MaybeMissingClass">
-			<stdout>
-				<line text="MaybeMissingClass.f1"/>
-				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-				<line text="MaybeMissingClass.f2"/>
-				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-				<line text="MaybeMissingClass.f3"/>
-				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-				<line text="MaybeMissingClass.f4"/>
-				<line text="execution(int MaybeMissingClass.f4())"/>
-				<line text="MaybeMissingClass.f5"/>
-				<line text="execution(int[] MaybeMissingClass.f5())"/>
-				<line text="MaybeMissingClass.f6"/>
-				<line text="execution(int[][] MaybeMissingClass.f6())"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		When compiling aspect and target class separately, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
-	-->
-	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled separately from target class">
-		<compile files="FuzzilyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
-			<message kind="warning" text="advice defined in FuzzilyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
-		</compile>
-		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
-			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
-			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-			<message kind="weave" text="method-execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-			<message kind="weave" text="method-execution(int MaybeMissingClass.f4())"/>
-			<message kind="weave" text="method-execution(int[] MaybeMissingClass.f5())"/>
-			<message kind="weave" text="method-execution(int[][] MaybeMissingClass.f6())"/>
-		</compile>
-		<run class="MaybeMissingClass" classpath="aspect.jar">
-			<stdout>
-				<line text="MaybeMissingClass.f1"/>
-				<line text="execution(MaybeMissingClass MaybeMissingClass.f1())"/>
-				<line text="MaybeMissingClass.f2"/>
-				<line text="execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
-				<line text="MaybeMissingClass.f3"/>
-				<line text="execution(MaybeMissingClass[][] MaybeMissingClass.f3())"/>
-				<line text="MaybeMissingClass.f4"/>
-				<line text="execution(int MaybeMissingClass.f4())"/>
-				<line text="MaybeMissingClass.f5"/>
-				<line text="execution(int[] MaybeMissingClass.f5())"/>
-				<line text="MaybeMissingClass.f6"/>
-				<line text="execution(int[][] MaybeMissingClass.f6())"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!--
-		https://github.com/eclipse/org.aspectj/issues/214
-		https://github.com/mojohaus/aspectj-maven-plugin/issues/164
-		Problem with multiple, subsequent weaving steps and '-Xlint:warning' or '-Xlint:unorderedAdviceAtShadow=warning'
-			java.lang.ArrayIndexOutOfBoundsException: 1
-			[ERROR] at org.aspectj.weaver.bcel.BcelShadow.prepareForMungers(BcelShadow.java:379)
-			[ERROR] at org.aspectj.weaver.Shadow.implement(Shadow.java:546)
-	-->
-	<ajc-test dir="bugs1920/github_214" vm="1.5" title="ArrayIndexOutOfBoundsException with Xlint unorderedAdviceAtShadow=warning">
-		<compile files="FirstAspect.java MarkerOne.java" options="-1.8 -showWeaveInfo -Xlint:warning" outjar="first-aspect.jar">
-			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
-			<message kind="warning" text="advice defined in FirstAspect has not been applied [Xlint:adviceDidNotMatch]"/>
-		</compile>
-		<compile files="Application.java MarkerTwo.java" options="-1.5 -showWeaveInfo -Xlint:warning" classpath="$sandbox/first-aspect.jar" outjar="application.jar"/>
-		<compile files="SecondAspect.java" options="-1.5 -showWeaveInfo -Xlint:warning" aspectpath="first-aspect.jar" inpath="application.jar" outjar="second-aspect.jar">
-			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
-			<message kind="warning" text="at this shadow method-execution(void Application.greet(java.lang.String)) no precedence is specified between advice applying from aspect FirstAspect and aspect SecondAspect [Xlint:unorderedAdviceAtShadow]"/>
-			<message kind="warning" text="can not implement lazyTjp at joinpoint method-execution(void Application.greet(java.lang.String)) because of advice conflicts, see secondary locations to find conflicting advice [Xlint:multipleAdviceStoppingLazyTjp]"/>
-			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by around advice from 'SecondAspect'"/>
-			<message kind="weave" text="method-execution(void Application.greet(java.lang.String))' in Type 'Application' (Application.java:4) advised by before advice from 'FirstAspect'"/>
-		</compile>
-		<run class="Application" classpath="$sandbox/second-aspect.jar,$sandbox/first-aspect.jar">
-			<stdout>
-				<line text="FirstAspect: execution(void Application.greet(String))"/>
-				<line text="SecondAspect: execution(void Application.greet(String))"/>
-				<line text="Hello world!"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!-- https://github.com/eclipse-aspectj/aspectj/issues/246 -->
-	<ajc-test dir="bugs1920/github_246" vm="8" title="add correct annotations to multiple ITD methods with the same name and same number of arguments">
-		<compile files="First.java Second.java App.java ITDAspect.aj" options="-8"/>
-		<run class="App">
-			<stdout>
-				<line text="[@Second()] public int App.foo(int[])"/>
-				<line text="[@First()] public void App.foo(java.lang.String)"/>
-				<line text="[] public void App.foo(java.lang.String[])"/>
-				<line text="[@First(), @Second()] public void App.foo(java.lang.Object)"/>
-				<line text="[@Second()] public int App.foo(int)"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!-- https://github.com/eclipse-aspectj/aspectj/issues/250 -->
-	<ajc-test dir="bugs1920/github_250" vm="8" title="correctly handle overloaded private methods in aspects">
-		<compile files="MyAspect.aj" options="-8"/>
-		<run class="MyAspect">
-			<stdout>
-				<line text="execution(void Application.doSomething())"/>
-				<line text="1 / one"/>
-				<line text="execution(void Application.doSomething())"/>
-				<line text="2"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!-- https://github.com/spring-projects/spring-framework/issues/27761 -->
-	<ajc-test dir="bugs1921/gh_spring_27761" vm="8" title="do not match bridge methods">
-		<!-- (1) Use ASM to generate JpaRepository class with reordered methods -->
-		<compile files="JpaRepositoryDump.java" options="-8"/>
-		<run class="JpaRepositoryDump" options="$sandbox"/>
-		<file deletefile="JpaRepositoryDump.class"/>
-		<!-- (2) Use AJC to compile the remaining classes and run the test -->
-		<compile files="RepositoryAspect.aj" options="-8"/>
-		<run class="RepositoryAspect">
-			<stdout>
-				<line text="execution(List RepositoryImpl.saveAll(Iterable))"/>
-				<line text="Saving [One, Two, Three]"/>
-			</stdout>
-		</run>
-	</ajc-test>
-
-	<!-- https://github.com/eclipse-aspectj/aspectj/issues/257 -->
-	<ajc-test dir="bugs1921/gh_257" vm="8" title="handle negated type patterns correctly">
-		<compile files="NegatedTypeAspect.aj" options="-8"/>
-		<run class="NegatedTypeAspect">
-			<stdout>
-				<line text="[SETTER] execution(void Person.setId(int))"/>
-				<line text="[SETTER] execution(void Person.setFirstName(String))"/>
-				<line text="[SETTER] execution(void Person.setLastName(String))"/>
-				<line text="Person(id=11, lastName='Curie', firstName='Marie')"/>
-				<line text="[GETTER] execution(int Person.getId())"/>
-				<line text="[NON-STRING GETTER] execution(int Person.getId())"/>
-				<line text="[NON-STRING-ARRAY GETTER] execution(int Person.getId())"/>
-				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(int Person.getId())"/>
-				<line text="[GETTER] execution(String Person.getFirstName())"/>
-				<line text="[NON-STRING-ARRAY GETTER] execution(String Person.getFirstName())"/>
-				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String Person.getFirstName())"/>
-				<line text="[GETTER] execution(String Person.getLastName())"/>
-				<line text="[NON-STRING-ARRAY GETTER] execution(String Person.getLastName())"/>
-				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String Person.getLastName())"/>
-				<line text="Marie Curie"/>
-				<line text="[SETTER] execution(void Person.setFullName(String))"/>
-				<line text="[SETTER] execution(void Person.setId(int))"/>
-				<line text="Person(id=22, lastName='Einstein', firstName='Albert')"/>
-				<line text="Einstein, Albert"/>
-				<line text="[NON-STRING GETTER] execution(void Person.getVoid())"/>
-				<line text="[NON-STRING-ARRAY GETTER] execution(void Person.getVoid())"/>
-				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(void Person.getVoid())"/>
-				<line text="[GETTER] execution(String[] Person.getStringArray())"/>
-				<line text="[NON-STRING GETTER] execution(String[] Person.getStringArray())"/>
-				<line text="[STRING-ARRAY GETTER] execution(String[] Person.getStringArray())"/>
-				<line text="[NON-STRING-ARRAY-ARRAY GETTER] execution(String[] Person.getStringArray())"/>
-				<line text="[Hello, world]"/>
-				<line text="[GETTER] execution(String[][] Person.getStringArrayArray())"/>
-				<line text="[NON-STRING GETTER] execution(String[][] Person.getStringArrayArray())"/>
-				<line text="[NON-STRING-ARRAY GETTER] execution(String[][] Person.getStringArrayArray())"/>
-				<line text="[[Hello, world], [Hallo, Welt]]"/>
-				<line text="AspectJ rules!"/>
 			</stdout>
 		</run>
 	</ajc-test>
