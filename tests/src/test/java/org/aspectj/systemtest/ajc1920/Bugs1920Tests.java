@@ -70,7 +70,8 @@ public class Bugs1920Tests extends XMLBasedAjcTestCase {
   /**
    * If one generic method overrides another one with a narrower return type, avoid matching bridge methods.
    * <p>
-   * See <a href="https://github.com/spring-projects/spring-framework/issues/27761">Spring GitHub issue 27761</a>.
+   * See <a href="https://github.com/spring-projects/spring-framework/issues/27761">Spring GitHub issue 27761</a>,
+   * <a href="https://github.com/eclipse-aspectj/aspectj/issues/257">AspectJ GitHub issue 257</a>.
    * <p>
    * This test uses an ASM-modified class file reproducing the problem seen in Spring in plain AspectJ. Before the
    * bugfix, it fails with <b>"advice defined in RepositoryAspect has not been applied [Xlint:adviceDidNotMatch]".</b>

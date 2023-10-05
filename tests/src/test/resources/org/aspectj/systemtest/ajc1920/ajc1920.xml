@@ -418,8 +418,11 @@
 		</run>
 	</ajc-test>
 
-	<!-- https://github.com/spring-projects/spring-framework/issues/27761 -->
-	<ajc-test dir="bugs1921/gh_spring_27761" vm="8" title="do not match bridge methods">
+	<!--
+		https://github.com/spring-projects/spring-framework/issues/27761, AspectJ 1.9.20.1
+		https://github.com/eclipse-aspectj/aspectj/issues/257
+	-->
+	<ajc-test dir="bugs1920/github_spring_27761" vm="8" title="do not match bridge methods">
 		<!-- (1) Use ASM to generate JpaRepository class with reordered methods -->
 		<compile files="JpaRepositoryDump.java" options="-8"/>
 		<run class="JpaRepositoryDump" options="$sandbox"/>
@@ -434,8 +437,8 @@
 		</run>
 	</ajc-test>
 
-	<!-- https://github.com/eclipse-aspectj/aspectj/issues/257 -->
-	<ajc-test dir="bugs1921/gh_257" vm="8" title="handle negated type patterns correctly">
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/257, AspectJ 1.9.20.1 -->
+	<ajc-test dir="bugs1920/github_257" vm="8" title="handle negated type patterns correctly">
 		<compile files="NegatedTypeAspect.aj" options="-8"/>
 		<run class="NegatedTypeAspect">
 			<stdout>
