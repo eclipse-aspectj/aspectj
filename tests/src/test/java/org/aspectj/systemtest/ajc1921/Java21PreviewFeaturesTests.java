@@ -1,25 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 2022 Contributors
+ * Copyright (c) 2023 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
-package org.aspectj.systemtest.ajc1920;
+package org.aspectj.systemtest.ajc1921;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava20Only;
+import org.aspectj.testing.XMLBasedAjcTestCaseForJava21Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only {
+public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only {
 
   public void testSwitchPatternMatchingPreview4Java() {
     runTest("switch pattern matching preview 4 java");
-    checkVersion("SwitchPatternPreview4OK", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview4OK", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
   }
 
   public void testSwitchPatternMatchingPreview4Error() {
@@ -28,10 +28,10 @@ public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only
 
   public void testSwitchPatternMatchingPreview3Aspect() {
     runTest("switch pattern matching preview 3 aspect");
-    checkVersion("SwitchPatternPreview3Aspect", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview3Aspect", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Application", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Shape", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("S", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
   }
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
@@ -54,8 +54,8 @@ public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only
   public void testRecordPatternsPreview1Error() {
     // https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27)
     runTest("record patterns error");
-    checkVersion("RecordPatternsPreview1Error", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Box", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("RecordPatternsPreview1Error", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Box", Constants.MAJOR_21, Constants.PREVIEW_MINOR_VERSION);
   }
 
   public void testRecordPatternsPreview1ExhaustivenessOK1() {
@@ -92,12 +92,12 @@ public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only
   }
 
   public static Test suite() {
-    return XMLBasedAjcTestCase.loadSuite(Java20PreviewFeaturesTests.class);
+    return XMLBasedAjcTestCase.loadSuite(Java21PreviewFeaturesTests.class);
   }
 
   @Override
   protected java.net.URL getSpecFile() {
-    return getClassResource("ajc1920.xml");
+    return getClassResource("ajc1921.xml");
   }
 
 }

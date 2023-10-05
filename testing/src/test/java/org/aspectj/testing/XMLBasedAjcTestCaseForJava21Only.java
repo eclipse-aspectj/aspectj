@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2022 Contributors
+ * Copyright (c) 2023 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -15,26 +15,26 @@ import org.aspectj.util.LangUtil;
  *
  * @author Alexander Kriegisch
  */
-public abstract class XMLBasedAjcTestCaseForJava20Only extends XMLBasedAjcTestCase {
+public abstract class XMLBasedAjcTestCaseForJava21Only extends XMLBasedAjcTestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		// Activate this block after upgrading to JDT Core Java 21
+		// Activate this block after upgrading to JDT Core Java 22
+		/*
 		throw new IllegalStateException(
-			"These tests need a Java 20 level AspectJ compiler " +
+			"These tests need a Java 21 level AspectJ compiler " +
 				"(e.g. because they use version-specific preview features). " +
 				"This compiler does not support preview features of a previous version anymore."
 		);
-		// Activate this block before upgrading to JDT Core Java 21
-		/*
-		if (!LangUtil.is20VMOrGreater() || LangUtil.is21VMOrGreater()) {
+		*/
+		// Activate this block before upgrading to JDT Core Java 22
+		if (!LangUtil.is21VMOrGreater() || LangUtil.is22VMOrGreater()) {
 			throw new IllegalStateException(
-				"These tests should be run on Java 20 only " +
+				"These tests should be run on Java 21 only " +
 				"(e.g. because they use version-specific preview features)"
 			);
 		}
 		super.setUp();
-		*/
 	}
 
 }

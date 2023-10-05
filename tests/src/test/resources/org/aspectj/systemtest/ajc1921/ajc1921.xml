@@ -11,8 +11,8 @@
 <suite>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1920/java20" vm="20" title="switch pattern matching preview 4 java">
-		<compile files="SwitchPatternPreview4OK.java" options="--enable-preview -20" />
+	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 java">
+		<compile files="SwitchPatternPreview4OK.java" options="--enable-preview -21" />
 		<run class="SwitchPatternPreview4OK" vmargs="--enable-preview">
 			<message></message>
 			<stdout>
@@ -39,16 +39,16 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1920/java20" vm="20" title="switch pattern matching preview 4 error">
-		<compile files="SwitchPatternPreview4Error.java" options="--enable-preview -20">
+	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 error">
+		<compile files="SwitchPatternPreview4Error.java" options="--enable-preview -21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="switch pattern matching preview 3 aspect">
-		<compile files="SwitchPatternPreview3Aspect.aj" options="--enable-preview -20" />
+	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 aspect">
+		<compile files="SwitchPatternPreview3Aspect.aj" options="--enable-preview -21" />
 		<run class="Application" vmargs="--enable-preview">
 			<stdout>
 				<line text="null" />
@@ -74,37 +74,37 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features198/java17" vm="20" title="switch pattern matching error">
-		<compile files="SwitchPatternError.java" options="--enable-preview -20">
+	<ajc-test dir="features198/java17" vm="21" title="switch pattern matching error">
+		<compile files="SwitchPatternError.java" options="--enable-preview -21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="switch pattern matching preview 3 error 1">
-		<compile files="SwitchPatternPreview3Error1.java" options="--enable-preview -20">
+	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 1">
+		<compile files="SwitchPatternPreview3Error1.java" options="--enable-preview -21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 17, 18, 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="switch pattern matching preview 3 error 2">
-		<compile files="SwitchPatternPreview3Error2.java" options="--enable-preview -20">
+	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 2">
+		<compile files="SwitchPatternPreview3Error2.java" options="--enable-preview -21">
 			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns">
-		<compile files="RecordPatternsPreview1OK.java" options="--enable-preview -20"/>
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns">
+		<compile files="RecordPatternsPreview1OK.java" options="--enable-preview -21"/>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns error">
-		<compile files="RecordPatternsPreview1Error.java" options="--enable-preview -20">
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns error">
+		<compile files="RecordPatternsPreview1Error.java" options="--enable-preview -21">
 			<!-- https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27) -->
 			<!--
 			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
@@ -120,8 +120,8 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns exhaustiveness 1">
-		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="--enable-preview -20"/>
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 1">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="--enable-preview -21"/>
 		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="--enable-preview">
 			<stdout>
 				<line text="y"/>
@@ -131,8 +131,8 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns exhaustiveness aspect">
-		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="--enable-preview -20"/>
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness aspect">
+		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="--enable-preview -21"/>
 		<!-- TODO: Remove redundant default clauses when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed -->
 		<run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="--enable-preview">
 			<stdout>
@@ -144,8 +144,8 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns aspect">
-		<compile files="RecordPatternsPreview1Aspect.aj" options="--enable-preview -20"/>
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns aspect">
+		<compile files="RecordPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
 		<run class="RecordPatternsPreview1Aspect" vmargs="--enable-preview">
 			<stdout>
 				<line text="9"/>
@@ -160,15 +160,15 @@
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns exhaustiveness error">
-		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="--enable-preview -20">
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness error">
+		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="--enable-preview -21">
 			<message kind="error" file="RecordPatternsPreview1ExhaustivenessError.java" text="An enhanced switch statement should be exhaustive; a default label expected"/>
 		</compile>
 	</ajc-test>
 
 	<!-- Java ?? final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="20" title="record patterns exhaustiveness 2">
-		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="--enable-preview -20"/>
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 2">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="--enable-preview -21"/>
 		<run class="RecordPatternsPreview1ExhaustivenessOK2" vmargs="--enable-preview">
 			<stdout>
 				<line text="Bob 12"/>
