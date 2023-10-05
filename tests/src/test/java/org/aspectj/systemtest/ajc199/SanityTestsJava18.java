@@ -8,6 +8,7 @@
 package org.aspectj.systemtest.ajc199;
 
 import junit.framework.Test;
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCaseForJava18OrLater;
 
@@ -20,7 +21,7 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava18OrLater;
  */
 public class SanityTestsJava18 extends XMLBasedAjcTestCaseForJava18OrLater {
 
-	public static final int bytecode_version_for_JDK_level = 62;
+	public static final int bytecode_version_for_JDK_level = Constants.MAJOR_18;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {
@@ -72,7 +73,7 @@ public class SanityTestsJava18 extends XMLBasedAjcTestCaseForJava18OrLater {
 	public void testVersionCorrect4() {
 		runTest("simple - m");
 		// Must be 49.0 when -1.5 is specified
-		checkVersion("A", 49, 0);
+		checkVersion("A", Constants.MAJOR_1_5, 0);
 	}
 
 	public static Test suite() {
