@@ -128,27 +128,27 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 		ContextToken completeTypeBindingsToken = enteringPhase(COMPLETING_TYPE_BINDINGS, "");
 		// builtInterTypesAndPerClauses = false;
 		// pendingTypesToWeave = new ArrayList();
-		stepCompleted = BUILD_TYPE_HIERARCHY;
+		stepCompleted = CompleteTypeBindingsSteps.CONNECT_TYPE_HIERARCHY;
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = enteringPhase(CHECK_AND_SET_IMPORTS, units[i].compilationResult.fileName);
 			units[i].scope.checkAndSetImports();
 			leavingPhase(tok);
 		}
-		stepCompleted = CHECK_AND_SET_IMPORTS;
+		stepCompleted = CompleteTypeBindingsSteps.CHECK_AND_SET_IMPORTS;
 
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = enteringPhase(CONNECTING_TYPE_HIERARCHY1, units[i].compilationResult.fileName);
-			units[i].scope.connectTypeHierarchy1();
+			units[i].scope.connectTypeHierarchy();
 			leavingPhase(tok);
 		}
-		stepCompleted = CONNECT_TYPE_HIERARCHY1;
+		stepCompleted = CompleteTypeBindingsSteps.CONNECT_TYPE_HIERARCHY;
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = enteringPhase(CONNECTING_TYPE_HIERARCHY2, units[i].compilationResult.fileName);
-			units[i].scope.connectTypeHierarchy2();
+			units[i].scope.integrateAnnotationsInHierarchy();
 			leavingPhase(tok);
 		}
-		stepCompleted = CONNECT_TYPE_HIERARCHY2;
+		stepCompleted = CompleteTypeBindingsSteps.INTEGRATE_ANNOTATIONS_IN_HIERARCHY;
 		for (int i = lastCompletedUnitIndex + 1; i <= lastUnitIndex; i++) {
 			ContextToken tok = enteringPhase(BUILDING_FIELDS_AND_METHODS, units[i].compilationResult.fileName);
 			// units[i].scope.checkParameterizedTypes(); do this check a little later, after ITDs applied to stbs
@@ -283,7 +283,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			units[i] = null; // release unnecessary reference to the parsed unit
 		}
 
-		stepCompleted = BUILD_FIELDS_AND_METHODS;
+		stepCompleted = CompleteTypeBindingsSteps.BUILD_FIELDS_AND_METHODS;
 		lastCompletedUnitIndex = lastUnitIndex;
 		AsmManager.setCompletingTypeBindings(false);
 		factory.getWorld().getCrosscuttingMembersSet().verify();
