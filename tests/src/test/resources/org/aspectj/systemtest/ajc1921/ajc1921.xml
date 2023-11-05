@@ -139,7 +139,7 @@
 	</ajc-test>
 
 	<!-- Java 21 final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 1">
+	<ajc-test dir="features1921/java21" vm="21" title="record patterns exhaustiveness 1">
 		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="-21"/>
 		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="">
 			<stdout>
@@ -150,9 +150,8 @@
 	</ajc-test>
 
 	<!-- Java 21 final, Java 19, 20 preview -->
-	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness aspect">
+	<ajc-test dir="features1921/java21" vm="21" title="record patterns exhaustiveness aspect">
 		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="-21"/>
-		<!-- TODO: Remove redundant default clauses when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed -->
 		<run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="">
 			<stdout>
 				<line text="y"/>

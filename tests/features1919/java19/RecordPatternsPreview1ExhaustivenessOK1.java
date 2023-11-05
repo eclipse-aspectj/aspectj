@@ -10,7 +10,8 @@ public class RecordPatternsPreview1ExhaustivenessOK1 {
     switch (p2) {
       case Pair<I>(I i, C c) -> System.out.println("x");
       case Pair<I>(I i, D d) -> System.out.println("y");
-      // TODO: Remove redundant default clause when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed
+      // TODO: Remove redundant default clause when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed.
+      // Fixed since Java 21, see features1921/java21/RecordPatternsPreview1ExhaustivenessOK1.java.
       default -> System.out.println("z");
     }
 
@@ -18,7 +19,8 @@ public class RecordPatternsPreview1ExhaustivenessOK1 {
       case Pair<I>(C c, I i) -> System.out.println("a");
       case Pair<I>(D d, C c) -> System.out.println("b");
       case Pair<I>(D d1, D d2) -> System.out.println("c");
-      // TODO: remove redundant default clause when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed
+      // TODO: Remove redundant default clause when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed.
+      // Fixed since Java 21, see features1921/java21/RecordPatternsPreview1ExhaustivenessOK1.java.
       default -> System.out.println("d");
     }
   }

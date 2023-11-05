@@ -59,10 +59,8 @@ public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
   }
 
   public void testRecordPatternsPreview1ExhaustivenessOK1() {
-    // Falsely throws 'An enhanced switch statement should be exhaustive; a default label expected' twice,
-    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455
-    // TODO: Remove redundant default clauses when fixed upstream
-    System.out.println("TODO: fully activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed");
+    // Used to falsely throw 'An enhanced switch statement should be exhaustive; a default label expected' twice,
+    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455. Fixed in Java 21.
     runTest("record patterns exhaustiveness 1");
   }
 
@@ -71,10 +69,8 @@ public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
   }
 
   public void testRecordPatternsPreview1ExhaustivenessAspect() {
-    // Falsely throws 'An enhanced switch statement should be exhaustive; a default label expected' twice,
-    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455
-    // TODO: Remove redundant default clauses when fixed upstream
-    System.out.println("TODO: fully activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455 has been fixed");
+    // Used to falsely throw 'An enhanced switch statement should be exhaustive; a default label expected' twice,
+    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/455. Fixed in Java 21.
     runTest("record patterns exhaustiveness aspect");
   }
 
@@ -84,11 +80,9 @@ public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
   }
 
   public void testRecordPatternsPreview1ExhaustivenessOK2() {
-    // Falsely throws 'An enhanced switch statement should be exhaustive; a default label expected',
-    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/398
-    // TODO: activate when fixed
-    System.out.println("TODO: activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/398 has been fixed");
-    //runTest("record patterns exhaustiveness 2");
+    // Used to falsely throw 'An enhanced switch statement should be exhaustive; a default label expected',
+    // see https://github.com/eclipse-jdt/eclipse.jdt.core/issues/398. Fixed in Java 21.
+    runTest("record patterns exhaustiveness 2");
   }
 
   public static Test suite() {
