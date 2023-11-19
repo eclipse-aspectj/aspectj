@@ -159,6 +159,10 @@ mvn nexus-staging:rc-list
 # [INFO] ID                   State    Description
 # [INFO] orgaspectj-1106      CLOSED   org.aspectj:aspectjrt:1.9.8.M2
 
+# Because of problems in Nexus Staging Maven Plugin with more recent JDKs,
+# we might need this first
+export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
+
 # Use the ID of the corresponding CLOSED staging repository for releasing to
 # Maven Central
 mvn nexus-staging:rc-release -DstagingRepositoryId=orgaspectj-1106
