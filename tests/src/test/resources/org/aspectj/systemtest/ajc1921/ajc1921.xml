@@ -26,7 +26,7 @@
 	<ajc-test dir="features1921/java21" vm="21" title="switch pattern matching preview 4 java">
 		<compile files="SwitchPatternPreview4OK.java" options="-21" />
 		<run class="SwitchPatternPreview4OK" vmargs="">
-			<message></message>
+			<message/>
 			<stdout>
 				<line text="null" />
 				<line text="int 123" />
@@ -40,15 +40,12 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
-				<!-- TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed. -->
-				<!--
 				<line text="absolute value 1: -1" />
 				<line text="other integer: 0" />
 				<line text="positive integer: 42" />
 				<line text="other integer: -99" />
 				<line text="positive integer: 123" />
 				<line text="value unavailable: null" />
-				-->
 				<line text="42" />
 			</stdout>
 		</run>
@@ -79,15 +76,12 @@
 				<line text="Sealed sub-class A" />
 				<line text="Sealed sub-class B" />
 				<line text="Sealed sub-record C" />
-				<!-- TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed. -->
-				<!--
 				<line text="absolute value 1: -1" />
 				<line text="other integer: 0" />
 				<line text="positive integer: 42" />
 				<line text="other integer: -99" />
 				<line text="positive integer: 123" />
 				<line text="value unavailable: null" />
-				-->
 			</stdout>
 		</run>
 	</ajc-test>

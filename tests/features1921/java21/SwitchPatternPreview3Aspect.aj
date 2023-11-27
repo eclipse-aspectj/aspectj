@@ -31,14 +31,6 @@ aspect SwitchPatternPreview3Aspect {
   }
 
   Object around(Integer i): execution(* doSomethingWithInteger(*)) && args(i) {
-    // This used to work in preview 4 (Java 20), but fails during runtime with
-    //   java.lang.IndexOutOfBoundsException: Index 4 out of bounds for length 4
-    // in ECJ 3.36.0-SNAPSHOT with Java 21.
-    // See:
-    //   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466.
-    //
-    // TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed.
-    /*
     System.out.println(
       switch (i) {
         case null -> "value unavailable: " + i;
@@ -47,7 +39,6 @@ aspect SwitchPatternPreview3Aspect {
         default -> "other integer: " + i;
       }
     );
-    */
     return proceed(i);
   }
 }

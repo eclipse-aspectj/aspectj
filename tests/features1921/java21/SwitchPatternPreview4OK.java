@@ -29,15 +29,12 @@ public class SwitchPatternPreview4OK {
 //    constantLabelMustAppearBeforePattern(Integer.valueOf(123));
 //    constantLabelMustAppearBeforePattern(null);
 
-    // TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed.
-    /*
     constantLabelMustAppearBeforePatternInteger(-1);
     constantLabelMustAppearBeforePatternInteger(0);
     constantLabelMustAppearBeforePatternInteger(42);
     constantLabelMustAppearBeforePatternInteger(-99);
     constantLabelMustAppearBeforePatternInteger(Integer.valueOf(123));
     constantLabelMustAppearBeforePatternInteger(null);
-    */
 
     System.out.println(testGenericSealedExhaustive(new E<Integer>()));
   }
@@ -105,15 +102,6 @@ public class SwitchPatternPreview4OK {
   }
 */
 
-  /**
-   * This used to work in preview 4 (Java 20), but fails during runtime with
-   *   java.lang.IndexOutOfBoundsException: Index 4 out of bounds for length 4
-   * in ECJ 3.36.0-SNAPSHOT with Java 21.
-   * See:
-   *   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466.
-   *
-   * TODO: Activate when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1466 is fixed.
-   */
   static String constantLabelMustAppearBeforePatternInteger(Integer i) {
     switch (i) {
       case null -> System.out.println("value unavailable: " + i);
