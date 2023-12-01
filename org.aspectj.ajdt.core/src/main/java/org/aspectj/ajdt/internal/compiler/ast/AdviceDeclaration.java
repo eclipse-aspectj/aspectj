@@ -331,7 +331,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		AspectDeclaration aspectDecl = (AspectDeclaration) typeDec;
 		adviceSequenceNumberInType = aspectDecl.adviceCounter++;
 
-		StringBuffer stringifiedPointcut = new StringBuffer(30);
+		StringBuilder stringifiedPointcut = new StringBuilder(30);
 		pointcutDesignator.print(0, stringifiedPointcut);
 		this.selector = NameMangler.adviceName(EclipseFactory.getName(typeDec.binding).replace('.', '_'), kind,
 				adviceSequenceNumberInType, stringifiedPointcut.toString().hashCode()).toCharArray();
@@ -459,7 +459,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 	// return s;
 	// }
 
-	public StringBuffer printBody(int indent, StringBuffer output) {
+	public StringBuilder printBody(int indent, StringBuilder output) {
 		output.append(": ");
 		if (pointcutDesignator != null) {
 			output.append(pointcutDesignator.toString());
@@ -467,7 +467,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		return super.printBody(indent, output);
 	}
 
-	public StringBuffer printReturnType(int indent, StringBuffer output) {
+	public StringBuilder printReturnType(int indent, StringBuilder output) {
 		if (this.kind == AdviceKind.Around) {
 			return super.printReturnType(indent, output);
 		}

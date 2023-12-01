@@ -86,9 +86,9 @@ public class PseudoToken extends ASTNode implements IToken {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
+	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuilder)
 	 */
-	public StringBuffer print(int indent, StringBuffer output) {
+	public StringBuilder print(int indent, StringBuilder output) {
 		output.append("PseudoToken<" + getString() + ">");
 		return output;
 	}

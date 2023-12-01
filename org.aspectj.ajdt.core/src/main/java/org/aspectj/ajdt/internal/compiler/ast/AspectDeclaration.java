@@ -1289,7 +1289,7 @@ public class AspectDeclaration extends TypeDeclaration {
 		return finder;
 	}
 
-	public StringBuffer printHeader(int indent, StringBuffer output) {
+	public StringBuilder printHeader(int indent, StringBuilder output) {
 		// since all aspects are made public we want to print the
 		// modifiers that were supplied in the original source code
 		printModifiers(this.declaredModifiers, output);

@@ -497,7 +497,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(TypeDeclaration typeDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		typeDeclaration.printHeader(0, output);
 		return output.toString();
 	}
@@ -689,7 +689,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(MethodDeclaration methodDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		ASTNode.printModifiers(methodDeclaration.modifiers, output);
 
 		// Append Type Parameters if any
@@ -815,7 +815,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(ImportReference importreference) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		output.append("import ");
 		ASTNode.printModifiers(importreference.modifiers, output);
 		output.append(importreference);
@@ -939,7 +939,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 *
 	 */
 	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		if (fieldDeclaration.type == null) { // This is an enum value
 			output.append(fieldDeclaration.name); // the "," or ";" has to be
 			// put on by whatever uses
@@ -1032,7 +1032,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(ConstructorDeclaration constructorDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		ASTNode.printModifiers(constructorDeclaration.modifiers, output);
 
 		// Append Type Parameters if any

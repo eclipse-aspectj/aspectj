@@ -153,7 +153,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		return declareDecl;
 	}
 
-	public StringBuffer print(int tab, StringBuffer output) {
+	public StringBuilder print(int tab, StringBuilder output) {
 		printIndent(tab, output);
 		if (declareDecl == null) {
 			output.append("<declare>");
