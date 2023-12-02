@@ -33,12 +33,12 @@ Assuming that you are currently working on version 1.9.8-SNAPSHOT, you simply ca
 mvn clean deploy 
 
 # OR: If you ran tests locally before, or the CI workflow on GitHub did 
-mvn -DskipTests=true clean deploy 
+mvn -DskipTests clean deploy 
 
 # OR: Speed it up some more, skipping documentation generation. Depending on
 # your shell, you might not have to escape the '!' character for deactivating
 # the 'create-docs' profile. On a (Git) Bash you have to, though.
-mvn -P \!create-docs -DskipTests=true clean deploy 
+mvn -P \!create-docs -DskipTests clean deploy 
 ```
 
 This only deploys the main artifacts
@@ -100,7 +100,7 @@ mvn versions:commit
 #   - Maven Javadoc plugin
 #   - Nexus Staging Maven plugin
 # The 'create-docs profile will make sure to generate AspectJ docs to be included in the installer. 
-# Optionally, use '-DskipTests=true', if you ran all tests before.
+# Optionally, use '-DskipTests', if you ran all tests before.
 mvn -P release,create-docs clean deploy
 ```
 
