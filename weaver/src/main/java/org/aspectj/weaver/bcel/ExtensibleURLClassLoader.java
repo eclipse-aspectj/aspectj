@@ -56,7 +56,7 @@ public abstract class ExtensibleURLClassLoader extends URLClassLoader {
 				throw new ClassNotFoundException(name);
 			}
 		} catch (IOException ex) {
-			throw new ClassNotFoundException(name);
+			throw new ClassNotFoundException(name, ex);
 		}
 	}
 
