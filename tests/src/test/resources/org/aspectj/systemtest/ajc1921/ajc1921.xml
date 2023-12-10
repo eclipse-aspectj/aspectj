@@ -188,4 +188,75 @@
 		</run>
 	</ajc-test>
 
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="string patterns">
+		<compile files="StringPatternsPreview1.java" options="--enable-preview -21"/>
+		<run class="StringPatternsPreview1" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
+				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
+				<line text="\Bill \Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="string patterns aspect">
+		<compile files="StringPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
+		<run class="StringPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="execution(void StringPatternsPreview1Aspect.main(String[]))"/>
+				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
+				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
+				<line text="\Bill \Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

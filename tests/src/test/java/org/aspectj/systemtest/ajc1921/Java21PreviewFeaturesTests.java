@@ -16,8 +16,12 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava21Only;
  */
 public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only {
 
-  public void testDummyPreviewJava21() {
-    //runTest("dummy preview Java 21");
+  public void testStringPatterns() {
+    runTest("string patterns");
+  }
+
+  public void testStringPatternsAspect() {
+    runTest("string patterns aspect");
   }
 
   public static Test suite() {
