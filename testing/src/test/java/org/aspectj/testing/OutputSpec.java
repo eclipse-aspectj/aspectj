@@ -127,8 +127,11 @@ public class OutputSpec {
 	}
 
 	private String[] getTrimmedLines(String text) {
-		// Remove leading/trailing empty lines and leading/trailing whitespace from each line
-		String[] trimmedLines = text.trim().split("\\s*\n\\s*");
+		// Remove leading/trailing empty lines and leading/trailing horizontal whitespace from each line.
+		// Regex character class '\h' is horizonal whitespace. We assume that lines are always separated by something
+		// containing a '\n' LF character, e.g. LF (UNIX), CRLF (Windows). For legacy Mac platforms with their CR-only line
+		// separators, this would not work, and it is not supposed to either.
+		String[] trimmedLines = text.trim().split("\\h*\r?\n\\h*");
 		return trimmedLines.length == 1 && trimmedLines[0].equals("") ? new String[0] : trimmedLines;
 	}
 }
