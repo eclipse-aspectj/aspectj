@@ -259,4 +259,45 @@
 		</run>
 	</ajc-test>
 
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns">
+		<compile files="UnnamedPatternsPreview1.java" options="--enable-preview -21"/>
+		<run class="UnnamedPatternsPreview1" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns aspect">
+		<compile files="UnnamedPatternsPreview1Aspect.java" options="--enable-preview -21"/>
+		<run class="UnnamedPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="execution(void UnnamedPatternsPreview1Aspect.main(String[]))"/>
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
