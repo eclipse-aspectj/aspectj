@@ -24,6 +24,28 @@ public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only
     runTest("string patterns aspect");
   }
 
+  /**
+   * Still not implemented with the Java 21 release Eclipse 2023-12 (4.30),
+   * see <a href="https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893">GitHub issue 893</a>.
+   * <p>
+   * TODO: Activate after JDT Core implementation and merge.
+   */
+  public void testUnnamedPatterns() {
+    //runTest("unnamed patterns");
+    System.out.println("Unnamed patterns still are not implemented with the Java 21 release Eclipse 2023-12 (4.30)");
+  }
+
+  /**
+   * Still not implemented with the Java 21 release Eclipse 2023-12 (4.30),
+   * see <a href="https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893">GitHub issue 893</a>.
+   * <p>
+   * TODO: Activate after JDT Core implementation and merge.
+   */
+  public void testUnnamedPatternsAspect() {
+    //runTest("unnamed patterns aspect");
+    System.out.println("Unnamed patterns still are not implemented with the Java 21 release Eclipse 2023-12 (4.30)");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Java21PreviewFeaturesTests.class);
   }
