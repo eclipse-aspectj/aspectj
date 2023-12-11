@@ -300,4 +300,37 @@
 		</run>
 	</ajc-test>
 
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="named class with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedClassWithSimpleMainMethodPreview1.java" options="-21"/>
+		<run class="NamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="named aspect with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedAspectWithSimpleMainMethodPreview1.aj" options="-21"/>
+		<run class="NamedAspectWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed class with simple main method">
+		<compile files="UnnamedClassWithSimpleMainMethodPreview1.java" options="--enable-preview -21"/>
+		<run class="UnnamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
