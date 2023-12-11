@@ -46,6 +46,25 @@ public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only
     System.out.println("Unnamed patterns still are not implemented with the Java 21 release Eclipse 2023-12 (4.30)");
   }
 
+  public void testNamedClassWithSimpleMainMethod() {
+    runTest("named class with simple main method");
+  }
+
+  public void testNamedAspectWithSimpleMainMethod() {
+    runTest("named aspect with simple main method");
+  }
+
+  /**
+   * Still not implemented with the Java 21 release Eclipse 2023-12 (4.30),
+   * see <a href="https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106">GitHub issue 1106</a>.
+   * <p>
+   * TODO: Activate after JDT Core implementation and merge.
+   */
+  public void testUnnamedClassWithSimpleMainMethod() {
+    //runTest("unnamed class with simple main method");
+    System.out.println("Unnamed classes still are not implemented with the Java 21 release Eclipse 2023-12 (4.30)");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Java21PreviewFeaturesTests.class);
   }
