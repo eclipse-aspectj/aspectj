@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+
+<head>
+<title>AspectJ 1.9.21 Readme</title>
+<style type="text/css">
+  <!--
+  P   { margin-left:  20px; }
+  PRE { margin-left:  20px; }
+  LI  { margin-left:  20px; }
+  H4  { margin-left:  20px; }
+  H3  { margin-left:  10px; }
+  -->
+</style>
+</head>
+
+<body>
+<div align="right"><small>&copy; Copyright 2023 Contributors. All rights reserved.</small></div>
+
+<h1>AspectJ 1.9.21</h1>
+
+<p>
+  Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+  <a href="https://github.com/eclipse/org.aspectj/issues/new">GitHub issues</a>.
+  The list of issues addressed for 1.9.21 can be found here:
+  <ul>
+    <li><a href="https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21">GitHub 1.9.21</a></li>
+    <li><a href="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21">Bugzilla 1.9.21</a></li>
+  </ul>
+</p>
+
+<h2>New features</h2>
+
+<p>
+  AspectJ 1.9.21 supports <a href="https://openjdk.java.net/projects/jdk/21/">Java 21</a>, its final features and a
+  subset of preview features, such as:
+</p>
+<ul>
+  <li>Record patterns</li>
+  <li>Pattern matching for <tt>switch</tt></li>
+  <li>Virtual threads</li>
+  <li>Sequenced collections</li>
+  <li>Structured concurrency (preview)</li>
+  <li>String templates (preview)</li>
+  <li>Instance main methods (preview)</li>
+</ul>
+
+<p>
+  Unfortunately, even after holding back the AspectJ release for 3 months after JDK 21 general availability, waiting for
+  Eclipse JDT Core and the Eclipse Java Compiler (ECJ) to catch up with Java 21 language features, even with the Java 21
+  officially supported in Eclipse 2023-12, some preview features are still unimplemented in ECJ:
+</p>
+<ul>
+  <li>Unnamed classes (preview)</li>
+  <li>Unnamed patterns and variables (preview)</li>
+</ul>
+
+<p>
+  As soon as these preview features are part of the upstream ECJ we depend on, we hope to publish another AspectJ
+  release to support them in the AspectJ Compiler (AJC), too.
+</p>
+
+<h2>Improvements</h2>
+
+<ul>
+  <li>
+    In <a href="https://github.com/eclipse-aspectj/aspectj/issues/266">GitHub issue 266</a>, exception cause reporting
+    has been improved in <tt>ExtensibleURLClassLoader</tt>. Thanks to Andy Russell (@euclio) for his contribution.
+  </li>
+</ul>
+
+<h2>Other changes and bug fixes</h2>
+
+<ul>
+  <li>
+    No major bug fixes
+  </li>
+</ul>
+
+<h2>AspectJ usage hints</h2>
+
+<h3>AspectJ compiler build system requirements</h3>
+
+<p>
+  Since 1.9.21, the AspectJ compiler <tt>ajc</tt> (contained in the <tt>aspectjtools</tt> library) no longer works on
+  JDKs 11 to 16. The minimum compile-time requirement is now JDK 17 due to upstream changes in the Eclipse Java Compiler
+  (subset of JDT Core), which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3
+  when compiling plain Java code or using plain Java ITD constructs which do not require the AspectJ runtime
+  <tt>aspectjrt</tt>, but the compiler itself needs JDK 17+. Just like in previous AspectJ versions, both the runtime
+  <tt>aspectjrt</tt> and the load-time weaver <tt>aspectjweaver</tt> still only require JRE 8+.
+</p>
+<p>
+  History: Since 1.9.7, the AspectJ compiler <tt>ajc</tt> needed JDK 11+, before then JDK 8+.
+</p>
+
+<h3>Use LTW on Java 16+</h3>
+
+<p>
+  Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
+  <a href="https://openjdk.java.net/jeps/396">JEP 396 (Strongly Encapsulate JDK Internals by Default)</a> and related
+  subsequent JEPs. Therefore, you need to set the JVM parameter <tt>--add-opens java.base/java.lang=ALL-UNNAMED</tt> in
+  order to enable aspect weaving. This is due to the fact that the weaver uses internal APIs for which we have not found
+  an adequate replacement yet when defining classes in different classloaders.
+</p>
+
+<h3>Compile with Java preview features</h3>
+
+<p>
+  For features marked as preview on a given JDK, you need to compile with <tt>ajc --enable-preview</tt> and run with
+  <tt>java --enable-preview</tt> on that JDK.
+</p>
+<p>
+  Please note that you cannot run code compiled with preview features on any other JDK than the one used for
+  compilation. For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This
+  is a JVM limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16.
+  You still need to recompile, no matter what.
+</p>
+
+<hr>
+
+<p>
+  <b>Available:</b> 1.9.21 on 11-Dec-2023
+</p>
+
+</body>
+
+</html>
