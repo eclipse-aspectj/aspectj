@@ -157,7 +157,7 @@ public class SwitchPatternPreview3OK {
    *   https://bugs.eclipse.org/bugs/show_bug.cgi?id=579360
    *   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/587
    *
-   * TODO: reactivate when implemented or move to preview 4 with Java 20.
+   * DONE: reactivated after fix in Java 21
    */
   /*
   sealed interface I<T> permits A, B {}

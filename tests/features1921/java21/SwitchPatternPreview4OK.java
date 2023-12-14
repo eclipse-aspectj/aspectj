@@ -129,8 +129,6 @@ public class SwitchPatternPreview4OK {
    *   https://openjdk.java.net/jeps/420#2--Exhaustiveness-of-switch-expressions-and-statements
    *   https://bugs.eclipse.org/bugs/show_bug.cgi?id=579360
    *   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/587
-   *
-   * TODO: reactivate when implemented or move to preview 5 with Java 21.
    */
   sealed interface I<T> permits D, E {}
   final static class D<X> implements I<String> {}

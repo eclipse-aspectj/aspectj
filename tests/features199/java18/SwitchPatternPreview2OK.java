@@ -97,6 +97,8 @@ public class SwitchPatternPreview2OK {
    *   https://openjdk.java.net/jeps/420#2--Exhaustiveness-of-switch-expressions-and-statements
    *   https://bugs.eclipse.org/bugs/show_bug.cgi?id=579360
    *   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/587
+   *
+   *   DONE: reactivated after fix in Java 21
    */
   /*
   sealed interface I<T> permits A, B {}
