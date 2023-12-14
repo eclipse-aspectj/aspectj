@@ -90,6 +90,12 @@
   <tt>aspectjrt</tt> and the load-time weaver <tt>aspectjweaver</tt> still only require JRE 8+.
 </p>
 <p>
+  Please note: If you run <tt>ajc</tt> on JDKs 11-16, you will probably see an error like
+  <tt>java.lang.NoSuchFieldError: RELEASE_17</tt>, and an <tt>ajcore.*.txt</tt> dump file will be created, while running
+  it on even older JDKs will rather yield an <tt>UnsupportedClassVersionError</tt>. See
+  <a href="https://github.com/eclipse-aspectj/aspectj/issues/269">GitHub issue 269</a> for more details.
+</p>
+<p>
   History: Since 1.9.7, the AspectJ compiler <tt>ajc</tt> needed JDK 11+, before then JDK 8+.
 </p>
 
