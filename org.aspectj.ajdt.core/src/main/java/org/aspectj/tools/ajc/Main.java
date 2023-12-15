@@ -38,6 +38,8 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Dump;
 
+import javax.lang.model.SourceVersion;
+
 /**
  * Programmatic and command-line interface to AspectJ compiler. The compiler is an ICommand obtained by reflection. Not thread-safe.
  * By default, messages are printed as they are emitted; info messages go to the output stream, and warnings and errors go to the
@@ -78,6 +80,12 @@ public class Main {
 			+ "on the AspectJ home page at http://www.eclipse.org/aspectj";
 
 	private static final String MESSAGE_HOLDER_OPTION = "-messageHolder";
+
+	// Minimal Java runtime version necessary to run AJC
+	// TODO: Update value, if Eclipse JDT Core raises compilation target level.
+	private static final int MINIMAL_JRE_VERSION = 17;
+	private static final String MINIMAL_JRE_VERSION_ERROR =
+		"The AspectJ compiler needs at least Java runtime " + MINIMAL_JRE_VERSION;
 
 	/** @param args the String[] of command-line arguments */
 	public static void main(String[] args) throws IOException {
@@ -218,14 +226,31 @@ public class Main {
 	}
 
 	/**
-	 * Run without throwing exceptions but optionally using System.exit(..). This sets up a message handler which emits messages
-	 * immediately, so report(boolean, IMessageHandler) only reports total number of errors or warnings.
+	 * Run without throwing exceptions, but optionally using {@link System#exit(int)}. This sets up a message handler
+	 * which emits messages immediately, so {@link #report(boolean, IMessageHolder)} only reports the total number of
+	 * errors or warnings.
 	 *
-	 * @param args the String[] command line for the compiler
-	 * @param useSystemExit if true, use System.exit(int) to complete unless one of the args is -noExit. and signal result (0 no
-	 *        exceptions/error, &lt;0 exceptions, &gt;0 compiler errors).
+	 * @param args          the compiler command line
+	 * @param useSystemExit if true, use {@link System#exit(int)} to complete unless one of the args is {@code -noExit},
+	 *                      and signal result (0 = no exceptions/error, &lt;0 = exceptions, &gt;0 = compiler errors).
+	 *                      Note: While some shells like Windows <i>cmd.exe</i> can correctly print negative exit codes
+	 *                      via {@code echo %errorlevel%"}, UNIX shells like Bash interpret them as positive byte values
+	 *                      modulo 256. E.g., exit code -1 will be printed as 127 using {@code echo $?}.
 	 */
 	public void runMain(String[] args, boolean useSystemExit) {
+		final boolean doExit = useSystemExit && !flagInArgs("-noExit", args);
+
+		// This needs to be checked, before any classes using JDT Core classes are used for the first time. Otherwise, users
+		// will see ugly UnsupportedClassVersionError stack traces, which they might or might not interpret correctly.
+		// Therefore, interrupt AJC usage right here, even if it means that not even a usage page can be printed. It is
+		// better to save users from subsequent problems later.
+		if (SourceVersion.latest().ordinal() < MINIMAL_JRE_VERSION) {
+			System.err.println(MINIMAL_JRE_VERSION_ERROR);
+			if (doExit)
+				System.exit(-1);
+			return;
+		}
+
 		// Urk - default no check for AJDT, enabled here for Ant, command-line
 		AjBuildManager.enableRuntimeVersionCheck(this);
 		final boolean verbose = flagInArgs("-verbose", args);
@@ -267,18 +292,8 @@ public class Main {
 			Dump.reset();
 		}
 
-		boolean skipExit = false;
-		if (useSystemExit && !LangUtil.isEmpty(args)) { // sigh - pluck -noExit
-			for (String arg : args) {
-				if ("-noExit".equals(arg)) {
-					skipExit = true;
-					break;
-				}
-			}
-		}
-		if (useSystemExit && !skipExit) {
-			systemExit(holder);
-		}
+		if (doExit)
+			systemExit();
 	}
 
 	// put calls around run() call above to allowing connecting jconsole
@@ -453,14 +468,13 @@ public class Main {
 	/**
 	 * Call System.exit(int) with values derived from the number of failures/aborts or errors in messages.
 	 *
-	 * @param messages the IMessageHolder to interrogate.
 	 */
-	protected void systemExit(IMessageHolder messages) {
-		int num = lastFails; // messages.numMessages(IMessage.FAIL, true);
+	protected void systemExit() {
+		int num = lastFails;
 		if (0 < num) {
 			System.exit(-num);
 		}
-		num = lastErrors; // messages.numMessages(IMessage.ERROR, false);
+		num = lastErrors;
 		if (0 < num) {
 			System.exit(num);
 		}
