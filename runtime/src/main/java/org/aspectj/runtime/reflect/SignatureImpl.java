@@ -230,7 +230,7 @@ abstract class SignatureImpl implements Signature {
 		}
 
 		private String[] array() {
-			return (String[]) toStringCacheRef.get();
+			return toStringCacheRef.get();
 		}
 
 		private String[] makeCache() {

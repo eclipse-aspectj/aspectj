@@ -152,7 +152,7 @@ public class AjCompilerOptions extends CompilerOptions {
 	@Override
 	public void set(Map<String,String> optionsMap) {
 		super.set(optionsMap);
-		Object optionValue;
+		String optionValue;
 		if ((optionValue = optionsMap.get(OPTION_ReportUnusedPrivateMember)) != null) {
 			updateSeverity(UnusedPrivateMember, optionValue);
 		}

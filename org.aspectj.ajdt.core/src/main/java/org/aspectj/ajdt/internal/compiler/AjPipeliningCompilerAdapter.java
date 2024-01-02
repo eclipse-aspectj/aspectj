@@ -227,7 +227,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 		// TESTING
 		if (pipelineTesting) {
 			if (pipelineOutput == null) {
-				pipelineOutput = new Hashtable();
+				pipelineOutput = new Hashtable<>();
 			}
 			pipelineOutput.put("filesContainingAspects", Integer.toString(toWaitFor));
 			StringBuilder order = new StringBuilder();
@@ -531,7 +531,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 			}
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
 		} else {
-			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
+			Map<String, List<UnwovenClassFile>> binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
 		}
 	}

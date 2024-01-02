@@ -1023,7 +1023,12 @@ class BcelClassWeaver implements IClassWeaver {
 							if (annotationsToAdd == null) {
 								annotationsToAdd = new ArrayList<>();
 							}
-							AnnotationGen a = ((BcelAnnotation) decaM.getAnnotation()).getBcelAnnotation();
+							BcelAnnotation decaMAnnotation = (BcelAnnotation) decaM.getAnnotation();
+							if (decaMAnnotation == null) {
+								unusedDecams.remove(decaM);
+								continue;
+							}
+							AnnotationGen a = decaMAnnotation.getBcelAnnotation();
 							AnnotationGen ag = new AnnotationGen(a, clazz.getConstantPool(), true);
 							annotationsToAdd.add(ag);
 							mg.addAnnotation(decaM.getAnnotation());
@@ -1423,7 +1428,8 @@ class BcelClassWeaver implements IClassWeaver {
 					// go through all the declare @field statements
 					for (DeclareAnnotation decaf : decafs) {
 						if (decaf.getAnnotation() == null) {
-							return false;
+							unusedDecafs.remove(decaf);
+							continue;
 						}
 						if (decaf.matches(field, world)) {
 							if (decaf.isRemover()) {
@@ -2380,7 +2386,7 @@ class BcelClassWeaver implements IClassWeaver {
 					ShadowRange oldRange = (ShadowRange) old;
 					if (oldRange.getStart() == src) {
 						BcelShadow oldShadow = oldRange.getShadow();
-						BcelShadow freshEnclosing = oldShadow.getEnclosingShadow() == null ? null : (BcelShadow) shadowMap
+						BcelShadow freshEnclosing = oldShadow.getEnclosingShadow() == null ? null : shadowMap
 								.get(oldShadow.getEnclosingShadow());
 						BcelShadow freshShadow = oldShadow.copyInto(recipient, freshEnclosing);
 						ShadowRange freshRange = new ShadowRange(recipient.getBody());

@@ -1,9 +1,9 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-  pack  [package] 
+<root>  [java source file]
+  pack  [package]
     pr77269.aj  [java source file] TEST_SANDBOX\pack\pr77269.aj:1:
       pack  [package declaration] TEST_SANDBOX\pack\pr77269.aj:1:
-        [import reference] 
+        [import reference]
       Test  [class] TEST_SANDBOX\pack\pr77269.aj:2:
         testMethod()  [method] TEST_SANDBOX\pack\pr77269.aj:4:
           new Runnable() {..}  [class] TEST_SANDBOX\pack\pr77269.aj:5:
@@ -15,8 +15,8 @@
         before(): p..  [advice] TEST_SANDBOX\pack\pr77269.aj:21:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <pack*pr77269.aj[Test~testMethod[~run (advised by) <pack*pr77269.aj'A&before
-(targets=1) <pack*pr77269.aj'A&before (advises) <pack*pr77269.aj[Test~testMethod[~run
+(targets=1) <pack*pr77269.aj[Test~testMethod[~run (advised by) <pack*pr77269.aj>A§before
+(targets=1) <pack*pr77269.aj>A§before (advises) <pack*pr77269.aj[Test~testMethod[~run
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=3

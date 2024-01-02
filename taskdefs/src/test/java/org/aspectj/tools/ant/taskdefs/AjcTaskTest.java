@@ -1021,6 +1021,18 @@ public class AjcTaskTest extends TestCase {
 			IMessage.Kind kind) {
 			if (num != IGNORE) {
 				int actual = holder.numMessages(kind, false);
+
+				// Filter out a warning which occurs, if the current release does not match the stored binary in lib/test.
+				// If e.g. we run tests for a milestone release a.b.5.M1 and afterwards switch back to a.b.5-SNAPSHOT, we do not
+				// want to update lib/test for a single commit, just to make this test pass. Hence, we ignore this warning here.
+				if (kind.equals(IMessage.WARNING)) {
+					for (IMessage message : holder.getMessages(kind, false)) {
+						String warningMessage = message.getMessage();
+						if (warningMessage.matches("bad version number found in .*aspectjrt.jar expected .* found .*"))
+							actual--;
+					}
+				}
+
 				if (num != actual) {
 					if (actual > 0) {
 						MessageUtil.print(
@@ -1028,9 +1040,7 @@ public class AjcTaskTest extends TestCase {
 							holder,
 							kind + " expected " + num + " got " + actual);
 					}
-					if (num != actual){
-						System.out.println("===\n"+Arrays.toString(holder.getMessages(kind, false))+"\n===\n");
-					}
+					System.out.println("===\n" + Arrays.toString(holder.getMessages(kind, false)) + "\n===\n");
 					assertEquals(kind.toString(), num, actual);
 				}
 			}

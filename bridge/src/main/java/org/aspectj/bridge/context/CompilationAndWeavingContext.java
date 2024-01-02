@@ -41,7 +41,7 @@ public class CompilationAndWeavingContext {
 	public static final int COMPLETING_TYPE_BINDINGS = 6;
 	public static final int PROCESSING_DECLARE_PARENTS = 7;
 	public static final int CHECK_AND_SET_IMPORTS = 8;
-	public static final int CONNECTING_TYPE_HIERARCHY = 9;
+	public static final int CONNECTING_TYPE_HIERARCHY1 = 9;
 	public static final int BUILDING_FIELDS_AND_METHODS = 10;
 	public static final int COLLECTING_ITDS_AND_DECLARES = 11;
 	public static final int PROCESSING_DECLARE_ANNOTATIONS = 12;
@@ -54,31 +54,32 @@ public class CompilationAndWeavingContext {
 	public static final int FIXING_SUPER_CALLS_IN_ITDS = 19;
 	public static final int FIXING_SUPER_CALLS = 20;
 	public static final int OPTIMIZING_THIS_JOIN_POINT_CALLS = 21;
+	public static final int CONNECTING_TYPE_HIERARCHY2 = 22;
 
 	// "BACK END"
 
-	public static final int WEAVING = 22;
-	public static final int PROCESSING_REWEAVABLE_STATE = 23;
-	public static final int PROCESSING_TYPE_MUNGERS = 24;
-	public static final int WEAVING_ASPECTS = 25;
-	public static final int WEAVING_CLASSES = 26;
-	public static final int WEAVING_TYPE = 27;
-	public static final int MATCHING_SHADOW = 28;
-	public static final int IMPLEMENTING_ON_SHADOW = 29;
-	public static final int MATCHING_POINTCUT = 30;
-	public static final int MUNGING_WITH = 31;
-	public static final int PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY = 32;
+	public static final int WEAVING = 23;
+	public static final int PROCESSING_REWEAVABLE_STATE = 24;
+	public static final int PROCESSING_TYPE_MUNGERS = 25;
+	public static final int WEAVING_ASPECTS = 26;
+	public static final int WEAVING_CLASSES = 27;
+	public static final int WEAVING_TYPE = 28;
+	public static final int MATCHING_SHADOW = 29;
+	public static final int IMPLEMENTING_ON_SHADOW = 30;
+	public static final int MATCHING_POINTCUT = 31;
+	public static final int MUNGING_WITH = 32;
+	public static final int PROCESSING_ATASPECTJTYPE_MUNGERS_ONLY = 33;
 
 	// phase names
 	public static final String[] PHASE_NAMES = new String[] { "batch building", "incrementally building",
 			"processing compilation unit", "resolving types defined in compilation unit",
 			"analysing types defined in compilation unit", "generating unwoven code for type defined in compilation unit",
-			"completing type bindings", "processing declare parents", "checking and setting imports", "connecting type hierarchy",
+			"completing type bindings", "processing declare parents", "checking and setting imports", "connecting type hierarchy 1",
 			"building fields and methods", "collecting itds and declares", "processing declare annotations",
 			"weaving intertype declarations", "resolving pointcut declarations", "adding declare warning and errors",
 			"validating @AspectJ annotations", "creating accessors for inlining", "adding @AspectJ annotations",
 			"fixing super calls in ITDs in interface context", "fixing super calls in ITDs",
-			"optimizing thisJoinPoint calls",
+			"optimizing thisJoinPoint calls", "connecting type hierarchy 2",
 
 			// BACK END
 

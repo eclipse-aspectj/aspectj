@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.impl.Constant;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
@@ -81,7 +82,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	// afterThrowingAdviceSig, aroundAdviceSig };
 
 	private final CompilationUnitDeclaration unit;
-	private final Stack typeStack = new Stack();
+	private final Stack<TypeDeclaration> typeStack = new Stack<>();
 	private AspectJAnnotations ajAnnotations;
 
 	public ValidateAtAspectJAnnotationsVisitor(CompilationUnitDeclaration unit) {
@@ -214,7 +215,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private boolean insideAspect() {
 		if (typeStack.empty())
 			return false;
-		TypeDeclaration typeDecl = (TypeDeclaration) typeStack.peek();
+		TypeDeclaration typeDecl = typeStack.peek();
 		return isAspect(typeDecl);
 	}
 
@@ -230,7 +231,12 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	private void validateAspectDeclaration(TypeDeclaration typeDecl) {
 		if (typeStack.size() > 1) {
 			// it's a nested aspect
-			if (!Modifier.isStatic(typeDecl.modifiers)) {
+			if (
+				!Modifier.isStatic(typeDecl.modifiers) &&
+				// Inner classes/aspects of interfaces are implicitly static,
+				// see https://github.com/eclipse/org.aspectj/issues/162
+				(typeDecl.enclosingType.modifiers & ClassFileConstants.AccInterface) == 0
+			) {
 				typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart, typeDecl.sourceEnd,
 						"inner aspects must be static");
 				return;
@@ -365,8 +371,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	 * @param arguments
 	 * @return argument names (possibly empty)
 	 */
-	private List toArgumentNames(Argument[] arguments) {
-		List names = new ArrayList();
+	private List<String> toArgumentNames(Argument[] arguments) {
+		List<String> names = new ArrayList<>();
 		if (arguments == null) {
 			return names;
 		} else {
@@ -401,8 +407,8 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			UnresolvedType[] paramTypes = new UnresolvedType[bindings.length];
 			for (int i = 0; i < paramTypes.length; i++)
 				paramTypes[i] = bindings[i].getType();
-			ResolvedPointcutDefinition resPcutDef = new ResolvedPointcutDefinition(factory.fromBinding(((TypeDeclaration) typeStack
-					.peek()).binding), methodDeclaration.modifiers, "anonymous", paramTypes, pc);
+			ResolvedPointcutDefinition resPcutDef = new ResolvedPointcutDefinition(factory.fromBinding(typeStack.peek().binding),
+					methodDeclaration.modifiers, "anonymous", paramTypes, pc);
 			AjAttribute attr = new AjAttribute.PointcutDeclarationAttribute(resPcutDef);
 			((AjMethodDeclaration) methodDeclaration).addAttribute(new EclipseAttributeAdapter(attr));
 		} catch (ParserException pEx) {
@@ -500,7 +506,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 	}
 
 	private void convertToPointcutDeclaration(MethodDeclaration methodDeclaration, ClassScope scope) {
-		TypeDeclaration typeDecl = (TypeDeclaration) typeStack.peek();
+		TypeDeclaration typeDecl = typeStack.peek();
 		if (typeDecl.binding != null) {
 			if (!typeDecl.binding.isClass()) {
 				methodDeclaration.scope.problemReporter().signalError(methodDeclaration.sourceStart, methodDeclaration.sourceEnd,
@@ -547,7 +553,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 			pcDecl.pointcutDesignator = (pc == null) ? null : new PointcutDesignator(pc);
 			pcDecl.setGenerateSyntheticPointcutMethod();
-			TypeDeclaration onType = (TypeDeclaration) typeStack.peek();
+			TypeDeclaration onType = typeStack.peek();
 			pcDecl.postParse(onType);
 			// EclipseFactory factory =
 			// EclipseFactory.fromScopeLookupEnvironment

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc160;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -25,6 +26,7 @@ import junit.framework.Test;
  * rather than executing them.
  */
 public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
+	public static final int bytecode_version_for_JDK_level = Constants.MAJOR_1_6;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {
@@ -66,22 +68,22 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	// Check the version number in the classfiles is correct when Java6 options specified
 	public void testVersionCorrect1() throws ClassNotFoundException {
 		runTest("simple - j");
-		checkVersion("A", 50, 0);
+		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
 	public void testVersionCorrect2() throws ClassNotFoundException {
 		runTest("simple - k");
-		checkVersion("A", 50, 0);
+		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
 	public void testVersionCorrect3() throws ClassNotFoundException {
 		runTest("simple - l");
-		checkVersion("A", 50, 0);
+		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
 	public void testVersionCorrect4() throws ClassNotFoundException {// check it is 49.0 when -1.5 is specified
 		runTest("simple - m");
-		checkVersion("A", 49, 0);
+		checkVersion("A", Constants.MAJOR_1_5, 0);
 	}
 
 	// Check the stackmap stuff appears for methods in a Java6 file

@@ -485,11 +485,11 @@ public class AjProblemReporter extends ProblemReporter {
 		// don't output unused type warnings for aspects!
 		if (typeDecl instanceof AspectDeclaration)
 			return;
-		if (typeDecl.enclosingType != null && (typeDecl.enclosingType instanceof AspectDeclaration)) {
+		if (typeDecl.enclosingType instanceof AspectDeclaration) {
 			AspectDeclaration ad = (AspectDeclaration) typeDecl.enclosingType;
 			if (ad.concreteName != null) {
 				List<Declare> declares = ad.concreteName.declares;
-				for (Object dec : declares) {
+				for (Declare dec : declares) {
 					if (dec instanceof DeclareParents) {
 						DeclareParents decp = (DeclareParents) dec;
 						TypePattern[] newparents = decp.getParents().getTypePatterns();
@@ -546,7 +546,7 @@ public class AjProblemReporter extends ProblemReporter {
 			} else {
 				weaverType = factory.fromEclipse(type.superclass());
 			}
-			Set checked = new HashSet();
+			Set<ResolvedType> checked = new HashSet<>();
 			for (ConcreteTypeMunger m : weaverType.getInterTypeMungersIncludingSupers()) {
 				ResolvedType theAspect = m.getAspectType();
 				if (!checked.contains(theAspect)) {
@@ -561,11 +561,10 @@ public class AjProblemReporter extends ProblemReporter {
 						} else if (theAspect instanceof ReferenceType) {
 							// ResolvedMember rm = factory.makeResolvedMember(fieldDecl.binding);
 							String fname = new String(fieldDecl.name);
-							Collection/* ResolvedMember */privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
+							Collection<ResolvedMember> privvies = ((ReferenceType) theAspect).getPrivilegedAccesses();
 							// On an incremental compile the information is in the bcel delegate
 							if (privvies != null) {
-								for (Object privvy : privvies) {
-									ResolvedMember priv = (ResolvedMember) privvy;
+								for (ResolvedMember priv : privvies) {
 									if (priv.getName().equals(fname)) {
 										return;
 									}
@@ -610,7 +609,7 @@ public class AjProblemReporter extends ProblemReporter {
 			Argument arg = (Argument) localDecl;
 			if (arg.binding != null && arg.binding.declaringScope != null) {
 				ReferenceContext context = arg.binding.declaringScope.referenceContext();
-				if (context != null && context instanceof PointcutDeclaration)
+				if (context instanceof PointcutDeclaration)
 					return;
 			}
 		}

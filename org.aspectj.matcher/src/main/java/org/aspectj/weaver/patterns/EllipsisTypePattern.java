@@ -17,6 +17,7 @@ import java.util.Map;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 
 public class EllipsisTypePattern extends TypePattern {
@@ -57,6 +58,11 @@ public class EllipsisTypePattern extends TypePattern {
 	@Override
 	public FuzzyBoolean matchesInstanceof(ResolvedType type) {
 		return FuzzyBoolean.NO;
+	}
+
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return false;
 	}
 
 	@Override

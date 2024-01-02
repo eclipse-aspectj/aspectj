@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.compiler.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
@@ -38,7 +39,7 @@ public class AjConstructorDeclaration extends ConstructorDeclaration {
 	 */
 	protected int generateInfoAttributes(ClassFile classFile) {
 		// add extra attributes into list then call 2-arg version of generateInfoAttributes...
-		List extras = new ArrayList();
+		List<IAttribute> extras = new ArrayList<>();
 		addDeclarationStartLineAttribute(extras,classFile);
 		return classFile.generateMethodInfoAttributes(binding,extras);
 	}

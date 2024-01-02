@@ -58,7 +58,7 @@ public class IncrementalStateManager {
 			System.out.println("Name " + entry.getKey());
 			File f = new File("n:/temp/foo.ajstate");
 			try {
-				AjState state = (AjState) entry.getValue();
+				AjState state = entry.getValue();
 				CompressingDataOutputStream dos = new CompressingDataOutputStream(new FileOutputStream(f));
 				state.write(dos);
 				dos.close();
@@ -87,7 +87,7 @@ public class IncrementalStateManager {
 	}
 
 	public static AjState retrieveStateFor(String configFile) {
-		return (AjState) incrementalStates.get(configFile);
+		return incrementalStates.get(configFile);
 	}
 
 	// now, managing changes to entries on a classpath
@@ -116,9 +116,8 @@ public class IncrementalStateManager {
 			}
 			CompilationResultDestinationManager outputManager = ajbc.getCompilationResultDestinationManager();
 			if (outputManager != null) {
-				List outputDirs = outputManager.getAllOutputLocations();
-				for (Object o : outputDirs) {
-					File dir = (File) o;
+				List<File> outputDirs = outputManager.getAllOutputLocations();
+				for (File dir : outputDirs) {
 					if (dir.equals(location)) {
 						if (debugIncrementalStates) {
 							System.err.println("< findStateManagingOutputLocation(" + location + ") returning " + element);

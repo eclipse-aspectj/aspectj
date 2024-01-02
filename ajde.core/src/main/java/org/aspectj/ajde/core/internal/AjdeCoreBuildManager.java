@@ -167,7 +167,7 @@ public class AjdeCoreBuildManager {
 		+ compilerConfig.getNonStandardOptions() + "\n-> javaoptions:" + formatMap(compilerConfig.getJavaOptionsMap());
 	}
 
-	private String formatCollection(Collection<?> options) {
+	private String formatCollection(Collection<File> options) {
 		if (options == null) {
 			return "<default>";
 		}
@@ -176,7 +176,7 @@ public class AjdeCoreBuildManager {
 		}
 
 		StringBuilder formattedOptions = new StringBuilder();
-		for (Object option : options) {
+		for (File option : options) {
 			String o = option.toString();
 			if (formattedOptions.length() > 0) {
 				formattedOptions.append(", ");

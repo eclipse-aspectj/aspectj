@@ -804,10 +804,9 @@ class SampleUtil {
     public static final String SAMPLE_BASE_DIR_NAME = "sandbox";
 
     public static void simpleRender(Samples result, StringBuffer sink) {
-        List sortedSamples = result.getSortedSamples();
+        List<Sample> sortedSamples = result.getSortedSamples();
         int i = 0;
-		for (Object sortedSample : sortedSamples) {
-			Sample sample = (Sample) sortedSample;
+		for (Sample sample : sortedSamples) {
 			sink.append(i++ + ": " + sample);
 		}
     }

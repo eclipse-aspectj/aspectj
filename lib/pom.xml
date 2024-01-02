@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.aspectj</groupId>
     <artifactId>aspectj-parent</artifactId>
-    <version>1.9.10-SNAPSHOT</version>
+    <version>1.9.21.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>lib</artifactId>
@@ -184,7 +184,6 @@
                   <artifactItems>
 
                     <artifactItem>
-                      <!-- Available from GitHub Packages (needs special repository declaration) -->
                       <groupId>org.aspectj</groupId>
                       <artifactId>org.eclipse.jdt.core</artifactId>
                       <version>${jdt.core.version}</version>
@@ -194,7 +193,6 @@
                       <destFileName>jdtcore-for-aspectj.jar</destFileName>
                     </artifactItem>
                     <artifactItem>
-                      <!-- Available from GitHub Packages (needs special repository declaration) -->
                       <groupId>org.aspectj</groupId>
                       <artifactId>org.eclipse.jdt.core</artifactId>
                       <version>${jdt.core.version}</version>

@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  */
 public class LangUtil {
 
-	public static final String EOL;
+	public static final String EOL = System.lineSeparator();
 
 	public static final String JRT_FS = "jrt-fs.jar";
 
@@ -55,24 +55,10 @@ public class LangUtil {
 	}
 
 	static {
-		StringWriter buf = new StringWriter();
-		PrintWriter writer = new PrintWriter(buf);
-		writer.println("");
-		String eol = "\n";
-		try {
-			buf.close();
-			StringBuffer sb = buf.getBuffer();
-			if (sb != null) {
-				eol = buf.toString();
-			}
-		} catch (Throwable t) {
-		}
-		EOL = eol;
-	}
-
-	static {
 		// http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
 		// http://openjdk.java.net/jeps/223 "New Version-String Scheme"
+		// TODO: Use java.lang.Runtime class (since Java 9, now AspectJ needs Java 11+ due to JDT Core anyway)
+		final String JAVA_VERSION_NOT_FOUND = "System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version";
 		try {
 			String vm = System.getProperty("java.version"); // JLS 20.18.7
 			if (vm == null) {
@@ -82,15 +68,12 @@ public class LangUtil {
 				vm = System.getProperty("java.vm.version");
 			}
 			if (vm == null) {
-				new RuntimeException(
-						"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version")
-				.printStackTrace(System.err);
+				new RuntimeException(JAVA_VERSION_NOT_FOUND).printStackTrace(System.err);
 				vmVersion = 1.5;
 			} else {
-				// Version: [1-9][0-9]*((\.0)*\.[1-9][0-9]*)*
 				// Care about the first set of digits and second set if first digit is 1
 				try {
-					List<Integer> numbers = getFirstNumbers(vm);
+					List<Integer> numbers = getJavaMajorMinor(vm);
 					if (numbers.get(0) == 1) {
 						// Old school for 1.0 > 1.8
 						vmVersion = numbers.get(0)+(numbers.get(1)/10d);
@@ -105,16 +88,15 @@ public class LangUtil {
 				}
 			}
 		} catch (Throwable t) {
-			new RuntimeException(
-					"System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version", t)
-			.printStackTrace(System.err);
+			new RuntimeException(JAVA_VERSION_NOT_FOUND, t).printStackTrace(System.err);
 			vmVersion = 1.5;
 		}
 	}
 
-	private static List<Integer> getFirstNumbers(String vm) {
+	private static List<Integer> getJavaMajorMinor(String vm) {
 		List<Integer> result = new ArrayList<>();
-		StringTokenizer st = new StringTokenizer(vm,".-_");
+		// Can be something like '1.5', '11.0.16.1', '19+36-2238'
+		StringTokenizer st = new StringTokenizer(vm.replaceFirst("[+].*", ""), ".-_");
 		try {
 			result.add(Integer.parseInt(st.nextToken()));
 			result.add(Integer.parseInt(st.nextToken()));
@@ -122,6 +104,9 @@ public class LangUtil {
 			// NoSuchElementException if no more tokens
 			// NumberFormatException if not a number
 		}
+		// Always add a default minor, just in case a caller expects it
+		if (result.size() == 1)
+			result.add(0);
 		return result;
 	}
 
@@ -196,6 +181,18 @@ public class LangUtil {
 
 	public static boolean is19VMOrGreater() {
 		return 19 <= vmVersion;
+	}
+
+	public static boolean is20VMOrGreater() {
+		return 20 <= vmVersion;
+	}
+
+	public static boolean is21VMOrGreater() {
+		return 21 <= vmVersion;
+	}
+
+	public static boolean is22VMOrGreater() {
+		return 22 <= vmVersion;
 	}
 
 	/**

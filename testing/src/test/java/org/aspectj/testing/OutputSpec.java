@@ -17,6 +17,8 @@ import java.util.List;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.LangUtil;
 
+import static java.lang.Double.parseDouble;
+
 public class OutputSpec {
 
 	private List<String> expectedOutputLines = new ArrayList<>();
@@ -28,28 +30,31 @@ public class OutputSpec {
 	}
 
 	/**
-	 * For a test output line that has specified a vm version, check if it matches the vm we are running on.
-	 * vm might be "1.2,1.3,1.4,1.5" or simply "9" or it may be a version with a '+' suffix indicating that
-	 * level or later, e.g. "9+" should be ok on Java 10
-	 * @return true if the current vm version matches the spec
+	 * For a test output line that has specified list of JVM version ranges, determine whether the JVM we are running on
+	 * matches at least one of those ranges.
+	 *
+	 * @param vmVersionRanges might be a single version like "9", a list of versions like "1.2,1.3,1.4,1.5", an equivalent
+	 *          range of "1.2-1.5", an open range like "-1.8", "9-" (equivalent to "9+") or a more complex list of ranges
+	 *          like "-1.6,9-11,13-14,17-" or "8,11,16+". Empty ranges like in "", " ", "8,,14", ",5", "6-," will be
+	 *          ignored. I.e., they will not yield a positive match. Bogus ranges like "9-11-14" will be ignored, too.
+	 *
+	 * @return true if the current vmVersionRanges version matches the spec
 	 */
-	private boolean matchesThisVm(String vm) {
-		// vm might be 1.2, 1.3, 1.4, 1.5 or 1.9 possibly with a '+' in there
-		// For now assume + is attached to there only being one version, like "9+"
-		//		System.out.println("Checking "+vm+" for "+LangUtil.getVmVersionString());
-		String v = LangUtil.getVmVersionString();
-		if (v.endsWith(".0")) {
-			v = v.substring(0,v.length()-2);
-		}
-		if (vm.contains(v)) {
-			return true;
-		}
-		if (vm.endsWith("+")) {
-			double vmVersion = LangUtil.getVmVersion();
-			double vmSpecified = Double.parseDouble(vm.substring(0,vm.length()-1));
-			return vmVersion >= vmSpecified;
-		}
-		return false;
+	private boolean matchesThisVm(String vmVersionRanges) {
+		double currentVmVersion = LangUtil.getVmVersion();
+		return Arrays.stream(vmVersionRanges.split(","))
+			.map(String::trim)
+			.filter(range -> !range.isEmpty())
+			.map(range -> range
+				.replaceFirst("^([0-9.]+)$", "$1-$1")   // single version 'n' to range 'n-n'
+				.replaceFirst("^-", "0-")               // left open range '-n' to '0-n'
+				.replaceFirst("[+-]$", "-99999")        // right open range 'n-' or 'n+' to 'n-99999'
+				.split("-")                             // range 'n-m' to array ['n', 'm']
+			)
+			.filter(range -> range.length == 2)
+			.map(range -> new double[] { parseDouble(range[0]), parseDouble(range[1]) })
+			//.filter(range -> { System.out.println(range[0] + " - " +range[1]); return true; })
+			.anyMatch(range -> range[0] <= currentVmVersion && range[1] >= currentVmVersion);
 	}
 
 	public void matchAgainst(String output) {
@@ -122,8 +127,11 @@ public class OutputSpec {
 	}
 
 	private String[] getTrimmedLines(String text) {
-		// Remove leading/trailing empty lines and leading/trailing whitespace from each line
-		String[] trimmedLines = text.trim().split("\\s*\n\\s*");
+		// Remove leading/trailing empty lines and leading/trailing horizontal whitespace from each line.
+		// Regex character class '\h' is horizonal whitespace. We assume that lines are always separated by something
+		// containing a '\n' LF character, e.g. LF (UNIX), CRLF (Windows). For legacy Mac platforms with their CR-only line
+		// separators, this would not work, and it is not supposed to either.
+		String[] trimmedLines = text.trim().split("\\h*\r?\n\\h*");
 		return trimmedLines.length == 1 && trimmedLines[0].equals("") ? new String[0] : trimmedLines;
 	}
 }

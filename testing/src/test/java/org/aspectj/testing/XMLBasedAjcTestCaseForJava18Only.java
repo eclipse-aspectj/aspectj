@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 2021 Contributors
+ * Copyright (c) 2022 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -20,14 +20,13 @@ public abstract class XMLBasedAjcTestCaseForJava18Only extends XMLBasedAjcTestCa
 	@Override
 	public void setUp() throws Exception {
 		// Activate this block after upgrading to JDT Core Java 19
-		/*
 		throw new IllegalStateException(
 			"These tests need a Java 18 level AspectJ compiler " +
 				"(e.g. because they use version-specific preview features). " +
 				"This compiler does not support preview features of a previous version anymore."
 		);
-		*/
 		// Activate this block before upgrading to JDT Core Java 19
+		/*
 		if (!LangUtil.is18VMOrGreater() || LangUtil.is19VMOrGreater()) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 18 only " +
@@ -35,6 +34,7 @@ public abstract class XMLBasedAjcTestCaseForJava18Only extends XMLBasedAjcTestCa
 			);
 		}
 		super.setUp();
+		*/
 	}
 
 }

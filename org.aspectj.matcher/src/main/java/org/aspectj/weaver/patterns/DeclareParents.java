@@ -66,6 +66,15 @@ public class DeclareParents extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.child != null)
+			this.child.traverse(visitor, ret);
+		if (this.parents != null)
+			this.parents.traverse(visitor, ret);
+		return ret;
+	}
+
 	@Override
 	public Declare parameterizeWith(Map<String,UnresolvedType> typeVariableBindingMap, World w) {
 		DeclareParents ret = new DeclareParents(child.parameterizeWith(typeVariableBindingMap, w), parents.parameterizeWith(

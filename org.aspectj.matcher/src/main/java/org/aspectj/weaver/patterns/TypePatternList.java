@@ -59,7 +59,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	public TypePatternList(List<TypePattern> l) {
-		this((TypePattern[]) l.toArray(new TypePattern[0]));
+		this(l.toArray(new TypePattern[0]));
 	}
 
 	public int size() {
@@ -549,8 +549,10 @@ public class TypePatternList extends PatternNode {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		for (TypePattern typePattern : typePatterns) {
-			typePattern.traverse(visitor, ret);
+		if (typePatterns != null) {
+			for (TypePattern typePattern : typePatterns) {
+				typePattern.traverse(visitor, ret);
+			}
 		}
 		return ret;
 	}

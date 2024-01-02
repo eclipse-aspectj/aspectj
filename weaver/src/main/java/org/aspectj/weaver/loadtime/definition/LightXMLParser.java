@@ -432,7 +432,7 @@ public class LightXMLParser {
 			}
 			buf.append(c);
 		} else {
-			char[] value = (char[]) entities.get(key);
+			char[] value = entities.get(key);
 			if (value == null) {
 				throw new Exception("Unknown entity: " + key);
 			}

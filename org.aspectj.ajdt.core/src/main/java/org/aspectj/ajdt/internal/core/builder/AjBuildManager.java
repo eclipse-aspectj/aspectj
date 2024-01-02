@@ -678,14 +678,13 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
         }
 	}
 
-	private ByteArrayOutputStream getOutxmlContents(List aspectNames) {
+	private ByteArrayOutputStream getOutxmlContents(List<String> aspectNames) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		ps.println("<aspectj>");
 		ps.println("<aspects>");
 		if (aspectNames != null) {
-            for (Object aspectName : aspectNames) {
-                String name = (String) aspectName;
+            for (String name : aspectNames) {
                 ps.println("<aspect name=\"" + name + "\"/>");
             }
 		}
@@ -719,9 +718,8 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			outputDirsToAspects.put(outputDir, aspectNames);
 		} else {
-			List outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
-            for (Object dir : outputDirs) {
-                File outputDir = (File) dir;
+			List<File> outputDirs = buildConfig.getCompilationResultDestinationManager().getAllOutputLocations();
+            for (File outputDir : outputDirs) {
                 outputDirsToAspects.put(outputDir, new ArrayList<>());
             }
 			if (aspectNamesToFileNames != null) {
@@ -734,7 +732,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
                     if (!outputDirsToAspects.containsKey(outputDir)) {
                         outputDirsToAspects.put(outputDir, new ArrayList<>());
                     }
-                    ((List) outputDirsToAspects.get(outputDir)).add(aspectName);
+                    outputDirsToAspects.get(outputDir).add(aspectName);
                 }
 			}
 		}
@@ -787,7 +785,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			model.setConfigFile(buildConfig.getConfigFile().getAbsolutePath());
 			kind = IProgramElement.Kind.FILE_LST;
 		}
-		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList()));
+		model.setRoot(new ProgramElement(structureModel, rootLabel, kind, new ArrayList<>()));
 
 		model.setFileMap(new HashMap<>());
 		// setStructureModel(model);
@@ -825,7 +823,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 
 	/** init only on initial batch compile? no file-specific options */
 	private void initBcelWorld(IMessageHandler handler) throws IOException {
-		List cp = buildConfig.getFullClasspath(); // pr145693
+		List<String> cp = buildConfig.getFullClasspath(); // pr145693
 		// buildConfig.getBootclasspath();
 		// cp.addAll(buildConfig.getClasspath());
 		BcelWorld bcelWorld = new BcelWorld(cp, handler, null);
@@ -1499,7 +1497,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private void populateCompilerOptionsFromLintSettings(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
 		BcelWorld world = this.state.getBcelWorld();
 		IMessage.Kind swallowedExceptionKind = world.getLint().swallowedExceptionInCatchBlock.getKind();
-		Map optionsMap = new HashMap();
+		Map<String, String> optionsMap = new HashMap<>();
 		optionsMap.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock, swallowedExceptionKind == null ? "ignore"
 				: swallowedExceptionKind.toString());
 		forCompiler.options.set(optionsMap);
@@ -1545,7 +1543,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				sb.append("incrementally building ");
 			}
 			AjBuildConfig config = (AjBuildConfig) data;
-			List classpath = config.getClasspath();
+			List<String> classpath = config.getClasspath();
 			sb.append("with classpath: ");
             for (Object o : classpath) {
                 sb.append(o.toString());

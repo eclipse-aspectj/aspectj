@@ -42,6 +42,9 @@ bin/
 /lib/regexp/
 /lib/saxon/
 
+# AspectJ core dumps
+ajcore.*.txt
+
 # When using a RAM disk to speed up development, see how-to in docs/developer/ram-disk/settings-ramdisk.xml
 /.mvn/maven.config
 /.mvn/settings-ramdisk.xml

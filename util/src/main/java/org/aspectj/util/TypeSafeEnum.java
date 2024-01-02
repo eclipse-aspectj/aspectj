@@ -16,8 +16,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class TypeSafeEnum {
-	private byte key;
-	private String name;
+	private final byte key;
+	private final String name;
 
 	public TypeSafeEnum(String name, int key) {
 		this.name = name;
@@ -50,7 +50,7 @@ public class TypeSafeEnum {
 	@Override
 	public boolean equals(Object o) {
 		return (o instanceof TypeSafeEnum) &&
-			   ((TypeSafeEnum)o).key == key &&
-			   ((TypeSafeEnum)o).name.equals(name);
+			((TypeSafeEnum)o).key == key &&
+			((TypeSafeEnum)o).name.equals(name);
 	}
 }

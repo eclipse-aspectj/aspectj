@@ -55,7 +55,7 @@ public class DefaultCacheKeyResolver implements CacheKeyResolver {
 		StringBuilder hashable = new StringBuilder(256);
 
 		// Add the list of loader urls to the hash list
-		if (cl != null && cl instanceof URLClassLoader) {
+		if (cl instanceof URLClassLoader) {
 			URL[] urls = ((URLClassLoader) cl).getURLs();
 			for (URL url : urls) {
 				hashableStrings.add(url.toString());

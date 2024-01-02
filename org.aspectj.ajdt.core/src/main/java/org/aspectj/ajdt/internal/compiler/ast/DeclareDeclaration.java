@@ -74,10 +74,10 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		} else if (declareDecl instanceof DeclareParents) {
 			DeclareParents dp = (DeclareParents) declareDecl;
 			String childPattern = dp.getChild().toString();
-			Collection parentPatterns = dp.getParents().getExactTypes();
+			Collection<UnresolvedType> parentPatterns = dp.getParents().getExactTypes();
 			StringBuilder parents = new StringBuilder();
-			for (Iterator iter = parentPatterns.iterator(); iter.hasNext();) {
-				UnresolvedType urt = ((UnresolvedType) iter.next());
+			for (Iterator<UnresolvedType> iter = parentPatterns.iterator(); iter.hasNext();) {
+				UnresolvedType urt = iter.next();
 				parents.append(urt.getName());
 				if (iter.hasNext()) {
 					parents.append(", ");
@@ -153,7 +153,7 @@ public class DeclareDeclaration extends AjMethodDeclaration {
 		return declareDecl;
 	}
 
-	public StringBuffer print(int tab, StringBuffer output) {
+	public StringBuilder print(int tab, StringBuilder output) {
 		printIndent(tab, output);
 		if (declareDecl == null) {
 			output.append("<declare>");

@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc195;
 
+import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCaseForJava13OrLater;
 
@@ -21,7 +22,7 @@ import junit.framework.Test;
  */
 public class SanityTestsJava13 extends XMLBasedAjcTestCaseForJava13OrLater {
 
-	public static final int bytecode_version_for_JDK_level = 57;
+	public static final int bytecode_version_for_JDK_level = Constants.MAJOR_13;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {
@@ -72,7 +73,7 @@ public class SanityTestsJava13 extends XMLBasedAjcTestCaseForJava13OrLater {
 
 	public void testVersionCorrect4() throws ClassNotFoundException { // check it is 49.0 when -1.5 is specified
 		runTest("simple - m");
-		checkVersion("A", 49, 0);
+		checkVersion("A", Constants.MAJOR_1_5, 0);
 	}
 
 

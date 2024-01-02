@@ -146,4 +146,12 @@ public class WithinPointcut extends Pointcut {
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
+
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.typePattern != null)
+			this.typePattern.traverse(visitor, ret);
+		return ret;
+	}
 }

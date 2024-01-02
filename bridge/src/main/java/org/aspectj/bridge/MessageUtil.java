@@ -798,10 +798,14 @@ public class MessageUtil {
 			return "((IMessage) null)";
 		}
 
+		String result = message.getKind().toString();
 		ISourceLocation loc = message.getSourceLocation();
-		String locString = (null == loc ? "" : " at " + loc);
-
-		String result = message.getKind() + locString + " " + message.getMessage();
+		if (loc != null) {
+			String context = loc.getContext();
+			result += context == null || context.trim().isEmpty() ? " at " : " at\n";
+			result += loc;
+		}
+		result += " " + message.getMessage();
 
 		Throwable thrown = message.getThrown();
 		if (thrown != null) {

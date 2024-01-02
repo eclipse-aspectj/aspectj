@@ -69,6 +69,11 @@ public class AndTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return left.matchesArray(type) && right.matchesArray(type);
+	}
+
+	@Override
 	public void setIsVarArgs(boolean isVarArgs) {
 		this.isVarArgs = isVarArgs;
 		left.setIsVarArgs(isVarArgs);
@@ -190,8 +195,10 @@ public class AndTypePattern extends TypePattern {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		left.traverse(visitor, ret);
-		right.traverse(visitor, ret);
+		if (this.left != null)
+			this.left.traverse(visitor, ret);
+		if (this.right != null)
+			this.right.traverse(visitor, ret);
 		return ret;
 	}
 

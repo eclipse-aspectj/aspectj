@@ -38,7 +38,7 @@ import org.aspectj.weaver.World;
 
 public class PrivilegedHandler implements IPrivilegedHandler {
 	private AspectDeclaration inAspect;
-	private Map accessors = new HashMap();
+	private Map<ResolvedMember, Object> accessors = new HashMap<>();
 
 	public PrivilegedHandler(AspectDeclaration inAspect) {
 		this.inAspect = inAspect;
@@ -139,12 +139,12 @@ public class PrivilegedHandler implements IPrivilegedHandler {
 	}
 
 	public ResolvedMember[] getMembers() {
-		Collection m = accessors.keySet();
+		Collection<ResolvedMember> m = accessors.keySet();
 		int len = m.size();
 		ResolvedMember[] ret = new ResolvedMember[len];
 		int index = 0;
-		for (Object o : m) {
-			ret[index++] = (ResolvedMember) o;
+		for (ResolvedMember o : m) {
+			ret[index++] = o;
 		}
 		return ret;
 	}

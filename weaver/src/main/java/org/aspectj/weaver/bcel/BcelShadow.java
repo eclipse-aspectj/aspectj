@@ -375,7 +375,7 @@ public class BcelShadow extends Shadow {
 				int i = 0;
 				for (BcelAdvice element : badAdvice) {
 					ISourceLocation sLoc = element.getSourceLocation();
-					if (sLoc != null) {
+					if (sLoc != null && sLoc.getLine() > 0) {
 						badLocs[i++] = sLoc;
 					}
 				}

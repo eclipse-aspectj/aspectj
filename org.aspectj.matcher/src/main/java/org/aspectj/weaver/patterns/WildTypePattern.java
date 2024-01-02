@@ -110,7 +110,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, false, TypePatternList.EMPTY);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, false, TypePatternList.EMPTY);
 
 	}
 
@@ -127,7 +127,7 @@ public class WildTypePattern extends TypePattern {
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams,
 			TypePattern upperBound, TypePattern[] additionalInterfaceBounds, TypePattern lowerBound) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
 		this.upperBound = upperBound;
 		this.lowerBound = lowerBound;
@@ -135,7 +135,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public WildTypePattern(List<NamePattern> names, boolean includeSubtypes, int dim, int endPos, boolean isVarArg, TypePatternList typeParams) {
-		this((NamePattern[]) names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
+		this(names.toArray(new NamePattern[0]), includeSubtypes, dim, isVarArg, typeParams);
 		this.end = endPos;
 	}
 
@@ -233,7 +233,8 @@ public class WildTypePattern extends TypePattern {
 		// Ensure the annotation pattern is resolved
 		annotationPattern.resolve(type.getWorld());
 
-		return matchesExactlyByName(targetTypeName, type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
+		return matchesExactlyByName(targetTypeName.replaceFirst("(\\[\\])+$", ""), type.isAnonymous(), type.isNested()) && matchesParameters(type, STATIC)
+				&& matchesArray(type)
 				&& matchesBounds(type, STATIC)
 				&& annotationPattern.matches(annotatedType, type.temporaryAnnotationTypes).alwaysTrue();
 	}
@@ -249,6 +250,12 @@ public class WildTypePattern extends TypePattern {
 			return typeParameters.matches(aType.getResolvedTypeParameters(), staticOrDynamic).alwaysTrue();
 		}
 		return true;
+	}
+
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return type.getDimensions() == getDimensions() ||
+			 getDimensions() == 0 && namePatterns.length > 0 && namePatterns[namePatterns.length-1].toString().endsWith("*");
 	}
 
 	// we've matched against the base (or raw) type, but if this type pattern specifies bounds because
@@ -296,7 +303,7 @@ public class WildTypePattern extends TypePattern {
 
 	@Override
 	public boolean isArray() {
-		return dim > 1;
+		return dim > 0;
 	}
 
 	/**
@@ -315,23 +322,6 @@ public class WildTypePattern extends TypePattern {
 		// XXX hack
 		if (knownMatches == null && importedPrefixes == null) {
 			return innerMatchesExactly(targetTypeName, isAnonymous, isNested);
-		}
-
-		if (isNamePatternStar()) {
-			// we match if the dimensions match
-			int numDimensionsInTargetType = 0;
-			if (dim > 0) {
-				int index;
-				while ((index = targetTypeName.indexOf('[')) != -1) {
-					numDimensionsInTargetType++;
-					targetTypeName = targetTypeName.substring(index + 1);
-				}
-				if (numDimensionsInTargetType == dim) {
-					return true;
-				} else {
-					return false;
-				}
-			}
 		}
 
 		// if our pattern is length 1, then known matches are exact matches
@@ -1182,7 +1172,7 @@ public class WildTypePattern extends TypePattern {
 		StringBuilder buf = new StringBuilder();
 		if (annotationPattern != AnnotationTypePattern.ANY) {
 			buf.append('(');
-			buf.append(annotationPattern.toString());
+			buf.append(annotationPattern);
 			buf.append(' ');
 		}
 		for (int i = 0, len = namePatterns.length; i < len; i++) {
@@ -1193,16 +1183,16 @@ public class WildTypePattern extends TypePattern {
 				if (i > 0) {
 					buf.append(".");
 				}
-				buf.append(name.toString());
+				buf.append(name);
 			}
 		}
 		if (upperBound != null) {
 			buf.append(" extends ");
-			buf.append(upperBound.toString());
+			buf.append(upperBound);
 		}
 		if (lowerBound != null) {
 			buf.append(" super ");
-			buf.append(lowerBound.toString());
+			buf.append(lowerBound);
 		}
 		if (typeParameters != null && typeParameters.size() != 0) {
 			buf.append("<");
@@ -1211,6 +1201,9 @@ public class WildTypePattern extends TypePattern {
 		}
 		if (includeSubtypes) {
 			buf.append('+');
+		}
+		for (int i = 0; i < getDimensions(); i++) {
+			buf.append("[]");
 		}
 		if (isVarArgs) {
 			buf.append("...");
@@ -1281,7 +1274,11 @@ public class WildTypePattern extends TypePattern {
 		for (NamePattern namePattern : namePatterns) {
 			result = 37 * result + namePattern.hashCode();
 		}
+		result = 37 * result + (includeSubtypes ? 1 : 0);
+		result = 37 * result + dim;
+		result = 37 * result + (isVarArgs ? 1 : 0);
 		result = 37 * result + annotationPattern.hashCode();
+		result = 37 * result + typeParameters.hashCode();
 		if (upperBound != null) {
 			result = 37 * result + upperBound.hashCode();
 		}

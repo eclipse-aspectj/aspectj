@@ -759,8 +759,11 @@ public abstract class AjcTestCase extends TestCase {
 			Thread.currentThread().setContextClassLoader(sandboxLoader);
 
 			Class<?> toRun = sandboxLoader.loadClass(className);
-			Method mainMethod = toRun.getMethod("main", new Class[] { String[].class });
-
+			Method mainMethod = toRun.getMethod("main", String[].class);
+			// Since JDK 21, a public main method of a non-public (e.g. default-scoped) class can no longer be invoked without
+			// making it accessible first. Because many test sources contain multiple aspects and classes in one file, this is
+			// a frequent use case.
+			mainMethod.setAccessible(true);
 			mainMethod.invoke(null, new Object[] { args });
 		} catch (ClassNotFoundException cnf) {
 			fail("Can't find class: " + className);

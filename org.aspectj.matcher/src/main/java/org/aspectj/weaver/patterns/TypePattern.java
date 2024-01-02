@@ -90,6 +90,10 @@ public abstract class TypePattern extends PatternNode {
 		return false;
 	}
 
+	public int getDimensions() {
+		return 0;
+	}
+
 	protected TypePattern(boolean includeSubtypes) {
 		this(includeSubtypes, false);
 	}
@@ -159,6 +163,8 @@ public abstract class TypePattern extends PatternNode {
 
 	protected abstract boolean matchesExactly(ResolvedType type, ResolvedType annotatedType);
 
+	protected abstract boolean matchesArray(UnresolvedType type);
+
 	protected boolean matchesSubtypes(ResolvedType type) {
 		// System.out.println("matching: " + this + " to " + type);
 		if (matchesExactly(type)) {
@@ -199,7 +205,7 @@ public abstract class TypePattern extends PatternNode {
 		}
 		// FuzzyBoolean ret = FuzzyBoolean.NO; // ??? -eh
 		for (Iterator<ResolvedType> i = superType.getDirectSupertypes(); i.hasNext();) {
-			ResolvedType superSuperType = (ResolvedType) i.next();
+			ResolvedType superSuperType = i.next();
 			if (matchesSubtypes(superSuperType, annotatedType)) {
 				return true;
 			}
@@ -355,6 +361,3 @@ public abstract class TypePattern extends PatternNode {
 	}
 
 }
-
-
-

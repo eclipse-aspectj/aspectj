@@ -183,7 +183,7 @@ public class TreeStructureViewBuilder {
 				if (properties.getFilteredMemberKinds().contains(pNode.getKind())) {
 					return false;
 				}
-				for (Object element : pNode.getModifiers()) {
+				for (IProgramElement.Modifiers element : pNode.getModifiers()) {
 					if (properties.getFilteredMemberModifiers().contains(element)) {
 						return false;
 					}

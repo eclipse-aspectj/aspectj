@@ -389,7 +389,7 @@ public class BcelWeaver {
 					Enumeration<JarEntry> entries = inJar.entries();
 
 					while (entries.hasMoreElements()) {
-						JarEntry entry = (JarEntry) entries.nextElement();
+						JarEntry entry = entries.nextElement();
 						InputStream inStream = inJar.getInputStream(entry);
 
 						byte[] bytes = FileUtil.readAsByteArray(inStream);

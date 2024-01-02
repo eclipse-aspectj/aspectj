@@ -180,7 +180,7 @@ public abstract class Builder {
 
     private final File tempDir;
 
-    private final List tempFiles;
+    private final List<File> tempFiles;
 
     private final boolean useEclipseCompiles;
 
@@ -190,7 +190,7 @@ public abstract class Builder {
         Util.iaxIfNull(handler, "handler");
         this.useEclipseCompiles = useEclipseCompiles;
         this.handler = handler;
-        this.tempFiles = new ArrayList();
+        this.tempFiles = new ArrayList<>();
         if ((null == tempDir) || !tempDir.canWrite() || !tempDir.isDirectory()) {
             this.tempDir = Util.makeTempDir("Builder");
         } else {
@@ -293,8 +293,7 @@ public abstract class Builder {
      */
     public boolean cleanup() {
         boolean noErr = true;
-		for (Object tempFile : tempFiles) {
-			File file = (File) tempFile;
+		for (File file : tempFiles) {
 			if (!Util.deleteContents(file) || !file.delete()) {
 				if (noErr) {
 					noErr = false;

@@ -139,9 +139,9 @@ Method call
         </compile>
         <run class="Basic3b">
 	        <stdout>
-	        <!-- BUG: one of these should be YImpl -->
-	        <line text="X.IImpl.m2() ran"/>
-	        <line text="X.IImpl.m2() ran"/>
+	        <!-- BUG: There should be one of each X.IImpl and Y.IImpl, just like for @decm. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=543657#c5. -->
+	        <line text="Y.IImpl.m2() ran"/>
+	        <line text="Y.IImpl.m2() ran"/>
 	        <line text="Basic3b.main ran"/>
 	        </stdout>
         </run>
@@ -161,7 +161,6 @@ Method call
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Basic3b' (Basic3b.java:11) advised by before advice from 'X' (Basic3b.java:33)"/>
         </compile>
         <compile files="Y.java" inpath="ow1.jar" options="-showWeaveInfo -1.8 -Xset:overWeaving=true">
-
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'Y' (Y.java:17)"/>
 	        <message kind="weave" text="Join point 'method-call(void java.io.PrintStream.println(java.lang.String))' in Type 'Y$IIimpl' (Y.java:10) advised by before advice from 'X' (ow1.jar!X.class(from Basic3b.java))"/>
 	        <message kind="weave" text="Join point 'method-call(void X.advice1())' in Type 'X$IIimpl' (Basic3b.java:23) advised by before advice from 'Y' (Y.java:17)"/>
@@ -183,7 +182,7 @@ Method call
         </compile>
         <run class="Basic3b">
 	        <stdout>
-	        <!-- BUG: one of these should be YImpl -->
+	        <!-- BUG: There should be one of each X.IImpl and Y.IImpl, just like for @decm. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=543657#c5. -->
 	        <line text="X.IImpl.m2() ran"/>
 	        <line text="X.IImpl.m2() ran"/>
 	        <line text="Basic3b.main ran"/>

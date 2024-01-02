@@ -647,7 +647,7 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 			}
 			// OPTIMIZE speed up matches? optimize order of checks
-			if (candidate.matches(aMember, eraseGenerics)) {
+			if (candidate.matches(aMember, eraseGenerics) && !candidate.isBridgeMethod()) {
 				found = candidate;
 				break;
 			}

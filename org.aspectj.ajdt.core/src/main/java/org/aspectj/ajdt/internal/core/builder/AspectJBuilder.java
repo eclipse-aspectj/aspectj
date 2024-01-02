@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.BooleanSupplier;
 
 import org.aspectj.ajdt.core.AspectJCore;
 import org.aspectj.ajdt.internal.compiler.CompilerAdapter;
@@ -98,7 +99,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	 * @see org.eclipse.jdt.internal.compiler.ICompilerAdapterFactory#getAdapter(org.eclipse.jdt.internal.compiler.Compiler)
 	 */
 	public ICompilerAdapter getAdapter(Compiler forCompiler) {
-		Map javaOptions = forCompiler.options.getMap();
+		Map<String, String> javaOptions = forCompiler.options.getMap();
 		// TODO get aspectj options from project and add into map before...
 		AjCompilerOptions ajOptions = new AjCompilerOptions(javaOptions);
 		forCompiler.options = ajOptions;
@@ -149,8 +150,8 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	 * @see org.eclipse.jdt.internal.core.builder.JavaBuilder#createBuildNotifier(org.eclipse.core.runtime.IProgressMonitor,
 	 * org.eclipse.core.resources.IProject)
 	 */
-	protected BuildNotifier createBuildNotifier(IProgressMonitor monitor, IProject currentProject) {
-		return new AjBuildNotifier(monitor, currentProject);
+	protected BuildNotifier createBuildNotifier(IProgressMonitor monitor, int buildKind, BooleanSupplier interruptSupplier) {
+		return new AjBuildNotifier(monitor, buildKind, interruptSupplier);
 	}
 
 	private void initWorldAndWeaver(AjCompilerOptions options) {
@@ -171,7 +172,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	private void setLintProperties(BcelWorld world, AjCompilerOptions options) {
 		Properties p = new Properties();
 		Lint lintSettings = world.getLint();
-		Map map = options.getMap();
+		Map<String, String> map = options.getMap();
 		p.put(lintSettings.invalidAbsoluteTypeName.getName(), map.get(AjCompilerOptions.OPTION_ReportInvalidAbsoluteTypeName));
 		p.put(lintSettings.invalidWildcardTypeName.getName(), map.get(AjCompilerOptions.OPTION_ReportInvalidWildcardTypeName));
 		p.put(lintSettings.unresolvableMember.getName(), map.get(AjCompilerOptions.OPTION_ReportUnresolvableMember));
@@ -186,7 +187,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 
 	private static class UnwovenResultCollector implements IIntermediateResultsRequestor {
 
-		private Collection results = new ArrayList();
+		private Collection<InterimCompilationResult> results = new ArrayList<>();
 
 		/*
 		 * (non-Javadoc)

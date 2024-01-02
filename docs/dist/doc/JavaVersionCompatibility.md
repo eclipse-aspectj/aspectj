@@ -7,7 +7,10 @@ be easily concluded from the AspectJ version number anymore, and we are sorry fo
 
 AspectJ version | Java version | Comments
 ----------------|--------------|--------
-1.9.9 | 18
+1.9.21 | 21 | AspectJ compiler requires JDK 17+ during build time. During runtime, AspectJ still only requires Java 8+ for both compile-time and load-time weaving. Pure Java code can be compiled down to as old as 1.3 byte code level.
+1.9.20 - 1.9.20.1 | 20
+1.9.19 | 19
+1.9.9 - 1.9.9.1 | 18
 1.9.8 | 17 | AspectJ compiler requires JDK 11+ during build time. During runtime, AspectJ still only requires Java 8+ for both compile-time and load-time weaving. Pure Java code can be compiled down to as old as 1.3 byte code level.
 1.9.7 | 15, 16
 1.9.6 | 14
@@ -22,3 +25,8 @@ AspectJ version | Java version | Comments
 1.5.0 - 1.5.4 | 5
 
 Older versions omitted.
+
+FYI, here is a brief overview of
+[Java language changes since Java 9](https://docs.oracle.com/en/java/javase/18/language/java-language-changes.html).
+They basically correspond to the new Java language features supported by AspectJ versions for the respective Java
+versions.

@@ -56,7 +56,7 @@ public class InterimCompilationResult {
 	}
 
 	public boolean equals(Object other) {
-		if (other == null || !(other instanceof InterimCompilationResult)) {
+		if (!(other instanceof InterimCompilationResult)) {
 			return false;
 		}
 		InterimCompilationResult ir = (InterimCompilationResult) other;

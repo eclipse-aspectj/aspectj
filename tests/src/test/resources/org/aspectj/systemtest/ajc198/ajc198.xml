@@ -49,7 +49,7 @@
   <ajc-test dir="features198/java17" vm="17" title="switch pattern matching error">
     <compile files="SwitchPatternError.java" options="--enable-preview -17">
       <!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
-      <message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case label"/>
+      <message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
     </compile>
   </ajc-test>
 

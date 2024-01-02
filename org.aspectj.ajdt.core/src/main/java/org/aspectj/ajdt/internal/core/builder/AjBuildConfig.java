@@ -115,7 +115,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj != null && (obj instanceof BinarySourceFile)) {
+			if (obj instanceof BinarySourceFile) {
 				BinarySourceFile other = (BinarySourceFile) obj;
 				return (binSrc.equals(other.binSrc));
 			}
@@ -536,9 +536,8 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 		setMakeReflectable(global.isMakeReflectable());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void join(Collection local, Collection global) {
-		for (Object next : global) {
+	<T> void join(Collection<T> local, Collection<T> global) {
+		for (T next : global) {
 			if (!local.contains(next)) {
 				local.add(next);
 			}
@@ -614,7 +613,7 @@ public class AjBuildConfig implements CompilerConfigurationChangeFlags {
 
 	private void setOption(String optionKey, String lintValue, Map<String,String> lintOptionsAccumulator) {
 		if (lintOptionsMap!=null && lintOptionsMap.containsKey(optionKey)) {
-			String v = lintOptionsMap.get(lintOptionsMap);
+			String v = lintOptionsMap.get(optionKey);
 			if (AJLINT_IGNORE.equals(v)) {
 				lintValue = AjCompilerOptions.IGNORE;
 			} else if (AJLINT_WARN.equals(v)) {

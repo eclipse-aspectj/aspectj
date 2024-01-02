@@ -153,71 +153,43 @@ public class CompilationResult {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder buff = new StringBuilder();
-		buff.append("AspectJ Compilation Result:\n");
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("AspectJ Compilation Result:\n");
+
 		int totalMessages = infoMessages.size() + warningMessages.size() + errorMessages.size() + failMessages.size() + weaveMessages.size();
-		buff.append(totalMessages);
-		buff.append(" messages");
+		buffer.append(totalMessages).append(" messages");
 		if (totalMessages > 0) {
-			buff.append(" (");
-			buff.append(infoMessages.size());
-			buff.append(" info, ");
-			buff.append(warningMessages.size());
-			buff.append(" warning, ");
-			buff.append(errorMessages.size());
-			buff.append(" error, ");
-			buff.append(failMessages.size());
-			buff.append(" fail, )");
-			buff.append(weaveMessages.size());
-			buff.append(" weaveInfo");
+			buffer
+				.append(" (")
+				.append(infoMessages.size()).append(" info, ")
+				.append(warningMessages.size()).append(" warning, ")
+				.append(errorMessages.size()).append(" error, ")
+				.append(failMessages.size()).append(" fail, ")
+				.append(weaveMessages.size()).append(" weaveInfo")
+				.append(")");
 		}
-		buff.append("\n");
+		buffer.append("\n");
+
+		printMessagesToBuffer(buffer, "fail", failMessages);
+		printMessagesToBuffer(buffer, "error", errorMessages);
+		printMessagesToBuffer(buffer, "warning", warningMessages);
+		printMessagesToBuffer(buffer, "info", infoMessages);
+		printMessagesToBuffer(buffer, "weaveInfo", weaveMessages);
+
+		buffer.append("\nCommand: 'ajc");
+		for (String arg : args)
+			buffer.append(' ').append(arg);
+		buffer.append("'\n");
+
+		return buffer.toString();
+	}
+
+	private void printMessagesToBuffer(StringBuilder buffer, String messageType, Iterable<IMessage> messages) {
 		int msgNo = 1;
-		for (IMessage failMessage : failMessages) {
-			buff.append("[fail ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(failMessage.toString());
-			buff.append("\n");
-		}
-		msgNo = 1;
-		for (IMessage errorMessage : errorMessages) {
-			buff.append("[error ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(errorMessage.toString());
-			buff.append("\n");
-		}
-		msgNo = 1;
-		for (IMessage warningMessage : warningMessages) {
-			buff.append("[warning ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(warningMessage.toString());
-			buff.append("\n");
-		}
-		msgNo = 1;
-		for (IMessage infoMessage : infoMessages) {
-			buff.append("[info ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(infoMessage.toString());
-			buff.append("\n");
-		}
-		msgNo = 1;
-		for (IMessage weaveMessage : weaveMessages) {
-			buff.append("[weaveInfo ");
-			buff.append(msgNo++);
-			buff.append("] ");
-			buff.append(weaveMessage.toString());
-			buff.append("\n");
-		}
-		buff.append("\nCommand: 'ajc");
-		for (String arg : args) {
-			buff.append(' ');
-			buff.append(arg);
-		}
-		buff.append("'\n");
-		return buff.toString();
+		for (IMessage message : messages)
+			buffer
+				.append("[").append(messageType).append(" ").append(msgNo++).append("] ")
+				.append(message.toString().replaceAll("\r\n|\n|\r", "\n  "))
+				.append('\n');
 	}
 }

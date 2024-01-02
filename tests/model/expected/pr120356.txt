@@ -1,8 +1,8 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-    [package] 
+<root>  [java source file]
+    [package]
     A.java  [java source file] TEST_SANDBOX\A.java:1:
-        [import reference] 
+        [import reference]
         org.aspectj.lang.annotation.DeclareError  [import reference] TEST_SANDBOX\A.java:4:
         org.aspectj.lang.annotation.DeclareWarning  [import reference] TEST_SANDBOX\A.java:3:
         org.aspectj.lang.annotation.Aspect  [import reference] TEST_SANDBOX\A.java:2:
@@ -10,7 +10,7 @@
         warning  [field] TEST_SANDBOX\A.java:10:
         error  [field] TEST_SANDBOX\A.java:13:
     C.java  [java source file] TEST_SANDBOX\C.java:1:
-        [import reference] 
+        [import reference]
       C  [class] TEST_SANDBOX\C.java:3:
         warningMethod()  [method] TEST_SANDBOX\C.java:5:
         badMethod()  [method] TEST_SANDBOX\C.java:8:

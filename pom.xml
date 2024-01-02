@@ -5,7 +5,7 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.10-SNAPSHOT</version>
+	<version>1.9.21.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
@@ -21,8 +21,8 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-		<jdt.core.version>1.9.9.1</jdt.core.version>
-		<asm.version>9.2</asm.version>
+		<jdt.core.version>1.9.21.1-SNAPSHOT</jdt.core.version>
+		<asm.version>9.6</asm.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
 		<lib.ant.xerces.version>2.6.2</lib.ant.xerces.version>
 		<lib.regexp.version>1.2</lib.regexp.version>

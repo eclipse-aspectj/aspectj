@@ -252,15 +252,15 @@ public class AjcTask extends MatchingTask {
 
 	static final String[] TARGET_INPUTS = new String[] {
 		"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
-		"10", "11", "12", "13", "14", "15", "16", "17", "18"
+		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
 	};
 	static final String[] SOURCE_INPUTS = new String[] {
 		"1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
-		"10", "11", "12", "13", "14", "15", "16", "17", "18"
+		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
 	};
 	static final String[] COMPLIANCE_INPUTS = new String[] {
 		"-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9",
-		"-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18"
+		"-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21"
 	};
 
 	private static final ICommandEditor COMMAND_EDITOR;
@@ -1166,7 +1166,7 @@ public class AjcTask extends MatchingTask {
 	// package-private for testing
 	String[] makeCommand() {
 		if (0 < ignored.size()) {
-            for (Object o : ignored) {
+            for (String o : ignored) {
                 logVerbose("ignored: " + o);
             }
 		}
@@ -1190,7 +1190,7 @@ public class AjcTask extends MatchingTask {
 		ArrayList<String> result = new ArrayList(cmd.extractArguments());
 		addListArgs(result);
 
-		String[] command = (String[]) result.toArray(new String[0]);
+		String[] command = result.toArray(new String[0]);
 		if (null != commandEditor) {
 			command = commandEditor.editCommand(command);
 		} else if (null != COMMAND_EDITOR) {

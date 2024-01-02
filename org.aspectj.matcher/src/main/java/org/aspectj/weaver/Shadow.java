@@ -178,10 +178,11 @@ public abstract class Shadow {
 		if (isShadowForMonitor()) {
 			return UnresolvedType.ARRAY_WITH_JUST_OBJECT;
 		}
+		ResolvedMember resolvedSig = getResolvedSignature();
 		if (getKind() == FieldSet) {
-			return new UnresolvedType[] { getResolvedSignature().getGenericReturnType() };
+			return new UnresolvedType[] { resolvedSig == null ? null : resolvedSig.getGenericReturnType() };
 		}
-		return getResolvedSignature().getGenericParameterTypes();
+		return resolvedSig == null ? null : resolvedSig.getGenericParameterTypes();
 	}
 
 	public UnresolvedType getArgType(int arg) {
@@ -282,7 +283,8 @@ public abstract class Shadow {
 		} else if (kind == SynchronizationLock || kind == SynchronizationUnlock) {
 			return UnresolvedType.VOID;
 		}
-		return getResolvedSignature().getGenericReturnType();
+		ResolvedMember resolvedSig = getResolvedSignature();
+		return resolvedSig == null ? null : resolvedSig.getGenericReturnType();
 	}
 
 	public static String METHOD_EXECUTION = "method-execution";
@@ -576,8 +578,8 @@ public abstract class Shadow {
 			// Compare every pair of advice mungers
 			for (int i = max - 1; i >= 0; i--) {
 				for (int j = 0; j < i; j++) {
-					Object a = mungers.get(i);
-					Object b = mungers.get(j);
+					ShadowMunger a = mungers.get(i);
+					ShadowMunger b = mungers.get(j);
 
 					// Make sure they are the right type
 					if (a instanceof Advice && b instanceof Advice) {

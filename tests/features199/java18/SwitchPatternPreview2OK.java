@@ -90,13 +90,15 @@ public class SwitchPatternPreview2OK {
   }
 
   /**
-   * According to an example from JEP 420, this should work, and it does with Javac, but not with ECJ.
+   * According to an example from JEP 420, this should work with preview 2 (Java 18), and it does with Javac,
+   * but not with ECJ for Java 18 and 19.
    *
    * See:
    *   https://openjdk.java.net/jeps/420#2--Exhaustiveness-of-switch-expressions-and-statements
    *   https://bugs.eclipse.org/bugs/show_bug.cgi?id=579360
+   *   https://github.com/eclipse-jdt/eclipse.jdt.core/issues/587
    *
-   * TODO: reactivate when implemented or move to preview 3 with Java 19, Eclipse 4.24.
+   *   DONE: reactivated after fix in Java 21
    */
   /*
   sealed interface I<T> permits A, B {}

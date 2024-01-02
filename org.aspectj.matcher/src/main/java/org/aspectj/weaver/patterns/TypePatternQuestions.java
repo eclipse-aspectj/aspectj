@@ -37,8 +37,8 @@ public class TypePatternQuestions {
 
 	public Question anyChanges() {
 		for (Map.Entry<Question, FuzzyBoolean> entry : questionsAndAnswers.entrySet()) {
-			Question question = (Question) entry.getKey();
-			FuzzyBoolean expectedAnswer = (FuzzyBoolean) entry.getValue();
+			Question question = entry.getKey();
+			FuzzyBoolean expectedAnswer = entry.getValue();
 
 			FuzzyBoolean currentAnswer = question.ask();
 			//System.out.println(question + ":" + currentAnswer);
@@ -54,8 +54,8 @@ public class TypePatternQuestions {
 		StringBuilder buf = new StringBuilder();
 		buf.append("TypePatternQuestions{");
 		for (Map.Entry<Question,FuzzyBoolean> entry: questionsAndAnswers.entrySet()) {
-			Question question = (Question)entry.getKey();
-			FuzzyBoolean expectedAnswer = (FuzzyBoolean)entry.getValue();
+			Question question = entry.getKey();
+			FuzzyBoolean expectedAnswer = entry.getValue();
 			buf.append(question);
 			buf.append(":");
 			buf.append(expectedAnswer);

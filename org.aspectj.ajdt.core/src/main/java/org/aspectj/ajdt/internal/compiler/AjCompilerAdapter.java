@@ -33,6 +33,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * @author colyer
@@ -65,7 +66,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 
 	private AjState incrementalCompilationState;
 
-	List /* InterimResult */resultsPendingWeave = new ArrayList();
+	List<InterimCompilationResult> resultsPendingWeave = new ArrayList<>();
 
 	/**
 	 * Create an adapter, and tell it everything it needs to now to drive the AspectJ parts of a compile cycle.
@@ -120,7 +121,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	// the compilation lifecycle methods below are called in order as compilation progresses...
 
 	public void beforeCompiling(ICompilationUnit[] sourceUnits) {
-		resultsPendingWeave = new ArrayList();
+		resultsPendingWeave = new ArrayList<>();
 		reportedErrors = false;
 	}
 
@@ -269,12 +270,11 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		}
 	}
 
-	private List getBinarySourcesFrom(Map binarySourceEntries) {
+	private List<InterimCompilationResult> getBinarySourcesFrom(Map<String, List<UnwovenClassFile>> binarySourceEntries) {
 		// Map is fileName |-> List<UnwovenClassFile>
-		List ret = new ArrayList();
-		for (Object o : binarySourceEntries.keySet()) {
-			String sourceFileName = (String) o;
-			List unwovenClassFiles = (List) binarySourceEntries.get(sourceFileName);
+		List<InterimCompilationResult> ret = new ArrayList<>();
+		for (String sourceFileName : binarySourceEntries.keySet()) {
+			List<UnwovenClassFile> unwovenClassFiles = binarySourceEntries.get(sourceFileName);
 			// XXX - see bugs 57432,58679 - final parameter on next call should be "compiler.options.maxProblemsPerUnit"
 			CompilationResult result = new CompilationResult(sourceFileName.toCharArray(), 0, 0, Integer.MAX_VALUE);
 			result.noSourceAvailable();
@@ -285,16 +285,14 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	}
 
 	private void notifyRequestor() {
-		for (Object o : resultsPendingWeave) {
-			InterimCompilationResult iresult = (InterimCompilationResult) o;
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			compiler.requestor.acceptResult(iresult.result().tagAsAccepted());
 		}
 	}
 
 	private void weave() throws IOException {
 		// ensure weaver state is set up correctly
-		for (Object o : resultsPendingWeave) {
-			InterimCompilationResult iresult = (InterimCompilationResult) o;
+		for (InterimCompilationResult iresult : resultsPendingWeave) {
 			for (int i = 0; i < iresult.unwovenClassFiles().length; i++) {
 				weaver.addClassFile(iresult.unwovenClassFiles()[i], false);
 			}
@@ -311,7 +309,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 			}
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourceSetForFullWeave));
 		} else {
-			Map binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
+			Map<String, List<UnwovenClassFile>> binarySourcesToAdd = binarySourceProvider.getBinarySourcesForThisWeave();
 			resultsPendingWeave.addAll(getBinarySourcesFrom(binarySourcesToAdd));
 		}
 

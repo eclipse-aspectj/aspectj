@@ -411,4 +411,14 @@ public class ReferencePointcut extends Pointcut {
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
+
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.onTypeSymbolic != null)
+			this.onTypeSymbolic.traverse(visitor, ret);
+		if (this.arguments != null)
+			this.arguments.traverse(visitor, ret);
+		return ret;
+	}
 }

@@ -33,12 +33,12 @@ Assuming that you are currently working on version 1.9.8-SNAPSHOT, you simply ca
 mvn clean deploy 
 
 # OR: If you ran tests locally before, or the CI workflow on GitHub did 
-mvn -DskipTests=true clean deploy 
+mvn -DskipTests clean deploy 
 
 # OR: Speed it up some more, skipping documentation generation. Depending on
 # your shell, you might not have to escape the '!' character for deactivating
 # the 'create-docs' profile. On a (Git) Bash you have to, though.
-mvn -P \!create-docs -DskipTests=true clean deploy 
+mvn -P \!create-docs -DskipTests clean deploy 
 ```
 
 This only deploys the main artifacts
@@ -99,8 +99,9 @@ mvn versions:commit
 #     try 'export GPG_TTY=$(tty)' before running the command.
 #   - Maven Javadoc plugin
 #   - Nexus Staging Maven plugin
-# Optionally, use '-DskipTests=true', if you ran all tests before.
-mvn -P release clean deploy
+# The 'create-docs profile will make sure to generate AspectJ docs to be included in the installer. 
+# Optionally, use '-DskipTests', if you ran all tests before.
+mvn -P release,create-docs clean deploy
 ```
 
 If this command was successful, it means we have created a staging repository on Sonatype OSSRH, uploaded all artifacts
@@ -157,6 +158,10 @@ to Maven Central:
 mvn nexus-staging:rc-list
 # [INFO] ID                   State    Description
 # [INFO] orgaspectj-1106      CLOSED   org.aspectj:aspectjrt:1.9.8.M2
+
+# Because of problems in Nexus Staging Maven Plugin with more recent JDKs,
+# we might need this first
+export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
 # Use the ID of the corresponding CLOSED staging repository for releasing to
 # Maven Central

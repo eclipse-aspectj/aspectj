@@ -100,8 +100,14 @@ public interface Constants {
 	short MINOR_17 = 0;
 	short MAJOR_18 = 62;
 	short MINOR_18 = 0;
-//	short MAJOR_19 = 63;
-//	short MINOR_19 = 0;
+	short MAJOR_19 = 63;
+	short MINOR_19 = 0;
+	short MAJOR_20 = 64;
+	short MINOR_20 = 0;
+	short MAJOR_21 = 65;
+	short MINOR_21 = 0;
+//	short MAJOR_22 = 66;
+//	short MINOR_22 = 0;
 
 	int PREVIEW_MINOR_VERSION = 65535;
 
@@ -185,7 +191,7 @@ public interface Constants {
 
 	String[] CONSTANT_NAMES = { "", "CONSTANT_Utf8", "", "CONSTANT_Integer", "CONSTANT_Float", "CONSTANT_Long",
 			"CONSTANT_Double", "CONSTANT_Class", "CONSTANT_String", "CONSTANT_Fieldref", "CONSTANT_Methodref",
-			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","","CONSTANT_InvokeDynamic",
+			"CONSTANT_InterfaceMethodref", "CONSTANT_NameAndType","","","CONSTANT_MethodHandle","CONSTANT_MethodType","CONSTANT_Dynamic","CONSTANT_InvokeDynamic",
 			// J9:
 			"CONSTANT_Module", "CONSTANT_Package"};
 

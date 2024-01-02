@@ -39,6 +39,15 @@ public class DeclareSoft extends Declare {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.exception != null)
+			this.exception.traverse(visitor, ret);
+		if (this.pointcut != null)
+			this.pointcut.traverse(visitor, ret);
+		return ret;
+	}
+
 	@Override
 	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
 		DeclareSoft ret = new DeclareSoft(exception.parameterizeWith(typeVariableBindingMap, w), pointcut.parameterizeWith(

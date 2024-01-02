@@ -1,0 +1,336 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+	JDK 21 (https://openjdk.org/projects/jdk/21/):
+		Language features:
+			JEP 430: String Templates (Preview)
+			JEP 440: Record Patterns
+			JEP 441: Pattern Matching for switch
+			JEP 443: Unnamed Patterns and Variables (Preview)
+			JEP 445: Unnamed Classes and Instance Main Methods (Preview)
+		API or JVM only:
+			JEP 431: Sequenced Collections
+			JEP 439: Generational ZGC
+			JEP 442: Foreign Function & Memory API (Third Preview)
+			JEP 444: Virtual Threads
+			JEP 446: Scoped Values (Preview)
+			JEP 448: Vector API (Sixth Incubator)
+			JEP 449: Deprecate the Windows 32-bit x86 Port for Removal
+			JEP 451: Prepare to Disallow the Dynamic Loading of Agents
+			JEP 452: Key Encapsulation Mechanism API
+			JEP 453: Structured Concurrency (Preview)
+-->
+<suite>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="switch pattern matching preview 4 java">
+		<compile files="SwitchPatternPreview4OK.java" options="-21" />
+		<run class="SwitchPatternPreview4OK" vmargs="">
+			<message/>
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+				<line text="42" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 error">
+		<compile files="SwitchPatternPreview4Error.java" options="-21">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case labels"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="switch pattern matching preview 3 aspect">
+		<compile files="SwitchPatternPreview3Aspect.aj" options="-21" />
+		<run class="Application" vmargs="">
+			<stdout>
+				<line text="null" />
+				<line text="int 123" />
+				<line text="long 999" />
+				<line text="double 12.340000" />
+				<line text="String foo" />
+				<line text="[123, foo, 999, 12.34]" />
+				<line text="Non-circle" />
+				<line text="Small circle" />
+				<line text="Large circle" />
+				<line text="Sealed sub-class A" />
+				<line text="Sealed sub-class B" />
+				<line text="Sealed sub-record C" />
+				<line text="absolute value 1: -1" />
+				<line text="other integer: 0" />
+				<line text="positive integer: 42" />
+				<line text="other integer: -99" />
+				<line text="positive integer: 123" />
+				<line text="value unavailable: null" />
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features198/java17" vm="21" title="switch pattern matching error">
+		<compile files="SwitchPatternError.java" options="-21">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 1">
+		<compile files="SwitchPatternPreview3Error1.java" options="-21">
+			<!-- No more error message as of Java 21 -->
+			<!--<message kind="error" file="SwitchPatternPreview3Error1.java" text="This case label is dominated by one of the preceding case labels"/>-->
+		</compile>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 2">
+		<compile files="SwitchPatternPreview3Error2.java" options="-21">
+			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
+			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case labels"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns">
+		<compile files="RecordPatternsPreview1OK.java" options="-21"/>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns error">
+		<compile files="RecordPatternsPreview1Error.java" options="-21">
+			<!-- https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27) -->
+			<!--
+			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
+			<message kind="error" file="RecordPatternsPreview1Error.java" text="Raw types are not allowed in record patterns"/>
+			-->
+		</compile>
+		<run class="RecordPatternsPreview1Error" vmargs="">
+			<stdout>
+				<line text="I'm a box"/>
+				<line text="I'm a box"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="record patterns exhaustiveness 1">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK1.java" options="-21"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK1" vmargs="">
+			<stdout>
+				<line text="y"/>
+				<line text="a"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="record patterns exhaustiveness aspect">
+		<compile files="RecordPatternsPreview1ExhaustivenessAspect.aj" options="-21"/>
+		<run class="RecordPatternsPreview1ExhaustivenessAspect" vmargs="">
+			<stdout>
+				<line text="y"/>
+				<line text="a"/>
+				<line text="Pair[x=C@000, y=D@000]"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns aspect">
+		<compile files="RecordPatternsPreview1Aspect.aj" options="-21"/>
+		<run class="RecordPatternsPreview1Aspect" vmargs="">
+			<stdout>
+				<line text="9"/>
+				<line text="14"/>
+				<line text="Doing something with Point[x=2, y=7]"/>
+				<line text="Upper-left color: RED"/>
+				<line text="Upper-left color: RED"/>
+				<line text="Upper-left x coordinate: 1"/>
+				<line text="Doing something with Rectangle[upperLeft=ColoredPoint[p=Point[x=1, y=6], c=RED], lowerRight=ColoredPoint[p=Point[x=4, y=6], c=BLUE]]"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness error">
+		<compile files="RecordPatternsPreview1ExhaustivenessError.java" options="-21">
+			<message kind="error" file="RecordPatternsPreview1ExhaustivenessError.java" text="An enhanced switch statement should be exhaustive; a default label expected"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Java 21 final, Java 19, 20 preview -->
+	<ajc-test dir="features1919/java19" vm="21" title="record patterns exhaustiveness 2">
+		<compile files="RecordPatternsPreview1ExhaustivenessOK2.java" options="-21"/>
+		<run class="RecordPatternsPreview1ExhaustivenessOK2" vmargs="">
+			<stdout>
+				<line text="Bob 12"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="string patterns">
+		<compile files="StringPatternsPreview1.java" options="--enable-preview -21"/>
+		<run class="StringPatternsPreview1" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
+				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
+				<line text="\Bill \Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="string patterns aspect">
+		<compile files="StringPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
+		<run class="StringPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="execution(void StringPatternsPreview1Aspect.main(String[]))"/>
+				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
+				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
+				<line text="\Bill \Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns">
+		<compile files="UnnamedPatternsPreview1.java" options="--enable-preview -21"/>
+		<run class="UnnamedPatternsPreview1" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns aspect">
+		<compile files="UnnamedPatternsPreview1Aspect.java" options="--enable-preview -21"/>
+		<run class="UnnamedPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="execution(void UnnamedPatternsPreview1Aspect.main(String[]))"/>
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="named class with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedClassWithSimpleMainMethodPreview1.java" options="-21"/>
+		<run class="NamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="named aspect with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedAspectWithSimpleMainMethodPreview1.aj" options="-21"/>
+		<run class="NamedAspectWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106 is done -->
+	<ajc-test dir="features1921/java21" vm="21" title="unnamed class with simple main method">
+		<compile files="UnnamedClassWithSimpleMainMethodPreview1.java" options="--enable-preview -21"/>
+		<run class="UnnamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

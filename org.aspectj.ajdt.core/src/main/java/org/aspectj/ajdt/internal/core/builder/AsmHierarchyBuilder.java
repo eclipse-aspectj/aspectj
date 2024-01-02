@@ -125,7 +125,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		filename = new String(currCompilationResult.fileName);
 		lineseps = currCompilationResult.lineSeparatorPositions;
 		LangUtil.throwIaxIfNull(currCompilationResult, "result");
-		stack = new Stack();
+		stack = new Stack<>();
 		packageDecl = null;
 		this.buildConfig = buildConfig;
 		internalBuild(cuDeclaration, structureModel);
@@ -171,8 +171,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 
 			// -- remove duplicates before adding (XXX use them instead?)
 			if (addToNode != null && addToNode.getChildren() != null) {
-				for (ListIterator itt = addToNode.getChildren().listIterator(); itt.hasNext();) {
-					IProgramElement child = (IProgramElement) itt.next();
+				for (ListIterator<IProgramElement> itt = addToNode.getChildren().listIterator(); itt.hasNext();) {
+					IProgramElement child = itt.next();
 					ISourceLocation childLoc = child.getSourceLocation();
 					if (null == childLoc) {
 						// XXX ok, packages have null source locations
@@ -214,7 +214,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 		}
 		if (sourceFolderNode == null) {
-			sourceFolderNode = new ProgramElement(structureModel, sourceFolder, IProgramElement.Kind.SOURCE_FOLDER, new ArrayList());
+			sourceFolderNode = new ProgramElement(structureModel, sourceFolder, IProgramElement.Kind.SOURCE_FOLDER, new ArrayList<>());
 			root.addChild(sourceFolderNode);
 		}
 		return sourceFolderNode;
@@ -272,7 +272,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 			if (pkgNode == null) {
 				// note packages themselves have no source location
-				pkgNode = new ProgramElement(activeStructureModel, pkgName, IProgramElement.Kind.PACKAGE, new ArrayList());
+				pkgNode = new ProgramElement(activeStructureModel, pkgName, IProgramElement.Kind.PACKAGE, new ArrayList<>());
 				rootForSource.addChild(pkgNode);
 			}
 			addToNode = pkgNode;
@@ -413,7 +413,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setFormalComment(generateJavadocComment(memberTypeDeclaration));
 		peNode.setAnnotationStyleDeclaration(isAnnotationStyleAspect);
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -482,11 +482,11 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			}
 		}
 
-		IProgramElement ipe = (IProgramElement)stack.peek();
+		IProgramElement ipe = stack.peek();
 		if (ipe!=null) {
 			// With AspectJ 1.8.9 the type structure must be slightly different as the guard
 			// is required (the null is due to a default constructor).
-			((IProgramElement) stack.peek()).addChild(peNode);
+			stack.peek().addChild(peNode);
 		}
 		stack.push(peNode);
 		return true;
@@ -497,7 +497,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(TypeDeclaration typeDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		typeDeclaration.printHeader(0, output);
 		return output.toString();
 	}
@@ -531,7 +531,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		formatter.genLabelAndKind(methodDeclaration, peNode); // will set the
 		// name
 		genBytecodeInfo(methodDeclaration, peNode);
-		List namedPointcuts = genNamedPointcuts(methodDeclaration);
+		List<ReferencePointcut> namedPointcuts = genNamedPointcuts(methodDeclaration);
 		// if (shouldAddUsesPointcut)
 		// addUsesPointcutRelationsForNode(peNode, namedPointcuts, methodDeclaration);
 
@@ -597,7 +597,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 							.equals("main(java.lang.String[])"))
 					&& peNode.getModifiers().contains(IProgramElement.Modifiers.STATIC)
 					&& peNode.getAccessibility().equals(IProgramElement.Accessibility.PUBLIC)) {
-				((IProgramElement) stack.peek()).setRunnable(true);
+				stack.peek().setRunnable(true);
 			}
 		}
 
@@ -651,8 +651,8 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * @param methodDeclaration
 	 * @return all of the named pointcuts referenced by the PCD of this declaration
 	 */
-	private List genNamedPointcuts(MethodDeclaration methodDeclaration) {
-		List pointcuts = new ArrayList();
+	private List<ReferencePointcut> genNamedPointcuts(MethodDeclaration methodDeclaration) {
+		List<ReferencePointcut> pointcuts = new ArrayList<>();
 		if (methodDeclaration instanceof AdviceDeclaration) {
 			if (((AdviceDeclaration) methodDeclaration).pointcutDesignator != null) {
 				addAllNamed(((AdviceDeclaration) methodDeclaration).pointcutDesignator.getPointcut(), pointcuts);
@@ -670,7 +670,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 * @param pointcuts
 	 *            accumulator for named pointcuts
 	 */
-	private void addAllNamed(Pointcut pointcut, List pointcuts) {
+	private void addAllNamed(Pointcut pointcut, List<ReferencePointcut> pointcuts) {
 		if (pointcut == null) {
 			return;
 		}
@@ -689,7 +689,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(MethodDeclaration methodDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		ASTNode.printModifiers(methodDeclaration.modifiers, output);
 
 		// Append Type Parameters if any
@@ -763,7 +763,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				npe.printStackTrace();
 			}
 		}
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 	}
 
 	public void endVisit(MethodDeclaration methodDeclaration, ClassScope scope) {
@@ -791,7 +791,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			// create Source signature for import
 			peNode.setSourceSignature(genSourceSignature(importRef));
 
-			IProgramElement containingTypeElement = (IProgramElement) stack.peek();
+			IProgramElement containingTypeElement = stack.peek();
 			ProgramElement imports = getImportReferencesRoot();
 			imports.addChild(0, peNode);
 			stack.push(peNode);
@@ -800,7 +800,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private ProgramElement getImportReferencesRoot() {
-		IProgramElement element = (IProgramElement) stack.peek();
+		IProgramElement element = stack.peek();
 		boolean hasPackageDeclaration = (element.getChildren().get(0)).getKind().isPackageDeclaration();
 		return (ProgramElement) element.getChildren().get(hasPackageDeclaration ? 1 : 0);
 	}
@@ -815,7 +815,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(ImportReference importreference) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		output.append("import ");
 		ASTNode.printModifiers(importreference.modifiers, output);
 		output.append(importreference);
@@ -870,7 +870,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 		peNode.setFormalComment(generateJavadocComment(fieldDeclaration));
 		// peNode.setBytecodeSignature(new String(fieldDeclaration.binding.type.signature()));
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -939,7 +939,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	 *
 	 */
 	protected String genSourceSignature(FieldDeclaration fieldDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		if (fieldDeclaration.type == null) { // This is an enum value
 			output.append(fieldDeclaration.name); // the "," or ";" has to be
 			// put on by whatever uses
@@ -1022,7 +1022,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 			peNode.setBytecodeSignature(memberBytecodeSignature);
 		}
 
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		return true;
 	}
@@ -1032,7 +1032,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 	}
 
 	private String genSourceSignature(ConstructorDeclaration constructorDeclaration) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		ASTNode.printModifiers(constructorDeclaration.modifiers, output);
 
 		// Append Type Parameters if any
@@ -1101,7 +1101,7 @@ public class AsmHierarchyBuilder extends ASTVisitor {
 				makeLocation(initializer), initializer.modifiers, null, null);
 		// "",
 		// new ArrayList());
-		((IProgramElement) stack.peek()).addChild(peNode);
+		stack.peek().addChild(peNode);
 		stack.push(peNode);
 		initializer.block.traverse(this, scope);
 		stack.pop();

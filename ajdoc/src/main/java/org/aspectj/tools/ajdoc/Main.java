@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -280,10 +281,22 @@ public class Main implements Config {
 				files.add(StructureUtil.translateAjPathName(signatureFile.getCanonicalPath()));
 			}
 		}
-		if (LangUtil.is9VMOrGreater()) {
-			JavadocRunner.callJavadocViaToolProvider(options, files);
-		} else {
-			JavadocRunner.callJavadoc(javadocargs);
+		// Since JDK 20, the javadoc tool renders the surrounding HTML according to the JVM default locale. Section headers
+		// such as "Class", "Method Summary" will e.g. in German be named "Klasse", "Methodenübersicht". That would derail
+		// ajdoc, because it matches on English headers hard-codedly.
+		//
+		// The remedy is to temporarily change the JVM default locale while generating javadocs.
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.ENGLISH);
+			if (LangUtil.is9VMOrGreater()) {
+				JavadocRunner.callJavadocViaToolProvider(options, files);
+			} else {
+				JavadocRunner.callJavadoc(javadocargs);
+			}
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
 		}
 	}
 

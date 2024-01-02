@@ -1436,11 +1436,36 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			InstructionList body = new InstructionList();
 			InstructionFactory fact = gen.getFactory();
 
-			// getfield
+			// Create a delegate method body which basically looks as follows:
+			//
+			// public void methodOne() {
+			//   if (this.ajc$instance$MyAspect$MyMixin == null) {
+			//     synchronized(this) {
+			//       if (this.ajc$instance$MyAspect$MyMixin == null) {
+			//         this.ajc$instance$MyAspect$MyMixin = MyAspect.aspectOf().createImplementation(this);
+			//       }
+			//     }
+			//   }
+			//   this.ajc$instance$MyAspect$MyMixin.methodOne();
+			// }
+
+			// Before synchronising on 'this', perform a preliminary null check on the delegate field. Only if it is null,
+			// it makes sense to synchronise, then check for null again and initialise the delegate, if null.
 			body.append(InstructionConstants.ALOAD_0);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
-			InstructionBranch ifNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
-			body.append(ifNonNull);
+			InstructionBranch outerIfNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+			body.append(outerIfNonNull);
+
+			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITORENTER (beginning of 'try')
+			body.append(InstructionConstants.ALOAD_0);
+			body.append(InstructionConstants.MONITORENTER);
+
+			// The JVM spec requires us add an exception handler ensuring MONITOREXIT in case of an exception inside the
+			// synchronized block, see https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-3.html#jvms-3.14.
+			InstructionHandle tryStart = body.append(InstructionConstants.ALOAD_0);
+			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
+			InstructionBranch innerIfNonNull = InstructionFactory.createBranchInstruction(Constants.IFNONNULL, null);
+			body.append(innerIfNonNull);
 
 			// Create and store a new instance
 			body.append(InstructionConstants.ALOAD_0); // 'this' is where we'll store the field value
@@ -1487,9 +1512,35 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				body.append(Utility.createSet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 			}
 
-			// if not null use the instance we've got
+			// Wrap delegate field initialisation in 'synchronized(this)' block - MONITOREXIT (end of 'try')
 			InstructionHandle ifNonNullElse = body.append(InstructionConstants.ALOAD_0);
-			ifNonNull.setTarget(ifNonNullElse);
+			innerIfNonNull.setTarget(ifNonNullElse);
+			body.append(InstructionConstants.MONITOREXIT);
+
+			// There was no error in the 'synchronized(this)' block -> jump to first instruction after exception handler
+			InstructionBranch gotoAfterTryCatch = new InstructionBranch(Constants.GOTO, null);
+			InstructionHandle tryEnd = body.append(gotoAfterTryCatch);
+
+			// Exception handler (logical 'catch') for the 'synchronized(this)' block ensures that MONITOREXIT is also called
+			// in case of an error
+			InstructionHandle catchStart = body.append(InstructionConstants.ALOAD_0);
+			body.append(InstructionConstants.MONITOREXIT);
+			InstructionHandle catchEnd = body.append(InstructionConstants.ATHROW);
+
+			// Add exception handler for 'synchronized(this)' block
+			mg.addExceptionHandler(tryStart, tryEnd.getPrev(), catchStart, null, false);
+
+			// CAVEAT: Add an extra, self-referential exception handler entry. I.e., the handler handles its own exceptions.
+			// According to https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-3.html#jvms-3.14, this is required, and
+			// Javac also creates code like this, which is why we are mimicking it.
+			mg.addExceptionHandler(catchStart, catchEnd.getPrev(), catchStart, null, false);
+
+			// if not null use the instance we've got
+			InstructionHandle afterTryCatch = body.append(InstructionConstants.ALOAD_0);
+			// Tell 'gotoAfterTryCatch' where to find the first statement after the exception handler
+			gotoAfterTryCatch.setTarget(afterTryCatch);
+			// The outer delegate field null check should also jump to the same place, if the delegate field is not null
+			outerIfNonNull.setTarget(afterTryCatch);
 			body.append(Utility.createGet(fact, munger.getDelegate(weaver.getLazyClassGen().getType())));
 
 			// args
@@ -1542,7 +1593,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			System.err.println("Member we are looking for: " + lookingFor);
 		}
 
-		ResolvedMember aspectMethods[] = aspectType.getDeclaredMethods();
+		ResolvedMember[] aspectMethods = aspectType.getDeclaredMethods();
 		UnresolvedType[] lookingForParams = lookingFor.getParameterTypes();
 
 		ResolvedMember realMember = null;
@@ -1551,53 +1602,38 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			if (member.getName().equals(lookingFor.getName())) {
 				UnresolvedType[] memberParams = member.getGenericParameterTypes();
 				if (memberParams.length == lookingForParams.length) {
-					if (debug) {
+					if (debug)
 						System.err.println("Reviewing potential candidates: " + member);
-					}
 					boolean matchOK = true;
-					// If not related to a ctor ITD then the name is enough to
-					// confirm we have the
-					// right one. If it is ctor related we need to check the
-					// params all match, although
-					// only the erasure.
-					if (isCtorRelated) {
-						for (int j = 0; j < memberParams.length && matchOK; j++) {
-							ResolvedType pMember = memberParams[j].resolve(world);
-							ResolvedType pLookingFor = lookingForParams[j].resolve(world);
 
-							if (pMember.isTypeVariableReference()) {
-								pMember = ((TypeVariableReference) pMember).getTypeVariable().getFirstBound().resolve(world);
-							}
-							if (pMember.isParameterizedType() || pMember.isGenericType()) {
-								pMember = pMember.getRawType().resolve(aspectType.getWorld());
-							}
+					// Check that all method/ctor params all match, although only the erasure
+					for (int j = 0; j < memberParams.length && matchOK; j++) {
+						ResolvedType pMember = memberParams[j].resolve(world);
+						ResolvedType pLookingFor = lookingForParams[j].resolve(world);
 
-							if (pLookingFor.isTypeVariableReference()) {
-								pLookingFor = ((TypeVariableReference) pLookingFor).getTypeVariable().getFirstBound()
-										.resolve(world);
-							}
-							if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType()) {
-								pLookingFor = pLookingFor.getRawType().resolve(world);
-							}
+						if (pMember.isTypeVariableReference())
+							pMember = ((TypeVariableReference) pMember).getTypeVariable().getFirstBound().resolve(world);
+						if (pMember.isParameterizedType() || pMember.isGenericType())
+							pMember = pMember.getRawType().resolve(aspectType.getWorld());
 
-							if (debug) {
-								System.err.println("Comparing parameter " + j + "   member=" + pMember + "   lookingFor="
-										+ pLookingFor);
-							}
-							if (!pMember.equals(pLookingFor)) {
-								matchOK = false;
-							}
-						}
+						if (pLookingFor.isTypeVariableReference())
+							pLookingFor = ((TypeVariableReference) pLookingFor).getTypeVariable().getFirstBound().resolve(world);
+						if (pLookingFor.isParameterizedType() || pLookingFor.isGenericType())
+							pLookingFor = pLookingFor.getRawType().resolve(world);
+
+						if (debug)
+							System.err.println("Comparing parameter " + j + "   member=" + pMember + "   lookingFor=" + pLookingFor);
+						if (!pMember.equals(pLookingFor))
+							matchOK = false;
 					}
-					if (matchOK) {
+
+					if (matchOK)
 						realMember = member;
-					}
 				}
 			}
 		}
-		if (debug && realMember == null) {
+		if (debug && realMember == null)
 			System.err.println("Didn't find a match");
-		}
 		return realMember;
 	}
 

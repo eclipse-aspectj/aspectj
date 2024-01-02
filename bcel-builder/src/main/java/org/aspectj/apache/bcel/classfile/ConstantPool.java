@@ -212,6 +212,10 @@ public class ConstantPool implements Node {
 			ConstantInvokeDynamic cID = ((ConstantInvokeDynamic)c);
 			return "#"+cID.getBootstrapMethodAttrIndex()+"."+constantToString(cID.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
 
+		case Constants.CONSTANT_Dynamic:
+			ConstantDynamic cD = ((ConstantDynamic)c);
+			return "#"+cD.getBootstrapMethodAttrIndex()+"."+constantToString(cD.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cMH = ((ConstantMethodHandle)c);
 			return cMH.getReferenceKind()+":"+constantToString(cMH.getReferenceIndex(),Constants.CONSTANT_Methodref);
@@ -284,8 +288,14 @@ public class ConstantPool implements Node {
 	} // TEMPORARY, DONT LIKE PASSING THIS DATA OUT!
 
 	public void dump(DataOutputStream file) throws IOException {
-		file.writeShort(poolSize);
-		for (int i = 1; i < poolSize; i++)
+		/*
+		 * Constants over the size of the constant pool shall not be written out.
+		 * This is a redundant measure as the ConstantPoolGen should have already
+		 * reported an error back in the situation.
+		 */
+		final int size = Math.min(poolSize, Constants.MAX_CP_ENTRIES);
+		file.writeShort(size);
+		for (int i = 1; i < size; i++)
 			if (pool[i] != null)
 				pool[i].dump(file);
 	}
@@ -326,7 +336,7 @@ public class ConstantPool implements Node {
 		StringBuilder buf = new StringBuilder();
 
 		for (int i = 1; i < poolSize; i++)
-			buf.append(i + ")" + pool[i] + "\n");
+			buf.append(i).append(") ").append(pool[i]).append("\n");
 
 		return buf.toString();
 	}
@@ -413,9 +423,19 @@ public class ConstantPool implements Node {
 	}
 
 	private void adjustSize() {
-		if (poolSize + 3 >= pool.length) {
+    // 3 extra spaces are needed as some entries may take 3 slots
+    if (poolSize + 3 >= Constants.MAX_CP_ENTRIES + 1) {
+      throw new IllegalStateException(
+        "The number of constants " + (poolSize + 3) +
+        " is over the size of the constant pool: " + Constants.MAX_CP_ENTRIES
+      );
+    }
+    if (poolSize + 3 >= pool.length) {
 			Constant[] cs = pool;
-			pool = new Constant[cs.length + 8];
+			int size = cs.length + 8;
+			// the constant array shall not exceed the size of the constant pool
+			size = Math.min(size, Constants.MAX_CP_ENTRIES + 1);
+			pool = new Constant[size];
 			System.arraycopy(cs, 0, pool, 0, cs.length);
 		}
 		if (poolSize == 0)
@@ -632,6 +652,16 @@ public class ConstantPool implements Node {
 			return addInvokeDynamic(index1,index2);
 		}
 
+		case Constants.CONSTANT_Dynamic: {
+			ConstantDynamic cd = (ConstantDynamic)c;
+			int index1 = cd.getBootstrapMethodAttrIndex();
+			ConstantNameAndType cnat = (ConstantNameAndType)constants[cd.getNameAndTypeIndex()];
+			ConstantUtf8 name = (ConstantUtf8) constants[cnat.getNameIndex()];
+			ConstantUtf8 signature = (ConstantUtf8) constants[cnat.getSignatureIndex()];
+			int index2 = addNameAndType(name.getValue(), signature.getValue());
+			return addConstantDynamic(index1,index2);
+		}
+
 		case Constants.CONSTANT_MethodHandle:
 			ConstantMethodHandle cmh = (ConstantMethodHandle)c;
 			return addMethodHandle(cmh.getReferenceKind(),addConstant(constants[cmh.getReferenceIndex()],cp));
@@ -723,6 +753,12 @@ public class ConstantPool implements Node {
 		adjustSize();
 		int ret = poolSize;
 		pool[poolSize++] = new ConstantInvokeDynamic(bootstrapMethodIndex, constantNameAndTypeIndex);
+		return ret;
+	}
+	public int addConstantDynamic(int bootstrapMethodIndex, int constantNameAndTypeIndex) {
+		adjustSize();
+		int ret = poolSize;
+		pool[poolSize++] = new ConstantDynamic(bootstrapMethodIndex, constantNameAndTypeIndex);
 		return ret;
 	}
 

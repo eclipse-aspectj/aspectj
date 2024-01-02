@@ -26,6 +26,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -62,7 +63,7 @@ public class HasMemberTypePattern extends TypePattern {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator<ResolvedMember> iter = type.getFields(); iter.hasNext();) {
-			Member field = (Member) iter.next();
+			Member field = iter.next();
 			if (field.getName().startsWith(declareAtPrefix)) {
 				continue;
 			}
@@ -82,7 +83,7 @@ public class HasMemberTypePattern extends TypePattern {
 		// TODO what about ITDs
 		World world = type.getWorld();
 		for (Iterator<ResolvedMember> iter = type.getMethods(true, true); iter.hasNext();) {
-			Member method = (Member) iter.next();
+			Member method = iter.next();
 			if (method.getName().startsWith(declareAtPrefix)) {
 				continue;
 			}
@@ -119,6 +120,11 @@ public class HasMemberTypePattern extends TypePattern {
 	@Override
 	protected boolean matchesExactly(ResolvedType type, ResolvedType annotatedType) {
 		return matchesExactly(type);
+	}
+
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return true;
 	}
 
 	@Override
@@ -192,4 +198,10 @@ public class HasMemberTypePattern extends TypePattern {
 		return visitor.visit(this, data);
 	}
 
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.signaturePattern != null)
+			this.signaturePattern.traverse(visitor, ret);
+		return ret;
+	}
 }

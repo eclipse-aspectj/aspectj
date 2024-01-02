@@ -50,7 +50,7 @@ public class WeakClassLoaderReference{
 	}
 
 	public ClassLoader getClassLoader() {
-		ClassLoader instance = (ClassLoader) loaderRef.get();
+		ClassLoader instance = loaderRef.get();
 		// Assert instance!=null
 		return instance;
 	}

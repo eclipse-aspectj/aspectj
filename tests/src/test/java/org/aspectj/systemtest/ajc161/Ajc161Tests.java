@@ -139,7 +139,7 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		IRelationshipMap irm = AsmManager.lastActiveStructureModel.getRelationshipMap();
 		Set entries = irm.getEntries();
 		boolean gotSomethingValid = false;
-		String expected = "<recursivepackage{RecursiveCatcher.java'RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
+		String expected = "<recursivepackage{RecursiveCatcher.java>RecursiveCatcher~recursiveCall~I?method-call(void recursivepackage.RecursiveCatcher.recursiveCall(int))";
 		for (Object entry : entries) {
 			String str = (String) entry;
 			if (str.contains(expected)) {

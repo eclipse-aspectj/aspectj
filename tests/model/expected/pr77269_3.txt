@@ -1,9 +1,9 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
-  pack  [package] 
+<root>  [java source file]
+  pack  [package]
     pr77269c.aj  [java source file] TEST_SANDBOX\pack\pr77269c.aj:1:
       pack  [package declaration] TEST_SANDBOX\pack\pr77269c.aj:1:
-        [import reference] 
+        [import reference]
       Test  [class] TEST_SANDBOX\pack\pr77269c.aj:3:
         testMethod()  [method] TEST_SANDBOX\pack\pr77269c.aj:5:
           new Runnable() {..}  [class] TEST_SANDBOX\pack\pr77269c.aj:6:
@@ -14,8 +14,8 @@
         declare warning: "blah blah blah"  [declare warning] TEST_SANDBOX\pack\pr77269c.aj:18:
 === END OF MODEL REPORT =========
 === RELATIONSHIPS REPORT ========= After a batch build
-(targets=1) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod()) (matches declare) <pack*pr77269c.aj'A`declare warning
-(targets=1) <pack*pr77269c.aj'A`declare warning (matched by) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod())
+(targets=1) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod()) (matches declare) <pack*pr77269c.aj>A´declare warning
+(targets=1) <pack*pr77269c.aj>A´declare warning (matched by) <pack*pr77269c.aj[Test~testMethod[~run?method-call(void pack.Test.someMethod())
 === END OF RELATIONSHIPS REPORT ==
 === Properties of the model and relationships map =====
 method=3

@@ -69,6 +69,16 @@ public class NotTypePattern extends TypePattern {
 	}
 
 	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		// '!String' should match anything but String, no matter if it is an array or not,
+		// e.g. int, void, int[], String[], String[][].
+		//
+		// '!String[]' should match anything but String[], no matter if it is an array or not,
+		// e.g. int, void, int[], String, String[][].
+		return true;
+	}
+
+	@Override
 	public boolean matchesStatically(ResolvedType type) {
 		return !negatedPattern.matchesStatically(type);
 	}
@@ -173,7 +183,8 @@ public class NotTypePattern extends TypePattern {
 	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		negatedPattern.traverse(visitor, ret);
+		if (this.negatedPattern != null)
+			this.negatedPattern.traverse(visitor, ret);
 		return ret;
 	}
 

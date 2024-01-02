@@ -259,9 +259,8 @@ public class Ajde {
 				showWarningMessage("No main class specified");
 			} else {
 				StringBuilder sb = new StringBuilder();
-				List outputDirs = compilerConfig.getOutputLocationManager().getAllOutputLocations();
-				for (Object outputDir : outputDirs) {
-					File dir = (File) outputDir;
+				List<File> outputDirs = compilerConfig.getOutputLocationManager().getAllOutputLocations();
+				for (File dir : outputDirs) {
 					sb.append(dir.getAbsolutePath() + File.pathSeparator);
 				}
 				classpath = LangUtil.makeClasspath(null, compilerConfig.getClasspath(), sb.toString(), compilerConfig.getOutJar());

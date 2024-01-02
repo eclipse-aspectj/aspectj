@@ -291,7 +291,7 @@ public class StandardShadow extends Shadow {
 			Var v = ReflectionVar.createAtAnnotationVar(annType, this.annotationFinder);
 			annotationVar.put(annType, v);
 		}
-		return (Var) annotationVar.get(annType);
+		return annotationVar.get(annType);
 	}
 
 	/*
@@ -305,7 +305,7 @@ public class StandardShadow extends Shadow {
 			Var v = ReflectionVar.createWithinAnnotationVar(annType, this.annotationFinder);
 			withinAnnotationVar.put(annType, v);
 		}
-		return (Var) withinAnnotationVar.get(annType);
+		return withinAnnotationVar.get(annType);
 	}
 
 	/*
@@ -319,7 +319,7 @@ public class StandardShadow extends Shadow {
 			Var v = ReflectionVar.createWithinCodeAnnotationVar(annType, this.annotationFinder);
 			withinCodeAnnotationVar.put(annType, v);
 		}
-		return (Var) withinCodeAnnotationVar.get(annType);
+		return withinCodeAnnotationVar.get(annType);
 	}
 
 	/*
@@ -357,7 +357,7 @@ public class StandardShadow extends Shadow {
 			Var[] vars = new Var[getArgCount()];
 			atArgsVars.put(annType, vars);
 		}
-		Var[] vars = (Var[]) atArgsVars.get(annType);
+		Var[] vars = atArgsVars.get(annType);
 		if (i > (vars.length - 1))
 			return null;
 		if (vars[i] == null) {

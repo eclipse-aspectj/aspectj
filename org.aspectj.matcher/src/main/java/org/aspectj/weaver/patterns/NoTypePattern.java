@@ -49,6 +49,11 @@ public class NoTypePattern extends TypePattern {
 		return false;
 	}
 
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return false;
+	}
+
 	/**
 	 * @see org.aspectj.weaver.patterns.TypePattern#matchesInstanceof(ResolvedType)
 	 */

@@ -113,9 +113,9 @@ public class PointcutDesignator extends ASTNode {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuffer)
+	 * @see org.eclipse.jdt.internal.compiler.ast.ASTNode#print(int, java.lang.StringBuilder)
 	 */
-	public StringBuffer print(int indent, StringBuffer output) {
+	public StringBuilder print(int indent, StringBuilder output) {
 		if (pointcut == null)
 			return output.append("<pcd>");
 		return output.append(pointcut.toString());

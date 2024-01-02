@@ -1,7 +1,7 @@
 === MODEL STATUS REPORT ========= After a batch build
-<root>  [java source file] 
+<root>  [java source file]
   pr238054.aj  [java source file] TEST_SANDBOX\pr238054.aj:1:
-    import declarations  [import reference] 
+    import declarations  [import reference]
     A  [class] TEST_SANDBOX\pr238054.aj:1:
       x()  [method] TEST_SANDBOX\pr238054.aj:2:
       y()  [method] TEST_SANDBOX\pr238054.aj:3:

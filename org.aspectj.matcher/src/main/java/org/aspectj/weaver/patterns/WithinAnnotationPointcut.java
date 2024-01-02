@@ -238,4 +238,12 @@ public class WithinAnnotationPointcut extends NameBindingPointcut {
 	public Object accept(PatternNodeVisitor visitor, Object data) {
 		return visitor.visit(this, data);
 	}
+
+	@Override
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (this.annotationTypePattern != null)
+			this.annotationTypePattern.traverse(visitor, ret);
+		return ret;
+	}
 }

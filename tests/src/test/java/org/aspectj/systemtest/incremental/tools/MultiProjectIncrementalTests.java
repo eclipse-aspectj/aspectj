@@ -228,10 +228,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr284771<test*AspectTrace.aj'AspectTrace&before");
+		List<IRelationship> rels = irm.get("=pr284771<test*AspectTrace.aj>AspectTrace§before");
 		assertNotNull(rels);
 		assertEquals(2, ((Relationship) rels.get(0)).getTargets().size());
-		rels = irm.get("=pr284771<test*AspectTrace.aj'AspectTrace&before!2");
+		rels = irm.get("=pr284771<test*AspectTrace.aj>AspectTrace§before!2");
 		assertNotNull(rels);
 		assertEquals(2, ((Relationship) rels.get(0)).getTargets().size());
 	}
@@ -242,21 +242,21 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		printModel(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr329111<{AJ.java'AJ`declare soft");
+		List<IRelationship> rels = irm.get("=pr329111<{AJ.java>AJ´declare soft");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft");
+		rels = irm.get("=pr329111<{AJ2.java>AJ2´declare soft");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft!2");
+		rels = irm.get("=pr329111<{AJ2.java>AJ2´declare soft!2");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ2.java'AJ2`declare soft!3");
+		rels = irm.get("=pr329111<{AJ2.java>AJ2´declare soft!3");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare warning");
+		rels = irm.get("=pr329111<{AJ3.java>AJ3´declare warning");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare warning!2");
+		rels = irm.get("=pr329111<{AJ3.java>AJ3´declare warning!2");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare error");
+		rels = irm.get("=pr329111<{AJ3.java>AJ3´declare error");
 		assertNotNull(rels);
-		rels = irm.get("=pr329111<{AJ3.java'AJ3`declare error!2");
+		rels = irm.get("=pr329111<{AJ3.java>AJ3´declare error!2");
 		assertNotNull(rels);
 	}
 
@@ -271,7 +271,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Hid:1:(targets=1) =pr322446<{Class.java[Class (aspect declarations) =pr322446<{AbstractAspect.java'AbstractAspect`declare
 		// parents
 		// Hid:2:(targets=1) =pr322446<{AbstractAspect.java'AbstractAspect`declare parents (declared on) =pr322446<{Class.java[Class
-		List<IRelationship> rels = irm.get("=pr322446<{AbstractAspect.java'AbstractAspect`declare parents");
+		List<IRelationship> rels = irm.get("=pr322446<{AbstractAspect.java>AbstractAspect´declare parents");
 		assertNotNull(rels);
 	}
 
@@ -290,11 +290,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// Check the 'standard build' - the library also has a type affected by the decp so we can check what happens on an 'all
 		// source' build
-		IProgramElement theAspect = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java'Super",
+		IProgramElement theAspect = getModelFor(lib).getHierarchy().findElementForHandleOrCreate("=pr343001_lib<{Super.java>Super",
 				false);
 		assertNotNull(theAspect);
 		IProgramElement sourcelevelDecp = getModelFor(lib).getHierarchy().findElementForHandleOrCreate(
-				"=pr343001_lib<{Super.java'Super`declare parents", false);
+				"=pr343001_lib<{Super.java>Super´declare parents", false);
 		assertNotNull(sourcelevelDecp);
 		assertEquals("[java.io.Serializable]", sourcelevelDecp.getParentTypes().toString());
 
@@ -304,10 +304,10 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 
 		IProgramElement theBinaryAspect = getModelFor(p).getHierarchy().findElementForHandleOrCreate(
-				"=pr343001/binaries<(Super.class'Super", false);
+				"=pr343001/binaries<(Super.class>Super", false);
 		assertNotNull(theBinaryAspect);
 		IProgramElement binaryDecp = getModelFor(p).getHierarchy().findElementForHandleOrCreate(
-				"=pr343001/binaries<(Super.class'Super`declare parents", false);
+				"=pr343001/binaries<(Super.class>Super´declare parents", false);
 		assertNotNull(binaryDecp);
 		assertEquals("[java.io.Serializable]", (binaryDecp.getParentTypes() == null ? "" : binaryDecp.getParentTypes().toString()));
 	}
@@ -372,35 +372,34 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		printModel(p);
-		IProgramElement decpPE = getModelFor(p).getHierarchy().findElementForHandle(
-				"=pr286539<p.q.r{Aspect.java'Asp`declare parents");
+		IProgramElement decpPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare parents");
 		assertNotNull(decpPE);
 		String s = ((decpPE.getParentTypes()).get(0));
 		assertEquals("p.q.r.Int", s);
 
-		decpPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java'Asp`declare parents!2");
+		decpPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare parents!2");
 		assertNotNull(decpPE);
 		s = ((decpPE.getParentTypes()).get(0));
 		assertEquals("p.q.r.Int", s);
 
 		IProgramElement decaPE = getModelFor(p).getHierarchy().findElementForHandle(
-				"=pr286539<p.q.r{Aspect.java'Asp`declare \\@type");
+				"=pr286539<p.q.r{Aspect.java>Asp´declare \\@type");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 
-		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java'Asp`declare \\@type!2");
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare \\@type!2");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Goo", decaPE.getAnnotationType());
 
-		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java'Asp`declare \\@field");
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare \\@field");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 
-		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java'Asp`declare \\@method");
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare \\@method");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 
-		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java'Asp`declare \\@constructor");
+		decaPE = getModelFor(p).getHierarchy().findElementForHandle("=pr286539<p.q.r{Aspect.java>Asp´declare \\@constructor");
 		assertNotNull(decaPE);
 		assertEquals("p.q.r.Foo", decaPE.getAnnotationType());
 	}
@@ -598,14 +597,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Hid:5:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new (declared on) =pr280380<f{AClass.java[AClass
 		// Hid:6:(targets=1) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx (declared on) =pr280380<f{AClass.java[AClass
 		printModel(p);
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj'AnAspect,AClass.xxxx"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj>AnAspect,AClass.xxxx"));
 		alter(p, "inc2");
 		build(p);
 		assertNoErrors(p);
 		printModel(p);
 		// On this build the relationship should have changed to include the fully qualified target
 		assertEquals(4, getModelFor(p).getRelationshipMap().getEntries().size());
-		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj'AnAspect,AClass.xxxx"));
+		assertNotNull(getModelFor(p).getRelationshipMap().get("=pr280380<g*AnAspect.aj>AnAspect,AClass.xxxx"));
 		// Hid:1:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.xxxx
 		// Hid:2:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.y
 		// Hid:3:(targets=3) =pr280380<f{AClass.java[AClass (aspect declarations) =pr280380<g*AnAspect.aj}AnAspect)AClass.AClass_new
@@ -620,7 +619,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		printModel(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr322039<p{Azpect.java'Azpect)q2.Code.something2");
+		List<IRelationship> rels = irm.get("=pr322039<p{Azpect.java>Azpect°q2.Code.something2");
 		assertNotNull(rels);
 	}
 
@@ -630,7 +629,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		printModel(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr280383<f{AnAspect.java'AnAspect)f.AClass.f_AClass_new");
+		List<IRelationship> rels = irm.get("=pr280383<f{AnAspect.java>AnAspect°f.AClass.f_AClass_new");
 		assertNotNull(rels);
 	}
 
@@ -654,9 +653,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// Hid:3:(targets=2) =pr283657<{Aspect.java[Target (aspect declarations) =pr283657<{Aspect.java}Aspect)Target.foo
 		// Hid:4:(targets=2) =pr283657<{Aspect.java[Target (aspect declarations) =pr283657<{Aspect.java}Aspect)Target.foo!2
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr283657<{Aspect.java'Aspect,Target.foo");
+		List<IRelationship> rels = irm.get("=pr283657<{Aspect.java>Aspect,Target.foo");
 		assertNotNull(rels);
-		rels = irm.get("=pr283657<{Aspect.java'Aspect)Target.foo!2");
+		rels = irm.get("=pr283657<{Aspect.java>Aspect°Target.foo!2");
 		assertNotNull(rels);
 	}
 
@@ -667,13 +666,13 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		addSourceFolderForSourceFile(p, getProjectRelativePath(p, "src/C.java"), "src");
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		IRelationship ir = irm.get("=pr276399/src<*X.aj'X&after").get(0);
+		IRelationship ir = irm.get("=pr276399/src<*X.aj>X§after").get(0);
 		assertNotNull(ir);
 		alter(p, "inc1");
 		build(p);
 		printModel(p);
 		irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> rels = irm.get("=pr276399/src<*X.aj'X&after"); // should be gone after the inc build
+		List<IRelationship> rels = irm.get("=pr276399/src<*X.aj>X§after"); // should be gone after the inc build
 		assertNull(rels);
 	}
 
@@ -685,7 +684,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 			printModelAndRelationships(p);
 		}
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		List<IRelationship> l = irm.get("=pr278255<{A.java'X`declare \\@type");
+		List<IRelationship> l = irm.get("=pr278255<{A.java>X´declare \\@type");
 		assertNotNull(l);
 		IRelationship ir = l.get(0);
 		assertNotNull(ir);
@@ -883,9 +882,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		}
 		// ITD from the test program:
 		// public String InterTypeAspectInterface.foo(int i,List list,App a) {
-		assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class'InterTypeAspect`declare parents", h1);
+		assertEquals("=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class>InterTypeAspect´declare parents", h1);
 		assertEquals(
-				"=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class'InterTypeAspect)InterTypeAspectInterface.foo)I)QList;)QSerializable;",
+				"=pr265729_client/binaries<be.cronos.aop.aspects(InterTypeAspect.class>InterTypeAspect°InterTypeAspectInterface.foo°I°QList;°QSerializable;",
 				h2);
 		IProgramElement binaryDecp = getModelFor(cli).getHierarchy().getElement(h1);
 		assertNotNull(binaryDecp);
@@ -929,7 +928,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "decps";
 		initialiseProject(p);
 		build(p);
-		IProgramElement decp = getModelFor(p).getHierarchy().findElementForHandle("=decps<a{A.java'A`declare parents");
+		IProgramElement decp = getModelFor(p).getHierarchy().findElementForHandle("=decps<a{A.java>A´declare parents");
 		List<String> ps = decp.getParentTypes();
 		assertNotNull(ps);
 		assertEquals(2, ps.size());
@@ -950,7 +949,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject(p);
 		build(p);
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
-		IRelationship ir = irm.get("=261380<test{C.java'X&before").get(0);
+		IRelationship ir = irm.get("=261380<test{C.java>X§before").get(0);
 		List<String> targets = ir.getTargets();
 		assertEquals(1, targets.size());
 		System.out.println(targets.get(0));
@@ -1115,7 +1114,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("java.io.Serializable", l.get(0));
 		ProgramElement ctorDecp = (ProgramElement) findElementAtLine(root, 16);
 		String ctordecphandle = ctorDecp.getHandleIdentifier();
-		assertEquals("=itdfq<a.b.c{A.java'XX)B.B_new)QString;", ctordecphandle); // 252702
+		assertEquals("=itdfq<a.b.c{A.java>XX°B.B_new°QString;", ctordecphandle); // 252702
 		// ,
 		// comment
 		// 7
@@ -1133,11 +1132,11 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		IProgramElement root = model.getHierarchy().getRoot();
 		IProgramElement ipe = findElementAtLine(root, 4);
-		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare warning", ipe.getHandleIdentifier());
+		assertEquals("=BrokenHandles<p{GetInfo.java>GetInfo´declare warning", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(root, 5);
-		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare warning!2", ipe.getHandleIdentifier());
+		assertEquals("=BrokenHandles<p{GetInfo.java>GetInfo´declare warning!2", ipe.getHandleIdentifier());
 		ipe = findElementAtLine(root, 6);
-		assertEquals("=BrokenHandles<p{GetInfo.java'GetInfo`declare parents", ipe.getHandleIdentifier());
+		assertEquals("=BrokenHandles<p{GetInfo.java>GetInfo´declare parents", ipe.getHandleIdentifier());
 	}
 
 	public void testNPEIncremental_pr262218() {
@@ -1312,7 +1311,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// the advice relationship
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 		IProgramElement code = findElementAtLine(root, 5);
-		assertEquals("=pr253067<aa*AdvisesC.aj'AdvisesC)C.nothing?method-call(int aa.C.nothing())", code.getHandleIdentifier());
+		assertEquals("=pr253067<aa*AdvisesC.aj>AdvisesC°C.nothing?method-call(int aa.C.nothing())", code.getHandleIdentifier());
 		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		// Ajc.dumpAJDEStructureModel(getModelFor("pr253067"),
 		// "after inc build where first advised line is gone");
@@ -1325,7 +1324,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 		IProgramElement code = findElementAtLine(root, 4);
 		// the @ should be escapified
-		assertEquals("=pr249216<{Deca.java'X`declare \\@type", code.getHandleIdentifier());
+		assertEquals("=pr249216<{Deca.java>X´declare \\@type", code.getHandleIdentifier());
 		// dumptree(getModelFor(p).getHierarchy().getRoot(), 0);
 		// Ajc.dumpAJDEStructureModel(getModelFor(p),
 		// "after inc build where first advised line is gone");
@@ -1424,48 +1423,48 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(p);
 		IProgramElement root = getModelFor(p).getHierarchy().getRoot();
 		IProgramElement typeDecl = findElementAtLine(root, 4);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles", typeDecl.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles", typeDecl.getHandleIdentifier());
 
 		IProgramElement advice1 = findElementAtLine(root, 7);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&before", advice1.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§before", advice1.getHandleIdentifier());
 
 		IProgramElement advice2 = findElementAtLine(root, 11);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&before!2", advice2.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§before!2", advice2.getHandleIdentifier());
 
 		IProgramElement advice3 = findElementAtLine(root, 15);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&before&I", advice3.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§before§I", advice3.getHandleIdentifier());
 
 		IProgramElement advice4 = findElementAtLine(root, 20);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&before&I!2", advice4.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§before§I!2", advice4.getHandleIdentifier());
 
 		IProgramElement advice5 = findElementAtLine(root, 25);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&after", advice5.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§after", advice5.getHandleIdentifier());
 
 		IProgramElement advice6 = findElementAtLine(root, 30);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&afterReturning", advice6.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§afterReturning", advice6.getHandleIdentifier());
 
 		IProgramElement advice7 = findElementAtLine(root, 35);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&afterThrowing", advice7.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§afterThrowing", advice7.getHandleIdentifier());
 
 		IProgramElement advice8 = findElementAtLine(root, 40);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles&afterThrowing&I", advice8.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles§afterThrowing§I", advice8.getHandleIdentifier());
 
 		IProgramElement namedInnerClass = findElementAtLine(root, 46);
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~x[NamedClass", namedInnerClass.getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~x[NamedClass", namedInnerClass.getHandleIdentifier());
 
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~foo[", findElementAtLine(root, 55).getHandleIdentifier());
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~foo[!2", findElementAtLine(root, 56).getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~foo[", findElementAtLine(root, 55).getHandleIdentifier());
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~foo[!2", findElementAtLine(root, 56).getHandleIdentifier());
 
 		// From 247742: comment 3: two anon class declarations
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~b~QString;[", findElementAtLine(root, 62)
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~b~QString;[", findElementAtLine(root, 62)
 				.getHandleIdentifier());
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~b~QString;[!2", findElementAtLine(root, 63)
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~b~QString;[!2", findElementAtLine(root, 63)
 				.getHandleIdentifier());
 
 		// From 247742: comment 6: two diff anon class declarations
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~c~QString;[", findElementAtLine(root, 66)
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~c~QString;[", findElementAtLine(root, 66)
 				.getHandleIdentifier());
-		assertEquals("=AdviceHandles/src<spacewar*Handles.aj'Handles~c~QString;[!2", findElementAtLine(root, 67)
+		assertEquals("=AdviceHandles/src<spacewar*Handles.aj>Handles~c~QString;[!2", findElementAtLine(root, 67)
 				.getHandleIdentifier());
 
 		// // From 247742: comment 4
@@ -1661,8 +1660,8 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		getModelFor(bug2).dumprels(pw);
 		pw.flush();
 		IProgramElement root = getModelFor(bug2).getHierarchy().getRoot();
-		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class'Asp&before", findElementAtLine(root, 5).getHandleIdentifier());
-		assertEquals("=AspectPathTwo/binaries<(Asp2.class'Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
+		assertEquals("=AspectPathTwo/binaries<pkg(Asp.class>Asp§before", findElementAtLine(root, 5).getHandleIdentifier());
+		assertEquals("=AspectPathTwo/binaries<(Asp2.class>Asp2§before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
 
 	public void testAspectPath_pr274558() throws Exception {
@@ -1676,7 +1675,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build(depending);
 		printModel(depending);
 		IProgramElement root = getModelFor(depending).getHierarchy().getRoot();
-		assertEquals("=bug274558base/binaries<r(DeclaresITD.class'DeclaresITD,InterfaceForITD.x", findElementAtLine(root, 5)
+		assertEquals("=bug274558base/binaries<r(DeclaresITD.class>DeclaresITD,InterfaceForITD.x", findElementAtLine(root, 5)
 				.getHandleIdentifier());
 		// assertEquals("=AspectPathTwo/binaries<(Asp2.class}Asp2&before", findElementAtLine(root, 16).getHandleIdentifier());
 	}
@@ -1764,7 +1763,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		assertEquals("=pr269286<{Logger.java[Logger~aroo", findElementAtLine(root, 15).getHandleIdentifier()); // around
 
 		// pointcuts are not fixed - seems to buggy handling of them internally
-		assertEquals("=pr269286<{Logger.java[Logger\"ooo", findElementAtLine(root, 20).getHandleIdentifier());
+		assertEquals("=pr269286<{Logger.java[Logger©ooo", findElementAtLine(root, 20).getHandleIdentifier());
 
 		// DeclareWarning
 		assertEquals("=pr269286<{Logger.java[Logger^message", findElementAtLine(root, 24).getHandleIdentifier());
@@ -1784,9 +1783,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// getModelFor(p).dumprels(pw);
 		// pw.flush();
 		IProgramElement ff = findFile(root, "ProcessAspect.aj");
-		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj'ProcessAspect&after&QMyProcessor;", findElementAtLine(root, 22)
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj>ProcessAspect§after§QMyProcessor;", findElementAtLine(root, 22)
 				.getHandleIdentifier());
-		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj'ProcessAspect&after&QMyProcessor;!2", findElementAtLine(root, 68)
+		assertEquals("=prx<com.kronos.aspects*ProcessAspect.aj>ProcessAspect§after§QMyProcessor;!2", findElementAtLine(root, 68)
 				.getHandleIdentifier());
 	}
 
@@ -3174,7 +3173,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		build("JDTLikeHandleProvider");
 		IHierarchy top = getModelFor("JDTLikeHandleProvider").getHierarchy();
 		IProgramElement pe = top.findElementForType("pkg", "A");
-		String expectedHandle = "=JDTLikeHandleProvider<pkg*A.aj'A";
+		String expectedHandle = "=JDTLikeHandleProvider<pkg*A.aj>A";
 		assertEquals("expected handle to be " + expectedHandle + ", but found " + pe.getHandleIdentifier(), expectedHandle,
 				pe.getHandleIdentifier());
 		// } finally {

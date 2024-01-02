@@ -31,8 +31,16 @@ projects using AspectJ Maven Plugin.
 
 #### AspectJ Development Tools (AJDT)
 
-Use an update sites corresponding to your Eclipse version (minimal version listed):
-* Eclipse 2022-03 (4.23), AspectJ 1.9.9, Java 18: https://download.eclipse.org/tools/ajdt/423/dev/update
+Use an update site corresponding to your Eclipse version (minimal version listed):
+* Eclipse 2023-12 (4.30), AspectJ 1.9.21, Java 21: https://download.eclipse.org/tools/ajdt/430/dev/update<br>
+  **Please note:** In Eclipse 2023-12, you should also add
+  https://download.eclipse.org/eclipse/updates/4.31-I-builds/I20231201-1800/ in addition to the regular release update
+  sites https://download.eclipse.org/eclipse/updates/4.30/ or https://download.eclipse.org/releases/latest. This is,
+  because AspectJ 1.9.21 contains support for JDK 21 string templates, which was added to the compiler after the 2023-12
+  release, but also includes a few Eclipse API changes requiring the additional update site. After adding it, please
+  make sure to call _Help_ → _Check for Updates_ and accept the updates.
+* Eclipse 2022-12 (4.26), AspectJ 1.9.19, Java 19: https://download.eclipse.org/tools/ajdt/426/dev/update
+* Eclipse 2022-03 (4.23), AspectJ 1.9.19, Java 19: https://download.eclipse.org/tools/ajdt/423/dev/update
 * Eclipse 2021-09 (4.21), AspectJ 1.9.8, Java 17: https://download.eclipse.org/tools/ajdt/421/dev/update
 * Eclipse 2021-03 (4.19), AspectJ 1.9.7, Java 16: https://download.eclipse.org/tools/ajdt/419/dev/update
 * Eclipse 2018-12 (4.10), AspectJ 1.9.6, Java 14: https://download.eclipse.org/tools/ajdt/410/dev/update
@@ -44,8 +52,13 @@ Use an update sites corresponding to your Eclipse version (minimal version liste
 The connector between AspectJ Maven Plugin and AJDT has not been maintained by the AspectJ team for some years, but
 there is a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with the following
 update sites:
+  * Eclipse 2022-12 (4.26): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2022-12/
   * Eclipse 2020-12 (4.18): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2020-12/
   * Eclipse 2019-06 (4.12): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2019-06/
+
+Your AspectJ-related list of Eclipse update sites could look like this for Eclipse 2023-12:
+
+![Eclipse IDE filtered list of update sites](EclipseSoftwareSitesAJDT.png)
 
 ### IntelliJ IDEA
 
@@ -82,6 +95,12 @@ StackOverflow, I got the impression that [Freefair by Lars Grefer](https://docs.
 is the one I want to recomment because of its good documentation, active development and feature set. It could well be
 or become for the Gradle ecosystem what AspectJ Maven is for the Maven one. At the time of writing this, the most recent
 milestone is [6.1.0-m3](https://docs.freefair.io/gradle-plugins/6.1.0-m3/reference/). 
+
+### Mill
+
+If you want to build your AspectJ projects with the [Mill Build Tool](https://github.com/com-lihaoyi/mill), you can use the [mill-aspectj](https://github.com/lefou/mill-aspectj) plugin. 
+It's actively maintained and its author Tobias Roeser is also the maintainer of Mill. 
+It supports all important settings of AspectJ and is even providing convenience options for polyglot projects, e.g. it features an option for out-of-the-box chained compilation with Zinc (for Java/Scala) and AspectJ (for weaving aspects) in the same module.
 
 ### Ant
 

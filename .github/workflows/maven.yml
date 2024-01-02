@@ -19,8 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO: switch from 18-ea to 18, as soon as Temurin offers the download on https://adoptium.net/releases.html
-        java: [ 11, 17, 18-ea ]
+        # Check for available Temurin releases on https://adoptium.net/releases.html
+        java: [ 17, 21 ]
 
     runs-on: ubuntu-latest
 
@@ -95,6 +95,6 @@ jobs:
       - name: Run Tests
         # Tests in module ajde call Swing/AWT classes. Without frame buffer they throw
         # HeadlessException: No X11 DISPLAY variable was set, but this program performed an operation which requires it.
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1.0.1
         with:
           run: ./mvnw -B --file pom.xml -Daspectj.tests.verbose=false verify

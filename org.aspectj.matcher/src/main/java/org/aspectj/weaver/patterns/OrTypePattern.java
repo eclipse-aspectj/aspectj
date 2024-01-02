@@ -73,6 +73,11 @@ public class OrTypePattern extends TypePattern {
 		return left.matchesExactly(type, annotatedType) || right.matchesExactly(type, annotatedType);
 	}
 
+	@Override
+	protected boolean matchesArray(UnresolvedType type) {
+		return left.matchesArray(type) || right.matchesArray(type);
+	}
+
 	public boolean matchesStatically(ResolvedType type) {
 		return left.matchesStatically(type) || right.matchesStatically(type);
 	}
@@ -185,8 +190,10 @@ public class OrTypePattern extends TypePattern {
 
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
-		left.traverse(visitor, ret);
-		right.traverse(visitor, ret);
+		if (this.left != null)
+			this.left.traverse(visitor, ret);
+		if (this.right != null)
+			this.right.traverse(visitor, ret);
 		return ret;
 	}
 

@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <suite>
-   
+
    <ajc-test dir="features164/declareMixin" title="casea">
      <compile files="CaseA.java" options="-1.5"/>
      <run class="CaseA">
@@ -11,7 +11,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="caseb">
      <compile files="CaseB.java" options="-1.5"/>
      <run class="CaseB">
@@ -21,7 +21,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casec">
      <compile files="CaseC.java" options="-1.5"/>
      <run class="CaseC">
@@ -31,7 +31,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="cased">
      <compile files="CaseD.java" options="-1.5"/>
      <run class="CaseD">
@@ -41,7 +41,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casee">
      <compile files="CaseE.java" options="-1.5"/>
      <run class="CaseE">
@@ -55,7 +55,25 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
+   <ajc-test dir="features164/declareMixin" title="casee_concurrent">
+     <compile files="CaseEConcurrent.java" options="-1.5"/>
+     <run class="CaseEConcurrent">
+       <stdout ordered="no">
+         <!--
+           Without the concurrency fix from https://github.com/eclipse/org.aspectj/issues/198, each delegate factory
+           would be invoked twice
+         -->
+         <line text="Delegate factory invoked for CaseEConcurrent instance: a"/>
+         <line text="Delegate factory invoked for CaseEConcurrent instance: b"/>
+         <line text="methodOne running on CaseEConcurrent instance: a"/>
+         <line text="methodTwo running on CaseEConcurrent instance: a"/>
+         <line text="methodOne running on CaseEConcurrent instance: b"/>
+         <line text="methodTwo running on CaseEConcurrent instance: b"/>
+       </stdout>
+     </run>
+   </ajc-test>
+
    <ajc-test dir="features164/declareMixin" title="casef">
      <compile files="CaseF.java" options="-1.5"/>
      <run class="CaseF">
@@ -65,7 +83,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="caseg">
      <compile files="CaseG.java" options="-1.5"/>
      <run class="CaseG">
@@ -77,44 +95,44 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="caseh">
      <compile files="CaseH.java" options="-1.5">
          <message kind="error" text="The value for annotation attribute DeclareMixin"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casei">
      <compile files="CaseI.java" options="-1.5">
          <message kind="error" text="Types listed in the 'interfaces'"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casej">
      <compile files="CaseJ.java" options="-1.5">
          <message kind="error" text="createImplementation1"/>
          <message kind="error" text="Method 'int X.createImplementation2(java.lang.Object)':  factory methods "/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casek">
      <compile files="CaseK.java" options="-1.5">
          <message kind="error" text="factory methods for a mixin can take a maximum of one parameter"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casel">
      <compile files="CaseL.java" options="-1.5">
        <message kind="error" text="Cannot cast from CaseL to C"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casem">
      <compile files="CaseM.java" options="-1.5">
        <message kind="error" text=": factory methods for a mixin must either return an interface type or specify interfaces in the annotation and return a class"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casen">
      <compile files="CaseN.java" options="-1.5"/>
      <run class="CaseN">
@@ -123,13 +141,13 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="caseo">
      <compile files="CaseO.java" options="-1.5">
        <message kind="error" text="factory method does not return something that implements 'I'"/>
      </compile>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="casep">
      <compile files="CaseP.java" options="-1.5"/>
      <run class="CaseP">
@@ -138,7 +156,7 @@
        </stdout>
      </run>
    </ajc-test>
-   
+
    <ajc-test dir="features164/declareMixin" title="caseq">
      <compile files="CaseQ.java" options="-1.5"/>
      <run class="CaseQ">
@@ -147,8 +165,8 @@
          <line text="goo() running"/>
        </stdout>
      </run>
-   </ajc-test>   
-     
+   </ajc-test>
+
    <ajc-test dir="features164/declareMixin" title="caser">
      <compile files="CaseR.java" options="-1.5"/>
      <run class="CaseR">
@@ -157,17 +175,17 @@
          <line text="false"/>
        </stdout>
      </run>
-   </ajc-test>    
-    
+   </ajc-test>
+
    <ajc-test dir="features164/declareMixin" title="cases">
      <compile files="CaseS.java" options="-1.5">
        <message kind="error" text="not compatible"/>
      </compile>
-   </ajc-test>     
-   
+   </ajc-test>
+
    <ajc-test dir="features164/declareMixin" title="caset">
      <compile files="CaseT.java" options="-1.5 -showWeaveInfo">
        <message kind="weave" text="Mixing interface 'I' (CaseT.java) into type 'CaseT' (CaseT.java)"/>
      </compile>
-   </ajc-test>    
+   </ajc-test>
 </suite>
