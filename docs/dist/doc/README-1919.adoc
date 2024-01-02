@@ -1,0 +1,92 @@
+== AspectJ 1.9.19
+
+_© Copyright 2022 Contributors. All rights reserved._
+
+== AspectJ 1.9.19
+
+_© Copyright 2022 Contributors. All rights reserved._
+
+_Release info: 1.9.19 available 21-Dec-2022_
+
+Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.19 can be found
+here:
+
+* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.19[GitHub 1.9.19]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.19[Bugzilla 1.9.19]
+
+=== New features
+
+AspectJ 1.9.19 supports https://openjdk.java.net/projects/jdk/19/[Java 19] and its final, preview and incubator
+features, such as:
+
+* Record patterns (preview)
+* Virtual threads (preview)
+* Pattern matching for `switch` (preview 3)
+* Structured concurrency (incubator)
+
+Please note that the upstream Eclipse Java Compiler (ECJ) which the AspectJ Compiler (AJC) is a fork of still has some
+open issues concerning Java 19 preview feature support, see the list in
+https://github.com/eclipse/org.aspectj/issues/184#issuecomment-1272254940[this comment]. AJC therefore inherits the same
+problems for the specific cases described in the linked issues.
+
+=== Improvements
+
+* Improve condy (constant dynamic) support. Together with some custom compilation or weaving options, this helps to
+  avoid a problem when using JaCoCo together with AspectJ, see
+  https://github.com/eclipse/org.aspectj/issues/170#issuecomment-1214163297[this comment in #170] for more details.
+
+=== Code examples
+
+You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
+first supported (possibly as JVM preview features):
+
+* https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17[Pattern matching for switch (preview 1)]
+* https://github.com/eclipse/org.aspectj/tree/master/tests/features199/java18[Pattern matching for switch (preview 2)]
+* https://github.com/eclipse/org.aspectj/tree/master/tests/features1919/java19[Pattern matching for switch (preview 3),
+  record patterns (preview 1)]
+* Please note that presently there is no specific sample code for virtual threads and structured concurrency in the
+  AspectJ code base, because these are just new APIs, no Java language features. You can find sample code for these
+  concurrency features elsewhere, e.g. in the corresponding JEPs. In AspectJ, they should just work transparently like
+  any other Java API.
+
+=== Other changes and bug fixes
+
+* Fix (or rather work around) an old bug occurring when compiling or weaving code using ITD to declare annotations with
+  `SOURCE` retention on types, methods, constructors or fields. While declaring such annotations does not make sense to
+  begin with, at least the AspectJ weaver or compiler should handle the situation gracefully, which now it does by
+  simply ignoring errors caused by it. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=366085[Bugzilla #366085] and
+  https://github.com/eclipse/org.aspectj/pull/196[pull request #196]. Better than this workaround would be for the
+  compiler or weaver to actually print a warning when meeting source level annotations in declare statements. Hence,
+  follow-up issue https://github.com/eclipse/org.aspectj/issues/201[#201] was created.
+* Remove legacy AspectJ Browser code and documentation.
+* Thanks to Andrey Turbanov for several clean code contributions.
+
+=== AspectJ usage hints
+
+==== AspectJ compiler build system requirements
+
+Since 1.9.8, the AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 8 to 10. The
+minimum compile-time requirement is now JDK 11 due to upstream changes in the Eclipse Java Compiler (subset of JDT
+Core), which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3 when compiling
+plain Java code or using plain Java ITD constructs which do not require the AspectJ runtime `aspectjrt`, but the
+compiler itself needs JDK 11+. Just like in previous AspectJ versions, both the runtime `aspectjrt` and the load-time
+weaver `aspectjweaver` still only require JRE 8+.
+
+==== Use LTW on Java 16+
+
+Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
+https://openjdk.java.net/jeps/396[JEP 396 (Strongly Encapsulate JDK Internals by Default)]. Therefore, you need to set
+the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in order to enable aspect weaving. This is due to the
+fact that the weaver uses internal APIs for which we have not found an adequate replacement yet when defining classes
+in different classloaders.
+
+==== Compile with Java preview features
+
+For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
+`java --enable-preview` on that JDK.
+
+Please note, that you cannot run code compiled with preview features on any other JDK than the one used for compilation.
+For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This is a JVM
+limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16. You still
+need to recompile, no matter what.

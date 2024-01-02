@@ -1,0 +1,81 @@
+== AspectJ 1.9.21
+
+_© Copyright 2023 Contributors. All rights reserved._
+
+_Release info: 1.9.21 available 11-Dec-2023_
+
+Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.21 can be found
+here:
+
+* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21[GitHub 1.9.21]
+* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21.1[GitHub 1.9.21.1]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21[Bugzilla 1.9.21]
+
+=== New features
+
+AspectJ 1.9.21 supports https://openjdk.java.net/projects/jdk/21/[Java 21], its final features and a subset of preview
+features, such as:
+
+* Record patterns
+* Pattern matching for switch
+* Virtual threads
+* Sequenced collections
+* Structured concurrency (preview)
+* String templates (preview)
+* Instance main methods (preview)
+
+Unfortunately, even after holding back the AspectJ release for 3 months after JDK 21 general availability, waiting for
+Eclipse JDT Core and the Eclipse Java Compiler (ECJ) to catch up with Java 21 language features, even with Java 21
+officially supported in Eclipse 2023-12, some preview features are still unimplemented in ECJ:
+
+* Unnamed classes (preview)
+* Unnamed patterns and variables (preview)
+
+As soon as these preview features are part of the upstream ECJ we depend on, we hope to publish another AspectJ release
+to support them in the AspectJ Compiler (AJC), too.
+
+=== Improvements
+
+* In https://github.com/eclipse-aspectj/aspectj/issues/266[GitHub issue 266], exception cause reporting has been
+  improved in `ExtensibleURLClassLoader`. Thanks to Andy Russell (@euclio) for his contribution.
+
+=== Other changes and bug fixes
+
+* No major bug fixes
+
+=== AspectJ usage hints
+
+==== AspectJ compiler build system requirements
+
+Since 1.9.21, the AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 11 to 16. The
+minimum compile-time requirement is now JDK 17 due to upstream changes in the Eclipse Java Compiler (subset of JDT
+Core), which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3 when compiling
+plain Java code or using plain Java ITD constructs which do not require the AspectJ runtime `aspectjrt`, but the
+compiler itself needs JDK 17+. Just like in previous AspectJ versions, both the runtime `aspectjrt` and the load-time
+weaver `aspectjweaver` still only require JRE 8+.
+
+Please note: If you run `ajc` on JDKs 11-16, you will probably see an error like `java.lang.NoSuchFieldError:
+RELEASE_17`, and an _ajcore.*.txt_ dump file will be created, while running it on even older JDKs will rather yield an
+`UnsupportedClassVersionError`. See https://github.com/eclipse-aspectj/aspectj/issues/269[GitHub issue 269] for more
+details.
+
+History: Since 1.9.8, the AspectJ compiler ajc needed JDK 11+, before then JDK 8+.
+
+==== Use LTW on Java 16+
+
+Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
+https://openjdk.java.net/jeps/396[JEP 396 (Strongly Encapsulate JDK Internals by Default)] and related subsequent
+JEPs. Therefore, you need to set the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in order to enable
+aspect weaving. This is due to the fact that the weaver uses internal APIs for which we have not found an adequate
+replacement yet when defining classes in different classloaders.
+
+==== Compile with Java preview features
+
+For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
+`java --enable-preview` on that JDK.
+
+Please note, that you cannot run code compiled with preview features on any other JDK than the one used for compilation.
+For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This is a JVM
+limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16. You still
+need to recompile, no matter what.
