@@ -80,7 +80,7 @@ in different classloaders.
 For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
 `java --enable-preview` on that JDK.
 
-Please note that you cannot run code compiled with preview features on any other JDK than the one used for compilation.
+Please note, that you cannot run code compiled with preview features on any other JDK than the one used for compilation.
 For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This is a JVM
 limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16. You still
 need to recompile, no matter what.
