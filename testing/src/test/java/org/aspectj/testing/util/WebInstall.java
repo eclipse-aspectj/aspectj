@@ -94,8 +94,6 @@ public class WebInstall {
     protected static String[] packages = new String[]
     { "aspectj-tools-", ""
     , "aspectj-docs-", ""
-    , "ajde-forteModule-", ""
-    , "ajde-jbuilderOpenTool-", ""
     };
 
     /**

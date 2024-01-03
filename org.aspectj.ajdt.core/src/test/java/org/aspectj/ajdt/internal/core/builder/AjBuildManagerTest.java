@@ -255,15 +255,6 @@ public class AjBuildManagerTest extends TestCase {
 	// deleted,
 	// ((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath());
 	//
-	// JavaBuilder jbuilder = manager.getJavaBuilder();
-	// jbuilder.lastState = new State(jbuilder);
-	// jbuilder.binaryLocationsPerProject = new SimpleLookupTable();
-	//
-	// AjBuildManager.IncrementalBuilder builder
-	// = manager.getIncrementalBuilder(messageWriter); // XXX trap errors
-	// TestNotifier testNotifier = new TestNotifier(builder, jbuilder.currentProject);
-	// jbuilder.notifier = testNotifier;
-	//
 	// IContainer[] sourceFolders = new IContainer[] {
 	// new FilesystemFolder(((File)manager.buildConfig.getSourceRoots().get(0)).getAbsolutePath())
 	// };

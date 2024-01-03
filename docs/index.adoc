@@ -69,12 +69,11 @@ the current version is limited to code the compiler controls.
 |xref:devguide/index.adoc[Development Environment Guide] +
 (printable xref:devguide/printable.html[html]) |This is a guide to
 xref:devguide/ajc.adoc[ajc], the command-line compiler;
-xref:devguide/ajbrowser.adoc[ajbrowser], the stand-alone GUI for
-compiling and viewing crosscutting structure; and the
+and the
 xref:devguide/antsupport.adoc[Ant tasks] for building AspectJ programs.
 
 |xref:pdguide/index.adoc[Problem Diagnosis Guide] +
-(printable xref:pdguide/printable.html[html]) |This has a guide to the
+(xref:pdguide/pdguide.adoc[single page]) |This has a guide to the
 various features available such as messages and trace to help you both
 solve problems with you own programs and report bugs to the AspectJ
 team.
@@ -168,7 +167,7 @@ components
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler[Compiler]
 (for the AspectJ compiler, ajc)
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE[IDE]
-(for AJBrowser and AJDE bugs),
+(for AJDE bugs),
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant[Ant]
 (for the Ant tasks), and
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs[Docs]
@@ -190,10 +189,7 @@ pointcuts, concepts AOP adds to OOP. To read about how the
 link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/dist/doc/examples[examples] work, see the
 xref:progguide/examples.adoc[Examples] section in the
 xref:progguide/index.adoc[Programming Guide]. View and navigate the
-crosscutting structure using https://eclipse.org/ajdt[AJDT]; if you can't
-use Eclipse, try the `ajbrowser` structure viewer, as described in the
-xref:devguide/ajbrowser.adoc[AspectJ Browser] section of the
-xref:devguide/index.adoc[Development Environment Guide].
+crosscutting structure using https://eclipse.org/ajdt[AJDT].
 
 To start using AspectJ with your own code, modify the example aspects to
 apply to your classes. As you learn, use the compiler's `-Xlint` flags

@@ -24,8 +24,6 @@ include::ajdoc.adoc[`ajdoc`, the AspectJ API documentation generator]
 
 include::aj.adoc[`aj`, the AspectJ load-time weaving launcher]
 
-include::ajbrowser.adoc[AspectJ Browser]
-
 include::antsupport.adoc[AspectJ Ant Tasks]
 
 include::ltw.adoc[Load-Time Weaving]

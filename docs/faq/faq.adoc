@@ -26,9 +26,8 @@ supported development environments) and then run it, supplying a small
 (< 100K) runtime library.
 
 The AspectJ technologies include a compiler (`ajc`), a debugger
-(`ajdb`), a documentation generator (`ajdoc`), a program structure
-browser (`ajbrowser`), and integration with Eclipse, Sun-ONE/Netbeans,
-GNU Emacs/XEmacs, JBuilder, and Ant.
+(`ajdb`), a documentation generator (`ajdoc`) and integration with Eclipse and
+Ant.
 
 *Q:* What are the benefits of using AspectJ?
 
@@ -233,9 +232,6 @@ AspectJ for JBuilder project http://aspectj4jbuildr.sourceforge.net
 * Netbeans up to 3.4 (and Sun Microsystems' Forte for Java (versions 2
 and 3), Sun/One) in the SourceForge AspectJ for NetBeans project
 http://aspectj4netbean.sourceforge.net
-
-The common functionality of AJDE is also available in the stand-alone
-source code browser `ajbrowser`, included in the tools distribution.
 
 Finally, as mentioned above, AspectJ also supports building with Ant by
 providing task interfaces to the ajc and ajdoc tools.
@@ -1201,10 +1197,10 @@ programmers to get the benefits of modularizing crosscutting concerns
 while still having immediate access to what aspects affect a class.
 
 For example, the link:devguide/index.html[Development Environment Guide]
-link:devguide/ajbrowser.html[ajbrowser section]. shows that you can list
+shows that you can list
 or navigate between method and advice affecting that method and between
 a type and declarations in an aspect on that type. (The IDE support may
-have more features than `ajbrowser`, depending on the IDE. See
+have more features than that, depending on the IDE. See
 #q:integrateWithDevTools[Q: How well does AspectJ integrate with
 existing Java development tools?] for more information on which Java
 development environments are supported.)
@@ -2162,8 +2158,7 @@ tree as Java files based on the .java extension), you can use the .aj
 extension for your AspectJ files. The ajc compiler accepts both .java
 and .aj files, and you can set up your build scripts to include the
 correct list of source files. (You will have to find another editor for
-editing AspectJ files; you can use the ajbrowser to view edit your
-AspectJ files and navigate the crosscutting structure.)
+editing AspectJ files and possible viewing crosscutting structure.)
 
 *Q:* I used to be able to compile my program in my IDE, but when I use
 AJDE, I run out of memory (or it goes really slow).
@@ -2183,8 +2178,8 @@ by 5-10%.
 To increase memory for the ajc compiler, see #q:ajcoom[Q:The AspectJ
 compiler aborts with an OutOfMemoryError when compiling many classes.
 How can I fix this?]. For your IDE, do something similar or follow the
-provider's instructions. For example, to increase memory in JBuilder,
-edit the `jbuilderX/bin/jbuilder.config` file to have an entry like:
+provider's instructions. For example, to increase memory, add something like
+this to your IDE's config file or start script:
 
 [source, text]
 ....
@@ -3173,11 +3168,6 @@ listed in #q:integrateWithDevTools[Q: How well does AspectJ integrate
 with existing Java development tools?] (including bug reports for the
 AJDE Eclipse support, which you can submit at
 https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AJDT ).
-
-Bug reports on ajbrowser should have version information for both Java
-and AspectJ, and (most importantly) clear steps for reproducing the bug.
-You may submit ajbrowser bugs against the IDE component of AspectJ via
-the web form https://bugs.eclipse.org/bugs/enter_bug.cgi?product=AspectJ.
 
 One of the benefits of open-source is that you can find and fix the bug
 for yourself; when you submit the fix back to us, we can validate the

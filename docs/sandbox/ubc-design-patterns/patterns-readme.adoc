@@ -12,7 +12,7 @@ Build options
 
 * To build the code manually with ajc, use the corresponding build.lst
   files, creating the aspect library first (to create lib.jar).
-* Ajbrowser and the other IDE support does not support options like
+* IDE support does not support options like
   sourceroots or -outjar in the .lst files, so you'll have to create new
   .lst files if you want to build portions of the project in an IDE.
 * To build with eclipse, there are .project and .classpath files, but

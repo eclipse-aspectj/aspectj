@@ -6,12 +6,9 @@ _Version @build.version.long@ released on @build.date@._
 
 * the link:bin[`<aspectj install dir>/bin`] directory has scripts for
 ** `ajc`: the compiler for the AspectJ language
-** `ajbrowser`: a graphical editor for compiling programs with `ajc` and
-navigating the crosscutting structure of those programs
 * the directory link:lib[`<aspectj install dir>/lib`] has the AspectJ
 binaries,
-** `aspectjtools.jar`: libraries for `ajc`, `ajbrowser`, and the Ant
-tasks
+** `aspectjtools.jar`: libraries for `ajc` and the Ant tasks
 ** `aspectjrt.jar`: runtime library for AspectJ programs
 * the directory link:doc[`<aspectj install dir>/doc`] has examples,
 programming and development environment guides, instructions for the Ant
@@ -24,7 +21,7 @@ the link:doc/index.html[index] page.
 
 === 2 Install Procedure
 
-The AspectJ tools `ajc` and `ajbrowser` are Java programs that can be
+The AspectJ tool `ajc` is a Java program that can be
 run indirectly from the scripts or directly from `aspectjtools.jar`. The
 `aspectjrt.jar` needs to be on the classpath when compiling or running
 programs compiled by `ajc`. This procedure shows ways to do that.
@@ -78,11 +75,7 @@ ____
 `C:\jdk1.3\bin\java.exe -jar D:\aspectj\lib\aspectjtools.jar %*`
 ____
 
-With no arguments or only argument list (.lst) files, this will launch
-`ajbrowser`, the GUI structure browser; otherwise, it will run `ajc`,
-the AspectJ compiler. This means that if your browser is set up to run
-jar files, clicking a link to lib/aspectjtools.jar will launch
-`ajbrowser`.
+This will run `ajc`, the AspectJ compiler.
 
 You can also create scripts like those created by the installer. These
 scripts use full paths that are system dependent so you will likely have
