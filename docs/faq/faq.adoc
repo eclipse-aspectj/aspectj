@@ -3109,6 +3109,7 @@ not hold BCEL structures in memory after our evaluation completes.
 
 *A:* Visit the AspectJ project web site: https://eclipse.org/aspectj.
 
+[[ajcbugs]]
 *Q:* How do I submit a bug report?
 
 *A:* You can submit a bug from
