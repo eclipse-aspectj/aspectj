@@ -18,7 +18,6 @@ most-recent documentation available from the https://eclipse.org/aspectj[AspectJ
 * xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver]
 * xref:ajdoc.adoc[`ajdoc`, the AspectJ API documentation generator]
 * xref:aj.adoc[`aj`, the AspectJ load-time weaving launcher]
-* xref:ajbrowser.adoc[AspectJ Browser]
 * xref:antsupport.adoc[AspectJ Ant Tasks]
 * xref:ltw.adoc[Load-Time Weaving]
 * xref:compatibility.adoc[AspectJ version compatibility]

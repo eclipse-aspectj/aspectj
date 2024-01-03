@@ -16,17 +16,13 @@ build outside of Eclipse.)
 |===
 | *Module* | *Dependencies* | *Description*
 
-| ajbrowser | ajde, asm, bridge, util, taskdefs (pseudo, for build system) | This module contains the ajbrowser
-application. It depends on the ajde module for access to the aspectj compiler, and also for the swing user interface
-components that ajde provides.
-
 | ajde | asm, bridge, org.aspectj.ajdt.core, org.eclipse.jdt.core, util | Hides the details of accessing the AspectJ
 compiler and interpreting compilation results (error messages, structure model, etc.) from other applications (typically
 IDEs) that need to invoke it programmatically. Changing any public interface in ajde can break all the IDE integration
 projects and should be done with care. +
  +
-It also contains a library of common swing user interface components that can be used by any swing based IDE. Ajbrowser
-and the non-eclipse IDE integration projects use this library (except for the emacs support).
+It also contains a library of common swing user interface components that can be used by any swing based IDE. The
+non-eclipse IDE integration projects use this library (except for the emacs support).
 
 | asm | bridge | Contains the Abstract Structure Model, which represents the result of an aspectj compilation. Clients
 of ajde are returned an instance of the structure model which allows them to navigate and interpret the static structure
@@ -53,7 +49,7 @@ accidental changes. Sources are available in CVS at dev.eclipse.org:/cvsroot/tec
 bytecode toolkit. All advice planning and weaving is done here. Takes an aspect bytecode format and other Java
 classfiles as input.
 |===
- 
+
 === Supporting Modules
 
 *CVS Location:* dev.eclipse.org:/cvsroot/technology/org.aspectj/modules
@@ -78,31 +74,4 @@ classfiles as input.
 | *Plug-in* | *Dependencies* | *Description*
 | org.eclipse.ajdt.ui | org.aspectj.ajde | AspectJ IDE support for Eclipse
 | org.aspectj.ajde | ajde, asm, bridge | AspectJ libraries plug-in
-|===
-
-=== JBuilder Support
-
-*CVS Location:* cvs.aspectj4jbuildr.sourceforge.net:/cvsroot/aspectj4jbuildr
-
-|===
-| *OpenTool* | *Dependencies* | *Description*
-| jbuilder | ajde, asm, bridge | AspectJ IDE support for JBuilder
-|===
-
-=== NetBeans Support
-
-*CVS Location:* cvs.aspectj4netbean.sourceforge.net:/cvsroot/aspectj4netbean
-
-|===
-| *Module* | *Dependencies* | *Description*
-| netbeans | ajde, asm, bridge | AspectJ IDE support for NetBeans and SunONE Studio
-|===
-
-=== Emacs Support
-
-*CVS Location:* cvs.aspectj4emacs.sourceforge.net:/cvsroot/aspectj4emacs
-
-|===
-| *Module* | *Dependencies* | *Description*
-| emacs | ajde, asm, bridge | AspectJ support for Emacs and XEmacs
 |===
