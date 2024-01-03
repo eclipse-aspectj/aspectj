@@ -304,6 +304,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>3.0.0-M3</version>
 				</plugin>
@@ -419,7 +424,7 @@
 					<configuration>
 						<attributes>
 							<source-highlighter>coderay</source-highlighter>
-							<imagesdir>./images</imagesdir>
+							<!--<imagesdir>./images</imagesdir>-->
 							<toc>left</toc>
 							<icons>font</icons>
 						</attributes>
