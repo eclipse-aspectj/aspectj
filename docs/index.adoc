@@ -12,8 +12,8 @@ for AspectJ 5.
 |===
 |+++Section+++ |+++Contents+++
 
-|xref:#documentation[Documentation] |xref:faq/faq.adoc#faq[FAQ], xref:dist/doc/quick5.pdf[Quick
-Reference (AspectJ 5)], xref:dist/doc/quick.pdf[Quick Reference (1.2.1)],
+|xref:#documentation[Documentation] |xref:faq/faq.adoc#faq[FAQ], xref:quickref/quick5.pdf[Quick
+Reference (AspectJ 5)], xref:quickref/quick.pdf[Quick Reference (1.2.1)],
 xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook],
 xref:progguide/index.adoc[programming],
 xref:devguide/index.adoc[development] and
@@ -38,10 +38,10 @@ mailto:aspectj-dev@eclipse.org[developers].
 [width="100%",cols="50%,50%",options="header",]
 |===
 |Documentation |Description
-|xref:dist/doc/quick5.pdf[AspectJ 5 Quick Reference] |This is a four-page quick
+|xref:quickref/quick5.pdf[AspectJ 5 Quick Reference] |This is a four-page quick
 reference for the AspectJ 5 language.
 
-|xref:dist/doc/quick.pdf[AspectJ Quick Reference] |This is a two-page quick
+|xref:quickref/quick.pdf[AspectJ Quick Reference] |This is a two-page quick
 reference for the AspectJ language.
 
 |xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook] +

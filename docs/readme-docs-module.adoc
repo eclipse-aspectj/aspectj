@@ -13,8 +13,8 @@ works:
   AspectJ API's, script snippets, and instructional trails, all intended
   to serve as sources for documentation. See xref:sandbox/readme-sandbox.adoc[].
 * `teaching`: Teaching materials, esp. for the AspectJ tutorials.
-* `quick.doc`: The Microsoft Word source file for the .pdf Quick Reference
-  guides `dist/doc/quick.pdf` and `dist/doc/quickA4.pdf`.
+* `quickref/quick.doc`: The Microsoft Word source file for the .pdf Quick Reference
+  guides `quickref/quick.pdf` and `quickref/quickA4.pdf`.
 * `build.xml`: Ant build script for the doc distribution
 * `developer`: Docs for AspectJ developers
 
@@ -27,7 +27,7 @@ into the product distribution by the master build script,
 * When building docbook, uses `../lib/saxon` libraries.
 * When building installer, using `../lib/build/build.jar` and the
   `../build/installer-resources`.
-* `dist/doc/quick.pdf` is generated manually from `quick.doc`.
+* `quickref/quick.pdf` is generated manually from `quickref/quick.doc`.
 * `../org.aspectj.lib` provides library sources for
   `{AspectJ}/doc/aspectjlib`.
 
