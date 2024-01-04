@@ -55,4 +55,4 @@ Ensure you run this with a JDK - the more recent the better since some tests wil
 
 ## Maven releases
 
-AspectJ is published to maven central under the `org.aspectj` groupID: https://search.maven.org/search?q=g:org.aspectj
+AspectJ is published to Maven Central under [group ID `org.aspectj`](https://search.maven.org/search?q=g:org.aspectj).
