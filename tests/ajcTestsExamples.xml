@@ -1,14 +1,14 @@
 
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
 
-<!-- 
+<!--
 	Test documentation examples.
-	Results unverified except for compiler messages, 
+	Results unverified except for compiler messages,
 	runtime exceptions, System.exit codes, and System.err
 	messages (the latter not for all tests).
 
   To run the example classes using a forked 1.1 vm:
-	
+
   java -Djavarun.fork=true \
        -Djavarun.java.home=d:\\jdk11 \
        -Djavarun.java=d:\\jdk11\\bin\\javaw \
@@ -16,20 +16,20 @@
        -jar ../aj-build/jars/testing-drivers-all.jar \
        ajcTestsExamples.xml \
        -ajctestSkipKeywords=knownLimitation-run11 \
-       -logFail 
+       -logFail
 
 -->
 <suite>
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="bean example">
         <compile argfiles="bean/files.lst"/>
         <run class="bean.Demo"
 			errStreamIsError="false"/>
 		<!-- ??: error security properties not found. using defaults. -->
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples,knownLimitation-run11"
 		title="introduction">
         <compile argfiles="introduction/files.lst"/>
@@ -37,84 +37,84 @@
         <run vm="1.2" class="introduction.CloneablePoint"/>
         <run vm="1.2" class="introduction.ComparablePoint"/>
         <run vm="1.2" class="introduction.HashablePoint"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="observer example">
         <compile argfiles="observer/files.lst"/>
         <!-- GUI run class="observer.Demo"/ -->
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="spacewar example">
         <compile argfiles="spacewar/debug.lst"/>
         <compile argfiles="spacewar/demo.lst"/>
         <!-- GUI run class="spacewar.Game"/ -->
-    </ajc-test>   
+    </ajc-test>
 
 	<!--
   	TODO: change 1.2 API's in telecom to 1.1:
   	(Vector.[add|remove](..) to [add|remove]Element(..))
   	then remove the knownLimitation-run11 keywords
-	-->			
-    <ajc-test dir="../docs/dist/doc/examples"
+	-->
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples,knownLimitation-run11"
 		title="telecom basic example">
         <compile argfiles="telecom/basic.lst"/>
         <run class="telecom.BasicSimulation"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples,knownLimitation-run11"
 		title="telecom billing example">
         <compile argfiles="telecom/billing.lst"/>
         <run class="telecom.BillingSimulation"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples,knownLimitation-run11"
 		title="telecom timing example">
         <compile argfiles="telecom/timing.lst"/>
         <run class="telecom.TimingSimulation"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="thisJoinPoint example">
         <compile argfiles="tjp/files.lst"/>
         <run class="tjp.Demo"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="tracing example - none">
         <compile argfiles="tracing/notrace.lst"/>
         <run class="tracing.ExampleMain"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="tracing example - version 1">
         <compile argfiles="tracing/tracev1.lst"/>
         <run class="tracing.version1.TraceMyClasses"
 			errStreamIsError="false"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="tracing example - version 2">
         <compile argfiles="tracing/tracev2.lst"/>
         <run class="tracing.version2.TraceMyClasses"
 			errStreamIsError="false"/>
-    </ajc-test>   
+    </ajc-test>
 
-    <ajc-test dir="../docs/dist/doc/examples"
+    <ajc-test dir="../docs/examples"
     	keywords="doc-examples"
 		title="tracing example - version 3">
         <compile argfiles="tracing/tracev3.lst"/>
         <run class="tracing.version3.TraceMyClasses"
 			errStreamIsError="false"/>
-    </ajc-test>   
+    </ajc-test>
 </suite>

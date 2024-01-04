@@ -18,7 +18,7 @@ xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook],
 xref:progguide/index.adoc[programming],
 xref:devguide/index.adoc[development] and
 xref:pdguide/index.adoc[problem diagnosis] guides,
-link:runtime-api/index.html[API] and link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/dist/doc/examples[example code].
+link:runtime-api/index.html[API] and link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[example code].
 
 |xref:#distributions[Distributions]
 |https://eclipse.org/aspectj[AspectJ]; development environment support
@@ -116,7 +116,7 @@ xref:dist/doc/porting.adoc[1.0].
 
 |xref:dist/doc/changes.adoc[Changes] |Changes between historical releases up to 1.6.0.
 
-|link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/dist/doc/examples[Examples] |AspectJ code to demonstrate some language
+|link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[Examples] |AspectJ code to demonstrate some language
 features and implement JavaBean properties, the Observer pattern, a
 tracing library, and a game application where aspects handle display
 updating.
@@ -190,7 +190,7 @@ xref:progguide/index.adoc[Programming Guide], keeping the
 xref:progguide/semantics.adoc[Semantics appendix] nearby as the best
 reference for AspectJ usage. Focus initially on the join point model and
 pointcuts, concepts AOP adds to OOP. To read about how the
-link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/dist/doc/examples[examples] work, see the
+link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[examples] work, see the
 xref:progguide/examples.adoc[Examples] section in the
 xref:progguide/index.adoc[Programming Guide]. View and navigate the
 crosscutting structure using https://eclipse.org/ajdt[AJDT].
