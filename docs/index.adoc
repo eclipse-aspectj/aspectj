@@ -1,33 +1,27 @@
 [[top]]
 == AspectJ Documentation and Resources
 
-AspectJ^TM^ is a seamless aspect-oriented extension to
-Java^TM^. The compiler and development tools are available
-under an open-source license, require Java 8 to run, and produce code
-that runs in JDK 1.3 and later VM's. For the latest materials, see
-https://eclipse.org/aspectj. Not all of these materials have been updated
-for AspectJ 5.
+AspectJ^TM^ is a seamless aspect-oriented extension to Java^TM^. The compiler and development tools are available under
+an open-source license, require Java 8 to run, and produce code that runs in JDK 1.3 and later VM's. For the latest
+materials, see https://eclipse.org/aspectj. Not all of these materials have been updated for AspectJ 5.
 
 [cols=",",]
 |===
 |+++Section+++ |+++Contents+++
 
-|xref:#documentation[Documentation] |xref:faq/faq.adoc#faq[FAQ], xref:quickref/quick5.pdf[Quick
-Reference (AspectJ 5)], xref:quickref/quick.pdf[Quick Reference (1.2.1)],
-xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook],
-xref:progguide/index.adoc[programming],
-xref:devguide/index.adoc[development] and
-xref:pdguide/index.adoc[problem diagnosis] guides,
-link:runtime-api/index.html[API] and link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[example code].
+|xref:#documentation[Documentation]
+|xref:faq/faq.adoc#faq[FAQ], xref:quickref/quick5.pdf[Quick Reference (AspectJ 5)],
+xref:quickref/quick.pdf[Quick Reference (1.2.1)], xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook],
+xref:progguide/index.adoc[programming], xref:devguide/index.adoc[development] and
+xref:pdguide/index.adoc[problem diagnosis] guides, link:runtime-api/index.html[API] and
+link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[example code]
 
 |xref:#distributions[Distributions]
-|https://eclipse.org/aspectj[AspectJ]; development environment support
-for https://eclipse.org/ajdt[Eclipse].
+|https://eclipse.org/aspectj[AspectJ] development environment support for https://eclipse.org/ajdt[Eclipse]
 
-|xref:#resources[Other resources] |https://eclipse.org/aspectj[AspectJ project], the bug
-https://bugs.eclipse.org/bugs[db], and mailing lists for
-mailto:aspectj-users@eclipse.org[users] and
-mailto:aspectj-dev@eclipse.org[developers].
+|xref:#resources[Other resources]
+|https://eclipse.org/aspectj[AspectJ project], the bug https://bugs.eclipse.org/bugs[db], and mailing lists for
+mailto:aspectj-users@eclipse.org[users] and mailto:aspectj-dev@eclipse.org[developers].
 
 |xref:#paths[Learning paths] |for those new to AspectJ
 |===
@@ -37,55 +31,52 @@ mailto:aspectj-dev@eclipse.org[developers].
 
 [width="100%",cols="50%,50%",options="header",]
 |===
-|Documentation |Description
-|xref:quickref/quick5.pdf[AspectJ 5 Quick Reference] |This is a four-page quick
-reference for the AspectJ 5 language.
+|Documentation
+|Description
 
-|xref:quickref/quick.pdf[AspectJ Quick Reference] |This is a two-page quick
-reference for the AspectJ language.
+|xref:quickref/quick5.pdf[AspectJ 5 Quick Reference]
+|Four-page quick reference for the AspectJ 5 language
+
+|xref:quickref/quick.pdf[AspectJ Quick Reference]
+|Two-page quick reference for the AspectJ language
 
 |xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook] +
-(xref:adk15notebook/adk15notebook.adoc[single page]) |This describes the
-changes to the AspectJ language and tools introduced in the AspectJ 5
-Development Kit. These changes are additive, and are not yet reflected
-in the programming guide or quick reference.
+(xref:adk15notebook/adk15notebook.adoc[single page])
+|Describes the changes to the AspectJ language and tools introduced in the AspectJ 5 Development Kit. These changes are
+additive, and are not yet reflected in the programming guide or quick reference.
 
 |xref:progguide/index.adoc[Programming Guide] +
-(xref:progguide/progguide.adoc[single page]) |This introduces AOP and the
-AspectJ language. xref:progguide/gettingstarted.adoc[Getting Started]
-describes basic semantics, and shows development- and production-time
-applications. xref:progguide/language.adoc[The AspectJ Language]
-describes join points, pointcuts, advice, and introduction, all features
-new to AOP. xref:progguide/examples.adoc[Examples] walks you through the
-examples included with the documentation, and there are two short
-chapters on useful xref:progguide/idioms.adoc[Idioms] and a few
-xref:progguide/pitfalls.html[Pitfalls] The appendices have reference
-information: the xref:progguide/quickreference.adoc[Quick Reference] summarizes
-AspectJ syntax, the xref:progguide/semantics.adoc[Language Semantics]
-best describes AspectJ usage, and
-xref:progguide/implementation.adoc[Implementation Notes] describes how
-the current version is limited to code the compiler controls.
+(xref:progguide/progguide.adoc[single page])
+|Introduces AOP and the AspectJ language. xref:progguide/gettingstarted.adoc[Getting Started] describes basic semantics
+and shows development- and production-time applications. xref:progguide/language.adoc[The AspectJ Language] describes
+join points, pointcuts, advice, and introduction, all features new to AOP. xref:progguide/examples.adoc[Examples] walks
+you through the examples included with the documentation, and there are two short chapters on useful
+xref:progguide/idioms.adoc[Idioms] and a few xref:progguide/pitfalls.html[Pitfalls]. +
+The appendices have reference information: the xref:progguide/quickreference.adoc[Quick Reference] summarizes AspectJ
+syntax, the xref:progguide/semantics.adoc[Language Semantics] best describes AspectJ usage, and
+xref:progguide/implementation.adoc[Implementation Notes] describes how the current version is limited to code the
+compiler controls.
 
 |xref:devguide/index.adoc[Development Environment Guide] +
-(xref:devguide/devguide.adoc[single page]) |This is a guide to
-xref:devguide/ajc.adoc[ajc], the command-line compiler;
-and the
-xref:devguide/antsupport.adoc[Ant tasks] for building AspectJ programs.
+(xref:devguide/devguide.adoc[single page])
+|Guide to the command-line compiler xref:devguide/ajc.adoc[ajc] and the xref:devguide/antsupport.adoc[Ant tasks] for
+building AspectJ programs
 
 |xref:pdguide/index.adoc[Problem Diagnosis Guide] +
-(xref:pdguide/pdguide.adoc[single page]) |This has a guide to the
-various features available such as messages and trace to help you both
-solve problems with you own programs and report bugs to the AspectJ
-team.
+(xref:pdguide/pdguide.adoc[single page])
+|Guide to various debugging features available, such as messages and trace to help you both solve problems with you own
+programs and report bugs to the AspectJ team
 
-|xref:runtime-api/index.html[AspectJ API] |API documentation for AspectJ
-runtime classes. JoinPoint shows the state automatically available at
-each join point. See also the xref:weaver-api/index.html[Weaver API]
+|xref:runtime-api/index.html[AspectJ API]
+|API documentation for AspectJ runtime classes. `JoinPoint` shows the state automatically available at each join point.
+See also the xref:weaver-api/index.html[Weaver API].
 
-|xref:faq/faq.adoc#faq[FAQ] |Frequently-asked questions about the AspectJ
-language, tools, and project.
+|xref:faq/faq.adoc#faq[FAQ]
+|Frequently asked questions about the AspectJ language, tools, and project
 
-|xref:release/JavaVersionCompatibility.adoc#faq[Java version compatibility] |Compatibility matrix, explaining which AspectJ compiler version supports which Java language version and needs which JDK to run
+|xref:release/JavaVersionCompatibility.adoc[Java version compatibility]
+|Compatibility matrix, explaining which AspectJ compiler version supports which Java language version and needs which
+JDK to run
 
 |Release notes |Release notes, describing new features, improvements, bugfixes per AspectJ version: +
  +
@@ -116,18 +107,19 @@ xref:release/README-1.5.2.adoc[1.5.2], xref:release/README-1.5.1.adoc[1.5.1],
 xref:release/README-1.5.0.adoc[1.5.0], xref:release/README-1.2.1.adoc[1.2.1],
 xref:release/README-1.2.adoc[1.2], xref:release/README-1.1.adoc[1.1].
 
-|xref:release/changes.adoc[Changes] (historical) |Changes between historical releases up to 1.6.0
+|xref:release/changes.adoc[Changes] (historical)
+|Changes between historical releases up to 1.6.0
 
-|xref:release/porting.adoc[Porting guide] (historical) |Porting guide for historical releases to 1.2
+|xref:release/porting.adoc[Porting guide] (historical)
+|Porting guide for historical releases to 1.2
 
-|link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[Examples] |AspectJ code to demonstrate some language
-features and implement JavaBean properties, the Observer pattern, a
-tracing library, and a game application where aspects handle display
-updating.
+|link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[Examples]
+|AspectJ code to demonstrate some language features and implement JavaBean properties, the Observer pattern, a tracing
+library, and a game application where aspects handle display updating
 
 | xref:developer/index.adoc[AspectJ Design Overview] +
-(xref:developer/design-overview.adoc[single page]) |Introductory information about
-AspectJ language design, developer guides, module structure
+(xref:developer/design-overview.adoc[single page])
+|Introductory information about AspectJ language design, developer guides, module structure
 |===
 
 [[distributions]]
@@ -136,20 +128,21 @@ AspectJ language design, developer guides, module structure
 
 [cols=",",options="header",]
 |===
-|Distributions |Description
-|https://eclipse.org/aspectj[AspectJ] |The AspectJ distribution contains
-binaries for the compiler, structure browser, and Ant taskdefs, as well
-as the documentation and examples.
+|Distributions
+|Description
 
-|https://eclipse.org/aspectj[AspectJ] source code |Source code for
-AspectJ is available under the open-source
-https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public
-License v 2.0] license from the Git repositories for the AspectJ
-project. See the xref:faq/faq.adoc#buildingsource[FAQ entry].
+|https://eclipse.org/aspectj[AspectJ binary distribution]
+|The AspectJ distribution contains a Java-based installer, binaries for the compiler, Ant taskdefs as well as the
+documentation and examples.
 
-|https://eclipse.org/ajdt[AspectJ for Eclipse] |AspectJ Development
-Environment support for Eclipse is available under Eclipse Public
-License v 1.0 from the eclipse.org project site https://eclipse.org/ajdt
+|https://eclipse.org/aspectj[AspectJ source code]
+|Source code for AspectJ is available under the open-source
+https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt[Eclipse Public License v 2.0] license from the Git
+repositories for the AspectJ project. See the xref:faq/faq.adoc#buildingsource[FAQ entry].
+
+|https://eclipse.org/ajdt[AspectJ for Eclipse]
+|AspectJ Development Environment support for Eclipse is available under Eclipse Public License v 1.0 from the
+eclipse.org project site https://eclipse.org/ajdt
 |===
 
 [[resources]]
@@ -158,61 +151,47 @@ License v 1.0 from the eclipse.org project site https://eclipse.org/ajdt
 
 [cols=",",options="header",]
 |===
-|Resources |Description
-|Mail lists |AspectJ users discuss tips and best practices for writing
-AspectJ programs on aspectj-users@eclipse.org. AspectJ developers
-discuss issues with developing the AspectJ tools on
-aspectj-dev@eclipse.org. To get occasional emails about AspectJ releases
-and relevant events, subscribe to aspectj-announce@eclipse.org. To view
-list archives or subscribe to the list, go to
-https://eclipse.org/aspectj[the AspectJ home page]. To find archived
-emails, use the Eclipse site
+|Resources
+|Description
+
+|Mail lists
+|AspectJ users discuss tips and best practices for writing AspectJ programs on aspectj-users@eclipse.org. AspectJ
+developers discuss issues with developing the AspectJ tools on aspectj-dev@eclipse.org. To get occasional emails about
+AspectJ releases and relevant events, subscribe to aspectj-announce@eclipse.org. To view list archives or subscribe to
+the list, go to https://eclipse.org/aspectj[the AspectJ home page]. To find archived emails, use the Eclipse site
 https://www.eclipse.org/search/search.cgi[search page].
 
-|https://bugs.eclipse.org/bugs[Bug database] |Use the Eclipse project's
-Bugzilla database to view and submit bugs against the AspectJ product
-components
-https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler[Compiler]
-(for the AspectJ compiler, ajc)
-https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE[IDE]
-(for AJDE bugs),
-https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant[Ant]
-(for the Ant tasks), and
-https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs[Docs]
-(for the documentation). Bugs all users should know about are
-https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info[flagged
-with the "info" keyword]. See the xref:faq/faq.adoc#ajcbugs[FAQ entry] for
-instructions on submitting compiler bugs.
-
+|https://bugs.eclipse.org/bugs[Bug database]
+|Use the Eclipse project's Bugzilla database to view and submit bugs against the AspectJ product components
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Compiler[Compiler] (for the AspectJ compiler, ajc),
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=IDE[IDE] (for AJDE bugs),
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Ant[Ant] (for the Ant tasks) and
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&component=Docs[Docs] (for the documentation).
+Bugs all users should know about are
+https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&keywords=info[flagged with the "info" keyword].
+See the xref:faq/faq.adoc#ajcbugs[FAQ entry] for instructions on submitting compiler bugs.
 |===
 
 [[paths]]
 === Suggested learning paths for those new to AspectJ
 
-To learn the AspectJ language, read the
-xref:progguide/index.adoc[Programming Guide], keeping the
-xref:progguide/semantics.adoc[Semantics appendix] nearby as the best
-reference for AspectJ usage. Focus initially on the join point model and
-pointcuts, concepts AOP adds to OOP. To read about how the
+To learn the AspectJ language, read the xref:progguide/index.adoc[Programming Guide], keeping the
+xref:progguide/semantics.adoc[Semantics appendix] nearby as the best reference for AspectJ usage. Focus initially on the
+join point model and pointcuts, concepts AOP adds to OOP. To read about how the
 link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[examples] work, see the
-xref:progguide/examples.adoc[Examples] section in the
-xref:progguide/index.adoc[Programming Guide]. View and navigate the
-crosscutting structure using https://eclipse.org/ajdt[AJDT].
+xref:progguide/examples.adoc[Examples] section in the xref:progguide/index.adoc[Programming Guide]. View and navigate
+the crosscutting structure using https://eclipse.org/ajdt[AJDT].
 
-To start using AspectJ with your own code, modify the example aspects to
-apply to your classes. As you learn, use the compiler's `-Xlint` flags
-to catch some common mistakes. (Understand that the
-xref:progguide/implementation.adoc[current implementation] is limited to
-code the compiler controls.)
+To start using AspectJ with your own code, modify the example aspects to apply to your classes. As you learn, use the
+compiler's `-Xlint` flags to catch some common mistakes. (Understand that the
+xref:progguide/implementation.adoc[current implementation] is limited to code the compiler controls.)
 
-To plan how to adopt AspectJ into a project, read the
-xref:progguide/index.adoc[Programming Guide] on development- and
-production-time aspects and the FAQ entries for
-xref:faq/faq.adoc#howToStartUsing[How should I start using AspectJ?],
-xref:faq/faq.adoc#adoption[Deciding to adopt AspectJ], the Development tools
-sections (xref:faq/faq.adoc#integrateWithDevTools[How does AspectJ integrate with existing Java development tools?],
-xref:faq/faq.adoc#devtools[Integrating AspectJ into your development environment], xref:faq/faq.adoc#ltw[Load-time weaving]), and
-xref:faq/faq.adoc#opensource[AspectJ as open-source].
+To plan how to adopt AspectJ into a project, read the xref:progguide/index.adoc[Programming Guide] on development- and
+production-time aspects and the FAQ entries for xref:faq/faq.adoc#howToStartUsing[How should I start using AspectJ?],
+xref:faq/faq.adoc#adoption[Deciding to adopt AspectJ], the Development tools sections
+(xref:faq/faq.adoc#integrateWithDevTools[How does AspectJ integrate with existing Java development tools?],
+xref:faq/faq.adoc#devtools[Integrating AspectJ into your development environment],
+xref:faq/faq.adoc#ltw[Load-time weaving]), and xref:faq/faq.adoc#opensource[AspectJ as open-source]).
 
 Enjoy the language!
 
