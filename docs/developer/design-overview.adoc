@@ -23,7 +23,7 @@ longer and are more likely to introduce new 'bugs'."
 ATTENTION: Please do not remove blank lines in between 'include::' statements. Otherwise, section numbers in the
 table of contents (TOC) can be wrong and the first section of each document missing completely.
 ////
-include::compiler-weaver/index.adoc[Guide for Developers of the AspectJ Compiler and Weaver]
+include::compiler-weaver.adoc[Guide for Developers of the AspectJ Compiler and Weaver]
 
 include::modules.adoc[Module Structure]
 
