@@ -92,7 +92,7 @@ public class Ajc11CompilerAdapterTest extends TestCase {
     }
 
     void setupTracingJava(Javac javac) { // XXX assumes module dir, doc loc
-        String exDir = "../docs/dist/doc/examples";
+        String exDir = "../docs/examples";
         javac.setSrcdir(new Path(javac.getProject(), exDir));
         javac.setIncludes("tracing/*.java"); // XXX assumes tracing example
     }

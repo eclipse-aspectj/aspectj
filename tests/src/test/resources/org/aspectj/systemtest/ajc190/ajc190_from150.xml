@@ -1569,7 +1569,7 @@
 
     <!-- end of atOverride tests with ITDs -->
 
-    <ajc-test dir="../docs/dist/doc/examples/introduction" title="introduction sample" vm="1.5">
+    <ajc-test dir="../docs/examples/introduction" title="introduction sample" vm="1.5">
         <compile files="CloneablePoint.java,ComparablePoint.java,HashablePoint.java,Point.java" options="-1.9 -Xlint:ignore"/>
     </ajc-test>
 

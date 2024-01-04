@@ -683,7 +683,7 @@
           location="${aj.otherSystems.dir}/examples"/>
     <mkdir dir="${aj.tempExamples.dir}"/>
     <copy todir="${aj.tempExamples.dir}">
-      <fileset dir="../docs/dist/doc/examples"/>
+      <fileset dir="../docs/examples"/>
     </copy>
     <!-- copy to temp.examples.dir -->
     <ajctest testId="examples"
