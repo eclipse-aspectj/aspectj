@@ -58,7 +58,7 @@ update sites:
 
 Your AspectJ-related list of Eclipse update sites could look like this for Eclipse 2023-12:
 
-![Eclipse IDE filtered list of update sites](EclipseSoftwareSitesAJDT.png)
+![Eclipse IDE filtered list of update sites](images/EclipseSoftwareSitesAJDT.png)
 
 ### IntelliJ IDEA
 
