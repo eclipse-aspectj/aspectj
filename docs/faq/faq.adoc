@@ -3308,10 +3308,10 @@ significant releases (1.0, 1.1).
 |Version |Description
 
 |AspectJ 1.5 |Upgrade to support Java 5 language and much better
-load-time weaving. See README-150.html for more details.
+load-time weaving. See README-1.5.0.html for more details.
 
 |AspectJ 1.1 |A few language changes and clarifications; bytecode
-weaving and incremental compilation. See README-11.html for more detail.
+weaving and incremental compilation. See README-1.1.html for more detail.
 
 |AspectJ 1.0 |Many language changes, fixes, cleanup and clarifications,
 some significant.

@@ -155,11 +155,11 @@
         />
     </target>
 
-    <target name="web.deploy" depends="web.deploy.README-11" />
+    <target name="web.deploy" depends="web.deploy.README-1.1" />
 
-    <target name="web.deploy.README-11"
+    <target name="web.deploy.README-1.1"
             depends="init"
-            description="deploy README-11.html to the web site"
+            description="deploy README-1.1.html to the web site"
     >
         <property name="readme11.dir"
                   location="${web.doc.dir}/documentation/readme11"
@@ -168,7 +168,7 @@
         <delete file="${readme11.dir}/index.html" />
         <mkdir dir="${readme11.dir}" />
         <copy tofile="${readme11.dir}/index.html"
-              file="${aspectj.products.dir}/tools/dist/README-11.html"
+              file="${aspectj.products.dir}/tools/dist/README-1.1.html"
               filtering="on"
         />
         <stripnonbodyhtml srcdir="${readme11.dir}"

@@ -107,7 +107,7 @@ aspect XlintTest {
     /*
      * example for "canNotImplementLazyTjp"
      *
-     * This example is from the README-12.html. To get the warning you must
+     * This example is from the README-1.2.html. To get the warning you must
      * compile it with "-XlazyTjp"
      *
      * NOTE: The expected warnung does not appear. I don't know why.
