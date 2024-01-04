@@ -54,6 +54,6 @@ up ajc as the compiler, do the following before starting Tomcat:
   common directory supported by the server.
 
 . Alternatively, you can precompile JSP's using
-  xref:#j2ee-tomcat4-precompileJsp[this Ant script]. That involves
+  xref:../scripts/precompile-jsp.build.xml[this Ant script]. That involves
   manually updating the `web.xml` file with the `Jasper`-generated servlet
   mappings.

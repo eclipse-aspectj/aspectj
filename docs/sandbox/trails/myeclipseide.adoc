@@ -54,4 +54,4 @@ web.xml. It would be great to get this working with AJDT.
 * I adapted the Tomcat precompile script to use AspectJ's iajc. This
 works fine, but like all Jasper2 solutions required the generated
 servlet mappings be copied manually into the web.xml file. See
-xref:#j2ee-tomcat4-precompileJsp[the Ant build script]
+xref:../scripts/precompile-jsp.build.xml[the Ant build script].
