@@ -70,7 +70,7 @@ public class RunSpec implements ITestStep {
 				vmargs = "";
 			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
 			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
-			// during runtime. See also docs/dist/doc/README-1.8.7.html.
+			// during runtime. See also docs/release/README-1.8.7.html.
 			//
 			// The reason for setting this parameter for Java 9+ instead of 16+ is that it helps to avoid the JVM printing
 			// unwanted illegal access warnings during weaving in 'useFullLTW' mode, either making existing tests fail or
