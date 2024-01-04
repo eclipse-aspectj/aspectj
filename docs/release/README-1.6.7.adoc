@@ -94,7 +94,9 @@ when load time weaving a small application loading in Tomcat. For each
 of 10 iterations (x axis), the top comparison is startup time in
 milliseconds, the lower comparison is memory used in bytes.
 
-image:167Memory.png[image]
+image:images/167speed.png[image]
+
+image:images/167Memory.png[image]
 
 === Annotation binding
 
