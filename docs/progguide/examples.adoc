@@ -287,7 +287,7 @@ aspects, though simple, are not totally trivial.
 The diagram below gives an overview of the aspects and their interaction
 with the class `Point`.
 
-image:aspects.gif[image]
+image:images/aspects.gif[image]
 
 ===== The `CloneablePoint` aspect
 
@@ -1314,7 +1314,7 @@ is used to connect them. Conference calls between more than two
 customers will involve more than one connection. A customer may be
 involved in many calls at one time.
 
-image:telecom.gif[image]
+image:images/telecom.gif[image]
 
 ===== The `Customer` class
 
