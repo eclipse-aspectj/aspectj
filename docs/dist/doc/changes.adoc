@@ -12,7 +12,7 @@ _© Copyright 1998-2002 Palo Alto Research Center Incorporated
 * xref:#_1_2_1[1.2.1] (released 2004-10)
 * xref:#_1_2[1.2] (released 2004-05)
 * xref:#_1_1_1[1.1.1] (released 2003-09)
-* 1.1.0 (released 2003-06-06) See xref:README-11.adoc#readme-1_1[1.1.0 release notes].
+* 1.1.0 (released 2003-06-06) See xref:README-1.1.adoc#readme-1_1[1.1.0 release notes].
 * xref:#_1_0_6[1.0.6] (released 2002-07-24)
 ** xref:#_1_0_6compiler[Compiler]
 ** xref:#_1_0_6ajde[AJDE]

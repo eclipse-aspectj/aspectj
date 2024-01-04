@@ -187,7 +187,7 @@ Installation & Verification Tests
 
 * check version in README-AspectJ.html                                  [   ]
 
-* check version in README-11.html (file not required)                   [   ]
+* check version in README-1.1.html (file not required)                   [   ]
 
 * check license present and correct version (currently CPLv1.0)         [   ]
 

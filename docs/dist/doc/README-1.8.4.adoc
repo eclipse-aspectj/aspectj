@@ -12,7 +12,7 @@ _Release info: 1.8.4 available 6-Nov-2014_
 ==== Support for is(FinalType)
 
 AspectJ has had type category type patterns since version 1.6.9, see the
-https://www.eclipse.org/aspectj/doc/released/README-169.html[README].
+https://www.eclipse.org/aspectj/doc/released/README-1.6.9.html[README].
 This enabled pointcuts to include is(..) clauses to specify which kinds
 of type they were or were not interested in matching, e.g. !within(* &&
 is(InnerType)) means not within innertypes. In 1.8.4 it is now possible
@@ -23,7 +23,7 @@ is(FinalType).
 
 This is the key fix in this release. Some products based on AspectJ were
 using the thisAspectInstance feature (see
-https://www.eclipse.org/aspectj/doc/released/README-1612.html[README
+https://www.eclipse.org/aspectj/doc/released/README-1.6.12.html[README
 1.6.12] for more info on the feature). Unfortunately if specifying -1.8
 compliance and using the feature an error would be reported at compile
 time of the aspect. This is now fixed.

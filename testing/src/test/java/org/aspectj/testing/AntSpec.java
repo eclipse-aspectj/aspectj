@@ -100,7 +100,7 @@ public class AntSpec implements ITestStep {
 
 			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
 			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
-			// during runtime. See also docs/dist/doc/README-187.html.
+			// during runtime. See also docs/dist/doc/README-1.8.7.html.
 			//
 			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
 			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line.
