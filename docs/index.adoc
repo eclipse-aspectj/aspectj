@@ -86,35 +86,35 @@ each join point. See also the xref:weaver-api/index.html[Weaver API]
 language, tools, and project.
 
 |README's |Changes and porting guide for AspectJ
-xref:dist/doc/README-1.9.21.adoc[1.9.21],
-xref:dist/doc/README-1.9.20.adoc[1.9.20 and 1.9.20.1], xref:dist/doc/README-1.9.19.adoc[1.9.19],
-xref:dist/doc/README-1.9.9.adoc[1.9.9 and 1.9.9.1], xref:dist/doc/README-1.9.8.adoc[1.9.8],
-xref:dist/doc/README-1.9.7.adoc[1.9.7], xref:dist/doc/README-1.9.6.adoc[1.9.6],
-xref:dist/doc/README-1.9.5.adoc[1.9.5], xref:dist/doc/README-1.9.4.adoc[1.9.4],
-xref:dist/doc/README-1.9.3.adoc[1.9.3], xref:dist/doc/README-1.9.2.adoc[1.9.2],
-xref:dist/doc/README-1.9.1.adoc[1.9.1], xref:dist/doc/README-1.9.0.adoc[1.9.0],
-xref:dist/doc/README-1.8.11.adoc[1.8.11], xref:dist/doc/README-1.8.10.adoc[1.8.10],
-xref:dist/doc/README-1.8.9.adoc[1.8.9], xref:dist/doc/README-1.8.8.adoc[1.8.8],
-xref:dist/doc/README-1.8.7.adoc[1.8.7], xref:dist/doc/README-1.8.6.adoc[1.8.6],
-xref:dist/doc/README-1.8.5.adoc[1.8.5], xref:dist/doc/README-1.8.4.adoc[1.8.4],
-xref:dist/doc/README-1.8.3.adoc[1.8.3], xref:dist/doc/README-1.8.2.adoc[1.8.2],
-xref:dist/doc/README-1.8.1.adoc[1.8.1], xref:dist/doc/README-1.8.0.adoc[1.8.0],
-xref:dist/doc/README-1.7.4.adoc[1.7.4], xref:dist/doc/README-1.7.3.adoc[1.7.3],
-xref:dist/doc/README-1.7.2.adoc[1.7.2], xref:dist/doc/README-1.7.1.adoc[1.7.1],
-xref:dist/doc/README-1.7.0.adoc[1.7.0], xref:dist/doc/README-1.6.12.adoc[1.6.12],
-xref:dist/doc/README-1.6.11.adoc[1.6.11], xref:dist/doc/README-1.6.10.adoc[1.6.10],
-xref:dist/doc/README-1.6.9.adoc[1.6.9], xref:dist/doc/README-1.6.8.adoc[1.6.8],
-xref:dist/doc/README-1.6.7.adoc[1.6.7], xref:dist/doc/README-1.6.6.adoc[1.6.6],
-xref:dist/doc/README-1.6.5.adoc[1.6.5], xref:dist/doc/README-1.6.4.adoc[1.6.4],
-xref:dist/doc/README-1.6.3.adoc[1.6.3], xref:dist/doc/README-1.6.2.adoc[1.6.2],
-xref:dist/doc/README-1.6.1.adoc[1.6.1], xref:dist/doc/README-1.6.0.adoc[1.6.0],
-xref:dist/doc/README-1.5.4.adoc[1.5.4], xref:dist/doc/README-1.5.3.adoc[1.5.3],
-xref:dist/doc/README-1.5.2.adoc[1.5.2], xref:dist/doc/README-1.5.1.adoc[1.5.1],
-xref:dist/doc/README-1.5.0.adoc[1.5.0], xref:dist/doc/README-1.2.1.adoc[1.2.1],
-xref:dist/doc/README-1.2.adoc[1.2.0], xref:dist/doc/README-1.1.adoc[1.1],
-xref:dist/doc/porting.adoc[1.0].
+xref:release/README-1.9.21.adoc[1.9.21],
+xref:release/README-1.9.20.adoc[1.9.20 and 1.9.20.1], xref:release/README-1.9.19.adoc[1.9.19],
+xref:release/README-1.9.9.adoc[1.9.9 and 1.9.9.1], xref:release/README-1.9.8.adoc[1.9.8],
+xref:release/README-1.9.7.adoc[1.9.7], xref:release/README-1.9.6.adoc[1.9.6],
+xref:release/README-1.9.5.adoc[1.9.5], xref:release/README-1.9.4.adoc[1.9.4],
+xref:release/README-1.9.3.adoc[1.9.3], xref:release/README-1.9.2.adoc[1.9.2],
+xref:release/README-1.9.1.adoc[1.9.1], xref:release/README-1.9.0.adoc[1.9.0],
+xref:release/README-1.8.11.adoc[1.8.11], xref:release/README-1.8.10.adoc[1.8.10],
+xref:release/README-1.8.9.adoc[1.8.9], xref:release/README-1.8.8.adoc[1.8.8],
+xref:release/README-1.8.7.adoc[1.8.7], xref:release/README-1.8.6.adoc[1.8.6],
+xref:release/README-1.8.5.adoc[1.8.5], xref:release/README-1.8.4.adoc[1.8.4],
+xref:release/README-1.8.3.adoc[1.8.3], xref:release/README-1.8.2.adoc[1.8.2],
+xref:release/README-1.8.1.adoc[1.8.1], xref:release/README-1.8.0.adoc[1.8.0],
+xref:release/README-1.7.4.adoc[1.7.4], xref:release/README-1.7.3.adoc[1.7.3],
+xref:release/README-1.7.2.adoc[1.7.2], xref:release/README-1.7.1.adoc[1.7.1],
+xref:release/README-1.7.0.adoc[1.7.0], xref:release/README-1.6.12.adoc[1.6.12],
+xref:release/README-1.6.11.adoc[1.6.11], xref:release/README-1.6.10.adoc[1.6.10],
+xref:release/README-1.6.9.adoc[1.6.9], xref:release/README-1.6.8.adoc[1.6.8],
+xref:release/README-1.6.7.adoc[1.6.7], xref:release/README-1.6.6.adoc[1.6.6],
+xref:release/README-1.6.5.adoc[1.6.5], xref:release/README-1.6.4.adoc[1.6.4],
+xref:release/README-1.6.3.adoc[1.6.3], xref:release/README-1.6.2.adoc[1.6.2],
+xref:release/README-1.6.1.adoc[1.6.1], xref:release/README-1.6.0.adoc[1.6.0],
+xref:release/README-1.5.4.adoc[1.5.4], xref:release/README-1.5.3.adoc[1.5.3],
+xref:release/README-1.5.2.adoc[1.5.2], xref:release/README-1.5.1.adoc[1.5.1],
+xref:release/README-1.5.0.adoc[1.5.0], xref:release/README-1.2.1.adoc[1.2.1],
+xref:release/README-1.2.adoc[1.2], xref:release/README-1.1.adoc[1.1],
+xref:release/porting.adoc[porting to 1.2].
 
-|xref:dist/doc/changes.adoc[Changes] |Changes between historical releases up to 1.6.0.
+|xref:release/changes.adoc[Changes] |Changes between historical releases up to 1.6.0.
 
 |link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[Examples] |AspectJ code to demonstrate some language
 features and implement JavaBean properties, the Observer pattern, a
