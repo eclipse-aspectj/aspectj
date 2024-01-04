@@ -85,7 +85,10 @@ each join point. See also the xref:weaver-api/index.html[Weaver API]
 |xref:faq/faq.adoc#faq[FAQ] |Frequently-asked questions about the AspectJ
 language, tools, and project.
 
-|README's |Changes and porting guide for AspectJ
+|xref:release/JavaVersionCompatibility.adoc#faq[Java version compatibility] |Compatibility matrix, explaining which AspectJ compiler version supports which Java language version and needs which JDK to run
+
+|Release notes |Release notes, describing new features, improvements, bugfixes per AspectJ version: +
+ +
 xref:release/README-1.9.21.adoc[1.9.21],
 xref:release/README-1.9.20.adoc[1.9.20 and 1.9.20.1], xref:release/README-1.9.19.adoc[1.9.19],
 xref:release/README-1.9.9.adoc[1.9.9 and 1.9.9.1], xref:release/README-1.9.8.adoc[1.9.8],
@@ -111,10 +114,11 @@ xref:release/README-1.6.1.adoc[1.6.1], xref:release/README-1.6.0.adoc[1.6.0],
 xref:release/README-1.5.4.adoc[1.5.4], xref:release/README-1.5.3.adoc[1.5.3],
 xref:release/README-1.5.2.adoc[1.5.2], xref:release/README-1.5.1.adoc[1.5.1],
 xref:release/README-1.5.0.adoc[1.5.0], xref:release/README-1.2.1.adoc[1.2.1],
-xref:release/README-1.2.adoc[1.2], xref:release/README-1.1.adoc[1.1],
-xref:release/porting.adoc[porting to 1.2].
+xref:release/README-1.2.adoc[1.2], xref:release/README-1.1.adoc[1.1].
 
-|xref:release/changes.adoc[Changes] |Changes between historical releases up to 1.6.0.
+|xref:release/changes.adoc[Changes] (historical) |Changes between historical releases up to 1.6.0
+
+|xref:release/porting.adoc[Porting guide] (historical) |Porting guide for historical releases to 1.2
 
 |link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[Examples] |AspectJ code to demonstrate some language
 features and implement JavaBean properties, the Observer pattern, a
