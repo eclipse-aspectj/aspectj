@@ -67,6 +67,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Invoke the Installer gui. There are two ways to run without GUI by passing parameters to main:
  * <ol>
@@ -678,7 +680,7 @@ abstract class WizardPane {
 	}
 
 	public static String stringFromStream(InputStream stream) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, UTF_8));
 
 		StringBuilder ret = new StringBuilder();
 		int data;
@@ -1345,7 +1347,7 @@ class CurrentJarUnpacker {
 
 	public void writeTextStream(InputStream zis, File outputFile) throws IOException {
 		BufferedWriter os = new BufferedWriter(new FileWriter(outputFile));
-		BufferedReader r = new BufferedReader(new InputStreamReader(zis, "US-ASCII"));
+		BufferedReader r = new BufferedReader(new InputStreamReader(zis, UTF_8));
 
 		String l;
 		while ((l = r.readLine()) != null) {
@@ -1386,7 +1388,7 @@ class CurrentJarUnpacker {
 		}
 
 //		InputStream stream = url.openStream();
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "US-ASCII"));
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, UTF_8));
 //		String line = reader.readLine();
 //		installPane.nBytes = Integer.parseInt(line);
 //
@@ -1727,7 +1729,7 @@ class JarUnpacker {
 
 	public void writeTextStream(ZipInputStream zis, File outputFile) throws IOException {
 		BufferedWriter os = new BufferedWriter(new FileWriter(outputFile));
-		BufferedReader r = new BufferedReader(new InputStreamReader(zis, "US-ASCII"));
+		BufferedReader r = new BufferedReader(new InputStreamReader(zis, UTF_8));
 
 		String l;
 		while ((l = r.readLine()) != null) {
