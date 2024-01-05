@@ -59,7 +59,7 @@
                   location="${aspectj.modules.dir}/ajde/src/main/resources/org/aspectj/ajde/resources/actions"
         />
         <property name="include.devguide.icons"
-                  value="build.gif,openConfig.gif,browseroptions.gif"
+                  value="build.png,openConfig.png,browseroptions.png"
         />
 
         <!-- callers of xml-html use these by default -->
@@ -289,7 +289,7 @@
             <param name="guide.dir" value="progguide" />
             <param name="guide.name" value="progguide" />
             <param name="xml-html-copy"
-          	            value="dd_arrow.gif,aspects.gif,figureUML.gif,overview.gif,telecom.gif,aspectj-docs.css"/>
+          	            value="dd_arrow.png,aspects.png,figureUML.png,overview.png,telecom.png,aspectj-docs.css"/>
         </antcall>
     </target>
 
@@ -298,7 +298,7 @@
             <param name="guide.dir" value="adk15notebook" />
             <param name="guide.name" value="adk15notebook" />
             <param name="xml-html-copy"
-    	            value="dd_arrow.gif,aspectj-docs.css"/>
+    	            value="dd_arrow.png,aspectj-docs.css"/>
         </antcall>
     </target>
 
@@ -313,7 +313,7 @@
 
         <antcall target="build-guide">
             <param name="xml-html-copy"
-                   value="dd_arrow.gif,aspectj-docs.css,ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
+                   value="dd_arrow.png,aspectj-docs.css,ajbrowser-building.png,ajbrowser-options.png,${include.devguide.icons}"
             />
             <param name="guide.dir" value="devguide" />
             <param name="guide.name" value="devguide" />
@@ -335,7 +335,7 @@
 
         <antcall target="build-guide">
             <param name="xml-html-copy"
-                   value="dd_arrow.gif,aspectj-docs.css,ajbrowser-building.gif,ajbrowser-options.gif,${include.pdguide.icons}"
+                   value="dd_arrow.png,aspectj-docs.css,ajbrowser-building.png,ajbrowser-options.png,${include.pdguide.icons}"
             />
             <param name="guide.dir" value="pdguide" />
             <param name="guide.name" value="pdguide" />
@@ -415,7 +415,7 @@
 
         <antcall target="build-pdf">
             <param name="xml-html-copy"
-                   value="ajbrowser-building.gif,ajbrowser-options.gif,${include.devguide.icons}"
+                   value="ajbrowser-building.png,ajbrowser-options.png,${include.devguide.icons}"
             />
             <param name="guide.dir" value="devguide" />
             <param name="guide.name" value="devguide" />

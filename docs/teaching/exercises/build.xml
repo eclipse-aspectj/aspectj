@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 This build script will create a directory called burn that is
 _almost_ suitable for burning onto a CD.  However, there
@@ -49,7 +49,7 @@ and a clean AspectJ installer.
     <delete dir="${printdir}/exercises.pdf.contents" />
     <mkdir dir="${printdir}/exercises.pdf.contents" />
     <copy toDir="${printdir}/exercises.pdf.contents" file="index.html" />
-    <copy toDir="${printdir}/exercises.pdf.contents" file="figures_classes.gif" />
+    <copy toDir="${printdir}/exercises.pdf.contents" file="figures_classes.pdf" />
     <copy toDir="${printdir}/exercises.pdf.contents" file="${aj.home}/doc/quick.pdf" />
 
     <delete dir="${printdir}/install.pdf.contents" />
@@ -68,7 +68,7 @@ and a clean AspectJ installer.
   </target>
 
   <target name="event" depends="tools,exercises">
-    <filter token="aj.event" value="${aj.event}" /> 
+    <filter token="aj.event" value="${aj.event}" />
     <copy file="install.txt" toDir="${eventdir}" filtering="yes" />
   </target>
 
@@ -82,7 +82,7 @@ and a clean AspectJ installer.
 
   <target name="tools" depends="skeleton">
     <mkdir dir="${eventdir}/aspectj" />
-    <filter token="aj.event" value="${aj.event}" /> 
+    <filter token="aj.event" value="${aj.event}" />
 
     <copy toDir="${eventdir}/aspectj">
       <fileset dir="${aj.home}" excludes="bin/**" />
@@ -118,4 +118,3 @@ and a clean AspectJ installer.
   </target>
 
 </project>
-
