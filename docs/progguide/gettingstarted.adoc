@@ -60,7 +60,7 @@ The features are presented using a simple figure editor system. A
 is also a `Display`. Most example programs later in this chapter are
 based on this system as well.
 
-image:images/figureUML.gif[ UML for the `FigureEditor` example ]
+image:images/figureUML.png[ UML for the `FigureEditor` example ]
 
 The motivation for AspectJ (and likewise for aspect-oriented
 programming) is the realization that there are issues or concerns that
