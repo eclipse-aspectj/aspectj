@@ -25,18 +25,137 @@
           <plugin>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
+            <configuration>
+              <sourceDirectory>${project.basedir}</sourceDirectory>
+              <preserveDirectories>true</preserveDirectories>
+              <relativeBaseDir>true</relativeBaseDir>
+              <resources>
+                <resource>
+                  <!-- Mandatory, even though identical to 'sourceDirectory' -->
+                  <directory>${project.basedir}</directory>
+                  <excludes>
+                    <!-- Generally excluded file extensions -->
+                    <exclude>**/*.doc</exclude>
+                    <exclude>**/*.vsd</exclude>
+                    <!-- Files excluded in root directory -->
+                    <exclude>*.iml</exclude>
+                    <exclude>pom.xml*</exclude>
+                    <exclude>build.xml</exclude>
+                    <exclude>docs.build.properties</exclude>
+                    <!-- Files excluded in subdirectories -->
+                    <exclude>developer/*.txt</exclude>
+                    <exclude>developer/ajdt/**</exclude>
+                    <exclude>developer/ram-disk/**</exclude>
+                    <exclude>developer/traces/**</exclude>
+                    <exclude>install/**</exclude>
+                    <exclude>sandbox/**</exclude>
+                    <exclude>src/**</exclude>
+                    <exclude>target/**</exclude>
+                    <exclude>teaching/**</exclude>
+                    <exclude>test/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
             <executions>
               <execution>
-                <id>create-asciidoc</id>
+                <id>create-html-from-asciidoc</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>generate-pdf-adk15notebook</id>
                 <phase>generate-resources</phase>
                 <goals>
                   <goal>process-asciidoc</goal>
                 </goals>
                 <configuration>
-                  <sourceDirectory>${project.basedir}</sourceDirectory>
-                  <outputDirectory>${project.build.directory}/html</outputDirectory>
-                  <preserveDirectories>true</preserveDirectories>
-                  <relativeBaseDir>true</relativeBaseDir>
+                  <backend>pdf</backend>
+                  <sourceDocumentName>adk15notebook/adk15notebook.adoc</sourceDocumentName>
+                  <skip>false</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-pdf-devguide</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <backend>pdf</backend>
+                  <sourceDocumentName>devguide/devguide.adoc</sourceDocumentName>
+                  <skip>false</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-pdf-pdguide</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <backend>pdf</backend>
+                  <sourceDocumentName>pdguide/pdguide.adoc</sourceDocumentName>
+                  <skip>false</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-pdf-progguide</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <backend>pdf</backend>
+                  <sourceDocumentName>progguide/progguide.adoc</sourceDocumentName>
+                  <skip>false</skip>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-pdf-design-overview</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <backend>pdf</backend>
+                  <sourceDocumentName>developer/design-overview.adoc</sourceDocumentName>
+                  <skip>false</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-docs-to-dist</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.basedir}/../aj-build/dist/docs/doc</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}/generated-docs</directory>
+                      <!-- Exclude HTML content created from asciidoc files irrelevant for the distribution -->
+                      <excludes>
+                        <!-- Files excluded in root directory -->
+                        <exclude>readme-docs-module.html</exclude>
+                        <!-- Files excluded in subdirectories -->
+                        <exclude>developer/ajdt/**</exclude>
+                        <exclude>developer/traces/**</exclude>
+                        <exclude>install/**</exclude>
+                        <exclude>sandbox/**</exclude>
+                        <exclude>teaching/**</exclude>
+                        <exclude>test/**</exclude>
+                      </excludes>
+                    </resource>
+                  </resources>
                 </configuration>
               </execution>
             </executions>

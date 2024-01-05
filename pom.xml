@@ -429,8 +429,13 @@
 							<icons>font</icons>
 						</attributes>
 					</configuration>
-					<!-- TODO: Remove dependency after https://github.com/asciidoctor/asciidoctor-maven-plugin/issues/553 fix -->
 					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj-pdf</artifactId>
+							<version>2.3.10</version>
+						</dependency>
+						<!-- TODO: Remove dependency after https://github.com/asciidoctor/asciidoctor-maven-plugin/issues/553 fix -->
 						<dependency>
 							<groupId>org.jruby</groupId>
 							<artifactId>jruby</artifactId>

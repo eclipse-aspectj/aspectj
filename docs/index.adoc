@@ -40,13 +40,19 @@ mailto:aspectj-users@eclipse.org[users] and mailto:aspectj-dev@eclipse.org[devel
 |xref:quickref/quick.pdf[AspectJ Quick Reference]
 |Two-page quick reference for the AspectJ language
 
-|xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook] +
-(xref:adk15notebook/adk15notebook.adoc[single page])
+a|AspectJ 5 Developer's Notebook
+
+* xref:adk15notebook/index.adoc[HTML multi-page]
+* xref:adk15notebook/adk15notebook.adoc[HTML single page]
+* xref:adk15notebook/adk15notebook.pdf[PDF]
 |Describes the changes to the AspectJ language and tools introduced in the AspectJ 5 Development Kit. These changes are
 additive, and are not yet reflected in the programming guide or quick reference.
 
-|xref:progguide/index.adoc[Programming Guide] +
-(xref:progguide/progguide.adoc[single page])
+a|Programming Guide
+
+* xref:progguide/index.adoc[HTML multi-page]
+* xref:progguide/progguide.adoc[HTML single page]
+* xref:progguide/progguide.pdf[PDF]
 |Introduces AOP and the AspectJ language. xref:progguide/gettingstarted.adoc[Getting Started] describes basic semantics
 and shows development- and production-time applications. xref:progguide/language.adoc[The AspectJ Language] describes
 join points, pointcuts, advice, and introduction, all features new to AOP. xref:progguide/examples.adoc[Examples] walks
@@ -57,13 +63,19 @@ syntax, the xref:progguide/semantics.adoc[Language Semantics] best describes Asp
 xref:progguide/implementation.adoc[Implementation Notes] describes how the current version is limited to code the
 compiler controls.
 
-|xref:devguide/index.adoc[Development Environment Guide] +
-(xref:devguide/devguide.adoc[single page])
+a|Development Environment Guide
+
+* xref:devguide/index.adoc[HTML multi-page]
+* xref:devguide/devguide.adoc[HTML single page]
+* xref:devguide/devguide.pdf[PDF]
 |Guide to the command-line compiler xref:devguide/ajc.adoc[ajc] and the xref:devguide/antsupport.adoc[Ant tasks] for
 building AspectJ programs
 
-|xref:pdguide/index.adoc[Problem Diagnosis Guide] +
-(xref:pdguide/pdguide.adoc[single page])
+a|Problem Diagnosis Guide
+
+* xref:pdguide/index.adoc[HTML multi-page]
+* xref:pdguide/pdguide.adoc[HTML single page]
+* xref:pdguide/pdguide.pdf[PDF]
 |Guide to various debugging features available, such as messages and trace to help you both solve problems with you own
 programs and report bugs to the AspectJ team
 
@@ -117,8 +129,11 @@ xref:release/README-1.2.adoc[1.2], xref:release/README-1.1.adoc[1.1].
 |AspectJ code to demonstrate some language features and implement JavaBean properties, the Observer pattern, a tracing
 library, and a game application where aspects handle display updating
 
-| xref:developer/index.adoc[AspectJ Design Overview] +
-(xref:developer/design-overview.adoc[single page])
+a|AspectJ Design Overview
+
+* xref:developer/index.adoc[HTML multi-page]
+* xref:developer/design-overview.adoc[HTML single page]
+* xref:developer/design-overview.pdf[PDF]
 |Introductory information about AspectJ language design, developer guides, module structure
 |===
 
