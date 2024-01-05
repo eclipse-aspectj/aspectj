@@ -1,10 +1,10 @@
 # Setting up an AspectJ development environment
 
-_by Alexander Kriegisch, 2021-08-05_
+_by Alexander Kriegisch, originally published on 2021-08-05_
 
 AspectJ, being an Eclipse project, can of course be used in the Eclipse IDE for Java developers, if you also install the
 AspectJ Development Tools (AJDT). IntelliJ IDEA also offers AspectJ and Spring AOP support. Regarding build tools, there
-are AspectJ plugins for Maven, Gradle and Ant.
+are AspectJ plugins for Maven, Gradle, Mill and Ant.
 
 Of course, you can use and other IDE and build tool or simply use your trusted text editor of choice and compile using
 the AspectJ Compiler _ajc_ from the command line.
@@ -83,24 +83,26 @@ user, so please try for yourself if those combinations are supported.
 
 If you want to build your AspectJ projects with Maven, use [AspectJ Maven Plugin](https://github.com/dev-aspectj/aspectj-maven-plugin)
 by AspectJ.dev, artifact ID `dev.aspectj:aspectj-maven-plugin`. It is a fork of the original plugin by MojoHaus, which
-was inactive for 3.5 years and only recently (2021-07-30) had a new release. Because the AspectJ.dev version (maintained
-by AspectJ contributor Alexander Kriegisch) has more features, we recommend using it instead of the original for
-original's sake.
+was inactive for several years and even now shows no activity other than AspectJ version bumps. Because the AspectJ.dev
+version has more features and is actively maintained by Alexander Kriegisch from the AspectJ core team, we recommend
+using it instead of the Mojohaus version.
 
 ### Gradle
 
 In contrast to Maven, there is no de-facto standard build plugin for Gradle, but a bunch of more or less well-maintained
 plugins with a more or less complete feature set. I am not a Gradle user, but when answering related questions on
-StackOverflow, I got the impression that [Freefair by Lars Grefer](https://docs.freefair.io/gradle-plugins/current/reference/)
-is the one I want to recomment because of its good documentation, active development and feature set. It could well be
-or become for the Gradle ecosystem what AspectJ Maven is for the Maven one. At the time of writing this, the most recent
-milestone is [6.1.0-m3](https://docs.freefair.io/gradle-plugins/6.1.0-m3/reference/). 
+Stack Overflow, I got the impression that [Freefair by Lars Grefer](https://docs.freefair.io/gradle-plugins/current/reference/#_aspectj_plugins)
+is the one I want to recommend because of its good documentation, active development and feature set. It could well be
+or become for the Gradle ecosystem what AspectJ Maven is for the Maven one. A few examples can be found
+[here](https://github.com/freefair/gradle-plugins/tree/main/examples/aspectj).
 
 ### Mill
 
-If you want to build your AspectJ projects with the [Mill Build Tool](https://github.com/com-lihaoyi/mill), you can use the [mill-aspectj](https://github.com/lefou/mill-aspectj) plugin. 
-It's actively maintained and its author Tobias Roeser is also the maintainer of Mill. 
-It supports all important settings of AspectJ and is even providing convenience options for polyglot projects, e.g. it features an option for out-of-the-box chained compilation with Zinc (for Java/Scala) and AspectJ (for weaving aspects) in the same module.
+If you want to build your AspectJ projects with the [Mill Build Tool](https://github.com/com-lihaoyi/mill), you can use
+the [mill-aspectj](https://github.com/lefou/mill-aspectj) plugin. It is actively maintained, and its author Tobias
+Roeser is also the maintainer of Mill. It supports all important settings of AspectJ and is even providing convenience
+options for polyglot projects, e.g. it features an option for out-of-the-box chained compilation with Zinc (for
+Java/Scala) and AspectJ (for weaving aspects) in the same module.
 
 ### Ant
 
@@ -126,7 +128,7 @@ _aspectj-*jar_.
 Feel free to be skeptical, because the author has both IDE and build tool biases, but I am recommending Maven as a build
 tool, AspectJ Maven as a build plugin and then either of Eclipse or IDEA as integrated development environments (IDEs).
 Why? Because Maven + (Eclipse or IDEA) probably has the most complete tooling and best end-to-end user experience for
-AspectJ developers. Because I am also by far the most active AspectJ and Spring AOP supporter on StackOverflow, you also
+AspectJ developers. Because I am also by far the most active AspectJ and Spring AOP supporter on Stack Overflow, you also
 have better chances to receive spot-on answers than if e.g. you ask why your Ant or Gradle build does not work so nicely
 in NetBeans or VS Code. But by all means, please do choose whichever combination of tools is the prescribed standard in
-your work environment or simply your personal pereference. I believe that diversity is good. 🙂
+your work environment or simply your personal pereference. I believe, that diversity is good. 🙂
