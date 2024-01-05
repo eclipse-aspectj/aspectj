@@ -12,10 +12,10 @@
 
   <profiles>
     <profile>
-      <id>create-docs-new</id>
+      <id>create-docs</id>
       <activation>
         <property>
-          <name>createDocs__NEW</name>
+          <name>createDocs</name>
           <value>true</value>
         </property>
       </activation>
@@ -164,10 +164,10 @@
       </build>
     </profile>
     <profile>
-      <id>create-docs</id>
+      <id>create-docs-LEGACY</id>
       <activation>
         <property>
-          <name>createDocs</name>
+          <name>createDocs_LEGACY</name>
           <value>true</value>
         </property>
       </activation>
