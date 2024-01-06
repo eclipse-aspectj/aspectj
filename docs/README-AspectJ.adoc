@@ -14,8 +14,8 @@ binaries,
 programming and development environment guides, instructions for the Ant
 tasks, a README for 1.1 changes, and a quick reference, all linked from
 the link:doc/index.html[index] page.
-* this README-AspectJ.html, and
-* the LICENSE-AspectJ.html applying to this distribution.
+* this README-AspectJ.adoc, and
+* the LICENSE-AspectJ.adoc applying to this distribution.
 
 '''''
 

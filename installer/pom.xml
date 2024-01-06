@@ -81,7 +81,7 @@
 			<artifactId>build</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- AspectJ documentation, created by Ant job in aj-build/dist/docs -->
+		<!-- AspectJ documentation, created by Asciidoctor in aj-build/dist/docs -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>docs</artifactId>

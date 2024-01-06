@@ -24,10 +24,10 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>../docs/dist</directory>
+			<directory>../docs</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
-				<include>LICENSE-AspectJ.html</include>
+				<include>LICENSE-AspectJ.adoc</include>
 			</includes>
 		</fileSet>
 
