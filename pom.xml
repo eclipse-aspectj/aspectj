@@ -424,9 +424,18 @@
 					<configuration>
 						<attributes>
 							<source-highlighter>coderay</source-highlighter>
-							<!--<imagesdir>./images</imagesdir>-->
 							<toc>left</toc>
 							<icons>font</icons>
+							<!--
+								Create separate CSS files, rather than embedding CSS into each HTML file
+								TODO:
+									There still is one set of CSS files per subdirectory due to the way the docs directories are
+									organised. It would be better to have them just once. But to achieve that, the ADOC-to-HTML conversion
+									would have to be changed, e.g. using one central directory for images and reorganisation of the
+									overall directory structure and build options.
+									See https://github.com/asciidoctor/asciidoctor-maven-plugin/issues/729.
+							-->
+							<linkcss>true</linkcss>
 						</attributes>
 					</configuration>
 					<dependencies>
