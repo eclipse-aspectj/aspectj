@@ -83,7 +83,7 @@ jobs:
             aspectjtools/target/flattened-pom.xml
 
       - name: Create docs
-        run: ./mvnw -B --file pom.xml -DskipTests process-resources -pl docs -P create-docs
+        run: ./mvnw -B --file pom.xml -DskipTests package -pl docs -P create-docs
 
       - name: Attach docs to build
         uses: actions/upload-artifact@v3
