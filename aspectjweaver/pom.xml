@@ -286,6 +286,34 @@
 				</executions>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-javadoc-to-dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<!--
+								Skip, if javadoc generation is also meant to be skipped, which is the default unless the 'release'
+								profile is active or the property is overridden manually to be false. See property definitions in parent
+								POM for default case and release profile.
+							-->
+							<skip>${maven.javadoc.skip}</skip>
+							<outputDirectory>${project.basedir}/../aj-build/dist/docs/doc/weaver-api</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/apidocs</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

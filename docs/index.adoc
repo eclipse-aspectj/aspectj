@@ -13,7 +13,8 @@ materials, see https://eclipse.org/aspectj. Not all of these materials have been
 |xref:faq/faq.adoc#faq[FAQ], xref:quickref/quick5.pdf[Quick Reference (AspectJ 5)],
 xref:quickref/quick.pdf[Quick Reference (1.2.1)], xref:adk15notebook/index.adoc[AspectJ 5 Developer's Notebook],
 xref:progguide/index.adoc[programming], xref:devguide/index.adoc[development] and
-xref:pdguide/index.adoc[problem diagnosis] guides, link:runtime-api/index.html[API] and
+xref:pdguide/index.adoc[problem diagnosis] guides, link:runtime-api/index.html[runtime API],
+link:weaver-api/index.html[weaver API] and
 link:https://github.com/eclipse-aspectj/aspectj/tree/master/docs/examples[example code]
 
 |xref:#distributions[Distributions]
@@ -79,9 +80,14 @@ a|Problem Diagnosis Guide
 |Guide to various debugging features available, such as messages and trace to help you both solve problems with you own
 programs and report bugs to the AspectJ team
 
-|xref:runtime-api/index.html[AspectJ API]
+|xref:runtime-api/index.html[AspectJ Runtime API]
 |API documentation for AspectJ runtime classes. `JoinPoint` shows the state automatically available at each join point.
-See also the xref:weaver-api/index.html[Weaver API].
+`ProceedingJoinPoint` explains how to `proceed(..)` to the intercepted join point from an around advice.
+
+|xref:weaver-api/index.html[AspectJ Weaver API]
+|API documentation for AspectJ weaver classes. This is a superset of the runtime API plus all the additional classes
+used for byte code weaving, both during compilation from source code and binary weaving during post-compile and
+load-time weaving.
 
 |xref:faq/faq.adoc#faq[FAQ]
 |Frequently asked questions about the AspectJ language, tools, and project
