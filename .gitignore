@@ -35,12 +35,10 @@ bin/
 /lib/provisioned.marker
 /lib/ant/
 /lib/commons/
-/lib/docbook/
 /lib/jarjar/
 /lib/jdtcore-aj/
 /lib/junit/
 /lib/regexp/
-/lib/saxon/
 
 # AspectJ core dumps
 ajcore.*.txt
