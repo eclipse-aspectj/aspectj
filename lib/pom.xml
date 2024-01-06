@@ -139,32 +139,6 @@
                   <sha1>c61a373f6d50ff8fcfba900934f7254d44f9735b</sha1>
                 </configuration>
               </execution>
-              <execution>
-                <id>download-docbook-dtd</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://www.oasis-open.org/docbook/xml/4.1.2/docbkx412.zip</url>
-                  <outputDirectory>docbook</outputDirectory>
-                  <outputFileName>docbkx412.zip</outputFileName>
-                  <sha1>b9ae7a41056bfaf885581812d60651b7b5531519</sha1>
-                </configuration>
-              </execution>
-              <execution>
-                <id>download-docbook-xsl</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>wget</goal>
-                </goals>
-                <configuration>
-                  <url>https://sourceforge.net/projects/docbook/files/OldFiles/docbook-xsl-1.44.zip/download</url>
-                  <outputDirectory>docbook</outputDirectory>
-                  <outputFileName>docbook-xsl-1.44.zip</outputFileName>
-                  <sha1>626e7bee806ea14812f6f95cc2d187ab6ba9114a</sha1>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
 
@@ -246,18 +220,6 @@
                       <destFileName>junit-src.zip</destFileName>
                     </artifactItem>
 
-                    <!-- Jython does not seem to be used anywhere in AspectJ -->
-
-                    <artifactItem>
-                      <!-- Binary is a bit newer than committed version, but produces identical results in 'docs' -->
-                      <groupId>saxon</groupId>
-                      <artifactId>saxon</artifactId>
-                      <version>6.5.3</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>saxon</outputDirectory>
-                      <destFileName>saxon.jar</destFileName>
-                    </artifactItem>
                     <artifactItem>
                       <!-- Binary is identical to committed version -->
                       <groupId>regexp</groupId>
@@ -323,28 +285,6 @@
                       <overWrite>false</overWrite>
                       <outputDirectory>commons</outputDirectory>
                       <destFileName>commons-logging-${lib.commons.logging.version}.jar</destFileName>
-                    </artifactItem>
-
-                    <!-- Libraries used to create HTML docs from XML DocBook files -->
-                    <artifactItem>
-                      <!-- Binary is identical to committed version -->
-                      <groupId>fop</groupId>
-                      <artifactId>fop</artifactId>
-                      <version>0.20.5</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>docbook</outputDirectory>
-                      <destFileName>fop.jar</destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <!-- Binary is identical to committed version -->
-                      <groupId>batik</groupId>
-                      <artifactId>batik-1.5-fop</artifactId>
-                      <version>0.20-5</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>docbook</outputDirectory>
-                      <destFileName>batik.jar</destFileName>
                     </artifactItem>
 
                   </artifactItems>
@@ -502,34 +442,6 @@
                   </fileset>
                 </configuration>
               </execution>
-              <execution>
-                <id>unzip-docbook-dtd</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <directory>docbook/docbkx412.zip</directory>
-                    <outputDirectory>docbook/docbook-dtd</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
-              <execution>
-                <id>unzip-docbook-xsl</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>copy</goal>
-                </goals>
-                <configuration>
-                  <verbose>true</verbose>
-                  <fileset>
-                    <directory>docbook/docbook-xsl-1.44.zip/docbook-xsl-1.44</directory>
-                    <outputDirectory>docbook/docbook-xsl</outputDirectory>
-                  </fileset>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
 
@@ -594,12 +506,10 @@
                         <include>${lib.provisioned.marker}</include>
                         <include>ant/**</include>
                         <include>commons/**</include>
-                        <include>docbook/**</include>
                         <include>jarjar/**</include>
                         <include>jdtcore-aj/**</include>
                         <include>junit/**</include>
                         <include>regexp/**</include>
-                        <include>saxon/**</include>
                       </includes>
                       <followSymlinks>false</followSymlinks>
                     </fileset>
@@ -646,15 +556,10 @@
                     <file>ant/bin/ant.bat</file>
                     <file>ant/lib/junit.jar</file>
                     <file>commons/commons.jar</file>
-                    <file>docbook/docbook-dtd/docbookx.dtd</file>
-                    <file>docbook/docbook-xsl/html/chunk.xsl</file>
-                    <file>docbook/fop.jar</file>
-                    <file>docbook/batik.jar</file>
                     <file>jarjar/jarjar-1.3.jar</file>
                     <file>jdtcore-aj/jdtcore-for-aspectj.jar</file>
                     <file>junit/junit.jar</file>
                     <file>regexp/jakarta-regexp-1.2.jar</file>
-                    <file>saxon/saxon.jar</file>
                   </files>
                 </requireFilesExist>
               </rules>
