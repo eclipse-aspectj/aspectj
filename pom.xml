@@ -45,6 +45,11 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
+		<site>
+			<id>aspectj-site-local</id>
+			<!-- Use mvn site:deploy from root directory to create multi-module Maven site there -->
+			<url>file://${user.dir}/aj-build/dist/site</url>
+		</site>
 	</distributionManagement>
 
 	<repositories>
