@@ -4,7 +4,7 @@ AspectJ is based on a multi-module Maven build with several options influencing
 
   * what to build, 
   * whether to run tests,
-  * whether to created documentation for the AspectJ website,
+  * whether to create documentation for the AspectJ website,
   * whether to create source and javadoc artifacts,
   * whether to GPG-sign artifacts for a release.
 
