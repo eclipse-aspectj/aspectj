@@ -82,6 +82,15 @@ jobs:
             aspectjtools/target/aspectjtools-*.jar
             aspectjtools/target/flattened-pom.xml
 
+      - name: Attach installer to build
+        uses: actions/upload-artifact@v3
+        with:
+          name: installer-java${{ matrix.java }}
+          # Installer JAR + flattened POM
+          path: |
+            installer/target/aspectj-*.jar
+            installer/target/flattened-pom.xml
+
       - name: Create docs
         run: ./mvnw -B --file pom.xml -DskipTests package -pl docs -P create-docs
 
