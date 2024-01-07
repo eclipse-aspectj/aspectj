@@ -23,8 +23,6 @@ import java.util.Properties;
 /** release-specific version information */
 public class Version {
 
-    // generated from build/lib/BridgeVersion.java
-
     /** default version value for development version */
     public static final String DEVELOPMENT = "DEVELOPMENT";
     // VersionUptodate.java depends on this value
@@ -115,8 +113,3 @@ public class Version {
 		return text;
 	}
 }
-
-
-
-
-
