@@ -1029,13 +1029,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	private Unsafe unsafe;
+	private static Unsafe unsafe;
+	private static Method defineClassMethod;
 
-	private Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
+	private static Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
+		Unsafe unsafe = ClassLoaderWeavingAdaptor.unsafe;
 		if (unsafe == null) {
 	        Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
 	        theUnsafeField.setAccessible(true);
-	        return (Unsafe) theUnsafeField.get(null);
+			ClassLoaderWeavingAdaptor.unsafe = unsafe = (Unsafe) theUnsafeField.get(null);
+			return unsafe;
 		}
 		return unsafe;
     }
@@ -1105,15 +1108,14 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			}
 		} else {
 			try {
-				if (defineClassMethod == null) {
-					synchronized (lock) {
-						getUnsafe();
-						defineClassMethod =
-								Unsafe.class.getDeclaredMethod("defineClass", String.class,byte[].class,Integer.TYPE,Integer.TYPE, ClassLoader.class,ProtectionDomain.class);
-					}
+				Unsafe unsafe = getUnsafe();
+				Method defineClass = defineClassMethod;
+				if (defineClass == null) {
+					defineClass = Unsafe.class.getDeclaredMethod("defineClass", String.class,byte[].class,Integer.TYPE,Integer.TYPE, ClassLoader.class,ProtectionDomain.class);
+					defineClass.setAccessible(true);
+					defineClassMethod = defineClass;
 				}
-				defineClassMethod.setAccessible(true);
-				clazz = defineClassMethod.invoke(getUnsafe(), name,bytes,0,bytes.length,loader,protectionDomain);
+				clazz = defineClass.invoke(unsafe, name,bytes,0,bytes.length,loader,protectionDomain);
 			} catch (LinkageError le) {
 				le.printStackTrace();
 				// likely thrown due to defining something that already exists?
@@ -1130,8 +1132,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			trace.exit("defineClass", clazz);
 		}
 	}
-	static Method defineClassMethod;
-	private static final Object lock = new Object();
 
 
 //    /*
