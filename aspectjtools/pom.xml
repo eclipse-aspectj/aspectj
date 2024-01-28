@@ -365,6 +365,10 @@
 			<artifactId>asm</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-commons</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>runtime</artifactId>
 			<version>${project.version}</version>

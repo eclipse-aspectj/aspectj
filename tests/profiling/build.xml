@@ -290,8 +290,8 @@
 			<jvmarg value="${gc.args}"/>
 			<jvmarg value="${hprof.args}"/>
 			<jvmarg value="-javaagent:${aspectj.lib.dir}/aspectjweaver.jar"/>
-			<jvmarg value="${aj.addOpensKey}"/>
-			<jvmarg value="${aj.addOpensValue}"/>
+<!--			<jvmarg value="${aj.addOpensKey}"/>-->
+<!--			<jvmarg value="${aj.addOpensValue}"/>-->
 			<classpath>
 				<pathelement location="${results.dir}/ltw-app"/>
 				<pathelement location="${results.dir}/aspectlib.jar"/>
@@ -323,8 +323,8 @@
 			<arg value="${weave.injar}"/>
 			<jvmarg value="${gc.args}"/>
 			<jvmarg value="-javaagent:${aspectj.lib.dir}/aspectjweaver.jar"/>
-			<jvmarg value="${aj.addOpensKey}"/>
-			<jvmarg value="${aj.addOpensValue}"/>
+<!--			<jvmarg value="${aj.addOpensKey}"/>-->
+<!--			<jvmarg value="${aj.addOpensValue}"/>-->
 			<classpath>
 				<pathelement location="${results.dir}/ltw-app"/>
 				<pathelement location="${results.dir}/aspectlib.jar"/>

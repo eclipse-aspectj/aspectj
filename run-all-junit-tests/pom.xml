@@ -162,6 +162,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-commons</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>ajde</artifactId>
 			<version>${project.version}</version>

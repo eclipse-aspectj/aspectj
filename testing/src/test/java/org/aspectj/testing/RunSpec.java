@@ -68,14 +68,21 @@ public class RunSpec implements ITestStep {
 
 			if (vmargs == null)
 				vmargs = "";
-			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
-			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
-			// during runtime. See also docs/release/README-1.8.7.html.
+			// On Java 16+, LTW did not work on AspectJ 1.9.7 to 1.9.21 without this parameter. So, we added the argument here
+			// and not in AjcTestCase::run, because without 'useLTW' or 'useFullLTW', there might have been a need for weaver
+			// attachment during runtime. See also docs/release/README-1.8.7.adoc.
+			//
+			// Since AspectJ 1.9.21.1, '--add-opens' is no longer necessary, because we found a workaround for defining
+			// classes in arbitrary class loaders. But some tests, e.g. AtAjLTWTests.testLTWUnweavable, still use
+			// ClassLoader::defineClass to inject dynamically generated classes into the current class loader. Therefore, we
+			// still set the parameters, so they can be used on demand - not for LTW as such, but for class injection. See
+			// also tests/java5/ataspectj/ataspectj/UnweavableTest.java.
 			//
 			// The reason for setting this parameter for Java 9+ instead of 16+ is that it helps to avoid the JVM printing
 			// unwanted illegal access warnings during weaving in 'useFullLTW' mode, either making existing tests fail or
 			// having to assert on the warning messages.
-			vmargs += is16VMOrGreater() ? " --add-opens java.base/java.lang=ALL-UNNAMED" : "";
+			//
+			// vmargs += is16VMOrGreater() ? " --add-opens java.base/java.lang=ALL-UNNAMED" : "";
 
 			AjcTestCase.RunResult rr = inTestCase.run(getClassToRun(), getModuleToRun(), args, vmargs, getClasspath(), getModulepath(), useLtw, "true".equalsIgnoreCase(usefullltw));
 

@@ -33,8 +33,8 @@
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -48,8 +48,8 @@
 <!--            <jvmarg value="-verbose:class"/>-->
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -63,8 +63,8 @@
             <jvmarg value="-Djava.util.logging.config.file=logging.properties"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -76,8 +76,8 @@
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg value="-verbose:class"/>-->
             <!-- use META-INF/aop.xml style -->
 <!--            <jvmarg line="${jdwp}"/>-->

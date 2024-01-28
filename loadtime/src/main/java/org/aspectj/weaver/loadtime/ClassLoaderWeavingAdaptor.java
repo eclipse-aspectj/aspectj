@@ -11,23 +11,16 @@ package org.aspectj.weaver.loadtime;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
@@ -54,6 +47,9 @@ import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 import org.aspectj.weaver.tools.cache.WeavedClassCache;
 
+import org.objectweb.asm.*;
+import org.objectweb.asm.commons.ClassRemapper;
+import org.objectweb.asm.commons.Remapper;
 import sun.misc.Unsafe;
 
 /**
@@ -1029,156 +1025,243 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	private Unsafe unsafe;
+	private static final Object lock = new Object();
 
-	private Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
-		if (unsafe == null) {
-	        Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-	        theUnsafeField.setAccessible(true);
-	        return (Unsafe) theUnsafeField.get(null);
-		}
-		return unsafe;
-    }
+	/**
+	 * Instance of either {@link sun.misc.Unsafe} or {@link jdk.internal.misc.Unsafe}. Luckily, both types have
+	 * {@code defineClass} methods with identical signatures. I.e., method handle {@link #defineClassMethodHandle} can be
+	 * invoked with the same set of parameters for both types.
+	 */
+	private static Object unsafeInstance = null;
 
-	private static Method bindTo_Method, invokeWithArguments_Method = null;
-	private static Object defineClassMethodHandle = null;
+	/**
+	 * Method handle for defining new classes in arbitrary class loaders. For invocation, use in connection with
+	 * {@link #unsafeInstance}.
+	 */
+	private static MethodHandle defineClassMethodHandle;
 
-	private static Boolean initializedForJava11 = false;
-
-	// In order to let this code compile on earlier versions of Java (8), use reflection to discover the elements
-	// we need to define classes.
-	private static synchronized void initializeForJava11() {
-		if (initializedForJava11) return;
+	static {
 		try {
-			// MethodType defineClassMethodType = MethodType.methodType(Class.class, new Class[]{String.class, byte[].class, int.class, int.class, ProtectionDomain.class});
-			Class<?> methodType_Class = Class.forName("java.lang.invoke.MethodType");
-			Method methodTypeMethodOnMethodTypeClass = methodType_Class.getDeclaredMethod("methodType", Class.class,Class[].class);
-			methodTypeMethodOnMethodTypeClass.setAccessible(true);
-			Object defineClassMethodType = methodTypeMethodOnMethodTypeClass.invoke(null, Class.class, new Class[] {String.class,byte[].class,int.class,int.class,ProtectionDomain.class});
-
-			// MethodHandles.Lookup methodHandlesLookup = MethodHandles.lookup();
-			Class<?> methodHandles_Class = Class.forName("java.lang.invoke.MethodHandles");
-			Method lookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("lookup");
-			lookupMethodOnMethodHandlesClass.setAccessible(true);
-			Object methodHandlesLookup = lookupMethodOnMethodHandlesClass.invoke(null);
-
-			// MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, methodHandlesLookup);
-			Class<?> methodHandlesLookup_Class = Class.forName("java.lang.invoke.MethodHandles$Lookup");
-			Method privateLookupMethodOnMethodHandlesClass = methodHandles_Class.getDeclaredMethod("privateLookupIn",Class.class,methodHandlesLookup_Class);
-			privateLookupMethodOnMethodHandlesClass.setAccessible(true);
-			Object lookup = privateLookupMethodOnMethodHandlesClass.invoke(null, ClassLoader.class, methodHandlesLookup);
-
-			// MethodHandle defineClassMethodHandle = lookup.findVirtual(ClassLoader.class, "defineClass", defineClassMethodType);
-			Method findVirtual_Method = methodHandlesLookup_Class.getDeclaredMethod("findVirtual", Class.class,String.class,methodType_Class);
-			findVirtual_Method.setAccessible(true);
-			defineClassMethodHandle = findVirtual_Method.invoke(lookup, ClassLoader.class, "defineClass",defineClassMethodType);
-
-			// clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length);
-			Class<?> methodHandle_Class = Class.forName("java.lang.invoke.MethodHandle");
-			bindTo_Method = methodHandle_Class.getDeclaredMethod("bindTo", Object.class);
-			invokeWithArguments_Method = methodHandle_Class.getDeclaredMethod("invokeWithArguments",Object[].class);
-
-			initializedForJava11 = true;
-		} catch (Exception e) {
-			e.printStackTrace();
+			createDefineClassMethodHandle();
 		}
+		catch (Exception initializationError) {
+			new RuntimeException(
+				"The aspect weaver cannot determine any valid method to define auxiliary classes in arbitrary class loaders. " +
+					"Aspect weaving will *not* work, and you will see subsequent errors. Please search for corresponding " +
+					"issues at https://github.com/eclipse-aspectj/aspectj/issues. If there are none, please create a new one.",
+				initializationError
+			).printStackTrace();
+		}
+	}
+
+	/**
+	 * Scaffolding for defining classes in arbitrary class loaders
+	 * <p>
+	 * Inspired by and shamelessly adapted from <a href="https://bit.ly/3w10oH5">Byte Buddy's {@code ClassInjector}</a>.
+	 * Special thanks to Byte Buddy (BB) author Rafael Winterhalter, who briefly mentioned this approach in a
+	 * <a href="https://bit.ly/3SjFOZY">GitHub comment</a> related to JDK issue
+	 * <a href="https://bugs.openjdk.org/browse/JDK-8200559">JDK-8200559</a>.
+	 * <p>
+	 * <b>Background:</b> Instead of BB, we use ASM and reflection as follows:
+	 * <ul>
+	 *   <li>
+	 *     Create a mirror class for {@link AccessibleObject} with a different package name in a separate, throw-away
+	 *     class loader.
+	 *   </li>
+	 *   <li>
+	 *     Use the mirror class to calculate the {@link Unsafe#objectFieldOffset(Field)} for boolean field
+	 *     {@link AccessibleObject#override}, which is expected to be identical to the offset of the same field in the
+	 *     original class.
+	 *   </li>
+	 *   <li>
+	 *     After we have the offset, we can use it to override the field value in the original class, deactivating access
+	 *     checks for {@link jdk.internal.misc.Unsafe#defineClass(String, byte[], int, int, ClassLoader, ProtectionDomain)},
+	 *     the method we need to execute using a method handle.
+	 *   </li>
+	 * </ul>
+	 * All these serve the sole purpose enable LTW without {@code --add-opens java.base/java.lang=ALL-UNNAMED} on the
+	 * JVM command line on JDK 16+, which was necessary for AspectJ 1.9.7 (Java 16) to 1.9.21 (Java 21).
+	 *
+	 * @throws Exception if anything goes wrong, trying to determine a usable {@code defineClass} method handle from any
+	 * of the inspected classes
+	 */
+	private static synchronized void createDefineClassMethodHandle() throws Exception {
+		Unsafe publicUnsafeInstance = null;
+		try {
+			Field publicUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+			publicUnsafeField.setAccessible(true);
+			publicUnsafeInstance = (Unsafe) publicUnsafeField.get(null);
+			synchronized (lock) {
+				unsafeInstance = publicUnsafeInstance;
+				defineClassMethodHandle =  createMethodHandle(
+					"sun.misc.Unsafe", "defineClass",
+					String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class
+				);
+			}
+		}
+		catch (Exception publicUnsafeException) {
+			if (publicUnsafeInstance == null)
+				throw publicUnsafeException;
+			long overrideOffset = getAccessibleObjectOverrideOffset(publicUnsafeInstance);
+			Class<?> internalUnsafeType = Class.forName("jdk.internal.misc.Unsafe");
+			Field internalUnsafeField = internalUnsafeType.getDeclaredField("theUnsafe");
+			publicUnsafeInstance.putBoolean(internalUnsafeField, overrideOffset, true);
+			Method internalUnsafeDefineClassMethod = internalUnsafeType.getMethod(
+				"defineClass",
+				String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class
+			);
+			publicUnsafeInstance.putBoolean(internalUnsafeDefineClassMethod, overrideOffset, true);
+			synchronized (lock) {
+				unsafeInstance = internalUnsafeField.get(null);
+				defineClassMethodHandle = createMethodHandle(internalUnsafeDefineClassMethod);
+			}
+		}
+	}
+
+	private static long getAccessibleObjectOverrideOffset(Unsafe unsafe)
+		throws IOException, ClassNotFoundException, NoSuchFieldException
+	{
+		Objects.requireNonNull(unsafe);
+		Field overrideField;
+		try {
+			overrideField = AccessibleObject.class.getDeclaredField("override");
+		}
+		catch (NoSuchFieldException ignored) {
+			// On JDK 12+, field AccessibleObject.override is protected from reflection. The work-around is to create a
+			// mirror class with the same field layout by transforming the original class, so we can calculate the field
+			// offset of 'override' and set a value in the original class using the now known offset.
+			Class<?> mirrorClass = getMirrorClass(
+				"java.lang.reflect.AccessibleObject", "org.aspectj.mirror.AccessibleObject", true
+			);
+			overrideField = mirrorClass.getDeclaredField("override");
+		}
+		return unsafe.objectFieldOffset(overrideField);
+	}
+
+	public static MethodHandle createMethodHandle(String className, String methodName, Class<?>... argumentTypes)
+		throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException
+	{
+		Class<?> clazz = Class.forName(className);
+		Method method = clazz.getDeclaredMethod(methodName, argumentTypes);
+		return createMethodHandle(method, false);
+	}
+
+	public static MethodHandle createMethodHandle(Method method) throws IllegalAccessException {
+		return createMethodHandle(method, false);
+	}
+
+	public static MethodHandle createMethodHandle(Method method, boolean setAccessible)
+		throws IllegalAccessException
+	{
+		// Use Method::setAccessible to access private methods. Caveat: This does not work for classes in packages not
+		// exported to the calling module (for LTW usually the unnamed module).
+		if (setAccessible)
+			method.setAccessible(true);
+		return MethodHandles.lookup().unreflect(method);
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static Class<?> getMirrorClass(String originalClass, String mirrorClass, boolean removeMethods)
+		throws IOException, ClassNotFoundException
+	{
+		Objects.requireNonNull(originalClass);
+		Objects.requireNonNull(mirrorClass);
+		if (mirrorClass.equals(originalClass))
+			throw new IllegalArgumentException("Mirror class name must be different from original " + originalClass);
+		byte[] mirrorClassBytes = getMirrorClassBytes(originalClass, mirrorClass, removeMethods);
+		ClassLoader mirrorClassLoader = new SingleClassLoader(mirrorClass, mirrorClassBytes);
+		return mirrorClassLoader.loadClass(mirrorClass);
+	}
+
+	private static byte[] getMirrorClassBytes(String originalClass, String mirrorClass, boolean removeMethods)
+		throws IOException, ClassNotFoundException
+	{
+		Class<?> aClass = Class.forName(originalClass);
+		try (InputStream input = aClass.getResourceAsStream(aClass.getSimpleName() + ".class")) {
+			Objects.requireNonNull(input);
+			ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+			ClassRemapper classRemapper = new ClassRemapper(classWriter, new ClassNameRemapper(originalClass, mirrorClass));
+			ClassVisitor classVisitor = removeMethods ? new MethodAndConstructorRemover(classRemapper) : classRemapper;
+			new ClassReader(input).accept(classVisitor, 0);
+			return classWriter.toByteArray();
+		}
+	}
+
+	private static class ClassNameRemapper extends Remapper {
+		private final String originalClass;
+		private final String mirrorClass;
+
+		public ClassNameRemapper(String originalClass, String mirrorClass) {
+			this.originalClass = originalClass.replace('.', '/');
+			this.mirrorClass = mirrorClass.replace('.', '/');
+		}
+
+		@Override
+		public String map(String internalName) {
+			return internalName.equals(originalClass) ? mirrorClass : internalName;
+		}
+	}
+
+	/**
+	 * ASM class visitor removing all methods and constructors from the given class, leaving only the original fields
+	 */
+	private static class MethodAndConstructorRemover extends ClassVisitor {
+		public MethodAndConstructorRemover(ClassRemapper classRemapper) {
+			super(Opcodes.ASM9, classRemapper);
+		}
+
+		@Override
+		public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+			// Do not visit any methods or constructors, effectively removing them
+			return null;
+		}
+	}
+
+	/**
+	 * Throw-away child classloader with the sole purpose to define a single {@link Class} from the given bytecode
+	 */
+	private static class SingleClassLoader extends ClassLoader {
+		private final String mirrorClass;
+		private final byte[] mirrorClassBytes;
+
+		private SingleClassLoader(String mirrorClass, byte[] mirrorClassBytes) {
+			super(SingleClassLoader.class.getClassLoader());
+			this.mirrorClass = mirrorClass;
+			this.mirrorClassBytes = mirrorClassBytes;
+		}
+
+		@Override
+		public Class<?> loadClass(String name) throws ClassNotFoundException {
+			return name.equals(mirrorClass)
+				? super.defineClass(null, mirrorClassBytes, 0, mirrorClassBytes.length)
+				: super.loadClass(name);
+		}
+	}
+
+	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
+		defineClass(loader, name, bytes, null);
 	}
 
 	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
-		}
-		Object clazz = null;
 		debug("generating class '" + name + "'");
-		if (LangUtil.is11VMOrGreater()) {
-			try {
-				if (!initializedForJava11) {
-					initializeForJava11();
-				}
-				// Do this: clazz = defineClassMethodHandle.bindTo(loader).invokeWithArguments(name, bytes, 0, bytes.length, protectionDomain);
-				Object o = bindTo_Method.invoke(defineClassMethodHandle,loader);
-				clazz = invokeWithArguments_Method.invoke(o, new Object[] {new Object[] {name, bytes, 0, bytes.length, protectionDomain}});
-
-			} catch (Throwable t) {
-				t.printStackTrace(System.err);
-				warn("define generated class failed", t);
-			}
-		} else {
-			try {
-				if (defineClassMethod == null) {
-					synchronized (lock) {
-						getUnsafe();
-						defineClassMethod =
-								Unsafe.class.getDeclaredMethod("defineClass", String.class,byte[].class,Integer.TYPE,Integer.TYPE, ClassLoader.class,ProtectionDomain.class);
-					}
-				}
-				defineClassMethod.setAccessible(true);
-				clazz = defineClassMethod.invoke(getUnsafe(), name,bytes,0,bytes.length,loader,protectionDomain);
-			} catch (LinkageError le) {
-				le.printStackTrace();
-				// likely thrown due to defining something that already exists?
-				// Old comments from before moving to Unsafe.defineClass():
-				// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-				// TODO maw I don't think this is OK and
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-				warn("define generated class failed", e);
-			}
+		Class<?> definedClass = null;
+		try {
+			if (defineClassMethodHandle == null)
+				throw new RuntimeException("no valid method to define auxiliary classes -> weaver not working");
+			definedClass = (Class<?>) defineClassMethodHandle
+				.bindTo(unsafeInstance)
+				.invokeWithArguments(name, bytes, 0, bytes.length, loader, protectionDomain);
 		}
-
-		if (trace.isTraceEnabled()) {
-			trace.exit("defineClass", clazz);
+		catch (Throwable t) {
+			t.printStackTrace(System.err);
+			warn("define generated class failed", t);
+		}
+		finally {
+			if (trace.isTraceEnabled())
+				trace.exit("defineClass", definedClass);
 		}
 	}
-	static Method defineClassMethod;
-	private static final Object lock = new Object();
-
-
-//    /*
-//    This method is equivalent to the following code but use reflection to compile on Java 7:
-//     MethodHandles.Lookup baseLookup = MethodHandles.lookup();
-//    MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, baseLookup);
-//    MethodHandle defineClassMethodHandle = lookup.findVirtual(ClassLoader.class, "defineClass", defineClassMethodType);
-//    handle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length));
-// */
-//@Override
-//@SuppressWarnings("unchecked")
-//public <T> Class<T> defineClass(ClassLoader classLoader, String className, byte[] classBytes) {
-//    Object baseLookup = methodHandlesLookup.invoke(null);
-//    Object lookup = methodHandlesPrivateLookupIn.invoke(null, ClassLoader.class, baseLookup);
-//    MethodHandle defineClassMethodHandle = (MethodHandle) lookupFindVirtual.invoke(lookup, ClassLoader.class, "defineClass", defineClassMethodType);
-//    try {
-//        return Cast.uncheckedCast(defineClassMethodHandle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length));
-//    } catch (Throwable throwable) {
-//        throw new RuntimeException(throwable);
-//        return (Class) defineClassMethodHandle.bindTo(classLoader).invokeWithArguments(className, classBytes, 0, classBytes.length);
-//    } catch (Throwable e) {
-//        throw new RuntimeException(e);
-//    }
-//}
-
-	private void defineClass(ClassLoader loader, String name, byte[] bytes){
-		defineClass(loader,name,bytes,null);//, ProtectionDomain protectionDomain) {
-	}
-//		if (trace.isTraceEnabled()) {
-//			trace.enter("defineClass", this, new Object[] { loader, name, bytes, protectionDomain });
-//		}
-//		Object clazz = null;
-//		debug("generating class '" + name + "'");
-//		try {
-//			getUnsafe().defineClass(name, bytes, 0, bytes.length, loader, protectionDomain);
-//		} catch (LinkageError le) {
-//			// likely thrown due to defining something that already exists?
-//			// Old comments from before moving to Unsafe.defineClass():
-//			// is already defined (happens for X$ajcMightHaveAspect interfaces since aspects are reweaved)
-//			// TODO maw I don't think this is OK and
-//		} catch (Exception e) {
-//			warn("define generated class failed", e);
-//		}
-//
-//		if (trace.isTraceEnabled()) {
-//			trace.exit("defineClass", clazz);
-//		}
-//	}
 
 }

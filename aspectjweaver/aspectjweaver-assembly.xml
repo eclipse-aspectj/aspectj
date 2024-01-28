@@ -17,6 +17,7 @@
 			<useProjectArtifact>false</useProjectArtifact>
 			<includes>
 				<include>org.ow2.asm:asm</include>
+				<include>org.ow2.asm:asm-commons</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

@@ -70,9 +70,15 @@ public abstract class AjcTestCase extends TestCase {
 	public static final String CLASSPATH_ASM =
 		Arrays.stream(System.getProperty("java.class.path")
 			.split(pathSeparator))
-			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/"))
+			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/asm/"))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("ASM library not found on classpath"));
+	public static final String CLASSPATH_ASM_COMMONS =
+		Arrays.stream(System.getProperty("java.class.path")
+			.split(pathSeparator))
+			.filter(path -> path.replace('\\', '/').contains("org/ow2/asm/asm-commons/"))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("ASM Commons library not found on classpath"));
 	public static final String CLASSPATH_JDT_CORE =
 		Arrays.stream(System.getProperty("java.class.path")
 			.split(pathSeparator))
@@ -102,6 +108,7 @@ public abstract class AjcTestCase extends TestCase {
 			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
 			+ pathSeparator + CLASSPATH_JDT_CORE
 			+ pathSeparator + CLASSPATH_ASM
+			+ pathSeparator + CLASSPATH_ASM_COMMONS
 			// hmmm, this next one should perhaps point to an aj-build jar...
 			+ pathSeparator + ".." + separator + "lib" + separator + "test" + separator + "aspectjrt.jar"
 		;
