@@ -104,6 +104,8 @@ public class UnweavableTest extends TestCase {
 
         try {
             ClassLoader loader = this.getClass().getClassLoader();
+            // Needs "--add-opens java.base/java.lang=ALL-UNNAMED" on the JVM command line, injected in Ant build via
+            // aj.addOpensKey and aj.addOpensValue variables. See also AntSpec::execute.
             Method def = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             def.setAccessible(true);
             Class<?> gen = (Class<?>) def.invoke(loader, "ataspectj.ISomeGen", cw.toByteArray(), 0, cw.toByteArray().length);
@@ -127,6 +129,8 @@ public class UnweavableTest extends TestCase {
 
         try {
             ClassLoader loader = this.getClass().getClassLoader();
+            // Needs "--add-opens java.base/java.lang=ALL-UNNAMED" on the JVM command line, injected in Ant build via
+            // aj.addOpensKey and aj.addOpensValue variables. See also AntSpec::execute.
             Method def = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             def.setAccessible(true);
             Class<?> gen = (Class<?>) def.invoke(loader, "ataspectj.unmatched.Gen", cw.toByteArray(), 0, cw.toByteArray().length);

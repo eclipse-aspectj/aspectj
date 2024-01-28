@@ -19,8 +19,8 @@
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
             <jvmarg value="-Daj.weaving.verbose=true"/>
             <jvmarg value="-Dorg.aspectj.weaver.showWeaveInfo=true"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg value="-Dorg.aspectj.testing.server.debug=true"/>-->
         	<arg path="${aj.sandbox}"/>
         </java>

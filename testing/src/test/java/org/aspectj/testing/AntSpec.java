@@ -98,9 +98,15 @@ public class AntSpec implements ITestStep {
 			// setup aj.dir "modules" folder
 			p.setUserProperty("aj.root", new File("..").getAbsolutePath());
 
-			// On Java 16+, LTW no longer works without this parameter. Add the argument here and not in AjcTestCase::run,
-			// because even if 'useLTW' and 'useFullLTW' are not set, we might in the future have tests for weaver attachment
-			// during runtime. See also docs/release/README-1.8.7.html.
+			// On Java 16+, LTW did not work on AspectJ 1.9.7 to 1.9.21 without this parameter. So, we added the argument here
+			// and not in AjcTestCase::run, because without 'useLTW' or 'useFullLTW', there might have been a need for weaver
+			// attachment during runtime. See also docs/release/README-1.8.7.adoc.
+			//
+			// Since AspectJ 1.9.21.1, '--add-opens' is no longer necessary, because we found a workaround for defining
+			// classes in arbitrary class loaders. But some tests, e.g. AtAjLTWTests.testLTWUnweavable, still use
+			// ClassLoader::defineClass to inject dynamically generated classes into the current class loader. Therefore, we
+			// still set the parameters, so they can be used on demand - not for LTW as such, but for class injection. See
+			// also tests/java5/ataspectj/ataspectj/UnweavableTest.java.
 			//
 			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
 			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line.

@@ -11,8 +11,8 @@
         <java fork="yes" classname="HelloWorldWithException" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
 <!--
             <jvmarg value="-Daj.weaving.verbose=true"/>
@@ -29,8 +29,8 @@
         <java fork="yes" classname="HelloWorldWithException" failonerror="yes">
             <classpath refid="aj.path"/>
             <jvmarg value="-Djava.system.class.loader=org.aspectj.weaver.loadtime.WeavingURLClassLoader"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
             <jvmarg value="-Dorg.aspectj.tracing.debug=true"/>
 <!--
             <jvmarg value="-Daj.weaving.verbose=true"/>
@@ -62,8 +62,8 @@
             <jvmarg value="-Dorg.aspectj.tracing.messages=true"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -80,8 +80,8 @@
         	     to bootclasspath -->
         	<jvmarg value="-Xbootclasspath/p:${aj.sandbox}"/>
             <jvmarg value="-Xbootclasspath/a:${aj.bootpath}"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 
         	<classpath>
                 <pathelement path="${aj.sandbox}/hello.jar:${aj.sandbox}/handler.jar:${aj.sandbox}/security.jar"/>
@@ -109,8 +109,8 @@
             <classpath refid="aj.path"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
     </target>
@@ -124,8 +124,8 @@
         	<sysproperty key="org.aspectj.dump.directory" path="${aj.sandbox}"/>
             <!-- use META-INF/aop.xml style -->
             <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
-            <jvmarg value="${aj.addOpensKey}"/>
-            <jvmarg value="${aj.addOpensValue}"/>
+<!--            <jvmarg value="${aj.addOpensKey}"/>-->
+<!--            <jvmarg value="${aj.addOpensValue}"/>-->
             <jvmarg value="-Dorg.aspectj.tracing.factory=default"/>
 <!--            <jvmarg line="${jdwp}"/>-->
         </java>
