@@ -573,10 +573,11 @@ class InstallContext {
 	}
 
 	public boolean onWindowsPro() {
+		// Except for some older versions/names, also match Windows 7, 8, 10, 11 up to 89,
+		// but not 9x, i.e. e.g. not Windows 95 or 98
 		// TODO: Think about a more future-proof solution also checking 'os.version' system property. See also this table:
-		//       https://github.com/openjdk/jdk/blob/9604ee82690f89320614b37bfef4178abc869777/src/java.base/windows/native/libjava/java_props_md.c#L446
-		//       Alternatively, explicitly exclude unsupported versions because those won't change in the future.
-		return getOS().matches("^Windows (NT|2000|XP|Vista|Server|7|8|10).*");
+		//       https://github.com/openjdk/jdk/blob/7a300b63b5ca22dfe3e831e641f7a11b9c719b30/src/java.base/windows/native/libjava/java_props_md.c#L415
+		return getOS().matches("^Windows (NT|2000|XP|Vista|Server|[1-8][0-9]?).*");
 	}
 
 	public boolean onMacintosh() {
