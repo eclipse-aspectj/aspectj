@@ -88,11 +88,6 @@
 							<archive>
 								<manifestEntries>
 									<Automatic-Module-Name>org.aspectj.matcher</Automatic-Module-Name>
-									<!--
-									<Premain-Class>org.aspectj.weaver.loadtime.Agent</Premain-Class>
-									<Agent-Class>org.aspectj.weaver.loadtime.Agent</Agent-Class>
-									<Can-Redefine-Classes>true</Can-Redefine-Classes>
-									-->
 								</manifestEntries>
 
 
