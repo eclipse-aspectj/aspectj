@@ -1,5 +1,5 @@
 [[top]]
-== AspectJ Documentation and Resources
+= AspectJ Documentation and Resources
 
 AspectJ^TM^ is a seamless aspect-oriented extension to Java^TM^. The compiler and development tools are available under
 an open-source license, require Java 8 to run, and produce code that runs in JDK 1.3 and later VM's. For the latest
@@ -27,7 +27,7 @@ mailto:aspectj-users@eclipse.org[users] and mailto:aspectj-dev@eclipse.org[devel
 |===
 
 [[documentation]]
-=== AspectJ documentation
+== AspectJ documentation
 
 [width="100%",cols="50%,50%",options="header",]
 |===
@@ -144,7 +144,7 @@ a|AspectJ Design Overview
 
 [[distributions]]
 
-=== AspectJ distributions
+== AspectJ distributions
 
 [cols=",",options="header",]
 |===
@@ -167,7 +167,7 @@ eclipse.org project site https://eclipse.org/ajdt
 
 [[resources]]
 
-=== Other AspectJ resources
+== Other AspectJ resources
 
 [cols=",",options="header",]
 |===
@@ -193,7 +193,7 @@ See the xref:faq/faq.adoc#ajcbugs[FAQ entry] for instructions on submitting comp
 |===
 
 [[paths]]
-=== Suggested learning paths for those new to AspectJ
+== Suggested learning paths for those new to AspectJ
 
 To learn the AspectJ language, read the xref:progguide/index.adoc[Programming Guide], keeping the
 xref:progguide/semantics.adoc[Semantics appendix] nearby as the best reference for AspectJ usage. Focus initially on the

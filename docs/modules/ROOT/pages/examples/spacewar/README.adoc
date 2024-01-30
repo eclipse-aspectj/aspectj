@@ -1,5 +1,5 @@
 [[_5]]
-== Exploring the Spacewar Example
+= Exploring the Spacewar Example
 
 _© Copyright 1997-2001 Xerox Corporation. All rights reserved._
 
@@ -19,13 +19,13 @@ the helloworld example first by following the instructions in
 xref:../doc/primer/default.html[Primer] section Getting Started.
 
 [[_5_1]]
-=== Compiling Spacewar
+== Compiling Spacewar
 
 * Change to the `examples` directory.
 * Type `ajc -argfile spacewar/demo.lst` to compile the system.
 
 [[_5_2]]
-=== Running Spacewar
+== Running Spacewar
 
 * In the examples directory, type `java spacewar.Game`
 
@@ -42,7 +42,7 @@ focus so that your keystrokes are recognized.
 You can quit the game with ctl-Q.
 
 [[_5_3]]
-=== Exploring the Code
+== Exploring the Code
 
 There is one other built-in configurations for the Spacewar game. Try it
 by typing `ajc @spacewar\debug.lst`. This compiles in an elaborate

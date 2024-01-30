@@ -1,8 +1,8 @@
 [[ajcore]]
-== AspectJ Core Files
+= AspectJ Core Files
 
 [[ajcore-introduction]]
-=== Introduction
+== Introduction
 
 When the compiler terminates abnormally, either because a particular
 kind of message was issued or an exception was thrown, an AspectJ core
@@ -15,7 +15,7 @@ version. When submitting a bug, include this file whenever it is
 available.
 
 [[configuration]]
-==== Configuring dump files
+=== Configuring dump files
 
 By default AspectJ will only create an `ajcore` file when an unexpected
 exception is thrown by the weaver or an `abort` message is issued.
@@ -37,7 +37,7 @@ files.
 |===
 
 [[ajcore-examples]]
-==== AJCore File Examples
+=== AJCore File Examples
 
 Below is an extract from an `ajcore` file. You will see details of the
 dump configuration as well as the exception (with stack trace) that is

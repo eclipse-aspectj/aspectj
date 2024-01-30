@@ -1,8 +1,8 @@
 [[miscellaneous]]
-== Other Changes in AspectJ 5
+= Other Changes in AspectJ 5
 
 [[pointcuts-change]]
-=== Pointcuts
+== Pointcuts
 
 AspectJ 5 is more liberal than AspectJ 1.2.1 in accepting pointcut
 expressions that bind context variables in more than one location. For
@@ -22,7 +22,7 @@ for instance, no join point can be both an execution join point and a
 set join point so the two branches are mutually exclusive.
 
 [[declare-soft-change]]
-=== Declare Soft
+== Declare Soft
 
 The semantics of the `declare soft` statement have been refined in
 AspectJ 5 to only soften exceptions that are not already runtime

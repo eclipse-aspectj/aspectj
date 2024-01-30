@@ -1,4 +1,4 @@
-== AspectJ 1.8.11
+= AspectJ 1.8.11
 
 _© Copyright 2017 Contributors. All rights reserved._
 

@@ -1,6 +1,6 @@
-== AspectJ Language Design
+= AspectJ Language Design
 
-=== User-suggested New Language Features
+== User-suggested New Language Features
 
 * `-` wildcard
 ** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00717.html
@@ -13,9 +13,9 @@
 ** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00458.html
 ** https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00467.html +
 
-=== Key Language Design Properties
+== Key Language Design Properties
 
-==== Orthogonal join point model
+=== Orthogonal join point model
 
 The different kinds of join
 points, the different primitive pointcuts, and the different kinds of
@@ -25,7 +25,7 @@ This was one of the hardest parts of the design to get right, because of
 the "constructor must call super" rule in Java. But we finally got this
 in 1.0.
 
-==== Pointcuts support composition and abstraction
+=== Pointcuts support composition and abstraction
 
 Abelson and Sussman
 say that composition and abstraction are the key elements of a real
@@ -45,18 +45,18 @@ pointcut topLevelStateChange(): stateChange() && !cflowbelow(stateChange());
 is what makes it possible for people to really work with crosscutting
 structure and make their code more clear.
 
-==== Statically type checked
+=== Statically type checked
 
 The efficiency, code quality and programmer
 productivity arguments for this have been made elsewhere, so I won't
 repeat them.
 
-==== Efficient
+=== Efficient
 
 AspectJ code is as fast as the equivalent functionality,
 written by hand, in a scattered and tangled way.
 
-==== Simple kernel
+=== Simple kernel
 
 I've heard some people say that AspectJ is too big
 and too complex. In the most important sense of simple AspectJ is
@@ -69,7 +69,7 @@ the right idea for a standard AOP API
 is this kernel, packaged in a way that allows building more
 sophisticated tools on top of it.
 
-==== Supports multiple weave times
+=== Supports multiple weave times
 
 AspectJ is neutral on whether weaving
 happens at pre-process, compile, post-process, load, JIT or runtime.

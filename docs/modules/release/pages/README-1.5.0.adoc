@@ -1,4 +1,4 @@
-== AspectJ 5
+= AspectJ 5
 
 _© Copyright 2005 Contributors. All rights reserved._
 

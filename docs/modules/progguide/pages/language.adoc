@@ -1,8 +1,8 @@
 [[language]]
-== The AspectJ Language
+= The AspectJ Language
 
 [[language-intro]]
-=== Introduction
+== Introduction
 
 The previous chapter, xref:gettingstarted.adoc#starting[Getting Started with AspectJ], was a brief overview of the
 AspectJ language. You should read this chapter to understand AspectJ's
@@ -14,13 +14,13 @@ of a pointcut, an introduction, and two pieces of advice. This example
 aspect will gives us something concrete to talk about.
 
 [[language-anatomy]]
-=== The Anatomy of an Aspect
+== The Anatomy of an Aspect
 
 This lesson explains the parts of AspectJ's aspects. By reading this
 lesson you will have an overview of what's in an aspect and you will be
 exposed to the new terminology introduced by AspectJ.
 
-==== An Example Aspect
+=== An Example Aspect
 
 Here's an example of an aspect definition in AspectJ:
 
@@ -61,7 +61,7 @@ and methods, pointcut definitions, inter-type declarations, and advice,
 where advice may be before, after or around advice. The remainder of
 this lesson focuses on those crosscut-related constructs.
 
-==== Pointcuts
+=== Pointcuts
 
 AspectJ's pointcut definitions give names to pointcuts. Pointcuts
 themselves pick out join points, i.e. interesting points in the
@@ -109,7 +109,7 @@ execution, and field access. Each kind of join point can be picked out
 by its own specialized pointcut that you will learn about in other parts
 of this guide.
 
-==== Advice
+=== Advice
 
 A piece of advice brings together a pointcut and a body of code to
 define aspect implementation that runs at join points picked out by the
@@ -148,7 +148,7 @@ third kind of advice called around. You will see those in other parts of
 this guide.
 
 [[language-joinPoints]]
-=== Join Points and Pointcuts
+== Join Points and Pointcuts
 
 Consider the following Java class:
 
@@ -221,7 +221,7 @@ separated by a colon. The left-hand side consists of the pointcut name
 and the pointcut parameters (i.e. the data available when the events
 happen). The right-hand side consists of the pointcut itself.
 
-==== Some Example Pointcuts
+=== Some Example Pointcuts
 
 Here are examples of pointcuts picking out
 
@@ -302,7 +302,7 @@ in ``MyInterface``'s signature -- that is, any method defined by
 `MyInterface` or inherited by one of its a supertypes.
 
 [[call-vs-execution]]
-==== call vs. execution
+=== call vs. execution
 
 When methods and constructors run, there are two interesting times
 associated with them. That is when they are called, and when they
@@ -335,7 +335,7 @@ use `execution`, but if you want to pick one that runs when a particular
 _signature_ is called (as is often the case for production aspects), use
 `call`.
 
-==== Pointcut composition
+=== Pointcut composition
 
 Pointcuts are put together with the operators and (spelled `&&`), or
 (spelled `||`), and not (spelled `!`). This allows the creation of very
@@ -426,7 +426,7 @@ If this was not present a recursive call would result as the pointcut
 would apply to its own advice. (See xref:pitfalls.adoc#pitfalls-infiniteLoops[Infinite loops]
 for more details.)
 
-==== Pointcut Parameters
+=== Pointcut Parameters
 
 Consider again the first pointcut definition in this chapter:
 
@@ -520,7 +520,7 @@ when calling `setY`, but the pointcut picks out all of these join points
 and tries to bind both `p1` and `p2`.
 
 [[example]]
-==== Example: `HandleLiveness`
+=== Example: `HandleLiveness`
 
 The example below consists of two object classes (plus an exception
 class) and one aspect. Handle objects delegate their public, non-static
@@ -561,7 +561,7 @@ class DeadPartnerException extends RuntimeException {}
 ....
 
 [[pointcut-best-practice]]
-==== Writing good pointcuts
+=== Writing good pointcuts
 
 During compilation, AspectJ processes pointcuts in order to try and
 optimize matching performance. Examining code and determining if each
@@ -603,7 +603,7 @@ processed - that is why a good pointcut should always include one if
 possible.
 
 [[language-advice]]
-=== Advice
+== Advice
 
 Advice defines pieces of aspect implementation that execute at
 well-defined points in the execution of the program. Those points can be
@@ -710,7 +710,7 @@ void around(Point p, int x):
 ....
 
 [[language-interType]]
-=== Inter-type declarations
+== Inter-type declarations
 
 Aspects can declare members (fields, methods, and constructors) that are
 owned by other types. These are called inter-type members. Aspects can
@@ -820,7 +820,7 @@ As you can see from the above example, an aspect can declare that
 interfaces have fields and methods, even non-constant fields and methods
 with bodies.
 
-==== Inter-type Scope
+=== Inter-type Scope
 
 AspectJ allows private and package-protected (default) inter-type
 declarations in addition to public inter-type declarations. Private
@@ -843,7 +843,7 @@ int Foo.x;
 then everything in the aspect's package (which may or may not be ``Foo``'s
 package) can access `x`.
 
-==== Example: `PointAssertions`
+=== Example: `PointAssertions`
 
 The example below consists of one class and one aspect. The aspect
 privately declares the assertion methods of `Point`, `assertX` and
@@ -888,7 +888,7 @@ aspect PointAssertions {
 ....
 
 [[language-thisJoinPoint]]
-=== `thisJoinPoint`
+== `thisJoinPoint`
 
 AspectJ provides a special reference variable, `thisJoinPoint`, that
 contains reflective information about the current join point for the

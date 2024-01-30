@@ -1,4 +1,4 @@
-== Changes in AspectJ
+= Changes in AspectJ
 
 _© Copyright 1998-2002 Palo Alto Research Center Incorporated
 2003-2008 Contributors. All rights reserved._
@@ -33,7 +33,7 @@ _© Copyright 1998-2002 Palo Alto Research Center Incorporated
 '''''
 
 [[_1_6_0]]
-== 1.6.0
+= 1.6.0
 
 This release rebases AspectJ on the Eclipse Compiler version 785_R33X -
 making it Java6 compliant.
@@ -42,7 +42,7 @@ A full list of bugs fixed and enhancements implemented can be found in
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0+RC1&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugzilla].
 
 [[_1_5_4]]
-== 1.5.4
+= 1.5.4
 
 This release contains around 40 bug fixes and enhancements since the
 1.5.3 release.
@@ -52,7 +52,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_3]]
-== 1.5.3
+= 1.5.3
 
 This release contains around 80 bug fixes and enhancements since the
 1.5.2 release.
@@ -62,7 +62,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_2]]
-== 1.5.2
+= 1.5.2
 
 This release contains around 60 bug fixes and enhancements since the
 1.5.1 release.
@@ -72,7 +72,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_1]]
-== 1.5.1
+= 1.5.1
 
 This release contains over 70 bug fixes and enhancements since the 1.5.0
 release.
@@ -82,7 +82,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_0]]
-== 1.5.0
+= 1.5.0
 
 This release contains nearly 400 bug fixes and enhancements since the
 1.2.1 release. Major updates to the language are documented in the
@@ -94,7 +94,7 @@ A full list of bugs fixed in AspectJ 5 can be found in
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&product=AspectJ&resolution=FIXED&chfieldfrom=2004-11-06&chfieldto=2005-12-20[bugzilla].
 
 [[_1_2_1]]
-== 1.2.1
+= 1.2.1
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2.1&bug_status=RESOLVED&resolution=FIXED[full
@@ -214,7 +214,7 @@ subset of aspectjtools.jar needed for weaving. The "aj" script is also
 moved into the bin directory.
 
 [[_1_2]]
-== 1.2
+= 1.2
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2[full
@@ -341,7 +341,7 @@ local storage used to manage cflow stacks when available - improves
 cflow performance when working with a multi-threaded application.
 
 [[_1_1_1]]
-== 1.1.1
+= 1.1.1
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.1.1[full
@@ -398,12 +398,12 @@ ajc to compile JSP's in Tomcat. Thanks to Ron Bodkin for investigating
 how to integrate ajc with Tomcat.
 
 [[_1_0_6]]
-== 1.0.6
+= 1.0.6
 
 This release contains mainly bug fixes for ajde and ajdoc.
 
 [[_1_0_6compiler]]
-=== Compiler
+== Compiler
 
 We fixed a bug with switch statements, thanks largely to Jason Rimmer's
 diligence in helping us isolate the problem. Also, to help Log4J parse
@@ -411,7 +411,7 @@ stack traces, we changed class file symbolic line references to use []
 instead of () for the virtual start lines of each file.
 
 [[_1_0_6ajde]]
-=== AJDE
+== AJDE
 
 *AJDE Framework, AJBrowser, and AJDE for Forte/NetBeans*
 
@@ -420,7 +420,7 @@ reduce footprint when working with large systems.  Error tolerance has
 also been improved for dealing with a structure model that is out of
 synch with resources on disk.
 
-==== AJDE for JBuilder
+=== AJDE for JBuilder
 
 JBuilder 7 is now supported.  All known bugs have been fixed including:
 
@@ -442,7 +442,7 @@ JBuilder OpenTools with AJDE/JBuilder, the OpenTool is now being built
 with itself.
 
 [[_1_0_6ajdoc]]
-=== Ajdoc
+== Ajdoc
 
 * Fixed http://aspectj.org/bugs/resolved?id=790[790] aspect code
 comments suppressed by fix to bug 710
@@ -451,7 +451,7 @@ comments suppressed by fix to bug 710
 '''''
 
 [[_1_0_5]]
-== 1.0.5
+= 1.0.5
 
 This release includes significant improvements to AspectJ Development
 Environment (AJDE) support. The entire user interface has been revised
@@ -466,7 +466,7 @@ tool.
 * xref:#_1_0_5anttasks[Ant tasks]
 
 [[_1_0_5compiler]]
-=== Compiler
+== Compiler
 
 This was another compiler release primarily concerned with fixing corner
 cases in the language implementation. Our handling of nested classes,
@@ -475,9 +475,9 @@ Thanks to Nicholas Alex Leidenfrost and Patrick Chan for their clear and
 concise bug reports on some of these issues.
 
 [[_1_0_5ajde]]
-=== AJDE
+== AJDE
 
-==== This release includes significant improvements to AspectJ Development Environment (AJDE) support. All known bugs have been fixed, and the core framework quality has been significantly increased thanks to the adoption of a unit test suite. The following changes apply to all of the AJDE NetBeans/Forte, JBuilder, and the AspectJ Browser support. NetBeans/Forte and JBuilder-specific changes are listed below.
+=== This release includes significant improvements to AspectJ Development Environment (AJDE) support. All known bugs have been fixed, and the core framework quality has been significantly increased thanks to the adoption of a unit test suite. The following changes apply to all of the AJDE NetBeans/Forte, JBuilder, and the AspectJ Browser support. NetBeans/Forte and JBuilder-specific changes are listed below.
 
 * The entire user interface has been revised and streamlined.
 * The structure view and browser have a new UI, and offer both a
@@ -491,7 +491,7 @@ crosscutting structure.
 * Error messages have been improved, and the structure views include
 annotations of nodes with errors and warnings.
 
-==== AJDE for JBuilder
+=== AJDE for JBuilder
 
 Integration into the JBuilder IDE is more streamlined. In addition:
 
@@ -514,7 +514,7 @@ double-clicking ".lst" files that have been added to the project.
 * Error messages now match JBuilder's look-and-feel and behavior.
 Seeking to column numbers now works in addition to line numbers.
 
-==== AJDE for Forte/NetBeans
+=== AJDE for Forte/NetBeans
 
 Integration into the NetBeans IDE is more streamlined. In addition:
 
@@ -529,7 +529,7 @@ configuration.
 * Class files are generated beside source files (NetBeans/javac
 default). There is currently no way to specify a target directory.
 
-==== AJBrowser
+=== AJBrowser
 
 * The browser now supports main class execution. Set the main class in
 the options dialog, and make sure that both the Java executable is on
@@ -537,7 +537,7 @@ your path, and the class that you expect to execute on your classpath.
 * The error messages UI has been improved.
 
 [[_1_0_5ajdoc]]
-=== Ajdoc
+== Ajdoc
 
 Bug fixes:
 
@@ -552,7 +552,7 @@ docs for methods or constructors declared on other types.]
 resource]
 
 [[_1_0_5anttasks]]
-=== Ant tasks
+== Ant tasks
 
 Bug fixes:
 
@@ -562,7 +562,7 @@ ajc flags]
 '''''
 
 [[_1_0_4]]
-== 1.0.4
+= 1.0.4
 
 * xref:#_1_0_4compiler[Compiler]
 * xref:#_1_0_4ajde[AJDE]
@@ -571,7 +571,7 @@ ajc flags]
 * xref:#_1_0_4doc[Documentation]
 
 [[_1_0_4compiler]]
-=== Compiler
+== Compiler
 
 * Over a dozen people independently reported a bug in error handling for
 the wrong number number of arguments to `proceed`. This has been turned
@@ -587,7 +587,7 @@ language spec.
 Language Spec have been fixed in this release. Thanks to Neal Gafter for
 reporting many of these.
 
-==== Incompatible changes
+=== Incompatible changes
 
 Two potentially surprising incompatible changes have been made to ajc in
 order to bring the compiler into compliance with the 1.0 language
@@ -609,19 +609,19 @@ of these changes can be found in the xref:porting.adoc#pre-1_0_4[porting
 notes].
 
 [[_1_0_4ajde]]
-=== AJDE
+== AJDE
 
 This is the first release of AJDE support with significant external
 contribution. A big thanks goes out to Phil Sager for porting the AJDE
 for Forte/NetBeans support to NetBeans 3.3.1 and improving the
 integration into NetBeans.
 
-==== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Updates
 ** This is a bug fix release only.
 
-==== AJDE for Forte/NetBeans
+=== AJDE for Forte/NetBeans
 
 * Updates
 ** NetBeans 3.3.1 is now supported in addition to NetBeans 3.2 and Forte
@@ -638,18 +638,18 @@ Explorer, right-click the class and select "Execute".
 source code. The "AspectJ" Explorer understands the structure of AspectJ
 projects and should be used for navigating structure instead.
 
-==== AJDE for Emacs
+=== AJDE for Emacs
 
 * This is a bug fix release only.
 
 [[_1_0_4ajdoc]]
-=== Ajdoc
+== Ajdoc
 
 Ajdoc now runs under J2SE 1.4, but still requires the tools.jar from
 J2SE 1.3 be on the classpath.
 
 [[_1_0_4taskdefs]]
-=== Ant tasks
+== Ant tasks
 
 * Repackaged to fit into the AspectJ product directory - e.g.,
 `aspectj-ant.jar` moved to `lib` as expected by `examples/build.xml`.
@@ -657,7 +657,7 @@ J2SE 1.3 be on the classpath.
 BuildException if failonerror and ajdoc detects misconfiguration.
 
 [[_1_0_4doc]]
-=== Documentation
+== Documentation
 
 Added a 1-page quick reference guide. Improved javadoc documentation for
 the org.aspectj.lang package.
@@ -665,13 +665,13 @@ the org.aspectj.lang package.
 '''''
 
 [[_1_0_3]]
-== 1.0.3
+= 1.0.3
 
 * xref:#_1_0_3compiler[Compiler]
 * xref:#_1_0_3taskdefs[Ant taskdefs]
 
 [[_1_0_3compiler]]
-=== Compiler
+== Compiler
 
 This release fixes a single significant bug in 1.0.2 where ajc could
 generate unreachable code in `-usejavac` or `-preprocess` mode. This
@@ -681,7 +681,7 @@ flow-analysis for this case and generate code that is acceptable to
 javac. Thanks to Rich Price for reporting this bug.
 
 [[_1_0_3taskdefs]]
-=== Ant taskdefs
+== Ant taskdefs
 
 Added support to the Ajc taskdef for the -source 1.4 and -X options
 generally.
@@ -689,7 +689,7 @@ generally.
 '''''
 
 [[_1_0_2]]
-== 1.0.2
+= 1.0.2
 
 This release is mainly about keeping up with the Joneses. To keep up
 with SUN's release candidate for J2SE1.4, we now officially support the
@@ -705,7 +705,7 @@ reported in 1.0.1.
 * xref:#_1_0_2ajdb[AJDB]
 
 [[_1_0_2compiler]]
-=== Compiler
+== Compiler
 
 * Official support for `-source 1.4` option to compile new
 http://java.sun.com/j2se/1.4/docs/guide/lang/assert.html[1.4
@@ -748,7 +748,7 @@ javac].
 using the latest `aspectjrt.jar`
 
 [[_1_0_2ajde]]
-=== AJDE
+== AJDE
 
 This is a bug fix release only.
 
@@ -760,7 +760,7 @@ view) have been fixed.
 * Other GUI and usability improvements have been made the AspectJ
 Browser and core framework.
 
-==== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Support has been extended to JBuilder 6, and support for Enterprise
 version features has been improved.
@@ -768,12 +768,12 @@ version features has been improved.
 not be updated after a recompile.
 * Keyboard shortcuts were fixed to work with Mac OSX.
 
-==== AJDE for Forte
+=== AJDE for Forte
 
 * Keyboard shortcuts were fixed to work with Mac OSX.
 
 [[_1_0_2ajdb]]
-==== AJDB
+=== AJDB
 
 Some minor bug fixes, but this is still early-access software. Please
 try using another JPDA-compliant debugger. If it uses JDI correctly,
@@ -784,14 +784,14 @@ would appreciate any reports of success or failure.
 '''''
 
 [[_1_0_1]]
-== 1.0.1
+= 1.0.1
 
 * xref:#_1_0_1compiler[Compiler]
 * xref:#_1_0_1ajde[AJDE]
 * xref:#_1_0_1ajdb[AJDB]
 
 [[_1_0_1compiler]]
-=== Compiler
+== Compiler
 
 This release fixes a significant performance issue in the compiler,
 reported by Rich Price, that could lead to extremely long compiles in
@@ -809,7 +809,7 @@ expected that this prefix will either become the default compiler
 behavior in the future or a non-experimental flag will replace it.
 
 [[_1_0_1ajde]]
-=== AJDE
+== AJDE
 
 Minor bug fixes, including: AJDE for JBuilder failed to preserve
 application parameters from project settings when executing the
@@ -818,7 +818,7 @@ application.
 Source builds were cleaned up for JBuilder and Forte sources.
 
 [[_1_0_1ajdb]]
-=== AJDB
+== AJDB
 
 Two bugs were reported and have been fixed in this release. (Note that
 ajdb is still considered early-access software.)
@@ -827,7 +827,7 @@ ajdb is still considered early-access software.)
 * bug 617: -X and -D options not passed to debug VM correctly
 
 [[_1_0_0]]
-== 1.0.0
+= 1.0.0
 
 * xref:#_1_0_0language[Language]
 * xref:#_1_0_0compiler[Compiler]
@@ -836,12 +836,12 @@ ajdb is still considered early-access software.)
 * xref:#_1_0_0taskdefs[Ant taskdefs]
 
 [[_1_0_0language]]
-== Language
+= Language
 
 There were no language changes for this release.
 
 [[_1_0_0compiler]]
-== Compiler
+= Compiler
 
 Several minor bugs primarily in error handling were reported and have
 been fixed in this release. The two most serious bugs are described
@@ -861,37 +861,37 @@ class overrode introduced methods on an interface implemented by that
 class. This is now fixed.
 
 [[_1_0_0ajde]]
-== AJDE
+= AJDE
 
 Numerous user interface refinements were made to the browser and core
 AJDE functionality. Error handling and reporting has been improved. All
 of the AJDE tools now support the ".aj" file extension.
 
-=== AJDE for JBuilder
+== AJDE for JBuilder
 
 * The AspectJ Browser now uses JBuilder's icons and distinguishes nodes
 by visibility.
 * Project-setting VM parameters are now supported by the "AJDE Run"
 button.
 
-=== AJDE for Forte
+== AJDE for Forte
 
 * The AspectJ Browser now uses Forte's icons and distinguishes nodes by
 visibility
 
-=== AJBrowser
+== AJBrowser
 
 * Documentation for the browser is now available at
 http://aspectj.org/docs
 
-=== Emacs Support: aspectj-mode and AJDEE
+== Emacs Support: aspectj-mode and AJDEE
 
 * Improved updating of annotations during editing.
 * Pop-up jump menu now placed (with mouse pointer) near cursor.
 * [AJDEE only] Improved filtering of legal code completions.
 
 [[_1_0_0ajdoc]]
-=== AJDoc
+== AJDoc
 
 * Runs only in J2SE 1.3 - not 1.2 or 1.4. You can document 1.x-reliant
 programs by using the options to compile using 1.x libraries.
@@ -899,15 +899,15 @@ programs by using the options to compile using 1.x libraries.
 the syntax message.
 
 [[_1_0_0taskdefs]]
-=== Ant taskdefs
+== Ant taskdefs
 
 * Fork is not supported in the AJDoc taskdef
 
 [[_1_0rc3]]
-== 1.0rc3
+= 1.0rc3
 
 [[_1_0rc3language]]
-== Language
+= Language
 
 There have been several minor clarifications/changes to the language.
 
@@ -921,7 +921,7 @@ to this language feature.
 http://aspectj.org/pipermail/users/2001/001258.html[More details...]
 
 [[_1_0rc3compiler]]
-== Compiler
+= Compiler
 
 This release saw several changes to the compiler in order to work-around
 known bugs in different JVMs, or to otherwise mimic the behavior of
@@ -960,7 +960,7 @@ the jikes group, and had added the feature days before getting our first
 bug report for it not being there.
 
 [[_1_0rc3ajde]]
-== AJDE
+= AJDE
 
 * The structure view has been improved.
 * Multiple user-configurable views are supported.
@@ -974,7 +974,7 @@ current file or the project root.
 associations are now navigable.
 * A depth slider for controlling tree-expansion has been added.
 
-=== AJDE for JBuilder
+== AJDE for JBuilder
 
 * Changes:
 * Inline annotations support have been improved and made consistent with
@@ -983,27 +983,27 @@ structure).
 * The current structure view persists across IDE launches.
 * An enabled AJDE no longer slows down JBuilder shutdown.
 
-=== AJDE for Forte
+== AJDE for Forte
 
 * Execution remembers main class.
 * The bug causing an error during a "Mode" and "Explorer" switch has
 been fixed.
 
-=== AJBrowser
+== AJBrowser
 
 * AJBrowser is currently an undocumented demonstration application. To
 use it type: ajbrowser <lst file1> <lst file2> ...
 * Multiple source locations can be shown by selecting multiple nodes and
 right-clicking to select the "Display Sources" command.
 
-=== Emacs Support: aspectj-mode and AJDEE
+== Emacs Support: aspectj-mode and AJDEE
 
 * Numerous jump-menu improvements, including operation of pop-ups.
 * For AJDEE, compatibility with JDEE 2.2.9beta4. Also, fixes in
 completion, ajdoc launch, and speedbar.
 
 [[_1_0rc3ajdoc]]
-=== AJDoc
+== AJDoc
 
 Some of the more obvious NullPointerException bugs in Ajdoc were fixed,
 but Ajdoc does not implement all the functionality of Javadoc and has
@@ -1024,7 +1024,7 @@ Further, Ajdoc has not been testing on variants of the J2SE (it uses
 javadoc classes).
 
 [[_1_0rc3taskdefs]]
-=== Ant taskdefs
+== Ant taskdefs
 
 The Ajc taskdef was updated to support the new compiler options and the
 .aj extension, and some NullPointerException bugs were fixed (thanks to
@@ -1036,30 +1036,30 @@ $\{ant.home}/lib.
 '''''
 
 [[_1_0rc2]]
-== 1.0rc2
+= 1.0rc2
 
 * xref:#_1_0rc2language[Language]
 * xref:#_1_0rc2compiler[Compiler]
 * xref:#_1_0rc2ajde[AJDE]
 
 [[_1_0rc2language]]
-== Language
+= Language
 
 There are no language changes in this release. This is a bug fix release
 only.
 
 [[_1_0rc2compiler]]
-== Compiler
+= Compiler
 
 A bug in handling inner type names that conflict with enclosing type
 names was fixed. Many error messages were improved.
 
 [[_1_0rc2ajde]]
-== AJDE
+= AJDE
 
 * This is a bug fix release only.
 
-=== AJDE for JBuilder
+== AJDE for JBuilder
 
 * Changes:
 ** Fixed bug causing the output path to be ignored and .class files to
@@ -1077,7 +1077,7 @@ placed in the project's "Working directory".
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== AJDE for Forte
+== AJDE for Forte
 
 * Changes:
 ** Moved the "AspectJ" menu into the "Tools" menu in order to make it
@@ -1091,7 +1091,7 @@ Switching to a different tab in the ProjectExplorer has the same effect.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== AJBrowser
+== AJBrowser
 
 * Changes:
 ** ...
@@ -1104,7 +1104,7 @@ use it type:
 ajbrowser <lst file1> <lst file2> ...
 ....
 
-=== Emacs Support: aspectj-mode and AJDEE
+== Emacs Support: aspectj-mode and AJDEE
 
 This release now properly displays annotations for call sites and
 introductions. Robustness has been improved in several dimensions,
@@ -1114,14 +1114,14 @@ properly when changing directories.
 '''''
 
 [[_1_0rc1]]
-== 1.0rc1
+= 1.0rc1
 
 * xref:#_1_0rc1language[Language]
 * xref:#_1_0rc1compiler[Compiler]
 * xref:#_1_0rc1ajde[AJDE]
 
 [[_1_0rc1language]]
-== Language
+= Language
 
 Some of the details of the specification for perthis and pertarget have
 changed. These changes make these language constructs implementable on
@@ -1138,7 +1138,7 @@ now we've chosen to leave the most room to design them right in a future
 release.
 
 [[_1_0rc1compiler]]
-== Compiler
+= Compiler
 
 ajc now directly generates .class files without using javac as a
 back-end. This should result in improved compiler performance, better
@@ -1157,7 +1157,7 @@ release of ajc will run under SUN's jdk1.4beta2. However, we still
 strongly recommend that most users use the non-beta jdk1.3.
 
 [[_1_0rc1ajde]]
-== AJDE
+= AJDE
 
 * The structure view can now be configured (using the "Options" dialog)
 to display different kinds of associations between program elements that
@@ -1166,7 +1166,7 @@ appear in the tree.
 * When navigating links the structure view will stay synchronized with
 the editor.
 
-=== AJDE for JBuilder
+== AJDE for JBuilder
 
 * Changes:
 ** Inline structural navigation annotations appear in the gutter of the
@@ -1177,7 +1177,7 @@ introduction.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== AJDE for Forte
+== AJDE for Forte
 
 * Changes:
 ** Support for Forte 3 and Netbeans 3.2 has been added.
@@ -1191,7 +1191,7 @@ Switching to a different tab in the ProjectExplorer has the same effect.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== AJBrowser
+== AJBrowser
 
 * Changes:
 ** Build configuration file editor added.
@@ -1204,7 +1204,7 @@ use it type:
 ajbrowser <lst file1> <lst file2> ...
 ....
 
-=== Aspectj-mode and AJDEE: AspectJ support in Emacs
+== Aspectj-mode and AJDEE: AspectJ support in Emacs
 
 This release of AspectJ support for Emacs includes corrections to the
 documentation and the appearance of annotations and jumps in the editing
@@ -1215,7 +1215,7 @@ computational overhead.
 '''''
 
 [[_1_0beta1]]
-== 1.0beta1
+= 1.0beta1
 
 * xref:#_1_0beta1language[Language]
 * xref:#_1_0beta1compiler[Compiler]
@@ -1223,7 +1223,7 @@ computational overhead.
 * xref:#_1_0beta1ajde[AJDE]
 
 [[_1_0beta1language]]
-== Language
+= Language
 
 There is one language change since 1.0alpha1. The static modifier is no
 longer needed or allowed on pointcut declarations. Name binding for
@@ -1237,7 +1237,7 @@ changes in the next release to address issues of implementability on the
 JVM as well as related issues.
 
 [[_1_0beta1compiler]]
-== Compiler
+= Compiler
 
 The ajc compiler should now catch all errors in source code and you
 should no longer see errors coming from files in 'ajworkingdir'. Please
@@ -1250,7 +1250,7 @@ very thorough bug report on this broken feature days after the 1.0alpha1
 release.
 
 [[_1_0beta1ajbrowser]]
-== AJBrowser
+= AJBrowser
 
 * Support for executing classes has been added.
 * .lst can now be passed as arguments on the command line.
@@ -1260,7 +1260,7 @@ release.
 that the browser is launched with.
 
 [[_1_0beta1ajde]]
-== AJDE
+= AJDE
 
 * The performance and UI of the structure tree has been improved.
 * Compilation now runs in a separate thread and a progress monitor is
@@ -1273,7 +1273,7 @@ the console that the IDE was launched from. No more errors should be
 passed to javac, so please report this behavior and the corresponding
 error message as a bug.
 
-=== AJDE for JBuilder
+== AJDE for JBuilder
 
 * Known bugs have been fixed.
 * Classpath separator character is no longer hardcoded.
@@ -1283,7 +1283,7 @@ have been added.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== AJDE for Forte
+== AJDE for Forte
 
 * Known bugs have been fixed.
 * Limitations:
@@ -1294,7 +1294,7 @@ to be restarted for the AspectJ window to show again.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-=== Aspectj-mode and AJDEE: AspectJ support in Emacs
+== Aspectj-mode and AJDEE: AspectJ support in Emacs
 
 AspectJ Development Environment for Emacs has been split into two
 pieces, aspectj-mode (an extension of java-mode), and AJDEE (an
@@ -1305,7 +1305,7 @@ beanshell is no longer required for use of these modes.
 '''''
 
 [[_1_0alpha1]]
-== 1.0alpha1
+= 1.0alpha1
 
 This is the first alpha release of the 1.0 language and tools. There
 have been many changes in the language, and many improvements to the
@@ -1321,7 +1321,7 @@ volatility of AspectJ in the push to 1.0.
 * xref:#_1_0alpha1ajde[AJDE]
 
 [[_1_0alpha1language]]
-=== Language
+== Language
 
 There have been many changes to make the 1.0 language both simpler and
 more powerful. User feedback has driven most of these design changes.
@@ -1341,7 +1341,7 @@ pointcuts, more flexible dominates, and many other improvements).
 Note that entries into the xref:porting.adoc[porting notes] for this
 release are linked from the various language changes.
 
-==== Pointcuts
+=== Pointcuts
 
 Perhaps the least interesting -- but most pervasive -- change is that
 the names of the single-kinded pointcut designators (the ones that pick
@@ -1411,7 +1411,7 @@ Non-abstract pointcuts may now be declared `final`.
 We have finally added an extremely general pointcut,
 `if(BooleanExpression)`, that picks out join points programatically.
 
-==== Type patterns
+=== Type patterns
 
 Our treatment of xref:porting.adoc#_1_0a1-new-wildcards[* and ..] in type
 patterns is cleaner.
@@ -1421,7 +1421,7 @@ a new wildcard, +, to pick out all subtypes of a given type. Previously,
 the subtypes operator was only allowed in introduction, and was
 xref:porting.adoc#_1_0a1-subtypes-to-plus[spelled differently].
 
-==== Advice
+=== Advice
 
 Around advice is treated much more like a method, with a
 xref:porting.adoc#_1_0a1-around-returns[return value] and an optional
@@ -1442,7 +1442,7 @@ xref:porting.adoc#_1_0a1-this-static-join-point[renamed], and the
 `thisJoinPoint` object hierarchy has been
 xref:porting.adoc#_1_0a1-this-join-point[simplified].
 
-==== Introduction and static crosscutting
+=== Introduction and static crosscutting
 
 On the static side of the language, introduction hasn't changed, but
 there is now a new keyword, `declare`, that is used to declare various
@@ -1462,7 +1462,7 @@ checked exceptions into an unchecked form. This may affect some uses of
 xref:porting.adoc#_1_0a1-now-use-soft[around advice] that previously
 mucked with the exception checking system.
 
-==== Aspects
+=== Aspects
 
 The "of each" modifiers have been
 xref:porting.adoc#_1_0a1-aspects[renamed]. Apart from the spelling, the
@@ -1476,7 +1476,7 @@ dominate the advice of another aspect B as well as its subtypes, with
 the new + subtypes operator: `aspect A dominates B+`.
 
 [[_1_0alpha1compiler]]
-=== Compiler
+== Compiler
 
 The most important change in the compiler is that it supports the new
 language. In addition, all reported bugs in the last release have been
@@ -1487,7 +1487,7 @@ handling source files that are not in standard US-ASCII format. Thanks
 to Nakamura Tadashi for both suggesting this feature and for submitting
 a nice patch to implement it.
 
-==== Known Limitations
+=== Known Limitations
 
 The previous compiler's limitations regarding join points that occurred
 in anonymous classes have all been eliminated. Unfortunately,
@@ -1500,7 +1500,7 @@ Moreover, some errors regarding the initialization of final fields might
 never show up when using ajc. This will be fixed shortly.
 
 [[_1_0alpha1documentation]]
-=== Documentation
+== Documentation
 
 Although we spent much of our time this release cycle updating the
 documentation to the new language rather than improving its content, we
@@ -1511,7 +1511,7 @@ printable versions of both guides (in PDF) are finally included in the
 documentation package.
 
 [[_1_0alpha1ajdoc]]
-=== Ajdoc
+== Ajdoc
 
 Ajdoc was rewritten to conform with the language changes and provide
 support for other AspectJ/Java compilers. Our doclet is used by default
@@ -1520,29 +1520,29 @@ used by passing the '-standard' flag to Ajdoc to produce regular Javadoc
 documentation (excluding AspectJ-specifics).
 
 [[_1_0alpha1ant]]
-=== Ant
+== Ant
 
 An Ajdoc task is now available. The Ajc ant task was improved to be
 completely back-compatible with the Javac task.
 
 [[_1_0alpha1ajbrowser]]
-=== AJBrowser
+== AJBrowser
 
 The "AspectJ Browser" is a new standalone source code browsing
 application. It will let you compile ".lst" files, view the structure
 for those files and navigate the corresponding source code.
 
 [[_1_0alpha1ajde]]
-=== AJDE
+== AJDE
 
-==== AJDE for JBuilder
+=== AJDE for JBuilder
 
-===== Installation
+==== Installation
 
 * Use the installer to place the "ajdeForJBuilder.jar" and
 "aspectjrt.jar" in to JBuilder's lib/ext directory.
 
-===== Key Improvements
+==== Key Improvements
 
 * The "AspectJ Structure View" replaces JBuilder's structure view
 instead of being launched in a separate window.
@@ -1552,7 +1552,7 @@ removed.
 * Projects no longer require the manual adding of the "aspectjrt.jar"
 libarary.
 
-===== Known Bugs & Limitations
+==== Known Bugs & Limitations
 
 * There is no compiler progress dialog--the way to tell if the compile
 is finished is to watch the "status" area of the main window.
@@ -1564,9 +1564,9 @@ is limited.
 * There is no ajdoc tool support.
 * Linux testing has been very limited.
 
-==== AJDE for Forte
+=== AJDE for Forte
 
-===== Installation
+==== Installation
 
 * Use the installer to place the "ajdeForForte.jar" in Forte's modules
 directory and "aspectjrt.jar" in to Forte's lib/ext directory.
@@ -1575,7 +1575,7 @@ directory and "aspectjrt.jar" in to Forte's lib/ext directory.
 * Find the ajdeForForte.jar in the directory that you installed into
 (e.g. c:\forte4j\modules) and select it.
 
-===== Key Improvements
+==== Key Improvements
 
 * AJDE can be toggled on/off with the "AJ" button--when it is turned off
 all of the menus, resources, and event listeners that it uses will be
@@ -1583,7 +1583,7 @@ removed.
 * The AJDE functionality is now contained within it's own toolbar and
 menu.
 
-===== Known Bugs & Limitations
+==== Known Bugs & Limitations
 
 * "Mode" switching is not supported in this version--you must do all of
 your AspectJ work in the "Editing" mode. If you switch modes the IDE has
@@ -1598,7 +1598,7 @@ is limited.
 * There is no ajdoc tool support.
 * Linux testing has been very limited.
 
-==== AJDE for Emacs
+=== AJDE for Emacs
 
 AspectJ-mode now includes a toggle in the AspectJ menu that disables its
 intrusive functions, enabling easy switching between Java and AspectJ

@@ -1,5 +1,5 @@
 [[pertypewithin]]
-== The `pertypewithin` Aspect Instantiation Model
+= The `pertypewithin` Aspect Instantiation Model
 
 AspectJ 5 defines a new per-clause type for aspect instantiation:
 `pertypewithin`. Unlike the other per-clauses, `pertypewithin` takes a

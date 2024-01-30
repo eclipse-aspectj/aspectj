@@ -1,4 +1,4 @@
-== AspectJ 1.9.1
+= AspectJ 1.9.1
 
 _© Copyright 2018 Contributors. All rights reserved._
 
@@ -7,7 +7,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIE
 
 _Release info: 1.9.1 available 20-Apr-2018_
 
-=== Java 10 support
+== Java 10 support
 
 AspectJ has updated to a recent JDT compiler version (commit
 #abe06abe4ce1 - 9-Apr-2018). With this update it now supports Java10.

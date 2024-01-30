@@ -1,7 +1,7 @@
-== Varargs
+= Varargs
 
 [[varargs-inJava5]]
-=== Variable-length Argument Lists in Java 5
+== Variable-length Argument Lists in Java 5
 
 Java 5 (and hence AspectJ 5) allows you to specify methods that take a
 variable number of arguments of a specified type. This is achieved using
@@ -15,7 +15,7 @@ public void foo(int i, String... strings) {}
 A method or constructor may take at most one variable length argument,
 and this must always be the last declared argument in the signature.
 
-==== Calling Methods and Constructors with variable-length arguments
+=== Calling Methods and Constructors with variable-length arguments
 
 A _varargs_ method may be called with zero or more arguments in the
 variable argument position. For example, given the definition of `foo`
@@ -49,7 +49,7 @@ foo(7,new String[] {"One String","Two Strings"});
 ....
 
 [[varargs-in-pcds]]
-=== Using Variable-length arguments in advice and pointcut expressions
+== Using Variable-length arguments in advice and pointcut expressions
 
 AspectJ 5 allows variable-length arguments to be used for methods
 declared within aspects, and for inter-type declared methods and
@@ -59,7 +59,7 @@ section.
 AspectJ 5 also allows variable length arguments to be matched by
 pointcut expressions and bound as formals in advice.
 
-==== Matching signatures based on variable length argument types
+=== Matching signatures based on variable length argument types
 
 Recall from the definition of signature patterns given in the chapter on
 annotations (xref:annotations.adoc#signaturePatterns[Signature Patterns]), that `MethodPattern` and
@@ -109,7 +109,7 @@ point for `foo`, but not `bar`. The pointcut
 `execution(* *.*(String[]))` matches the execution join point for `bar`
 but not `foo`.
 
-==== Exposing variable-length arguments as context in pointcuts and advice
+=== Exposing variable-length arguments as context in pointcuts and advice
 
 When a varargs parameter is used within the body of a method, it has an
 array type, as discussed in the introduction to this section. We follow

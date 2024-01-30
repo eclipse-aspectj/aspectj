@@ -1,4 +1,4 @@
-== AspectJ 1.8.8
+= AspectJ 1.8.8
 
 _© Copyright 2016 Contributors. All rights reserved._
 
@@ -7,9 +7,9 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.8 available 7-Jan-2016_
 
-=== Notable changes
+== Notable changes
 
-==== Around advice on default methods
+=== Around advice on default methods
 
 In previous releases attempting to apply around advice to default
 methods would create methods with rogue modifiers in the interface

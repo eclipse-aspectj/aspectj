@@ -1,4 +1,4 @@
-== AspectJ 1.6.2
+= AspectJ 1.6.2
 
 _© Copyright 2008 Contributors. All rights reserved._
 
@@ -31,7 +31,7 @@ resolved]
 
 '''''
 
-=== Incremental compilation (https://bugs.eclipse.org/bugs/show_bug.cgi?id=247742[bug 247742], https://bugs.eclipse.org/bugs/show_bug.cgi?id=245566[bug 245566], https://bugs.eclipse.org/bugs/show_bug.cgi?id=243376[bug 243376])
+== Incremental compilation (https://bugs.eclipse.org/bugs/show_bug.cgi?id=247742[bug 247742], https://bugs.eclipse.org/bugs/show_bug.cgi?id=245566[bug 245566], https://bugs.eclipse.org/bugs/show_bug.cgi?id=243376[bug 243376])
 
 Two main changes in this area.
 

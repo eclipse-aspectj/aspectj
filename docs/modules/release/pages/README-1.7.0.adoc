@@ -1,4 +1,4 @@
-== AspectJ 1.7.0
+= AspectJ 1.7.0
 
 _© Copyright 2011 Contributors. All rights reserved._
 
@@ -11,9 +11,9 @@ _Release info:_
 * _1.7.0.RC1 available 25-May-2012_
 * _1.7.0.M1 available 16-Dec-2011_
 
-=== Notable Changes
+== Notable Changes
 
-==== Java 7 bytecode weaving
+=== Java 7 bytecode weaving
 
 The first milestone of 1.7.0 upgraded the compiler but this still left
 the weaver with some issues if it had to weave into bytecode containing
@@ -26,7 +26,7 @@ point yet so you cannot write a pointcut to match on it. If you use
 execution() pointcuts as opposed to call() then you will still be able
 to advise what the invokedynamic actually calls.
 
-==== Bytecode caching for loadtime weaving
+=== Bytecode caching for loadtime weaving
 
 Under https://bugs.eclipse.org/bugs/show_bug.cgi?id=367673[bug 367673]
 we have had a contribution (thanks John Kew!) that enables a bytecode
@@ -42,7 +42,7 @@ To activate it, use the following system properties:
 -Daj.weaving.cache.dir=/tmp/aspectj-cache/
 ....
 
-==== Upgrade to Java 7
+=== Upgrade to Java 7
 
 For AspectJ 1.7.0, AspectJ moved from Eclipse JDT Core 0.785_R33x
 (Eclipse 3.3) to Eclipse JDT Core 0.B79_R37x (Eclipse 3.7). This is a

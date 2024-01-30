@@ -1,8 +1,8 @@
 [[ltw]]
-== Load-Time Weaving
+= Load-Time Weaving
 
 [[ltw-introduction]]
-=== Introduction
+== Introduction
 
 See xref:../devguide/ltw.adoc#ltw[Developer's Guide] for information on
 load-time weaving support in AspectJ 5.

@@ -1,4 +1,4 @@
-== AspectJ 1.8.9
+= AspectJ 1.8.9
 
 _© Copyright 2016 Contributors. All rights reserved._
 
@@ -7,7 +7,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.9 available 14-Mar-2016_
 
-=== Notable changes
+== Notable changes
 
 The JDT compiler inside AspectJ has been upgraded to the Eclipse Mars.2
 level (commit #a7bba8b1).

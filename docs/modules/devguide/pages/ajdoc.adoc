@@ -1,15 +1,15 @@
-== `ajdoc`, the AspectJ API documentation generator
+= `ajdoc`, the AspectJ API documentation generator
 
-=== Name
+== Name
 
 `ajdoc` - generate HTML API documentation, including crosscutting structure
 
-=== Synopsis
+== Synopsis
 
 [subs=+quotes]
  ajdoc [ -bootclasspath _classpathlist_ ] [ -classpath _classpathlist_ ] [-d _path_] [-help] [-package] [-protected] [-private] [-public] [-overview _overviewFile_] [ -sourcepath _sourcepathlist_ ] [-verbose] [-version] [_sourcefiles_... | _packages_... | @_file_... | -argfile _file_...] [ _ajc options_ ]
 
-=== Description
+== Description
 
 `ajdoc` renders HTML documentation for AspectJ constructs as well as the
 Java constructs that `javadoc` renders. In addition `ajdoc` displays the
@@ -51,7 +51,7 @@ classpath. Normally the scripts set this up, assuming that your
 may need to provide this jar when using a different version of Java or a
 JRE.
 
-=== Examples
+== Examples
 
 * Change into the `examples` directory.
 * Type `mkdir doc` to create the destination directory for the documentation.

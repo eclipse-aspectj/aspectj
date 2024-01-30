@@ -1,4 +1,4 @@
-== AspectJ 1.6.7
+= AspectJ 1.6.7
 
 _© Copyright 2009 Contributors. All rights reserved._
 
@@ -6,7 +6,7 @@ AspectJ 1.6.7 includes some radical internal changes. These improvements
 enable faster compilation, faster binary weaving, faster load time
 weaving and in some situations faster generated code.
 
-=== Pointcut timers
+== Pointcut timers
 
 Until 1.6.7 there has not really been a way to determine if it is just
 one of your pointcuts that is hurting your weaving performance. In 1.6.7
@@ -41,7 +41,7 @@ AJDT. Armed with this information you can optimize your pointcuts or
 post on the mailing list asking for help. The timers can even be turned
 on for load time weaving.
 
-=== Faster matching
+== Faster matching
 
 The changes to enable pointcut profiling enabled some targeted work to
 be done on the matching algorithms. These have remained unchanged for a
@@ -61,7 +61,7 @@ as early as possible once they can determine something is a match or is
 definetly not a match. This reduces memory usage, speeds up weaving and
 reduces the occurrences of those annoying 'cantFindType' messages.
 
-=== aop.xml processing
+== aop.xml processing
 
 The processing of include/exclude entries in aop.xml has been rewritten.
 It now optimizes for many more common patterns. If a pattern is
@@ -69,7 +69,7 @@ optimized then there is no need to ask the weaver to do an expensive
 include/exclude match. More details
 http://andrewclement.blogspot.com/2009/12/aspectj-167-and-faster-load-time.html[here].
 
-=== Less need to tweak options for load time weaving
+== Less need to tweak options for load time weaving
 
 A number of options were previously configurable for load time weaving
 that were considered experimental. These options have now been tested
@@ -82,7 +82,7 @@ by default in 1.6.7. If you have been using either of these:
 then please delete them from your weaver options section, the weaver
 will now do the right thing out of the box.
 
-=== Benchmarking memory and performance
+== Benchmarking memory and performance
 
 All those changes above, and some additional tweaks, mean we are now
 using less memory than ever before and getting things done more quickly.
@@ -98,7 +98,7 @@ image:167speed.png[image]
 
 image:167Memory.png[image]
 
-=== Annotation binding
+== Annotation binding
 
 All those changes affect compilation/weaving but what about the code
 that actually runs? One user, Oliver Hoff, raised a query on the
@@ -171,7 +171,7 @@ value.
 '''''
 
 [[bugsfixed]]
-==== Bugs fixed
+=== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.7 can be found with
 this bugzilla query:

@@ -1,4 +1,4 @@
-== AspectJ 1.8.4
+= AspectJ 1.8.4
 
 _© Copyright 2014 Contributors. All rights reserved._
 
@@ -7,9 +7,9 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.4 available 6-Nov-2014_
 
-=== Notable changes
+== Notable changes
 
-==== Support for is(FinalType)
+=== Support for is(FinalType)
 
 AspectJ has had type category type patterns since version 1.6.9, see the
 https://www.eclipse.org/aspectj/doc/released/README-1.6.9.html[README].
@@ -19,7 +19,7 @@ is(InnerType)) means not within innertypes. In 1.8.4 it is now possible
 to recognize (for inclusion or exclusion) final types with
 is(FinalType).
 
-==== thisAspectInstance correctly handled with -1.8
+=== thisAspectInstance correctly handled with -1.8
 
 This is the key fix in this release. Some products based on AspectJ were
 using the thisAspectInstance feature (see

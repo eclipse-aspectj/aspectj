@@ -1,4 +1,4 @@
-== AspectJ 1.9.4
+= AspectJ 1.9.4
 
 _© Copyright 2019 Contributors. All rights reserved._
 

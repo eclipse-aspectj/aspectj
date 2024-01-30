@@ -1,4 +1,4 @@
-== AspectJ 1.8.2
+= AspectJ 1.8.2
 
 _© Copyright 2014 Contributors. All rights reserved._
 
@@ -7,31 +7,31 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.2 available 14-Aug-2014_
 
-=== Notable changes
+== Notable changes
 
 Although only a few bugs have been fixed here, they are quite important
 ones:
 
-==== Update to more recent Eclipse Compiler
+=== Update to more recent Eclipse Compiler
 
 AspectJ is now based on a more up to date Eclipse compiler level (git
 hash 2b07958) so includes all the latest fixes
 
-==== Correct handling of RuntimeInvisibleTypeAnnotations (type annotations without runtime visibility)
+=== Correct handling of RuntimeInvisibleTypeAnnotations (type annotations without runtime visibility)
 
 For anyone weaving code containing these kind of type annotations, this
 is an important fix. Although AspectJ does not currently support
 pointcuts matching on these kinds of annotation it was crashing when
 they were encountered. That is now fixed.
 
-==== Annotation processing
+=== Annotation processing
 
 A very long standing issue, the AspectJ compiler now supports annotation
 processors thanks to some work by Sergey Stupin.
 
 Here is a short example, a very basic annotation and application:
 
-===== Marker.java
+==== Marker.java
 
 [source, java]
 ....
@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Marker { }
 ....
 
-===== Code.java
+==== Code.java
 
 [source, java]
 ....
@@ -72,7 +72,7 @@ in the source marked with the annotation Marker and for each one
 generate an aspect tailored to advising that method (this *is* a
 contrived demo!)
 
-===== DemoProcessor.java
+==== DemoProcessor.java
 
 [source, java]
 ....

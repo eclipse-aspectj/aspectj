@@ -1,4 +1,4 @@
-== AspectJ 1.7.1
+= AspectJ 1.7.1
 
 _© Copyright 2011 Contributors. All rights reserved._
 
@@ -7,7 +7,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.7.1 available 6-Sep-2012_
 
-=== Changes
+== Changes
 
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=388971[388971] Double
 Synthetic attributes on some around advice members +

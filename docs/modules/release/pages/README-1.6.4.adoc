@@ -1,4 +1,4 @@
-== AspectJ 1.6.4
+= AspectJ 1.6.4
 
 _© Copyright 2009 Contributors. All rights reserved._
 
@@ -10,7 +10,7 @@ _© Copyright 2009 Contributors. All rights reserved._
 '''''
 
 [[compilation]]
-=== Compilation times
+== Compilation times
 
 In AspectJ 1.6.4 the goal was to improve the IDE experience, through a
 combination of improved compilation speed (both full builds and
@@ -107,7 +107,7 @@ AspectJ projects depend upon Java projects and where aspectpath is used.
 AJDT 1.6.5 dev builds also include some changes that really speed up
 builds.
 
-=== Better editor feedback
+== Better editor feedback
 
 Under https://bugs.eclipse.org/bugs/show_bug.cgi?id=246393[bug 246393]
 the problem has been addressed where sometimes spurious errors would
@@ -118,7 +118,7 @@ http://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.
 '''''
 
 [[language]]
-=== Language Enhancements
+== Language Enhancements
 
 *Optimizing support for maintaining per join point state*
 
@@ -169,7 +169,7 @@ advised type.
 See related https://bugs.eclipse.org/bugs/show_bug.cgi?id=89009[bug
 89009] for the full discussion
 
-=== @DeclareMixin
+== @DeclareMixin
 
 The annotation style declare parents support (@DeclareParents) has been
 (rightly) criticized because it really does not offer an equivalent to
@@ -208,7 +208,7 @@ deprecated.
 '''''
 
 [[bugsfixed]]
-=== Bugs fixed
+== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.4 (more than 70)
 can be found with this bugzilla query:
@@ -219,7 +219,7 @@ resolved]
 '''''
 
 [[whatsnext]]
-=== What's next?
+== What's next?
 
 *More incremental build enhancements*
 

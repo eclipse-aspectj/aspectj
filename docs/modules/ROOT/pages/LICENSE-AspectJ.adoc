@@ -1,4 +1,4 @@
-== *AspectJ^TM^ Compiler and Core Tools License*
+= *AspectJ^TM^ Compiler and Core Tools License*
 
 This is a binary-only release. Source code is available from
 https://eclipse.org/aspectj
@@ -19,7 +19,7 @@ the Redistributor. Unless otherwise indicated below, the terms and
 conditions of the EPL still apply to any source code in the Content and
 such source code may be obtained at link:/[https://www.eclipse.org].
 
-=== Third Party Content
+== Third Party Content
 
 The Content includes items that have been sourced from third parties as
 set out below. If you did not receive this Content directly from the
@@ -29,7 +29,7 @@ conditions of use.
 
 __
 
-==== BCEL v5.1
+=== BCEL v5.1
 
 This product contains software developed by the Apache Software
 Foundation (http://www.apache.org/[http://www.apache.org]).
@@ -40,7 +40,7 @@ https://commons.apache.org/bcel/. Source code for the modified version
 of BCEL is available at Eclipse.org in the AspectJ source tree. This
 code is made available under the Apache Software License v1.1
 
-==== ASM v2.2.1
+=== ASM v2.2.1
 
 AspectJ includes a binary version of ASM v2.2.1
 (http://asm.objectweb.org/index.html[http://asm.objectweb.org/]) The

@@ -1,8 +1,8 @@
-== AspectJ 1.6.0
+= AspectJ 1.6.0
 
 _© Copyright 2008 Contributors. All rights reserved._
 
-=== AspectJ v1.6.0 - 23 Apr 2008
+== AspectJ v1.6.0 - 23 Apr 2008
 
 For the complete list of every issue addressed since the last full
 release, see
@@ -11,12 +11,12 @@ bugzilla link].
 
 Some of the highlights of 1.6.0 are:
 
-==== Upgrade to a Java 1.6 compiler
+=== Upgrade to a Java 1.6 compiler
 
 AspectJ1.6.0 upgrades the internal Eclipse compiler level to version
 785_R33x - a Java 1.6 level compiler
 
-==== Better incremental compilation support in the IDE
+=== Better incremental compilation support in the IDE
 
 Changes under https://bugs.eclipse.org/bugs/show_bug.cgi?id=221427[bug
 221427] mean that the compiler is better able to maintain incremental
@@ -28,7 +28,7 @@ findings can be seen in
 https://dev.eclipse.org/mhonarc/lists/aspectj-users/msg09002.html[this
 mailing list post].
 
-==== Parameter annotation matching
+=== Parameter annotation matching
 
 Parameter matching is possible for constructors and methods. The use of
 parentheses around the parameter types in a method signature determine
@@ -88,7 +88,7 @@ Join point 'method-execution(void C.goo(java.lang.String))' in Type 'C' (A.java:
 
 The first piece of advice matched both methods. The second only matched `goo()`.
 
-==== Annotation Value Matching
+=== Annotation Value Matching
 
 This allows static matching of the values of an annotation - if the
 matching is done statically at weave time, it is possible to avoid some
@@ -155,13 +155,13 @@ Matching is currently allowed on all annotation value types *except*
 class and array. Also it is not currently supported for parameter
 annotation values.
 
-==== Changes since release candidate
+=== Changes since release candidate
 
 The only fix 1.6.0 final includes beyond the release candidate is a
 multi-threading problem in the weaver -
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=227029[bug 227029].
 
-==== Releases leading up to AspectJ 1.6.0
+=== Releases leading up to AspectJ 1.6.0
 
 AspectJ v1.6.0rc1- 16 Apr 2008
 

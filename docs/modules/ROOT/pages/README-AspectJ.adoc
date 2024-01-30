@@ -1,8 +1,8 @@
-== AspectJ^TM^
+= AspectJ^TM^
 
 _Version @build.version.long@ released on @build.date@._
 
-=== 1 Contents of this Package
+== 1 Contents of this Package
 
 * the link:bin[`<aspectj install dir>/bin`] directory has scripts for
 ** `ajc`: the compiler for the AspectJ language
@@ -19,7 +19,7 @@ the link:doc/index.html[index] page.
 
 '''''
 
-=== 2 Install Procedure
+== 2 Install Procedure
 
 The AspectJ tool `ajc` is a Java program that can be
 run indirectly from the scripts or directly from `aspectjtools.jar`. The
@@ -62,7 +62,7 @@ create short launch scripts to start ajc easily (section 3).
 
 '''''
 
-=== 3. Running the Tools
+== 3. Running the Tools
 
 If you did not use the automatic installation process or the default
 launch scripts do not work on your system, you may wish to create short
@@ -98,9 +98,9 @@ ____
 '''''
 
 [[configInstructions]]
-=== 4. Configuration Instructions
+== 4. Configuration Instructions
 
-==== 4.1 Adding `<aspectj install dir>/lib/aspectjrt.jar` to your classpath
+=== 4.1 Adding `<aspectj install dir>/lib/aspectjrt.jar` to your classpath
 
 There are several ways to add this jar file to your classpath:
 
@@ -110,7 +110,7 @@ next section for details)
 * always use the "`-classpath aspectjrt.jar`" option when running
 programs compiled with ajc
 
-==== 4.2 [#6.1]#Setting the Environment Variables on Windows#
+=== 4.2 [#6.1]#Setting the Environment Variables on Windows#
 
 The following instructions use the PATH variable as an example, but this
 process is identical for the CLASSPATH variable.

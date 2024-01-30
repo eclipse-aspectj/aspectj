@@ -1,4 +1,4 @@
-== AspectJ 1.8.5
+= AspectJ 1.8.5
 
 _© Copyright 2015 Contributors. All rights reserved._
 
@@ -7,7 +7,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.5 available 28-Jan-2015_
 
-=== Notable changes
+== Notable changes
 
 The most important fixes in 1.8.5 are JDT compiler fixes that it
 includes

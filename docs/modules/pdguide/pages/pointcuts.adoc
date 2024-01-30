@@ -1,8 +1,8 @@
 [[pointcuts]]
-== Debugging Pointcuts
+= Debugging Pointcuts
 
 [[pointcuts-introduction]]
-=== Introduction
+== Introduction
 
 This section describes how to write and debug pointcuts using the usual
 approach of iteration and decomposition. New users are often stumped
@@ -14,11 +14,11 @@ break it down, particularly into parts that can be checked at
 compile-time, can save a lot of time.
 
 [[pointcuts-debugging]]
-=== Debugging pointcuts
+== Debugging pointcuts
 
 Go at it top-down and then bottom-up.
 
-==== Top-down
+=== Top-down
 
 Top-down, draft significant
 aspects by first writing the comments to specify responsibilities.
@@ -30,7 +30,7 @@ semantic bridge to the plain-text meaning in a comment, e.g. `// when
 the client passes only context into the library`. This gets you to a
 point where you can debug the parts of the pointcut independently.
 
-==== Bottom-up
+=== Bottom-up
 
 Bottom-up (to build each part), consider each primitive pointcut
 designator (PCD), then the composition, and then any implicit
@@ -59,12 +59,12 @@ listed above). If compiles themselves take too long because of all the
 AspectJ weaving, then try to only include the debugging aspect with the
 prototype pointcut, and limit the scope using `within(..)`.
 
-=== Common pointcut mistakes
+== Common pointcut mistakes
 
 There are some typical types of mistakes developers make when designing pointcuts.
 Here are a few examples:
 
-==== Mistakes in primitive pointcuts
+=== Mistakes in primitive pointcuts
 
 * `this(Foo) && execution(static * *(..))`: There is no `this` in a
 static context, so `this()` or `target()` should not be used in a static
@@ -90,7 +90,7 @@ within `Foo`, so this won't pick out any overrides of `bar(..)`. Use
 * `within(Foo)`: anonymous types are not known at weave-time to be
 within the lexically-enclosing type (a limitation of Java bytecode).
 
-==== Mistakes in composition
+=== Mistakes in composition
 
 * `call(* foo(Bar, Foo)) && args(Foo)`: This will never match. The
 parameters in `args(..)` are position-dependent, so `args(Foo)` only
@@ -104,7 +104,7 @@ different kinds of join points (here, call or execution), use `||`.
 E.g., to match both method-call and field-get join points, use
 `call(* ...) || get(...)`.
 
-==== Mistakes in implicit advice constraints
+=== Mistakes in implicit advice constraints
 
 * `after () returning (Foo foo) : ...`: after advice can bind the
 returned object or exception thrown. That effectively acts like
@@ -112,7 +112,7 @@ returned object or exception thrown. That effectively acts like
 based on the runtime type of the bound object, even though it is not
 explicitly part of the pointcut.
 
-==== Mistakes in implementation requirements
+=== Mistakes in implementation requirements
 
 * _ajc_ has to control the code for a join point in order to implement
 the join point. This translates to an implicit `within({code under the

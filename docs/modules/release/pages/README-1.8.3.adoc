@@ -1,4 +1,4 @@
-== AspectJ 1.8.3
+= AspectJ 1.8.3
 
 _© Copyright 2014 Contributors. All rights reserved._
 
@@ -7,9 +7,9 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.3 available 22-Oct-2014_
 
-=== Notable changes
+== Notable changes
 
-==== Conditional aspect activation with @RequiredTypes - https://bugs.eclipse.org/bugs/show_bug.cgi?id=436653[Issue 436653]
+=== Conditional aspect activation with @RequiredTypes - https://bugs.eclipse.org/bugs/show_bug.cgi?id=436653[Issue 436653]
 
 AspectJ is sometimes used to create aspect libraries. These libraries
 contain a number of aspects often covering a variety of domains. The
@@ -49,7 +49,7 @@ passed on the aspectpath for compile time weaving, if the type
 turned off and the pointcut will have no effect. There will be no
 attempt made to match it and so no unhelpful "can't find type" messages.
 
-==== cflow and the pre-initialization joinpoint changes due to Java 7 verifier modifications - https://bugs.eclipse.org/bugs/show_bug.cgi?id=443477[Issue 443477]
+=== cflow and the pre-initialization joinpoint changes due to Java 7 verifier modifications - https://bugs.eclipse.org/bugs/show_bug.cgi?id=443477[Issue 443477]
 
 There has been a change in the Java7 verifier in a recent patch release
 of Java7 (update 67) that causes a verify error for usage of a
@@ -89,7 +89,7 @@ seems little use in applying it to pre-initialization - that is your cue
 to raise an AspectJ bug with a realistic use case inside that proves
 this an invalid assumption :)
 
-==== around advice and lambdas - https://bugs.eclipse.org/bugs/show_bug.cgi?id=445395[Issue 445395]
+=== around advice and lambdas - https://bugs.eclipse.org/bugs/show_bug.cgi?id=445395[Issue 445395]
 
 For optimal performance, where possible, AspectJ tries to inline around
 advice when it applies at a joinpoint. There are few characteristics of

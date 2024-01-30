@@ -50,7 +50,7 @@ class
 
 arguments
 
-== Description
+= Description
 
 The command `ajdb` is used to debug AspectJ and Java programs. In
 addition to its command line interface, `adjb` also has a standalone,
@@ -131,14 +131,14 @@ option
 
 Pass a non-standard option to the VM
 
-=== Capabilities
+== Capabilities
 
 The AspectJ debugger implements all of ``jdb``'s commands. In addition,
 the command `workingdir` allow you to set the AspectJ working directory,
 and the breakpoint command, `stop on`, has been extended to allow the
 setting of breakpoint on a source file line.
 
-=== Examples
+== Examples
 
 Suppose you want to debug the file spacewar/Ship.java found in the
 examples directory. At the command line start up the debugger: `
@@ -306,7 +306,7 @@ following message:
 The application has exited.
 ....
 
-=== The AspectJ debugger API
+== The AspectJ debugger API
 
 The AspectJ debugger is implemented completely in Java and can be called
 as a Java class. The only interface that should be considered public is

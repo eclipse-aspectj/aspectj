@@ -1,8 +1,8 @@
 [[tools-intro]]
-== Introduction to the AspectJ tools
+= Introduction to the AspectJ tools
 
 [[eclipse-aspectj]]
-=== The Eclipse AspectJ implementation
+== The Eclipse AspectJ implementation
 
 The xref:../progguide/index.html[AspectJ Programming Guide] describes
 the AspectJ language. This guide describes the AspectJ tools produced by
@@ -41,7 +41,7 @@ text below introduces an implementation detail, it will warn if users
 make mistakes by applying it in lieu of the language semantics.
 
 [[bytecode-concepts]]
-=== Bytecode weaving, incremental compilation, and memory usage
+== Bytecode weaving, incremental compilation, and memory usage
 
 Bytecode weaving takes classes and aspects in .class form and weaves
 them together to produce binary-compatible .class files that run in any
@@ -74,7 +74,7 @@ require more memory and more time to recompile than the corresponding
 AspectJ program.)
 
 [[classpathInpathAndAspectpath]]
-==== Classpath, inpath, and aspectpath
+=== Classpath, inpath, and aspectpath
 
 AspectJ introduces two new paths for the binary input to the weaver
 which you'll find referenced in xref:ajc.adoc[`ajc`, the AspectJ compiler/weaver],

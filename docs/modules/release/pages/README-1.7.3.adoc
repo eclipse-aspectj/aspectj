@@ -1,4 +1,4 @@
-== AspectJ 1.7.3
+= AspectJ 1.7.3
 
 _© Copyright 2011 Contributors. All rights reserved._
 

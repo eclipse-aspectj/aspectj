@@ -1,13 +1,13 @@
-== AspectJ 1.6.9
+= AspectJ 1.6.9
 
 _© Copyright 2010 Contributors. All rights reserved._
 
 The full list of resolved issues in 1.6.9 is available
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOLVED;bug_status=VERIFIED;bug_status=CLOSED;product=AspectJ;target_milestone=1.6.9;target_milestone=1.6.9M1;target_milestone=1.6.9M2;target_milestone=1.6.9RC1[here]
 
-=== Features
+== Features
 
-==== declare annotation supports compound signature patterns: https://bugs.eclipse.org/bugs/show_bug.cgi?id=287613[287613]
+=== declare annotation supports compound signature patterns: https://bugs.eclipse.org/bugs/show_bug.cgi?id=287613[287613]
 
 Until now it wasn't possible to express a compound pattern in any of the
 declare annotation constructs that take a member signature. For example,
@@ -28,7 +28,7 @@ Now AspectJ allows compound patterns for declare
 declare @method: (* is*()) || (* get*()): @FooBar;
 ....
 
-==== Intertype declaration of member types
+=== Intertype declaration of member types
 
 It is now possible to ITD member types. The syntax is as would be
 expected. This example introduces a new member type called Inner into
@@ -53,7 +53,7 @@ aspect Magic {
 
 Only static member types are supported.
 
-==== 'Optional' aspects: https://bugs.eclipse.org/bugs/show_bug.cgi?id=310506[310506]
+=== 'Optional' aspects: https://bugs.eclipse.org/bugs/show_bug.cgi?id=310506[310506]
 
 It is not uncommon to ship a library aspect separately to a jar upon
 which it depends. In the case of Spring there is an aspect library
@@ -79,7 +79,7 @@ Here is an example, 'AspectA' will switch itself off if the type
 <aspect name="AspectA" requires="a.b.c.Anno"/>
 ....
 
-==== Reduction in class file sizes: https://bugs.eclipse.org/bugs/show_bug.cgi?id=312839[312839]
+=== Reduction in class file sizes: https://bugs.eclipse.org/bugs/show_bug.cgi?id=312839[312839]
 
 More details here:
 http://andrewclement.blogspot.com/2010/05/aspectj-size-is-important.html
@@ -88,7 +88,7 @@ aspects. As an example, a compiled Roo petclinic sample (which uses lots
 of aspects and ITDs) is down from 1Meg (AspectJ 1.6.9m2) to 630k
 (AspectJ 1.6.9rc1).
 
-==== Transparent weaving: https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743[309743]
+=== Transparent weaving: https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743[309743]
 
 In a further step towards transparent weaving, support for the AjType
 reflection system is now being made optional. This means if intending to
@@ -101,7 +101,7 @@ standard reflection than are using AjTypeSystem. The related bugzilla
 discussing this issue is
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=309743[309743].
 
-==== Overweaving: https://bugs.eclipse.org/bugs/show_bug.cgi?id=293450[293450]
+=== Overweaving: https://bugs.eclipse.org/bugs/show_bug.cgi?id=293450[293450]
 
 Preliminary support for overweaving was added in AspectJ 1.6.7, but now
 in AspectJ 1.6.9m2 it is much more reliable. Basically it is an
@@ -116,7 +116,7 @@ article]. A weaver is switched into overweaving mode by the option
 in the weaver options section of aop.xml. There is still more work to be
 done on this feature - any feedback is welcome.
 
-==== AOP Scoping: https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460[124460]
+=== AOP Scoping: https://bugs.eclipse.org/bugs/show_bug.cgi?id=124460[124460]
 
 Another feature that had preliminary support a while ago is aspect
 scoping in aop.xml. This has also been improved in AspectJ1.6.9m2. For
@@ -150,7 +150,7 @@ com..* should be woven and the aspects to be used are X and Y. The new
 'scope' setting on aspect Y's definition allows finer control, and
 specifies that Y should in fact only be applied to com.foo..* types.
 
-==== Message inserts for declare warning/error messages
+=== Message inserts for declare warning/error messages
 
 It is now possible to use joinpoint context in the messages attached to
 declare warning and declare error constructs. Some examples:
@@ -173,7 +173,7 @@ The syntax is to enclose the relevant key within curly brackets within
 the message. Please raise an enhancement request if you need other keys
 - the set supported so far are all those shown in the example above.
 
-==== declare warning/error for type patterns
+=== declare warning/error for type patterns
 
 It is now possible to use a type pattern with declare warning and
 declare error. For example:
@@ -183,7 +183,7 @@ declare error. For example:
 declare warning: I+ && !hasfield(int i): "Implementations of I are expected to have a int field called i";
 ....
 
-==== Type category type patterns
+=== Type category type patterns
 
 This is the ability to narrow the types of interest so that interfaces
 can be ignored, or inner types, or classes or aspects. There is now a
@@ -218,7 +218,7 @@ surrounding Boo will match it). Bar.foo() will not match
 !within(is(InnerType)) because Bar will match the pattern and then the
 result of that match will be negated.
 
-==== Intertype fields preserve visibility and name
+=== Intertype fields preserve visibility and name
 
 Some users always expect this:
 
@@ -270,7 +270,7 @@ The name 'someField' is preserved. The visibility is also preserved but
 because of that we also need to generate some accessors to get at the
 field.
 
-==== AspectJ snapshots in a maven repo
+=== AspectJ snapshots in a maven repo
 
 To ease how AspectJ development builds can be consumed, they are now
 placed into a maven repo. When a new version of AspectJ is put into AJDT
