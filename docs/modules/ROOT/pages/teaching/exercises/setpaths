@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Change this to be the full path for this directory
+EXTRACTION=$HOME/aj-oopsla
+
+if [ "$JAVA_HOME" = "" ] 
+then
+    echo Please remember to manually set $JAVA_HOME to 
+    echo the location of your java installation
+fi
+
+export ASPECTJ_HOME=$EXTRACTION/aspectj
+export PATH=$ASPECTJ_HOME/bin:$PATH
+export CLASSPATH=.:$ASPECTJ_HOME/lib/aspectjrt.jar:$EXTRACTION/junit.jar
