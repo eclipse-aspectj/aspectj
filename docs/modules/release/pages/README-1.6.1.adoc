@@ -43,7 +43,7 @@ sample piece of source code).
 . 1100 source files, insane aspect (before(): within(*) \{}) (203000
 join points)
 
-image:images/perfSourceCompile_161.jpg[image]
+image:perfSourceCompile_161.jpg[image]
 
 ==== Binary weaving
 
@@ -60,7 +60,7 @@ aspect (121000 join points)
 . Binary weaving rt.jar (~12000 classes) with an insane aspect
 (before(): within(*) \{}) (352000 join points)
 
-image:images/perfBinaryWeave_161.jpg[image]
+image:perfBinaryWeave_161.jpg[image]
 
 ==== Loadtime weaving
 
@@ -73,7 +73,7 @@ aspect
 . Binary weaving tools.jar (~1900 classes) with an insane aspect
 (before(): within(*) \{})
 
-image:images/perfLTW_161.jpg[image]
+image:perfLTW_161.jpg[image]
 
 The refactoring work has also reduced the amount of unnecessary garbage
 created on the heap during the weaving process. The next comparison
@@ -87,7 +87,7 @@ during a weave of tools.jar with a code style trace aspect
 . Second, another run of the same thing
 . Third, this time using the insane aspect
 
-image:images/heapContents_161.jpg[image]
+image:heapContents_161.jpg[image]
 
 So in terms of memory required, weaving the insane aspect into tools.jar
 created 1.4G of 'stuff' over the entire weaving process, compared to
@@ -113,11 +113,11 @@ discarded.
 First, AspectJ 1.6.0, in which memory was never correctly recovered and
 so an OutOfMemory problem would always occur eventually.
 
-image:images/memLtwStress_160.jpg[image]
+image:memLtwStress_160.jpg[image]
 
 And now AspectJ 1.6.1:
 
-image:images/memLtwStress_161.jpg[image]
+image:memLtwStress_161.jpg[image]
 
 === Incremental compilation
 

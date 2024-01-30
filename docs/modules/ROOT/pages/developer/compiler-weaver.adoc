@@ -21,7 +21,7 @@ for AspectJ-1.2.
 runtime and must be redistributed with any system built using AspectJ.
 This module has no external dependencies and produces a tiny ~30KB jar.
 
-image:images/overview.png[image]
+image:overview.png[image]
 
 The AspectJ compiler accepts both AspectJ bytecode and source code and
 produces pure Java bytecode as a result. Internally it has two stages.
@@ -94,7 +94,7 @@ aspect A {
 
 When parsed, this program will produce the following tree.
 
-image:images/top-tree.png[image]
+image:top-tree.png[image]
 
 ==== PointcutDeclaration processing
 
@@ -105,7 +105,7 @@ Let's look more closely at the pointcut declaration:
 pointcut entries(Main o): execution(void doit()) && this(o);
 ....
 
-image:images/pointcut-dec.png[image]
+image:pointcut-dec.png[image]
 
 The pointcut declaration is implemented as a subtype of a method
 declaration. The actual pointcut is parsed by the weaver module. This
@@ -131,7 +131,7 @@ postParse, the selector is filled in and several additional arguments
 are added for the special thisJoinPoint forms that could be used in the
 body.
 
-image:images/advice-dec.png[image]
+image:advice-dec.png[image]
 
 At this point the statements field which will hold the body of the
 advice is still null. This field is not filled in until the second stage
@@ -142,7 +142,7 @@ prelude to generating the classfile.
 
 The main classes in this module are shown in the following diagram:
 
-image:images/ajdt-uml.png[image]
+image:ajdt-uml.png[image]
 
 === Weaving back-end (weaver)
 

@@ -31,7 +31,7 @@ Compared to AspectJ 1.1.1, the AspectJ 1.2 compiler...
 
 * xref:#WEAVE_TIME[Is faster], with weaving completing in less than half
 the time it used to take in many cases.
-[[WEAVE_CHART]]image:images/AspectJ11v12.JPG[image].
+[[WEAVE_CHART]]image:AspectJ11v12.JPG[image].
 * Supports the xref:#LAZY_TJP[-XlazyTjp option] which produces code that
 runs faster and uses less memory in some common cases.
 * Has xref:#INCREMENTAL[much better support for incremental
@@ -453,11 +453,11 @@ everything in the Spacewar example run: +
 
 `ajdoc` sample output for an aspect source file:
 
-image:images/ajdoc1.JPG[image]
+image:ajdoc1.JPG[image]
 
 `ajdoc` sample output for advised methods:
 
-image:images/ajdoc2.JPG[image]
+image:ajdoc2.JPG[image]
 
 [[LTW]]
 ==== A sample script is supplied that supports load-time weaving from the command-line
