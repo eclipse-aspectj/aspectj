@@ -15,7 +15,6 @@
 * xref:adk15notebook:varargs.adoc[]
 * xref:devguide:aj.adoc[]
 * xref:devguide:ajc.adoc[]
-* xref:devguide:ajdb.adoc[]
 * xref:devguide:ajdoc.adoc[]
 * xref:devguide:antsupport.adoc[]
 * xref:devguide:compatibility.adoc[]
