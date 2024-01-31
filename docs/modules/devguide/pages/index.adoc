@@ -1,6 +1,6 @@
 = The AspectJ^TM^ Development Environment Guide
-
 :doctype: book
+:leveloffset: +1
 
 _by the AspectJ Team_
 

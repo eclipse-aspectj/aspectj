@@ -1,6 +1,6 @@
 = The AspectJ^TM^ Problem Diagnosis Guide
-
 :doctype: book
+:leveloffset: +1
 
 _by the AspectJ Team_
 

@@ -1,5 +1,6 @@
 = AspectJ Design Overview
 :doctype: book
+:leveloffset: +1
 
 Here are some sobering words:
 
