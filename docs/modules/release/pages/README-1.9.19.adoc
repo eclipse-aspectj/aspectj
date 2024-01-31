@@ -2,10 +2,6 @@
 
 _© Copyright 2022 Contributors. All rights reserved._
 
-= AspectJ 1.9.19
-
-_© Copyright 2022 Contributors. All rights reserved._
-
 _Release info: 1.9.19 available 21-Dec-2022_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as

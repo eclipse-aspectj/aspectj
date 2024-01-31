@@ -87,7 +87,7 @@ were necessary when moving to binary weaving in the 1.1 release, but at
 this time we don't anticipate more in the future. You might also find
 that the program behaves differently if you relied on behavior specific
 to that compiler/weaver, but which is not specified in the
-xref:../progguide/semantics.html[Semantics appendix to the Programming
+xref:progguide:semantics.adoc[Semantics appendix to the Programming
 Guide].
 
 [[upgrading]]

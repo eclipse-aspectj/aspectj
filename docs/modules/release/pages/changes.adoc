@@ -1,39 +1,38 @@
 = Changes in AspectJ
+:doctype: book
+:leveloffset: +1
 
 _© Copyright 1998-2002 Palo Alto Research Center Incorporated
 2003-2008 Contributors. All rights reserved._
 
-* xref:#_1_6_0[1.6.0] (released 2008-04)
-* xref:#_1_5_4[1.5.4] (released 2007-12)
-* xref:#_1_5_3[1.5.3] (released 2006-11)
-* xref:#_1_5_2[1.5.2] (released 2006-06)
-* xref:#_1_5_1[1.5.1] (released 2006-04)
-* xref:#_1_5_0[1.5.0] (released 2005-12)
-* xref:#_1_2_1[1.2.1] (released 2004-10)
-* xref:#_1_2[1.2] (released 2004-05)
-* xref:#_1_1_1[1.1.1] (released 2003-09)
-* 1.1.0 (released 2003-06-06) See xref:README-1.1.adoc#readme-1_1[1.1.0 release notes].
-* xref:#_1_0_6[1.0.6] (released 2002-07-24)
-** xref:#_1_0_6compiler[Compiler]
-** xref:#_1_0_6ajde[AJDE]
-** xref:#_1_0_6ajdoc[Ajdoc]
-* xref:#_1_0_5[1.0.5] (released 2002-06-27)
-* xref:#_1_0_4[1.0.4] (released 2002-04-17)
-* xref:#_1_0_3[1.0.3] (released 2002-02-08)
-* xref:#_1_0_2[1.0.2] (released 2002-02-06)
-* xref:#_1_0_1[1.0.1] (released 2001-12-18)
-* xref:#_1_0_0[1.0.0] (released 2001-11-30)
-* xref:#_1_0rc3[1.0rc3] (released 2001-11-14)
-* xref:#_1_0rc2[1.0rc2] (released 2001-10-12)
-* xref:#_1_0rc1[1.0rc1] (released 2001-10-5)
-* xref:#_1_0beta1[1.0beta1] (released 2001-08-29)
-* xref:#_1_0alpha1[1.0alpha1] (released 2001-08-09)
+* xref:#_1_6_0[AspectJ 1.6.0] (released 2008-04)
+* xref:#_1_5_4[AspectJ 1.5.4] (released 2007-12)
+* xref:#_1_5_3[AspectJ 1.5.3] (released 2006-11)
+* xref:#_1_5_2[AspectJ 1.5.2] (released 2006-06)
+* xref:#_1_5_1[AspectJ 1.5.1] (released 2006-04)
+* xref:#_1_5_0[AspectJ 1.5.0] (released 2005-12)
+* xref:#_1_2_1[AspectJ 1.2.1] (released 2004-10)
+* xref:#_1_2[AspectJ 1.2] (released 2004-05)
+* xref:#_1_1_1[AspectJ 1.1.1] (released 2003-09)
+* AspectJ 1.1.0 (released 2003-06-06) See xref:README-1.1.adoc#readme-1_1[release notes].
+* xref:#_1_0_6[AspectJ 1.0.6] (released 2002-07-24)
+* xref:#_1_0_5[AspectJ 1.0.5] (released 2002-06-27)
+* xref:#_1_0_4[AspectJ 1.0.4] (released 2002-04-17)
+* xref:#_1_0_3[AspectJ 1.0.3] (released 2002-02-08)
+* xref:#_1_0_2[AspectJ 1.0.2] (released 2002-02-06)
+* xref:#_1_0_1[AspectJ 1.0.1] (released 2001-12-18)
+* xref:#_1_0_0[AspectJ 1.0.0] (released 2001-11-30)
+* xref:#_1_0rc3[AspectJ 1.0rc3] (released 2001-11-14)
+* xref:#_1_0rc2[AspectJ 1.0rc2] (released 2001-10-12)
+* xref:#_1_0rc1[AspectJ 1.0rc1] (released 2001-10-5)
+* xref:#_1_0beta1[AspectJ 1.0beta1] (released 2001-08-29)
+* xref:#_1_0alpha1[AspectJ 1.0alpha1] (released 2001-08-09)
 * xref:porting.adoc[Porting and Transition]
 
 '''''
 
 [[_1_6_0]]
-= 1.6.0
+= AspectJ 1.6.0
 
 This release rebases AspectJ on the Eclipse Compiler version 785_R33X -
 making it Java6 compliant.
@@ -42,7 +41,7 @@ A full list of bugs fixed and enhancements implemented can be found in
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&short_desc=&product=AspectJ&target_milestone=1.6.0+M1&target_milestone=1.6.0+M2&target_milestone=1.6.0+RC1&target_milestone=1.6.0&long_desc_type=allwordssubstr&long_desc=&bug_file_loc_type=allwordssubstr&bug_file_loc=&status_whiteboard_type=allwordssubstr&status_whiteboard=&keywords_type=allwords&keywords=&bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&emailtype1=substring&email1=&emailtype2=substring&email2=&bugidtype=include&bug_id=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&cmdtype=doit&order=Reuse+same+sort+as+last+time&field0-0-0=noop&type0-0-0=noop&value0-0-0=[Bugzilla].
 
 [[_1_5_4]]
-= 1.5.4
+= AspectJ 1.5.4
 
 This release contains around 40 bug fixes and enhancements since the
 1.5.3 release.
@@ -52,7 +51,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_3]]
-= 1.5.3
+= AspectJ 1.5.3
 
 This release contains around 80 bug fixes and enhancements since the
 1.5.2 release.
@@ -62,7 +61,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_2]]
-= 1.5.2
+= AspectJ 1.5.2
 
 This release contains around 60 bug fixes and enhancements since the
 1.5.1 release.
@@ -72,7 +71,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_1]]
-= 1.5.1
+= AspectJ 1.5.1
 
 This release contains over 70 bug fixes and enhancements since the 1.5.0
 release.
@@ -82,19 +81,19 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&product=AspectJ&
 Bugzilla
 
 [[_1_5_0]]
-= 1.5.0
+= AspectJ 1.5.0
 
 This release contains nearly 400 bug fixes and enhancements since the
 1.2.1 release. Major updates to the language are documented in the
-xref:../../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook]. There are
+xref:adk15notebook:adk15notebook.adoc[AspectJ 5 Developer's Notebook]. There are
 also a number of enhancements to accompanying tools documented in the
-link:devguide/index.html[Developer's Guide]
+xref:devguide:index.adoc[Developer's Guide]
 
 A full list of bugs fixed in AspectJ 5 can be found in
 https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&short_desc_type=allwordssubstr&product=AspectJ&resolution=FIXED&chfieldfrom=2004-11-06&chfieldto=2005-12-20[bugzilla].
 
 [[_1_2_1]]
-= 1.2.1
+= AspectJ 1.2.1
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2.1&bug_status=RESOLVED&resolution=FIXED[full
@@ -214,7 +213,7 @@ subset of aspectjtools.jar needed for weaving. The "aj" script is also
 moved into the bin directory.
 
 [[_1_2]]
-= 1.2
+= AspectJ 1.2
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.2[full
@@ -341,7 +340,7 @@ local storage used to manage cflow stacks when available - improves
 cflow performance when working with a multi-threaded application.
 
 [[_1_1_1]]
-= 1.1.1
+= AspectJ 1.1.1
 
 All known P1 and P2 bugs have been fixed in this release. The
 https://bugs.eclipse.org/bugs/buglist.cgi?product=AspectJ&target_milestone=1.1.1[full
@@ -398,7 +397,7 @@ ajc to compile JSP's in Tomcat. Thanks to Ron Bodkin for investigating
 how to integrate ajc with Tomcat.
 
 [[_1_0_6]]
-= 1.0.6
+= AspectJ 1.0.6
 
 This release contains mainly bug fixes for ajde and ajdoc.
 
@@ -451,7 +450,7 @@ comments suppressed by fix to bug 710
 '''''
 
 [[_1_0_5]]
-= 1.0.5
+= AspectJ 1.0.5
 
 This release includes significant improvements to AspectJ Development
 Environment (AJDE) support. The entire user interface has been revised
@@ -477,7 +476,12 @@ concise bug reports on some of these issues.
 [[_1_0_5ajde]]
 == AJDE
 
-=== This release includes significant improvements to AspectJ Development Environment (AJDE) support. All known bugs have been fixed, and the core framework quality has been significantly increased thanks to the adoption of a unit test suite. The following changes apply to all of the AJDE NetBeans/Forte, JBuilder, and the AspectJ Browser support. NetBeans/Forte and JBuilder-specific changes are listed below.
+This release includes significant improvements to AspectJ Development
+Environment (AJDE) support. All known bugs have been fixed, and the core
+framework quality has been significantly increased thanks to the adoption of a
+unit test suite. The following changes apply to all of the AJDE NetBeans/Forte,
+JBuilder, and the AspectJ Browser support. NetBeans/Forte and JBuilder-specific
+changes are listed below.
 
 * The entire user interface has been revised and streamlined.
 * The structure view and browser have a new UI, and offer both a
@@ -562,7 +566,7 @@ ajc flags]
 '''''
 
 [[_1_0_4]]
-= 1.0.4
+= AspectJ 1.0.4
 
 * xref:#_1_0_4compiler[Compiler]
 * xref:#_1_0_4ajde[AJDE]
@@ -665,7 +669,7 @@ the org.aspectj.lang package.
 '''''
 
 [[_1_0_3]]
-= 1.0.3
+= AspectJ 1.0.3
 
 * xref:#_1_0_3compiler[Compiler]
 * xref:#_1_0_3taskdefs[Ant taskdefs]
@@ -689,7 +693,7 @@ generally.
 '''''
 
 [[_1_0_2]]
-= 1.0.2
+= AspectJ 1.0.2
 
 This release is mainly about keeping up with the Joneses. To keep up
 with SUN's release candidate for J2SE1.4, we now officially support the
@@ -784,7 +788,7 @@ would appreciate any reports of success or failure.
 '''''
 
 [[_1_0_1]]
-= 1.0.1
+= AspectJ 1.0.1
 
 * xref:#_1_0_1compiler[Compiler]
 * xref:#_1_0_1ajde[AJDE]
@@ -827,7 +831,7 @@ ajdb is still considered early-access software.)
 * bug 617: -X and -D options not passed to debug VM correctly
 
 [[_1_0_0]]
-= 1.0.0
+= AspectJ 1.0.0
 
 * xref:#_1_0_0language[Language]
 * xref:#_1_0_0compiler[Compiler]
@@ -836,12 +840,12 @@ ajdb is still considered early-access software.)
 * xref:#_1_0_0taskdefs[Ant taskdefs]
 
 [[_1_0_0language]]
-= Language
+== Language
 
 There were no language changes for this release.
 
 [[_1_0_0compiler]]
-= Compiler
+== Compiler
 
 Several minor bugs primarily in error handling were reported and have
 been fixed in this release. The two most serious bugs are described
@@ -861,30 +865,30 @@ class overrode introduced methods on an interface implemented by that
 class. This is now fixed.
 
 [[_1_0_0ajde]]
-= AJDE
+== AJDE
 
 Numerous user interface refinements were made to the browser and core
 AJDE functionality. Error handling and reporting has been improved. All
 of the AJDE tools now support the ".aj" file extension.
 
-== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * The AspectJ Browser now uses JBuilder's icons and distinguishes nodes
 by visibility.
 * Project-setting VM parameters are now supported by the "AJDE Run"
 button.
 
-== AJDE for Forte
+=== AJDE for Forte
 
 * The AspectJ Browser now uses Forte's icons and distinguishes nodes by
 visibility
 
-== AJBrowser
+=== AJBrowser
 
 * Documentation for the browser is now available at
 http://aspectj.org/docs
 
-== Emacs Support: aspectj-mode and AJDEE
+=== Emacs Support: aspectj-mode and AJDEE
 
 * Improved updating of annotations during editing.
 * Pop-up jump menu now placed (with mouse pointer) near cursor.
@@ -904,10 +908,10 @@ the syntax message.
 * Fork is not supported in the AJDoc taskdef
 
 [[_1_0rc3]]
-= 1.0rc3
+= AspectJ 1.0rc3
 
 [[_1_0rc3language]]
-= Language
+== Language
 
 There have been several minor clarifications/changes to the language.
 
@@ -921,7 +925,7 @@ to this language feature.
 http://aspectj.org/pipermail/users/2001/001258.html[More details...]
 
 [[_1_0rc3compiler]]
-= Compiler
+== Compiler
 
 This release saw several changes to the compiler in order to work-around
 known bugs in different JVMs, or to otherwise mimic the behavior of
@@ -960,7 +964,7 @@ the jikes group, and had added the feature days before getting our first
 bug report for it not being there.
 
 [[_1_0rc3ajde]]
-= AJDE
+== AJDE
 
 * The structure view has been improved.
 * Multiple user-configurable views are supported.
@@ -974,7 +978,7 @@ current file or the project root.
 associations are now navigable.
 * A depth slider for controlling tree-expansion has been added.
 
-== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Changes:
 * Inline annotations support have been improved and made consistent with
@@ -983,20 +987,20 @@ structure).
 * The current structure view persists across IDE launches.
 * An enabled AJDE no longer slows down JBuilder shutdown.
 
-== AJDE for Forte
+=== AJDE for Forte
 
 * Execution remembers main class.
 * The bug causing an error during a "Mode" and "Explorer" switch has
 been fixed.
 
-== AJBrowser
+=== AJBrowser
 
 * AJBrowser is currently an undocumented demonstration application. To
 use it type: ajbrowser <lst file1> <lst file2> ...
 * Multiple source locations can be shown by selecting multiple nodes and
 right-clicking to select the "Display Sources" command.
 
-== Emacs Support: aspectj-mode and AJDEE
+=== Emacs Support: aspectj-mode and AJDEE
 
 * Numerous jump-menu improvements, including operation of pop-ups.
 * For AJDEE, compatibility with JDEE 2.2.9beta4. Also, fixes in
@@ -1036,30 +1040,30 @@ $\{ant.home}/lib.
 '''''
 
 [[_1_0rc2]]
-= 1.0rc2
+= AspectJ 1.0rc2
 
 * xref:#_1_0rc2language[Language]
 * xref:#_1_0rc2compiler[Compiler]
 * xref:#_1_0rc2ajde[AJDE]
 
 [[_1_0rc2language]]
-= Language
+== Language
 
 There are no language changes in this release. This is a bug fix release
 only.
 
 [[_1_0rc2compiler]]
-= Compiler
+== Compiler
 
 A bug in handling inner type names that conflict with enclosing type
 names was fixed. Many error messages were improved.
 
 [[_1_0rc2ajde]]
-= AJDE
+== AJDE
 
 * This is a bug fix release only.
 
-== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Changes:
 ** Fixed bug causing the output path to be ignored and .class files to
@@ -1077,7 +1081,7 @@ placed in the project's "Working directory".
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== AJDE for Forte
+=== AJDE for Forte
 
 * Changes:
 ** Moved the "AspectJ" menu into the "Tools" menu in order to make it
@@ -1091,7 +1095,7 @@ Switching to a different tab in the ProjectExplorer has the same effect.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== AJBrowser
+=== AJBrowser
 
 * Changes:
 ** ...
@@ -1104,7 +1108,7 @@ use it type:
 ajbrowser <lst file1> <lst file2> ...
 ....
 
-== Emacs Support: aspectj-mode and AJDEE
+=== Emacs Support: aspectj-mode and AJDEE
 
 This release now properly displays annotations for call sites and
 introductions. Robustness has been improved in several dimensions,
@@ -1114,14 +1118,14 @@ properly when changing directories.
 '''''
 
 [[_1_0rc1]]
-= 1.0rc1
+= AspectJ 1.0rc1
 
 * xref:#_1_0rc1language[Language]
 * xref:#_1_0rc1compiler[Compiler]
 * xref:#_1_0rc1ajde[AJDE]
 
 [[_1_0rc1language]]
-= Language
+== Language
 
 Some of the details of the specification for perthis and pertarget have
 changed. These changes make these language constructs implementable on
@@ -1138,7 +1142,7 @@ now we've chosen to leave the most room to design them right in a future
 release.
 
 [[_1_0rc1compiler]]
-= Compiler
+== Compiler
 
 ajc now directly generates .class files without using javac as a
 back-end. This should result in improved compiler performance, better
@@ -1157,7 +1161,7 @@ release of ajc will run under SUN's jdk1.4beta2. However, we still
 strongly recommend that most users use the non-beta jdk1.3.
 
 [[_1_0rc1ajde]]
-= AJDE
+== AJDE
 
 * The structure view can now be configured (using the "Options" dialog)
 to display different kinds of associations between program elements that
@@ -1166,7 +1170,7 @@ appear in the tree.
 * When navigating links the structure view will stay synchronized with
 the editor.
 
-== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Changes:
 ** Inline structural navigation annotations appear in the gutter of the
@@ -1177,7 +1181,7 @@ introduction.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== AJDE for Forte
+=== AJDE for Forte
 
 * Changes:
 ** Support for Forte 3 and Netbeans 3.2 has been added.
@@ -1191,7 +1195,7 @@ Switching to a different tab in the ProjectExplorer has the same effect.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== AJBrowser
+=== AJBrowser
 
 * Changes:
 ** Build configuration file editor added.
@@ -1204,7 +1208,7 @@ use it type:
 ajbrowser <lst file1> <lst file2> ...
 ....
 
-== Aspectj-mode and AJDEE: AspectJ support in Emacs
+=== Aspectj-mode and AJDEE: AspectJ support in Emacs
 
 This release of AspectJ support for Emacs includes corrections to the
 documentation and the appearance of annotations and jumps in the editing
@@ -1215,7 +1219,7 @@ computational overhead.
 '''''
 
 [[_1_0beta1]]
-= 1.0beta1
+= AspectJ 1.0beta1
 
 * xref:#_1_0beta1language[Language]
 * xref:#_1_0beta1compiler[Compiler]
@@ -1223,7 +1227,7 @@ computational overhead.
 * xref:#_1_0beta1ajde[AJDE]
 
 [[_1_0beta1language]]
-= Language
+== Language
 
 There is one language change since 1.0alpha1. The static modifier is no
 longer needed or allowed on pointcut declarations. Name binding for
@@ -1237,7 +1241,7 @@ changes in the next release to address issues of implementability on the
 JVM as well as related issues.
 
 [[_1_0beta1compiler]]
-= Compiler
+== Compiler
 
 The ajc compiler should now catch all errors in source code and you
 should no longer see errors coming from files in 'ajworkingdir'. Please
@@ -1250,7 +1254,7 @@ very thorough bug report on this broken feature days after the 1.0alpha1
 release.
 
 [[_1_0beta1ajbrowser]]
-= AJBrowser
+== AJBrowser
 
 * Support for executing classes has been added.
 * .lst can now be passed as arguments on the command line.
@@ -1260,7 +1264,7 @@ release.
 that the browser is launched with.
 
 [[_1_0beta1ajde]]
-= AJDE
+== AJDE
 
 * The performance and UI of the structure tree has been improved.
 * Compilation now runs in a separate thread and a progress monitor is
@@ -1273,7 +1277,7 @@ the console that the IDE was launched from. No more errors should be
 passed to javac, so please report this behavior and the corresponding
 error message as a bug.
 
-== AJDE for JBuilder
+=== AJDE for JBuilder
 
 * Known bugs have been fixed.
 * Classpath separator character is no longer hardcoded.
@@ -1283,7 +1287,7 @@ have been added.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== AJDE for Forte
+=== AJDE for Forte
 
 * Known bugs have been fixed.
 * Limitations:
@@ -1294,7 +1298,7 @@ to be restarted for the AspectJ window to show again.
 ** The debugger has not seen much use and it's stability and performance
 is limited.
 
-== Aspectj-mode and AJDEE: AspectJ support in Emacs
+=== Aspectj-mode and AJDEE: AspectJ support in Emacs
 
 AspectJ Development Environment for Emacs has been split into two
 pieces, aspectj-mode (an extension of java-mode), and AJDEE (an
@@ -1305,7 +1309,7 @@ beanshell is no longer required for use of these modes.
 '''''
 
 [[_1_0alpha1]]
-= 1.0alpha1
+= AspectJ 1.0alpha1
 
 This is the first alpha release of the 1.0 language and tools. There
 have been many changes in the language, and many improvements to the

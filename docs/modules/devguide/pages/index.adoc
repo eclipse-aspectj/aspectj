@@ -8,7 +8,7 @@ _Copyright (c) 1998-2001 Xerox Corporation, 2002 Palo Alto Research Center, Inco
 All rights reserved._
 
 This guide describes how to build and deploy AspectJ programs using the AspectJ tools and facilities. See also the
-xref:../progguide/progguide.adoc[AspectJ Programming Guide], the documentation available with the AspectJ support
+xref:progguide:progguide.adoc[AspectJ Programming Guide], the documentation available with the AspectJ support
 available for various integrated development environments (e.g. https://www.eclipse.org/ajdt/[Eclipse AJDT]), and the
 most-recent documentation available from the https://eclipse.org/aspectj[AspectJ project page].
 

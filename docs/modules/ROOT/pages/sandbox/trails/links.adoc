@@ -26,7 +26,7 @@ AspectJ web site as ubc-design-patterns.zip. The latest version is
 checked into the CVS repository along with other sample code at
 `org.aspectj/modules/docs/sandbox/ubc-design-patterns`. For instructions
 on downloading code from the CVS repository, see the FAQ entry
-xref:../../faq/faq.adoc#buildingsource[How do I get and compile the source code for AspectJ?].
+xref:faq:faq.adoc#buildingsource[How do I get and compile the source code for AspectJ?].
 
 The https://atrack.dev.java.net/[*aTrack project*] aims to create an open
 source bug tracking application that demonstrates use of Aspect-Oriented

@@ -280,8 +280,8 @@ public class Y extends X {
 }
 ....
 
-Then the modifiers for a call to `(Y y) y.doIt()` are simply `{public}`.
-The modifiers for a call to `(X x) x.doIt()` are `{@Foo,protected}`.
+Then the modifiers for a call to `(Y y) y.doIt()` are simply `{ public }`.
+The modifiers for a call to `(X x) x.doIt()` are `{ @Foo, protected }`.
 
 [[join-point-matching-summary]]
 == Summary of Join Point Matching

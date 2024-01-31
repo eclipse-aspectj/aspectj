@@ -4,7 +4,7 @@
 [[eclipse-aspectj]]
 == The Eclipse AspectJ implementation
 
-The xref:../progguide/index.html[AspectJ Programming Guide] describes
+The xref:progguide:index.adoc[AspectJ Programming Guide] describes
 the AspectJ language. This guide describes the AspectJ tools produced by
 the AspectJ team on https://eclipse.org/aspectj. The AspectJ tools
 include - ajc, the compiler/weaver; ajdoc, a documentation tool;
@@ -24,7 +24,7 @@ files that run in a Java VM. There are other ways to implement the
 language (e.g., compiler preprocessor, VM support); the AspectJ team has
 always tried to distinguish the language and the implementation so other
 groups could build alternative implementations of AspectJ. To that end,
-xref:../progguide/implementation.html[The AspectJ Programming Guide,
+xref:progguide:implementation.adoc[The AspectJ Programming Guide,
 Implementation Notes] describes how the Java bytecode form affects
 language semantics. VM- or source-based implementations may be free of
 these limits or impose limits of their own, but most should be fairly

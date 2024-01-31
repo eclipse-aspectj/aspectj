@@ -21,19 +21,19 @@ In Tomcat, you can deploy application servlets in WAR's or in exploded
 web directories and share code across applications.
 
 . Use `ajc` to compile the servlets, and deploy the classes as usual
-  into `{WebRoot}/WEB-INF/classes`.
+  into `\{WebRoot}/WEB-INF/classes`.
 . If your web applications or aspects do not interact, deploy
-  `aspectjrt.jar` into `{WebRoot}/WEB-INF/lib`.
+  `aspectjrt.jar` into `\{WebRoot}/WEB-INF/lib`.
 . If your web applications or aspects might interact, deploy them to
-`${CATALINA_BASE}/shared/lib`.
+`$\{CATALINA_BASE}/shared/lib`.
 
 Tomcat 4.x uses the Jasper engine based on Ant to compile JSP's. To set
 up ajc as the compiler, do the following before starting Tomcat:
 
-. Put `aspectjtools.jar` in `${CATALINA_HOME}/common/lib` so that it can
+. Put `aspectjtools.jar` in `$\{CATALINA_HOME}/common/lib` so that it can
   be loaded by Jasper.
 
-. Update Jasper servlet parameters in `${CATALINA_HOME}/conf/web.xml` to
+. Update Jasper servlet parameters in `$\{CATALINA_HOME}/conf/web.xml` to
   tell Ant to use `ajc` by setting the compiler property to the AspectJ
   compiler adapter:
 +
@@ -50,7 +50,7 @@ up ajc as the compiler, do the following before starting Tomcat:
 ....
 
 . The classpath is dynamically generated from the webapp deployment, so
-  `aspectjrt.jar` should be in `{webapp}/WEB-INF/lib` or some shared or
+  `aspectjrt.jar` should be in `\{webapp}/WEB-INF/lib` or some shared or
   common directory supported by the server.
 
 . Alternatively, you can precompile JSP's using

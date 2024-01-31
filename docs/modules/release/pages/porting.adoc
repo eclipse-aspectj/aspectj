@@ -244,7 +244,7 @@ used in declare error or declare warning statements, which might produce
 different results. (xref:README-1.1.adoc#WITHIN_MEMBER_TYPES[more info])
 
 The compiler will report an error that the form
-`aspect {name} dominates {list}...` is no longer supported. It has been
+`aspect \{name} dominates \{list}...` is no longer supported. It has been
 replaced by a new declare statement:
 
 [source, java]

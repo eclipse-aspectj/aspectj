@@ -34,7 +34,7 @@ v 2.0 at https://eclipse.org/aspectj.
 In Ant 1.5, third-party tasks can be declared using a taskdef entry in
 the build script, to identify the name and classes. When declaring a
 task, include the `aspectjtools.jar` either in the taskdef classpath or
-in `${ANT_HOME}/lib` where it will be added to the system class path by
+in `$\{ANT_HOME}/lib` where it will be added to the system class path by
 the ant script. You may specify the task script names directly, or use
 the "resource" attribute to specify the default names:
 
@@ -49,7 +49,7 @@ uses "iajc" for the AspectJ post-1.1 task.
 In Ant 1.6, third-party tasks are declared in their own namespace using
 `antlib.xml`. For example, the following script would build and run the
 spacewar example, if you put the script in the examples directory and
-`aspectjtools.jar` in the `${ANT_HOME}/lib` directory.
+`aspectjtools.jar` in the `$\{ANT_HOME}/lib` directory.
 
 [source, xml]
 ....
@@ -370,7 +370,7 @@ specified using the refid attribute:
 </iajc>
 ....
 
-The task also supports an attribute `{name}ref` for each such parameter.
+The task also supports an attribute `\{name}ref` for each such parameter.
 E.g., for `aspectpath`:
 
 [source, xml]
@@ -510,7 +510,7 @@ that can be handled by iajc/ajc.
 === Sample of compiler adapter
 
 To build using the adapter, put the `aspectjtools.jar` on the system/ant
-classpath (e.g., in `${ANT_HOME}/lib`) and define the `build.compiler`
+classpath (e.g., in `$\{ANT_HOME}/lib`) and define the `build.compiler`
 property as the fully-qualified name of the class,
 `org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter`.
 
@@ -580,10 +580,10 @@ in javac).
 as the message holder.
 * `-Xcopyinjars`: copy resources from any input jars to output (default
 behavior since 1.1.1)
-* `-Xsourcerootcopyfilter {filter}`: copy resources from source
+* `-Xsourcerootcopyfilter \{filter}`: copy resources from source
 directories to output (minus files specified in filter)
-* `-Xtagfile {file}`: use file to control incremental compilation
-* `-Xsrcdir {dir}`: add to list of ajc source roots (all source files
+* `-Xtagfile \{file}`: use file to control incremental compilation
+* `-Xsrcdir \{dir}`: add to list of ajc source roots (all source files
 will be included).
 
 Special considerations when using Javac and compilerarg:
@@ -735,7 +735,7 @@ argfile).
 
 ==== argfiles - argument list files
 
-An argument file is a file (usually `{file}.lst`) containing a list of
+An argument file is a file (usually `\{file}.lst`) containing a list of
 source file paths (absolute or relative to the argfile). You can use it
 to specify all source files to be compiled, which ajc requires to avoid
 searching every possible source file in the source path when building
@@ -818,8 +818,8 @@ This next example
 />
 ....
 
-compiles .java files under the `${src}` directory in the spacewar and
-coordination packages, and stores the .class files in the `${build}`
+compiles .java files under the `$\{src}` directory in the spacewar and
+coordination packages, and stores the .class files in the `$\{build}`
 directory. All source files under spacewar/ and coordination/ are used,
 except Debug.java.
 

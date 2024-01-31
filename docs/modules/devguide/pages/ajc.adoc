@@ -28,7 +28,7 @@ include the source not only for the aspects or pointcuts but also for
 any affected types. Specifying all sources is necessary because, unlike
 javac, ajc does not search the sourcepath for classes. (For a discussion
 of what affected types might be required, see
-xref:../progguide/implementation.html[The AspectJ Programming Guide,
+xref:progguide:implementation.adoc[The AspectJ Programming Guide,
 Implementation Appendix].)
 
 To specify sources, you can list source files as arguments or use the
@@ -91,7 +91,7 @@ destination directory on the inpath and rebuild.)
   Generate .ajesym symbol files for emacs support (deprecated).
 `-Xlint`::
   Same as -Xlint:warning (enabled by default)
-`-Xlint:{level}`::
+`-Xlint:\{level}`::
   Set default level for messages about potential programming mistakes in
   crosscutting code. \{level} may be ignore, warning, or error. This
   overrides entries in org/aspectj/weaver/XlintDefault.properties from

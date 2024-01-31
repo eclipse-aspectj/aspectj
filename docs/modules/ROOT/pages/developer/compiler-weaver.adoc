@@ -1,4 +1,8 @@
 = Guide for Developers of the AspectJ Compiler and Weaver
+:doctype: book
+:leveloffset: +1
+
+= Guide for Developers of the AspectJ Compiler and Weaver
 
 _Latest (non-license) content update: 2004-02-20 by jhugunin_
 

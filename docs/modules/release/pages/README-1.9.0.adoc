@@ -1,4 +1,8 @@
 = AspectJ 1.9.0
+:doctype: book
+:leveloffset: +1
+
+= AspectJ 1.9.0
 
 _© Copyright 2018 Contributors. All rights reserved._
 
