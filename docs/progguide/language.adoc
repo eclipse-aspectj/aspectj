@@ -896,7 +896,7 @@ advice to use. The `thisJoinPoint` variable can only be used in the
 context of advice, just like `this` can only be used in the context of
 non-static methods and variable initializers. In advice, `thisJoinPoint`
 is an object of type
-xref:../api/org/aspectj/lang/JoinPoint.html[`org.aspectj.lang.JoinPoint`].
+xref:../runtime-api/org/aspectj/lang/JoinPoint.html[`org.aspectj.lang.JoinPoint`].
 
 One way to use it is simply to print it out. Like all Java objects,
 `thisJoinPoint` has a `toString()` method that makes quick-and-dirty

@@ -111,7 +111,7 @@ the pointcut, we can reasonably ask which join point was reached.
 
 Information about the join point that was matched is available to advice
 through the special variable `thisJoinPoint`, of type
-xref:../api/org/aspectj/lang/JoinPoint.html[`org.aspectj.lang.JoinPoint`].
+xref:../runtime-api/org/aspectj/lang/JoinPoint.html[`org.aspectj.lang.JoinPoint`].
 Through this object we can access information such as
 
 * the kind of join point that was matched
@@ -220,7 +220,7 @@ advised.
 
 The name of the method and that method's defining class are available as
 parts of the
-xref:../api/org/aspectj/lang/Signature.html[`org.aspectj.lang.Signature`]
+xref:../runtime-api/org/aspectj/lang/Signature.html[`org.aspectj.lang.Signature`]
 object returned by calling `getSignature()` on either `thisJoinPoint` or
 `thisJoinPointStaticPart`.
 
@@ -228,7 +228,7 @@ object returned by calling `getSignature()` on either `thisJoinPoint` or
 
 The static portions of the parameter details, the name and types of the
 parameters, can be accessed through the
-xref:../api/org/aspectj/lang/reflect/CodeSignature.html[`org.aspectj.lang.reflect.CodeSignature`]
+xref:../runtime-api/org/aspectj/lang/reflect/CodeSignature.html[`org.aspectj.lang.reflect.CodeSignature`]
 associated with the join point. All execution join points have code
 signatures, so the cast to `CodeSignature` cannot fail.
 

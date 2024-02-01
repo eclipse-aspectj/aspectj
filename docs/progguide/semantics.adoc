@@ -2109,7 +2109,7 @@ the before advice...
 There is no general way to detect these kinds of circularities at
 compile time. If advice runs before its aspect is instantiated, AspectJ
 will throw a
-xref:../api/org/aspectj/lang/NoAspectBoundException.html[`org.aspectj.lang.NoAspectBoundException`].
+xref:../runtime-api/org/aspectj/lang/NoAspectBoundException.html[`org.aspectj.lang.NoAspectBoundException`].
 
 === Aspect privilege
 
