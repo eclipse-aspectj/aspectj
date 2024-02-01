@@ -85,7 +85,7 @@
 							<classifier>sources</classifier>
 							<!--<failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>-->
 							<includeGroupIds>org.ow2.asm</includeGroupIds>
-							<includeArtifactIds>asm</includeArtifactIds>
+							<includeArtifactIds>asm,asm-commons</includeArtifactIds>
 							<outputDirectory>${project.build.directory}/unzipped-sources</outputDirectory>
 							<!-- Avoid accidentally shading test-scoped dependencies like JUnit -->
 							<includeScope>runtime</includeScope>
