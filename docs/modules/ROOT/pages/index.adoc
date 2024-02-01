@@ -10,8 +10,8 @@ materials, see https://eclipse.org/aspectj. Not all of these materials have been
 |+++Section+++ |+++Contents+++
 
 |xref:#documentation[Documentation]
-|xref:faq:faq.adoc#faq[FAQ], xref:quickref/quick5.pdf[Quick Reference (AspectJ 5)],
-xref:quickref/quick.pdf[Quick Reference (1.2.1)], xref:adk15notebook:index.adoc[AspectJ 5 Developer's Notebook],
+|xref:faq:faq.adoc#faq[FAQ], xref:attachment$quickref/quick5.pdf[Quick Reference (AspectJ 5)],
+xref:attachment$quickref/quick.pdf[Quick Reference (1.2.1)], xref:adk15notebook:index.adoc[AspectJ 5 Developer's Notebook],
 xref:progguide:index.adoc[programming], xref:devguide:index.adoc[development] and
 xref:pdguide:index.adoc[problem diagnosis] guides, link:runtime-api/index.html[runtime API],
 link:weaver-api/index.html[weaver API] and link:examples[example code]
@@ -34,10 +34,10 @@ mailto:aspectj-users@eclipse.org[users] and mailto:aspectj-dev@eclipse.org[devel
 |Documentation
 |Description
 
-|xref:quickref/quick5.pdf[AspectJ 5 Quick Reference]
+|xref:attachment$quickref/quick5.pdf[AspectJ 5 Quick Reference]
 |Four-page quick reference for the AspectJ 5 language
 
-|xref:quickref/quick.pdf[AspectJ Quick Reference]
+|xref:attachment$quickref/quick.pdf[AspectJ Quick Reference]
 |Two-page quick reference for the AspectJ language
 
 a|AspectJ 5 Developer's Notebook
