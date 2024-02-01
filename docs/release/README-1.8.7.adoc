@@ -1,4 +1,4 @@
-== AspectJ 1.8.7
+= AspectJ 1.8.7
 
 _© Copyright 2015 Contributors. All rights reserved._
 
@@ -7,14 +7,14 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.7 available 9-Sep-2015_
 
-=== Notable changes
+== Notable changes
 
-==== ajdoc
+=== ajdoc
 
 The ajdoc tool has been fixed! It is now working again if run on a 1.7
 JDK.
 
-==== Dynamic weaver attachment
+=== Dynamic weaver attachment
 
 The AspectJ loadtime weaving agent can now be dynamically attached to a
 JVM after it has started (you don't need to use -javaagent). This offers

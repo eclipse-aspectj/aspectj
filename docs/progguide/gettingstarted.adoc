@@ -1,8 +1,8 @@
 [[starting]]
-== Getting Started with AspectJ
+= Getting Started with AspectJ
 
 [[starting-intro]]
-=== Introduction
+== Introduction
 
 Many software developers are attracted to the idea of aspect-oriented
 programming (AOP) but unsure about how to begin using the technology.
@@ -48,7 +48,7 @@ is one ordering that allows developers to get experience with (and
 benefit from) AOP technology quickly, while also minimizing risk.
 
 [[starting-aspectj]]
-=== Introduction to AspectJ
+== Introduction to AspectJ
 
 This section presents a brief introduction to the features of AspectJ
 used later in this chapter. These features are at the core of the
@@ -114,7 +114,7 @@ inheritable unit of modularity. Lastly, we will look at how to use
 inter-type declarations to deal with crosscutting concerns of a
 program's class structure.
 
-==== The Dynamic Join Point Model
+=== The Dynamic Join Point Model
 
 A critical element in the design of any aspect-oriented language is the
 join point model. The join point model provides the common frame of
@@ -138,7 +138,7 @@ from the body. We say that these join points execute in the _dynamic
 context_ of the original call join point.
 
 [[pointcuts-starting]]
-==== Pointcuts
+=== Pointcuts
 
 In AspectJ, _pointcuts_ pick out certain join points in the program
 flow. For example, the pointcut
@@ -239,7 +239,7 @@ called and when it returns (either normally or by throwing an
 exception).
 
 [[advice-starting]]
-==== Advice
+=== Advice
 
 So pointcuts pick out join points. But they don't _do_ anything apart
 from picking out join points. To actually implement crosscutting
@@ -279,7 +279,7 @@ _Around advice_ on a join point runs as the join point is reached, and
 has explicit control over whether the program proceeds with the join
 point. Around advice is not discussed in this section.
 
-===== Exposing Context in Pointcuts
+==== Exposing Context in Pointcuts
 
 Pointcuts not only pick out join points, they can also expose part of
 the execution context at their join points. Values exposed by a pointcut
@@ -353,7 +353,7 @@ after(FigureElement fe, int x, int y) returning: setXY(fe, x, y) {
 }
 ....
 
-==== Inter-type declarations
+=== Inter-type declarations
 
 Inter-type declarations in AspectJ are declarations that cut across
 classes and their hierarchies. They may declare members that cut across
@@ -440,7 +440,7 @@ Note that neither ``Screen``'s nor ``Point``'s code has to be modified, and
 that all the changes needed to support this new capability are local to
 this aspect.
 
-==== Aspects
+=== Aspects
 
 Aspects wrap up pointcuts, advice, and inter-type declarations in a a
 modular unit of crosscutting implementation. It is defined very much
@@ -469,7 +469,7 @@ Aspects may also have more complicated rules for instantiation, but
 these will be described in a later chapter.
 
 [[starting-development]]
-=== Development Aspects
+== Development Aspects
 
 The next two sections present the use of aspects in increasingly
 sophisticated ways. Development aspects are easily removed from
@@ -484,7 +484,7 @@ consistency within the application. Using AspectJ makes it possible to
 cleanly modularize this kind of functionality, thereby making it
 possible to easily enable and disable the functionality when desired.
 
-==== Tracing
+=== Tracing
 
 This first example shows how to increase the visibility of the internal
 workings of a program. It is a simple tracing aspect that prints a
@@ -537,7 +537,7 @@ that have proven useful in the past is a direct result of AspectJ
 modularizing a crosscutting design element the set of methods that are
 appropriate to trace when looking for a given kind of information.
 
-==== Profiling and Logging
+=== Profiling and Logging
 
 Our second example shows you how to do some very specific profiling.
 Although many sophisticated profiling tools are available, and these can
@@ -588,7 +588,7 @@ Such questions may be difficult to express using standard profiling or
 logging tools.
 
 [[pre-and-post-conditions]]
-==== Pre- and Post-Conditions
+=== Pre- and Post-Conditions
 
 Many programmers use the "Design by Contract" style popularized by
 Bertand Meyer in Object-Oriented Software Construction, 2/e. In this
@@ -637,7 +637,7 @@ in the production build as well. Again, because AspectJ makes it
 possible to modularize these crosscutting concerns cleanly, it gives
 developers good control over this decision.
 
-==== Contract Enforcement
+=== Contract Enforcement
 
 The property-based crosscutting mechanisms can be very useful in
 defining more sophisticated contract enforcement. One very powerful use
@@ -692,7 +692,7 @@ and the `call` pointcut here picks out join points statically). Other
 enforcement, such as the precondition enforcement, above, does require
 dynamic information such as the runtime value of parameters.
 
-==== Configuration Management
+=== Configuration Management
 
 Configuration management for aspects can be handled using a variety of
 make-file like techniques. To work with optional aspects, the programmer
@@ -706,7 +706,7 @@ to write such make files, the AspectJ compiler has a command-line
 interface that is consistent with ordinary Java compilers.
 
 [[starting-production]]
-=== Production Aspects
+== Production Aspects
 
 This section presents examples of aspects that are inherently intended
 to be included in the production builds of an application. Production
@@ -719,7 +719,7 @@ adopting AspectJ. But even though they tend to be small and simple, they
 can often have a significant effect in terms of making the program
 easier to understand and maintain.
 
-==== Change Monitoring
+=== Change Monitoring
 
 The first example production aspect shows how one might implement some
 simple functionality where it is problematic to try and do it
@@ -803,7 +803,7 @@ compelling for property-based aspects (see the section
 xref:#starting-production-consistentBehavior[Providing Consistent
 Behavior]).
 
-==== Context Passing
+=== Context Passing
 
 The crosscutting structure of context passing can be a significant
 source of complexity in Java programs. Consider implementing
@@ -844,7 +844,7 @@ aspects while the aspect is short and affects only a modest number of
 benefits, the complexity the aspect saves is potentially much larger.
 
 [[starting-production-consistentBehavior]]
-==== Providing Consistent Behavior
+=== Providing Consistent Behavior
 
 This example shows how a property-based aspect can be used to provide
 consistent handling of functionality across a large set of operations.
@@ -935,7 +935,7 @@ crosscutting structure of the aspect explicitly made the code more
 concise and eliminated latent bugs.
 
 [[starting-conclusion]]
-=== Conclusion
+== Conclusion
 
 AspectJ is a simple and practical aspect-oriented extension to Java.
 With just a few new constructs, AspectJ provides support for modular

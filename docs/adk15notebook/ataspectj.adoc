@@ -1,8 +1,8 @@
 [[ataspectj]]
-== An Annotation Based Development Style
+= An Annotation Based Development Style
 
 [[ataspectj-intro]]
-=== Introduction
+== Introduction
 
 In addition to the familiar AspectJ code-based style of aspect
 declaration, AspectJ 5 also supports an annotation-based style of aspect
@@ -25,7 +25,7 @@ chapter we introduce the @AspectJ annotations and show how they can be
 used to declare aspects and aspect members.
 
 [[ataspectj-aspects]]
-=== Aspect Declarations
+== Aspect Declarations
 
 Aspect declarations are supported by the
 `org.aspectj.lang.annotation.Aspect` annotation. The declaration:
@@ -59,18 +59,18 @@ is equivalent to...
 public aspect Foo perthis(execution(* abc..*(..))) {}
 ....
 
-==== Limitations
+=== Limitations
 
 Privileged aspects are not supported by the annotation style.
 
 [[ataspectj-pcadvice]]
-=== Pointcuts and Advice
+== Pointcuts and Advice
 
 Pointcut and advice declarations can be made using the
 `Pointcut, Before, After, AfterReturning, AfterThrowing,` and `Around`
 annotations.
 
-==== Pointcuts
+=== Pointcuts
 
 Pointcuts are specified using the `org.aspectj.lang.annotation.Pointcut`
 annotation on a method declaration. The method should have a `void`
@@ -136,7 +136,7 @@ is equivalent to...
 protected abstract pointcut anyCall();
 ....
 
-===== Type references inside @AspectJ annotations
+==== Type references inside @AspectJ annotations
 
 Using the code style, types referenced in pointcut expressions are
 resolved with respect to the imported types in the compilation unit.
@@ -179,7 +179,7 @@ public class Foo {
 }
 ....
 
-===== if() pointcut expressions
+==== if() pointcut expressions
 
 In code style, it is possible to use the `if(...)` poincut to define a
 conditional pointcut expression which will be evaluated at runtime for
@@ -255,7 +255,7 @@ The special forms `if(true)` and `if(false)` can be used in a more
 general way and don't imply that the pointcut method must have a body.
 You can thus write `@Before("somePoincut() && if(false)")` .
 
-==== Advice
+=== Advice
 
 In this section we first discuss the use of annotations for simple
 advice declarations. Then we show how `thisJoinPoint` and its siblings
@@ -485,7 +485,7 @@ above aren't obeyed, then it will unfortunately manifest as a runtime
 error.
 
 [[ataspectj-itds]]
-=== Inter-type Declarations
+== Inter-type Declarations
 
 Inter-type declarations are challenging to support using an annotation
 style. For code style aspects compiled with the _ajc_ compiler, the entire
@@ -521,7 +521,7 @@ The `defaultImpl` attribute of `@DeclareParents` may become deprecated if
 introduce a marker interface.
 
 [[atDeclareParents]]
-==== @DeclareParents
+=== @DeclareParents
 
 Consider the following aspect:
 
@@ -641,7 +641,7 @@ If the interface defines one or more operations, and these are not
 implemented by the target type, an error will be issued during weaving.
 
 [[atDeclareMixin]]
-==== @DeclareMixin
+=== @DeclareMixin
 
 Consider the following aspect:
 
@@ -793,7 +793,7 @@ Any annotations defined on the interface methods are also put upon the
 delegate forwarding methods created in the matched target type.
 
 [[ataspectj-declare]]
-=== Declare statements
+== Declare statements
 
 The previous section on inter-type declarations covered the case of
 `declare parents ...` implements. The 1.5.0 release of AspectJ 5 does not
@@ -865,7 +865,7 @@ static String getMessage() {
 ....
 
 [[ataspectj-aspectof]]
-=== `aspectOf()` and `hasAspect()` methods
+== `aspectOf()` and `hasAspect()` methods
 
 A central part of AspectJ's programming model is that aspects written
 using the code style and compiled using ajc support `aspectOf` and

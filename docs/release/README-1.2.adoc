@@ -1,4 +1,4 @@
-== AspectJ 1.2
+= AspectJ 1.2
 
 _© Copyright 2003,2004 Contributors. All rights reserved._
 
@@ -25,7 +25,7 @@ readers to the bug database for xref:#allchanges[all the changes].
 '''''
 
 [[compiler]]
-=== The Compiler
+== The Compiler
 
 Compared to AspectJ 1.1.1, the AspectJ 1.2 compiler...
 
@@ -56,7 +56,7 @@ ajc].
 '''''
 
 [[tools]]
-=== Support Tools
+== Support Tools
 
 AspectJ 1.2 contains two important changes to the supporting tools:
 
@@ -67,7 +67,7 @@ command-line.
 '''''
 
 [[runtime]]
-=== The Runtime Library
+== The Runtime Library
 
 This release has minor updates to the runtime library classes. As with
 any release, you should compile and run with the runtime library that
@@ -86,7 +86,7 @@ heap usage for multi-threaded applications that use cflow.
 '''''
 
 [[devenv]]
-=== The AJDE Tools
+== The AJDE Tools
 
 The AJDE based tools for JBuilder, NetBeans and Emacs continue to be
 independent SourceForge projects. The AspectJ 1.2 distribution includes
@@ -104,10 +104,10 @@ https://www.eclipse.org/ajdt[AJDT project website].
 '''''
 
 [[details]]
-=== Details of some compiler changes
+== Details of some compiler changes
 
 [[WEAVE_TIME]]
-==== Compilation (weave) times reduced.
+=== Compilation (weave) times reduced.
 
 Our benchmark suite shows that AspectJ 1.2 is at least twice as fast in
 the weaving phase as AspectJ 1.1.1 for matches based on a variety of
@@ -123,7 +123,7 @@ performance and memory usage. Experiments forcing GC showed that we can
 achieve about a 20% memory usage reduction in this manner if needed.
 
 [[LAZY_TJP]]
-==== The -XlazyTjp option.
+=== The -XlazyTjp option.
 
 Under AspectJ 1.1.1, if the body of an advice contained a reference to a
 non-statically determinable portion of `thisJoinPoint` (such as for
@@ -161,7 +161,7 @@ issues. The optimization is disabled at join points advised by around
 advice, and an Xlint warning will be displayed in these cases.
 
 [[INCREMENTAL]]
-==== Improvements to incremental compilation.
+=== Improvements to incremental compilation.
 
 AspectJ 1.2 provides more complete incremental compilation support than
 AspectJ 1.1.1. Firstly, incremental compilation resulting from a change
@@ -179,7 +179,7 @@ detected, but will trigger a full rebuild, as will any change to the
 paths used to control compilation.
 
 [[ERROR_MESSAGES]]
-==== Improved error messages.
+=== Improved error messages.
 
 AspectJ 1.1.1 did not provide source context information for messages
 produced during the weaving phase, even in the case where source files
@@ -234,7 +234,7 @@ file called `BadClass.java`, contains a join point
 line 5 of the file `DeclareError.java`.
 
 [[LINT]]
-==== New lint warnings.
+=== New lint warnings.
 
 Consider the program:
 
@@ -326,7 +326,7 @@ process of weaving makes an incompatible change to a serializable class
 (for example, through the addition of an inter-type declared field).
 
 [[REWEAVABLE]]
-==== The -Xreweavable option.
+=== The -Xreweavable option.
 
 The new `-Xreweavable` option produces class files that contain enough
 additional information in them that they can be rewoven. In time we hope
@@ -347,7 +347,7 @@ during weaving be present in the system during a reweave. An error will
 be issued if any are missing.
 
 [[INPATH]]
-==== The -inpath option.
+=== The -inpath option.
 
 The new `-inpath` option replaces the `-injars` option (which is still
 supported for backwards compatibility). It allows both directories and
@@ -357,7 +357,7 @@ result of building one project to become binary input to the compilation
 of a second project.
 
 [[COMPLIANCE]]
-==== The default compliance mode of the compiler has changed from -1.3 to -1.4.
+=== The default compliance mode of the compiler has changed from -1.3 to -1.4.
 
 The default AspectJ compiler compliance level is now 1.4 (whereas in
 previous releases the default compliance level was 1.3). This has a
@@ -432,7 +432,7 @@ actual type of the receiver.
 '''''
 
 [[AJDOC]]
-==== The ajdoc tool makes a comeback in the AspectJ 1.2 distribution.
+=== The ajdoc tool makes a comeback in the AspectJ 1.2 distribution.
 
 `ajdoc` (the AspectJ replacement for the `javadoc` tool) is once again
 included in the AspectJ distribution. The `ajdoc` tool produces regular
@@ -460,7 +460,7 @@ image:images/ajdoc1.JPG[image]
 image:images/ajdoc2.JPG[image]
 
 [[LTW]]
-==== A sample script is supplied that supports load-time weaving from the command-line
+=== A sample script is supplied that supports load-time weaving from the command-line
 
 The AspectJ 1.2 distribution ships with sample scripts for Windows and
 Unix platforms that exploit AspectJ's binary weaving capabilities at
@@ -541,7 +541,7 @@ welcome contributions from users to improve these scripts.
 '''''
 
 [[SOFTEX]]
-==== SoftException now supports getCause()
+=== SoftException now supports getCause()
 
 `org.aspectj.lang.SoftException` now supports the `getCause()` method,
 which returns the original exception wrapped by the `SoftException`.
@@ -549,7 +549,7 @@ This means that exception chains will print correctly on 1.4 and later
 JREs.
 
 [[LTW2]]
-==== org.aspectj.weaver.tools package added
+=== org.aspectj.weaver.tools package added
 
 A new set of public APIs are exported by the
 link:api/index.html[`org.aspectj.weaver.tools`] package that can be used
@@ -561,7 +561,7 @@ example of how to use these APIs, see the
 '''''
 
 [[allchanges]]
-=== All changes are listed in the bug database
+== All changes are listed in the bug database
 
 For a complete list of changes in the 1.2 release, search for
 `target 1.2` in the bug database:

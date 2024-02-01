@@ -1,14 +1,14 @@
-== Generics
+= Generics
 
 [[generics-inJava5]]
-=== Generics in Java 5
+== Generics in Java 5
 
 This section provides the essential information about generics in Java 5
 needed to understand how generics are treated in AspectJ 5. For a full
 introduction to generics in Java, please see the documentation for the
 Java 5 SDK.
 
-==== Declaring Generic Types
+=== Declaring Generic Types
 
 A generic type is declared with one or more type parameters following
 the type name. By convention formal type parameters are named using a
@@ -57,7 +57,7 @@ Some examples follow:
   with a type that is a subtype of `Number` and that implements
   `Comparable`.
 
-==== Using Generic and Parameterized Types
+=== Using Generic and Parameterized Types
 
 You declare a variable (or a method/constructor argument) of a
 parameterized type by specifying a concrete type specfication for each
@@ -132,7 +132,7 @@ more parameterized interfaces (for example,
 time be a subtype of two interface types which are different
 parameterizations of the same interface.
 
-==== Subtypes, Supertypes, and Assignability
+=== Subtypes, Supertypes, and Assignability
 
 The supertype of a generic type `C` is the type given in the extends
 clause of `C`, or `Object` if no extends clause is present. Given the
@@ -163,7 +163,7 @@ example, `List<String>` can be assigned to a variable of type
 `Collection<?>`, and `List<Double>` can be assigned to a variable of
 type `List<? extends Number>`.
 
-==== Generic Methods and Constructors
+=== Generic Methods and Constructors
 
 A static method may be declared with one or more type parameters as in
 the following declaration:
@@ -186,7 +186,7 @@ in a similar fashion:
 
 The same technique can be used to declare a generic constructor.
 
-==== Erasure
+=== Erasure
 
 Generics in Java are implemented using a technique called _erasure_. All
 type parameter information is erased from the run-time type system.
@@ -196,7 +196,7 @@ of type `List<String>`. A consequence of this is that you cannot at
 runtime ask if an object is an `instanceof` a parameterized type.
 
 [[generics-inAspectJ5]]
-=== Generics in AspectJ 5
+== Generics in AspectJ 5
 
 AspectJ 5 provides full support for all of the Java 5 language features,
 including generics. Any legal Java 5 program is a legal AspectJ 5
@@ -205,7 +205,7 @@ parameterized types in pointcuts, inter-type declarations, and declare
 statements. Parameterized types may freely be used within aspect
 members, and support is also provided for generic _abstract_ aspects.
 
-==== Matching generic and parameterized types in pointcut expressions
+=== Matching generic and parameterized types in pointcut expressions
 
 The simplest way to work with generic and parameterized types in
 pointcut expressions and type patterns is simply to use the raw type
@@ -273,7 +273,7 @@ respectively. The members of the generic type `G` can be matched by a
 signature pattern matching `Object G.myData` and
 `public List G.getAllDataItems()` respectively.
 
-===== Restricting matching using parameterized types
+==== Restricting matching using parameterized types
 
 Pointcut matching can be further restricted to match only given
 parameterizations of parameter types (methods and constructors), return
@@ -337,7 +337,7 @@ The execution of `foo` can be matched by `execution(List foo(List))`,
 `execution(List<Object> foo(List<String>>)` since the erasure of
 `List<T>` is `List` and not `List<Object>`.
 
-===== Generic wildcards and signature matching
+==== Generic wildcards and signature matching
 
 When it comes to signature matching, a type parameterized using a
 generic wildcard is a distinct type. For example, `List<?>` is a very
@@ -365,7 +365,7 @@ class C {
   matches both the execution of `foo` and the execution of `bar` since
   the upper bound of `List<?>` is implicitly `Object`.
 
-===== Treatment of bridge methods
+==== Treatment of bridge methods
 
 Under certain circumstances a Java 5 compiler is required to create
 _bridge methods_ that support the compilation of programs using raw
@@ -422,7 +422,7 @@ Object n = new Integer(5);
 rawType.foo(n);     // call to bridge method that would succeed at runtime
 ....
 
-===== Runtime type matching with this(), target() and args()
+==== Runtime type matching with this(), target() and args()
 
 The `this()`, `target()`, and `args()` pointcut expressions all match
 based on the runtime type of their arguments. Because Java 5 implements
@@ -591,7 +591,7 @@ aspect A {
 }
 ....
 
-===== Binding return values in after returning advice
+==== Binding return values in after returning advice
 
 After returning advice can be used to bind the return value from a
 matched join point. AspectJ 5 supports the use of a parameterized type
@@ -651,7 +651,7 @@ executes on lists _statically determinable_ to be of the right type by
 specifying a return type pattern in the associated pointcut. The
 `@SuppressAjWarnings` annotation can also be used if desired.
 
-===== Declaring pointcuts inside generic types
+==== Declaring pointcuts inside generic types
 
 Pointcuts can be declared in both classes and aspects. A pointcut
 declared in a generic type may use the type variables of the type in
@@ -692,7 +692,7 @@ public aspect A {
 }
 ....
 
-==== Inter-type Declarations
+=== Inter-type Declarations
 
 AspectJ 5 supports the inter-type declaration of generic methods, and of
 members on generic types. For generic methods, the syntax is exactly as
@@ -743,7 +743,7 @@ declare a member on behalf of (say) `Bar<String>`, you can only declare
 members on the generic type `Bar<T>`.
 
 [[declare-parents-java5]]
-==== Declare Parents
+=== Declare Parents
 
 Both generic and parameterized types can be used as the parent type in a
 `declare parents` statement (as long as the resulting type hierarchy
@@ -758,14 +758,14 @@ statement.
   since a type cannot implement multiple parameterizations of the same
   generic interface type.
 
-==== Declare Soft
+=== Declare Soft
 
 It is an error to use a generic or parameterized type as the softened
 exception type in a declare soft statement. Java 5 does not permit a
 generic class to be a direct or indirect subtype of `Throwable` (JLS
 8.1.2).
 
-==== Generic Aspects
+=== Generic Aspects
 
 AspectJ 5 allows an _abstract_ aspect to be declared as a generic type.
 Any concrete aspect extending a generic abstract aspect must extend a

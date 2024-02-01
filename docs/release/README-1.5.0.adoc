@@ -1,13 +1,13 @@
-== AspectJ 5
+= AspectJ 5
 
 _© Copyright 2005 Contributors. All rights reserved._
 
 AspectJ 5 introduces several important changes to the language and tools
 in order to support Java 5 and extend the capabilities of AspectJ in
-general. For language changes, see xref:../../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook]. For tools changes, see the
-link:devguide/index.html[AspectJ Development Environment Guide],
-especially the section on link:devguide/ltw.html[Load-time weaving]. The
-changes are summarized in the faq.html#q:aspectj5features[FAQ entry on
+general. For language changes, see xref:../adk15notebook/index.adoc[AspectJ 5 Developer's Notebook]. For tools changes, see the
+xref:../devguide/index.adoc[AspectJ Development Environment Guide],
+especially the section on xref:../devguide/ltw.adoc[Load-time weaving]. The
+changes are summarized in the xref:../faq/faq.adoc#AspectJ5[FAQ entry on
 AspectJ 5].
 
 Some of the other documentation has not been updated for AspectJ 5. For
@@ -16,4 +16,4 @@ https://eclipse.org/aspectj/doc/next/index.html, linked off
 https://eclipse.org/aspectj/docs.php[the AspectJ documentation home page].
 
 For information on bug fixes in AspectJ 5 v1.5.0, see the
-link:changes.html[changes] document.
+xref:changes.adoc[changes] document.

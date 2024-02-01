@@ -1,8 +1,8 @@
 [[examples]]
-== Examples
+= Examples
 
 [[examples-intro]]
-=== Introduction
+== Introduction
 
 This chapter consists entirely of examples of AspectJ use.
 
@@ -18,7 +18,7 @@ reusable::
   Examples of reuse of aspects and pointcuts
 
 [[examples-howto]]
-=== Obtaining, Compiling and Running the Examples
+== Obtaining, Compiling and Running the Examples
 
 The examples source code is part of the AspectJ distribution which may
 be downloaded from the https://eclipse.org/aspectj[AspectJ project page].
@@ -51,7 +51,7 @@ java -classpath ".;InstallDir/lib/aspectjrt.jar" telecom.billingSimulation
 ....
 
 [[examples-basic]]
-=== Basic Techniques
+== Basic Techniques
 
 This section presents two basic techniques of using AspectJ, one each
 from the two fundamental ways of capturing crosscutting concerns: with
@@ -65,7 +65,7 @@ some advice. The second example, xref:#examples-roles[Roles and Views],
 concerns a crosscutting view of an existing class hierarchy.
 
 [[examples-joinPoints]]
-==== Join Points and `thisJoinPoint`
+=== Join Points and `thisJoinPoint`
 
 (The code for this example is in `InstallDir/examples/tjp`.)
 
@@ -125,7 +125,7 @@ point
 * an object encapsulating the static information about the join point.
 This is also available through the special variable `thisJoinPointStaticPart`.
 
-===== The `Demo` class
+==== The `Demo` class
 
 The class `tjp.Demo` in `tjp/Demo.java` defines two methods `foo` and
 `bar` with different parameter lists and return types. Both are called,
@@ -158,7 +158,7 @@ public class Demo {
 }
 ....
 
-===== The `GetInfo` aspect
+==== The `GetInfo` aspect
 
 This aspect uses around advice to intercept the execution of methods
 `foo` and `bar` in `Demo`, and prints out information garnered from
@@ -201,7 +201,7 @@ aspect GetInfo {
 }
 ....
 
-====== Defining the scope of a pointcut
+===== Defining the scope of a pointcut
 
 The pointcut `goCut` is defined as
 
@@ -216,7 +216,7 @@ execution of `go` itself, so the definition of the around advice
 includes `!execution(* go())` to exclude it from the set of executions
 advised.
 
-====== Printing the class and method name
+===== Printing the class and method name
 
 The name of the method and that method's defining class are available as
 parts of the
@@ -224,7 +224,7 @@ xref:../api/org/aspectj/lang/Signature.html[`org.aspectj.lang.Signature`]
 object returned by calling `getSignature()` on either `thisJoinPoint` or
 `thisJoinPointStaticPart`.
 
-====== Printing the parameters
+===== Printing the parameters
 
 The static portions of the parameter details, the name and types of the
 parameters, can be accessed through the
@@ -236,7 +236,7 @@ The dynamic portions of the parameter details, the actual values of the
 parameters, are accessed directly from the execution join point object.
 
 [[examples-roles]]
-==== Roles and Views
+=== Roles and Views
 
 (The code for this example is in `InstallDir/examples/introduction`.)
 
@@ -269,7 +269,7 @@ and polar coordinates. Our inter-type declarations will make the class
 are provided by AspectJ without having to modify the code for the class
 `Point`.
 
-===== The `Point` class
+==== The `Point` class
 
 The `Point` class defines geometric points whose interface includes
 polar and rectangular coordinates, plus some simple operations to
@@ -289,7 +289,7 @@ with the class `Point`.
 
 image:images/aspects.png[image]
 
-===== The `CloneablePoint` aspect
+==== The `CloneablePoint` aspect
 
 This first aspect is responsible for ``Point``'s implementation of the
 `Cloneable` interface. It declares that `Point implements Cloneable`
@@ -336,7 +336,7 @@ public aspect CloneablePoint {
 }
 ....
 
-===== The `ComparablePoint` aspect
+==== The `ComparablePoint` aspect
 
 `ComparablePoint` is responsible for ``Point``'s implementation of the
 `Comparable` interface.
@@ -387,7 +387,7 @@ public aspect ComparablePoint {
 }
 ....
 
-===== The `HashablePoint` aspect
+==== The `HashablePoint` aspect
 
 Our third aspect is responsible for ``Point``'s overriding of ``Object``'s
 `equals` and `hashCode` methods in order to make ``Point``s hashable.
@@ -450,9 +450,9 @@ public aspect HashablePoint {
 ....
 
 [[examples-development]]
-=== Development Aspects
+== Development Aspects
 
-==== Tracing using aspects
+=== Tracing using aspects
 
 (The code for this example is in `InstallDir/examples/tracing`.)
 
@@ -482,7 +482,7 @@ one of those kind of system aspects that can potentially be plugged in
 and unplugged without any side-effects in the basic functionality of the
 system.
 
-===== An Example Application
+==== An Example Application
 
 Throughout this example we will use a simple application that contains
 only four classes. The application is about shapes. The `TwoDShape`
@@ -586,7 +586,7 @@ s1.distance(c1) = 2.23606797749979
 s1.toString(): Square side = 1.0 @ (1.0, 2.0)
 ....
 
-===== Tracing - Version 1
+==== Tracing - Version 1
 
 In a first attempt to insert tracing in this application, we will start
 by writing a `Trace` class that is exactly what we would write if we
@@ -707,7 +707,7 @@ s1.toString(): Square side = 1.0 @ (1.0, 2.0)
 When `TraceMyClasses.java` is not provided to `ajc`, the aspect does not
 have any affect on the system and the tracing is unplugged.
 
-===== Tracing - Version 2
+==== Tracing - Version 2
 
 Another way to accomplish the same thing would be to write a reusable
 tracing aspect that can be used not only for these application classes,
@@ -846,9 +846,9 @@ Abstract methods don't provide the implementation, but you know that the
 concrete subclasses will, so you can invoke those methods.
 
 [[examples-production]]
-=== Production Aspects
+== Production Aspects
 
-==== A Bean Aspect
+=== A Bean Aspect
 
 (The code for this example is in `InstallDir/examples/bean`.)
 
@@ -876,7 +876,7 @@ class is not serializable. Bound is an aspect that makes `Point` a
 serializable class and makes its `get` and `set` methods support the
 bound property protocol.
 
-===== The `Point` class
+==== The `Point` class
 
 The `Point` class is a very simple class with trivial getters and
 setters, and a simple vector offset method.
@@ -919,7 +919,7 @@ class Point {
 }
 ....
 
-===== The `BoundPoint` aspect
+==== The `BoundPoint` aspect
 
 The `BoundPoint` aspect is responsible for ``Point``'s "beanness". The
 first thing it does is privately declare that each `Point` has a
@@ -1023,7 +1023,7 @@ aspect BoundPoint {
 }
 ....
 
-===== The Test Program
+==== The Test Program
 
 The test program registers itself as a property change listener to a
 `Point` object that it creates and then performs simple manipulation of
@@ -1064,7 +1064,7 @@ class Demo implements PropertyChangeListener {
 }
 ....
 
-===== Compiling and Running the Example
+==== Compiling and Running the Example
 
 To compile and run this example, go to the examples directory and type:
 
@@ -1075,7 +1075,7 @@ java bean.Demo
 ....
 
 [[the-subject-observer-protocol]]
-==== The Subject/Observer Protocol
+=== The Subject/Observer Protocol
 
 (The code for this example is in `InstallDir/examples/observer`.)
 
@@ -1095,7 +1095,7 @@ The demo is designed and implemented using the Subject/Observer design
 pattern. The remainder of this example explains the classes and aspects
 of this demo, and tells you how to run it.
 
-===== Generic Components
+==== Generic Components
 
 The generic parts of the protocol are the interfaces `Subject` and
 `Observer`, and the abstract aspect `SubjectObserverProtocol`. The
@@ -1165,7 +1165,7 @@ after the join points of the pointcut. And it declares an inter-type
 field and two inter-type methods so that each `Observer` can hold onto
 its `Subject`.
 
-===== Application Classes
+==== Application Classes
 
 `Button` objects extend `java.awt.Button`, and all they do is make sure
 the `void click()` method is called whenever a button is clicked.
@@ -1255,7 +1255,7 @@ required by those interfaces, and providing a definition for the
 abstract `stateChanges` pointcut. Now, every time a `Button` is clicked,
 all `ColorLabel` objects observing that button will `colorCycle`.
 
-===== Compiling and Running
+==== Compiling and Running
 
 `Demo` is the top class that starts this demo. It instantiates a two
 buttons and three observers and links them together as subjects and
@@ -1267,7 +1267,7 @@ ajc -argfile observer/files.lst
 java observer.Demo
 ....
 
-==== A Simple Telecom Simulation
+=== A Simple Telecom Simulation
 
 (The code for this example is in `InstallDir/examples/telecom`.)
 
@@ -1277,7 +1277,7 @@ model of telephone connections to which timing and billing features are
 added using aspects, where the billing feature depends upon the timing
 feature.
 
-===== The Application
+==== The Application
 
 The example application is a simple simulation of a telephony system in
 which customers make, accept, merge and hang-up both local and long
@@ -1303,7 +1303,7 @@ share a common superclass `AbstractSimulation`, which defines the method
 run with the simulation itself and the method wait used to simulate
 elapsed time.
 
-===== The Basic Objects
+==== The Basic Objects
 
 The telecom simulation comprises the classes `Customer`, `Call` and the
 abstract class `Connection` with its two concrete subclasses `Local` and
@@ -1316,7 +1316,7 @@ involved in many calls at one time.
 
 image:images/telecom.png[image]
 
-===== The `Customer` class
+==== The `Customer` class
 
 `Customer` has methods `call`, `pickup`, `hangup` and `merge` for
 managing calls.
@@ -1377,7 +1377,7 @@ public class Customer {
 }
 ....
 
-===== The `Call` class
+==== The `Call` class
 
 Calls are created with a caller and receiver who are customers. If the
 caller and receiver have the same area code then the call can be
@@ -1387,7 +1387,7 @@ connections between customers. Initially there is only the connection
 between the caller and receiver but additional connections can be added
 if calls are merged to form conference calls.
 
-===== The `Connection` class
+==== The `Connection` class
 
 The class `Connection` models the physical details of establishing a
 connection between customers. It does this with a simple state machine
@@ -1437,7 +1437,7 @@ abstract class Connection {
 }
 ....
 
-===== The `Local` and `LongDistance` classes
+==== The `Local` and `LongDistance` classes
 
 The two kinds of connections supported by our simulation are `Local` and
 `LongDistance` connections.
@@ -1466,7 +1466,7 @@ class LongDistance extends Connection {
 }
 ....
 
-===== Compiling and Running the Basic Simulation
+==== Compiling and Running the Basic Simulation
 
 The source files for the basic system are listed in the file
 `basic.lst`. To build and run the basic system, in a shell window, type
@@ -1478,13 +1478,13 @@ ajc -argfile telecom/basic.lst
 java telecom.BasicSimulation
 ....
 
-===== The Timing aspect
+==== The Timing aspect
 
 The `Timing` aspect keeps track of total connection time for each
 `Customer` by starting and stopping a timer associated with each
 connection. It uses some helper classes:
 
-====== The `Timer` class
+===== The `Timer` class
 
 A `Timer` object simply records the current time when it is started and
 stopped, and returns their difference when asked for the elapsed time.
@@ -1511,7 +1511,7 @@ class Timer {
 }
 ....
 
-===== The `TimerLog` aspect
+==== The `TimerLog` aspect
 
 The `TimerLog` aspect can be included in a build to get the timer to
 announce when it is started and stopped.
@@ -1530,7 +1530,7 @@ public aspect TimerLog {
 }
 ....
 
-===== The `Timing` aspect
+==== The `Timing` aspect
 
 The `Timing` aspect is declares an inter-type field `totalConnectTime`
 for `Customer` to store the accumulated connection time per `Customer`.
@@ -1573,7 +1573,7 @@ public aspect Timing {
 }
 ....
 
-===== The `Billing` aspect
+==== The `Billing` aspect
 
 The Billing system adds billing functionality to the telecom application
 on top of timing.
@@ -1627,7 +1627,7 @@ public aspect Billing {
 }
 ....
 
-===== Accessing the inter-type state
+==== Accessing the inter-type state
 
 Both the aspects `Timing` and `Billing` contain the definition of
 operations that the rest of the system may want to access. For example,
@@ -1651,7 +1651,7 @@ protected void report(Customer c){
 }
 ....
 
-===== Compiling and Running
+==== Compiling and Running
 
 The files timing.lst and billing.lst contain file lists for the timing
 and billing configurations. To build and run the application with only
@@ -1672,7 +1672,7 @@ ajc -argfile telecom/billing.lst
 java telecom.BillingSimulation
 ....
 
-===== Discussion
+==== Discussion
 
 There are some explicit dependencies between the aspects `Billing` and
 `Timing`:
@@ -1683,13 +1683,13 @@ advice runs after that of `Timing` when they are on the same join point.
 * `Billing` needs access to the timer associated with a connection.
 
 [[examples-reusable]]
-=== Reusable Aspects
+== Reusable Aspects
 
-==== Tracing using Aspects, Revisited
+=== Tracing using Aspects, Revisited
 
 (The code for this example is in `InstallDir/examples/tracing`.)
 
-===== Tracing - Version 3
+==== Tracing - Version 3
 
 One advantage of not exposing the methods `traceEntry` and `traceExit` as
 public operations is that we can easily change their interface without

@@ -1,8 +1,8 @@
 [[autoboxing]]
-== Autoboxing and Unboxing
+= Autoboxing and Unboxing
 
 [[boxing-inJava5]]
-=== Autoboxing and Unboxing in Java 5
+== Autoboxing and Unboxing in Java 5
 
 Java 5 (and hence AspectJ 1.5) supports automatic conversion of
 primitive types (`int`, `float`, `double` etc.) to their object equivalents
@@ -23,7 +23,7 @@ Integer i2 = 5;      // autoboxing
 ....
 
 [[autoboxing-in-aspectj5]]
-=== Autoboxing and Join Point matching in AspectJ 5
+== Autoboxing and Join Point matching in AspectJ 5
 
 Most of the pointcut designators match based on signatures, and hence
 are unaffected by autoboxing. For example, a call to a method
@@ -63,7 +63,7 @@ before(Integer i) : foo(i) {
 ....
 
 [[autoboxing-and-method-dispatch]]
-=== Inter-type method declarations and method dispatch
+== Inter-type method declarations and method dispatch
 
 Autoboxing, unboxing, and also varargs all affect the method dispatch
 algorithm used in Java 5. In AspectJ 5, the target method of a call is

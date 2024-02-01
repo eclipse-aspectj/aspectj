@@ -1,4 +1,4 @@
-== Exercises plugin for the tutorial
+= Exercises plugin for the tutorial
 
 Download the appropriate version and unzip it in your eclipse\plugins
 directory:

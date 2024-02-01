@@ -1,4 +1,4 @@
-== AspectJ 1.8.10
+= AspectJ 1.8.10
 
 _© Copyright 2016 Contributors. All rights reserved._
 
@@ -7,21 +7,21 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.10 available 9-Dec-2016_
 
-=== Notable changes
+== Notable changes
 
-==== JDT Upgrade
+=== JDT Upgrade
 
 The JDT compiler inside AspectJ has been upgraded to the Eclipse Neon.2
 level (JDT commit #75dbfad0).
 
-==== Java8
+=== Java8
 
 The Eclipse JDT compiler embedded inside AspectJ now requires Java 8, so
 that is the minimum required level to compile sources with AspectJ.
 However, if only doing weaving and no compilation then it is possible to
 use Java 7.
 
-==== Annotation style around advice and proceed (https://bugs.eclipse.org/bugs/show_bug.cgi?id=500035[Bug 500035])
+=== Annotation style around advice and proceed (https://bugs.eclipse.org/bugs/show_bug.cgi?id=500035[Bug 500035])
 
 A long standing issue that has been lurking in the handling of arguments
 passed to proceed for annotation style aspects has been fixed. If, at a

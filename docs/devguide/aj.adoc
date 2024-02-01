@@ -1,16 +1,16 @@
-== `aj`, the AspectJ load-time weaving launcher
+= `aj`, the AspectJ load-time weaving launcher
 
-=== Name
+== Name
 
 `aj` - command-line launcher for basic load-time weaving
 
-=== Synopsis
+== Synopsis
 
 [subs=+quotes]
 aj [_Options_] [_arg_...]
 
 [[aj]]
-=== Description
+== Description
 
 The `aj` command runs Java programs in Java 1.4 or later by setting up
 `WeavingURLClassLoader` as the system class loader, to do load-time
@@ -23,7 +23,7 @@ Users should define the environment variables `CLASSPATH` and
 For more information and alternatives for load-time weaving, see
 xref:ltw.adoc#ltw[Load-Time Weaving].
 
-=== Examples
+== Examples
 
 Use ajc to build a library, then weave at load time
 

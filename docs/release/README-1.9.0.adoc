@@ -1,4 +1,8 @@
-== AspectJ 1.9.0
+= AspectJ 1.9.0
+:doctype: book
+:leveloffset: +1
+
+= AspectJ 1.9.0
 
 _© Copyright 2018 Contributors. All rights reserved._
 
@@ -7,7 +11,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIE
 
 _Release info: 1.9.0 available 2-Apr-2018_
 
-=== Improved runtime interface
+== Improved runtime interface
 
 New factory methods have been added to the AspectJ runtime. This is an
 attempt to more optimally create `thisJoinPoint` and
@@ -48,7 +52,7 @@ export ASPECTJ_OPTS="-Xajruntimetarget:1.9"
 
 And it should get picked up by AspectJ when it runs.
 
-== AspectJ 1.9.0.RC4
+= AspectJ 1.9.0.RC4
 
 _Release info: 1.9.0.RC4 available 21-Feb-2018_
 
@@ -75,14 +79,14 @@ For example, here is an `iajc` usage with `compilerArg` that is passing
 </iajc>
 ....
 
-== AspectJ 1.9.0.RC3
+= AspectJ 1.9.0.RC3
 
 _Release info: 1.9.0.RC3 available 5-Feb-2018_
 
 Primary changes in RC3 are to upgrade JDT and pickup all the fixes for
 Java9 that have gone into it over the last few months.
 
-== AspectJ 1.9.0.RC2
+= AspectJ 1.9.0.RC2
 
 _Release info: 1.9.0.RC2 available 9-Nov-2017_
 
@@ -91,7 +95,7 @@ version handling has been somewhat overhauled so AspectJ 9 will behave
 better on Java 10 and future JDKs. This should put AspectJ in a better
 place if new JDK versions are going to arrive thick and fast.
 
-== AspectJ 1.9.0.RC1
+= AspectJ 1.9.0.RC1
 
 _Release info: 1.9.0.RC1 available 20-Oct-2017_
 
@@ -99,7 +103,7 @@ This is the first release candidate of AspectJ 1.9.0 - the version of
 AspectJ to be based on Java9. It includes a recent version of the
 Eclipse Java9 compiler (from jdt core, commit #062ac5d7a6bf9).
 
-=== Automatic Modules
+== Automatic Modules
 
 AspectJ can now be used with the new module system available in Java9.
 The key jars in AspectJ have been given automatic module names. The
@@ -133,7 +137,7 @@ contains org.aspectj.asm.internal
 ...
 ....
 
-=== Building woven modules
+== Building woven modules
 
 AspectJ understands `module-info.java` source files and building modules
 that include aspects. Here is an example:
@@ -200,7 +204,7 @@ Demo running
 
 That's it!
 
-=== Binary weaving with modules
+== Binary weaving with modules
 
 A module is really just a jar with a _module-info_ descriptor. As such, you
 can simply pass a module on the _inpath_ and binary-weave it with other
@@ -242,7 +246,7 @@ AnotherAzpect running
 Demo running
 ....
 
-=== Faster Spring AOP
+== Faster Spring AOP
 
 Dave Syer recently created a https://github.com/dsyer/spring-boot-aspectj[series of benchmarks] for checking the speed
 of Spring-AspectJ.
@@ -319,7 +323,7 @@ StartupBenchmark.spring   a20_100  avgt   10  3.093 ~ 0.098   s/op
 Look at the a20_100 case - instead of impacting start time by 9 seconds,
 it impacts it by 1 second.
 
-=== More to come...
+== More to come...
 
 * Eclipse JDT Java 9 support is still being actively worked on and lots
 of fixes will be coming through over the next few months and included in

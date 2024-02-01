@@ -1,8 +1,8 @@
 [[ltw]]
-== Load-Time Weaving
+= Load-Time Weaving
 
 [[ltw-introduction]]
-=== Introduction
+== Introduction
 
 The AspectJ weaver takes class files as input and produces class files
 as output. The weaving process itself can take place at one of three
@@ -35,7 +35,7 @@ reloading those classes). AspectJ 5 does not provide explicit support
 for run-time weaving although simple coding patterns can support
 dynamically enabling and disabling advice in aspects.
 
-==== Weaving class files more than once
+=== Weaving class files more than once
 
 As of AspectJ 5 aspects (code style or annotation style) and woven
 classes are reweavable by default. If you are developing AspectJ
@@ -46,7 +46,7 @@ additional state in the class files that is used to support subsequent
 reweaving.
 
 [[ltw-rules]]
-=== Load-time Weaving Requirements
+== Load-time Weaving Requirements
 
 All load-time weaving is done in the context of a class loader, and
 hence the set of aspects used for weaving and the types that can be
@@ -67,7 +67,7 @@ may be extended.
 weave classes loaded by a delegate or parent class loader.
 
 [[ltw-configuration]]
-=== Configuration
+== Configuration
 
 New in AspectJ 5 are a number of mechanisms to make load-time weaving
 easy to use. The load-time weaving mechanism is chosen through JVM
@@ -75,7 +75,7 @@ startup options. Configuration files determine the set of aspects to be
 used for weaving and which types will be woven. Additional diagnostic
 options allow the user to debug the configuration and weaving process.
 
-==== Enabling Load-time Weaving
+=== Enabling Load-time Weaving
 
 AspectJ 5 supports several ways of enabling load-time weaving for an
 application: agents, a command-line launch script, and a set of
@@ -116,7 +116,7 @@ documentation and source for `WeavingURLClassLoader` and
 `WeavingAdapter`.
 
 [[configuring-load-time-weaving-with-aopxml-files]]
-==== Configuring Load-time Weaving with aop.xml files
+=== Configuring Load-time Weaving with aop.xml files
 
 The weaver is configured using one or more `META-INF/aop.xml` files
 located on the class loader search path. Each file may declare a list of
@@ -255,7 +255,7 @@ option a JAR is produced that can be used with the `aj5` command or a
 load-time weaving environment.
 
 [[concrete-aspect]]
-==== Using Concrete Aspects
+=== Using Concrete Aspects
 
 It is possible to make an abstract aspect concrete by means of the
 `META-INF/aop.xml` file. This is useful way to implement abstract
@@ -355,7 +355,7 @@ AbstractAspect concreteInstance = Aspects.aspectOf(myConcreteAspectClass);
 ....
 
 [[concrete-aspect-precedence]]
-==== Using Concrete Aspects to define precedence
+=== Using Concrete Aspects to define precedence
 
 As described in the previous section, the `concrete-aspect` element in
 `META-INF/aop.xml` gives the option to declare the precedence, just as
@@ -382,7 +382,7 @@ qualified class name that will be then reserved for this concrete-aspect
 and must not conflict with other classes you deploy.
 
 [[weaver-options]]
-==== Weaver Options
+=== Weaver Options
 
 The table below lists the AspectJ options supported by LTW. All other
 options will be ignored and a warning issued.
@@ -429,7 +429,7 @@ declared to the same weaver.
 |===
 
 [[ltw-specialcases]]
-=== Special cases
+== Special cases
 
 The following classes are not exposed to the LTW infrastructure
 regardless of the `aop.xml` file(s) used:
@@ -453,7 +453,7 @@ The `adviceDidNotMatch` won't be handled as a warn (as during compile
 time) but as an info message.
 
 [[ltw-packaging]]
-=== Runtime Requirements for Load-time Weaving
+== Runtime Requirements for Load-time Weaving
 
 To use LTW the `aspectjweaver.jar` library must be added to the
 classpath. This contains the AspectJ 5 runtime, weaver, weaving class
@@ -461,9 +461,9 @@ loader and weaving agents. It also contains the DTD for parsing XML
 weaving configuration files.
 
 [[ltw-agents]]
-=== Supported Agents
+== Supported Agents
 
-==== JVMTI
+=== JVMTI
 
 When using Java 5 the JVMTI agent can be used by starting the JVM with
 the following option (adapt according to the path to aspectjweaver.jar):
@@ -474,7 +474,7 @@ the following option (adapt according to the path to aspectjweaver.jar):
 ....
 
 [[jrockit]]
-==== JRockit with Java 1.3/1.4 (use JVMTI on Java 5)
+=== JRockit with Java 1.3/1.4 (use JVMTI on Java 5)
 
 Since AspectJ 1.9.7, the obsolete Oracle/BEA JRockit agent is no longer
 part of AspectJ. JRockit JDK never supported Java versions higher than

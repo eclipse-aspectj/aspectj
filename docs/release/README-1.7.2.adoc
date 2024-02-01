@@ -1,4 +1,4 @@
-== AspectJ 1.7.2
+= AspectJ 1.7.2
 
 _© Copyright 2011 Contributors. All rights reserved._
 
@@ -7,7 +7,7 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.7.2 available 13-Feb-2013_
 
-=== Fixes:
+== Fixes:
 
 * Incorrect signature attributes generated into some class files for
 complex generics declarations.

@@ -1,9 +1,9 @@
-== AspectJ 1.6.6
+= AspectJ 1.6.6
 
 _© Copyright 2009 Contributors. All rights reserved._
 
 [[bugsfixed]]
-=== Bugs fixed
+== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.6 can be found with
 this bugzilla query:
@@ -13,7 +13,7 @@ resolved]
 
 '''''
 
-=== Changes
+== Changes
 
 *Java5*
 

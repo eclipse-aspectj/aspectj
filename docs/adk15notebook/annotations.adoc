@@ -1,14 +1,14 @@
-== Annotations
+= Annotations
 
 [[annotations-inJava5]]
-=== Annotations in Java 5
+== Annotations in Java 5
 
 This section provides the essential information about annotations in
 Java 5 needed to understand how annotations are treated in AspectJ 5.
 For a full introduction to annotations in Java, please see the
 documentation for the Java 5 SDK.
 
-==== Using Annotations
+=== Using Annotations
 
 Java 5 introduces _annotation types_ which can be used to express
 metadata relating to program members in the form of _annotations_.
@@ -55,7 +55,7 @@ Multi-value annotations must use the `member-name=value
 public void someMethod() {...}
 ....
 
-==== Retention Policies
+=== Retention Policies
 
 Annotations can have one of three retention policies:
 
@@ -74,7 +74,7 @@ Local variable annotations are not retained in class files (or at
 runtime) regardless of the retention policy set on the annotation type.
 See JLS 9.6.1.2.
 
-==== Accessing Annotations at Runtime
+=== Accessing Annotations at Runtime
 
 Java 5 supports a new interface, `java.lang.reflect.AnnotatedElement`,
 that is implemented by the reflection classes in Java (`Class`,
@@ -84,7 +84,7 @@ you access to annotations _that have runtime retention_ via the
 annotation types are just regular Java classes, the annotations returned
 by these methods can be queried just like any regular Java object.
 
-==== Annotation Inheritance
+=== Annotation Inheritance
 
 It is important to understand the rules relating to inheritance of
 annotations, as these have a bearing on join point matching based on the
@@ -120,7 +120,7 @@ interfaces never inherits any annotations from the interfaces it
 implements.
 
 [[annotations-aspectmembers]]
-=== Annotating Aspects
+== Annotating Aspects
 
 AspectJ 5 supports annotations on aspects, and on method, field,
 constructor, advice, and inter-type declarations within aspects. Method
@@ -210,14 +210,14 @@ public aspect AnAspect {
 ....
 
 [[annotations-pointcuts-and-advice]]
-=== Join Point Matching based on Annotations
+== Join Point Matching based on Annotations
 
 This section discusses changes to type pattern and signature pattern
 matching in AspectJ 5 that support matching join points based on the
 presence or absence of annotations. We then discuss means of exposing
 annotation values within the body of advice.
 
-==== Annotation Patterns
+=== Annotation Patterns
 
 For any kind of annotated element (type, method, constructor, package,
 etc.), an annotation pattern can be used to match against the set of
@@ -254,7 +254,7 @@ Some examples of annotation patterns follow:
   element with an annotation that is declared in the org.xyz package or
   a sub-package. (The parenthesis are required in this example).
 
-==== Type Patterns
+=== Type Patterns
 
 AspectJ 1.5 extends type patterns to allow an optional
 `AnnotationPattern` prefix.
@@ -320,10 +320,10 @@ patterns:
   `@Inherited` annotation.
 
 [[signaturePatterns]]
-==== Signature Patterns
+=== Signature Patterns
 
 [[fieldPatterns]]
-===== Field Patterns
+==== Field Patterns
 
 A `FieldPattern` can optionally specify an annotation-matching pattern
 as the first element:
@@ -365,7 +365,7 @@ annotations that match the pattern. For example:
   `@Classified`.
 
 [[methodPatterns]]
-===== Method and Constructor Patterns
+==== Method and Constructor Patterns
 
 A `MethodPattern` can optionally specify an annotation-matching pattern
 as the first element.
@@ -424,7 +424,7 @@ annotations that match the pattern. For example:
   Matches any method taking at least one parameter, where the parameter
   type has an annotation `@Immutable`.
 
-==== Example Pointcuts
+=== Example Pointcuts
 
 `within(@Secure *)`::
   Matches any join point where the code executing is declared in a type
@@ -448,7 +448,7 @@ annotations that match the pattern. For example:
   is not `Catastrophic`. The format of the `handler` pointcut designator
   in AspectJ 5 is `'handler' '(' OptionalParensTypePattern ')'`.
 
-==== Runtime type matching and context exposure
+=== Runtime type matching and context exposure
 
 AspectJ 5 supports a set of "@" pointcut designators which can be used
 both to match based on the presence of an annotation at runtime, and to
@@ -617,7 +617,7 @@ be used to match against annotations that have at least class-file
 retention, and if used in the binding form the annotation must have
 runtime retention.
 
-==== Package and Parameter Annotations
+=== Package and Parameter Annotations
 
 _Matching on package annotations is not supported in AspectJ. Support
 for this capability may be considered in a future release._
@@ -677,7 +677,7 @@ The parentheses are grouping @SomeOtherAnnotation with the * to form the
 type pattern for the parameter, then the type @SomeAnnotation will be
 treated as a parameter annotation pattern.
 
-==== Annotation Inheritance and pointcut matching
+=== Annotation Inheritance and pointcut matching
 
 According to the Java 5 specification, non-type annotations are not
 inherited, and annotations on types are only inherited if they have the
@@ -722,7 +722,7 @@ throws clause) is based on the subject of the join point (the method
 actually being called).
 
 [[matchingOnAnnotationValues]]
-==== Matching based on annotation values
+=== Matching based on annotation values
 
 The `if` pointcut designator can be used to write pointcuts that match
 based on the values annotation members. For example:
@@ -735,9 +735,9 @@ pointcut txRequiredMethod(Tx transactionAnnotation) :
 ....
 
 [[annotations-decp]]
-=== Using Annotations with declare statements
+== Using Annotations with declare statements
 
-==== Declare error and declare warning
+=== Declare error and declare warning
 
 Since pointcut expressions in AspectJ 5 support join point matching
 based on annotations, this facility can be exploited when writing
@@ -757,7 +757,7 @@ declare error : call(* org.xyz.model.*.*(..)) &&
                 : "Untrusted code should not call the model classes directly";
 ....
 
-==== declare parents
+=== declare parents
 
 The general form of a `declare parents` statement is:
 
@@ -787,7 +787,7 @@ annotation type is matched by a non-explicit type pattern used in a
 declare parents statement it will be ignored (and an XLint warning
 issued).
 
-==== declare precedence
+=== declare precedence
 
 The general form of a declare precedence statement is:
 
@@ -805,7 +805,7 @@ information as part of the pattern specification. For example:
   security-related aspects take precedence).
 
 [[annotations-declare]]
-=== Declare Annotation
+== Declare Annotation
 
 AspectJ 5 supports a new kind of declare statement,
 `declare annotation`. This takes different forms according to the
@@ -854,6 +854,6 @@ declare @constructor : BankAccount+.new(..) :
   annotation.
 
 [[annotations-itds]]
-=== Inter-type Declarations
+== Inter-type Declarations
 
 An annotation type may not be the target of an inter-type declaration.

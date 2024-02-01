@@ -1,9 +1,9 @@
 [[grammar]]
-== A Grammar for the AspectJ 5 Language
+= A Grammar for the AspectJ 5 Language
 
 [source, text]
 ....
-=== type patterns ===
+== type patterns ===
 
 TypePattern :=
     SimpleTypePattern |
@@ -26,13 +26,13 @@ NotStarNamePattern :=
 
 FullyQualifiedName := JavaIdentifierCharacter+ ('.' JavaIdentifierCharacter+)*
 
-=== annotation patterns ===
+== annotation patterns ===
 
 AnnotationPattern := '!'? '@' AnnotationTypePattern AnnotationPattern*
 
 AnnotationTypePattern := FullyQualifiedName | '(' TypePattern ')'
 
-=== signature patterns ===
+== signature patterns ===
 
 -- field --
 
@@ -88,7 +88,7 @@ ConstructorModifiersPattern :=
 
 ConstructorModifier := 'public' | 'private' | 'protected'
 
-=== Pointcuts ===
+== Pointcuts ===
 
 PointcutPrimitive :=
     Call | Execution | Get | Set | Handler |
@@ -174,19 +174,19 @@ PointcutExpression :=
     PointcutExpression '&&' PointcutExpression |
     PointcutExpression '||' PointcutExpression
 
-=== Advice ===
+== Advice ===
 
 to be written...
 
-=== Inter-type Declarations ===
+== Inter-type Declarations ===
 
 to be written...
 
-=== Declare Statements ===
+== Declare Statements ===
 
 to be written...
 
-=== Aspects ===
+== Aspects ===
 
 to be written...
 ....

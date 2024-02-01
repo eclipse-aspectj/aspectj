@@ -1,10 +1,10 @@
-== AspectJ Modules
+= AspectJ Modules
 
 There are a number of different structures [Parnas]: "the module structure, the uses structure, the runtime structure,
 ..." This document overviews module structure and summarizes what is hidden by each. For detailed documentation refer to
 the individual module sources and docs available via CVS.
 
-=== Core Modules
+== Core Modules
 
 *CVS Location:* dev.eclipse.org:/cvsroot/technology/org.aspectj/modules
 
@@ -50,7 +50,7 @@ bytecode toolkit. All advice planning and weaving is done here. Takes an aspect 
 classfiles as input.
 |===
 
-=== Supporting Modules
+== Supporting Modules
 
 *CVS Location:* dev.eclipse.org:/cvsroot/technology/org.aspectj/modules
 
@@ -66,7 +66,7 @@ classfiles as input.
 | tests | AspectJ test suite, including all language tests, regression tests, and test system sources
 |===
 
-=== Eclipse AspectJ Development Tools (AJDT)
+== Eclipse AspectJ Development Tools (AJDT)
 
 *CVS Location:* dev.eclipse.org:/cvsroot/technology/org.eclipse.ajdt/plugins/org.eclipse.ajdt
 

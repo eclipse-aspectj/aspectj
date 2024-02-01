@@ -1,6 +1,6 @@
 = The AspectJ^TM^ 5 Development Kit Developer's Notebook
-
 :doctype: book
+:leveloffset: +1
 
 _by the AspectJ Team_
 

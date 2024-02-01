@@ -1,4 +1,4 @@
-== AspectJ 1.6.8
+= AspectJ 1.6.8
 
 _© Copyright 2009 Contributors. All rights reserved._
 
@@ -9,7 +9,7 @@ Unfortunately not enough testing was done on 1.6.7 and two nasty issues
 were found that really needed addressing. Fixes for these issues are all
 that is new in 1.6.8.
 
-=== Incorrect treatment of some aop.xml include/exclude patterns
+== Incorrect treatment of some aop.xml include/exclude patterns
 
 See https://bugs.eclipse.org/bugs/show_bug.cgi?id=298786[Bug 298786]
 
@@ -39,7 +39,7 @@ right now as it includes multiple wildcards).
 With that configuration any types that the include="*" would have
 accepted are not accepted.
 
-=== Stack overflow problem in ReferenceType.isAssignableFrom()
+== Stack overflow problem in ReferenceType.isAssignableFrom()
 
 See https://bugs.eclipse.org/bugs/show_bug.cgi?id=298908[Bug 298908]
 

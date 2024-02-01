@@ -1,7 +1,7 @@
-== Idioms
+= Idioms
 
 [[idioms-intro]]
-=== Introduction
+== Introduction
 
 This chapter consists of very short snippets of AspectJ code, typically
 pointcuts, that are particularly evocative or useful. This section is a

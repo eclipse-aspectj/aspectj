@@ -113,7 +113,7 @@ Guide.
 ### Command line
 
 If you wish to install AspectJ in a separate directory and use it from the command line without any extra build tools,
-feel free to download the **AspectJ installer**. It is and executable JAR installer. It requires Java and possibly admin
+feel free to download the **AspectJ installer**. It is an executable JAR installer, requires Java and possibly admin
 rights, if e.g. under Windows you want to install AspectJ to _C:/Program Files/AspectJ_. You execute it from a command
 prompt via `java -jar installer-<version>.jar` and select your installation options. Then you add `<ASPECTJ_HOME>/bin`
 to your path and are good to go. You can now call tools like the Aspectj compiler `ajc` or the AspectJ documentation

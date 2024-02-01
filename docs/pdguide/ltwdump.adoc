@@ -1,8 +1,8 @@
 [[ltwdump]]
-== Dumping classes during load-time weaving
+= Dumping classes during load-time weaving
 
 [[ltwdump-introduction]]
-=== Introduction
+== Introduction
 
 Very rarely problems may be encountered with classes that have been
 load-time woven. Symptoms will include incorrect program function or a
@@ -16,15 +16,15 @@ proxy or has already been instrumented by another agent) you can
 configure the weaver to dump the input classes as well.
 
 [[ltw-examples]]
-==== Configuring bytecode dumping in load-time weaving
+=== Configuring bytecode dumping in load-time weaving
 
 For details of how to configure byte-code dumping, see the AspectJ
 Development Environment Guide section on
-xref:../devguide/ltw.html#configuring-load-time-weaving-with-aopxml-files[Configuring
+xref:../devguide/ltw.adoc#configuring-load-time-weaving-with-aopxml-files[Configuring
 Load-time Weaving]. Following is a simple example.
 
 [[ltwdump-examples]]
-==== LTW Dump Examples
+=== LTW Dump Examples
 
 The following `META-INF/aop.xml` will weave classes in the `com.foo`
 package (and subpackages) but not CGLIB generated classes in the

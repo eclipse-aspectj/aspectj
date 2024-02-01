@@ -1,6 +1,6 @@
 = The AspectJ^TM^ Programming Guide
-
 :doctype: book
+:leveloffset: +1
 
 _by the AspectJ Team_
 

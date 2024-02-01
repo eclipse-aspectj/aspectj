@@ -1,8 +1,8 @@
 [[antTasks]]
-== AspectJ Ant Tasks
+= AspectJ Ant Tasks
 
 [[antTasks-intro]]
-=== Introduction
+== Introduction
 
 AspectJ contains a compiler, `ajc`, that can be run from Ant. Included
 in the `aspectjtools.jar` are Ant binaries to support three ways of
@@ -22,7 +22,7 @@ This describes how to install and use the tasks and the adapter. For an
 example Ant script, see xref:../examples/build.xml[examples/build.xml].
 
 [[antTasks-install]]
-=== Installing Ant Tasks
+== Installing Ant Tasks
 
 Install Jakarta Ant 1.5.1: Please see the official Jakarta Ant website
 for more information and the 1.5.1 distribution. This release is
@@ -34,7 +34,7 @@ v 2.0 at https://eclipse.org/aspectj.
 In Ant 1.5, third-party tasks can be declared using a taskdef entry in
 the build script, to identify the name and classes. When declaring a
 task, include the `aspectjtools.jar` either in the taskdef classpath or
-in `${ANT_HOME}/lib` where it will be added to the system class path by
+in `$\{ANT_HOME}/lib` where it will be added to the system class path by
 the ant script. You may specify the task script names directly, or use
 the "resource" attribute to specify the default names:
 
@@ -49,7 +49,7 @@ uses "iajc" for the AspectJ post-1.1 task.
 In Ant 1.6, third-party tasks are declared in their own namespace using
 `antlib.xml`. For example, the following script would build and run the
 spacewar example, if you put the script in the examples directory and
-`aspectjtools.jar` in the `${ANT_HOME}/lib` directory.
+`aspectjtools.jar` in the `$\{ANT_HOME}/lib` directory.
 
 [source, xml]
 ....
@@ -71,7 +71,7 @@ For more information on using Ant, please refer to Jakarta's
 documentation on integrating user-defined Ant tasks into builds.
 
 [[antTasks-iajc]]
-=== AjcTask (iajc)
+== AjcTask (iajc)
 
 This task uses the AspectJ post-1.1 compiler ajc. The AspectJ compiler
 can be used like Javac to compile Java sources, but it can also compile
@@ -91,7 +91,7 @@ directory.
 This task is named iajc to avoid conflict with the 1.0 task ajc.
 
 [[antTasks-iajc-options]]
-==== AjcTask (iajc) Options
+=== AjcTask (iajc) Options
 
 The following tables list the supported parameters. For any parameter
 specified as a Path, a single path can be specified directly as an
@@ -325,7 +325,7 @@ depends on compliance mode.
 |===
 
 [[antTasks-nested-includes]]
-==== AjcTask matching parameters specified as nested elements
+=== AjcTask matching parameters specified as nested elements
 
 This task forms an implicit FileSet and supports all attributes of
 `fileset` (dir becomes srcdir) as well as the nested `include`,
@@ -335,7 +335,7 @@ source directories unless using filters to exclude some files from
 compilation.
 
 [[antTasks-iajc-paths]]
-==== AjcTask Path-like Structures
+=== AjcTask Path-like Structures
 
 Some parameters are path-like structures containing one or more
 elements; these are `sourceroots`, `argfiles`, `injars`, `inpath`,
@@ -370,7 +370,7 @@ specified using the refid attribute:
 </iajc>
 ....
 
-The task also supports an attribute `{name}ref` for each such parameter.
+The task also supports an attribute `\{name}ref` for each such parameter.
 E.g., for `aspectpath`:
 
 [source, xml]
@@ -379,7 +379,7 @@ E.g., for `aspectpath`:
 ....
 
 [[antTasks-iajc-sample]]
-==== Sample of iajc task
+=== Sample of iajc task
 
 A minimal build script defines the task and runs it, specifying the
 sources:
@@ -452,7 +452,7 @@ has quit, then this runs the application.
 For an example of a build script, see ../examples/build.xml.
 
 [[antTasks-iajc-uptodate]]
-==== Avoiding clean compiles
+=== Avoiding clean compiles
 
 Unlike javac, the ajc compiler always processes all input because new
 aspects can apply to updated classes and vice-versa. However, in the
@@ -479,7 +479,7 @@ When using this technique, be careful to verify that binary input jars
 are themselves up-to-date after they would have been modified by any
 build commands.
 
-==== Programmatically handling compiler messages
+=== Programmatically handling compiler messages
 
 Users may specify a message holder to which the compiler will pass all
 messages as they are generated. This will override all of the normal
@@ -495,7 +495,7 @@ AspectJ testing module (which is not included in the binary
 distribution).
 
 [[antTasks-adapter]]
-=== Ajc11CompilerAdapter (javac)
+== Ajc11CompilerAdapter (javac)
 
 This CompilerAdapter can be used in javac task calls by setting the
 `build.compiler` property. This enables users to to easily switch
@@ -507,10 +507,10 @@ possible for any given compile job to restate the Javac task in a way
 that can be handled by iajc/ajc.
 
 [[antTasks-adapter-sample]]
-==== Sample of compiler adapter
+=== Sample of compiler adapter
 
 To build using the adapter, put the `aspectjtools.jar` on the system/ant
-classpath (e.g., in `${ANT_HOME}/lib`) and define the `build.compiler`
+classpath (e.g., in `$\{ANT_HOME}/lib`) and define the `build.compiler`
 property as the fully-qualified name of the class,
 `org.aspectj.tools.ant.taskdefs.Ajc11CompilerAdapter`.
 
@@ -565,7 +565,7 @@ that source root (without exception or filtering).) To replace source
 dir searching in Javac, use an Ant filter to specify the source files.
 
 [[antTasks-adapter-options]]
-==== Compiler adapter compilerarg options
+=== Compiler adapter compilerarg options
 
 The adapter supports any ajc command-line option passed using
 compilerarg, as well as the following options available only in AjcTask.
@@ -580,10 +580,10 @@ in javac).
 as the message holder.
 * `-Xcopyinjars`: copy resources from any input jars to output (default
 behavior since 1.1.1)
-* `-Xsourcerootcopyfilter {filter}`: copy resources from source
+* `-Xsourcerootcopyfilter \{filter}`: copy resources from source
 directories to output (minus files specified in filter)
-* `-Xtagfile {file}`: use file to control incremental compilation
-* `-Xsrcdir {dir}`: add to list of ajc source roots (all source files
+* `-Xtagfile \{file}`: use file to control incremental compilation
+* `-Xsrcdir \{dir}`: add to list of ajc source roots (all source files
 will be included).
 
 Special considerations when using Javac and compilerarg:
@@ -630,7 +630,7 @@ to the destination directory.
 compile.
 
 [[antTasks-ajc]]
-=== Ajc10 (ajc)
+== Ajc10 (ajc)
 
 This task handles the same arguments as those used by the AspectJ 1.0
 task. This should permit those with existing build scripts using the Ajc
@@ -642,7 +642,7 @@ AspectJ 1.1 only should upgrade their scripts to use AjcTask instead.
 This will not work for AspectJ 1.2 or later.)
 
 [[antTasks-ajc-options]]
-==== Ajc10 (ajc) Options
+=== Ajc10 (ajc) Options
 
 Most attributes and nested elements are optional. The compiler requires
 that the same version of `aspectjrt.jar` be specified on the classpath,
@@ -733,9 +733,9 @@ line-delimited list of source file paths (absolute or relative to the
 argfile).
 |===
 
-===== argfiles - argument list files
+==== argfiles - argument list files
 
-An argument file is a file (usually `{file}.lst`) containing a list of
+An argument file is a file (usually `\{file}.lst`) containing a list of
 source file paths (absolute or relative to the argfile). You can use it
 to specify all source files to be compiled, which ajc requires to avoid
 searching every possible source file in the source path when building
@@ -750,7 +750,7 @@ IDE support for such files varies, and Javac does not support them. Be
 sure to include exactly one argument on each line.
 
 [[antTasks-ajc-nested]]
-==== Ajc10 parameters specified as nested elements
+=== Ajc10 parameters specified as nested elements
 
 This task forms an implicit FileSet and supports all attributes of
 `fileset` (dir becomes srcdir) as well as the nested `include`,
@@ -763,7 +763,7 @@ attributes are path-like structures and can also be set via nested
 elements, respectively.
 
 [[antTasks-ajc-sample]]
-==== Sample of ajc task
+=== Sample of ajc task
 
 Following is a declaration for the ajc task and a sample invocation that
 uses the ajc compiler to compile the files listed in `default.lst` into
@@ -818,15 +818,15 @@ This next example
 />
 ....
 
-compiles .java files under the `${src}` directory in the spacewar and
-coordination packages, and stores the .class files in the `${build}`
+compiles .java files under the `$\{src}` directory in the spacewar and
+coordination packages, and stores the .class files in the `$\{build}`
 directory. All source files under spacewar/ and coordination/ are used,
 except Debug.java.
 
 See ../examples/build.xml for an example build script.
 
 [[antTasks-problems]]
-=== Isolating problems running the Ant tasks
+== Isolating problems running the Ant tasks
 
 If you have problems with the tasks not solved by the documentation,
 please try to see if you have the same problems when running ajc
@@ -842,7 +842,7 @@ building from Ant, then please send a report (including your build file,
 if possible).
 
 [[antTasks-knownProblems]]
-==== Known issues with the Ant tasks
+=== Known issues with the Ant tasks
 
 For the most up-to-date information on known problems, see the
 https://bugs.eclipse.org/bugs[bug database] for unresolved
@@ -869,7 +869,7 @@ Ant (see the Ant documentation, searching for ANT_OPTS, the variable
 they use in their scripts to pass VM options, e.g., ANT_OPTS=-Xmx128m).
 
 [[antTasks-feedback]]
-==== Ant task questions and bugs
+=== Ant task questions and bugs
 
 For questions, you can send email to aspectj-users@dev.eclipse.org. (Do
 join the list to participate!) We also welcome any bug reports, patches,

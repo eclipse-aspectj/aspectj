@@ -1,4 +1,4 @@
-== AspectJ Patterns
+= AspectJ Patterns
 
 _Last updated: 2004-03-31 by wisberg_
 

@@ -1,4 +1,4 @@
-== AspectJ 5 v1.5.3 Readme
+= AspectJ 5 v1.5.3 Readme
 
 _© Copyright 2006 Contributors. All rights reserved._
 
@@ -9,7 +9,7 @@ bugzilla query].
 
 Notable changes since the 1.5.2 release include: +
 
-=== Pipeline compilation - https://bugs.eclipse.org/bugs/show_bug.cgi?id=146781[146781]
+== Pipeline compilation - https://bugs.eclipse.org/bugs/show_bug.cgi?id=146781[146781]
 
 Until this release, the memory profile for AspectJ looked like this
 (time is along the X axis, memory usage is the Y axis)
@@ -74,7 +74,7 @@ with memory. These savings will affect any code built from source: on
 the command line, in Ant, or in AJDT. It will not affect binary weaving
 - that is a future enhancement.
 
-=== Serviceability - https://bugs.eclipse.org/bugs/show_bug.cgi?id=150487[150487]
+== Serviceability - https://bugs.eclipse.org/bugs/show_bug.cgi?id=150487[150487]
 
 As AspectJ grows in popularity, we find that it is becoming more
 difficult for users to come up with the small testcases that recreate
@@ -87,9 +87,9 @@ https://www.eclipse.org/aspectj/doc/released/pdguide/index.html[documentation]
 on how to configure these new features. Don't be surprised if you get
 asked for an AspectJ trace on a future bug report!
 
-=== LTW enhancements
+== LTW enhancements
 
-==== User and System Configuration Files - https://bugs.eclipse.org/bugs/show_bug.cgi?id=149289[149289]
+=== User and System Configuration Files - https://bugs.eclipse.org/bugs/show_bug.cgi?id=149289[149289]
 
 The `-outxml` option now generates a file named `META-INF/aop-ajc.xml`.
 This no longer clashes with a user defined `META-INF/aop.xml`
@@ -97,11 +97,11 @@ configuration file. Both file names along with an OSGi-friendly
 `org/aspectj/aop.xml` (which can also be signed) are used by default to
 configure LTW.
 
-==== Weaving Concrete Aspects Defined in aop.xml - https://bugs.eclipse.org/bugs/show_bug.cgi?id=132080[132080]
+=== Weaving Concrete Aspects Defined in aop.xml - https://bugs.eclipse.org/bugs/show_bug.cgi?id=132080[132080]
 
 Concrete aspects defined using aop.xml are now exposed for weaving.
 
-=== Pertypewithin enhancement - https://bugs.eclipse.org/bugs/show_bug.cgi?id=123423[123423]
+== Pertypewithin enhancement - https://bugs.eclipse.org/bugs/show_bug.cgi?id=123423[123423]
 
 It is now possible to ask an instance of a ptw aspect which type it is
 'attached' to. The method:

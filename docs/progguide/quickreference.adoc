@@ -1,8 +1,8 @@
 [[quick]]
-== AspectJ Quick Reference
+= AspectJ Quick Reference
 
 [[quick-pointcuts]]
-=== Pointcuts
+== Pointcuts
 
 [cols=",",]
 |===
@@ -56,7 +56,7 @@ or constructor matching `Signature`
 |===
 
 [[quick-typePatterns]]
-=== Type Patterns
+== Type Patterns
 
 A type pattern is one of
 
@@ -90,7 +90,7 @@ An embedded `..` in an identifier matches any sequence of characters
 that starts and ends with the package (or inner-type) separator `.`.
 
 [[quick-advice]]
-=== Advice
+== Advice
 
 Each piece of advice is of the form
 
@@ -130,7 +130,7 @@ Three special variables are available inside of advice bodies:
   the static part of the dynamically enclosing join point
 
 [[quick-interType]]
-=== Inter-type member declarations
+== Inter-type member declarations
 
 Each inter-type member is one of
 
@@ -144,7 +144,7 @@ Each inter-type member is one of
   a field on `OnType`
 
 [[quick-other]]
-=== Other declarations
+== Other declarations
 
 `declare parents : TypePattern extends Type ;`::
   the types in `TypePattern` extend `Type`
@@ -164,7 +164,7 @@ Each inter-type member is one of
   precedence at that join point is in `TypePatternList` order
 
 [[quick-aspectAssociations]]
-=== Aspects
+== Aspects
 
 Each aspect is of the form
 

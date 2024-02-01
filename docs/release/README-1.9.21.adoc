@@ -1,4 +1,4 @@
-== AspectJ 1.9.21
+= AspectJ 1.9.21
 
 _© Copyright 2023 Contributors. All rights reserved._
 
@@ -12,7 +12,7 @@ here:
 * https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21.1[GitHub 1.9.21.1]
 * https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21[Bugzilla 1.9.21]
 
-=== New features
+== New features
 
 AspectJ 1.9.21 supports https://openjdk.java.net/projects/jdk/21/[Java 21], its final features and a subset of preview
 features, such as:
@@ -35,18 +35,18 @@ officially supported in Eclipse 2023-12, some preview features are still unimple
 As soon as these preview features are part of the upstream ECJ we depend on, we hope to publish another AspectJ release
 to support them in the AspectJ Compiler (AJC), too.
 
-=== Improvements
+== Improvements
 
 * In https://github.com/eclipse-aspectj/aspectj/issues/266[GitHub issue 266], exception cause reporting has been
   improved in `ExtensibleURLClassLoader`. Thanks to Andy Russell (@euclio) for his contribution.
 
-=== Other changes and bug fixes
+== Other changes and bug fixes
 
 * No major bug fixes
 
-=== AspectJ usage hints
+== AspectJ usage hints
 
-==== AspectJ compiler build system requirements
+=== AspectJ compiler build system requirements
 
 Since 1.9.21, the AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 11 to 16. The
 minimum compile-time requirement is now JDK 17 due to upstream changes in the Eclipse Java Compiler (subset of JDT
@@ -62,7 +62,7 @@ details.
 
 History: Since 1.9.8, the AspectJ compiler ajc needed JDK 11+, before then JDK 8+.
 
-==== Use LTW on Java 16+
+=== Use LTW on Java 16+
 
 Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
 https://openjdk.java.net/jeps/396[JEP 396 (Strongly Encapsulate JDK Internals by Default)] and related subsequent
@@ -70,7 +70,7 @@ JEPs. Therefore, you need to set the JVM parameter `--add-opens java.base/java.l
 aspect weaving. This is due to the fact that the weaver uses internal APIs for which we have not found an adequate
 replacement yet when defining classes in different classloaders.
 
-==== Compile with Java preview features
+=== Compile with Java preview features
 
 For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
 `java --enable-preview` on that JDK.

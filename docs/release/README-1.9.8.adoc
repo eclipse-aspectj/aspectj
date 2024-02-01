@@ -1,4 +1,4 @@
-== AspectJ 1.9.8
+= AspectJ 1.9.8
 
 _© Copyright 2022 Contributors. All rights reserved._
 
@@ -9,14 +9,14 @@ https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of is
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.8[here for Bugzilla] and
 https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.8[here for GitHub issues].
 
-=== New features
+== New features
 
 AspectJ 1.9.8 supports https://openjdk.java.net/projects/jdk/17/[Java 17] and its final and review features, such as:
 
 * Sealed classes (final in Java 17, previews in Java 15, 16 and AspectJ 1.9.7)
 * Pattern matching for `switch`
 
-=== Improvements
+== Improvements
 
 The `--release N` compiler option for correct cross-compilation to previous JDK bytecode + API versions is now supported
 by AJC. Previously, the option existed (inherited by ECJ) but did not work correctly.
@@ -32,7 +32,7 @@ feedback is positive and no negative side effects are found. Please try using th
 questions (to the AspectJ users mailing list) or problems (as a GitHub issue), if any. Thanks to Stefan Starke for his
 contribution. See also https://github.com/eclipse/org.aspectj/pull/37[PR #37].
 
-=== Code examples
+== Code examples
 
 You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
 first supported (possibly as JVM preview features):
@@ -42,7 +42,7 @@ first supported (possibly as JVM preview features):
   the JDK. Simply `-source 8 -target 8` would not be enough in this case.
 * https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17[Pattern matching for `switch`]
 
-=== Other changes and bug fixes
+== Other changes and bug fixes
 
 * The AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 8 to 10. The minimum
   compile-time requirement is now JDK 11 due to upstream changes in the Eclipse Java Compiler (subset of JDT Core),
@@ -65,9 +65,9 @@ first supported (possibly as JVM preview features):
 * Thanks to Andrey Turbanov for several clean code contributions and to Dmitry Mikhaylov for fixing a potential
   concurrency problem.
 
-=== AspectJ usage hints
+== AspectJ usage hints
 
-==== Use LTW on Java 16+
+=== Use LTW on Java 16+
 
 Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
 https://openjdk.java.net/jeps/396[JEP 396 (Strongly Encapsulate JDK Internals by Default)]. Therefore, you need to set
@@ -75,7 +75,7 @@ the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in order to enab
 fact that the weaver uses internal APIs for which we have not found an adequate replacement yet when defining classes
 in different classloaders.
 
-==== Compile with Java preview features
+=== Compile with Java preview features
 
 For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
 `java --enable-preview` on that JDK.

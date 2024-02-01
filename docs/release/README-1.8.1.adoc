@@ -1,4 +1,4 @@
-== AspectJ 1.8.1
+= AspectJ 1.8.1
 
 _© Copyright 2014 Contributors. All rights reserved._
 
@@ -7,9 +7,9 @@ https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced;bug_status=RESOL
 
 _Release info: 1.8.1 available 20-Jun-2014_
 
-=== Notable changes
+== Notable changes
 
-==== Java 8 update
+=== Java 8 update
 
 As Eclipse itself nears the 4.4 release, AspectJ has been updated to the
 latest Eclipse JDT Core that will be included in it, picking up numerous

@@ -1,7 +1,7 @@
-== Covariance
+= Covariance
 
 [[covariance-inJava5]]
-=== Covariance in Java 5
+== Covariance in Java 5
 
 Java 5 (and hence AspectJ 5) allows you to narrow the return type in an
 overriding method. For example:
@@ -19,7 +19,7 @@ class B extends A {
 ....
 
 [[covariance-and-join-point-matching]]
-=== Covariant methods and Join Point matching
+== Covariant methods and Join Point matching
 
 The join point matching rules for `call` and `execution` pointcut
 designators are extended to match against covariant methods.

@@ -1,4 +1,4 @@
-== AspectJ Porting Notes
+= AspectJ Porting Notes
 
 _© Copyright 1998-2002 Palo Alto Research Center Incorporated,
 2003-2004 Contributors. All rights reserved._
@@ -15,7 +15,7 @@ _© Copyright 1998-2002 Palo Alto Research Center Incorporated,
 * xref:#pre07b10[Pre-0.7beta10 code]
 
 [[pre-1_2]]
-=== Porting pre-1.2 code to AspectJ 1.2
+== Porting pre-1.2 code to AspectJ 1.2
 
 README-1.2.html contains a discussion of the changes between 1.1 and 1.2.
 The key points are:
@@ -190,7 +190,7 @@ https://bugs.eclipse.org/bugs/show_bug.cgi?id=60389[60389],
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=59921[59921].
 
 [[pre-1_1]]
-=== Porting pre-1.1 code to AspectJ 1.1
+== Porting pre-1.1 code to AspectJ 1.1
 
 README-1.1.html contains a discussion of the language changes from 1.0 to
 1.1. The high points:
@@ -244,7 +244,7 @@ used in declare error or declare warning statements, which might produce
 different results. (xref:README-1.1.adoc#WITHIN_MEMBER_TYPES[more info])
 
 The compiler will report an error that the form
-`aspect {name} dominates {list}...` is no longer supported. It has been
+`aspect \{name} dominates \{list}...` is no longer supported. It has been
 replaced by a new declare statement:
 
 [source, java]
@@ -265,7 +265,7 @@ because the end of exception handlers is ambiguous in bytecode. Try to
 use before advice. (xref:README-1.1.adoc#AFTER_HANDLER[more info])
 
 [[pre-1_0_4]]
-=== Porting pre-1.0.4 code
+== Porting pre-1.0.4 code
 
 In versions of AspectJ prior to 1.0.4, the compiler was not correctly
 implementing the AspectJ-1.0 language design for some uses of after
@@ -321,7 +321,7 @@ Uses of both of these forms are highleted with compiler warnings in the
 '''''
 
 [[pre-1_0rc1]]
-=== Porting pre-1.0rc1 code
+== Porting pre-1.0rc1 code
 
 Aspects can no longer be declared to implement the `Serializable` or
 `Cloneable` interfaces. If you previously used serializable or cloneable
@@ -331,7 +331,7 @@ serialize or clone in objects associated with the aspects.
 '''''
 
 [[pre-1_0beta1]]
-=== Porting pre-1.0beta1 code
+== Porting pre-1.0beta1 code
 
 The `static` modifier is no longer allowed on pointcut declarations
 anywhere. Porting is simple; just remove the static declarations when
@@ -345,7 +345,7 @@ now. If you used this feature, now is the right time to remove the
 '''''
 
 [[pre-1_0alpha1]]
-=== Porting pre-1.0alpha1 code
+== Porting pre-1.0alpha1 code
 
 The release of AspectJ 1.0alpha1 involved sweeping cleanups of the
 language to bring it to 1.0 status.
@@ -358,10 +358,10 @@ crosscutting]
 * xref:#_1_0a1-aspects[Aspects]
 
 [[_1_0a1-pointcuts]]
-==== Pointcuts
+=== Pointcuts
 
 [[_1_0a1-plural-to-singular]]
-===== Removing the "s" from pointcuts
+==== Removing the "s" from pointcuts
 
 One of the most pervasive changes in porting code written before
 1.0alpha1 is the change in some of the pointcut names from plural to
@@ -401,7 +401,7 @@ Of course, your naming conventions are your own, but throughout these
 porting notes we will be making these changes in our example ports.
 
 [[_1_0a1-remove-receptions]]
-===== Removing the receptions pointcut
+==== Removing the receptions pointcut
 
 Perhaps the largest semantic change in the 1.0 language is the removal
 of receptions join points. They have been merged with call join points
@@ -411,7 +411,7 @@ in AspectJ 1.0, so now a call join point doesn't represent the
 Changing code that used the `receptions` pointcut should be fairly
 straightforward, depending on whether the pointcut exposed state or not.
 
-====== Not exposing state
+===== Not exposing state
 
 Receptions pointcuts that did not expose state can simply be replaced by
 the new `call` and `target` pointcuts:
@@ -423,7 +423,7 @@ receptions(void Foo.m())
 target(Foo) && call(void m())
 ....
 
-====== Exposing state
+===== Exposing state
 
 Some receptions pointcuts exposed the receiving object by replacing the
 receiving type with a pointcut formal. These PCDs should be rewritten to
@@ -448,7 +448,7 @@ pointcut intPasser(int i, int j):
     args(i, j) && target(Foo) && call(void m(int, int));
 ....
 
-====== Constructor receptions
+===== Constructor receptions
 
 There are two issues with constructor receptions in particular.
 
@@ -499,7 +499,7 @@ after() returning (Point p): call(Point+.new(int, int)) { ... }
 ....
 
 [[_1_0a1-fixing-state-access]]
-===== Fixing state access
+==== Fixing state access
 
 In previous versions of AspectJ, state such as the currently executing
 object or a particular argument of a method call could be accessed from
@@ -508,7 +508,7 @@ AspectJ 1.0, all state accesses now use only three pointcuts `args, this, target
 which pick out argument values, the currently executing object, and the
 target object of a method call or field operation, respectively.
 
-====== Using args
+===== Using args
 
 Any time you have a pointcut that has a signature where one of the
 arguments was a pointcut or advice formal, just replace that formal with
@@ -528,7 +528,7 @@ pointcut stringPassers(String s): receptions(void Foo.m(s, ..));
 pointcut stringPasser(String s): args(s, ..) && call(void Foo.m(String, ..));
 ....
 
-====== Rewriting calls
+===== Rewriting calls
 
 If a calls pointcut exposed the the receiving object, such as
 
@@ -559,7 +559,7 @@ after(Point p) returning (): calls(p.new(int, int)) { ... }
 after() returning (Point p): call(Point+.new(int, int)) { ... }
 ....
 
-====== Rewriting gets and sets
+===== Rewriting gets and sets
 
 Exposing the target object of a `gets` or `sets` pointcut should be done
 the same way it was for `calls` pointcuts, with the new `target`
@@ -640,7 +640,7 @@ after(Color newColor): args(newColor) && set(Color Frame.color) { ... }
 Also, if the field was declared private, in order to get at its old
 value the aspect must be declared `privileged`.
 
-====== Rewriting handlers
+===== Rewriting handlers
 
 The value of the exception at an exception handler join point is now
 accessed through the `args` pointcut; all exception handler join points
@@ -653,7 +653,7 @@ before(NotFoundException e): handlers(e) { ... }
 before(NotFoundException e): args(e) && handler(NotFoundException) { ... }
 ....
 
-====== Rewriting within
+===== Rewriting within
 
 The `within` pointcut was not typically used to export context. Though
 it was accidentally possible to do so in versions of AspectJ before 1.0,
@@ -670,7 +670,7 @@ pointcut usesFoo(Foo f): this(f) && within(Foo);
 ....
 
 [[_1_0a1-no-subs-in-sigs]]
-===== Understanding signatures
+==== Understanding signatures
 
 Now that we have `this`, `target`, and `args` pointcuts, all of our
 signatures are composed of just types, names, and wildcards; there are
@@ -707,7 +707,7 @@ call(void m(Object+))
 ....
 
 [[_1_0a1-fixing-instanceof]]
-===== Removing the instanceof pointcut
+==== Removing the instanceof pointcut
 
 The intanceof pointcut has been split into two different pointcuts,
 `this` and `target`.
@@ -746,7 +746,7 @@ pointcut setup(Client c): this(c) && calls(Remote Naming.lookup(String));
 ....
 
 [[_1_0a1-initializations]]
-===== Rewriting the initializations pointcut
+==== Rewriting the initializations pointcut
 
 Object initialization join points are now more complicated, and more
 true to Java's execution model. Now they bracket all of the
@@ -766,7 +766,7 @@ initialization(A.new(..)) && !execution(A.new(..))
 ....
 
 [[_1_0a1-constructor-calls]]
-===== Understanding constructor calls
+==== Understanding constructor calls
 
 Previously, constructor call join points were matched by subtypes, so
 `calls(Foo.new())` would match both calls to create new `Foo` objects,
@@ -782,7 +782,7 @@ In both of these cases, think before using the + operator; it may be
 that you didn't intend subtype matching in the first place.
 
 [[_1_0a1-hasaspect]]
-===== Removing the hasaspect pointcut
+==== Removing the hasaspect pointcut
 
 The `hasaspect` pointcut is no longer defined, but you can get the same
 behaviour using the new `if` pointcut.
@@ -828,7 +828,7 @@ before(): if(A.hasAspect()) {
 ....
 
 [[_1_0a1-withinall]]
-===== Removing the withinall pointcut
+==== Removing the withinall pointcut
 
 The withinall poinctut is no longer defined. You can use a combination
 of within and the xref:#_1_0a1-subtypes-to-plus[new subtypes operator],
@@ -843,7 +843,7 @@ within(Foo+)
 ....
 
 [[_1_0a1-user-defined-returns]]
-===== Removing returns modifier from pointcuts
+==== Removing returns modifier from pointcuts
 
 The returns keyword is no longer necessary for user-defined pointcuts.
 Simply remove it when you find it.
@@ -856,7 +856,7 @@ pointcut publicIntCall(): call(public int *(..));
 ....
 
 [[_1_0a1-static-pointcuts]]
-===== Making some pointcuts static
+==== Making some pointcuts static
 
 In Java, only static members may be accessed by their declaring type
 name, like the static method `Math.max()` can be accessed.
@@ -874,10 +874,10 @@ classes `static`, and make any pointcut with a qualified reference
 static.
 
 [[_1_0a1-type-patterns]]
-==== Type patterns
+=== Type patterns
 
 [[_1_0a1-new-wildcards]]
-===== Understanding * and .. in type patterns
+==== Understanding * and .. in type patterns
 
 Previous versions of AspectJ treated * and .. too cleverly in type
 patterns, placing restrictions based on what is a package and what is a
@@ -908,7 +908,7 @@ pointcut unaryVoidMethod(): call(void *(*));
 ....
 
 [[_1_0a1-subtypes-to-plus]]
-===== Fixing subtypes in introduction
+==== Fixing subtypes in introduction
 
 The new + operator is used to normalize the many places you want to use
 subtypes of some types.
@@ -931,10 +931,10 @@ public void (Target0+ || Target1+).accept(Visitor v) {
 ....
 
 [[_1_0a1-advice]]
-==== Advice
+=== Advice
 
 [[_1_0a1-around-returns]]
-===== Moving the return type of around
+==== Moving the return type of around
 
 The returns keyword is no longer used for around advice. Instead, the
 return type is declared as it is for methods. So,
@@ -947,7 +947,7 @@ void around(Point p): setter(p) { ... }
 ....
 
 [[_1_0a1-around-throws]]
-===== Adding a throws clause to around
+==== Adding a throws clause to around
 
 Around advice must now declare the checked exceptions it throws with a
 `throws` clause, much like a method.
@@ -966,7 +966,7 @@ char around(char c) throws java.io.CharConversionException: converter(c) {
 ....
 
 [[_1_0a1-advice-precedence]]
-===== Understanding advice precedence
+==== Understanding advice precedence
 
 In previous versions of AspectJ, advice precedence within an aspect was
 simple: if a piece of advice appeared before another piece, it was more
@@ -1022,7 +1022,7 @@ Advice in _different_ aspects is ordered by the normal aspect precedence
 rules of subtyping and the `dominates` modifier.
 
 [[_1_0a1-after-returning]]
-===== Fixing after returning
+==== Fixing after returning
 
 If you use after returning advice and do not need to expose the return
 value, you no longer need to write an empty set of parentheses to
@@ -1044,14 +1044,14 @@ after(Formals) throwing: Pointcut { ... }
 ....
 
 [[_1_0a1-this-static-join-point]]
-===== Renaming thisStaticJoinPoint
+==== Renaming thisStaticJoinPoint
 
 `thisStaticJoinPoint` has been renamed `thisJoinPointStaticPart`, to
 reflect that it is now exactly the static part of `thisJoinPoint`: It
 will return the same object as `thisJoinPoint.getStaticPart()`.
 
 [[_1_0a1-this-join-point]]
-===== Converting access to thisJoinPoint
+==== Converting access to thisJoinPoint
 
 The `JoinPoint` object hierarchy has been folded into a single class,
 `org.aspectj.lang.JoinPoint`. A common pattern in logging, for example,
@@ -1083,10 +1083,10 @@ before() executions(* myMethod()) {
 Some of the method names of `JoinPoint` have been reorganized, as well.
 
 [[_1_0a1-introduction-and-static]]
-==== Introduction and static crosscutting
+=== Introduction and static crosscutting
 
 [[_1_0a1-plus-implements-extends]]
-===== Removing +implements and +extends
+==== Removing +implements and +extends
 
 The keywords `+implements` and `+extends` no longer exist. Instead,
 AspectJ uses the `declare` form for exactly the same functionality.
@@ -1106,7 +1106,7 @@ declare parents: MyButton extends ButtonAdaptor;
 ....
 
 [[_1_0a1-now-use-soft]]
-===== Using declare soft
+==== Using declare soft
 
 Around advice advice no longer effects the static exception checking of
 Java. This means that the following code previously compiled:
@@ -1156,7 +1156,7 @@ declare soft: IOException:
 ....
 
 [[_1_0a1-aspects]]
-==== Aspects
+=== Aspects
 
 The syntax of "of each" modifiers has changed. For `of eachcflow` and
 `of eachcflowbelow`, you can simply replace "of each" with "per". So,
@@ -1222,7 +1222,7 @@ object at such join points.
 '''''
 
 [[pre08b3]]
-=== Porting pre-0.8beta3 code
+== Porting pre-0.8beta3 code
 
 * xref:#cflowTerminology[Changing cflow terminology]
 * xref:#abstractPointcuts[Overriding abstract pointcuts]
@@ -1232,18 +1232,18 @@ The following changes are only required when porting code written prior
 to the 0.8beta3 release of AspectJ.
 
 [[cflowTerminology]]
-==== Changing cflow terminology
+=== Changing cflow terminology
 
 Changing pre-0.8beta3 code that uses AspectJ's control-flow-based
 features only requires rewriting occurrences of `eachcflowroot`,
 `cflow`, and `cflowtop`. No editing of other aspect code is necessary.
 
-===== eachcflowroot
+==== eachcflowroot
 
 The aspect modifier "`of eachcflowroot(Pointcut)`" should now be written
 more as "`percflow(Pointcut)`".
 
-===== cflow
+==== cflow
 
 In previous versions of AspectJ, the pointcut `cflow(Pointcut)` picked
 out all join points in the cflow below the join points of `Pointcut`.
@@ -1270,7 +1270,7 @@ definitely want to rewrite that as
 Pointcut && ! cflowbelow(Pointcut)
 ----
 
-===== cflowtop
+==== cflowtop
 
 The primitive pointcut designator `cflowtop(Pointcut)` has been removed
 from the language, as it is expressible with `cflow` or `cflowbelow`.
@@ -1289,7 +1289,7 @@ cflow(Pointcut && ! cflowbelow(Pointcut))
 ----
 
 [[abstractPointcuts]]
-==== Overriding abstract pointcuts
+=== Overriding abstract pointcuts
 
 In previous versions of AspectJ, a concrete aspect would implicitly
 override all of its abstract pointcuts with an empty pointcut. AspectJ
@@ -1328,7 +1328,7 @@ aspect B {
 ----
 
 [[recursiveAdvice]]
-==== Limiting recursive advice
+=== Limiting recursive advice
 
 Previously, the compiler silently refrained from applying a piece of
 advice to join points within its own advice body. So, for example, in
@@ -1401,7 +1401,7 @@ aspect A {
 '''''
 
 [[pre08b1]]
-=== Porting pre-0.8beta1 code
+== Porting pre-0.8beta1 code
 
 * xref:#introSyntax[Rewriting introductions]
 * xref:#staticAdvice[Removing static advice]
@@ -1412,9 +1412,9 @@ The following changes are only required when porting code written prior
 to the 0.8beta1 release of AspectJ.
 
 [[introSyntax]]
-==== Rewriting introductions
+=== Rewriting introductions
 
-===== Syntax
+==== Syntax
 
 The syntax of introduction has changed. Porting most programs should
 require some simple editing. Anywhere you have an introduction block
@@ -1481,7 +1481,7 @@ introduction subtypes(Foo) && !Goo {
 int (Foo+ && !Goo).x;
 ----
 
-===== Access
+==== Access
 
 If you had an introduction that was referring to private or protected
 members of the target class, this will no longer work. You will either
@@ -1547,7 +1547,7 @@ inherited from a superclass, you will have to make this introduction
 public.
 
 [[staticAdvice]]
-==== Removing static advice
+=== Removing static advice
 
 Static advice has been removed from the language. Now, every piece of
 advice is non-static, meaning that it will run in the context of an
@@ -1610,7 +1610,7 @@ aspect ComplexTracing of eachobject(cflow(executions(void Main.main(..)))) {
 ----
 
 [[aspect-aspect]]
-==== Fixing aspect-aspect inheritance
+=== Fixing aspect-aspect inheritance
 
 Aspects can now only extend abstract aspects. This restriction may cause
 some redesign of aspect hierarchies. You will probably find that for the
@@ -1670,7 +1670,7 @@ A better way to implement this kind of design aspect is to use private
 introduction, a new feature of AspectJ.
 
 [[usingPrivateIntroduction]]
-==== Using private introduction
+=== Using private introduction
 
 A common pattern for AspectJ programs that need to associate some state
 with every object of a particular type has been to use aspects that are
@@ -1722,7 +1722,7 @@ association may capture the crosscutting concern best.
 '''''
 
 [[pre07b11]]
-=== Porting pre-0.7beta11 code
+== Porting pre-0.7beta11 code
 
 * xref:#twoArgumentCalls[Removing two-argument calls]
 * xref:#adviceInClasses[Removing advice from Class declarations]
@@ -1731,13 +1731,13 @@ The following changes are only required when porting code written prior
 to the 0.7beta11 release of AspectJ.
 
 [[twoArgumentCalls]]
-==== Removing two-argument calls
+=== Removing two-argument calls
 
 In AspectJ 0.7beta11, the two-argument `calls` primitive pointcut
 designator was deprecated. Removing these designators will require
 different cases depending on what the original pointcut did.
 
-===== Calls to static methods
+==== Calls to static methods
 
 For pointcuts denoting calls to particular static methods, such as
 
@@ -1771,7 +1771,7 @@ should now be written
 call(static * my.package.*.get*(..))
 ....
 
-===== Calls to non-static methods
+==== Calls to non-static methods
 
 Many pointcuts denoting calls to non-static methods can be fixed the
 same way that those pointcuts denoting calls to static methods are
@@ -1815,7 +1815,7 @@ It will also denote any join points if the Thread type does not define
 (possibly abstractly) some `int getPriority()` method, though.
 
 [[adviceInClasses]]
-==== Removing advice from Class declarations
+=== Removing advice from Class declarations
 
 The simplest way to remove an advice declaration from a class is to
 simply define the advice declaration in an inner aspect. So, instead of
@@ -1860,7 +1860,7 @@ appropriate.
 '''''
 
 [[pre07b10]]
-=== Porting pre-0.7beta10 code
+== Porting pre-0.7beta10 code
 
 * xref:#joinPoints[Changing access to thisJoinPoint]
 
@@ -1868,7 +1868,7 @@ The following changes are only required when porting code written prior
 to the 0.7beta10 release of AspectJ.
 
 [[joinPoints]]
-==== Changing access to thisJoinPoint
+=== Changing access to thisJoinPoint
 
 In AspectJ 0.7beta10, access to the reflective object `thisJoinPoint`
 substantially changed. The two parts of this change were the elimination
@@ -1876,7 +1876,7 @@ of the `runNext()` static method, and the use of an interface hierarchy
 represent the join point object.
 
 [[proceed]]
-===== `thisJoinPoint.runNext()` to `proceed()`
+==== `thisJoinPoint.runNext()` to `proceed()`
 
 The elimination of the `runNext()` static method requires almost no
 porting work. An automatic replacement of the string
@@ -1901,7 +1901,7 @@ aspect name or `this`, depending on whether the field is static or
 not).
 
 [[thisJoinPoint]]
-===== Using `thisJoinPoint`
+==== Using `thisJoinPoint`
 
 While access to reflective information through `thisJoinPoint` is more
 powerful and regular through its interface hierarchy, the previous uses

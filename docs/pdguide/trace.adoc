@@ -1,8 +1,8 @@
 [[trace]]
-== Tracing
+= Tracing
 
 [[trace-introduction]]
-=== Introduction
+== Introduction
 
 The AspectJ developers have instrumented the compiler/weaver with many
 "trace" messages for their own debugging use. These remain in the
@@ -22,7 +22,7 @@ produce a trace of the compiler when the problem occurs instead. This
 can then be attached to the bug report.
 
 [[trace-configuration]]
-==== Configuring Tracing
+=== Configuring Tracing
 
 When available (Java 5 or later) AspectJ will use the
 http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html[java.util.logging]
@@ -72,7 +72,7 @@ Default: `false`.
 |===
 
 [[trace-examples]]
-==== Examples
+=== Examples
 
 Using `-Dorg.aspectj.tracing.factory=default` to force AspectJ to use
 its internal infrastructure, `-Dorg.aspectj.tracing.enabled=true` to

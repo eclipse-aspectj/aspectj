@@ -1,7 +1,7 @@
 [[implementation]]
-== Implementation Notes
+= Implementation Notes
 
-=== Compiler Notes
+== Compiler Notes
 
 The initial implementations of AspectJ have all been compiler-based
 implementations. Certain elements of AspectJ's semantics are difficult
@@ -108,10 +108,10 @@ used. During your development, you will have to be aware of the
 limitations of the _ajc_ compiler you're using, but these limitations
 should not drive the design of your aspects.
 
-=== Bytecode Notes
+== Bytecode Notes
 
 [[the-class-expression-and-string-plus]]
-==== The `.class` expression and `String` `+`
+=== The `.class` expression and `String` `+`
 
 The java language form `Foo.class` is implemented in bytecode with a
 call to `Class.forName` guarded by an exception handler catching a
@@ -140,7 +140,7 @@ class Test {
 In short, the join point model of the current AspectJ compiler considers
 these as valid join points.
 
-==== The `handler()` join point
+=== The `handler()` join point
 
 The end of exception handlers cannot reliably be found in Java bytecode.
 Instead of removing the `handler` join point entirely, the current AspectJ
@@ -185,7 +185,7 @@ A source-code implementation of AspectJ (such as AspectJ 1.0.6) is able
 to detect the endpoint of a handler join point, and as such will likely
 have fewer such restrictions.
 
-==== Initializers and Inter-type Constructors
+=== Initializers and Inter-type Constructors
 
 The code for Java initializers, such as the assignment to the field `d` in
 
@@ -221,7 +221,7 @@ aspect A {
 It is the job of an inter-type constructor to do all the required
 initialization, or to delegate to a `this` constructor if necessary.
 
-=== Annotation-style Notes
+== Annotation-style Notes
 
 Writing aspects in annotation-style is subject to the same bytecode
 limitations since the binary aspects take the same form and are woven in
@@ -229,7 +229,7 @@ the same way. However, the implementation differences (e.g., the
 mechanism for implementing `around` advice) may be apparent at runtime.
 See the documentation on annotation-style for more information.
 
-=== Summary of implementation requirements
+== Summary of implementation requirements
 
 This summarizes the requirements of our implementation of AspectJ. For
 more details, see the relevant sections of this guide.

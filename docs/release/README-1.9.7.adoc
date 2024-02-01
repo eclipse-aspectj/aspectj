@@ -1,4 +1,4 @@
-== AspectJ 1.9.7
+= AspectJ 1.9.7
 
 _© Copyright 2021 Contributors. All rights reserved._
 
@@ -17,7 +17,7 @@ for Bugzilla] and
 https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.7[here
 for GitHub issues].
 
-=== New features
+== New features
 
 AspectJ 1.9.7 supports https://openjdk.java.net/projects/jdk/15/[Java
 15] & https://openjdk.java.net/projects/jdk/16/[Java 16] and their
@@ -50,7 +50,7 @@ respective AspectJ version in which the features were first supported
 * https://github.com/eclipse/org.aspectj/tree/master/tests/features197/java15[AspectJ
 1.9.7: hidden classes, sealed classes]
 
-=== Using LTW on Java 16+
+== Using LTW on Java 16+
 
 Please note that if you want to use load-time weaving on Java 16+, the
 weaving agent collides with https://openjdk.java.net/jeps/396[JEP 396
@@ -60,7 +60,7 @@ order to enable aspect weaving. This is due to the fact that the weaver
 uses internal APIs for which we have not found an adequate replacement
 yet when defining classes in different classloaders.
 
-=== Organisational and internal changes
+== Organisational and internal changes
 
 For AspectJ 1.9.7, we implemented a lot of internal changes concerning
 the build and release process, most of which are not visible in the
@@ -86,7 +86,7 @@ enable users to re-test fixed bugs or try new features.
 This enables developers and contributors to make a choice if they want
 to work on Linux or on Windows.
 
-=== Other changes and bug fixes
+== Other changes and bug fixes
 
 * Remove legacy JRockit support.
 * Support Windows 10 and Windows Server 2016/2019 in installer. Those

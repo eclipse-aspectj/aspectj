@@ -1,4 +1,4 @@
-== AspectJ 1.6.3
+= AspectJ 1.6.3
 
 _© Copyright 2008 Contributors. All rights reserved._
 
@@ -10,7 +10,7 @@ _© Copyright 2008 Contributors. All rights reserved._
 '''''
 
 [[split]]
-=== Split matching/weaving
+== Split matching/weaving
 
 The main goal of AspectJ 1.6.3 was to make the line between matching and
 weaving more explicit and introduce the notion of a matcher artifact.
@@ -43,7 +43,7 @@ and reflection based - both of which require compilation).
 '''''
 
 [[bugsfixed]]
-=== Bugs fixed
+== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.3 (more than 50)
 can be found with this bugzilla query:
@@ -57,7 +57,7 @@ issues.
 '''''
 
 [[notable]]
-=== Notable bug fixes
+== Notable bug fixes
 
 * More improvements to the way AspectJ/AJDT communicate (251277, 249216,
 258325)
@@ -72,7 +72,7 @@ type (256669)
 '''''
 
 [[whatsnext]]
-=== What's next?
+== What's next?
 
 The JDT World should be completed in the 1.6.4 timeframe and that will
 surface as benefits in AJDT, possibly leading to better LTW tooling.

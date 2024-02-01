@@ -1,13 +1,13 @@
-== Pitfalls
+= Pitfalls
 
 [[pitfalls-intro]]
-=== Introduction
+== Introduction
 
 This chapter consists of a few AspectJ programs that may lead to
 surprising behavior and how to understand them.
 
 [[pitfalls-infiniteLoops]]
-=== Infinite loops
+== Infinite loops
 
 Here is a Java program with peculiar behavior
 

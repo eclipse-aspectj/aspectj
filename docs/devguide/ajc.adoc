@@ -1,16 +1,16 @@
 [[ajc]]
-== `ajc`, the AspectJ compiler/weaver
+= `ajc`, the AspectJ compiler/weaver
 
-=== Name
+== Name
 
 `ajc` - compiler and bytecode weaver for the AspectJ and Java languages
 
-=== Synopsis
+== Synopsis
 
 [subs=+quotes]
  ajc [_option_...] [_file_... | @_file_... | -argfile _file_...]
 
-=== Description
+== Description
 
 The `ajc` command compiles and weaves AspectJ and Java source and .class
 files, producing .class files compliant with any Java VM (1.1 or later).
@@ -28,7 +28,7 @@ include the source not only for the aspects or pointcuts but also for
 any affected types. Specifying all sources is necessary because, unlike
 javac, ajc does not search the sourcepath for classes. (For a discussion
 of what affected types might be required, see
-xref:../progguide/implementation.html[The AspectJ Programming Guide,
+xref:../progguide/implementation.adoc[The AspectJ Programming Guide,
 Implementation Appendix].)
 
 To specify sources, you can list source files as arguments or use the
@@ -38,7 +38,7 @@ which source is correct. (This happens most often when users include the
 destination directory on the inpath and rebuild.)
 
 [[ajc_options]]
-==== Options
+=== Options
 
 `-injars <JarList>`::
   deprecated: since 1.2, use -inpath, which also takes directories.
@@ -91,7 +91,7 @@ destination directory on the inpath and rebuild.)
   Generate .ajesym symbol files for emacs support (deprecated).
 `-Xlint`::
   Same as -Xlint:warning (enabled by default)
-`-Xlint:{level}`::
+`-Xlint:\{level}`::
   Set default level for messages about potential programming mistakes in
   crosscutting code. \{level} may be ignore, warning, or error. This
   overrides entries in org/aspectj/weaver/XlintDefault.properties from
@@ -227,7 +227,7 @@ none                   suppress all compiler warnings
   (Experimental) Allows code to be generated that targets a 1.2 or a 1.5
   level AspectJ runtime (default 1.5)
 
-==== File names
+=== File names
 
 ajc accepts source files with either the `.java` extension or the `.aj`
 extension. We normally use `.java` for all of our files in an AspectJ
@@ -247,7 +247,7 @@ can create an artificial need for privileged aspects. Instead of adding
 a sub-package like `aspects` we recommend using the `.aj` extension and
 including these files in your existing packages instead.
 
-==== Compatibility
+=== Compatibility
 
 AspectJ is a compatible extension to the Java programming language. The
 AspectJ compiler adheres to the
@@ -259,7 +259,7 @@ platform. The code it generates runs on any Java 1.1 or later compatible
 platform. For more information on compatibility with Java and with
 previous releases of AspectJ, see xref:compatibility.adoc#versionCompatibility[Version Compatibility].
 
-==== Examples
+=== Examples
 
 Compile two files:
 
@@ -413,7 +413,7 @@ Run the application without tracing:
 java -classpath "app.jar" tracing.ExampleMain
 ....
 
-==== The AspectJ compiler API
+=== The AspectJ compiler API
 
 The AspectJ compiler is implemented completely in Java and can be called
 as a Java class. The only interface that should be considered public are
@@ -449,7 +449,7 @@ public class WrapAjc {
 }
 ....
 
-==== Stack Traces and the SourceFile attribute
+=== Stack Traces and the SourceFile attribute
 
 Unlike traditional java compilers, the AspectJ compiler may in certain
 cases generate classfiles from multiple source files. Unfortunately, the

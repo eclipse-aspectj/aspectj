@@ -1,8 +1,8 @@
 [[messages]]
-== Messages
+= Messages
 
 [[messages-introduction]]
-=== Introduction
+== Introduction
 
 Messages point out potential problems in the input program; some are
 clearly problems (errors), but many more may depend on what the
@@ -14,7 +14,7 @@ some problem scenarios when compiling or doing load-time weaving, and
 summarizes some of the more relevant messages.
 
 [[messages-introduction-config]]
-==== Configuring Messages
+=== Configuring Messages
 
 The compiler offers `-verbose`, `-warning`, and `-XLint` options when
 invoked using the command-line, Ant, or embedded in an IDE. All options
@@ -85,19 +85,19 @@ warnings associated with the next line of code.
 |===
 
 [[messages-scenarios]]
-=== Message scenarios
+== Message scenarios
 
 [[messages-scenarios-ct]]
-==== Compile-time weaving scenarios
+=== Compile-time weaving scenarios
 
 [[messages-scenarios-ct-adviceNotWoven]]
-===== Advice not woven
+==== Advice not woven
 
 This means that the pointcut for the advice did not match, and it should
 be debugged as described in xref:pointcuts.adoc#pointcuts[Debugging Pointcuts].
 
 [[messages-scenarios-ltw]]
-==== Load-time weaving scenarios
+=== Load-time weaving scenarios
 
 You can use `META-INF/aop.xml` to control which messages are produced
 during LTW. The following example will produce basic informational
@@ -129,7 +129,7 @@ applications each of which will typically have its own class loader.
 ....
 
 [[messages-scenarios-ltw-adviceNotWoven]]
-===== Advice not woven
+==== Advice not woven
 
 It is often difficult to determine, especially when using load-time
 weaving (LTW), why advice has not been woven. Here is a quick guide to
@@ -164,7 +164,7 @@ If advice is woven at this join point you should get the corresponding
 message.
 
 [[messages-xlint]]
-=== Lint messages
+== Lint messages
 
 The table below lists some useful `-Xlint` messages.
 

@@ -2267,7 +2267,7 @@ bug. See #q:bugreports[Q:How do I submit a bug report?].
 specifying the defining signature. Since all overriding methods share
 this signature, the advice runs for each method executed. (This happens,
 e.g., when one method invokes the same method in the superclass using
-`super.{method}(..)`). This is the correct behavior.
+`super.\{method}(..)`). This is the correct behavior.
 
 To avoid this, use the `call(..)` pointcut designator, or use
 `!cflow(..)` to pick out only the initial method-execution.
@@ -2467,7 +2467,7 @@ Aspect instances will be garbage collected just like regular objects
 after there are no more strong references to them. For the default
 aspect instantiation model, `issingleton`, the aspect class retains a
 reference to the singleton instance, in order to implement
-`static {AspectClass} aspectOf()`, so singleton instances will not be
+`static \{AspectClass} aspectOf()`, so singleton instances will not be
 garbage collected until the class is. For long-running or
 memory-critical programs, consider using weak references in singleton
 aspects for state that should be garbage collected.
@@ -2586,8 +2586,8 @@ JBuilder, and NetBeans through a common API, AJDE.
 *Q:* What are the new features of AspectJ 5?
 
 *A:* All the new features are documented in the
-xref:../adk15notebook/adk15notebook.adoc[AspectJ 5 Developer's Notebook] and the
-link:devguide/index.html[AspectJ Development Environment Guide]. To
+xref:../adk15notebook/index.adoc[AspectJ 5 Developer's Notebook] and the
+xref:../devguide/index.adoc[AspectJ Development Environment Guide]. To
 summarize:
 
 * Java 5 support: as an extension to Java, AspectJ supports all the new

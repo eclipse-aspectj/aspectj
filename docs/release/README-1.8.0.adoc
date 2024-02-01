@@ -1,4 +1,4 @@
-== AspectJ 1.8.0
+= AspectJ 1.8.0
 
 _© Copyright 2014 Contributors. All rights reserved._
 
@@ -11,9 +11,9 @@ _Release info:_
 * _1.8.0.RC1 available 18-Mar-2014_
 * _1.8.0.M1 available 29-Jul-2013_
 
-=== Notable changes
+== Notable changes
 
-==== Java 8 compilation
+=== Java 8 compilation
 
 AspectJ has been updated to the latest available Eclipse Java compiler
 version that compiles Java8 code (the version available as a feature

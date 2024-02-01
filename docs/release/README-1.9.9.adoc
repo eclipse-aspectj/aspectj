@@ -1,4 +1,8 @@
-== AspectJ 1.9.9.1
+= AspectJ 1.9.9
+:doctype: book
+:leveloffset: +1
+
+= AspectJ 1.9.9.1
 
 _© Copyright 2022 Contributors. All rights reserved._
 
@@ -12,7 +16,7 @@ This probably was broken for a long time. AspectJ still is not boasting extensiv
 this improvement seems substantial enough to justify a minor release, instead of keeping users waiting for the next
 regular release.
 
-== AspectJ 1.9.9
+= AspectJ 1.9.9
 
 _© Copyright 2022 Contributors. All rights reserved._
 
@@ -26,13 +30,13 @@ here:
 * https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.9.1[GitHub 1.9.9.1]
 * https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.9[Bugzilla 1.9.9]
 
-=== New features
+== New features
 
 AspectJ 1.9.9 supports https://openjdk.java.net/projects/jdk/18/[Java 18] and its final and preview features, such as:
 
 * Pattern matching for `switch` (preview 2)
 
-=== Improvements
+== Improvements
 
 In annotation style aspects, asynchronous `proceed()` calls in `@Around` advice now works in threads created from within
 the advice. Previously, this was only working in native syntax aspects. There is still a limitation with regard to
@@ -42,7 +46,7 @@ own thread pool. This still is not working in annotation style aspects, only in 
 See https://github.com/eclipse/org.aspectj/issues/128[issue #128] and
 https://github.com/eclipse/org.aspectj/pull/132[pull request #132] for more details.
 
-=== Code examples
+== Code examples
 
 You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
 first supported (possibly as JVM preview features):
@@ -52,7 +56,7 @@ first supported (possibly as JVM preview features):
 * https://github.com/eclipse/org.aspectj/tree/master/tests/bugs199/github_128[Asynchronous proceed in native vs.
   annotation style syntax]
 
-=== Other changes and bug fixes
+== Other changes and bug fixes
 
 * Fix a bug which led to ``NullPointerException``s, if too many JAR archives were on the classpath. Too many here means
   the value of system property `org.aspectj.weaver.openarchives` (1,000 by default). The AspectJ compiler is meant to
@@ -64,9 +68,9 @@ first supported (possibly as JVM preview features):
   https://github.com/eclipse/org.aspectj/issues/122[#122].
 * Thanks to Andrey Turbanov for several clean code contributions.
 
-=== AspectJ usage hints
+== AspectJ usage hints
 
-==== AspectJ compiler build system requirements
+=== AspectJ compiler build system requirements
 
 Since 1.9.8, the AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 8 to 10. The
 minimum compile-time requirement is now JDK 11 due to upstream changes in the Eclipse Java Compiler (subset of JDT
@@ -75,7 +79,7 @@ plain Java code or using plain Java ITD constructs which do not require the Aspe
 compiler itself needs JDK 11+. Just like in previous AspectJ versions, both the runtime `aspectjrt` and the load-time
 weaver `aspectjweaver` still only require JRE 8+.
 
-==== Use LTW on Java 16+
+=== Use LTW on Java 16+
 
 Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
 https://openjdk.java.net/jeps/396[JEP 396 (Strongly Encapsulate JDK Internals by Default)]. Therefore, you need to set
@@ -83,7 +87,7 @@ the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in order to enab
 fact that the weaver uses internal APIs for which we have not found an adequate replacement yet when defining classes
 in different classloaders.
 
-==== Compile with Java preview features
+=== Compile with Java preview features
 
 For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
 `java --enable-preview` on that JDK.

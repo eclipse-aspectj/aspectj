@@ -1,9 +1,9 @@
-== AspectJ 1.6.5
+= AspectJ 1.6.5
 
 _© Copyright 2009 Contributors. All rights reserved._
 
 [[bugsfixed]]
-=== Bugs fixed
+== Bugs fixed
 
 The complete list of issues resolved for AspectJ 1.6.5 can be found with
 this bugzilla query:

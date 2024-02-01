@@ -1,8 +1,8 @@
 [[enumeratedtypes]]
-== Enumerated Types
+= Enumerated Types
 
 [[enums-in-java5]]
-=== Enumerated Types in Java 5
+== Enumerated Types in Java 5
 
 Java 5 (and hence AspectJ 5) provides explicit support for enumerated
 types. In the simplest case, you can declare an enumerated type as
@@ -24,7 +24,7 @@ Enumerated types in Java 5 all implicitly extend the type
 class.
 
 [[enums-in-aspectj5]]
-=== Enumerated Types in AspectJ 5
+== Enumerated Types in AspectJ 5
 
 AspectJ 5 supports the declaration of enumerated types just as Java 5
 does. Because of the special restrictions Java 5 places around

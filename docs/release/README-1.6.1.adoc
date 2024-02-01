@@ -1,4 +1,4 @@
-== AspectJ 1.6.1
+= AspectJ 1.6.1
 
 _© Copyright 2008 Contributors. All rights reserved._
 
@@ -21,14 +21,14 @@ implemented]
 
 '''''
 
-=== Refactored (https://bugs.eclipse.org/bugs/show_bug.cgi?id=231396[bug 231396])
+== Refactored (https://bugs.eclipse.org/bugs/show_bug.cgi?id=231396[bug 231396])
 
 The bugzilla entry goes into more specifics on what has changed, the end
 result is that aspectjweaver.jar has had around 275 classes removed
 (about 25%) and has slimmed down by 350k (about 20%). In terms of
 performance for different scenarios:
 
-==== Straight compilation
+=== Straight compilation
 
 The refactoring effort has been focused on the weaver component, hence
 there is limited impact on the performance of source compilation but
@@ -45,7 +45,7 @@ join points)
 
 image:images/perfSourceCompile_161.jpg[image]
 
-==== Binary weaving
+=== Binary weaving
 
 Moving on from source compilation to pure binary weaving, the
 improvements are more obvious. Here we are using the complete JVM
@@ -62,7 +62,7 @@ aspect (121000 join points)
 
 image:images/perfBinaryWeave_161.jpg[image]
 
-==== Loadtime weaving
+=== Loadtime weaving
 
 The loadtime weaving improvements are similar to those seen for binary
 weaving (naturally). Here we are using the JDK tools jar 'tools.jar' as
@@ -93,7 +93,7 @@ So in terms of memory required, weaving the insane aspect into tools.jar
 created 1.4G of 'stuff' over the entire weaving process, compared to
 1.75G with 1.6.0.
 
-==== Loadtime weaving stress
+=== Loadtime weaving stress
 
 As well as addressing the memory usage of a single load time weaver, we
 have also looked at the use of load time weaving in a larger scale
@@ -119,7 +119,7 @@ And now AspectJ 1.6.1:
 
 image:images/memLtwStress_161.jpg[image]
 
-=== Incremental compilation
+== Incremental compilation
 
 Following on from the work done to improve compilation under Eclipse in
 AspectJ 1.6.0 (https://bugs.eclipse.org/bugs/show_bug.cgi?id=221427[Bug
@@ -138,9 +138,9 @@ with known errors, and this means AspectJ will more frequently do
 incremental builds rather than falling back to full builds because there
 was a compilation error.
 
-=== Language changes
+== Language changes
 
-==== Optmized syntax for annotation value binding (https://bugs.eclipse.org/bugs/show_bug.cgi?id=234943[Bug234943])
+=== Optmized syntax for annotation value binding (https://bugs.eclipse.org/bugs/show_bug.cgi?id=234943[Bug234943])
 
 If only binding an annotation at a method-execution join point in order
 to access an *enum value* within it, there is a more optimal syntax that

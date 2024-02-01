@@ -1,8 +1,8 @@
 [[compatibility]]
-== AspectJ version compatibility
+= AspectJ version compatibility
 
 [[versionCompatibility]]
-=== Version Compatibility
+== Version Compatibility
 
 Systems, code, and build tools change over time, often not in step.
 Generally, later versions of the build tools understand earlier versions
@@ -10,7 +10,7 @@ of the code, but systems should include versions of the runtime used to
 build the AspectJ program.
 
 [[javaCompatibility]]
-==== Java compatibility
+=== Java compatibility
 
 AspectJ programs can run on any Java VM of the required version. The
 AspectJ tools produce Java bytecode .class files that run on Java
@@ -35,7 +35,7 @@ require a more recent version of Java. You might use Java 5 to run the
 AspectJ compiler to produce code for Java 1.1.8.
 
 [[runtimeCompatibility]]
-==== Runtime library compatibility
+=== Runtime library compatibility
 
 When deploying AspectJ programs, include on the classpath the classes,
 aspects, and the AspectJ runtime library (`aspectjrt.jar`). Use the
@@ -59,7 +59,7 @@ aspect. To find out if the runtime you deployed is the one actually
 being used, log the defining class loader for the aspects and runtime.
 
 [[binaryCompatibility]]
-==== Aspect binary compatibility
+=== Aspect binary compatibility
 
 Generally, binary aspects can be read by later versions of the weaver if
 the aspects were built by version 1.2.1 or later. (Some future weavers
@@ -76,7 +76,7 @@ weaver, be careful to rebuild and redeploy with the next released
 version.
 
 [[sourceCompatibility]]
-==== Aspect source compatibility
+=== Aspect source compatibility
 
 Generally, AspectJ source files can be read by later versions of the
 compiler. Language features do not change in dot releases (e.g., from
@@ -91,7 +91,7 @@ xref:../progguide/semantics.html[Semantics appendix to the Programming
 Guide].
 
 [[upgrading]]
-==== Problems when upgrading to new AspectJ versions
+=== Problems when upgrading to new AspectJ versions
 
 Let's say your program behaves differently after being built with a new
 version of the AspectJ tools. It could be a bug that was introduced by
