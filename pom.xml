@@ -421,6 +421,22 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.2.0</version>
+					<!--
+						FIXME: This configuration works with JDK 16, but throws errors on other JDK versions, e.g. 14. It looks as
+						 if the Maven Javadoc plugin does not do a particularly good job applying the plugin settings in a way
+						 making it work with different JDK javadoc tool versions. I am saying that, because when using the tool
+						 directly on the console, it works with basic settings and the correct classpath.
+					-->
+					<configuration>
+						<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjtools? -->
+						<subpackages>org.aspectj</subpackages>
+						<!-- Deactivate doclint checks in order to suppress errors -->
+						<doclint>none</doclint>
+						<!-- Generate class use xref, making javadocs considerably bigger, but also more informative -->
+						<use>true</use>
+						<!-- FIXME: Why does it fail without this parameter? -->
+						<javadocVersion>8</javadocVersion>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.asciidoctor</groupId>

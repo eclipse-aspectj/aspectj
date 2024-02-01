@@ -194,14 +194,6 @@
 						</goals>
 						<configuration>
 							<sourcepath>${project.build.directory}/unpacked-sources</sourcepath>
-							<!-- TODO: Include 'aj' package for ASM-renamed contained in aspectjtools? -->
-							<subpackages>org.aspectj</subpackages>
-							<!-- Deactivate doclint checks in order to suppress errors -->
-							<doclint>none</doclint>
-							<!-- Generate class use xref, making javadocs considerably bigger, but also more informative -->
-							<use>true</use>
-							<!-- FIXME: Why does it fail without this parameter? -->
-							<javadocVersion>8</javadocVersion>
 						</configuration>
 					</execution>
 				</executions>
