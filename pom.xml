@@ -436,6 +436,18 @@
 						<use>true</use>
 						<!-- FIXME: Why does it fail without this parameter? -->
 						<javadocVersion>8</javadocVersion>
+						<!--
+							Avoid non-English javadoc generation. Due to https://bugs.openjdk.org/browse/JDK-8222793 reoccurring at
+							least in JDKs 19-21 and also being broken in some older JDKs, we cannot rely on just setting the locale
+							parameter, but also need the 'user.language' and 'user.country' parameters in 'additionalJOptions' as a
+							workaround.
+						-->
+						<locale>en</locale>
+						<additionalJOptions>
+							<additionalJOption>-J-Dfile.encoding=UTF-8</additionalJOption>
+							<additionalJOption>-J-Duser.language=en</additionalJOption>
+							<additionalJOption>-J-Duser.country=US</additionalJOption>
+						</additionalJOptions>
 					</configuration>
 				</plugin>
 				<plugin>
