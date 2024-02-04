@@ -922,7 +922,7 @@ public class WeavingAdaptor implements IMessageContext {
 						}
 
 						generatedClasses.put(className, result);
-						generatedClasses.put(wovenClass.getClassName(), result);
+						generatedClasses.put(wovenClass.getClassName(), wovenClass);
 						generatedClassHandler.acceptClass(className, null, resultBytes);
 					}
 				}
