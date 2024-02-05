@@ -369,7 +369,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 			try {
 				delegateForCurrentClass = null;
-				if (couldWeave(name, bytes)) {
+				if (shouldWeaveName(name)) {
 					if (accept(name, bytes)) {
 
 						// Determine if we have the weaved class cached
@@ -446,14 +446,6 @@ public class WeavingAdaptor implements IMessageContext {
 		} finally {
 			weaverRunning.remove();
 		}
-	}
-
-	/**
-	 * @param name
-	 * @return true if even valid to weave: either with an accept check or to munge it for @AspectJ aspectof support
-	 */
-	private boolean couldWeave(String name, byte[] bytes) {
-		return !generatedClasses.containsKey(name) && shouldWeaveName(name);
 	}
 
 	/**
