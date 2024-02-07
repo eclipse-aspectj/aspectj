@@ -136,6 +136,8 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 
 			try {
 				b = adaptor.weaveClass(name, b, false);
+				if (b == null)
+					b = orig;
 			} catch (AbortException ex) {
 				trace.error("defineClass", ex);
 				throw ex;
@@ -149,7 +151,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 		try {
 			clazz= super.defineClass(name, b, cs);
 		} catch (Throwable th) {
-			trace.error("Weaving class problem. Original class has been returned. The error was caused because of: " + th, th);
+			trace.error("Weaving class problem. Original class has been returned. Error cause: " + th, th);
 			clazz= super.defineClass(name, orig, cs);
 		}
 		if (trace.isTraceEnabled()) {

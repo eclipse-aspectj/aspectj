@@ -318,26 +318,30 @@ public class WeavingAdaptor implements IMessageContext {
 	/**
 	 * Weave a class using aspects previously supplied to the adaptor.
 	 *
-	 * @param name the name of the class
-	 * @param bytes the class bytes
-	 * @param mustWeave if true then this class *must* get woven (used for concrete aspects generated from XML)
-	 * @return the woven bytes
-	 * @exception IOException weave failed
+	 * @param name      the name of the class in the internal form of fully qualified class and interface names as defined
+	 *                  in <i>The Java Virtual Machine Specification</i>. For example, <code>"java/util/List"</code>.
+	 * @param bytes     the input byte buffer in class file format - must not be modified
+	 * @param mustWeave if true then this class <i>must</i> get woven (used for concrete aspects generated from XML)
+	 *
+	 * @return a well-formed class file buffer (the weaving result), or {@code null} if no weaving was performed
+	 *
+	 * @throws IOException weave failed
 	 */
-	public byte[] weaveClass(String name, byte[] bytes, boolean mustWeave) throws IOException {
+	public byte[] weaveClass(String name, final byte[] bytes, boolean mustWeave) throws IOException {
 		if (trace == null) {
 			// Pr231945: we are likely to be under tomcat and ENABLE_CLEAR_REFERENCES hasn't been set
 			System.err
 					.println("AspectJ Weaver cannot continue to weave, static state has been cleared.  Are you under Tomcat? In order to weave '"
 							+ name
 							+ "' during shutdown, 'org.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false' must be set (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=231945).");
-			return bytes;
+			return null;
 		}
 		if (weaverRunning.get()) {
 			// System.out.println("AJC: avoiding re-entrant call to transform " + name);
-			return bytes;
+			return null;
 		}
 		try {
+			byte[] newBytes = null;
 			weaverRunning.set(true);
 			if (trace.isTraceEnabled()) {
 				trace.enter("weaveClass", this, new Object[] { name, bytes });
@@ -347,7 +351,7 @@ public class WeavingAdaptor implements IMessageContext {
 				if (trace.isTraceEnabled()) {
 					trace.exit("weaveClass", false);
 				}
-				return bytes;
+				return null;
 			}
 
 			boolean debugOn = !messageHandler.isIgnoring(Message.DEBUG);
@@ -360,15 +364,14 @@ public class WeavingAdaptor implements IMessageContext {
 
 						// Determine if we have the weaved class cached
 						CachedClassReference cacheKey = null;
-						final byte[] original_bytes = bytes;
 						if (cache != null && !mustWeave) {
-							cacheKey = cache.createCacheKey(name, original_bytes);
-							CachedClassEntry entry = cache.get(cacheKey, original_bytes);
+							cacheKey = cache.createCacheKey(name, bytes);
+							CachedClassEntry entry = cache.get(cacheKey, bytes);
 							if (entry != null) {
 								// If the entry has been explicitly ignored
 								// return the original bytes
 								if (entry.isIgnored()) {
-									return bytes;
+									return null;
 								}
 								return entry.getBytes();
 							}
@@ -382,7 +385,12 @@ public class WeavingAdaptor implements IMessageContext {
 						if (debugOn) {
 							debug("weaving '" + name + "'");
 						}
-						bytes = getWovenBytes(name, bytes);
+						newBytes = getWovenBytes(name, bytes);
+						// TODO: Is this OK performance-wise?
+						if (Arrays.equals(bytes, newBytes)) {
+							// null means unchanged in java.lang.instrument.ClassFileTransformer::transform
+							newBytes = null;
+						}
 						// temporarily out - searching for @Aspect annotated types is a slow thing to do - we should
 						// expect the user to name them if they want them woven - just like code style
 						// } else if (shouldWeaveAnnotationStyleAspect(name, bytes)) {
@@ -405,10 +413,10 @@ public class WeavingAdaptor implements IMessageContext {
 						if (cacheKey != null) {
 							// If no transform has been applied, mark the class
 							// as ignored.
-							if (Arrays.equals(original_bytes, bytes)) {
-								cache.ignore(cacheKey, original_bytes);
+							if (newBytes == null) {
+								cache.ignore(cacheKey, bytes);
 							} else {
-								cache.put(cacheKey, original_bytes, bytes);
+								cache.put(cacheKey, bytes, newBytes);
 							}
 						}
 					} else if (debugOn) {
@@ -422,9 +430,9 @@ public class WeavingAdaptor implements IMessageContext {
 			}
 
 			if (trace.isTraceEnabled()) {
-				trace.exit("weaveClass", bytes);
+				trace.exit("weaveClass", newBytes);
 			}
-			return bytes;
+			return newBytes;
 		} finally {
 			weaverRunning.remove();
 		}

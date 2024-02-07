@@ -24,7 +24,18 @@ public interface ClassPreProcessor {
 	 */
 	void initialize();
 
-	byte[] preProcess(String className, byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
+	/**
+	 * @param className        the name of the class in the internal form of fully qualified class and interface names as
+	 *                         defined in <i>The Java Virtual Machine Specification</i>. For example,
+	 *                         <code>"java/util/List"</code>.
+	 * @param bytes            the input byte buffer in class file format - must not be modified
+	 * @param classLoader      the defining loader of the class to be transformed, may be {@code null} if the bootstrap
+	 *                         loader
+	 * @param protectionDomain the protection domain of the class being defined or redefined
+	 *
+	 * @return a well-formed class file buffer (weaving result), or {@code null} if no weaving was performed
+	 */
+	byte[] preProcess(String className, final byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
 
 	void prepareForRedefinition(ClassLoader loader, String className);
 }

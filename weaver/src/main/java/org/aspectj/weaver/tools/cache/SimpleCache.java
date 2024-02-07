@@ -72,6 +72,7 @@ public class SimpleCache {
 		byte[] res = get(classname, bytes);
 
 		if (Arrays.equals(SAME_BYTES, res)) {
+			// TODO: Should we return null (means "not transformed") in this case?
 			return bytes;
 		} else {
 			if (res != null) {
