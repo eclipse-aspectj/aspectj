@@ -34,6 +34,8 @@ public interface ClassPreProcessor {
 	 * @param protectionDomain the protection domain of the class being defined or redefined
 	 *
 	 * @return a well-formed class file buffer (weaving result), or {@code null} if no weaving was performed
+	 *
+	 * @see java.lang.instrument.ClassFileTransformer#transform(ClassLoader, String, Class, ProtectionDomain, byte[])
 	 */
 	byte[] preProcess(String className, final byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain);
 

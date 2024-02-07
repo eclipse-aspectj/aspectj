@@ -326,6 +326,8 @@ public class WeavingAdaptor implements IMessageContext {
 	 * @return a well-formed class file buffer (the weaving result), or {@code null} if no weaving was performed
 	 *
 	 * @throws IOException weave failed
+	 *
+	 * @see java.lang.instrument.ClassFileTransformer#transform(ClassLoader, String, Class, ProtectionDomain, byte[])
 	 */
 	public byte[] weaveClass(String name, final byte[] bytes, boolean mustWeave) throws IOException {
 		if (trace == null) {
