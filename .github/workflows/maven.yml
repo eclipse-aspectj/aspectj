@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
@@ -40,7 +40,7 @@ jobs:
           ant -version
 
       - name: Set up cache for ~./m2/repository
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository
@@ -56,7 +56,7 @@ jobs:
         run: ./mvnw -B --file pom.xml -DskipTests install
 
       - name: Attach aspectjrt to build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aspectjrt-java${{ matrix.java }}
           # Binary, source, javadoc JARs + flattened POM
@@ -65,7 +65,7 @@ jobs:
             aspectjrt/target/flattened-pom.xml
 
       - name: Attach aspectjweaver to build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aspectjweaver-java${{ matrix.java }}
           # Binary, source, javadoc JARs + flattened POM
@@ -74,7 +74,7 @@ jobs:
             aspectjweaver/target/flattened-pom.xml
 
       - name: Attach aspectjtools to build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aspectjtools-java${{ matrix.java }}
           # Binary, source, javadoc JARs + flattened POM
@@ -83,7 +83,7 @@ jobs:
             aspectjtools/target/flattened-pom.xml
 
       - name: Attach installer to build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: installer-java${{ matrix.java }}
           # Installer JAR + flattened POM
@@ -95,15 +95,11 @@ jobs:
         run: ./mvnw -B --file pom.xml -DskipTests package -pl docs -P create-docs
 
       - name: Attach docs to build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aspectj-docs-java${{ matrix.java }}
           # Re-zip docs directory instead of wrapping existing distribution archive into another zip archive
           path: aj-build/dist/docs/
 
       - name: Run Tests
-        # Tests in module ajde call Swing/AWT classes. Without frame buffer they throw
-        # HeadlessException: No X11 DISPLAY variable was set, but this program performed an operation which requires it.
-        uses: coactions/setup-xvfb@v1.0.1
-        with:
-          run: ./mvnw -B --file pom.xml -Daspectj.tests.verbose=false verify
+        run: ./mvnw -B --file pom.xml -Daspectj.tests.verbose=false verify
