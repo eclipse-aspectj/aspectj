@@ -75,41 +75,41 @@ public class Aj implements ClassPreProcessor {
 	private final static String deleLoader2 = "jdk.internal.reflect.DelegatingClassLoader"; // On JDK11+
 
 	@Override
-	public byte[] preProcess(String className, byte[] bytes, ClassLoader loader, ProtectionDomain protectionDomain) {
-		if (loader == null || className == null ||
-			loader.getClass().getName().equals(deleLoader) || loader.getClass().getName().equals(deleLoader2)) {
+	public byte[] preProcess(String className, final byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain) {
+		if (classLoader == null || className == null ||
+			classLoader.getClass().getName().equals(deleLoader) || classLoader.getClass().getName().equals(deleLoader2)) {
 			// skip boot loader, null classes (hibernate), or those from a reflection loader
-			return bytes;
+			return null;
 		}
 
 		if (loadersToSkip != null) {
 			// Check whether to reject it
-			if (loadersToSkip.contains(loader.getClass().getName())) {
+			if (loadersToSkip.contains(classLoader.getClass().getName())) {
 //				System.out.println("debug: no weaver created for loader '"+loader.getClass().getName()+"'");
-				return bytes;
+				return null;
 			}
 		}
 
 		if (trace.isTraceEnabled())
-			trace.enter("preProcess", this, new Object[] { className, bytes, loader });
+			trace.enter("preProcess", this, new Object[] { className, bytes, classLoader });
 		if (trace.isTraceEnabled())
-			trace.event("preProcess", this, new Object[] { loader.getParent(), Thread.currentThread().getContextClassLoader() });
+			trace.event("preProcess", this, new Object[] { classLoader.getParent(), Thread.currentThread().getContextClassLoader() });
 
 		try {
-			synchronized (loader) {
+			synchronized (classLoader) {
 
 				if (SimpleCacheFactory.isEnabled()) {
-					byte[] cacheBytes= laCache.getAndInitialize(className, bytes,loader,protectionDomain);
+					byte[] cacheBytes= laCache.getAndInitialize(className, bytes, classLoader, protectionDomain);
 					if (cacheBytes!=null){
 							return cacheBytes;
 					}
 				}
 
-				WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(loader, weavingContext);
+				WeavingAdaptor weavingAdaptor = WeaverContainer.getWeaver(classLoader, weavingContext);
 				if (weavingAdaptor == null) {
 					if (trace.isTraceEnabled())
 						trace.exit("preProcess");
-					return bytes;
+					return null;
 				}
 				try {
 					weavingAdaptor.setActiveProtectionDomain(protectionDomain);
@@ -134,7 +134,7 @@ public class Aj implements ClassPreProcessor {
 			// would make sense at least in test f.e. see TestHelper.handleMessage()
 			if (trace.isTraceEnabled())
 				trace.exit("preProcess", th);
-			return bytes;
+			return null;
 		} finally {
 			CompilationAndWeavingContext.resetForThread();
 		}

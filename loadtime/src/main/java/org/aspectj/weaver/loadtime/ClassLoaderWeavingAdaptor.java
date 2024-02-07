@@ -569,7 +569,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 			try {
 				byte[] newBytes = weaveClass(name, bytes, true);
-				this.generatedClassHandler.acceptClass(name, bytes, newBytes);
+				this.generatedClassHandler.acceptClass(name, bytes, newBytes == null ? bytes : newBytes);
 			} catch (IOException ex) {
 				trace.error("weaveAndDefineConceteAspects", ex);
 				error("exception weaving aspect '" + name + "'", ex);
