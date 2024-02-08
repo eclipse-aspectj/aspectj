@@ -68,7 +68,7 @@ public class DeclareMixinTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	// multiple instances causing factory invocation multiple times (but is cached), concurrent case
-	// see https://github.com/eclipse/org.aspectj/issues/198
+	// see https://github.com/eclipse-aspectj/aspectj/issues/198
 	public void testCaseEConcurrent() {
 		runTest("casee_concurrent");
 	}

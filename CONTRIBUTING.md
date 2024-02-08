@@ -1,6 +1,6 @@
 # Contributing to AspectJ
 
-AspectJ is a maven project, as such it should import cleanly into your IDE. The project uses github for issue tracking ( https://github.com/eclipse/org.aspectj/issues ).
+AspectJ is a maven project, as such it should import cleanly into your IDE. The project uses github for issue tracking ( https://github.com/eclipse-aspectj/aspectj/issues ).
 
 ## Working on the codebase
 

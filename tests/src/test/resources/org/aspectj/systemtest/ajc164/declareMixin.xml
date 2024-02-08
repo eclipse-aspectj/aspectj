@@ -61,7 +61,7 @@
      <run class="CaseEConcurrent">
        <stdout ordered="no">
          <!--
-           Without the concurrency fix from https://github.com/eclipse/org.aspectj/issues/198, each delegate factory
+           Without the concurrency fix from https://github.com/eclipse-aspectj/aspectj/issues/198, each delegate factory
            would be invoked twice
          -->
          <line text="Delegate factory invoked for CaseEConcurrent instance: a"/>

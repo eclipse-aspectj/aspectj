@@ -3,7 +3,7 @@
 
 <suite>
 
-	<!-- https://github.com/eclipse/org.aspectj/issues/68 -->
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/68 -->
 	<ajc-test dir="bugs198/github_68" vm="11" title="correctly weave code using constant-dynamic">
 		<compile files="Application.java MyAspect.aj" options="-11" inpath="condy.jar"/>
 		<run class="Application">
@@ -16,7 +16,7 @@
 		</run>
 	</ajc-test>
 
-	<!-- https://github.com/eclipse/org.aspectj/issues/105 -->
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/105 -->
 	<ajc-test dir="bugs198/github_105" vm="8" title="ITD annotation with mandatory parameter via aspectpath">
 		<compile files="FooAnnotation.java BarAnnotation.java FooAspect.aj" options="-8" outjar="aspect.jar"/>
 		<compile files="Application.java" options="-8" aspectpath="aspect.jar"/>

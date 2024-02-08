@@ -234,7 +234,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			if (
 				!Modifier.isStatic(typeDecl.modifiers) &&
 				// Inner classes/aspects of interfaces are implicitly static,
-				// see https://github.com/eclipse/org.aspectj/issues/162
+				// see https://github.com/eclipse-aspectj/aspectj/issues/162
 				(typeDecl.enclosingType.modifiers & ClassFileConstants.AccInterface) == 0
 			) {
 				typeDecl.scope.problemReporter().signalError(typeDecl.sourceStart, typeDecl.sourceEnd,

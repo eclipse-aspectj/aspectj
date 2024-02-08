@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
  * This fails in AspectJ 1.9.5 to 1.9.8.RC2 due to a removed safeguard in JDT Core,
  * if the aspect is in a separate library on the aspectpath.
  * <p>
- * See https://github.com/eclipse/org.aspectj/issues/105
+ * See https://github.com/eclipse-aspectj/aspectj/issues/105
  */
 @FooAnnotation
 public class Application {

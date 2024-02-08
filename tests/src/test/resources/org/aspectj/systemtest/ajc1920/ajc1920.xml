@@ -176,7 +176,7 @@
 		</run>
 	</ajc-test>
 
-	<!-- RuntimeException in BcelWeaver, see https://github.com/eclipse/org.aspectj/issues/190 -->
+	<!-- RuntimeException in BcelWeaver, see https://github.com/eclipse-aspectj/aspectj/issues/190 -->
 	<ajc-test dir="bugs1920/github_190" vm="1.5" title="switch with Integer.MAX_VALUE case">
 		<compile files="SwitchCaseWith_Integer_MAX_VALUE.java" options="-1.5 -showWeaveInfo">
 			<message kind="weave" text="Join point 'method-execution(java.lang.String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))'"/>
@@ -191,7 +191,7 @@
 
 	<!--
 		'Syntax error, insert "Expression" to complete Expression' when compiling parenthesised expressions
-		containing AspectJ keywords, e.g. '(before)', see https://github.com/eclipse/org.aspectj/issues/20
+		containing AspectJ keywords, e.g. '(before)', see https://github.com/eclipse-aspectj/aspectj/issues/20
 	-->
 	<ajc-test dir="bugs1920/github_20" vm="1.5" title="parenthesised expression with AspectJ keyword">
 		<compile files="ParenthesisedAJKeywords.java" options="-1.5 -showWeaveInfo"/>
@@ -210,7 +210,7 @@
 
 	<!--
 		'inner aspects must be static' when compiling an interface with an inner aspect which was not explicitly declared
-		static, see https://github.com/eclipse/org.aspectj/issues/162
+		static, see https://github.com/eclipse-aspectj/aspectj/issues/162
 	-->
 	<ajc-test dir="bugs1920/github_162" vm="1.5" title="inner aspect of interface is implicitly static">
 		<compile files="InterfaceWithInnerClass.java" options="-1.5 -showWeaveInfo">
@@ -228,7 +228,7 @@
 
 	<!--
 		When compiling aspect and target class together, matching works as expected,
-		see https://github.com/eclipse/org.aspectj/issues/24
+		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled together with target class">
 		<compile files="ExactlyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
@@ -260,7 +260,7 @@
 
 	<!--
 		When compiling aspect and target class separately, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
+		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled separately from target class">
 		<compile files="ExactlyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
@@ -296,7 +296,7 @@
 
 	<!--
 		When compiling aspect and target class together, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
+		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled together with target class">
 		<compile files="FuzzilyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
@@ -328,7 +328,7 @@
 
 	<!--
 		When compiling aspect and target class separately, too many joinpoints are matched,
-		see https://github.com/eclipse/org.aspectj/issues/24
+		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled separately from target class">
 		<compile files="FuzzilyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
@@ -362,7 +362,7 @@
 	</ajc-test>
 
 	<!--
-		https://github.com/eclipse/org.aspectj/issues/214
+		https://github.com/eclipse-aspectj/aspectj/issues/214
 		https://github.com/mojohaus/aspectj-maven-plugin/issues/164
 		Problem with multiple, subsequent weaving steps and '-Xlint:warning' or '-Xlint:unorderedAdviceAtShadow=warning'
 			java.lang.ArrayIndexOutOfBoundsException: 1

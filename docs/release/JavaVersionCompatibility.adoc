@@ -1,6 +1,6 @@
 = AspectJ Java version compatibility
 
-For reasons described e.g. in https://github.com/eclipse/org.aspectj/issues/139#issuecomment-1072946123[this comment],
+For reasons described e.g. in https://github.com/eclipse-aspectj/aspectj/issues/139#issuecomment-1072946123[this comment],
 for AspectJ users it has become a little challenging to find out which minimum AspectJ version is required in order to
 process byte code or compile source code using features of a certain Java language version. Since Java 10, this cannot
 be easily concluded from the AspectJ version number anymore, and we are sorry for that. So here is a little overview:

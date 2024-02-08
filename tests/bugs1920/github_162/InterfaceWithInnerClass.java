@@ -3,7 +3,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.JoinPoint;
 
 /**
- * https://github.com/eclipse/org.aspectj/issues/162
+ * https://github.com/eclipse-aspectj/aspectj/issues/162
  */
 public interface InterfaceWithInnerClass {
   public class ImplicitlyStatic {

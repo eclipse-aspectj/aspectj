@@ -5,9 +5,9 @@ _© Copyright 2022 Contributors. All rights reserved._
 _Release info: 1.9.8 available 11-Feb-2022_
 
 Please note, that Bugzilla for issue management is deprecated, and new issues should be filed as
-https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.8 can be found
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.8 can be found
 https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.8[here for Bugzilla] and
-https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.8[here for GitHub issues].
+https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.8[here for GitHub issues].
 
 == New features
 
@@ -30,17 +30,17 @@ The following new properties can improve performance, e.g. Spring start-up time:
 For now, they all default to `false` for backward compatibility. This might change in a future Aspect release, if user
 feedback is positive and no negative side effects are found. Please try using them as much as you can and report back
 questions (to the AspectJ users mailing list) or problems (as a GitHub issue), if any. Thanks to Stefan Starke for his
-contribution. See also https://github.com/eclipse/org.aspectj/pull/37[PR #37].
+contribution. See also https://github.com/eclipse-aspectj/aspectj/pull/37[PR #37].
 
 == Code examples
 
 You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
 first supported (possibly as JVM preview features):
 
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features198/compiler_release[Cross-compilation to legacy JDK]:
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features198/compiler_release[Cross-compilation to legacy JDK]:
   An example class which only works correctly on JDK 8 when compiled with `--release 8` due to API changes in
   the JDK. Simply `-source 8 -target 8` would not be enough in this case.
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17[Pattern matching for `switch`]
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features198/java17[Pattern matching for `switch`]
 
 == Other changes and bug fixes
 
@@ -52,15 +52,15 @@ first supported (possibly as JVM preview features):
   `aspectjweaver` still only require JRE 8+.
 * Document build profiles and properties in _docs/developer/BUILD.md_
 * Add a guide for setting up an AspectJ development environment in _docs/developer/IDE.md_
-* Fix https://github.com/eclipse/org.aspectj/issues/105[issue #105]: Compilation fails when using an aspect library via
+* Fix https://github.com/eclipse-aspectj/aspectj/issues/105[issue #105]: Compilation fails when using an aspect library via
   `-aspectpath` in combination with introducing an annotation via ITD. This was broken since version 1.9.5 and fixed in
   1.9.8.RC3.
-* Fix https://github.com/eclipse/org.aspectj/issues/68[issue #68]: Correctly process class files containing
+* Fix https://github.com/eclipse-aspectj/aspectj/issues/68[issue #68]: Correctly process class files containing
   https://openjdk.java.net/jeps/309[dynamic class-file constants (JEP 309)], which were introduced in Java 11 and broken
   in AspectJ ever since their introduction in 1.9.2. Java itself currently does not use "condy" and neither do other
   widespread JVM languages. Byte code engineering libraries like ASM or Byte Buddy and some instrumentation tools like
   JaCoCo can however produce condy code. Therefore, in order to create a regression test, we actually had to
-  https://github.com/eclipse/org.aspectj/blob/de63b63d/tests/bugs198/github_68/Generator.java#L50-L61[craft a condy
+  https://github.com/eclipse-aspectj/aspectj/blob/de63b63d/tests/bugs198/github_68/Generator.java#L50-L61[craft a condy
   class with ASM].
 * Thanks to Andrey Turbanov for several clean code contributions and to Dmitry Mikhaylov for fixing a potential
   concurrency problem.

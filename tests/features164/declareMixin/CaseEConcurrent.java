@@ -1,5 +1,5 @@
 // TESTING: multiple instances causing factory invocation multiple times (but is cached correctly)
-// Concurrency fix regression test for https://github.com/eclipse/org.aspectj/issues/198
+// Concurrency fix regression test for https://github.com/eclipse-aspectj/aspectj/issues/198
 import org.aspectj.lang.annotation.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +35,7 @@ public class CaseEConcurrent {
   }
 
   // Helper methods 'doSomething' and 'callMe' help to produce byte code similar to what we need in order to fix
-  // https://github.com/eclipse/org.aspectj/issues/198. If necessary, just temporarily uncomment, compile and analyse
+  // https://github.com/eclipse-aspectj/aspectj/issues/198. If necessary, just temporarily uncomment, compile and analyse
   // the byte code, e.g. with JDK tool 'javap -v'.
   /*
   public void doSomething() {

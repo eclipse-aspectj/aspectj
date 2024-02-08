@@ -10,7 +10,7 @@ _Release info: 1.9.9.1 available 31-Mar-2022_
 
 Bugfix release for some compiler options related to the Java Platform Module System (JPMS) which were not working, most
 importantly `--add-modules`, `--add-exports` and `--add-reads`. See
-https://github.com/eclipse/org.aspectj/issues/145[issue #145].
+https://github.com/eclipse-aspectj/aspectj/issues/145[issue #145].
 
 This probably was broken for a long time. AspectJ still is not boasting extensive JPMS support or test coverage, but
 this improvement seems substantial enough to justify a minor release, instead of keeping users waiting for the next
@@ -23,11 +23,11 @@ _© Copyright 2022 Contributors. All rights reserved._
 _Release info: 1.9.9 available 24-Mar-2022_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
-https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.9 can be found
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.9 can be found
 here:
 
-* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.9[GitHub 1.9.9]
-* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.9.1[GitHub 1.9.9.1]
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.9[GitHub 1.9.9]
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.9.1[GitHub 1.9.9.1]
 * https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.9[Bugzilla 1.9.9]
 
 == New features
@@ -43,17 +43,17 @@ the advice. Previously, this was only working in native syntax aspects. There is
 asynchronous proceed, if you do not create the thread in the advice but want to use e.g. an `ExecutorService` with its
 own thread pool. This still is not working in annotation style aspects, only in native syntax ones.
 
-See https://github.com/eclipse/org.aspectj/issues/128[issue #128] and
-https://github.com/eclipse/org.aspectj/pull/132[pull request #132] for more details.
+See https://github.com/eclipse-aspectj/aspectj/issues/128[issue #128] and
+https://github.com/eclipse-aspectj/aspectj/pull/132[pull request #132] for more details.
 
 == Code examples
 
 You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
 first supported (possibly as JVM preview features):
 
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17[Pattern matching for switch, preview 1]
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features199/java18[Pattern matching for switch, preview 2]
-* https://github.com/eclipse/org.aspectj/tree/master/tests/bugs199/github_128[Asynchronous proceed in native vs.
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features198/java17[Pattern matching for switch, preview 1]
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features199/java18[Pattern matching for switch, preview 2]
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/bugs199/github_128[Asynchronous proceed in native vs.
   annotation style syntax]
 
 == Other changes and bug fixes
@@ -62,10 +62,10 @@ first supported (possibly as JVM preview features):
   the value of system property `org.aspectj.weaver.openarchives` (1,000 by default). The AspectJ compiler is meant to
   close archives upon cache exhaustion and then re-open them, if it needs them again later. Re-opening was broken, but
   now the compiler works reliably even for cache sizes as small as 20. See
-  https://github.com/eclipse/org.aspectj/issues/125[issue #125].
+  https://github.com/eclipse-aspectj/aspectj/issues/125[issue #125].
 * Improvements for `if()` pointcuts in annotation syntax, see issues
-  https://github.com/eclipse/org.aspectj/issues/115[#115], https://github.com/eclipse/org.aspectj/issues/120[#120],
-  https://github.com/eclipse/org.aspectj/issues/122[#122].
+  https://github.com/eclipse-aspectj/aspectj/issues/115[#115], https://github.com/eclipse-aspectj/aspectj/issues/120[#120],
+  https://github.com/eclipse-aspectj/aspectj/issues/122[#122].
 * Thanks to Andrey Turbanov for several clean code contributions.
 
 == AspectJ usage hints

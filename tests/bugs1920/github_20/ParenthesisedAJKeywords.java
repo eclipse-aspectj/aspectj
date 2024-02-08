@@ -1,5 +1,5 @@
 /**
- * https://github.com/eclipse/org.aspectj/issues/20
+ * https://github.com/eclipse-aspectj/aspectj/issues/20
  */
 public class ParenthesisedAJKeywords {
   public static void main(String[] args) {

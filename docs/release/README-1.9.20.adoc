@@ -19,7 +19,7 @@ This is a bugfix release for 1.9.20, fixing two problems:
   https://github.com/eclipse-aspectj/aspectj/issues/256[AspectJ tracker issue 256]).
 
 The list of issues addressed for 1.9.20.1 can be found
-https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20.1[here].
+https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20.1[here].
 
 = AspectJ 1.9.20
 
@@ -28,11 +28,11 @@ _© Copyright 2023 Contributors. All rights reserved._
 _Release info: 1.9.20 available 16-Aug-2023_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
-https://github.com/eclipse/org.aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.20 can be found
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.20 can be found
 here:
 
-* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20[GitHub 1.9.20]
-* https://github.com/eclipse/org.aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20.1[GitHub 1.9.20.1]
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20[GitHub 1.9.20]
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.20.1[GitHub 1.9.20.1]
 * https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.20[Bugzilla 1.9.20]
 
 == New features
@@ -47,7 +47,7 @@ features, such as:
 
 Please note, that the upstream Eclipse Java Compiler (ECJ), which the AspectJ Compiler (AJC) is a fork of, still has
 some open issues concerning Java 20 preview feature support, see the list in
-https://github.com/eclipse/org.aspectj/issues/184#issuecomment-1272254940[this comment]. AJC therefore inherits the same
+https://github.com/eclipse-aspectj/aspectj/issues/184#issuecomment-1272254940[this comment]. AJC therefore inherits the same
 problems for the specific cases described in the linked issues.
 
 == Improvements
@@ -68,11 +68,11 @@ problems for the specific cases described in the linked issues.
 You can find some sample code in the AspectJ test suite under the respective AspectJ version in which the features were
 first supported (possibly as JVM preview features):
 
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features198/java17[Pattern matching for switch (preview 1)]
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features199/java18[Pattern matching for switch (preview 2)]
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features1919/java19[Pattern matching for switch (preview 3),
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features198/java17[Pattern matching for switch (preview 1)]
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features199/java18[Pattern matching for switch (preview 2)]
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features1919/java19[Pattern matching for switch (preview 3),
   record patterns (preview 1)]
-* https://github.com/eclipse/org.aspectj/tree/master/tests/features1920/java20[Pattern matching for switch (preview 4),
+* https://github.com/eclipse-aspectj/aspectj/tree/master/tests/features1920/java20[Pattern matching for switch (preview 4),
   record patterns (preview 2)]
 * Please note that presently there is no specific sample code for virtual threads and structured concurrency in the
   AspectJ code base, because these are just new APIs, no Java language features. You can find sample code for these
