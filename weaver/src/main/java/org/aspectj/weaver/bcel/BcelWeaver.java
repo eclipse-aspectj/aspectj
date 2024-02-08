@@ -972,35 +972,32 @@ public class BcelWeaver {
 			}
 
 			public IWeaveRequestor getRequestor() {
-				return new IWeaveRequestor() {
-					public void acceptResult(IUnwovenClassFile result) {
-						try {
-							writeZipEntry(result.getFilename(), result.getBytes());
-						} catch (IOException ex) {
-						}
-					}
-
-					public void processingReweavableState() {
-					}
-
-					public void addingTypeMungers() {
-					}
-
-					public void weavingAspects() {
-					}
-
-					public void weavingClasses() {
-					}
-
-					public void weaveCompleted() {
-					}
-				};
+				return new WeaveRequestor();
 			}
 		});
 		// /* BUG 40943*/
 		// dumpResourcesToOutJar();
 		zipOutputStream.close(); // this flushes and closes the acutal file
 		return c;
+	}
+
+	private class WeaveRequestor implements IWeaveRequestor {
+		public void acceptResult(IUnwovenClassFile result) {
+			try {
+				writeZipEntry(result.getFilename(), result.getBytes());
+			} catch (IOException ex) {
+			}
+		}
+
+		public void processingReweavableState() {}
+
+		public void addingTypeMungers() {}
+
+		public void weavingAspects() {}
+
+		public void weavingClasses() {}
+
+		public void weaveCompleted() {}
 	}
 
 	private Set<IProgramElement> candidatesForRemoval = null;
