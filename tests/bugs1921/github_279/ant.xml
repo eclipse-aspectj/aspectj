@@ -1,0 +1,15 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+  <target name="same class woven concurrently in parallel-capable classloader">
+    <copy file="${aj.root}/tests/bugs1921/github_279/aop.xml" tofile="${aj.sandbox}/META-INF/aop.xml"/>
+    <java fork="yes" classname="Application" failonerror="yes">
+      <classpath refid="aj.path"/>
+      <jvmarg value="-ea"/>
+      <!-- use META-INF/aop.xml style -->
+      <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+      <!--<jvmarg value="${aj.addOpensKey}"/>-->
+      <!--<jvmarg value="${aj.addOpensValue}"/>-->
+    </java>
+  </target>
+
+</project>

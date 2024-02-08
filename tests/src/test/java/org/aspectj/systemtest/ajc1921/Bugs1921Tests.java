@@ -15,8 +15,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs1921Tests extends XMLBasedAjcTestCase {
 
-  public void testDummy() {
-    //runTest("dummy");
+  public void testGitHub_279() {
+    runTest("same class woven concurrently in parallel-capable classloader");
   }
 
   public static Test suite() {
