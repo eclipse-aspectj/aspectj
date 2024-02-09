@@ -76,6 +76,11 @@ public class Aj implements ClassPreProcessor {
 
 	@Override
 	public byte[] preProcess(String className, final byte[] bytes, ClassLoader classLoader, ProtectionDomain protectionDomain) {
+
+		// Implementation note: Try to return null, whenever it is clear that the original byte code was not changed by the
+		// weaver. While not strictly necessary, the changes from commit 3e3c83712e are defensive programming, which helps
+		// to avoid problems like https://bugs.openjdk.org/browse/JDK-8325536, even if unfixed in the JDK.
+
 		if (classLoader == null || className == null ||
 			classLoader.getClass().getName().equals(deleLoader) || classLoader.getClass().getName().equals(deleLoader2)) {
 			// skip boot loader, null classes (hibernate), or those from a reflection loader
