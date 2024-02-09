@@ -333,7 +333,7 @@
 		</run>
 	</ajc-test>
 
-	<!-- https://github.com/eclipse-aspectj/aspectj/issues/279 -->
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/279, AspectJ 1.9.21.1 -->
 	<ajc-test dir="bugs1921/github_279" vm="8" title="same class woven concurrently in parallel-capable classloader">
 		<compile files="Application.java Greeter.java GreeterImpl.java ParallelCapableClassLoader.java" options="-8"/>
 		<compile files="HelloInterceptor.java" options="-8 -Xlint:ignore"/>
