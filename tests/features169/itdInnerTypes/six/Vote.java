@@ -2,7 +2,7 @@ package a.b.c;
 
 public class Vote {
 
-  public static Vote._ field = new Vote._(null);
+  public static Vote.__ field = new Vote.__(null);
 
   static class RealInner {}
 

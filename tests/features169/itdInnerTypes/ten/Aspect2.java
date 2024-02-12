@@ -1,3 +1,3 @@
 aspect Aspect2 {
-  public Construction._ Construction._() { return new _("abc"); }
+  public Construction.__ Construction.__() { return new __("abc"); }
 }

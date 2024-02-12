@@ -1,11 +1,11 @@
 public class Construction {
   public static void main(String []argv) {
-    new _();
+    new __();
     System.out.println("done");
   }
 }
 
 aspect XX {
-  public static class Construction._ {
+  public static class Construction.__ {
   }
 }

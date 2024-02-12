@@ -1,8 +1,8 @@
 aspect Aspect1 {
-  public static class Construction._ {
+  public static class Construction.__ {
     private String string;
-    public _(String string) { this.string = string; }
-    public _() { this.string = "nothing"; }
+    public __(String string) { this.string = string; }
+    public __() { this.string = "nothing"; }
     public String toString() {
       return string; 
     }

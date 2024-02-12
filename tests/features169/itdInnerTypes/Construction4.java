@@ -1,11 +1,11 @@
 aspect Aspect1 {
-  public static Construction4._ Construction4._() { return new _("abc"); }
+  public static Construction4.__ Construction4.__() { return new __("abc"); }
   public static String Construction4.foo() { return "abc"; }
 }
 aspect Aspect2 {
-  public static class Construction4._ {
+  public static class Construction4.__ {
     String string;
-    public _(String string) { this.string = string;}
+    public __(String string) { this.string = string;}
     public String toString() {
       return string;
     }
@@ -13,7 +13,7 @@ aspect Aspect2 {
 } 
 public class Construction4 {
   public static void main(String []argv) {
-    Object o = _();
+    Object o = __();
     o = foo();
     System.out.println(o);
   }

@@ -66,14 +66,14 @@
    </ajc-test>
 
    <ajc-test dir="features169/itdInnerTypes/nine" title="vote - itd mixture 2">
-     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5"/>
+     <compile files="Underscorer.aj Vote.java Runner.java RelatedType.java" options="-1.5" vm=""/>
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -83,10 +83,10 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -96,10 +96,10 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -109,10 +109,10 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -122,10 +122,10 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -135,10 +135,10 @@
      <run class="a.b.c.Runner">
        <stdout>
        <line text="wibble"/>
-       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_$choice)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_$choice.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_$choice.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.choice.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$__$choice)" vm="-1.8"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__$choice.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__$choice.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.choice.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
@@ -149,9 +149,9 @@
        <stdout>
        <line text="wibble"/>
        <line text="@a.b.c.RelatedType(value=class a.b.c.Vote$_)" vm="-1.8"/>
-       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$_.class)" vm="9-13"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote$_.class)" vm="14-18"/>
-       <line text="@a.b.c.RelatedType(a.b.c.Vote._.class)" vm="19-"/>
+       <line text="@a.b.c.RelatedType(value=a.b.c.Vote$__.class)" vm="9-13"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote$__.class)" vm="14-18"/>
+       <line text="@a.b.c.RelatedType(a.b.c.Vote.__.class)" vm="19-"/>
        </stdout>
      </run>
    </ajc-test>
