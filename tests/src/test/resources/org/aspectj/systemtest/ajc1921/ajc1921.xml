@@ -193,9 +193,7 @@
 		<compile files="StringPatternsPreview1.java" options="--enable-preview -21"/>
 		<run class="StringPatternsPreview1" vmargs="--enable-preview">
 			<stdout ordered="yes">
-				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
-				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
-				<line text="\Bill \Duck"/>
+				<line text="Bill Duck"/>
 				<line text="10 + 20 = 30"/>
 				<line text="You have a special New Year's sale discount waiting for you!"/>
 				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
@@ -229,9 +227,7 @@
 		<run class="StringPatternsPreview1Aspect" vmargs="--enable-preview">
 			<stdout ordered="yes">
 				<line text="execution(void StringPatternsPreview1Aspect.main(String[]))"/>
-				<!-- TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered
-				           incorrectly. After the upstream fix, change "\Bill \Duck" to "Bill Duck". -->
-				<line text="\Bill \Duck"/>
+				<line text="Bill Duck"/>
 				<line text="10 + 20 = 30"/>
 				<line text="You have a special New Year's sale discount waiting for you!"/>
 				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
