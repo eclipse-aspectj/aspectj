@@ -2040,10 +2040,11 @@ public class AjASTConverter extends ASTConverter {
 		expression.computeConstant();
 		final InfixExpression infixExpression = new InfixExpression(this.ast);
 		infixExpression.setOperator(InfixExpression.Operator.PLUS);
-		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] stringLiterals = expression.literals;
+		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] stringLiterals = expression.getLiterals();
+		int stringLiteralsSize = stringLiterals.length;
 		infixExpression.setLeftOperand(super.convert(stringLiterals[0]));
 		infixExpression.setRightOperand(super.convert(stringLiterals[1]));
-		for (int i = 2; i < expression.counter; i++) {
+		for (int i = 2; i < stringLiteralsSize; i++) {
 			infixExpression.extendedOperands().add(super.convert(stringLiterals[i]));
 		}
 		if (this.resolveBindings) {
