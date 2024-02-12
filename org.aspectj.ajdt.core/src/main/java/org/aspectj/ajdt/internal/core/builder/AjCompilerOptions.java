@@ -51,15 +51,15 @@ public class AjCompilerOptions extends CompilerOptions {
 
 
 	// constants for irritant levels
-	public static final int InvalidAbsoluteTypeName = IrritantSet.GROUP3 | ASTNode.Bit1;
-	public static final int InvalidWildCardTypeName = IrritantSet.GROUP3 | ASTNode.Bit2;
-	public static final int UnresolvableMember = IrritantSet.GROUP3 | ASTNode.Bit3;
-	public static final int TypeNotExposedToWeaver = IrritantSet.GROUP3 | ASTNode.Bit4;
-	public static final int ShadowNotInStructure = IrritantSet.GROUP3 | ASTNode.Bit5;
-	public static final int UnmatchedSuperTypeInCall = IrritantSet.GROUP3 | ASTNode.Bit6;
-	public static final int CannotImplementLazyTJP = IrritantSet.GROUP3 | ASTNode.Bit7;
-	public static final int NeedSerialVersionUIDField = IrritantSet.GROUP3 | ASTNode.Bit8;
-	public static final int IncompatibleSerialVersion = IrritantSet.GROUP3 | ASTNode.Bit9;
+	public static final int InvalidAbsoluteTypeName = IrritantSet.GROUP4 | ASTNode.Bit1;
+	public static final int InvalidWildCardTypeName = IrritantSet.GROUP4 | ASTNode.Bit2;
+	public static final int UnresolvableMember = IrritantSet.GROUP4 | ASTNode.Bit3;
+	public static final int TypeNotExposedToWeaver = IrritantSet.GROUP4 | ASTNode.Bit4;
+	public static final int ShadowNotInStructure = IrritantSet.GROUP4 | ASTNode.Bit5;
+	public static final int UnmatchedSuperTypeInCall = IrritantSet.GROUP4 | ASTNode.Bit6;
+	public static final int CannotImplementLazyTJP = IrritantSet.GROUP4 | ASTNode.Bit7;
+	public static final int NeedSerialVersionUIDField = IrritantSet.GROUP4 | ASTNode.Bit8;
+	public static final int IncompatibleSerialVersion = IrritantSet.GROUP4 | ASTNode.Bit9;
 
 	public boolean terminateAfterCompilation = false;
 	public boolean xSerializableAspects = false;
