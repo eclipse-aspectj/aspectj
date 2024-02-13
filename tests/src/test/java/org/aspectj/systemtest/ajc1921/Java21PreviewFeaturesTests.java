@@ -8,6 +8,7 @@
 package org.aspectj.systemtest.ajc1921;
 
 import junit.framework.Test;
+import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCaseForJava21Only;
 
@@ -44,6 +45,17 @@ public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only
   public void testUnnamedPatternsAspect() {
     //runTest("unnamed patterns aspect");
     System.out.println("Unnamed patterns still are not implemented with the Java 21 release Eclipse 2023-12 (4.30)");
+  }
+
+  /**
+   * Same as {@link Ajc10xTests#test052()}, but compiled to target 21 instead of 1.4
+   */
+  public void testUnderscoreInPointcutPattern1() {
+    runTest("underscore can still be used in pointcut patterns on Java 21+ - 1");
+  }
+
+  public void testUnderscoreInPointcutPattern2() {
+    runTest("underscore can still be used in pointcut patterns on Java 21+ - 2");
   }
 
   public void testNamedClassWithSimpleMainMethod() {

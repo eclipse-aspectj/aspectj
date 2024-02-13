@@ -297,6 +297,41 @@
 	</ajc-test>
 
 	<!-- Java 21 preview -->
+	<ajc-test dir="new" vm="21" title="underscore can still be used in pointcut patterns on Java 21+ - 1">
+		<compile files="NotCharInPointcut.java" options="--enable-preview -21">
+			<message kind="warning" line="51" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+			<message kind="warning" line="52" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+			<message kind="warning" line="53" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<run class="NotCharInPointcut" vmargs="--enable-preview"/>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
+	<ajc-test dir="features1921/java21" vm="21" title="underscore can still be used in pointcut patterns on Java 21+ - 2">
+		<compile files="UnderscoreInPointcutAspect.aj" options="--enable-preview -21"/>
+		<run class="UnderscoreInPointcutAspect" vmargs="--enable-preview">
+			<stdout>
+				<line text="[starts with underscore] execution(int UnderTest._add(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest._add(int, int)) -> 12, 4"/>
+				<line text="16"/>
+				<line text="[starts with underscore] execution(int UnderTest._subtract(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest._subtract(int, int)) -> 12, 4"/>
+				<line text="8"/>
+				<line text="[ends with underscore] execution(int UnderTest.multiply_(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest.multiply_(int, int)) -> 12, 4"/>
+				<line text="48"/>
+				<line text="[ends with underscore] execution(int UnderTest.divide_(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest.divide_(int, int)) -> 12, 4"/>
+				<line text="3"/>
+				<line text="[contains underscore] execution(int UnderTest.power_of(int, int)) -> 3, 3"/>
+				<line text="27"/>
+				<line text="[no underscore] execution(int UnderTest.squareRoot(int)) -> 49"/>
+				<line text="7"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21 preview -->
 	<ajc-test dir="features1921/java21" vm="21" title="named class with simple main method">
 		<!-- Compiles without preview mode, but needs preview mode to run -->
 		<compile files="NamedClassWithSimpleMainMethodPreview1.java" options="-21"/>
