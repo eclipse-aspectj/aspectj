@@ -1,15 +1,66 @@
 = AspectJ 1.9.21
+:doctype: book
+:leveloffset: +1
+
+The releases 1.9.21 and 1.9.21.1 are described together in this document.
+
+= AspectJ 1.9.21.1
+
+_© Copyright 2024 Contributors. All rights reserved._
+
+_Release info: 1.9.21.1 available 14-Feb-2024_
+
+Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.21.1 can be
+found here:
+
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21.1[GitHub 1.9.21.1]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21.1[Bugzilla 1.9.21.1]
+
+== New features
+
+AspectJ 1.9.21.1 is a maintenance release with no new language features, but important improvements and some bugfixes,
+see below.
+
+== Improvements
+
+* **For load-time weaving (LTW) on JDK 16+, xref:#ltw_java_16[using `--add-opens`] is no longer necessary!** This solves
+link:https://github.com/eclipse-aspectj/aspectj/issues/117[issue #117]. The additional JVM command-line option was
+necessary for LTW on JRE 16+ in all AspectJ versions up to 1.9.21. Since AspectJ 1.9.21.1, the LTW agent uses an
+alternative approach for defining new classes during weaving, which works without `--add-opens` - at least for now, i.e.
+JDKs 8 to 21. There still is no canonical solution, because link:https://bugs.openjdk.org/browse/JDK-8200559[JDK-8200559]
+is still unresolved since 2018.
+
+* The **AspectJ documentation** is now written in **asciidoc** format and processed by the Asciidoctor toolchain.
+Before, it was a mixture of DocBook XML and plain HTML files. While the content has not changed much, it now looks
+fresher, is easier to read (also online when browsing the GitHub repository), navigate and maintain and also easy to
+publish in different formats (multi-page HTML, single-page HTML, PDF). Those formats are also distributed on the website
+and with the AspectJ installer. A content overhaul is also overdue, but not part of this change. It is still basically
+the same: Everything up to AspectJ 1.5 is in the regular documentation. The changes since then can be extracted
+incrementally from various release notes.
+
+== Other changes and bugfixes
+
+* Running the AspectJ Compiler on JDK < 17 no longer creates an `ajcore.*.txt` crash dump file, but prints "The AspectJ
+compiler needs at least Java runtime 17". Fixes link:https://github.com/eclipse-aspectj/aspectj/issues/269[issue #269].
+
+* The AspectJ weaver now plays nicer with parallel class loaders, e.g. jboss-modules in WildFly. Before, it would
+sometimes return original instead of woven byte code. Fixes link:https://github.com/eclipse-aspectj/aspectj/issues/279[issue #279].
+
+* An upstream refresh from JDT Core (Eclipse Java Compiler) fixes a little
+link:https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719[bug in JDK 21 string templates].
+
+= AspectJ 1.9.21
 
 _© Copyright 2023 Contributors. All rights reserved._
 
 _Release info: 1.9.21 available 11-Dec-2023_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
-https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.21 can be found
-here:
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.21 can be
+found here:
 
 * https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21[GitHub 1.9.21]
-* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21.1[GitHub 1.9.21.1]
 * https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21[Bugzilla 1.9.21]
 
 == New features
@@ -62,6 +113,7 @@ details.
 
 History: Since 1.9.8, the AspectJ compiler ajc needed JDK 11+, before then JDK 8+.
 
+[[ltw_java_16]]
 === Use LTW on Java 16+
 
 Please note that if you want to use load-time weaving on Java 16+, the weaving agent collides with
