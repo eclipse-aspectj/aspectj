@@ -1,0 +1,14 @@
+= AspectJ 1.8.13
+
+_© Copyright 2017 Contributors. All rights reserved._
+
+_Release info: 1.8.13 available 15-Nov-2017_
+
+Small release that:
+
+  * Dials back the performance optimizations for Spring AOP. One of them was taking things too far and has caused an
+    issue link:https://jira.spring.io/browse/SPR-16161[SPR-16161]. This wasn't the main performance enhancement for
+    Spring AOP though so the numbers are still very close to those shown in the 1.8.12 readme.
+
+  * Includes better toleration of new JDK versions. If the versions are coming out thick and fast we need older
+    AspectJs to cope when simply running on new JDKs they haven't encountered before.

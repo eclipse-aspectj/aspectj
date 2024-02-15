@@ -1,0 +1,12 @@
+= AspectJ 1.8.14
+
+_© Copyright 2019 Contributors. All rights reserved._
+
+_Release info: 1.8.14 available 6-Mar-2019_
+
+Small release that:
+
+ * Will skip `module-info.class` and class files under `META-INF` that you find in multi-release JARs, as described in
+   link:https://bugs.eclipse.org/bugs/show_bug.cgi?id=545033[bug 545033]. This enables some usage of AspectJ 8 operating
+   on JARs containing some of these features from later Java (but where the main set of classfiles in a JAR are Java 8
+   or lower). For proper treatment of Java 9 code, please use AspectJ 1.9 or later.

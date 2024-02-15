@@ -1,0 +1,72 @@
+= AspectJ 1.8.12
+
+_© Copyright 2017 Contributors. All rights reserved._
+
+_Release info: 1.8.12 available 20-Oct-2017_
+
+This is a small release that includes a backport of some 1.9.0 work that improves the performance of Spring AOP (or any
+system consuming AspectJ in a similar way to Spring).
+
+Dave Syer recently created a series of benchmarks for checking the speed of Spring-AspectJ:
+https://github.com/dsyer/spring-boot-aspectj
+
+Here we can see the numbers for AspectJ 1.8.11 (on an older Macbook Pro):
+
+[source, text]
+....
+Benchmark                 (scale)  Mode  Cnt   Score   Error  Units
+StartupBenchmark.ltw          N/A  avgt   10   2.656 ~ 0.166   s/op
+StartupBenchmark.ltw_100      N/A  avgt   10   2.618 ~ 0.063   s/op
+StartupBenchmark.spring     v0_10  avgt   10   2.071 ~ 0.044   s/op
+StartupBenchmark.spring     v1_10  avgt   10   2.210 ~ 0.058   s/op
+StartupBenchmark.spring    v1_100  avgt   10   2.260 ~ 0.068   s/op
+StartupBenchmark.spring    v10_50  avgt   10   2.933 ~ 0.039   s/op
+StartupBenchmark.spring    v20_50  avgt   10   3.832 ~ 0.094   s/op
+StartupBenchmark.spring   v20_100  avgt   10   3.959 ~ 0.047   s/op
+StartupBenchmark.spring     a0_10  avgt   10   2.073 ~ 0.028   s/op
+StartupBenchmark.spring     a1_10  avgt   10   2.729 ~ 0.061   s/op
+StartupBenchmark.spring    a1_100  avgt   10   2.750 ~ 0.029   s/op
+StartupBenchmark.spring    a10_50  avgt   10   7.153 ~ 0.075   s/op
+StartupBenchmark.spring   a10_100  avgt   10   7.152 ~ 0.059   s/op
+StartupBenchmark.spring    a20_50  avgt   10  11.430 ~ 0.105   s/op
+StartupBenchmark.spring   a20_100  avgt   10  11.497 ~ 0.162   s/op
+....
+
+So this is the average **startup time** of an app affected by aspects applying to the beans involved. Where numbers are
+referenced the first is the number of aspects/pointcuts and the second is the number of beans. The 'a' indicates an
+annotation based pointcut vs a non-annotation based pointcut ('v'). Notice things are much worse for annotation based
+pointcuts. At 20 pointcuts and 50 beans the app is 9 seconds slower to startup.
+
+In AspectJ 1.8.12 and 1.9.0.RC1 some work has been done here. The key change is to recognize that the use of annotations
+with runtime retention is much more likely than annotations with class level retention. Retrieving annotations with
+class retention is costly because we must open the bytes for the class file and dig around in there (vs runtime
+retention which are immediately accessible by reflection on the types). In 1.8.11 the actual type of the annotation
+involved in the matching is ignored and the code will fetch *all* the annotations on the type/method/field being matched
+against. So even if the match is looking for a runtime retention annotation, we were doing the costly thing of fetching
+any class retention annotations. In 1.8.12/1.9.0.RC1 we take the type of the match annotation into account - allowing us
+to skip opening the classfiles in many cases. There is also some deeper work on activating caches that were not
+previously being used correctly but the primary change is factoring in the annotation type.
+
+What difference does that make? AspectJ 1.8.12:
+
+[source, text]
+....
+Benchmark                 (scale)  Mode  Cnt  Score   Error  Units
+StartupBenchmark.ltw          N/A  avgt   10  2.620 ~ 0.130   s/op
+StartupBenchmark.ltw_100      N/A  avgt   10  2.567 ~ 0.038   s/op
+StartupBenchmark.spring     v0_10  avgt   10  2.044 ~ 0.027   s/op
+StartupBenchmark.spring     v1_10  avgt   10  2.195 ~ 0.026   s/op
+StartupBenchmark.spring    v1_100  avgt   10  2.237 ~ 0.039   s/op
+StartupBenchmark.spring    v10_50  avgt   10  2.774 ~ 0.038   s/op
+StartupBenchmark.spring    v20_50  avgt   10  3.488 ~ 0.116   s/op
+StartupBenchmark.spring   v20_100  avgt   10  3.642 ~ 0.080   s/op
+StartupBenchmark.spring     a0_10  avgt   10  2.067 ~ 0.034   s/op
+StartupBenchmark.spring     a1_10  avgt   10  2.159 ~ 0.030   s/op
+StartupBenchmark.spring    a1_100  avgt   10  2.207 ~ 0.020   s/op
+StartupBenchmark.spring    a10_50  avgt   10  2.471 ~ 0.031   s/op
+StartupBenchmark.spring   a10_100  avgt   10  2.517 ~ 0.045   s/op
+StartupBenchmark.spring    a20_50  avgt   10  2.842 ~ 0.049   s/op
+StartupBenchmark.spring   a20_100  avgt   10  2.916 ~ 0.145   s/op
+....
+
+Look at the a20_100 case - instead of impacting start time by 9 seconds, it impacts it by 1 second.

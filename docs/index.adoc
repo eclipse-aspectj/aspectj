@@ -97,13 +97,14 @@ JDK to run
 
 |Release notes |Release notes, describing new features, improvements, bugfixes per AspectJ version: +
  +
-xref:release/README-1.9.21.adoc[1.9.21],
-xref:release/README-1.9.20.adoc[1.9.20 and 1.9.20.1], xref:release/README-1.9.19.adoc[1.9.19],
-xref:release/README-1.9.9.adoc[1.9.9 and 1.9.9.1], xref:release/README-1.9.8.adoc[1.9.8],
-xref:release/README-1.9.7.adoc[1.9.7], xref:release/README-1.9.6.adoc[1.9.6],
-xref:release/README-1.9.5.adoc[1.9.5], xref:release/README-1.9.4.adoc[1.9.4],
-xref:release/README-1.9.3.adoc[1.9.3], xref:release/README-1.9.2.adoc[1.9.2],
-xref:release/README-1.9.1.adoc[1.9.1], xref:release/README-1.9.0.adoc[1.9.0],
+xref:release/README-1.9.21.adoc[1.9.21], xref:release/README-1.9.20.adoc[1.9.20 / 1.9.20.1],
+xref:release/README-1.9.19.adoc[1.9.19], xref:release/README-1.9.9.adoc[1.9.9 / 1.9.9.1],
+xref:release/README-1.9.8.adoc[1.9.8], xref:release/README-1.9.7.adoc[1.9.7],
+xref:release/README-1.9.6.adoc[1.9.6], xref:release/README-1.9.5.adoc[1.9.5],
+xref:release/README-1.9.4.adoc[1.9.4], xref:release/README-1.9.3.adoc[1.9.3],
+xref:release/README-1.9.2.adoc[1.9.2], xref:release/README-1.9.1.adoc[1.9.1],
+xref:release/README-1.9.0.adoc[1.9.0], xref:release/README-1.8.14.adoc[1.8.14],
+xref:release/README-1.8.13.adoc[1.8.13], xref:release/README-1.8.12.adoc[1.8.12],
 xref:release/README-1.8.11.adoc[1.8.11], xref:release/README-1.8.10.adoc[1.8.10],
 xref:release/README-1.8.9.adoc[1.8.9], xref:release/README-1.8.8.adoc[1.8.8],
 xref:release/README-1.8.7.adoc[1.8.7], xref:release/README-1.8.6.adoc[1.8.6],
