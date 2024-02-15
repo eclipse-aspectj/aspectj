@@ -29,6 +29,10 @@
               <sourceDirectory>${project.basedir}</sourceDirectory>
               <preserveDirectories>true</preserveDirectories>
               <relativeBaseDir>true</relativeBaseDir>
+              <attributes>
+                <!-- Avoid "Last updated [timestamp]" footer on each page -->
+                <nofooter>true</nofooter>
+              </attributes>
               <resources>
                 <resource>
                   <!-- Mandatory, even though identical to 'sourceDirectory' -->
