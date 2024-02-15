@@ -1,0 +1,19 @@
+# Mapping file for Git committers, mapping e-mail addresses to names for 'git shortlog -sne'
+# See https://git-scm.com/docs/gitmailmap.
+
+Andy Clement <aclement@pivotal.io> <aclement@gopivotal.com>
+Andy Clement <aclement@pivotal.io> <aclement@vmware.com>
+Andy Clement <aclement@pivotal.io> <andrew.clement@gmail.com>
+Andy Clement <aclement@pivotal.io> <aclement>
+Alexander Kriegisch <kriegaex@aspectj.dev> <Alexander@Kriegisch.name>
+Alexander Kriegisch <kriegaex@aspectj.dev> <Kriegisch@Scrum-Master.de>
+Adrian Colyer <acolyer>
+Alexandre Vasseur <avasseur>
+Erik Hilsdale <ehilsdal>
+Jim Hugunin <jhugunin>
+Mik Kersten <mkersten>
+Matthew Webster <mwebster>
+Wes Isberg <wisberg>
+Sergey Stupin <stupin.sergey@gmail.com>
+John Kew <jkew@vmware.com>
+Eli Finkel <eyfinkel@gmail.com>
