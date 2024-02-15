@@ -18,7 +18,7 @@ class DemoServiceImpl implements DemoService {
 
 aspect X {
 	// None of these match, the subject at execution(secureMethod()) does not have the annotation
-	// see https://www.eclipse.org/aspectj/doc/next/adk15notebook/join-point-modifiers.html
+	// see https://github.com/eclipse-aspectj/aspectj/blob/master/docs/adk15notebook/joinpointsignatures.adoc#join-point-modifiers
 	before(): execution(@Secured * *Service+.*(..))  {	}
 
 	before(): execution(@Secured * *Service.*(..))  {	}

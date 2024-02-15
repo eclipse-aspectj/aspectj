@@ -9,7 +9,7 @@ are AspectJ plugins for Maven, Gradle, Mill and Ant.
 Of course, you can use and other IDE and build tool or simply use your trusted text editor of choice and compile using
 the AspectJ Compiler _ajc_ from the command line.
 
-Please refer to the [AspectJ Development Environment Guide](https://www.eclipse.org/aspectj/doc/next/devguide/printable.html)
+Please refer to the [AspectJ Development Environment Guide](../devguide/index.adoc)
 for more details about on-board AspectJ tools, such as _ajc_ (compiler), _ajdoc_ (aspect-enriched Javadoc), _aj_
 (load-time weaving helper) as well as basic information about load-time weaving configuration and the built-in Ant task
 for AspectJ.
@@ -107,7 +107,7 @@ Java/Scala) and AspectJ (for weaving aspects) in the same module.
 ### Ant
 
 As mentioned in the introduction, AspectJ features its own Ant task, which is described in
-[this chapter](https://www.eclipse.org/aspectj/doc/next/devguide/printable.html#antTasks) of the Development Environment
+[this chapter](../devguide/antsupport.adoc) of the Development Environment
 Guide.
 
 ### Command line

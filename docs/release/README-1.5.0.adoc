@@ -11,9 +11,7 @@ changes are summarized in the xref:../faq/faq.adoc#AspectJ5[FAQ entry on
 AspectJ 5].
 
 Some of the other documentation has not been updated for AspectJ 5. For
-the latest documentation, see
-https://eclipse.org/aspectj/doc/next/index.html, linked off
-https://eclipse.org/aspectj/doc/latest/index.html[the AspectJ documentation home page].
+the latest documentation, see xref:../index.adoc[the AspectJ documentation home page].
 
 For information on bug fixes in AspectJ 5 v1.5.0, see the
 xref:changes.adoc[changes] document.
