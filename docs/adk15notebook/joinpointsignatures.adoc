@@ -229,10 +229,9 @@ manner.
 == Join Point Modifiers
 
 Every join point has a single set of modifiers - these include the
-standard Java modifiers such as `public, private,
-          static, abstract` etc., any annotations, and the throws
-clauses of methods and constructors. These modifiers are the modifiers
-of the _subject_ of the join point.
+standard Java modifiers such as `public`, `private`, `static`, `abstract` etc.,
+any annotations, and the `throws` clauses of methods and constructors.
+These modifiers are the modifiers of the _subject_ of the join point.
 
 The following table defines the join point subject for each kind of join
 point.
