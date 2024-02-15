@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.generic.*;
@@ -64,7 +64,7 @@ import java.util.*;
  * Elements of this stack are org.aspectj.apache.bcel.generic.Type objects.
  *
  * @version $Id: OperandStack.java,v 1.3 2009/09/09 19:56:20 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class OperandStack{
 
@@ -88,7 +88,7 @@ public class OperandStack{
 	public OperandStack(int maxStack, ObjectType obj){
 		this.maxStack = maxStack;
 		this.push(obj);
-	}	
+	}
 	/**
 	 * Returns a deep copy of this object; that means, the clone operates
 	 * on a new stack. However, the Type objects on the stack are
@@ -198,7 +198,7 @@ public class OperandStack{
 	/**
 	 * Returns the number of stack slots used.
 	 * @see #maxStack()
-	 */	
+	 */
 	public int slotsUsed(){
 		/*  XXX change this to a better implementation using a variable
 		    that keeps track of the actual slotsUsed()-value monitoring
@@ -210,7 +210,7 @@ public class OperandStack{
 		}
 		return slots;
 	}
-	
+
 	/**
 	 * Returns a String representation of this OperandStack instance.
 	 */
@@ -230,7 +230,7 @@ public class OperandStack{
 	public void merge(OperandStack s){
 		if ( (slotsUsed() != s.slotsUsed()) || (size() != s.size()) )
 			throw new StructuralCodeConstraintException("Cannot merge stacks of different size:\nOperandStack A:\n"+this+"\nOperandStack B:\n"+s);
-		
+
 		for (int i=0; i<size(); i++){
 			// If the object _was_ initialized and we're supposed to merge
 			// in some uninitialized object, we reject the code (see vmspec2, 4.9.4, last paragraph).

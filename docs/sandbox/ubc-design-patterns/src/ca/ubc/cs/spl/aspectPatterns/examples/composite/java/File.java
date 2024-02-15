@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,20 +15,20 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 /**
  * Implements a <i>Leaf</i>. Leafs have no children.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/06/04
- * 
+ *
  * @see Directory
  */
 
@@ -39,7 +39,7 @@ public class File implements FileSystemComponent {
      */
 
 	protected String name;
-	
+
 	/**
 	 * stores the size for this File
 	 */
@@ -56,7 +56,7 @@ public class File implements FileSystemComponent {
 		this.name = name;
 		this.size = size;
 	}
-	 
+
     /**
      * Overwrites the <code>toString()</code> method from <code>Object</code>
      * to print information about this object
@@ -65,8 +65,8 @@ public class File implements FileSystemComponent {
 	public String toString() {
 		return ("File: "+name+" ("+size+" KB)");
 	}
- 
- 
+
+
     /**
      * Adds a child to the Component. Since Files have no
      * children, this method does nothing.
@@ -92,26 +92,26 @@ public class File implements FileSystemComponent {
      * @param index the position of the child
      * @return always null, since Files do not have children
      */
-     
+
 	public FileSystemComponent getChild(int index) {
 		return null;
 	}
 
     /**
-     * Returns the number of chilren this Component has. Since Files 
-     * are <i>Leaf</i>s, they don't have any children. Thus, this method 
+     * Returns the number of chilren this Component has. Since Files
+     * are <i>Leaf</i>s, they don't have any children. Thus, this method
      * returns 0.
      *
      * @returns always 0, since Files do not have children
      */
- 
+
 	public int	 getChildCount() {
 		return 0;
 	}
-	
+
 	/**
 	 * Returns the size of this File
-	 * 
+	 *
 	 * @return the size of this File (on disk)
 	 */
 	public int getSize() {

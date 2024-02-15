@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.generic;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.generic;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -85,7 +85,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeParamAnnos;
  *
  * @version $Id: MethodGen.java,v 1.17 2011/05/19 23:23:46 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @author <A HREF="http://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
+ * @author <A HREF="https://www.vmeng.com/beard">Patrick C. Beard</A> [setMaxStack()]
  * @see InstructionList
  * @see Method
  */

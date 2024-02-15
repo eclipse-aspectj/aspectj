@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.Repository;
@@ -64,7 +64,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * more notably, memory.
  *
  * @version $Id: TransitiveHull.java,v 1.2 2008/05/28 23:53:00 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class TransitiveHull implements VerifierFactoryObserver{
 
@@ -74,7 +74,7 @@ public class TransitiveHull implements VerifierFactoryObserver{
 	/** Not publicly instantiable. */
 	private TransitiveHull(){
 	}
-	
+
 	/* Implementing VerifierFactoryObserver. */
 	public void update(String classname){
 
@@ -87,7 +87,7 @@ public class TransitiveHull implements VerifierFactoryObserver{
 		indent += 1;
 
 		Verifier v = VerifierFactory.getVerifier(classname);
-	
+
 		VerificationResult vr;
 		vr = v.doPass1();
 		if (vr != VerificationResult.VR_OK) //System.exit(1);
@@ -128,7 +128,7 @@ public class TransitiveHull implements VerifierFactoryObserver{
 		int dotclasspos = args[0].lastIndexOf(".class");
 		if (dotclasspos != -1) args[0] = args[0].substring(0,dotclasspos);
 		args[0] = args[0].replace('/', '.');
-	
+
 		TransitiveHull th = new TransitiveHull();
 		VerifierFactory.attach(th);
 		VerifierFactory.getVerifier(args[0]); // the observer is called back and does the actual trick.

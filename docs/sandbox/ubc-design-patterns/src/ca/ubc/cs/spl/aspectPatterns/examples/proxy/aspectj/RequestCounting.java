@@ -1,4 +1,4 @@
-package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj; 
+package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
 
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,48 +15,48 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import ca.ubc.cs.spl.aspectPatterns.patternLibrary.ProxyProtocol;
 import org.aspectj.lang.JoinPoint;
 
 /**
- * Implements a concrete proxy pattern instance. Here, all method calls from 
- * <code>Main</code> to <code>OutputImplementation.print(String)</code> are blocked.<p> 
+ * Implements a concrete proxy pattern instance. Here, all method calls from
+ * <code>Main</code> to <code>OutputImplementation.print(String)</code> are blocked.<p>
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/17/04
- */    
+ */
 
-public aspect RequestCounting extends ProxyProtocol {  
-	
+public aspect RequestCounting extends ProxyProtocol {
+
 	/**
 	 * An internal counter for the number of calls to <code>
 	 * print(String)</code>.
 	 */
-	 
+
 	private int regularRequests = 0;
 
-    
-    /** 
+
+    /**
      * Assigns the <i>OutputSubject</i> role to <code>OutputImplementation</code>.
      */
-    
+
     declare parents: OutputImplementation implements Subject;
 
     /**
-     * Captures all accesses to the subject that should be protected by 
+     * Captures all accesses to the subject that should be protected by
      * this pattern instance. Here: All calls to <code>
      * OutputImplementation.print(..)</code>.
      */
 
-	protected pointcut requests(): 
+	protected pointcut requests():
 		call(* OutputImplementation.regularRequest(..));
 
 	/**
@@ -64,20 +64,20 @@ public aspect RequestCounting extends ProxyProtocol {
 	 * that come from <code>Main</code> objects are denied.
 	 *
      * @param caller the object responsible for the protected access
-     * @param subject the subject receiving the call  
+     * @param subject the subject receiving the call
      * @param joinPoint the joinpoint associated with the protected access
      *
      * @return true if the access is from a Main object, false otherwise
      */
 
-	protected boolean isProxyProtected(Object caller, 
-	                            Subject subject, 
-	                            JoinPoint joinPoint) { 
+	protected boolean isProxyProtected(Object caller,
+	                            Subject subject,
+	                            JoinPoint joinPoint) {
 		if (joinPoint.getThis() instanceof Main) {
 			regularRequests++;
 			System.out.println("[RequestCounter:] That was regular request nr. " +
 				regularRequests);
-		} 
-		return false;		
+		}
+		return false;
 	}
 }

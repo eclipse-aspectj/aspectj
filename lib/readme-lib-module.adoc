@@ -5,11 +5,11 @@ than the Eclipse Public License (EPL). Those not subject to EPL are not distribu
 AspectJ (except for Apache's BCEL), but are used in the development of AspectJ. This module also contains some bootstrap
 libraries and test sources.
 
-* ant: Ant 1.6.3 from http:jakarta.apache.org/ant. This is a normal binary distribution, junit.jar in the lib dir. Ant
+* ant: Ant 1.6.3 from https:jakarta.apache.org/ant. This is a normal binary distribution, junit.jar in the lib dir. Ant
   is available under the Apache Software License.
 * aspectj: This is just our version to avoid bootstrapping Ant builds of modules built with AspectJ. Likely to be
   replaced with bootstrapping.
-* bcel: The Bytecode Engineering Library from http:jakarta.apache.org/bcel, available under the Apache Software License.
+* bcel: The Bytecode Engineering Library from https:jakarta.apache.org/bcel, available under the Apache Software License.
 * build: bootstrap libraries for the build process.
 * commons: Commons 1.0 from https://commons.apache.org[apache.org]. This is used only by the testing module.
 * junit: JUnit 3.7 test libraries, available from https://junit.org[junit.org] and under the CPL.

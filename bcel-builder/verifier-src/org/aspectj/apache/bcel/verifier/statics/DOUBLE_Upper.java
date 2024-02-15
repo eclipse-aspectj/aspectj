@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.Constants;
@@ -60,7 +60,7 @@ import org.aspectj.apache.bcel.generic.Type;
 /**
  * This class represents the upper half of a DOUBLE variable.
  * @version $Id: DOUBLE_Upper.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public final class DOUBLE_Upper extends Type{
 

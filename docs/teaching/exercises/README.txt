@@ -67,17 +67,17 @@ It is almost certainly a good idea to hope that Java is already
 installed on the students' systems, but to provide two installers
 (windows and linux) anyway.
 
-   http://java.sun.com
+   https://java.sun.com
 
 You may want to also include the rest of the AspectJ installers as
 well, but that might be a bit of a distraction
 
-   http://aspectj.org/dl
+   https://aspectj.org/dl
 
 These require junit.jar.  I've included a copy in with the two zip
 files, but they might want to be refreshed every now and again.
 
-   http://junit.org
+   https://junit.org
 
 
 ------------------------------
@@ -121,4 +121,3 @@ scripts under CVS.
 
 Since the only difference is the answers, just overwrite the
 extraction directory with answers.zip.
-

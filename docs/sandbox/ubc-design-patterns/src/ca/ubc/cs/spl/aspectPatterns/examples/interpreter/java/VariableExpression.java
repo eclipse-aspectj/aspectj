@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,15 +15,15 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
- * Implements a variable expression for booleans. This is a concrete 
+ * Implements a variable expression for booleans. This is a concrete
  * boolean <i>NonterminalExpression</i>
  * expression
  *
@@ -33,29 +33,29 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  */
 
 public class VariableExpression implements BooleanExpression {
-    
-    /** 
+
+    /**
      * the name of the variable this object represents
      */
-     
-	protected String name = null;  
-	
+
+	protected String name = null;
+
 	/**
-	 * Creates a new <code>VariableExpression</code> with the given name   
+	 * Creates a new <code>VariableExpression</code> with the given name
 	 *
-	 * @param name the name of the new variable 
+	 * @param name the name of the new variable
 	 */
 
 	public VariableExpression(String name) {
 		this.name = name;
-	} 
-	
+	}
+
 	/**
 	 * Accessor for the variable's name
 	 *
 	 * @return the name of the variable
 	 */
-	
+
 	public String getName() {
 		return name;
 	}
@@ -70,7 +70,7 @@ public class VariableExpression implements BooleanExpression {
 	public boolean evaluate(VariableContext c) {
 		return c.lookup(name);
 	}
-	
+
     /**
      * Replaces a variable with an <i>Expression</i>
      *
@@ -86,14 +86,14 @@ public class VariableExpression implements BooleanExpression {
 			return new VariableExpression(this.name);
 		}
 	}
-	
+
     /**
      * Copies this <i>Expression</i>
      *
      * @return the copied <i>Expression</i>
      */
-     
+
 	public BooleanExpression copy() {
 		return new VariableExpression(name);
-	}		
+	}
 }

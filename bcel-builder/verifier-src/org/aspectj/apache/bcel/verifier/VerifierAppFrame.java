@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import java.awt.AWTEvent;
@@ -397,7 +397,7 @@ public class VerifierAppFrame extends JFrame {
 
   void aboutMenuItem_actionPerformed(ActionEvent e) {
     JOptionPane.showMessageDialog(this,
-            "JustIce is a Java class file verifier.\nIt was implemented by Enver Haase in 2001, 2002.\n<http://jakarta.apache.org/bcel/index.html>",
+            "JustIce is a Java class file verifier.\nIt was implemented by Enver Haase in 2001, 2002.\n<https://jakarta.apache.org/bcel/index.html>",
              JUSTICE_VERSION, JOptionPane.INFORMATION_MESSAGE);
   }
 

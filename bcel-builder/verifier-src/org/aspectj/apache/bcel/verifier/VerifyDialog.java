@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import java.awt.Color;
@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.classfile.JavaClass;
  * [This class was created using VisualAge for Java,
  * but it does not work under VAJ itself (Version 3.02 JDK 1.2)]
  * @version $Id: VerifyDialog.java,v 1.2 2008/05/28 23:53:01 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #main(String[])
  * @see #VerifyDialog(String)
  */
@@ -108,13 +108,13 @@ public class VerifyDialog extends javax.swing.JDialog {
 /** Machine-generated. */
 class IvjEventHandler implements java.awt.event.ActionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == VerifyDialog.this.getPass1Button()) 
+			if (e.getSource() == VerifyDialog.this.getPass1Button())
 				connEtoC1(e);
-			if (e.getSource() == VerifyDialog.this.getPass2Button()) 
+			if (e.getSource() == VerifyDialog.this.getPass2Button())
 				connEtoC2(e);
-			if (e.getSource() == VerifyDialog.this.getPass3Button()) 
+			if (e.getSource() == VerifyDialog.this.getPass3Button())
 				connEtoC3(e);
-			if (e.getSource() == VerifyDialog.this.getFlushButton()) 
+			if (e.getSource() == VerifyDialog.this.getFlushButton())
 				connEtoC4(e);
 		};
 	};
@@ -173,7 +173,7 @@ public VerifyDialog(java.awt.Frame owner, boolean modal) {
  */
 public VerifyDialog(String fully_qualified_class_name) {
 	super();
-	
+
 	int dotclasspos = fully_qualified_class_name.lastIndexOf(".class");
 	if (dotclasspos != -1) fully_qualified_class_name = fully_qualified_class_name.substring(0,dotclasspos);
 	fully_qualified_class_name = fully_qualified_class_name.replace('/', '.');
@@ -472,7 +472,7 @@ private void initialize() {
  */
 public static void main(java.lang.String[] args) {
 	classes_to_verify = args.length;
-	
+
 	for (int i=0; i<args.length; i++){
 
 		try {
@@ -490,7 +490,7 @@ public static void main(java.lang.String[] args) {
 			System.err.println("Exception occurred in main() of javax.swing.JDialog");
 			exception.printStackTrace(System.out);
 		}
-	
+
 	}
 }
 
@@ -511,7 +511,7 @@ public void pass1Button_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 /** Machine-generated. */
 public void pass2Button_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	pass1Button_ActionPerformed(actionEvent);
-	
+
 	Verifier v = VerifierFactory.getVerifier(class_name);
 	VerificationResult vr = v.doPass2();
 	if (vr.getStatus() == VerificationResult.VERIFIED_OK){
@@ -530,10 +530,10 @@ public void pass2Button_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 
 /** Machine-generated. */
 public void pass4Button_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	
+
 	pass2Button_ActionPerformed(actionEvent);
-	
-	
+
+
 	Color color = Color.green;
 
 	Verifier v = VerifierFactory.getVerifier(class_name);

@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,21 +15,21 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 import javax.swing.*;
 import java.awt.event.*;
 
 /**
- * Implements the driver for the mediator design pattern example.<p> 
+ * Implements the driver for the mediator design pattern example.<p>
  *
  * Intent: <i>Define an object that encapsulates how a set of objects
- * interact. Mediator promotes loose coupling by keeping objects from 
+ * interact. Mediator promotes loose coupling by keeping objects from
  * referring to each other explicitly, and it lets you vary their interaction
  * independently.</i><p>
  *
@@ -44,15 +44,15 @@ import java.awt.event.*;
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/12/04
- * 
+ *
  * @see Button
  * @see Label
  */
-  
+
 public class Main {
 
-     
-    static JFrame frame   = new JFrame("Mediator Demo"); 
+
+    static JFrame frame   = new JFrame("Mediator Demo");
     static Button button1 = new Button("Button1");
     static Button button2 = new Button("Button2");
     static Label  label   = new Label ("Click a button!");
@@ -60,30 +60,30 @@ public class Main {
     /**
      * Implements the driver for the mediator example. It creates a small
      * GUI with a label and two buttons. The buttons are <i>Colleague</i>s,
-     * the label is the <i>Mediator</i>. 
+     * the label is the <i>Mediator</i>.
      *
      * Each button click causes the mediator to update itself and the
      * calling button.
-     */ 
- 
+     */
+
 	public static void main(String[] args) {;
 
-	    
+
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {System.exit(0);}
 		});
-		    
+
 		JPanel panel = new JPanel();
-	
+
 		panel.add(label);
 		panel.add(button1);
-		panel.add(button2); 
-		
+		panel.add(button2);
+
 		frame.getContentPane().add(panel);
 		frame.pack();
-		frame.setVisible(true);  
-		
-	    MediatorImplementation.aspectOf().setMediator(button1, label);    
-	    MediatorImplementation.aspectOf().setMediator(button2, label);    
+		frame.setVisible(true);
+
+	    MediatorImplementation.aspectOf().setMediator(button1, label);
+	    MediatorImplementation.aspectOf().setMediator(button2, label);
 	}
 }

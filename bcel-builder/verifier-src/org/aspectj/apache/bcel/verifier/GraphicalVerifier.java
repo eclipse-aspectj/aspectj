@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import java.awt.Dimension;
@@ -74,8 +74,8 @@ public class GraphicalVerifier {
   /** Constructor. */
   public GraphicalVerifier() {
     VerifierAppFrame frame = new VerifierAppFrame();
-    //Frames überprüfen, die voreingestellte Größe haben
-    //Frames packen, die nutzbare bevorzugte Größeninformationen enthalten, z.B. aus ihrem Layout
+    //Frames ï¿½berprï¿½fen, die voreingestellte Grï¿½ï¿½e haben
+    //Frames packen, die nutzbare bevorzugte Grï¿½ï¿½eninformationen enthalten, z.B. aus ihrem Layout
     if (packFrame) {
       frame.pack();
     }

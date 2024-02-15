@@ -220,7 +220,7 @@ public class AjcSpecXmlReader {
 //        try {
 //            // this is the correct approach, but the commons parser
 //            // fails to accept a second, overriding registration - see
-//            // http://lists.xml.org/archives/xml-dev/200111/msg00959.html
+//            // https://lists.xml.org/archives/xml-dev/200111/msg00959.html
 //            digester.getXMLReader().setEntityResolver(new SuiteResolver(suiteFile));
 //        } catch (SAXException e) {
 //            System.err.println("unable to set entity resolver");
@@ -534,4 +534,3 @@ public class AjcSpecXmlReader {
 //  }
 //  return null;
 //}
-

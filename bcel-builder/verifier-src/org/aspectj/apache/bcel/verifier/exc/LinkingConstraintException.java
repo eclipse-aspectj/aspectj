@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 /**
  * Instances of this class are thrown by BCEL's class file verifier "JustIce" when
@@ -68,7 +68,7 @@ package org.aspectj.apache.bcel.verifier.exc;
  * <B>TODO: At this time, this class is not used in JustIce.</B>
  *
  * @version $Id: LinkingConstraintException.java,v 1.2 2008/05/28 23:53:02 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class LinkingConstraintException extends StructuralCodeConstraintException{
 }

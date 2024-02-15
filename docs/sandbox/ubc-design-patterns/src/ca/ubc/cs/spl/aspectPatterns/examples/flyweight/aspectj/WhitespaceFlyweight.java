@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.flyweight.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,21 +15,21 @@ package ca.ubc.cs.spl.aspectPatterns.examples.flyweight.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 /**
- * A <i>ConcreteFlyweight</i> storing a single whitespace 
+ * A <i>ConcreteFlyweight</i> storing a single whitespace
  * character
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/11/04
- * 
+ *
  * @see PrintableFlyweightFactory
  */
 
@@ -39,27 +39,27 @@ public class WhitespaceFlyweight implements PrintableFlyweight {
     /**
      * The character this flyweight represents
      */
-     
+
 	private char c;
-	
-    /** 
-     * Creates a new flyweight and sets it to represent a particular 
+
+    /**
+     * Creates a new flyweight and sets it to represent a particular
      * whitespace character
-     * 
+     *
      * @param c the character to represent
      */
 
 	public WhitespaceFlyweight(char c) {
 		this.c = c;
 	}
-	
-    /** 
+
+    /**
      * Prints the stored character
      *
      * @param uppercase whether the character should be printed in
      * uppercase
-     */ 
-     
+     */
+
 	public void print(boolean uppercase) {
 		System.out.print(uppercase ? Character.toUpperCase(c) : c);
 	}

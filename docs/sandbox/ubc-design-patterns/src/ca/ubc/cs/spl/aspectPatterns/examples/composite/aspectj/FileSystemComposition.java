@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,36 +15,36 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
-import java.io.PrintStream;  
-import java.util.Enumeration; 
+
+import java.io.PrintStream;
+import java.util.Enumeration;
 import ca.ubc.cs.spl.aspectPatterns.patternLibrary.CompositeProtocol;
 
 /**
- * Implements a concrete instance of the Composite design pattern.<p> 
- * 
- * It maintains the mapping between <i>Composite</i>s and their children, 
- * defines the <i>Component</i>, <i>Composite</i>, and <i>Leaf</i> roles, 
- * and provides facilities to implement methods that work on the whole 
+ * Implements a concrete instance of the Composite design pattern.<p>
+ *
+ * It maintains the mapping between <i>Composite</i>s and their children,
+ * defines the <i>Component</i>, <i>Composite</i>, and <i>Leaf</i> roles,
+ * and provides facilities to implement methods that work on the whole
  * aggregate structure.
  *
- * <p><i>This is the AspectJ version.</i><p> 
+ * <p><i>This is the AspectJ version.</i><p>
  *
  * This concrete subaspect does the following things: <UL>
  * <LI> Defines which classes are Components and Leafs
  * <LI> Defines methods that operate on the whole aggregate
  *      structure (using visitors)
  * </UL>
- * 
+ *
  * Note that implementing the two visitors is just done for fun. Similar
  * implementations are possible in the OO case of course, although that would
- * require changing the <i>Components</i>. 
+ * require changing the <i>Components</i>.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
@@ -53,20 +53,20 @@ import ca.ubc.cs.spl.aspectPatterns.patternLibrary.CompositeProtocol;
 
 public aspect FileSystemComposition extends CompositeProtocol {
 
-    /** 
+    /**
      * Assigns the Composite role to <code>Directory</code>
      */
-     
+
     declare parents: Directory implements Composite;
 
-    /** 
+    /**
      * Assigns the Leaf role to <code>File</code>
      */
 
     declare parents: File      implements Leaf;
- 
- 
-    
+
+
+
 
 	// Test 1: Printing the stucture using a visitor
 
@@ -86,7 +86,7 @@ public aspect FileSystemComposition extends CompositeProtocol {
 	}
 
     /**
-     * Provides a client-accessible method that pretty-prints the 
+     * Provides a client-accessible method that pretty-prints the
      * structure of the aggregate structure using a Visitor
      *
      * @param s the PrintStream to print to
@@ -95,11 +95,11 @@ public aspect FileSystemComposition extends CompositeProtocol {
     public void Component.printStructure(PrintStream s) {
         indent();
         s.println("<Component>"+this);
-    } 
-    
+    }
+
     /**
-     * Implements <code>printStructure</code> for Composites: The indent 
-     * is appropriately updated and the method call is forwarded to all 
+     * Implements <code>printStructure</code> for Composites: The indent
+     * is appropriately updated and the method call is forwarded to all
      * children.
      *
      * @param s the PrintStream to print to
@@ -109,8 +109,8 @@ public aspect FileSystemComposition extends CompositeProtocol {
         indent();
         s.println("<Composite>"+this);
         indent +=4;
-        FileSystemComposition.aspectOf().recurseOperation(this, new Visitor() { 
-            public void doOperation(Component c) { c.printStructure(s); } 
+        FileSystemComposition.aspectOf().recurseOperation(this, new Visitor() {
+            public void doOperation(Component c) { c.printStructure(s); }
         } );
         indent -=4;
     }
@@ -125,47 +125,47 @@ public aspect FileSystemComposition extends CompositeProtocol {
         indent();
         s.println("<Leaf>"+this);
     }
-    
- 
- 
- 
-    
+
+
+
+
+
     // Test2: Collecting statistics on the structure (aggregation)
-    
+
     /**
-     * Provides a client-accessible method that pretty-prints the 
-     * structure of the aggregate structure using a FunctionVisitor. 
+     * Provides a client-accessible method that pretty-prints the
+     * structure of the aggregate structure using a FunctionVisitor.
      * Calculates the sum of all File (<i>Leaf</i>) sizes in the structure.
      *
      * @returns the sum of <i>Leaf</i> sizes of all elements in this structure
-     */ 
-     
+     */
+
     public int Component.subSum() {
         return 0;
     }
 
     /**
-     * Implements <code>subSum()</code> for Composites: The method call 
+     * Implements <code>subSum()</code> for Composites: The method call
      * is forwarded to all children, then the results are summed up.
      *
      * @returns the sum of leaf sizes of all elements in this structure
      */
 
-    public int Directory.subSum() {     
+    public int Directory.subSum() {
         Enumeration enum = FileSystemComposition.aspectOf().recurseFunction(
-          this, new FunctionVisitor() { 
-            public Object doFunction(Component c) { 
-                return new Integer(c.subSum()); 
+          this, new FunctionVisitor() {
+            public Object doFunction(Component c) {
+                return new Integer(c.subSum());
             }
-        }); 
-        
+        });
+
         int sum = 0;
         while (enum.hasMoreElements()) {
             sum += ((Integer) enum.nextElement()).intValue();
         }
         return sum;
     }
-    
+
     /**
      * Implements <code>subSum()</code> for <i>Leaf</i>s: Simply returns
      * the <i>Leaf</i>'s size.
@@ -176,5 +176,4 @@ public aspect FileSystemComposition extends CompositeProtocol {
     public int File.subSum() {
         return size;
     }
-}       
-
+}

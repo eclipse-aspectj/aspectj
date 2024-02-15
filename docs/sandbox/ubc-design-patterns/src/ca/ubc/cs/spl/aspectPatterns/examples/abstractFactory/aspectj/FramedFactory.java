@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.abstractFactory.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,15 +15,15 @@ package ca.ubc.cs.spl.aspectPatterns.examples.abstractFactory.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
- 
-import javax.swing.JLabel; 
+
+import javax.swing.JLabel;
 import javax.swing.border.Border;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,7 +31,7 @@ import javax.swing.JButton;
 /**
  * This <i>Concrete Factory</i> implements the <code>ComcreteFactory</code>
  * interface to provide framed Swing GUI components.
- * 
+ *
  * @author Jan Hannemann
  * @author Gregor Kiczales
  * @version 1.1, 01/20/04
@@ -41,11 +41,11 @@ import javax.swing.JButton;
 public class FramedFactory implements ComponentFactory {
 
     /**
-     * Factroy method to create framed <code>JLabel</code> objects. 
+     * Factroy method to create framed <code>JLabel</code> objects.
      *
      * @return the framed <code>JLabel</code>
      */
- 
+
 
 	public JLabel createLabel() {
 		JLabel label = new JLabel("This Label was created by " + getName());
@@ -53,32 +53,32 @@ public class FramedFactory implements ComponentFactory {
 		Border loweredbevel = BorderFactory.createLoweredBevelBorder();
 		label.setBorder(BorderFactory.createCompoundBorder(
 			raisedbevel, loweredbevel));
-		
+
 		return label;
-	} 
-	
+	}
+
     /**
-     * Factory method to create framed <code>JButton</code> objects. 
+     * Factory method to create framed <code>JButton</code> objects.
      *
      * @param  the label for the new <code>JButton</code>
      * @return the framed <code>JButton</code>
      */
- 
+
      public JButton createButton(String label) {
 		JButton button = new JButton(label);
 		Border raisedbevel = BorderFactory.createRaisedBevelBorder();
 		Border loweredbevel = BorderFactory.createLoweredBevelBorder();
 		button.setBorder(BorderFactory.createCompoundBorder(raisedbevel, loweredbevel));
 		return button;
-	}	
+	}
 
-    /** 	
+    /**
      * Returns the name of the factory.
      *
      * @return the name of the factory
      */
- 
+
  	public String getName() {
 		return "Framed Factory";
-	} 
+	}
 }

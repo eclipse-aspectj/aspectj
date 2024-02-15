@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
@@ -31,14 +31,14 @@ package ca.ubc.cs.spl.aspectPatterns.examples.interpreter.java;
  */
 
 public interface BooleanExpression {
-    
+
     /**
      * Evaluates this <i>Expression</i> in the given <i>VariableContext</i>
      *
      * @param c the <i>Context</i> to evaluate the <i>Expression</i> in
      * @return the boolean value of the <i>Expression</i>
      */
-     
+
 	public boolean evaluate(VariableContext c);
 
     /**
@@ -48,7 +48,7 @@ public interface BooleanExpression {
      * @param exp the <i>Expression</i> to replace the variable
      * @return a copy of this <i>Expression</i> with the variable replaced
      */
-     
+
 	public BooleanExpression replace(String name, BooleanExpression exp);
 
     /**
@@ -56,6 +56,6 @@ public interface BooleanExpression {
      *
      * @return the copied <i>Expression</i>
      */
-     
+
 	public BooleanExpression copy();
 }

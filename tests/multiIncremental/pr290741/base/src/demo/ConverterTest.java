@@ -4,12 +4,12 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 public class ConverterTest {
-	
+
 	/**
 	 * For signature we need an UTF-8 environment - don't ask my why.
-	 * 
+	 *
 	 * @since 29-Jun-06
-	 * @see http://mindprod.com/jgloss/encoding.html
+	 * @see https://mindprod.com/jgloss/encoding.html
 	 */
 /*
 		String encoding = System.getProperty("file.encoding");
@@ -18,11 +18,11 @@ public class ConverterTest {
 		System.out.println("System.out encoding = " + outEncoding);
 	}
 */
-	
+
 	public static void run() throws Exception {
 	/**
 	 * Do we really get the right bytes here if the encoding is wrong?
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 		//String name = "B\u00f6hm";	// this works
 		String name = "Böhm";

@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import java.util.WeakHashMap;
@@ -44,7 +44,7 @@ import java.util.Iterator;
  *
  *   <li> how to update the observers <br>
  *        this is done by defining a method on
- *        updateObserver(Subject, Observer) 
+ *        updateObserver(Subject, Observer)
  * </ol>
  *
  * Note that in this implementation, the work of updating is a method
@@ -59,16 +59,16 @@ import java.util.Iterator;
  * @author  Gregor Kiczales
  * @version 1.1, 02/13/04
  */
- 
-public abstract aspect ObserverProtocol {  
-    
-    
+
+public abstract aspect ObserverProtocol {
+
+
     /**
      * This interface is used by extending aspects to say what types
      * can be <i>Subject</i>s. It models the <i>Subject</i> role.
      */
 
-    protected interface Subject  { }    
+    protected interface Subject  { }
 
 
     /**
@@ -84,19 +84,19 @@ public abstract aspect ObserverProtocol {
      * Observer</i>s. For each <i>Subject</i>, a <code>LinkedList</code>
      * is of its <i>Observer</i>s is stored.
      */
-    
+
     private WeakHashMap perSubjectObservers;
 
 
     /**
-     * Returns a <code>Collection</code> of the <i>Observer</i>s of 
+     * Returns a <code>Collection</code> of the <i>Observer</i>s of
      * a particular subject. Used internally.
      *
      * @param subject the <i>subject</i> for which to return the <i>Observer</i>s
      * @return a <code>Collection</code> of s's <i>Observer</i>s
      */
 
-    protected List getObservers(Subject subject) { 
+    protected List getObservers(Subject subject) {
         if (perSubjectObservers == null) {
             perSubjectObservers = new WeakHashMap();
         }
@@ -108,42 +108,42 @@ public abstract aspect ObserverProtocol {
         return observers;
     }
 
-    
+
     /**
      * Adds an <i>Observer</i> to a <i>Subject</i>. This is the equivalent of <i>
-     * attach()</i>, but is a method on the pattern aspect, not the 
-     * <i>Subject</i>. 
+     * attach()</i>, but is a method on the pattern aspect, not the
+     * <i>Subject</i>.
      *
      * @param s the <i>Subject</i> to attach a new <i>Observer</i> to
      * @param o the new <i>Observer</i> to attach
-     */ 
-     
-    public void    addObserver(Subject subject, Observer observer) { 
-        getObservers(subject).add(observer);    
+     */
+
+    public void    addObserver(Subject subject, Observer observer) {
+        getObservers(subject).add(observer);
     }
-    
+
     /**
      * Removes an observer from a <i>Subject</i>. This is the equivalent of <i>
-     * detach()</i>, but is a method on the pattern aspect, not the <i>Subject</i>. 
+     * detach()</i>, but is a method on the pattern aspect, not the <i>Subject</i>.
      *
      * @param s the <i>Subject</i> to remove the <i>Observer</i> from
      * @param o the <i>Observer</i> to remove
-     */ 
-    
-    public void removeObserver(Subject subject, Observer observer) { 
-        getObservers(subject).remove(observer); 
+     */
+
+    public void removeObserver(Subject subject, Observer observer) {
+        getObservers(subject).remove(observer);
     }
 
     /**
      * The join points after which to do the update.
      * It replaces the normally scattered calls to <i>notify()</i>. To be
      * concretized by sub-aspects.
-     */ 
-     
+     */
+
     protected abstract pointcut subjectChange(Subject s);
 
     /**
-     * Calls <code>updateObserver(..)</code> after a change of interest to 
+     * Calls <code>updateObserver(..)</code> after a change of interest to
      * update each <i>Observer</i>.
      *
      * @param subject the <i>Subject</i> on which the change occured
@@ -154,14 +154,14 @@ public abstract aspect ObserverProtocol {
         while ( iter.hasNext() ) {
             updateObserver(subject, ((Observer)iter.next()));
         }
-    } 
-    
+    }
+
    /**
      * Defines how each <i>Observer</i> is to be updated when a change
      * to a <i>Subject</i> occurs. To be concretized by sub-aspects.
      *
      * @param subject the <i>Subject</i> on which a change of interest occured
-     * @param observer the <i>Observer</i> to be notifed of the change  
+     * @param observer the <i>Observer</i> to be notifed of the change
      */
 
     protected abstract void updateObserver(Subject subject, Observer observer);

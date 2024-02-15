@@ -81,7 +81,7 @@ ltw.aop.xml=
 # msa=y|n                Solaris micro state accounting n
 # force=y|n              force output to <file>         y
 # verbose=y|n            print messages about dumps     y
-# see http://java.sun.com/developer/technicalArticles/Programming/HPROF.html
+# see https://java.sun.com/developer/technicalArticles/Programming/HPROF.html
 hprof.args=-agentlib:hprof=heap=sites,cpu=samples,depth=3
 #hprof.args=-agentlib:hprof=heap=dump,cpu=samples,depth=8
 # for full details on object allocation and reachability use heap=all instead
@@ -92,8 +92,6 @@ hprof.args=-agentlib:hprof=heap=sites,cpu=samples,depth=3
 
 # args to pass to vm for gc run
 # after a run this file will be copied into results/${target.application.name}/gt.<date-time>.txt
-# you can analyze it with JTune (http://www.hp.com/products1/unix/java/java2/hpjtune/index.html)
+# you can analyze it with JTune (https://www.hp.com/products1/unix/java/java2/hpjtune/index.html)
 # Start JTune with java -jar HPTune.jar
 gc.args=-Xloggc:gc.txt
-
-

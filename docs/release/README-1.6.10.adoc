@@ -32,7 +32,7 @@ specify:
 
 If I can get enough positive feedback about this option, it will be made
 the default. For a more detailed write up, check out the blog post:
-http://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html
+https://andrewclement.blogspot.com/2010/07/ajdt-memory-usage-reduction.html
 
 === Runtime changes
 

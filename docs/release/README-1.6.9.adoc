@@ -82,7 +82,7 @@ Here is an example, 'AspectA' will switch itself off if the type
 === Reduction in class file sizes: https://bugs.eclipse.org/bugs/show_bug.cgi?id=312839[312839]
 
 More details here:
-http://andrewclement.blogspot.com/2010/05/aspectj-size-is-important.html
+https://andrewclement.blogspot.com/2010/05/aspectj-size-is-important.html
 but basically some work has been done to improve the serialized form of
 aspects. As an example, a compiled Roo petclinic sample (which uses lots
 of aspects and ITDs) is down from 1Meg (AspectJ 1.6.9m2) to 630k
@@ -110,7 +110,7 @@ Overweaving can cope with 'other tools' modifying the bytecode in
 between AspectJ weaves, whereas reweaving cannot. More details are in
 the related bugzilla
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=293450[293450] and in this
-http://andrewclement.blogspot.com/2010/05/aspectj-overweaving.html[blog
+https://andrewclement.blogspot.com/2010/05/aspectj-overweaving.html[blog
 article]. A weaver is switched into overweaving mode by the option
 -Xset:overWeaving=true - which can be specified on the command line or
 in the weaver options section of aop.xml. There is still more work to be
@@ -285,7 +285,7 @@ magic:
 <repository>
     <id>maven.springframework.org</id>
     <name>SpringSource snapshots</name>
-    <url>http://maven.springframework.org/snapshot</url>
+    <url>https://maven.springframework.org/snapshot</url>
 </repository>
 ....
 

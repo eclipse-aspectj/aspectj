@@ -54,8 +54,8 @@ public class Checklics extends MatchingTask {
 		final String IBM = "IBM";
 		final String VMWARE = "VMware";
 		final String IBM_LONG = "International Business Machines";
-		final String LIC_APL = "Apache Software Foundation (http://www.apache.org/)";
-		final String LIC_MPL = "http://aspectj.org/MPL/";
+		final String LIC_APL = "Apache Software Foundation (https://www.apache.org/)";
+		final String LIC_MPL = "https://aspectj.org/MPL/";
 		final String LIC_CPL = "Eclipse Public License";
 		final String LIC_ECPL = " Public License";
 		License APL = new License(APACHE_TAG, LIC_APL, APACHE);
@@ -655,4 +655,3 @@ class Header {
 	}
 
 } // class Header
-

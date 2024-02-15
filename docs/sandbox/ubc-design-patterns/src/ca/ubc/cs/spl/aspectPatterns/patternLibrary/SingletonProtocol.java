@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import java.util.Hashtable;
@@ -47,15 +47,15 @@ import java.util.Hashtable;
  * @author  Gregor Kiczales
  * @version 1.1, 02/18/04
  */
-  
+
 public abstract aspect SingletonProtocol {
-	
+
 	/**
 	 * stores the <i>Singleton</i> instances
 	 */
-	
-    private Hashtable singletons = new Hashtable(); 
-    
+
+    private Hashtable singletons = new Hashtable();
+
     /**
      * Defines the <i>Singleton</i> role. It is realized as <code>public
      * </code> to allow for more flexibility (i.e., alternatively, types
@@ -64,30 +64,30 @@ public abstract aspect SingletonProtocol {
      */
 
     public interface Singleton {}
-    
+
     /**
      * Placeholder for exceptions to the <i>Singleton</i>'s constructor
-     * protection. For example, non-singleton subclasses may need to 
+     * protection. For example, non-singleton subclasses may need to
      * access the protected constructor of the <i>Singleton</i> normally.
-     * 
+     *
      * An alternative implementation would be to define an interface
      * for singleton exceptions similar to the one above.
      */
-    
+
     protected pointcut protectionExclusions();
 
 	/**
 	 * Protects the <i>Singleton</i>'s constructor. Creates the unique
 	 * instance on demant and returns it instead of a new object.
-	 * 
-	 * @return the singleton instance 
+	 *
+	 * @return the singleton instance
 	 */
-                                                                                                                            
-	Object around(): call((Singleton+).new(..)) && !protectionExclusions() {                    
-	    Class singleton = thisJoinPoint.getSignature().getDeclaringType(); 
+
+	Object around(): call((Singleton+).new(..)) && !protectionExclusions() {
+	    Class singleton = thisJoinPoint.getSignature().getDeclaringType();
 		if (singletons.get(singleton) == null) {                         // How to access the static instance variable here?
-		    singletons.put(singleton, proceed()); 
+		    singletons.put(singleton, proceed());
 		}
 		return singletons.get(singleton);
-	} 
+	}
 }

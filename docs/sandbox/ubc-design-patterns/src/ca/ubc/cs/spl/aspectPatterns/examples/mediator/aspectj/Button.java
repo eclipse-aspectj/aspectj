@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,20 +15,20 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/** 
- * Basically a <code>JButton</code> with an <code>ActionListener</code>. 
- * The listener calls <code>clicked()</code> when the button gets pressed. 
+/**
+ * Basically a <code>JButton</code> with an <code>ActionListener</code>.
+ * The listener calls <code>clicked()</code> when the button gets pressed.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
@@ -36,22 +36,22 @@ import java.awt.event.ActionEvent;
  */
 
 public class Button extends JButton {
-    
+
     /**
      * Creates a new <code>Button</code> object with the provided label.
      *
-     * @param name the label for the new <code>Button</code> object 
+     * @param name the label for the new <code>Button</code> object
      */
- 
+
  	public Button(String name) {
 		super(name);
 		this.setActionCommand(name);
 		this.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clicked(); 
+				clicked();
 			}
-		}); 
+		});
 	}
-	
-	public void clicked() {}  
+
+	public void clicked() {}
 }

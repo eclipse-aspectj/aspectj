@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.Repository;
@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.verifier.exc.Utility;
  * documentation.
  *
  * @version $Id: Pass1Verifier.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
 public final class Pass1Verifier extends PassVerifier{
@@ -91,7 +91,7 @@ public final class Pass1Verifier extends PassVerifier{
 		}
 		return jc;
 	}
-	
+
 	/**
 	 * Should only be instantiated by a Verifier.
 	 *
@@ -149,7 +149,7 @@ public final class Pass1Verifier extends PassVerifier{
 	 *   <LI> the name and signature of fields and methods are verified to be of legal format.
 	 *  </UL>
 	 * </UL>
-	 * (From the Paper <A HREF=http://www.cs.sfu.ca/people/GradStudents/pwfong/personal/JVM/pass1/>The Mysterious Pass One, first draft, September 2, 1997</A>.)
+	 * (From the Paper <A HREF=https://www.cs.sfu.ca/people/GradStudents/pwfong/personal/JVM/pass1/>The Mysterious Pass One, first draft, September 2, 1997</A>.)
 	 * </BR>
 	 * However, most of this is done by parsing a class file or generating a class file into BCEL's internal data structure.
 	 * <B>Therefore, all that is really done here is look up the class file from BCEL's repository.</B>
@@ -172,7 +172,7 @@ public final class Pass1Verifier extends PassVerifier{
 					throw new LoadingException("Wrong name: the internal name of the .class file '"+jc.getClassName()+"' does not match the file's name '"+myOwner.getClassName()+"'.");
 				}
 			}
-			
+
 		}
 		catch(LoadingException e){
 			return new VerificationResult(VerificationResult.VERIFIED_REJECTED, e.getMessage());

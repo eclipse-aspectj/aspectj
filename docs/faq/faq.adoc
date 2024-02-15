@@ -92,7 +92,7 @@ under the https://eclipse.org/legal/cpl-v10.html[Common Public License
 1.0].
 
 The AspectJ 1.0 tools are open-source software available under the
-http://www.opensource.org/licenses/mozilla1.1[Mozilla Public License
+https://www.opensource.org/licenses/mozilla1.1[Mozilla Public License
 1.1]. That documentation is available under a separate license that
 precludes for-profit or commercial redistribution.
 
@@ -106,7 +106,7 @@ https://www.eclipse.org/legal/eplfaq.php[Eclipse Public License FAQ].
 *Q:* What is the AspectJ Project?
 
 *A:* AspectJ is based on over ten years of research at
-http://www.parc.xerox.com[Xerox Palo Alto Research Center] as funded by
+https://www.parc.xerox.com[Xerox Palo Alto Research Center] as funded by
 Xerox, a U.S. Government grant (NISTATP), and a DARPA contract.
 
 It has evolved through open-source releases to a strong user community
@@ -226,12 +226,12 @@ tool integrations:
 https://eclipse.org/ajdt
 * Emacs (GNU version 20.3) and XEmacs (version 21.1 on Unix and 21.4 on
 Windows), in the SourceForge AspectJ for Emacs project
-http://aspectj4emacs.sourceforge.net
+https://aspectj4emacs.sourceforge.net
 * JBuilder (versions 4 through 7) from Borland in the SourceForge
-AspectJ for JBuilder project http://aspectj4jbuildr.sourceforge.net
+AspectJ for JBuilder project https://aspectj4jbuildr.sourceforge.net
 * Netbeans up to 3.4 (and Sun Microsystems' Forte for Java (versions 2
 and 3), Sun/One) in the SourceForge AspectJ for NetBeans project
-http://aspectj4netbean.sourceforge.net
+https://aspectj4netbean.sourceforge.net
 
 Finally, as mentioned above, AspectJ also supports building with Ant by
 providing task interfaces to the ajc and ajdoc tools.
@@ -394,7 +394,7 @@ programming language innovations also do that, as will future
 developments.
 
 (Slides for a long talk on this topic were once available at
-http://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip.)
+https://www.cs.ubc.ca/~gregor/vinst-2-17-01.zip.)
 
 *Q:* Is AOP restricted to domain-specific applications?
 
@@ -679,7 +679,7 @@ dangerous code.
 
 One paper someone else just reminded me of that talks some more about
 this is:
-http://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf
+https://www.cs.ubc.ca/~kdvolder/Workshops/OOPSLA2001/submissions/12-nordberg.pdf
 
 *Q:* Why does AspectJ permit aspects to access and add members of
 another type? Isn't that violating OO encapsulation?
@@ -1034,12 +1034,12 @@ of developers who are working on platforms without Java 2 support. Here
 is a list of starting places where you might find support for your
 system.
 
-* http://java.sun.com/j2se/[Java 2 Platform, Standard Edition]
-* http://www-106.ibm.com/developerworks/java/jdk/[developerWorks : Java
+* https://java.sun.com/j2se/[Java 2 Platform, Standard Edition]
+* https://www-106.ibm.com/developerworks/java/jdk/[developerWorks : Java
 technology : Tools and products - Developer kits]
-* http://www-124.ibm.com/developerworks/oss/jikes/[developerWorks : Open
+* https://www-124.ibm.com/developerworks/oss/jikes/[developerWorks : Open
 Source - Jikes Project]
-* http://java.sun.com/cgi-bin/java-ports.cgi[Java Platform Ports]
+* https://java.sun.com/cgi-bin/java-ports.cgi[Java Platform Ports]
 
 The requirement of Java 2 support is only for _running_ the AspectJ
 compiler. The AspectJ compiler can be used to build programs that will
@@ -1250,10 +1250,10 @@ interest, so interested developer may want to join with others in their
 developer communities to build the integration.
 
 * IDEA/IntelliJ has an enthusiastic community and the developers are
-working on an extensibility API - http://intellij.com
+working on an extensibility API - https://intellij.com
 * jEdit comes from a very active open-source community.
 * Some have suggested Codeguide from Omnicore
-http://www.omnicore.com[http://www.omnicore.com/]
+https://www.omnicore.com[https://www.omnicore.com/]
 
 For questions on AJDE, join the developer's list
 `aspectj-dev@eclipse.org`. For questions on the current IDE
@@ -1406,9 +1406,9 @@ without changing intervening signatures. For more details, see
 link:progguide/index.html[The AspectJ Programming Guide]. In the case of
 `synchronized`, we have what we consider a better solution that uses
 around advice instead of introduction. This solution is described in
-http://aspectj.org/pipermail/users/2000/000534.html[this thread (no
+https://aspectj.org/pipermail/users/2000/000534.html[this thread (no
 longer available)] on the AspectJ users list, with some
-http://aspectj.org/pipermail/users/2000/000536.html[additional comments
+https://aspectj.org/pipermail/users/2000/000536.html[additional comments
 (no longer available)] .
 
 *Q:* I don't understand what join points exist. How can I see them?
@@ -1876,7 +1876,7 @@ important when using serialization for the long-term persistence of
 objects. Using standard Java serialization for long-term persistence has
 a number of drawbacks and many developers already use alternative
 solutions. For one possibly standard solution, see
-http://jcp.org/jsr/detail/057.jsp[Long-Term Persistence for JavaBeans
+https://jcp.org/jsr/detail/057.jsp[Long-Term Persistence for JavaBeans
 Specification] .
 
 *Q:* How can I use AspectJ with applets?
@@ -1903,7 +1903,7 @@ The above markup has worked reliably with the Java Plugin (included in
 the JRE 1.4.x) in IE 6, Mozilla 1.1 (Win32), and Mozilla 1.0.1 (Red Hat
 Linux 8.0). The following link describes how to configure
 Mozilla/Netscape 6.x/7.x to use the Java Plugin from a JRE/SDK
-installation: http://java.sun.com/j2se/1.4.1/manual_install_linux.html.
+installation: https://java.sun.com/j2se/1.4.1/manual_install_linux.html.
 (Thanks to Chris Bartling for this answer.)
 
 *Q:* How can I specify types for advice that captures primitives, void,
@@ -2189,7 +2189,7 @@ vmparam -Xmx384m
 If it turns out that your project is too big to use with AJDE, your IDE
 may nonetheless support external commands or Ant build processes, which
 run outside the IDE memory space. For a JBuilder Ant plugin, some people
-have directed us to http://antrunner.sourceforge.net[].
+have directed us to https://antrunner.sourceforge.net[].
 
 *Q:* When I run, I get a `NoAspectBoundException` or a ClassNotFound
 message for `NoAspectBoundException`.
@@ -2571,9 +2571,9 @@ compiler.
 
 Similarly, Sourceforge has projects integrating AspectJ into other
 development environments using the AJDE API's:
-http://aspectj4emacs.sourceforge.net[AspectJ for Emacs],
-http://aspectj4jbuildr.sourceforge.net[AspectJ for JBuilder], and
-http://aspectj4netbean.sourceforge.net[AspectJ for NetBeans].
+https://aspectj4emacs.sourceforge.net[AspectJ for Emacs],
+https://aspectj4jbuildr.sourceforge.net[AspectJ for JBuilder], and
+https://aspectj4netbean.sourceforge.net[AspectJ for NetBeans].
 
 This is the right level of separation/integration. AspectJ is available
 standalone, leverages an existing open-source compliant Java compiler,
@@ -2709,7 +2709,7 @@ or view the source code (see xref:#Developers[AspectJ Project
 Development]). We hope to write papers on the bytecode weaving model
 used in AspectJ-1.1 if we can find the time. Erik Hilsdale and Jim
 Hugunin did draft a paper for AOSD 2004, now available on Jim's web
-site: http://hugunin.net/papers.html Jim summarized advice weaving in
+site: https://hugunin.net/papers.html Jim summarized advice weaving in
 the AspectJ 1.1 implementation in the
 https://dev.eclipse.org/mhonarc/lists/aspectj-dev/msg00519.html[following
 mailing-list reply]:
@@ -2777,7 +2777,7 @@ you have an additional option if your application is based on the Spring
 framework. If you deploy in one of the supported web servers or
 application servers, you can avoid modifications to the startup script.
 Please see
-http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring
+https://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-ltw-spring
 for more details.
 
 *Q:* Does AspectJ use reflection at runtime?
@@ -3126,7 +3126,7 @@ from the AspectJ home page https://eclipse.org/aspectj .
 *Q:* How can I search the email archives or the web site?
 
 *A:* It is very effective to do a google search of the form,
-http://www.google.com/search?q=site:eclipse.org+cflowbelow , and you can
+https://www.google.com/search?q=site:eclipse.org+cflowbelow , and you can
 use the eclipse.org search at https://www.eclipse.org/search/search.cgi .
 You can also check the old archives available for download from the
 AspectJ home page https://eclipse.org/aspectj .
@@ -3153,8 +3153,8 @@ without additional libraries or source files.
 
 For the mail lists, we try to follow the conventions for open-source
 discussions that help avoid "the tragedy of the commons." For example
-conventions, see http://jakarta.apache.org/site/mail.html and
-http://www.tuxedo.org/%7Eesr/faqs/smart-questions.html .
+conventions, see https://jakarta.apache.org/site/mail.html and
+https://www.tuxedo.org/%7Eesr/faqs/smart-questions.html .
 
 *Q:* How do I write bugs for IDE support?
 

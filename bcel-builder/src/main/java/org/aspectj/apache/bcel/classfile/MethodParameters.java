@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
 
-// see http://cr.openjdk.java.net/~abuckley/8misc.pdf
+// see https://cr.openjdk.java.net/~abuckley/8misc.pdf
 public class MethodParameters extends Attribute {
 
 	public final static int[] NO_PARAMETER_NAME_INDEXES = new int[0];

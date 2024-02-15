@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import java.util.HashMap;
@@ -107,9 +107,9 @@ import org.aspectj.apache.bcel.verifier.exc.LocalVariableInfoInconsistentExcepti
 /**
  * This PassVerifier verifies a class file according to pass 2 as described in The Java Virtual Machine Specification, 2nd edition.
  * More detailed information is to be found at the do_verify() method's documentation.
- * 
+ *
  * @version $Id: Pass2Verifier.java,v 1.5 2009/09/10 15:35:05 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
 public final class Pass2Verifier extends PassVerifier implements Constants {
@@ -125,7 +125,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 
 	/**
 	 * Should only be instantiated by a Verifier.
-	 * 
+	 *
 	 * @see Verifier
 	 */
 	public Pass2Verifier(Verifier owner) {
@@ -157,7 +157,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	 * Very few checks that conceptually belong here are delayed until pass 3a in JustIce. JustIce does not only check for
 	 * syntactical correctness but also for semantical sanity - therefore it needs access to the "Code" array of methods in a few
 	 * cases. Please see the pass 3a documentation, too.
-	 * 
+	 *
 	 * @see org.aspectj.apache.bcel.verifier.statics.Pass3aVerifier
 	 */
 	@Override
@@ -188,7 +188,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	 * Pass2Verifier operates on has proper super classes (transitively) up to java.lang.Object. The reason for really loading (and
 	 * Pass1-verifying) all of those classes here is that we need them in Pass2 anyway to verify no final methods are overridden
 	 * (that could be declared anywhere in the ancestor hierarchy).
-	 * 
+	 *
 	 * @throws ClassConstraintException otherwise.
 	 */
 	private void every_class_has_an_accessible_superclass() {
@@ -229,7 +229,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	 * Ensures that <B>final</B> methods are not overridden. <B>Precondition to run this method:
 	 * constant_pool_entries_satisfy_static_constraints() and every_class_has_an_accessible_superclass() have to be invoked before
 	 * (in that order).</B>
-	 * 
+	 *
 	 * @throws ClassConstraintException otherwise.
 	 * @see #constant_pool_entries_satisfy_static_constraints()
 	 * @see #every_class_has_an_accessible_superclass()
@@ -271,7 +271,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	/**
 	 * Ensures that the constant pool entries satisfy the static constraints as described in The Java Virtual Machine Specification,
 	 * 2nd Edition.
-	 * 
+	 *
 	 * @throws ClassConstraintException otherwise.
 	 */
 	private void constant_pool_entries_satisfy_static_constraints() {
@@ -285,7 +285,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	/**
 	 * A Visitor class that ensures the constant pool satisfies the static constraints. The visitXXX() methods throw
 	 * ClassConstraintException instances otherwise.
-	 * 
+	 *
 	 * @see #constant_pool_entries_satisfy_static_constraints()
 	 */
 	private class CPESSC_Visitor extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor {
@@ -1225,7 +1225,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	 * only the formal correctness (such as well-formed signatures). The visitXXX() methods throw ClassConstraintException instances
 	 * otherwise. <B>Precondition: index-style cross referencing in the constant pool must be valid. Simply invoke
 	 * constant_pool_entries_satisfy_static_constraints() before.</B>
-	 * 
+	 *
 	 * @throws ClassConstraintException otherwise.
 	 * @see #constant_pool_entries_satisfy_static_constraints()
 	 */
@@ -1238,7 +1238,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 	/**
 	 * A Visitor class that ensures the ConstantCP-subclassed entries of the constant pool are valid. <B>Precondition: index-style
 	 * cross referencing in the constant pool must be valid.</B>
-	 * 
+	 *
 	 * @see #constant_pool_entries_satisfy_static_constraints()
 	 * @see org.aspectj.apache.bcel.classfile.ConstantCP
 	 */
@@ -1388,7 +1388,7 @@ public final class Pass2Verifier extends PassVerifier implements Constants {
 
 	/**
 	 * This method returns true if and only if the supplied String represents a valid Java programming language method name stored
-	 * as a simple (non-qualified) name. Conforming to: The Java Virtual Machine Specification, Second Edition, §2.7, §2.7.1, §2.2.
+	 * as a simple (non-qualified) name. Conforming to: The Java Virtual Machine Specification, Second Edition, ï¿½2.7, ï¿½2.7.1, ï¿½2.2.
 	 */
 	private static boolean validJavaLangMethodName(String name) {
 		if (!Character.isJavaIdentifierStart(name.charAt(0)))

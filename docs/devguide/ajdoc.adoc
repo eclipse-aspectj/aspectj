@@ -21,7 +21,7 @@ To run `ajdoc`, use one of the scripts in the AspectJ `bin` directory.
 The `ajdoc` implementation builds on Sun's `javadoc` command line tool,
 and you use it in the same way with many of the same options (`javadoc`
 options are not documented here; for more information on `javadoc`
-usage, see the http://java.sun.com/j2se/javadoc/[Javadoc homepage].)
+usage, see the https://java.sun.com/j2se/javadoc/[Javadoc homepage].)
 
 As with `ajc` (but unlike `javadoc`), you pass `ajdoc` all your aspect
 source files and any files containing types affected by the aspects;

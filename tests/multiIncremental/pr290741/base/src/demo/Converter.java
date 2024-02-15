@@ -14,7 +14,7 @@ public class Converter {
 	/**
 	 * You may get problems using String.getBytes("UTF-8") on a non UTF-8
 	 * environment. Here is an alternative for it from
-	 * http://mindprod.com/jgloss/encoding.html.
+	 * https://mindprod.com/jgloss/encoding.html.
 	 * 
 	 * @param text
 	 * @return

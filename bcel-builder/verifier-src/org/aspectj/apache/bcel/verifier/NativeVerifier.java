@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 /**
@@ -62,7 +62,7 @@ package org.aspectj.apache.bcel.verifier;
  * and JustIce.
  *
  * @version $Id: NativeVerifier.java,v 1.2 2008/05/28 23:53:01 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public abstract class NativeVerifier{
 
@@ -71,7 +71,7 @@ public abstract class NativeVerifier{
 	 */
 	private NativeVerifier(){
 	}
-	
+
 	/**
 	 * Works only on the first argument.
 	 */
@@ -86,14 +86,14 @@ public abstract class NativeVerifier{
 		args[0] = args[0].replace('/','.');
 		//System.out.println(args[0]);
 
-		
+
 		try{
 			Class.forName(args[0]);
 		}
 		catch(ExceptionInInitializerError eiie){ //subclass of LinkageError!
 			System.out.println("NativeVerifier: ExceptionInInitializerError encountered on '"+args[0]+"'.");
 			System.out.println(eiie);
-			System.exit(1);		
+			System.exit(1);
 		}
 		catch(LinkageError le){
 			System.out.println("NativeVerifier: LinkageError encountered on '"+args[0]+"'.");
@@ -108,7 +108,7 @@ public abstract class NativeVerifier{
 			System.out.println("NativeVerifier: Unspecified verification error on'"+args[0]+"'.");
 			System.exit(1);
 		}
-		
+
 		System.out.println("NativeVerifier: Class file '"+args[0]+"' seems to be okay.");
 		System.exit(0);
 

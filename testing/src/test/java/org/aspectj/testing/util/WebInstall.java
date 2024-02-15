@@ -25,7 +25,7 @@ import java.net.URLClassLoader;
  *
  * Example:
  * <p><code>java -classpath aj-testing.jar org.aspectj.testing.util.WebInstall
- *    http://aspectj.org/download/distribution/aspectj10-tools.jar -text
+ *    https://aspectj.org/download/distribution/aspectj10-tools.jar -text
  *    install.properties</code>
  *
  * <p>You can omit the <code>-text install.properties</code> if there is

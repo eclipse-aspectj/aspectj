@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
@@ -34,33 +34,33 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.java;
 
 public class TextCreator extends Creator {
 
-    /** 
+    /**
      * Defines a <i>buildPart()</i> operation for type parts.
      *
      * @param newType the type to process
-     */ 
+     */
 
     public void processType(String newType) {
         representation = "This is a new "+newType+":\n";
     }
-    
-    /** 
+
+    /**
      * Defines a <i>buildPart()</i> operation for attribute parts.
      *
      * @param newAttribute the attribute to process
-     */ 
+     */
 
     public void processAttribute(String newAttribute) {
         representation += ("Its " + newAttribute + " is ");
     }
-    
-    /** 
+
+    /**
      * Defines a <i>buildPart()</i> operation for value parts.
      *
      * @param newValue the value to process
-     */ 
+     */
 
     public void processValue(String newValue) {
         representation += (newValue + ".\n");
     }
-}  
+}

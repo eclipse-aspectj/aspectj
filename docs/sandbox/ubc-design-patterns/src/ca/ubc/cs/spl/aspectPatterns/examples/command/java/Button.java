@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.command.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,19 +15,19 @@ package ca.ubc.cs.spl.aspectPatterns.examples.command.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * Implements a simple extension of JButton that supplies its own 
+ * Implements a simple extension of JButton that supplies its own
  * ActionListener and calls its own <code>clicked()</code> method
  * whenever the button is pressed. This method calls the <code>
  * executeCommand()</code> method on the button's associated <i>Command</i>
@@ -44,9 +44,9 @@ public class Button extends JButton {
     /**
      * the command object associated with this button
      */
-     	
+
 	protected Command command;
-	
+
     /**
      * Creates a new button with the provided label
      *
@@ -58,23 +58,23 @@ public class Button extends JButton {
 		this.setActionCommand(label);
 		this.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					clicked(); 
+					clicked();
 				}
-			}); 
+			});
 	}
 
     /**
-     * Calls <code>ececuteCommand()</code> on the associated 
-     * command object. This method gets called whenever the 
+     * Calls <code>ececuteCommand()</code> on the associated
+     * command object. This method gets called whenever the
      * button is pressed.
      */
-	
+
 	public void clicked() {
 		if (command != null) {
 			command.executeCommand();
 		}
 	}
-	
+
     /**
      * Sets the associated command object for this button
      *
@@ -83,5 +83,5 @@ public class Button extends JButton {
 
 	public void setCommand(Command command)	{
 		this.command = command;
-	}  
+	}
 }

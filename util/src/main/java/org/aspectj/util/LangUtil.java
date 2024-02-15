@@ -55,8 +55,8 @@ public class LangUtil {
 	}
 
 	static {
-		// http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
-		// http://openjdk.java.net/jeps/223 "New Version-String Scheme"
+		// https://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html
+		// https://openjdk.java.net/jeps/223 "New Version-String Scheme"
 		// TODO: Use java.lang.Runtime class (since Java 9, now AspectJ needs Java 11+ due to JDT Core anyway)
 		final String JAVA_VERSION_NOT_FOUND = "System properties appear damaged, cannot find: java.version/java.runtime.version/java.vm.version";
 		try {

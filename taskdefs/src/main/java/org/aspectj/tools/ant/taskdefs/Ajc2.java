@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * Ant task for the AspectJ compiler -- AJC.
  * List (.lst) files are passed in as includes.
  *
- * This task was developed by the <a href="http://aspectj.org">AspectJ Project</a>
+ * This task was developed by the <a href="https://aspectj.org">AspectJ Project</a>
  *
  * @author <a href="mailto:palm@parc.xerox.com">Jeffrey Palm</a>
  * @see    org.aspectj.tools.ant.taskdefs.compilers.Ajc

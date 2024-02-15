@@ -333,7 +333,7 @@ public class Util {
      * Currently very limited, and will only support the subset of
      * features that we use.
      * sources:
-     * http://www-128.ibm.com/developerworks/library/os-ecl-osgi/index.html
+     * https://www-128.ibm.com/developerworks/library/os-ecl-osgi/index.html
      * https://help.eclipse.org/help30/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/osgi/org/osgi/framework/Constants.html
      */
     public static class OSGIBundle {

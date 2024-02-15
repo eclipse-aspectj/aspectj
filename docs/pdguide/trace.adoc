@@ -25,7 +25,7 @@ can then be attached to the bug report.
 === Configuring Tracing
 
 When available (Java 5 or later) AspectJ will use the
-http://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html[java.util.logging]
+https://java.sun.com/j2se/1.5.0/docs/guide/logging/index.html[java.util.logging]
 infrastructure configured using a `logging.properties` file. By default
 only error and fatal events will be logged but less severe warnings as
 well as fine-grained method entry and exit events can be obtained using

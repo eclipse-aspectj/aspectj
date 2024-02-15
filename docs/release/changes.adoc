@@ -423,17 +423,17 @@ synch with resources on disk.
 
 JBuilder 7 is now supported.  All known bugs have been fixed including:
 
-* http://aspectj.org/bugs/resolved?id=787[787] AJDE for JBuilder throws
+* https://aspectj.org/bugs/resolved?id=787[787] AJDE for JBuilder throws
 exception given non-existent file
-* http://aspectj.org/bugs/resolved?id=788[788] Label too small in error
+* https://aspectj.org/bugs/resolved?id=788[788] Label too small in error
 message
-* http://aspectj.org/bugs/resolved?id=789[789] Index-out-of-bounds
+* https://aspectj.org/bugs/resolved?id=789[789] Index-out-of-bounds
 exception in JBuilder AJDE
-* http://aspectj.org/bugs/resolved?id=792[792] Required libraries
+* https://aspectj.org/bugs/resolved?id=792[792] Required libraries
 disappear from JBuilder 6
-* http://aspectj.org/bugs/resolved?id=795[795] Unable to compile open
+* https://aspectj.org/bugs/resolved?id=795[795] Unable to compile open
 tools
-* http://aspectj.org/bugs/resolved?id=802[802] AJDE loses current
+* https://aspectj.org/bugs/resolved?id=802[802] AJDE loses current
 (cursor) position in file when switching files
 
 In addition, thanks to user feedback that indicated trouble building
@@ -443,9 +443,9 @@ with itself.
 [[_1_0_6ajdoc]]
 == Ajdoc
 
-* Fixed http://aspectj.org/bugs/resolved?id=790[790] aspect code
+* Fixed https://aspectj.org/bugs/resolved?id=790[790] aspect code
 comments suppressed by fix to bug 710
-* Known problems: http://aspectj.org/bugs/ajdoc
+* Known problems: https://aspectj.org/bugs/ajdoc
 
 '''''
 
@@ -545,14 +545,14 @@ your path, and the class that you expect to execute on your classpath.
 
 Bug fixes:
 
-* http://aspectj.org/bugs/resolved?id=710[710 - compiler-generated
+* https://aspectj.org/bugs/resolved?id=710[710 - compiler-generated
 constructor shown with class comment]
-* http://aspectj.org/bugs/resolved?id=712[712 - comments lost in aspect
+* https://aspectj.org/bugs/resolved?id=712[712 - comments lost in aspect
 docs for methods or constructors declared on other types.]
-* http://aspectj.org/bugs/resolved?id=719[719 - poor support for @link,
+* https://aspectj.org/bugs/resolved?id=719[719 - poor support for @link,
 @see tags]
-* http://aspectj.org/bugs/resolved?id=742[742 - crash with @see tag]
-* http://aspectj.org/bugs/resolved?id=751[751 - error loading doclet
+* https://aspectj.org/bugs/resolved?id=742[742 - crash with @see tag]
+* https://aspectj.org/bugs/resolved?id=751[751 - error loading doclet
 resource]
 
 [[_1_0_5anttasks]]
@@ -560,7 +560,7 @@ resource]
 
 Bug fixes:
 
-* http://aspectj.org/bugs/resolved?id=730[730 - document all supported
+* https://aspectj.org/bugs/resolved?id=730[730 - document all supported
 ajc flags]
 
 '''''
@@ -657,7 +657,7 @@ J2SE 1.3 be on the classpath.
 
 * Repackaged to fit into the AspectJ product directory - e.g.,
 `aspectj-ant.jar` moved to `lib` as expected by `examples/build.xml`.
-* Fixed bugs, esp. http://aspectj.org/bugs/resolved?id=682[682]: Throw
+* Fixed bugs, esp. https://aspectj.org/bugs/resolved?id=682[682]: Throw
 BuildException if failonerror and ajdoc detects misconfiguration.
 
 [[_1_0_4doc]]
@@ -712,9 +712,9 @@ reported in 1.0.1.
 == Compiler
 
 * Official support for `-source 1.4` option to compile new
-http://java.sun.com/j2se/1.4/docs/guide/lang/assert.html[1.4
+https://java.sun.com/j2se/1.4/docs/guide/lang/assert.html[1.4
 assertions]. This makes ajc completely compatible with j2se-1.4.
-* Implementation of http://jcp.org/jsr/detail/45.jsp[JSR-45 Debugging
+* Implementation of https://jcp.org/jsr/detail/45.jsp[JSR-45 Debugging
 Support for Other Languages] so that debuggers which correctly implement
 this specification will be able to accurately debug any AspectJ program
 at a source code level. We are not currently aware of any debuggers that
@@ -726,27 +726,27 @@ type patterns used in pcds have no bindings. We are very interested in
 feedback on the usefulness and suggested improvements for this feature.
 * Several significant bugs in the implementation of around advice have
 been fixed. These include issues with
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=632[dynamic
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=632[dynamic
 tests], with
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=620[complicated
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=620[complicated
 local types in an around body], and with
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=636[capturing
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=636[capturing
 proceed in a closure].
 * All but two
-(http://aspectj.org/jitterbug/aspectj-bugs/compiler?id=626[1],
-http://aspectj.org/jitterbug/aspectj-bugs/compiler?id=645[2]) verified
+(https://aspectj.org/jitterbug/aspectj-bugs/compiler?id=626[1],
+https://aspectj.org/jitterbug/aspectj-bugs/compiler?id=645[2]) verified
 bugs in 1.0.1 have been fixed. The two outstanding bugs have relatively
 easy work-arounds. Thanks as usual to everyone who submitted a bug
 report.
 * We no longer use the `SYNTHETIC` attribute to label declarations added
 by the aspectj compiler. We were using this attribute in compliance with
-http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#80128[the
+https://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#80128[the
 JVM Specification]; however, we've found that many tools expect this
 attribute to only be used for the narrow purpose of implementing Java's
 inner classes and that using it for other synthetic members can confuse
 them. This led to problems both
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=649[with javap]
-and http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=646[with
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=649[with javap]
+and https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=646[with
 javac].
 * Changes required adding runtime classes, so please compile and run
 using the latest `aspectjrt.jar`
@@ -801,7 +801,7 @@ This release fixes a significant performance issue in the compiler,
 reported by Rich Price, that could lead to extremely long compiles in
 systems with many aspects and classes. Several other small bugs related
 to reporting compilation errors have also been fixed, see
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=610[this bug
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=610[this bug
 report] for an example.
 
 A new experimental flag has been added, `-XaddSafePrefix`, that will
@@ -855,10 +855,10 @@ below:
 which are also produced by other compilers) that caused verify errors
 when dealing with nested try-finally and synchronized statements. These
 are now fixed. More details are available
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=601[here] and
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=595[here]
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=601[here] and
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=595[here]
 * Jan Hannemann submitted a
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=600[succint and
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=600[succint and
 clear bug report] for a difficult intermittant bug. The bug led to the
 compiler sometimes generating illegal code when introduced methods on a
 class overrode introduced methods on an interface implemented by that
@@ -886,7 +886,7 @@ visibility
 === AJBrowser
 
 * Documentation for the browser is now available at
-http://aspectj.org/docs
+https://aspectj.org/docs
 
 === Emacs Support: aspectj-mode and AJDEE
 
@@ -918,11 +918,11 @@ There have been several minor clarifications/changes to the language.
 * Thanks to Robin Green for suggesting that we could relax the rules for
 inheriting multiple concrete members in order to allow those unambiguous
 cases where one member has already overridden the other.
-http://aspectj.org/pipermail/users/2001/001289.html[More details...]
+https://aspectj.org/pipermail/users/2001/001289.html[More details...]
 * Ron Bodkin encouraged us to examine the details of privileged aspects
 more closely. This led to several small improvements and clarifications
 to this language feature.
-http://aspectj.org/pipermail/users/2001/001258.html[More details...]
+https://aspectj.org/pipermail/users/2001/001258.html[More details...]
 
 [[_1_0rc3compiler]]
 == Compiler
@@ -936,14 +936,14 @@ for some references to interface fields result in verify errors on
 certain JVMs. While this is a known bug in those JVMs, we've modified
 ajc to be bug compatible with all the other Java compilers out there to
 work-around this JVM bug.
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=551[More
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=551[More
 details...]
 * Frank Hunleth discovered a similar bug where ajc's correct bytecodes
 could lead to essentially random method dispath due to a bad bug in the
 1.3.0 JVM from Sun. Even though this bug was fixed in the 1.3.1 and
 1.2.2 JVMs, we have introduced the appropriate work-around in ajc's code
 generation.
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=580[More
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=580[More
 details...]
 * Thomas Haug (as well as several other members of his group) reported a
 problem with name binding where ajc was behaving differently than javac.
@@ -952,7 +952,7 @@ that conflicted with his package names. The JLS doesn't clearly specify
 which of these two behaviors is correct. Nevertheless, ajc has been
 changed to treat packages more like javac does in order to minimize this
 sort of problem in the future.
-http://aspectj.org/jitterbug/aspectj-bugs/resolved?id=574[More
+https://aspectj.org/jitterbug/aspectj-bugs/resolved?id=574[More
 details...]
 * Several "real" bugs in ajc were also reported and fixed. Toby Allsopp
 gets credit for reporting two of them. The most interesting of these

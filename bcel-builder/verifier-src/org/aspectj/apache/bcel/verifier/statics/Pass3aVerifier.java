@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.Constants;
@@ -110,9 +110,9 @@ import org.aspectj.apache.bcel.verifier.exc.StaticCodeInstructionOperandConstrai
 /**
  * This PassVerifier verifies a class file according to pass 3, static part as described in The Java Virtual Machine Specification,
  * 2nd edition. More detailed information is to be found at the do_verify() method's documentation.
- * 
+ *
  * @version $Id: Pass3aVerifier.java,v 1.5 2009/09/10 15:35:06 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  * @see #do_verify()
  */
 public final class Pass3aVerifier extends PassVerifier {
@@ -148,7 +148,7 @@ public final class Pass3aVerifier extends PassVerifier {
 	 * Code attribute and correct line number entries in a LineNumberTable attribute of a Code attribute (which conceptually belong
 	 * to pass 2) to this pass. Also, most of the check for valid local variable entries in a LocalVariableTable attribute of a Code
 	 * attribute is delayed until this pass. All these checks need access to the code array of the Code attribute.
-	 * 
+	 *
 	 * @throws InvalidMethodException if the method to verify does not exist.
 	 */
 	@Override
@@ -211,7 +211,7 @@ public final class Pass3aVerifier extends PassVerifier {
 	 * These are the checks that could be done in pass 2 but are delayed to pass 3 for performance reasons. Also, these checks need
 	 * access to the code array of the Code attribute of a Method so it's okay to perform them here. Also see the description of the
 	 * do_verify() method.
-	 * 
+	 *
 	 * @throws ClassConstraintException if the verification fails.
 	 * @see #do_verify()
 	 */
@@ -316,7 +316,7 @@ public final class Pass3aVerifier extends PassVerifier {
 	/**
 	 * These are the checks if constraints are satisfied which are described in the Java Virtual Machine Specification, Second
 	 * Edition as Static Constraints on the instructions of Java Virtual Machine Code (chapter 4.8.1).
-	 * 
+	 *
 	 * @throws StaticCodeConstraintException if the verification fails.
 	 */
 	private void pass3StaticInstructionChecks() {
@@ -381,7 +381,7 @@ public final class Pass3aVerifier extends PassVerifier {
 	 * Second Edition as Static Constraints on the operands of instructions of Java Virtual Machine Code (chapter 4.8.1). BCEL
 	 * parses the code array to create an InstructionList and therefore has to check some of these constraints. Additional checks
 	 * are also implemented here.
-	 * 
+	 *
 	 * @throws StaticCodeConstraintException if the verification fails.
 	 */
 	private void pass3StaticInstructionOperandsChecks() {

@@ -6,11 +6,11 @@
 <h3>Testing and Tests</h3>
 Testing on the AspectJ project is fairly straightforward.
 For compiler issues/bugs, we write harness tests.
-For API issues/bugs, we write JUnit tests. 
+For API issues/bugs, we write JUnit tests.
 We also have other testware for system testing.
 <p>
 This module contains test data and scripts, while the testing-drivers
-and testing modules contain the harness.    
+and testing modules contain the harness.
 
 Tests differ in the kind of harness they use and their target.
 (Many tests are unused and date back to earlier times in the project.)
@@ -21,7 +21,7 @@ Tests differ in the kind of harness they use and their target.
     <th align="left">Driver</th>
     <th align="left">Sources</th>
     </tr>
-    
+
 <tr><td><a href="#harness">Harness</a> tests
      compile and run test sources.
         </td>
@@ -36,13 +36,13 @@ Tests differ in the kind of harness they use and their target.
        <a href="pureJava">pureJava/</a>,
        etc.
        </td>
-    
+
      </tr>
 
-<tr><td><a href="#product">Product</a> tests use a variety of 
+<tr><td><a href="#product">Product</a> tests use a variety of
      Ant and Bash scripts to drive the product distributions.
-    <td>bash, 
-        <a href="http://jakarta.apache.org/Ant">Ant</a>
+    <td>bash,
+        <a href="https://jakarta.apache.org/Ant">Ant</a>
         </td>
     <td><a href="product">product/..</a></td>
      </tr>
@@ -50,8 +50,8 @@ Tests differ in the kind of harness they use and their target.
 <tr><td><a href="#ajctest">AjcTest</a> is a large taskdef which
      compiles and runs large Java systems.
      </td>
-     <td>AjcTest 
-        <a href="http://jakarta.apache.org/Ant">Ant</a>
+     <td>AjcTest
+        <a href="https://jakarta.apache.org/Ant">Ant</a>
         Task in testing module </td>
     <td><a href="other-systems/">other-systems/..</a>,
         <a href="XXX">aspectj-external-lib.jar?/other-systems/</a></td>
@@ -60,24 +60,24 @@ Tests differ in the kind of harness they use and their target.
 <tr><td><a href="#jacks">Jacks</a> is the Jikes compiler test suite,
      run for us using a bash script.
     <td>bash</td>
-    <td>See the 
-    <a href="http://www-124.ibm.com/developerworks/oss/cvs/jikes/~checkout~/jacks/jacks.html">
+    <td>See the
+    <a href="https://www-124.ibm.com/developerworks/oss/cvs/jikes/~checkout~/jacks/jacks.html">
        Jacks project page</a>
     </td>
      </tr>
 
 
 <tr><td><a href="#junit">JUnit</a> tests normally are run directly
-     before checking in, 
+     before checking in,
      but there is an Ant script to run and report on them all.
      </td>
      <td><a href="junit.org">JUnit</a></td>
-     <td>Every module has a testsrc/ directory with JUnit tests.</td>            
+     <td>Every module has a testsrc/ directory with JUnit tests.</td>
      </tr>
 </table>
 
 <h3><a name="harness"></a>Harness</h3>
-   
+
 <h4><a name="harness-tests"></a>Harness tests</h4>
 These are compiler test cases, the preferred form for
 any compiler tests.  The XML files are test definitions,
@@ -88,24 +88,24 @@ segregated for convenience as follows:
    <li><a href="ajcTests.xml">ajcTests.xml</a>: main test suite.
        After a release, these tests should always run and pass.
        </li>
-   <li><a href="ajcTests10.xml">ajcTests10.xml</a>: 
+   <li><a href="ajcTests10.xml">ajcTests10.xml</a>:
        Tests for the 1.0 compiler.  In some cases, error tests
        differ between the 1.0 and 1.1 compiler only in the
        errors expected to be generated.
        </li>
-   <li><a href="ajcTestsBroken.xml">ajcTestsBroken.xml</a>: 
-	   These tests fail, and the tests are broken.  
+   <li><a href="ajcTestsBroken.xml">ajcTestsBroken.xml</a>:
+	   These tests fail, and the tests are broken.
 	   The tests should be fixed and rolled into ajcTests.xml
        </li>
-   <li><a href="ajcTestsFailing.xml">ajcTestsFailing.xml</a>: 
+   <li><a href="ajcTestsFailing.xml">ajcTestsFailing.xml</a>:
        These tests fail, and the compiler is broken.
        When fixed, these tests should be rolled into
        <a href="ajcTests.xml">ajcTests.xml</a>.
        </li>
-   <li><a href="ajcTestsAttic.xml">ajcTestsAttic.xml</a>: 
+   <li><a href="ajcTestsAttic.xml">ajcTestsAttic.xml</a>:
        These are broken or failing tests not slated to be fixed.
        </li>
-   <li><a href="ajcHarnessTests.xml">ajcHarnessTests.xml</a>: 
+   <li><a href="ajcHarnessTests.xml">ajcHarnessTests.xml</a>:
        These are tests to exercise the test harness itself.
        </li>
 </ul>
@@ -115,10 +115,10 @@ format is the <a href="ajcTestSuite.dtd">ajcTestSuite.dtd</a>.
 
 <p>
 To write a new test, evolve an existing example.  See the dtd and/or
-the javadoc for the testing harness implementation in the 
+the javadoc for the testing harness implementation in the
 <code>testing</code> module for more details.
 
-<p>To write a test case for a bug, see 
+<p>To write a test case for a bug, see
   <a href="readme-writing-compiler-tests.html">
            readme-writing-compiler-tests.html</a>.
    Many bugs that first present in an IDE or the Ant taskdef
@@ -130,7 +130,7 @@ the javadoc for the testing harness implementation in the
 <p>
 To run the harness, use <code>org.aspectj.testing.drivers.Harness</code>,
 in the <code>testing-drivers</code> module. Since that is the main class
-for the <code>testing-drivers</code> module, you can build and 
+for the <code>testing-drivers</code> module, you can build and
 run the harness as follows:
 <pre>
   cd build/
@@ -138,24 +138,24 @@ run the harness as follows:
   cd ../tests
   java -jar ../aj-build/jars/testing-drivers-all.jar ajcTests.xml
 </pre>
- 
+
 The harness enable you to
 <ul>
   <li>control output, hiding streams and logging messages</li>
   <li>select tests using keywords, bug ID's, or titles</li>
   <li>pass compiler arguments on the harness command line</li>
   <li>use different compiler wrappers - the command-line compiler,
-      the AJDE IDE support (mostly sans GUI), or 
+      the AJDE IDE support (mostly sans GUI), or
       the Ant taskdef support.</li>
   <li>fork java run steps</li>
 </ul>
-For a listing of harness options, use <code>-help</code>.   
-For a fuller description of harness options and components, see 
+For a listing of harness options, use <code>-help</code>.
+For a fuller description of harness options and components, see
   <a href="../testing-drivers/src/org/aspectj/testing/drivers/package.html">
   the package documentation for the harness</a>.
-           
+
 <h3><a name="product"></a>Product</h3>
-Product tests target a built distribution or do compiler (argument) 
+Product tests target a built distribution or do compiler (argument)
 testing not supported by the harness.
 Many have been superceded by ant tests.
 To build aspectj with itself, see
@@ -167,15 +167,15 @@ To build aspectj with itself, see
    is an Ant script that compiles and runs large systems.
    The scripts tell the AjcTest task from the testing module to drive
    the sources in other-systems through compile/doc/run cycles.
-   To set up the tests, the script combines the aspects checked in to 
+   To set up the tests, the script combines the aspects checked in to
    other-systems/ with the Java source files from various open-source
-   projects, contained in aspectj-external-lib.zip.  
+   projects, contained in aspectj-external-lib.zip.
    <!-- XXX install and correct -->
-   
-   
+
+
 <h3><a name="jacks"></a>Jacks</h3>
-Jacks is the Jikes compiler test suite available at the 
-    <a href="http://www-124.ibm.com/developerworks/oss/cvs/jikes/~checkout~/jacks/jacks.html">
+Jacks is the Jikes compiler test suite available at the
+    <a href="https://www-124.ibm.com/developerworks/oss/cvs/jikes/~checkout~/jacks/jacks.html">
        Jacks project page</a>.
 
 We have a bash script to run it using ajc and javac and compare

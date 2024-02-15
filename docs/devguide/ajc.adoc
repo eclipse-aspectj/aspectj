@@ -251,9 +251,9 @@ including these files in your existing packages instead.
 
 AspectJ is a compatible extension to the Java programming language. The
 AspectJ compiler adheres to the
-http://java.sun.com/docs/books/jls/index.html[The Java Language
+https://java.sun.com/docs/books/jls/index.html[The Java Language
 Specification, Second Edition] and to the
-http://java.sun.com/docs/books/vmspec/index.html[The Java Virtual
+https://java.sun.com/docs/books/vmspec/index.html[The Java Virtual
 Machine Specification, Second Edition] and runs on any Java 2 compatible
 platform. The code it generates runs on any Java 1.1 or later compatible
 platform. For more information on compatibility with Java and with

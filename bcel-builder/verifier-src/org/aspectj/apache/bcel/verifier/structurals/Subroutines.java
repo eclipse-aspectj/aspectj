@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.structurals;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.Constants;
@@ -86,7 +86,7 @@ import java.util.Iterator;
 	 * TODO: refer to the paper.
 	 *
 	 * @version $Id: Subroutines.java,v 1.4 2009/09/09 19:56:20 aclement Exp $
-	 * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+	 * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
 	 * @see #getTopLevel()
 	 */
 public class Subroutines{
@@ -111,25 +111,25 @@ public class Subroutines{
 
 		/** The instructions that belong to this subroutine. */
 		private HashSet<Serializable> instructions = new HashSet<Serializable>(); // Elements: InstructionHandle
-		
+
 		/*
 		 * Refer to the Subroutine interface for documentation.
 		 */
 		public boolean contains(InstructionHandle inst){
 			return instructions.contains(inst);
 		}
-		
+
 		/**
 		 * The JSR or JSR_W instructions that define this
 		 * subroutine by targeting it.
 		 */
 		private HashSet<InstructionHandle> theJSRs = new HashSet<InstructionHandle>();
-		
+
 		/**
 		 * The RET instruction that leaves this subroutine.
 		 */
 		private InstructionHandle theRET;
-		
+
 		/**
 		 * Returns a String representation of this object, merely
 		 * for debugging purposes.
@@ -139,7 +139,7 @@ public class Subroutines{
 		 */
 		public String toString(){
 			String ret = "Subroutine: Local variable is '"+localVariable+"', JSRs are '"+theJSRs+"', RET is '"+theRET+"', Instructions: '"+instructions.toString()+"'.";
-			
+
 			ret += " Accessed local variable slots: '";
 			int[] alv = getAccessedLocalsIndices();
 			for (int i=0; i<alv.length; i++){
@@ -156,7 +156,7 @@ public class Subroutines{
 
 			return ret;
 		}
-		
+
 		/**
 		 * Sets the leaving RET instruction. Must be invoked after all instructions are added.
 		 * Must not be invoked for top-level 'subroutine'.
@@ -186,7 +186,7 @@ public class Subroutines{
 			}
 			theRET = ret;
 		}
-				
+
 		/*
 		 * Refer to the Subroutine interface for documentation.
 		 */
@@ -197,7 +197,7 @@ public class Subroutines{
 			InstructionHandle[] jsrs = new InstructionHandle[theJSRs.size()];
 			return (theJSRs.toArray(jsrs));
 		}
-	
+
 		/**
 		 * Adds a new JSR or JSR_W that has this subroutine as its target.
 		 */
@@ -228,7 +228,7 @@ public class Subroutines{
 			}
 			return theRET;
 		}
-		
+
 		/*
 		 * Refer to the Subroutine interface for documentation.
 		 */
@@ -236,7 +236,7 @@ public class Subroutines{
 			InstructionHandle[] ret = new InstructionHandle[instructions.size()];
 			return instructions.toArray(ret);
 		}
-		
+
 		/*
 		 * Adds an instruction to this subroutine.
 		 * All instructions must have been added before invoking setLeavingRET().
@@ -313,7 +313,7 @@ public class Subroutines{
 					}
 				}
 			}
-			
+
 			int[] ret = new int[acc.size()];
 			i = acc.iterator();
 			int j=-1;
@@ -341,7 +341,7 @@ public class Subroutines{
 			Subroutine[] ret = new Subroutine[h.size()];
 			return h.toArray(ret);
 		}
-		
+
 		/*
 		 * Sets the local variable slot the ASTORE that is targeted
 		 * by the JsrInstructions of this subroutine operates on.
@@ -356,7 +356,7 @@ public class Subroutines{
 				localVariable = i;
 			}
 		}
-		
+
 		/**
 		 * The default constructor.
 		 */
@@ -386,7 +386,7 @@ public class Subroutines{
 	 * create the Subroutine objects of.
 	 */
 	public Subroutines(MethodGen mg){
-	
+
 		InstructionHandle[] all = mg.getInstructionList().getInstructionHandles();
 		CodeExceptionGen[] handlers = mg.getExceptionHandlers();
 
@@ -402,7 +402,7 @@ public class Subroutines{
 				sub_leaders.add(((InstructionBranch) inst).getTarget());
 			}
 		}
- 
+
 		// Build up the database.
 		Iterator<InstructionHandle> iter = sub_leaders.iterator();
 		while (iter.hasNext()){
@@ -428,13 +428,13 @@ public class Subroutines{
 				((SubroutineImpl) getSubroutine(leader)).addEnteringJsrInstruction(all[i]);
 			}
 		}
-		
+
 		// Now do a BFS from every subroutine leader to find all the
 		// instructions that belong to a subroutine.
 		HashSet<InstructionHandle> instructions_assigned = new HashSet<InstructionHandle>(); // we don't want to assign an instruction to two or more Subroutine objects.
-		
+
 		Hashtable<InstructionHandle, Color> colors = new Hashtable<InstructionHandle, Color>(); //Graph colouring. Key: InstructionHandle, Value: java.awt.Color .
-		
+
 		iter = sub_leaders.iterator();
 		while (iter.hasNext()){
 			// Do some BFS with "actual" as the root of the graph.
@@ -447,7 +447,7 @@ public class Subroutines{
 			// Init Queue
 			ArrayList<InstructionHandle> Q = new ArrayList<InstructionHandle>();
 			Q.add(actual); // add(Obj) adds to the end, remove(0) removes from the start.
-			
+
 			/* BFS ALGORITHM MODIFICATION: Start out with multiple "root" nodes, as exception handlers are starting points of top-level code, too. [why top-level? TODO: Refer to the special JustIce notion of subroutines.]*/
 			if (actual == all[0]){
 				for (int j=0; j<handlers.length; j++){
@@ -456,7 +456,7 @@ public class Subroutines{
 				}
 			}
 			/* CONTINUE NORMAL BFS ALGORITHM */
-			
+
 			// Loop until Queue is empty
 			while (Q.size() != 0){
 				InstructionHandle u = Q.remove(0);
@@ -485,7 +485,7 @@ public class Subroutines{
 				((SubroutineImpl) getSubroutine(actual)).setLeavingRET();
 			}
 		}
-		
+
 		// Now make sure no instruction of a Subroutine is protected by exception handling code
 		// as is mandated by JustIces notion of subroutines.
 		for (int i=0; i<handlers.length; i++){
@@ -503,7 +503,7 @@ public class Subroutines{
 				_protected = _protected.getNext();
 			}
 		}
-		
+
 		// Now make sure no subroutine is calling a subroutine
 		// that uses the same local variable for the RET as themselves
 		// (recursively).
@@ -530,7 +530,7 @@ public class Subroutines{
 
 		for (int i=0; i<subs.length; i++){
 			int index = ((RET) (subs[i].getLeavingRET().getInstruction())).getIndex();
-			
+
 			if (!set.add(new Integer(index))){
 				// Don't use toString() here because of possibly infinite recursive subSubs() calls then.
 				SubroutineImpl si = (SubroutineImpl) subs[i];
@@ -538,11 +538,11 @@ public class Subroutines{
 			}
 
 			noRecursiveCalls(subs[i], set);
-			
+
 			set.remove(new Integer(index));
 		}
-	} 
-	
+	}
+
 	/**
 	 * Returns the Subroutine object associated with the given
 	 * leader (that is, the first instruction of the subroutine).
@@ -553,7 +553,7 @@ public class Subroutines{
 	 */
 	public Subroutine getSubroutine(InstructionHandle leader){
 		Subroutine ret = subroutines.get(leader);
-		
+
 		if (ret == null){
 			throw new AssertionViolatedException("Subroutine requested for an InstructionHandle that is not a leader of a subroutine.");
 		}
@@ -561,7 +561,7 @@ public class Subroutines{
 		if (ret == TOPLEVEL){
 			throw new AssertionViolatedException("TOPLEVEL special subroutine requested; use getTopLevel().");
 		}
-		
+
 		return ret;
 	}
 
@@ -610,24 +610,24 @@ System.err.println("DEBUG: Please verify '"+any+"' lies in dead code.");
 		final InstructionHandle[] empty = new InstructionHandle[0];
 		final InstructionHandle[] single = new InstructionHandle[1];
 		final InstructionHandle[] pair = new InstructionHandle[2];
-		
+
 		Instruction inst = instruction.getInstruction();
-		
+
 		if (inst instanceof RET){
 			return empty;
 		}
-		
+
 		// Terminates method normally.
 		if (inst.isReturnInstruction()){
 			return empty;
 		}
-		
+
 		// Terminates method abnormally, because JustIce mandates
 		// subroutines not to be protected by exception handlers.
 		if (inst.getOpcode()==Constants.ATHROW){
 			return empty;
 		}
-		
+
 		// See method comment.
 		if (inst.isJsrInstruction()){
 			single[0] = instruction.getNext();
@@ -656,7 +656,7 @@ System.err.println("DEBUG: Please verify '"+any+"' lies in dead code.");
 			}
 		}
 
-		// default case: Fall through.		
+		// default case: Fall through.
 		single[0] = instruction.getNext();
 		return single;
 	}

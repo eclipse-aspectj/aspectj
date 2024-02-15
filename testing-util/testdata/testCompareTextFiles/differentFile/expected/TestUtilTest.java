@@ -1,12 +1,12 @@
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
  * This file is part of the compiler and core tools for the AspectJ(tm)
- * programming language; see http://aspectj.org
+ * programming language; see https://aspectj.org
  *
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -34,20 +34,20 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 /**
- * 
+ *
  */
 public class TestUtilTest extends TestCase {
 
 	public TestUtilTest(String name) {
 		super(name);
 	}
-    
+
     public void testFileCompareNonClass() throws IOException {
         MessageHandler holder = new MessageHandler();
         File thisFile = new File("testsrc/org/aspectj/testing/util/TestUtilTest.java");
         //File thisFile = new File("src/testing-util.lst");
         assertTrue(TestUtil.sameFiles(holder, thisFile, thisFile));
-        
+
         File tempFile = File.createTempFile("TestUtilTest", ".tmp");
         FileUtil.copyFile(thisFile, tempFile);
         long len = tempFile.length();
@@ -57,7 +57,7 @@ public class TestUtilTest extends TestCase {
         assertTrue(TestUtil.sameFiles(holder, tempFile, thisFile));
         try {
             String path = thisFile.getName();
-            File basedir = tempFile.getParentFile();        
+            File basedir = tempFile.getParentFile();
             File renamed = new File(basedir, path);
             if (!tempFile.renameTo(renamed)) {
                 MessageUtil.warn(holder, "unable to rename " + tempFile + " to " + renamed);
@@ -80,7 +80,7 @@ public class TestUtilTest extends TestCase {
         File classBase = new File("testdata/testCompareClassFiles");
         String path = "org/aspectj/testing/util/TestCompareClassFile.class";
         File classFile = new File(classBase, path);
-        
+
         try {
             assertTrue(TestUtil.sameFiles(holder, classFile, classFile));
             assertTrue(TestUtil.sameFiles(holder, classBase, classBase, path));
@@ -90,5 +90,5 @@ public class TestUtilTest extends TestCase {
             }
         }
     }
-    
+
 }

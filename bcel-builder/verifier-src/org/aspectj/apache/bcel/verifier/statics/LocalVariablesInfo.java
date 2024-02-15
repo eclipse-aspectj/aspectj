@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.statics;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 import org.aspectj.apache.bcel.generic.Type;
@@ -63,10 +63,10 @@ import org.aspectj.apache.bcel.verifier.exc.*;
  * a given method.
  *
  * @version $Id: LocalVariablesInfo.java,v 1.2 2008/05/28 23:52:54 aclement Exp $
- * @author <A HREF="http://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
+ * @author <A HREF="https://www.inf.fu-berlin.de/~ehaase"/>Enver Haase</A>
  */
 public class LocalVariablesInfo{
-	
+
 	/** The information about the local variables is stored here. */
 	private LocalVariableInfo[] localVariableInfos;
 
@@ -87,14 +87,14 @@ public class LocalVariablesInfo{
 	}
 
 	/**
-	 * Adds information about the local variable in slot 'slot'. Automatically 
+	 * Adds information about the local variable in slot 'slot'. Automatically
 	 * adds information for slot+1 if 't' is Type.LONG or Type.DOUBLE.
 	 * @throws LocalVariableInfoInconsistentException if the new information conflicts
 	 *         with already gathered information.
 	 */
 	public void add(int slot, String name, int startpc, int length, Type t) throws LocalVariableInfoInconsistentException{
 		// The add operation on LocalVariableInfo may throw the '...Inconsistent...' exception, we don't throw it explicitely here.
-		
+
 		if (slot < 0 || slot >= localVariableInfos.length){
 			throw new AssertionViolatedException("Slot number for local variable information out of range.");
 		}

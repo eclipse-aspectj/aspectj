@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,34 +15,34 @@ package ca.ubc.cs.spl.aspectPatterns.examples.composite.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 /**
- * Implements a <i>Composite</i>. Note that in this AspectJ version, the 
+ * Implements a <i>Composite</i>. Note that in this AspectJ version, the
  * participants are decoupled from the pattern. Thus, this composite does
  * not need to implement an interface or even keep track of its children.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/06/04
- * 
- * @see Component 
+ *
+ * @see Component
  * @see File
  */
- 
-public class Directory { 
+
+public class Directory {
 
 	/**
 	 * stores the name of this Directory
 	 */
 
 	protected String name;
-	
+
 	/**
 	 * Creates a new Directory with a given name
 	 *
@@ -52,7 +52,7 @@ public class Directory {
 	public Directory(String name) {
 		this.name = name;
 	}
-	 
+
 	/**
 	 * Overwrites the <code>toString()</code> method from <code>Object</code>
 	 * to print information about this Directory
@@ -62,4 +62,3 @@ public class Directory {
 		return ("Directory: "+name);
 	}
 }
-        

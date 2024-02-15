@@ -113,7 +113,7 @@ Under https://bugs.eclipse.org/bugs/show_bug.cgi?id=246393[bug 246393]
 the problem has been addressed where sometimes spurious errors would
 appear throughout the editor for a file in AJDT when just one single
 simple syntax errors exists. More detail on this problem can be found
-http://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.html[here].
+https://andrewclement.blogspot.com/2009/02/aspectj-fixing-reverse-cascade-errors.html[here].
 
 '''''
 

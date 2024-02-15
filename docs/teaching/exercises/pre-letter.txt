@@ -15,10 +15,10 @@ most we can from this tutorial, it would really help us if many of you
 had an AspectJ environment installed early.
 
 This message contains basic instructions on where to get some needed
-tools.  These instructions will not take much time. 
+tools.  These instructions will not take much time.
 
 If you are planning to bring a laptop to the tutorial, would you
-please take the time to do the steps outlined in this message?  
+please take the time to do the steps outlined in this message?
 
 If you're not planning to, you might want to install an AspectJ
 environment on your desktop anyway and try the instructions below, so
@@ -32,8 +32,8 @@ Thank you, and please don't hesitate to contact us (at
 support@aspectj.org) if you have any questions.  See you on
 Wednesday...
 
--Erik Hilsdale, 
- Jim Hugunin, 
+-Erik Hilsdale,
+ Jim Hugunin,
  and the whole AspectJ Team
 
 
@@ -45,13 +45,13 @@ Overview:
   0. Install AspectJ
   1. Download JUnit and put it on your classpath
   2. Test your setup
-  
+
 ------------------------------
 0. AspectJ
 
 Download the AspectJ 1.0.6 from
 
-  http://aspectj.org/dl
+  https://aspectj.org/dl
 
 You should definitly download and intstall the tools package and the
 docs package.  If you plan to use JBuilder, Forte/NetBeans, Emacs, or
@@ -63,11 +63,11 @@ plugin.
 1. JUnit
 
 We use the JUnit framework for testing our exercises.  Download JUnit
-from 
+from
 
-   http://www.junit.org
+   https://www.junit.org
 
-and place junit.jar on your CLASSPATH.  
+and place junit.jar on your CLASSPATH.
 
 
 ------------------------------
@@ -79,8 +79,8 @@ a. Create a file "Hello.java" with this class:
         public static void main(String[] args) {
             System.err.println(getHelloString());
         }
-        public static String getHelloString() { 
-            return "Hello, WORLD"; 
+        public static String getHelloString() {
+            return "Hello, WORLD";
         }
     }
 
@@ -91,7 +91,7 @@ b. Compile the class with ajc and run it...
     Hello, WORLD
 
 c. Create a file "TestHello.java" with this class:
-    
+
     public class TestHello extends junit.framework.TestCase {
         public TestHello(String name) {
             super(name);
@@ -111,7 +111,7 @@ d. Compile the class with ajc and run it...
     .F
     Time: 0.01
     There was 1 failure:
-    1) testHello(TestHello)junit.framework.ComparisonFailure: 
+    1) testHello(TestHello)junit.framework.ComparisonFailure:
     expected:<...OOPSLA> but was:<...WORLD>
             at TestHello.testHello(TestHello.java:9)
             at TestHello.main(TestHello.java:6)

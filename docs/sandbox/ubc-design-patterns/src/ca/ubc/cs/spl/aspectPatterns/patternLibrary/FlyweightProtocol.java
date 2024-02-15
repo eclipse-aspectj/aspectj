@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,42 +15,42 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 import java.util.Hashtable;
 
 /**
- * Implements a the abstracted Flyweight design pattern. Included is the 
+ * Implements a the abstracted Flyweight design pattern. Included is the
  * general creation-on-demand logic. Concrete subaspects are used to
  * defines the actual <i>FlyweightFactories</i>.
  *
  * Concrete subaspects need only to assign the flyweight roles and to
  * overwrite the <code>createFlyweight(Object)<code> method.
- * 
+ *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/11/04
  */
 
 public abstract aspect FlyweightProtocol {
-    
-    /** 
+
+    /**
      * stores the existing <i>Flyweight</i> by key
      */
 
 	private Hashtable flyweights = new Hashtable();
 
-    /** 
+    /**
      * defines the <i>Flyweight</i> role.
      */
 
 	protected interface Flyweight{};
-	
+
     /**
      * Creates a <i>Flyweight</i> for a given key. This method is called by
      * <code>getFlyweight(Object)</code> if the flyweight does not already
@@ -61,10 +61,10 @@ public abstract aspect FlyweightProtocol {
      */
 
 	protected abstract Flyweight createFlyweight(Object key);
-	
+
     /**
      * Returns the <i>Flyweight</i> for a particular key.
-     * If the appropriate <i>Flyweight</i> does not yet exist, it is created 
+     * If the appropriate <i>Flyweight</i> does not yet exist, it is created
      * on demand.
      *
      * @param key the key identifying the particular <i>Flyweight</i>
@@ -76,7 +76,7 @@ public abstract aspect FlyweightProtocol {
 			return (Flyweight) flyweights.get(key);
 		} else {
 			Flyweight flyweight = createFlyweight(key);
-			flyweights.put(key, flyweight);  
+			flyweights.put(key, flyweight);
 			return flyweight;
 		}
 	}

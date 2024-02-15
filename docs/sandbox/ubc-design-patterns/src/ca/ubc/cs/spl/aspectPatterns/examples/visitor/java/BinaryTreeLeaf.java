@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.visitor.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,15 +15,15 @@ package ca.ubc.cs.spl.aspectPatterns.examples.visitor.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
- * Implements a <i>ConcreteElement</i> of the aggregate strcuture. This is a 
+ * Implements a <i>ConcreteElement</i> of the aggregate strcuture. This is a
  * terminal binary tree element (leaf).
  *
  * @author  Jan Hannemann
@@ -31,40 +31,40 @@ package ca.ubc.cs.spl.aspectPatterns.examples.visitor.java;
  * @version 1.1, 02/17/04
  */
 
-public class BinaryTreeLeaf implements Visitable {  
-    
+public class BinaryTreeLeaf implements Visitable {
+
     /**
      * the value stored in this leaf
      */
 
 	protected int value;
-	
+
     /**
      * Accepts a visitor and calls <code>visitLeaf(Node) on it.
      *
      * @param visitor the NodeVisitor that is to be accepted.
      */
-     
+
 	public void accept(BinaryTreeVisitor visitor) {
 		visitor.visitLeaf(this);
 	}
-	
+
     /**
      * Creates a new <code>BinaryTreeLeaf</code> with the given value.
      *
      * @param value the value of the leaf
      */
-    
+
 	public BinaryTreeLeaf(int value) {
 		this.value = value;
-	} 
-	
-	/** 
+	}
+
+	/**
 	 * Accessor for the leaf's value
 	 *
 	 * @return the leaf's value
 	 */
-	 
+
 	public int getValue() {
 	    return value;
 	}

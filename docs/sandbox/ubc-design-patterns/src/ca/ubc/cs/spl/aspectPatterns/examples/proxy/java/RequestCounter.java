@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
@@ -29,25 +29,25 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.java;
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/17/04
- */  
+ */
 
-public class RequestCounter implements OutputSubject { 
-    
+public class RequestCounter implements OutputSubject {
+
     /**
      * a reference to the <i>Subject</i> (used to forward requests to)
      */
-     
-	private OutputSubject realSubject; 
-	
+
+	private OutputSubject realSubject;
+
 	/**
 	 * An internal counter for the number of calls to <code>
 	 * print(String)</code>.
 	 */
-	 
+
 	private int regularRequests = 0;
-	
+
     /**
-     * Creates a new <code>RequestCounter</code> with the given 
+     * Creates a new <code>RequestCounter</code> with the given
      * <i>Subject</i>.
      *
      * @param subject The <i>Subject</i> to forward method calls to
@@ -56,49 +56,49 @@ public class RequestCounter implements OutputSubject {
 	public RequestCounter(OutputSubject subject) {
 		this.realSubject = subject;
 	}
-	
+
     /**
 	 * Forwards the request to its subject. We are not interested in
-	 * this kind of request, but must implement the method (and the 
-	 * request forwarding) anyway since the method is part of the 
+	 * this kind of request, but must implement the method (and the
+	 * request forwarding) anyway since the method is part of the
 	 * <code>RequestBlocker</code> interface.
      *
      * @param s the string to print
      */
-     
+
 	public void safeRequest(String s) {
-		realSubject.safeRequest(s);                                                
+		realSubject.safeRequest(s);
 		System.out.println("[RequestCounter:] Not interested in safe " +
-			"requests, but must implement anyway");		
+			"requests, but must implement anyway");
 	}
-	
+
 	/**
-     * Forwards the request to its subject and prints 
-     * out how many times the <i>request()</i> has been called so far. 
+     * Forwards the request to its subject and prints
+     * out how many times the <i>request()</i> has been called so far.
 	 *
 	 * @param s the string to print
 	 */
 
 	public void regularRequest(String s) {
 		regularRequests++;
-		realSubject.regularRequest(s);                                                
+		realSubject.regularRequest(s);
 		System.out.println("[RequestCounter:] That was regular request nr. " +
-			regularRequests);		
+			regularRequests);
 	}
 
 	/**
 	 * Forwards the request to its subject. We are not interested in
-	 * this kind of request, but must implement the method (and the 
-	 * request forwarding) anyway since the method is part of the 
+	 * this kind of request, but must implement the method (and the
+	 * request forwarding) anyway since the method is part of the
 	 * <code>RequestBlocker</code> interface.
 	 *
 	 * @param s the string to print
 	 */
 
 	public void unsafeRequest(String s) {
-		realSubject.unsafeRequest(s);                                                
+		realSubject.unsafeRequest(s);
 		System.out.println("[RequestCounter:] Not interested in unsafe requests," +
-			" but must implement anyway");		
+			" but must implement anyway");
 	}
-	
+
 }

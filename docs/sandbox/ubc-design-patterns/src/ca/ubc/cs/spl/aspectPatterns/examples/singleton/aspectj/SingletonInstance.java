@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.singleton.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.singleton.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import ca.ubc.cs.spl.aspectPatterns.patternLibrary.SingletonProtocol;
@@ -33,28 +33,28 @@ import ca.ubc.cs.spl.aspectPatterns.patternLibrary.SingletonProtocol;
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/18/04
- * 
+ *
  * @see Printer
  * @see PrinterSubclass
  */
 
 
-public aspect SingletonInstance extends SingletonProtocol { 
-    
+public aspect SingletonInstance extends SingletonProtocol {
+
     /**
-     * Assigns the Singleton to <code>Printer</code>. This is all that is 
+     * Assigns the Singleton to <code>Printer</code>. This is all that is
      * necessary to provide <code>Printer</i>'s constructor with the
      * Singleton protection.
      */
-  
-	declare parents: Printer implements Singleton;		                
-	
+
+	declare parents: Printer implements Singleton;
+
     /**
      * This declaration allows <code>PrinterSubclass</code> (and all its
      * subclasses) to access <code>Printer</code>'s constructor within
      * its constructor (to allow for <code>super(..)</code> calls).
      */
- 
- 	protected pointcut protectionExclusions(): 
- 		call((PrinterSubclass+).new(..));  
+
+ 	protected pointcut protectionExclusions():
+ 		call((PrinterSubclass+).new(..));
 }

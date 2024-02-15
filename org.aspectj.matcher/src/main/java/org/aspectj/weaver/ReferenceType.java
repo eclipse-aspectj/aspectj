@@ -378,7 +378,7 @@ public class ReferenceType extends ResolvedType {
 		}
 
 		// 20170927: What is the block of code for? It mentions jls5.5 which isn't on this topic (old version of jls?)
-		// Some possible references: http://docs.oracle.com/javase/specs/jls/se9/jls9.pdf  5.1.6 (narrowing reference conversion)
+		// Some possible references: https://docs.oracle.com/javase/specs/jls/se9/jls9.pdf  5.1.6 (narrowing reference conversion)
 		// On Java 9 the test GenericsTests.testAfterReturningWithWildcardVar will fail because this code below
 		// used to find Set and List were the same, but now finds they are not. (so it doesn't put out the unchecked
 		// conversion message). However the code "List l = (List)someSet;" still compiles on 9 - so is this code bogus?

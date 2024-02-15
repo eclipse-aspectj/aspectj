@@ -29,7 +29,7 @@ import org.apache.tools.ant.types.Commandline;
 /**
  * Ajc uses this as the CompilerAdapter.
  *
- * This task was developed by the <a href="http://aspectj.org">AspectJ Project</a>
+ * This task was developed by the <a href="https://aspectj.org">AspectJ Project</a>
  *
  * @author <a href="mailto:palm@parc.xerox.com">Jeffrey Palm</a>
  * @see    org.aspectj.tools.ant.taskdefs.Ajc2

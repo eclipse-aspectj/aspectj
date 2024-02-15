@@ -137,17 +137,17 @@ public class DocumentParser extends DefaultHandler {
 		xmlReader.setErrorHandler(parser);
 
 		try {
-			xmlReader.setFeature("http://xml.org/sax/features/validation", false);
+			xmlReader.setFeature("https://xml.org/sax/features/validation", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}
 		try {
-			xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			xmlReader.setFeature("https://xml.org/sax/features/external-general-entities", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}
 		try {
-			xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			xmlReader.setFeature("https://xml.org/sax/features/external-parameter-entities", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}

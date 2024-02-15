@@ -13,7 +13,7 @@ https://eclipse.org/aspectj
 *"AspectJ in Action"* by Ramnivas Laddad has sample code including
 four patterns: the worker object creation pattern, the exception
 introduction pattern, the participant pattern, and the wormhole pattern.
-Find the code at http://www.manning.com/laddad/.
+Find the code at https://www.manning.com/laddad/.
 
 In the OOPSLA 2002 paper *"Design Pattern Implementation in Java and
 AspectJ"*, Jan Hannemann and Gregor Kiczales discuss the implementation
@@ -21,7 +21,7 @@ in AspectJ of 23 of the traditional "gang of four" design patterns (from
 the book "Design Patterns: elements of reusable object-oriented
 software" by Gamma, Helm, Johnson, and Vlissides). Their paper and the
 code for those patterns are available from
-http://www.cs.ubc.ca/~jan/AODPs/. The code is also available from the
+https://www.cs.ubc.ca/~jan/AODPs/. The code is also available from the
 AspectJ web site as ubc-design-patterns.zip. The latest version is
 checked into the CVS repository along with other sample code at
 `org.aspectj/modules/docs/sandbox/ubc-design-patterns`. For instructions
@@ -33,7 +33,7 @@ source bug tracking application that demonstrates use of Aspect-Oriented
 Programming (AOP) with AspectJ. It uses AOP pragmatically to provide
 systematic support for technical, middleware, and business concerns.
 
-The http://sourceforge.net/projects/cricketcage/[*CricketCage project*]
+The https://sourceforge.net/projects/cricketcage/[*CricketCage project*]
 automatically creates JUnit TestCases for repeatable bugs and test
 scenarios. Include Cricket Cage's AspectJ code to install a code
 generator, then run the program to generate the TestCase.

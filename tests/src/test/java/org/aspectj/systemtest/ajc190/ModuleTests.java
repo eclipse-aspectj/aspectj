@@ -20,7 +20,7 @@ import junit.framework.Test;
 /**
  * Building and weaving with modules in the picture.
  *
- * Module options from http://openjdk.java.net/jeps/261
+ * Module options from https://openjdk.java.net/jeps/261
  *
  * @author Andy Clement
  *

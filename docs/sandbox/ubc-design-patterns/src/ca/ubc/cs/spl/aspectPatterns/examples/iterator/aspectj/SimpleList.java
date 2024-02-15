@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.iterator.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,40 +15,40 @@ package ca.ubc.cs.spl.aspectPatterns.examples.iterator.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
- * Defines an interface for a basic list. 
+ * Defines an interface for a basic list.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/12/04
- * 
+ *
  * @see OpenList
  */
 
-public interface SimpleList { 
-    
-    /** 
+public interface SimpleList {
+
+    /**
      * Returns the number of elements in the list
      *
      * @return the number of elements in the list
      */
-     
-	public int count(); 
-	
+
+	public int count();
+
 	/**
 	 * Appends an object to the list
 	 *
 	 * @param o the object to append
 	 * @return true if successful, false otherwise
 	 */
-	 
+
 	public boolean append(Object o);
 
 	/**
@@ -57,8 +57,8 @@ public interface SimpleList {
 	 * @param o the object to remove
 	 * @return true if successful, false otherwise
 	 */
-	 
-	public boolean remove(Object o); 
+
+	public boolean remove(Object o);
 
 	/**
 	 * Returns an object from the list
@@ -66,7 +66,6 @@ public interface SimpleList {
 	 * @param index the position of the object
 	 * @return the object at position index
 	 */
-	 
+
 	public Object get(int index);
-}	
-	
+}

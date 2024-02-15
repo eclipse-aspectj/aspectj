@@ -19,7 +19,7 @@
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -49,7 +49,7 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 package org.aspectj.apache.bcel.classfile;
 
@@ -62,8 +62,8 @@ import org.aspectj.apache.bcel.Constants;
 /**
  * This class is derived from <em>Attribute</em> and represents the module
  * information captured in a class file.
- * http://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
- * http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.25
+ * https://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
+ * https://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.25
  *
  * @author Andy Clement
  */
@@ -367,7 +367,7 @@ public final class Module extends Attribute {
 		return ((moduleInfo[offset++] & 0xff) << 8) + (moduleInfo[offset] & 0xff);
 	}
 
-	// Format: http://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.25
+	// Format: https://cr.openjdk.java.net/~mr/jigsaw/spec/java-se-9-jvms-diffs.pdf 4.7.25
 	private void ensureUnpacked() {
 		if (!unpacked) {
 			ptr = 0;

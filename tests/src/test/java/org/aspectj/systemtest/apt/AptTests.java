@@ -30,7 +30,7 @@ public class AptTests extends XMLBasedAjcTestCase {
   }
 
   /**
-   * SPI - http://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
+   * SPI - https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html
    */
   public void testAptUsingSPI() {
 	  if (LangUtil.is9VMOrGreater()) {

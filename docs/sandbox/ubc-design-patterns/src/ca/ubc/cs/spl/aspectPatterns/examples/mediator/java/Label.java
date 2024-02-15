@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,17 +15,17 @@ package ca.ubc.cs.spl.aspectPatterns.examples.mediator.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 import javax.swing.*;
 
-/** 
- * Basically a JLabel. Acts as <i>Mediator</i>. 
+/**
+ * Basically a JLabel. Acts as <i>Mediator</i>.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
@@ -33,28 +33,28 @@ import javax.swing.*;
  */
 
 public class Label extends JLabel implements GUIMediator {
-	
+
     /**
      * Creates a new <code>Label</code> object with the provided name.
      *
-     * @param s the tag for the new <code>Label</code> object 
+     * @param s the tag for the new <code>Label</code> object
      */
-    
+
 	public Label(String s) {
 		super(s);
 	}
 
     /**
-     * Handles the event that a <i>colleague</i> chanbged. 
+     * Handles the event that a <i>colleague</i> chanbged.
      *
-     * @param colleague the <i>Colleague</i> that caused the notification 
+     * @param colleague the <i>Colleague</i> that caused the notification
      */
-    
-	public void colleagueChanged(GUIColleague colleague) { 
+
+	public void colleagueChanged(GUIColleague colleague) {
 	    Button button = (Button) colleague;
-	    
+
 		if (button == Main.button1) {
-			this.setText("Button1 clicked"); 
+			this.setText("Button1 clicked");
 		} else if (button == Main.button2) {
 			this.setText("Button2 clicked");
 		}

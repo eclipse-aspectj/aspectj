@@ -268,9 +268,9 @@ because they came under different licenses. All of AspectJ 1.1 is
 licensed under the CPL 1.0, so the tools, Ant tasks, and documentation
 are all in one distribution available from https://eclipse.org/aspectj.
 To retain their MPL 1.1 license, Ajde for
-http://aspectj4emacs.sourceforge.net/[Emacs],
-http://aspectj4netbean.sourceforge.net/[NetBeans] and
-http://aspectj4jbuildr.sourceforge.net/[JBuilder] are now independent
+https://aspectj4emacs.sourceforge.net/[Emacs],
+https://aspectj4netbean.sourceforge.net/[NetBeans] and
+https://aspectj4jbuildr.sourceforge.net/[JBuilder] are now independent
 SourceForge projects.
 
 '''''

@@ -46,7 +46,7 @@ public class DefaultCacheKeyResolverTest extends TestCase {
 	}
 
 	public void testCreateURLClassLoaderScope() throws Exception {
-		URL testURLA = new URL("http://example.com");
+		URL testURLA = new URL("https://example.com");
 		URL testURLB = new URL("file:///tmp");
 		URL testURLC = new URL("ftp://ftp.example.com");
 		URLTestCL A = new URLTestCL(testURLA);

@@ -40,7 +40,7 @@ import org.aspectj.util.LangUtil;
 
 /**
  * Quick and dirty link checker.
- * This checks that links into file: and http: targets work,
+ * This checks that links into file: and https: targets work,
  * and that links out of file: targets work.
  */
 public class LinkCheck {

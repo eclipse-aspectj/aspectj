@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.decorator.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,24 +15,24 @@ package ca.ubc.cs.spl.aspectPatterns.examples.decorator.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 /**
- * Implements a simple class that provides a <code>print(String)</code> 
- * method. In this AspectJ implementation, there is no need for a 
- * <i>Component</i> interface; this class is autonomous and does not need 
+ * Implements a simple class that provides a <code>print(String)</code>
+ * method. In this AspectJ implementation, there is no need for a
+ * <i>Component</i> interface; this class is autonomous and does not need
  * to have pattern-related code.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/11/04
- */                        
- 
+ */
+
 public class ConcreteOutput {
 
     /**

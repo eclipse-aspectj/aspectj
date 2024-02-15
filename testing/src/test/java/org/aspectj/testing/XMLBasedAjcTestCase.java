@@ -229,7 +229,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	 * properties in the associated classes, so this simple implementation should be very easy to maintain and extend should you
 	 * ever need to.
 	 *
-	 * See also <a href="http://commons.apache.org/proper/commons-digester/commons-digester-2.1/core.html">
+	 * See also <a href="https://commons.apache.org/proper/commons-digester/commons-digester-2.1/core.html">
 	 * this introduction (archived for version 2.1)</a>. AspectJ uses version 1.3, though.
 	 *
 	 * @return a newly created XML digester

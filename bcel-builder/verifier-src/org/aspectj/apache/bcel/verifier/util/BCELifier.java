@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.verifier.util;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.verifier.util;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -69,7 +69,7 @@ import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.generic.MethodGen;
 import org.aspectj.apache.bcel.generic.Type;
 
-/** 
+/**
  * This class takes a given JavaClass object and converts it to a
  * Java program that creates that very class using BCEL. This
  * gives new users of BCEL a useful example showing how things
@@ -77,7 +77,7 @@ import org.aspectj.apache.bcel.generic.Type;
  * but tries to mimic hand-written code as close as possible.
  *
  * @version $Id: BCELifier.java,v 1.2 2008/05/28 23:53:04 aclement Exp $
- * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A> 
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class BCELifier extends org.aspectj.apache.bcel.verifier.EmptyClassVisitor {
   private JavaClass         _clazz;
@@ -139,56 +139,56 @@ public class BCELifier extends org.aspectj.apache.bcel.verifier.EmptyClassVisito
     Field[] fields = clazz.getFields();
 
     if(fields.length > 0) {
-      _out.println("  private void createFields() {");   
+      _out.println("  private void createFields() {");
       _out.println("    FieldGen field;");
 
       for(int i=0; i < fields.length; i++) {
 	fields[i].accept(this);
       }
 
-      _out.println("  }\n");   
+      _out.println("  }\n");
     }
 
     Method[] methods = clazz.getMethods();
 
     for(int i=0; i < methods.length; i++) {
-      _out.println("  private void createMethod_" + i + "() {");   
+      _out.println("  private void createMethod_" + i + "() {");
 
       methods[i].accept(this);
-      _out.println("  }\n");   
+      _out.println("  }\n");
     }
 
     printMain();
     _out.println("}");
   }
-  
+
   private void printCreate() {
     _out.println("  public void create(OutputStream out) throws IOException {");
 
     Field[] fields = _clazz.getFields();
     if(fields.length > 0) {
-      _out.println("    createFields();");   
+      _out.println("    createFields();");
     }
 
     Method[] methods = _clazz.getMethods();
     for(int i=0; i < methods.length; i++) {
-      _out.println("    createMethod_" + i + "();");   
+      _out.println("    createMethod_" + i + "();");
     }
 
-    _out.println("    _cg.getJavaClass().dump(out);");   
-  
-    _out.println("  }\n");     
+    _out.println("    _cg.getJavaClass().dump(out);");
+
+    _out.println("  }\n");
   }
 
   private void printMain() {
     String   class_name   = _clazz.getClassName();
-    
+
     _out.println("  public static void main(String[] args) throws Exception {");
     _out.println("    " + class_name + "Creator creator = new " +
 		 class_name + "Creator();");
     _out.println("    creator.create(new FileOutputStream(\"" + class_name +
 		 ".class\"));");
-    _out.println("  }");     
+    _out.println("  }");
   }
 
   public void visitField(Field field) {
@@ -222,7 +222,7 @@ public class BCELifier extends org.aspectj.apache.bcel.verifier.EmptyClassVisito
 		 BCELifier.printArray(mg.getArgumentNames(), false, true) +
 		 " }, \"" + method.getName() + "\", \"" +
 		 _clazz.getClassName() + "\", il, _cp);\n");
-    
+
     BCELFactory factory = new BCELFactory(mg, _out);
     factory.start();
 

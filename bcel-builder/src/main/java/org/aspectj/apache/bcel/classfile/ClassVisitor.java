@@ -28,7 +28,7 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -58,14 +58,14 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 /**
  * Interface to make use of the Visitor pattern programming style. I.e. a class that implements this interface can traverse the
  * contents of a Java class just by calling the `accept' method which all classes have.
  *
- * Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
+ * Implemented by wish of <A HREF="https://www.inf.fu-berlin.de/~bokowski">Boris Bokowski</A>.
  *
  * @version $Id: ClassVisitor.java,v 1.4 2009/09/15 19:40:13 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>

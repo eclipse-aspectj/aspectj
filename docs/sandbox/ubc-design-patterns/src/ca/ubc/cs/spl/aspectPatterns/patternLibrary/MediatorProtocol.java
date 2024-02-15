@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.patternLibrary;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 import java.util.WeakHashMap;
@@ -41,19 +41,19 @@ import java.util.Iterator;
  *
  *   <li> what operations on the <i>Colleague</i> trigger <i>Mediator</i>
  * 		  updates.<br>
- *        This is done by concretizing the <code>change(Colleague)</code> 
+ *        This is done by concretizing the <code>change(Colleague)</code>
  *        pointcut
  *
  *   <li> how to mediate <br>
  *        this is done by concretizing
- *        <code>notifyMediator(Colleague, Mediator)</code> 
+ *        <code>notifyMediator(Colleague, Mediator)</code>
  * </ol>
  *
  * Note that in this implementation, the work of updating is a method
  * on the sub-aspect, not a method introduced on the <i>Mediator</i>.  This
  * allows one class of object to be the <i>Mediator</i> in different kinds of
  * mediation relationships, each of which has a different updating
- * behavior.  
+ * behavior.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
@@ -62,19 +62,19 @@ import java.util.Iterator;
 
 public abstract aspect MediatorProtocol {
 
-	
+
     /**
      * Declares the Colleague role.
      * Roles are modeled as (empty) interfaces.
      */
- 
-	protected interface Colleague  { }	
+
+	protected interface Colleague  { }
 
     /**
      * Declares the <code>Mediator</code> role.
      * Roles are modeled as (empty) interfaces.
      */
- 
+
 	protected interface Mediator { }
 
     /**
@@ -82,12 +82,12 @@ public abstract aspect MediatorProtocol {
      * Mediator</i>s. For each <i>Colleague</i>, its <i>Mediator</i>
      * is stored.
      */
-    
+
 	private WeakHashMap mappingColleagueToMediator = new WeakHashMap();
 
 
     /**
-     * Returns the <i>Mediator</i> of 
+     * Returns the <i>Mediator</i> of
      * a particular <i>Colleague</i>. Used internally.
      *
      * @param colleague the <i>Colleague</i> for which to return the mediator
@@ -95,21 +95,21 @@ public abstract aspect MediatorProtocol {
      */
 
 	private Mediator getMediator(Colleague colleague) {
-		Mediator mediator = 
+		Mediator mediator =
 		    (Mediator) mappingColleagueToMediator.get(colleague);
 		return mediator;
 	}
-	
+
     /**
-     * Sets the <i>Mediator</i> for a <i>Colleague</i>. This is a method 
-     * on the pattern aspect, not on any of the participants. 
+     * Sets the <i>Mediator</i> for a <i>Colleague</i>. This is a method
+     * on the pattern aspect, not on any of the participants.
      *
      * @param colleague the <i>Colleague</i> to set a new <i>Mediator</i> for
      * @param mediator the new <i>Mediator</i> to set
-     */ 
-     
-	public void	setMediator(Colleague colleague, Mediator mediator) { 
-	    mappingColleagueToMediator.put(colleague, mediator); 
+     */
+
+	public void	setMediator(Colleague colleague, Mediator mediator) {
+	    mappingColleagueToMediator.put(colleague, mediator);
 	}
 
 
@@ -125,8 +125,8 @@ public abstract aspect MediatorProtocol {
 
 	/**
 	 * Call updateObserver to update each observer.
-	 */  
-	 
+	 */
+
 	after(Colleague c): change(c) {
 		notifyMediator(c, getMediator(c));
 	}
@@ -136,7 +136,7 @@ public abstract aspect MediatorProtocol {
      * to a <code>Colleague</code> occurs. To be concretized by sub-aspects.
      *
      * @param c the <i>Colleague</i> on which a change of interest occured
-     * @param m the <i>Mediator</i> to be notifed of the change  
+     * @param m the <i>Mediator</i> to be notifed of the change
      */
 
 	protected abstract void notifyMediator(Colleague c, Mediator m);

@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
@@ -28,7 +28,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.aspectj;
  * without losing the possibility to declare default implementations and even
  * variables.
  *
- * This also illiustrates the tradeoffs: The current version of AspectJ 
+ * This also illiustrates the tradeoffs: The current version of AspectJ
  * (1.0.4) does not allow protected introduction. To achieve the same result
  * as in the OO case, the result variable has to be introduced as public
  * (to be inherited). To make sure that no other classes can access that
@@ -38,22 +38,22 @@ package ca.ubc.cs.spl.aspectPatterns.examples.builder.aspectj;
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 01/26/04
- * 
+ *
  * @see Builder
  * @see TextBuilder
  * @see StructureBuilder
  */
 
 public aspect CreatorImplementation {
-    
+
     /**
      * Declares the result variable on the <code>Creator</code> interface.
      */
-    
+
     public String Creator.representation;
 
     /**
-     * Declares the <i>getResult()</i> method with a default implementation 
+     * Declares the <i>getResult()</i> method with a default implementation
      * to the <code>Creator</code> interface.
      *
      * @returns the representation string for the builder.
@@ -62,15 +62,15 @@ public aspect CreatorImplementation {
     public String Creator.getRepresentation() {
         return representation;
     }
-    
+
     /**
-     * Declares a compiler error that gets reported if other classes 
+     * Declares a compiler error that gets reported if other classes
      * (except Creators or this aspect) try to access the result variable.
      */
-    
-    declare error: (set(public String Creator+.representation) 
-                 || get(public String Creator+.representation)) 
-              && ! (within(Creator+) 
-                 || within(CreatorImplementation)): 
+
+    declare error: (set(public String Creator+.representation)
+                 || get(public String Creator+.representation))
+              && ! (within(Creator+)
+                 || within(CreatorImplementation)):
        "variable result is aspect protected. Use getResult() to access it";
 }

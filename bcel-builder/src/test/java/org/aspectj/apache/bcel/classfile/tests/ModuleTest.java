@@ -25,7 +25,7 @@ import org.aspectj.apache.bcel.classfile.Module.Uses;
 import org.aspectj.apache.bcel.classfile.SourceFile;
 
 /**
- * http://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
+ * https://cr.openjdk.java.net/~mr/jigsaw/spec/lang-vm.html
  *
  * @author Andy Clement
  */

@@ -1,4 +1,4 @@
-package ca.ubc.cs.spl.aspectPatterns.examples.prototype.java; 
+package ca.ubc.cs.spl.aspectPatterns.examples.prototype.java;
 
 /* -*- Mode: Java; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.prototype.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,11 +15,11 @@ package ca.ubc.cs.spl.aspectPatterns.examples.prototype.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
@@ -29,18 +29,18 @@ package ca.ubc.cs.spl.aspectPatterns.examples.prototype.java;
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/13/04
- * 
+ *
  * @see StringPrototypeB
- */ 
+ */
 
 public class StringPrototypeA implements Cloneable {
 
     /**
      * the string that this object encapsulates
      */
-         
+
     protected String text;
-    
+
     /**
      * Creates a new StringPrototypeA object with the given string
      *
@@ -50,34 +50,33 @@ public class StringPrototypeA implements Cloneable {
     public StringPrototypeA(String init) {
         text = init;
     }
-    
+
     /**
      * Changes the string this object encapsulates
      *
      * @param newText the new text for this object.
-     */  
-    
+     */
+
     public void setText(String newText) {
         text = newText;
     }
-    
+
     /**
      * Returns a string representation of this object.
      *
      * @returns a string representation of this object.
      */
-    
+
     public String toString() {
         return "StringPrototypeA: "+ text;
-    } 
-    
-    /** 
+    }
+
+    /**
      * Returns a copy of this object. Does only work this way if the
      * superclass implements <code>clone()</code>.
      */
-    
+
     public Object clone() throws CloneNotSupportedException  {
         return super.clone();
     }
 }
-   

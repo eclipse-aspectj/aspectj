@@ -48,7 +48,7 @@ import org.aspectj.apache.bcel.verifier.InstructionWalker;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -78,12 +78,12 @@ import org.aspectj.apache.bcel.verifier.InstructionWalker;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  */
 
 /**
  * Factory creates il.append() statements, and sets instruction targets. A helper class for BCELifier.
- * 
+ *
  * @see BCELifier
  * @version $Id: BCELFactory.java,v 1.6 2009/09/14 20:29:10 aclement Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>

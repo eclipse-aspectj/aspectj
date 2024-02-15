@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.flyweight.java;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,32 +15,32 @@ package ca.ubc.cs.spl.aspectPatterns.examples.flyweight.java;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
- 
+
 /**
- * Defines the <i>Flyweight</i> interface. Here, the flyweights are 
+ * Defines the <i>Flyweight</i> interface. Here, the flyweights are
  * characters that offer a single method: <code>print(boolean)</code>.
  *
  * @author  Jan Hannemann
  * @author  Gregor Kiczales
  * @version 1.1, 02/11/04
- * 
+ *
  * @see PrintableFlyweightFactory
  */
- 
-public interface PrintableFlyweight { 
-    
+
+public interface PrintableFlyweight {
+
     /**
-     * Defines the method signature for <i>Flyweights</i>' 
+     * Defines the method signature for <i>Flyweights</i>'
      * <code>print()</code> method
      *
      * @param uppercase whether the character is to be printed as uppercase
      */
-      
+
 	public void print(boolean uppercase);
 }

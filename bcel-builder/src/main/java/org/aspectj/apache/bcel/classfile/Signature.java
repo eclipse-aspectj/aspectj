@@ -21,7 +21,7 @@ package org.aspectj.apache.bcel.classfile;
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (https://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
  *
@@ -51,7 +51,7 @@ package org.aspectj.apache.bcel.classfile;
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <https://www.apache.org/>.
  *
  * Extended by Adrian Colyer, June 2005 to support unpacking of Signature
  * attribute
@@ -65,7 +65,7 @@ import java.io.IOException;
 import org.aspectj.apache.bcel.Constants;
 
 /**
- * This class is derived from <em>Attribute</em> and represents a reference to a <href="http://wwwipd.ira.uka.de/~pizza/gj/">GJ</a>
+ * This class is derived from <em>Attribute</em> and represents a reference to a <href="https://wwwipd.ira.uka.de/~pizza/gj/">GJ</a>
  * attribute.
  *
  * @version $Id: Signature.java,v 1.11 2009/09/15 19:40:12 aclement Exp $

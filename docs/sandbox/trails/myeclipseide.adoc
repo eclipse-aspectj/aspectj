@@ -2,7 +2,7 @@
 
 _Last updated: 2003-07-08 by wisberg_
 
-MyEclipseIde (http://www.myeclipseide.com/[http://www.myeclipseide.com])
+MyEclipseIde (https://www.myeclipseide.com/[https://www.myeclipseide.com])
 aims to make it easy to develop J2EE applications using Eclipse. AJDT
 (https://eclipse.org/ajdt) is an Eclipse plug-in that supports AspectJ.
 

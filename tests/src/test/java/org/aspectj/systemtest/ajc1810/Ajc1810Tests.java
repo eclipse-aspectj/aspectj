@@ -62,7 +62,7 @@ public class Ajc1810Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ambiguous message - 18");
 	}
 
-	// http://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.6
+	// https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.6
 	public void testInnerClassesAttributeStructure_493554() throws Exception {
 		runTest("pertarget");
 

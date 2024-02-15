@@ -7,7 +7,7 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * either http://www.mozilla.org/MPL/ or http://aspectj.org/MPL/.
+ * either https://www.mozilla.org/MPL/ or https://aspectj.org/MPL/.
  *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
@@ -15,42 +15,42 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
  * License.
  *
  * The Original Code is ca.ubc.cs.spl.aspectPatterns.
- * 
- * For more details and the latest version of this code, please see:
- * http://www.cs.ubc.ca/labs/spl/projects/aodps.html
  *
- * Contributor(s):   
+ * For more details and the latest version of this code, please see:
+ * https://www.cs.ubc.ca/labs/spl/projects/aodps.html
+ *
+ * Contributor(s):
  */
 
 /**
- * Implements the driver for the Proxy design pattern example.<p> 
+ * Implements the driver for the Proxy design pattern example.<p>
  *
  * Intent: <i>Provide a surrogate or placeholder for another object to control
  * access to it.</i><p>
  *
- * Participating objects are <code>OutputImplementation</code>s and 
- * <code>AlternateOutputImplementation</code>. 
- * 
+ * Participating objects are <code>OutputImplementation</code>s and
+ * <code>AlternateOutputImplementation</code>.
+ *
  * The former acts as a <i>RealSubject</i>.
  *
  * Experimental setup:
  * <code>Main</code> issues three different kinds of requests to
- * the <i>RealSubject</i> (<code>OutputImplementation</code>) twice. 
+ * the <i>RealSubject</i> (<code>OutputImplementation</code>) twice.
  * <UL>
- * 	<LI> SAFE requests are delegated to a different object 
+ * 	<LI> SAFE requests are delegated to a different object
  *       (delegation proxy)
  *  <LI> REGULAR request are counted
  *  <LI> UNSAFE requests are blocked entirely.
  * </UL>
  *
- * <p><i>This is the AspectJ version.</i><p> 
- * 
+ * <p><i>This is the AspectJ version.</i><p>
+ *
  * Each concrete aspect defines exactly what requests it is interested
  * in. For those requests, it declares how to deal with the request.
- * 
+ *
  * The proxy implementation is localized. Even clients need not set
- * or remove proxies.  
- * 
+ * or remove proxies.
+ *
  * Please note that the AspectJ version includes an additional proxy
  * that delegates safe request to a different object. An OO implementation
  * would be similar to the other OO proxies.
@@ -61,39 +61,39 @@ package ca.ubc.cs.spl.aspectPatterns.examples.proxy.aspectj;
  */
 
 public class Main {
-    
-    /** 
+
+    /**
      * Creates a new Main object and runs the test suite.
-     */  
-    
-	public Main() { 
+     */
+
+	public Main() {
 
 	    /**
 	     * The <i>RealSubject</i> that the client sends all requests to
 	     */
-	     
-		OutputImplementation real = new OutputImplementation(); 
 
-		System.out.println("\n===> Issuing SAFE request...");		
+		OutputImplementation real = new OutputImplementation();
+
+		System.out.println("\n===> Issuing SAFE request...");
 		real.safeRequest   ("Safe Reqeust");
-		System.out.println("\n===> Issuing REGULAR request...");		
+		System.out.println("\n===> Issuing REGULAR request...");
 		real.regularRequest("Normal Request");
-		System.out.println("\n===> Issuing UNSAFE request...");		
+		System.out.println("\n===> Issuing UNSAFE request...");
 		real.unsafeRequest ("Unsafe Request");
 
-		System.out.println("\n===> Issuing SAFE request...");		
+		System.out.println("\n===> Issuing SAFE request...");
 		real.safeRequest   ("Safe Reqeust");
-		System.out.println("\n===> Issuing REGULAR request...");		
+		System.out.println("\n===> Issuing REGULAR request...");
 		real.regularRequest("Normal Request");
-		System.out.println("\n===> Issuing UNSAFE request...");		
+		System.out.println("\n===> Issuing UNSAFE request...");
 		real.unsafeRequest ("Unsafe Request");
-	}	    
+	}
 
-    /** 
+    /**
      * Implements the driver for the proxy design pattern example.
 	 */
 
-	public static void main (String[] args) { 
+	public static void main (String[] args) {
         Main main = new Main();
 	}
 }
