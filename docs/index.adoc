@@ -97,7 +97,7 @@ JDK to run
 
 |Release notes |Release notes, describing new features, improvements, bugfixes per AspectJ version: +
  +
-xref:release/README-1.9.21.adoc[1.9.21], xref:release/README-1.9.20.adoc[1.9.20 / 1.9.20.1],
+xref:release/README-1.9.21.adoc[1.9.21 / 1.9.21.1], xref:release/README-1.9.20.adoc[1.9.20 / 1.9.20.1],
 xref:release/README-1.9.19.adoc[1.9.19], xref:release/README-1.9.9.adoc[1.9.9 / 1.9.9.1],
 xref:release/README-1.9.8.adoc[1.9.8], xref:release/README-1.9.7.adoc[1.9.7],
 xref:release/README-1.9.6.adoc[1.9.6], xref:release/README-1.9.5.adoc[1.9.5],
