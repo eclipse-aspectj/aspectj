@@ -192,13 +192,17 @@ folder `doc/latest` in the website repository or maybe to a folder named after t
 the future. Presently, we only publish the latest documentation, always overwriting the preceding version. The entry
 page for the generated docs is published [here](https://eclipse.dev/aspectj/doc/latest/index.html).
 
-Make sure to check the diffs before committing. If a certain part of the documentation (e.g. developer's notebook,
-programming guide) has not changed HTML-wise, you also do not need to commit the corresponding PDF, even though it
-might be binarily different. But if the HTML content is unchanged, the PDF should look the same as before, too, unless
-you have reason to believe otherwise (e.g. changes in style in the generator options). Inspecting the diffs, you also
-want to identify other generic changes, such as timestamps, years in copyright notices etc. It is an ongoing process
-to optimise such changes away to achieve stable docs and small commit diffs. If you spot something, make sure to
-optimise the build process accordingly. 
+Make sure to **check the diffs** before committing:
+  * If a certain part of the documentation (e.g. developer's notebook, programming guide) has not changed HTML-wise,
+    you also do not need to commit the corresponding PDF, even though it might be binarily different. But if the HTML
+    content is unchanged, the PDF should look the same as before, too, unless you have reason to believe otherwise
+    (e.g. changes in style in the generator options).
+  * Depending on your local OS and Git configuration, some changes might only be caused by different line delimiters,
+    i.e. CRLF on Windows and LF on Linux and MacOS. Please avoid committing those, changing the files back and forth.
+    Rather run dos2unix or unix2dos on those files to eliminate unnecessary and possibly huge diffs.  
+  * You also want to identify other generic changes, such as timestamps, years in copyright notices etc. It is an
+    ongoing process to optimise such changes away to achieve stable docs and small commit diffs. If you spot
+    something, make sure to improve the build process accordingly. 
 
 After pushing changes to the website repository, they should be published by a batch process automatically after a
 short delay (usually a few minutes).
