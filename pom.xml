@@ -427,7 +427,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>3.6.3</version>
 					<!--
 						FIXME: This configuration works with JDK 16, but throws errors on other JDK versions, e.g. 14. It looks as
 						 if the Maven Javadoc plugin does not do a particularly good job applying the plugin settings in a way
