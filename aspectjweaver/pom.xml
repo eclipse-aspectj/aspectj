@@ -274,6 +274,19 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<!-- Remove javadoc version number from HTML comment to keep website diffs small -->
+					<execution>
+						<id>filter-javadocs</id>
+						<!-- Override default phase 'none' from parent -->
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
