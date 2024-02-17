@@ -455,6 +455,14 @@
 							<additionalJOption>-J-Duser.language=en</additionalJOption>
 							<additionalJOption>-J-Duser.country=US</additionalJOption>
 						</additionalJOptions>
+						<!--
+							Options for reproducible build artifacts and smaller diffs when committing changes to the website,
+							avoiding timestamps, changing current copyright years, artifact versions
+						-->
+						<notimestamp>true</notimestamp>
+						<bottom>Copyright © 1997 to present AspectJ contributors. All rights reserved.</bottom>
+						<doctitle>${project.name} API</doctitle>
+						<windowtitle>${project.name} API</windowtitle>
 					</configuration>
 				</plugin>
 				<plugin>
