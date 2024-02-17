@@ -15,6 +15,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+		<!--
+			Set fixed timestamp for reproducible builds,
+			see https://maven.apache.org/guides/mini/guide-reproducible-builds.html
+		-->
+		<project.build.outputTimestamp>2024-01-01T00:00:00Z</project.build.outputTimestamp>
+
 		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<!-- By default, do not create javadoc - override in release profile or manually -->
