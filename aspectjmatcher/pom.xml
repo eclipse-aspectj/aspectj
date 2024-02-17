@@ -206,8 +206,9 @@
 					<!-- Remove javadoc version number from HTML comment to keep website diffs small -->
 					<execution>
 						<id>filter-javadocs</id>
-						<!-- Override default phase 'none' from parent -->
-						<phase>package</phase>
+						<configuration>
+							<skip>${maven.javadoc.skip}</skip>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

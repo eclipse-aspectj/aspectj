@@ -484,12 +484,13 @@
 						-->
 						<execution>
 							<id>filter-javadocs</id>
-							<!-- Override phase to 'package' in modules which need to filter javadocs -->
-							<phase>none</phase>
+							<phase>package</phase>
 							<goals>
 								<goal>run</goal>
 							</goals>
 							<configuration>
+								<!-- Override in modules which need to filter javadocs -->
+								<skip>$true</skip>
 								<target>
 									<!-- See https://ant.apache.org/manual/Tasks/replaceregexp.html -->
 									<replaceregexp byline="true">
