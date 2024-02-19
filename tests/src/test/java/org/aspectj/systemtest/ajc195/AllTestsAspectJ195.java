@@ -20,7 +20,7 @@ public class AllTestsAspectJ195 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.5 tests");
 		suite.addTest(Ajc195Tests.suite());
-		if (LangUtil.is13VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(13)) {
 			suite.addTest(SanityTestsJava13.suite());
 		}
 		return suite;

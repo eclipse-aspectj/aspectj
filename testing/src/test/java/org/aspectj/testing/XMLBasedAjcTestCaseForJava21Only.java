@@ -30,7 +30,7 @@ public abstract class XMLBasedAjcTestCaseForJava21Only extends XMLBasedAjcTestCa
 		*/
 		// AspectJ_JDK_Update
 		// Activate this block before upgrading to JDT Core Java 22
-		if (!LangUtil.is21VMOrGreater() || LangUtil.is22VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(21) || LangUtil.isVMGreaterOrEqual(22)) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 21 only " +
 				"(e.g. because they use version-specific preview features)"

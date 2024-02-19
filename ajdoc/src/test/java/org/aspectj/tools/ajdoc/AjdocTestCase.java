@@ -219,7 +219,7 @@ public abstract class AjdocTestCase extends TestCase {
 		args[2] = sourceLevel;
 		args[3] = "-classpath";
 		StringBuilder classpath = new StringBuilder();
-		if (LangUtil.is9VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(9)) {
 			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
 		}
 		classpath.append(AjdocTests.ASPECTJRT_PATH.getPath());

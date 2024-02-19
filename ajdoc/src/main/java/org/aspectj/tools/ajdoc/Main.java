@@ -265,7 +265,7 @@ public class Main implements Config {
 			for (int k = 0; k < fileList.size(); k++) {
 				javadocargs[numExtraArgs + options.size() + packageList.size() + k] = fileList.elementAt(k);
 			}
-			if (LangUtil.is9VMOrGreater()) {
+			if (LangUtil.isVMGreaterOrEqual(9)) {
 				options = new Vector<>();
 				Collections.addAll(options, javadocargs);
 			}
@@ -289,7 +289,7 @@ public class Main implements Config {
 		Locale defaultLocale = Locale.getDefault();
 		try {
 			Locale.setDefault(Locale.ENGLISH);
-			if (LangUtil.is9VMOrGreater()) {
+			if (LangUtil.isVMGreaterOrEqual(9)) {
 				JavadocRunner.callJavadocViaToolProvider(options, files);
 			} else {
 				JavadocRunner.callJavadoc(javadocargs);

@@ -783,7 +783,7 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 	}
 
 	public void testAfterReturningWithWildcardVar() {
-		if (LangUtil.is9VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(9)) {
 			// See ReferenceType.isCoerceableFrom comments
 			return;
 		}

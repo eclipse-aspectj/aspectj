@@ -159,7 +159,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== METHOD DETAIL",
 				toName("setX(int)"),
-//				LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
+//				LangUtil.isVMGreaterOrEqual(18)?"setX-int-":"setX(int)",
 				HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 				"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" +
@@ -167,7 +167,7 @@ public class DeclareFormsTest extends AjdocTestCase {
         b = AjdocOutputChecker.summarySectionContainsRel(
 					htmlFile,"=== METHOD SUMMARY",
 					toName("setX(int)"),
-//					LangUtil.is18VMOrGreater()?"setX-int-":"setX(int)",
+//					LangUtil.isVMGreaterOrEqual(18)?"setX-int-":"setX(int)",
 					HtmlDecorator.HtmlRelationshipKind.MATCHES_DECLARE,
 					"declare warning: quot;blahquot;");
 		assertTrue("Should have 'setX(int) matches declare declare warning: quot;blahquot;" +
@@ -291,7 +291,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 	}
 
 	private String toName(String name) {
-		if (!LangUtil.is11VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(11)) {
 			name = name.replace('(','-');
 			name = name.replace(')','-');
 		}
@@ -394,7 +394,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				LangUtil.is11VMOrGreater()?"&lt;init&gt;(java.lang.String)":toName("C(java.lang.String)"),
+				LangUtil.isVMGreaterOrEqual(11)?"&lt;init&gt;(java.lang.String)":toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " +
@@ -402,7 +402,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 				"' in the Method Detail section", b);
         b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				LangUtil.is11VMOrGreater()?"#%3Cinit%3E(java.lang.String)":toName("C(java.lang.String)"),
+				LangUtil.isVMGreaterOrEqual(11)?"#%3Cinit%3E(java.lang.String)":toName("C(java.lang.String)"),
 				HtmlDecorator.HtmlRelationshipKind.ANNOTATED_BY,
 				"declare @constructor: foo.C.new(..) : @MyAnnotation");
 		assertTrue("Should have '" + doIt + " annotated by " +

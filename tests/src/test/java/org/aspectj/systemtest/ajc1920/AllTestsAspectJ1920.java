@@ -19,13 +19,13 @@ public class AllTestsAspectJ1920 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.20 tests");
 		suite.addTest(Bugs1920Tests.suite());
-		if (LangUtil.is20VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(20)) {
 			suite.addTest(SanityTestsJava20.suite());
 			suite.addTest(Ajc1920TestsJava.suite());
 		}
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
 		/*
-		if (LangUtil.is20VMOrGreater() && !LangUtil.is21VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(20) && !LangUtil.isVMGreaterOrEqual(21)) {
 			suite.addTest(Java20PreviewFeaturesTests.suite());
 		}
 		*/

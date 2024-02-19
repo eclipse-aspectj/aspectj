@@ -110,7 +110,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(FieldSetTestCase.class);
 		suite.addTestSuite(HierarchyDependsTestCase.class);
 		suite.addTestSuite(IdWeaveTestCase.class);
-        if (LangUtil.is9VMOrGreater()) {
+        if (LangUtil.isVMGreaterOrEqual(9)) {
         	suite.addTestSuite(JImageTestCase.class);
         }
 		suite.addTestSuite(MegaZipTestCase.class);

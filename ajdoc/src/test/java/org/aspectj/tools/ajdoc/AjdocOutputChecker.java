@@ -206,7 +206,7 @@ public class AjdocOutputChecker {
 				String nextLine = reader.readLine();
 				while (nextLine != null && (!nextLine.contains("========"))) {
 					// On JDK11 it looks like <a id="doIt()"> on earlier JDKs it can look like <a name="doit">
-					if ((LangUtil.is11VMOrGreater() && nextLine.contains("ID=\"" + source + "\"") || nextLine.contains("id=\"" + source + "\"")) ||
+					if ((LangUtil.isVMGreaterOrEqual(11) && nextLine.contains("ID=\"" + source + "\"") || nextLine.contains("id=\"" + source + "\"")) ||
 							nextLine.contains("NAME=\"" + source + "\"") || nextLine.contains("name=\"" + source + "\"")) {
 						// found the required subsection
 						String subLine = reader.readLine();

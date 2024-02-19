@@ -110,90 +110,12 @@ public class LangUtil {
 		return result;
 	}
 
-	@Deprecated
-	public static boolean is1dot3VMOrGreater() {
-		return 1.3 <= vmVersion;
+	public static boolean isVMGreaterOrEqual(int javaVersion) {
+		return isVMGreaterOrEqual((double) javaVersion);
 	}
 
-	@Deprecated
-	public static boolean is1dot4VMOrGreater() {
-		return 1.4 <= vmVersion;
-	}
-
-	@Deprecated
-	public static boolean is1dot5VMOrGreater() {
-		return 1.5 <= vmVersion;
-	}
-
-	@Deprecated
-	public static boolean is1dot6VMOrGreater() {
-		return 1.6 <= vmVersion;
-	}
-
-	@Deprecated
-	public static boolean is1dot7VMOrGreater() {
-		return 1.7 <= vmVersion;
-	}
-
-	public static boolean is1dot8VMOrGreater() {
-		return 1.8 <= vmVersion;
-	}
-
-	public static boolean is9VMOrGreater() {
-		return 9 <= vmVersion;
-	}
-
-	public static boolean is10VMOrGreater() {
-		return 10 <= vmVersion;
-	}
-
-	public static boolean is11VMOrGreater() {
-		return 11 <= vmVersion;
-	}
-
-	public static boolean is12VMOrGreater() {
-		return 12 <= vmVersion;
-	}
-
-	public static boolean is13VMOrGreater() {
-		return 13 <= vmVersion;
-	}
-
-	public static boolean is14VMOrGreater() {
-		return 14 <= vmVersion;
-	}
-
-	public static boolean is15VMOrGreater() {
-		return 15 <= vmVersion;
-	}
-
-	public static boolean is16VMOrGreater() {
-		return 16 <= vmVersion;
-	}
-
-	public static boolean is17VMOrGreater() {
-		return 17 <= vmVersion;
-	}
-
-	public static boolean is18VMOrGreater() {
-		return 18 <= vmVersion;
-	}
-
-	public static boolean is19VMOrGreater() {
-		return 19 <= vmVersion;
-	}
-
-	public static boolean is20VMOrGreater() {
-		return 20 <= vmVersion;
-	}
-
-	public static boolean is21VMOrGreater() {
-		return 21 <= vmVersion;
-	}
-
-	// AspectJ_JDK_Update
-	public static boolean is22VMOrGreater() {
-		return 22 <= vmVersion;
+	public static boolean isVMGreaterOrEqual(double javaVersion) {
+		return javaVersion <= vmVersion;
 	}
 
 	/**

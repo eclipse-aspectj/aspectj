@@ -45,7 +45,7 @@ public class VersionTest extends TestCase {
 	}
 
 	public void testVersion() {
-		if (LangUtil.is11VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(11)) {
 			return;
 		}
 		if (Version.getTimeText().equals("")) {

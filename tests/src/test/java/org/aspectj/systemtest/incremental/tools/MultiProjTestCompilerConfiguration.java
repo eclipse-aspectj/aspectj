@@ -76,7 +76,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 			+ "../lib/junit/junit.jar" + File.pathSeparator
 			+ ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
 		verifyClasspath(cp);
-		if (LangUtil.is9VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(9)) {
 			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
 		}
 

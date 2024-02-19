@@ -48,7 +48,7 @@ public class AjcTaskCompileCommandTest extends TestCase {
         list.add("-classpath");
         StringBuilder classpath = new StringBuilder();
         classpath.append(Globals.F_aspectjrt_jar.getAbsolutePath());
-        if (LangUtil.is9VMOrGreater()) {
+        if (LangUtil.isVMGreaterOrEqual(9)) {
         	classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
         }
         list.add(classpath.toString());

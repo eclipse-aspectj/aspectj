@@ -19,13 +19,13 @@ public class AllTestsAspectJ199 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.9 tests");
     suite.addTest(Bugs199Tests.suite());
-		if (LangUtil.is18VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(18)) {
 			suite.addTest(SanityTestsJava18.suite());
 			suite.addTest(Ajc199TestsJava.suite());
 		}
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
 		/*
-		if (LangUtil.is18VMOrGreater() && !LangUtil.is19VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(18) && !LangUtil.isVMGreaterOrEqual(19)) {
 			suite.addTest(Java18PreviewFeaturesTests.suite());
 		}
 		*/

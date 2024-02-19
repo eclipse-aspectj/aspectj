@@ -26,13 +26,13 @@ public class AjcTest {
 	private static boolean is1dot6VMOrGreater = true;
 	private static boolean is1dot7VMOrGreater = true;
 	private static boolean is1dot8VMOrGreater = true;
-	private static boolean is9VMOrGreater = LangUtil.is9VMOrGreater();
-	private static boolean is10VMOrGreater = LangUtil.is10VMOrGreater();
-	private static boolean is11VMOrGreater = LangUtil.is11VMOrGreater();
-	private static boolean is12VMOrGreater = LangUtil.is12VMOrGreater();
-	private static boolean is13VMOrGreater = LangUtil.is13VMOrGreater();
-	private static boolean is14VMOrGreater = LangUtil.is14VMOrGreater();
-	private static boolean is15VMOrGreater = LangUtil.is15VMOrGreater();
+	private static boolean is9VMOrGreater = LangUtil.isVMGreaterOrEqual(9);
+	private static boolean is10VMOrGreater = LangUtil.isVMGreaterOrEqual(10);
+	private static boolean is11VMOrGreater = LangUtil.isVMGreaterOrEqual(11);
+	private static boolean is12VMOrGreater = LangUtil.isVMGreaterOrEqual(12);
+	private static boolean is13VMOrGreater = LangUtil.isVMGreaterOrEqual(13);
+	private static boolean is14VMOrGreater = LangUtil.isVMGreaterOrEqual(14);
+	private static boolean is15VMOrGreater = LangUtil.isVMGreaterOrEqual(15);
 
 	private List<ITestStep> testSteps = new ArrayList<>();
 

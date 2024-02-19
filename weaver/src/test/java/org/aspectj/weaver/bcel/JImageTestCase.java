@@ -49,13 +49,13 @@ public class JImageTestCase extends TestCase {
 	}
 
 	public void testOnJava9() {
-		if (!LangUtil.is9VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(9)) {
 			System.out.println("SKIPPING JIMAGE TESTS AS NOT ON 1.9 OR LATER");
 		}
 	}
 
 	public void testBasicStructureAndCapabilities() {
-		if (!LangUtil.is9VMOrGreater()) return;
+		if (!LangUtil.isVMGreaterOrEqual(9)) return;
 		// Should be one entry for finding JRT contents
 		List<Entry> entries = cpm.getEntries();
 		assertEquals(1,entries.size());
@@ -67,7 +67,7 @@ public class JImageTestCase extends TestCase {
 	}
 
 	public void testBehaviour() throws Exception {
-		if (!LangUtil.is9VMOrGreater()) return;
+		if (!LangUtil.isVMGreaterOrEqual(9)) return;
 		JImageEntry jie = getJImageEntry();
 
 		Map<String, Path> packageCache = jie.getPackageCache();

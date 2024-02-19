@@ -22,7 +22,7 @@ public abstract class XMLBasedAjcTestCaseForJava10OrLater extends XMLBasedAjcTes
 
 	@Override
 	public void setUp() throws Exception {
-		if (!LangUtil.is10VMOrGreater())
+		if (!LangUtil.isVMGreaterOrEqual(10))
 			throw new IllegalStateException("These tests should be run on Java 10 or later");
 		super.setUp();
 	}

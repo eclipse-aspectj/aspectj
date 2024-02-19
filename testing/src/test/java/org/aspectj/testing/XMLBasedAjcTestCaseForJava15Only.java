@@ -25,7 +25,7 @@ public abstract class XMLBasedAjcTestCaseForJava15Only extends XMLBasedAjcTestCa
 		);
 		// Activate this block before upgrading to JDT Core Java 16
 		/*
-		if (!LangUtil.is15VMOrGreater() || LangUtil.is16VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(15) || LangUtil.isVMGreaterOrEqual(16)) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 15 only " +
 				"(e.g. because they use version-specific preview features)"

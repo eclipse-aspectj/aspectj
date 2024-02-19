@@ -81,7 +81,7 @@ public class ReflectionWorld extends World implements IReflectionWorld {
 	private ReflectionWorld() {
 		// super();
 		// this.setMessageHandler(new ExceptionBasedMessageHandler());
-		// setBehaveInJava5Way(LangUtil.is15VMOrGreater());
+		// setBehaveInJava5Way(LangUtil.isVMGreaterOrEqual(15));
 		// this.classLoaderReference = new
 		// WeakClassLoaderReference(ReflectionWorld.class.getClassLoader());
 		// this.annotationFinder =

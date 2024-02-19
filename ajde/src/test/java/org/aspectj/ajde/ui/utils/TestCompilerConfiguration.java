@@ -67,7 +67,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public String getClasspath() {
 		String cp = projectPath + File.pathSeparator + System.getProperty("sun.boot.class.path") + File.pathSeparator
 				+ TestUtil.aspectjrtClasspath();
-		if (LangUtil.is9VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(9)) {
 			cp = LangUtil.getJrtFsFilePath()+File.pathSeparator+cp;
 		}
 		return cp;

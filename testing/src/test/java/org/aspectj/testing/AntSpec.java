@@ -25,8 +25,7 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.aspectj.tools.ajc.AjcTestCase;
-
-import static org.aspectj.util.LangUtil.is16VMOrGreater;
+import org.aspectj.util.LangUtil;
 
 /**
  * Element that allow to run an abritrary Ant target in a sandbox.
@@ -110,8 +109,14 @@ public class AntSpec implements ITestStep {
 			//
 			// Attention: Ant 1.6.3 under Linux neither likes "" (empty string) nor " " (space), on Windows it would not be
 			// a problem. So we use "_dummy" Java system properties, even though they pollute the command line.
-			p.setUserProperty("aj.addOpensKey", is16VMOrGreater() ? "--add-opens" : "-D_dummy");
-			p.setUserProperty("aj.addOpensValue", is16VMOrGreater() ? "java.base/java.lang=ALL-UNNAMED" : "-D_dummy");
+			p.setUserProperty(
+				"aj.addOpensKey",
+				LangUtil.isVMGreaterOrEqual(16) ? "--add-opens" : "-D_dummy"
+			);
+			p.setUserProperty(
+				"aj.addOpensValue",
+				LangUtil.isVMGreaterOrEqual(16) ? "java.base/java.lang=ALL-UNNAMED" : "-D_dummy"
+			);
 
 			// create the test implicit path aj.path that contains the sandbox + regular test infra path
 			Path path = new Path(p, inTestCase.getSandboxDirectory().getAbsolutePath());

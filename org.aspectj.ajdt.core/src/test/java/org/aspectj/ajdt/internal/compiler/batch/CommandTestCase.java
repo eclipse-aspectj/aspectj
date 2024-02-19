@@ -169,7 +169,7 @@ public abstract class CommandTestCase extends TestCase {
 	/** get the location of the org.aspectj.lang & runtime classes */
 	protected static String getRuntimeClasspath() {
 		StringBuilder classpath = new StringBuilder();
-		if (LangUtil.is9VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(9)) {
 			classpath.append(LangUtil.getJrtFsFilePath()).append(File.pathSeparator);
 		}
 		classpath.append(Constants.aspectjrtClasspath());

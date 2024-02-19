@@ -43,16 +43,16 @@ class HtmlDecorator {
 	public static final String CLOSING_SPAN;
 
 	static {
-		if (LangUtil.is16VMOrGreater())
+		if (LangUtil.isVMGreaterOrEqual(16))
 			TYPE_NAME_LABEL = "element-name type-name-label";
-		else if (LangUtil.is15VMOrGreater())
+		else if (LangUtil.isVMGreaterOrEqual(15))
 			TYPE_NAME_LABEL = "type-name-label";
-		else if (LangUtil.is1dot8VMOrGreater())
+		else if (LangUtil.isVMGreaterOrEqual(1.8))
 			TYPE_NAME_LABEL = "typeNameLabel";
 		else
 			TYPE_NAME_LABEL = "strong";
 
-		if (LangUtil.is16VMOrGreater())
+		if (LangUtil.isVMGreaterOrEqual(16))
 			CLOSING_SPAN = "</span>";
 				else
 			CLOSING_SPAN = "";

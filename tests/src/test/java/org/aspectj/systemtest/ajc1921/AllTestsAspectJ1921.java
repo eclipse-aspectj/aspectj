@@ -31,14 +31,14 @@ public class AllTestsAspectJ1921 {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.21 tests");
 		suite.addTest(Bugs1921Tests.suite());
-		if (LangUtil.is21VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(21)) {
 			suite.addTest(SanityTestsJava21.suite());
 			suite.addTest(Ajc1921TestsJava.suite());
 		}
 		// AspectJ_JDK_Update
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
 		// TODO: Comment out the following block when upgrading JDT Core to Java 22
-		if (LangUtil.is21VMOrGreater() && !LangUtil.is22VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(21) && !LangUtil.isVMGreaterOrEqual(22)) {
 			suite.addTest(Java21PreviewFeaturesTests.suite());
 		}
 		return suite;

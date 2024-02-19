@@ -61,7 +61,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public String getClasspath() {
 		StringBuilder classpath = new StringBuilder();
 		classpath.append(projectPath);
-        if (LangUtil.is9VMOrGreater()) {
+        if (LangUtil.isVMGreaterOrEqual(9)) {
         		classpath.append(File.pathSeparator).append(LangUtil.getJrtFsFilePath());
         } else {
         		classpath.append(File.pathSeparator).append(System.getProperty("sun.boot.class.path"));

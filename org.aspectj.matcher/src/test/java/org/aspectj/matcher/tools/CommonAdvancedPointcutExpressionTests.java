@@ -528,7 +528,7 @@ public abstract class CommonAdvancedPointcutExpressionTests extends TestCase {
 	// assertFalse("Matches maybe", ex.matchesMethodExecution(foo).alwaysMatches());
 	// // never match
 	// ex = p.parsePointcutExpression("args(String,Integer,Number)");
-	// if (LangUtil.is15VMOrGreater()) {
+	// if (LangUtil.isVMGreaterOrEqual(15)) {
 	// assertTrue("matches", ex.matchesMethodExecution(foo).alwaysMatches());
 	// } else {
 	// assertTrue("Does not match", ex.matchesMethodExecution(foo).neverMatches());

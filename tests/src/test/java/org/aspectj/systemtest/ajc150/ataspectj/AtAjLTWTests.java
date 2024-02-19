@@ -18,8 +18,7 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.FileUtil;
 
 import junit.framework.Test;
-
-import static org.aspectj.util.LangUtil.is16VMOrGreater;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>
@@ -143,7 +142,7 @@ public class AtAjLTWTests extends XMLBasedAjcTestCase {
 		//
 		// TODO: A better solution would be a recursive filtered search via Files.walk, ideally added as a recursive search
 		//       option for CountingFilenameFilter.
-		String proxyDir = is16VMOrGreater() ? "jdk/proxy1" : "com/sun/proxy";
+		String proxyDir = LangUtil.isVMGreaterOrEqual(16) ? "jdk/proxy1" : "com/sun/proxy";
 
 		File f = new File(dir, "_ajdump/_before/" + proxyDir);
 		CountingFilenameFilter cff = new CountingFilenameFilter(".class");

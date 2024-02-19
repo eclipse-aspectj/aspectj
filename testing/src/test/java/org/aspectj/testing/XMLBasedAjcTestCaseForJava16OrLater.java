@@ -19,7 +19,7 @@ public abstract class XMLBasedAjcTestCaseForJava16OrLater extends XMLBasedAjcTes
 
 	@Override
 	public void setUp() throws Exception {
-		if (!LangUtil.is16VMOrGreater())
+		if (!LangUtil.isVMGreaterOrEqual(16))
 			throw new IllegalStateException("These tests should be run on Java 16 or later");
 		super.setUp();
 	}

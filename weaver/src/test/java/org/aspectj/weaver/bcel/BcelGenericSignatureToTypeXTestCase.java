@@ -48,13 +48,13 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 				cSig.formalTypeParameters, world);
 		assertEquals("Ljava/lang/Object;", superclass.getSignature());
 		System.out.println(Arrays.toString(cSig.superInterfaceSignatures));
-		if (LangUtil.is12VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(12)) {
 			// [Ljava/lang/constant/Constable;, Ljava/lang/Comparable<TE;>;, Ljava/io/Serializable;]
 			assertEquals("3 superinterfaces but "+Arrays.toString(cSig.superInterfaceSignatures), 3, cSig.superInterfaceSignatures.length);
 		} else {
 			assertEquals("2 superinterfaces", 2, cSig.superInterfaceSignatures.length);
 		}
-		int idx = LangUtil.is12VMOrGreater()?1:0;
+		int idx = LangUtil.isVMGreaterOrEqual(12)?1:0;
 		UnresolvedType comparable = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superInterfaceSignatures[idx++],
 				cSig.formalTypeParameters, world);
 		assertEquals("Pjava/lang/Comparable<TE;>;", comparable.getSignature());

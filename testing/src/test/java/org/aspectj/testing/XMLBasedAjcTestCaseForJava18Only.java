@@ -27,7 +27,7 @@ public abstract class XMLBasedAjcTestCaseForJava18Only extends XMLBasedAjcTestCa
 		);
 		// Activate this block before upgrading to JDT Core Java 19
 		/*
-		if (!LangUtil.is18VMOrGreater() || LangUtil.is19VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(18) || LangUtil.isVMGreaterOrEqual(19)) {
 			throw new IllegalStateException(
 				"These tests should be run on Java 18 only " +
 				"(e.g. because they use version-specific preview features)"

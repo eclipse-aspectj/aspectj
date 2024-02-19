@@ -319,7 +319,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
 
 		String[] strings = {
-				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
+				LangUtil.isVMGreaterOrEqual(11)?"&lt;init&gt;()":toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): constructorExecutionP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
@@ -336,7 +336,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		// <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Point</a></span>()</code></th>
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":toName("Point()"),
+				LangUtil.isVMGreaterOrEqual(11)?"#%3Cinit%3E()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Constructor Summary should have " + strings[0]+" advised by " + strings[1],b);
@@ -465,14 +465,14 @@ public class CoverageTestCase extends AjdocTestCase {
 
 		b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR DETAIL",
-				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
+				LangUtil.isVMGreaterOrEqual(11)?"&lt;init&gt;()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Detail should have advised by " + href,b);
 
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,"=== CONSTRUCTOR SUMMARY",
-				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":toName("Point()"),
+				LangUtil.isVMGreaterOrEqual(11)?"#%3Cinit%3E()":toName("Point()"),
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				href);
 		assertTrue("the Constructor Summary should have advised by " + href,b);
@@ -498,7 +498,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		}
 
 		String[] strings = {
-				LangUtil.is11VMOrGreater()?"&lt;init&gt;()":toName("Point()"),
+				LangUtil.isVMGreaterOrEqual(11)?"&lt;init&gt;()":toName("Point()"),
 				"HREF=\"../foo/AdvisesRelationshipCoverage.html#before(): initializationP..\""};
 		boolean b = AjdocOutputChecker.detailSectionContainsRel(
 				htmlFile,
@@ -510,7 +510,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		b = AjdocOutputChecker.summarySectionContainsRel(
 				htmlFile,
 				"=== CONSTRUCTOR SUMMARY",
-				LangUtil.is11VMOrGreater()?"#%3Cinit%3E()":strings[0],
+				LangUtil.isVMGreaterOrEqual(11)?"#%3Cinit%3E()":strings[0],
 				HtmlDecorator.HtmlRelationshipKind.ADVISED_BY,
 				strings[1]);
 		assertTrue("the Method Summary should have 'setX(int) advised by ... before()'",b);
@@ -569,7 +569,7 @@ public class CoverageTestCase extends AjdocTestCase {
     }
 
 	private String toName(String name) {
-		if (!LangUtil.is11VMOrGreater()) {
+		if (!LangUtil.isVMGreaterOrEqual(11)) {
 			name = name.replace('(','-');
 			name = name.replace(')','-');
 		}
@@ -692,7 +692,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		// ensure that the file is entitled "Class PkgVisibleClass" and
 		// has not been changed to "Aspect PkgVisibleClass"
 		String[] classStrings = null;
-		if (LangUtil.is13VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(13)) {
 			classStrings = new String[] {
 				"Class PkgVisibleClass</h1>",
 				"class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">PkgVisibleClass</span>",
@@ -757,7 +757,7 @@ public class CoverageTestCase extends AjdocTestCase {
 		// ensure that the file is entitled "Class ClassWithNestedAspect" and
 		// has not been changed to "Aspect ClassWithNestedAspect"
 		String[] classStrings = null;
-		if (LangUtil.is13VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(13)) {
 			classStrings = new String[] {
 				"Class ClassWithNestedAspect</h1>",
 				"public class " + CLOSING_SPAN + "<span class=\"" + TYPE_NAME_LABEL + "\">ClassWithNestedAspect</span>",

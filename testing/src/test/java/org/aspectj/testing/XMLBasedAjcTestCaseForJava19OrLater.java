@@ -19,7 +19,7 @@ public abstract class XMLBasedAjcTestCaseForJava19OrLater extends XMLBasedAjcTes
 
 	@Override
 	public void setUp() throws Exception {
-		if (!LangUtil.is19VMOrGreater())
+		if (!LangUtil.isVMGreaterOrEqual(19))
 			throw new IllegalStateException("These tests should be run on Java 19 or later");
 		super.setUp();
 	}

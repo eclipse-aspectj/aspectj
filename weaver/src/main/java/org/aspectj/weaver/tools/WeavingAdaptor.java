@@ -149,7 +149,7 @@ public class WeavingAdaptor implements IMessageContext {
 		}
 		// On Java9 it is possible to fail to find a URLClassLoader from which to derive a suitable classpath
 		// For now we can determine it from the java.class.path:
-        if (LangUtil.is9VMOrGreater()) {
+        if (LangUtil.isVMGreaterOrEqual(9)) {
 	    		list.add(0, LangUtil.getJrtFsFilePath());
 			List<String> javaClassPathEntries = makeClasspath(System.getProperty("java.class.path"));
 			for (int i=javaClassPathEntries.size()-1;i>=0;i--) {

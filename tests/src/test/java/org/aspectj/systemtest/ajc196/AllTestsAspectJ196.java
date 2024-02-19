@@ -19,13 +19,13 @@ public class AllTestsAspectJ196 {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.6 tests");
-		if (LangUtil.is14VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(14)) {
 			suite.addTest(Ajc196Tests.suite());
 			suite.addTest(SanityTestsJava14.suite());
 		}
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
 		/*
-		if (LangUtil.is14VMOrGreater() && !LangUtil.is15VMOrGreater()) {
+		if (LangUtil.isVMGreaterOrEqual(14) && !LangUtil.isVMGreaterOrEqual(15)) {
 			suite.addTest(Java14PreviewFeaturesTests.suite());
 		}
 		*/
