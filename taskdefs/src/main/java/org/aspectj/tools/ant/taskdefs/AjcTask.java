@@ -250,21 +250,43 @@ public class AjcTask extends MatchingTask {
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
-	// AspectJ_JDK_Update
-	static final String[] TARGET_INPUTS = new String[] {
-		"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
-		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
-	};
-	// AspectJ_JDK_Update
-	static final String[] SOURCE_INPUTS = new String[] {
-		"1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
-		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
-	};
-	// AspectJ_JDK_Update
-	static final String[] COMPLIANCE_INPUTS = new String[] {
-		"-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9",
-		"-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21"
-	};
+	// AspectJ_JDK_Update: Check minimum supported ECJ version, currently 1.3
+	static final int JAVA_VERSION_MIN = 3;
+	// AspectJ_JDK_Update: Check maximum supported ECJ version
+	static final int JAVA_VERSION_MAX = 21;
+
+	static final String[] SOURCE_INPUTS;
+	static final String[] TARGET_INPUTS;
+	static final String[] COMPLIANCE_INPUTS;
+
+	static {
+		// 1.3 to 1.9
+		final int major1Versions = 10 - JAVA_VERSION_MIN;
+		// 5 to JAVA_VERSION_MAX
+		final int major5AndUpVersions = JAVA_VERSION_MAX - 4;
+
+		SOURCE_INPUTS = new String[major1Versions + major5AndUpVersions];
+		TARGET_INPUTS = new String[major1Versions + major5AndUpVersions];
+		COMPLIANCE_INPUTS = new String[major1Versions + major5AndUpVersions];
+
+		int arrayIndex = 0;
+		for (int i = 3; i <= JAVA_VERSION_MAX ; i++) {
+			// Before Java 10, 1.x majors were supported by ECJ/AJC
+			if (i < 10) {
+				SOURCE_INPUTS[arrayIndex] = "1." + i;
+				TARGET_INPUTS[arrayIndex] = "1." + i;
+				COMPLIANCE_INPUTS[arrayIndex] = "-1." + i;
+				arrayIndex++;
+			}
+			// Since Java 5, non-1 majors are supported by ECJ/AJC
+			if (i >= 5) {
+				SOURCE_INPUTS[arrayIndex] = "" + i;
+				TARGET_INPUTS[arrayIndex] = "" + i;
+				COMPLIANCE_INPUTS[arrayIndex] = "-" + i;
+				arrayIndex++;
+			}
+		}
+	}
 
 	private static final ICommandEditor COMMAND_EDITOR;
 

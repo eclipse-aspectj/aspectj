@@ -656,7 +656,7 @@ public class AjcTaskTest extends TestCase {
 	}
 
 	public void testVersions() {
-        String[] inputs = AjcTask.TARGET_INPUTS;
+		String[] inputs = AjcTask.TARGET_INPUTS;
 		for (String value : inputs) {
 			AjcTask task = getTask(NOFILE);
 			task.setTarget(value);
@@ -665,7 +665,7 @@ public class AjcTaskTest extends TestCase {
 			checkContains(cmd, value, true);
 		}
 
-        inputs = AjcTask.SOURCE_INPUTS;
+		inputs = AjcTask.SOURCE_INPUTS;
 		for (String s : inputs) {
 			AjcTask task = getTask(NOFILE);
 			task.setSource(s);
@@ -674,7 +674,7 @@ public class AjcTaskTest extends TestCase {
 			checkContains(cmd, s, true);
 		}
 
-        inputs = AjcTask.COMPLIANCE_INPUTS;
+		inputs = AjcTask.COMPLIANCE_INPUTS;
 		for (String input : inputs) {
 			AjcTask task = getTask(NOFILE);
 			task.setCompliance(input);
