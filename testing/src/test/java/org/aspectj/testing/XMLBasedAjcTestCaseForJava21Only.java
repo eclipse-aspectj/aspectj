@@ -19,6 +19,7 @@ public abstract class XMLBasedAjcTestCaseForJava21Only extends XMLBasedAjcTestCa
 
 	@Override
 	public void setUp() throws Exception {
+		// AspectJ_JDK_Update
 		// Activate this block after upgrading to JDT Core Java 22
 		/*
 		throw new IllegalStateException(
@@ -27,6 +28,7 @@ public abstract class XMLBasedAjcTestCaseForJava21Only extends XMLBasedAjcTestCa
 				"This compiler does not support preview features of a previous version anymore."
 		);
 		*/
+		// AspectJ_JDK_Update
 		// Activate this block before upgrading to JDT Core Java 22
 		if (!LangUtil.is21VMOrGreater() || LangUtil.is22VMOrGreater()) {
 			throw new IllegalStateException(

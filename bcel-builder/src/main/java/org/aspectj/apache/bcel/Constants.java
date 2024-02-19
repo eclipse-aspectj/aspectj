@@ -106,6 +106,7 @@ public interface Constants {
 	short MINOR_20 = 0;
 	short MAJOR_21 = 65;
 	short MINOR_21 = 0;
+	// AspectJ_JDK_Update
 //	short MAJOR_22 = 66;
 //	short MINOR_22 = 0;
 

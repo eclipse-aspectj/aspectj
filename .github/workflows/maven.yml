@@ -22,6 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # AspectJ_JDK_Update
         # Check for available Temurin releases on https://adoptium.net/releases.html
         java: [ 17, 21 ]
 

@@ -250,14 +250,17 @@ public class AjcTask extends MatchingTask {
 
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
+	// AspectJ_JDK_Update
 	static final String[] TARGET_INPUTS = new String[] {
 		"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
 		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
 	};
+	// AspectJ_JDK_Update
 	static final String[] SOURCE_INPUTS = new String[] {
 		"1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "9",
 		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"
 	};
+	// AspectJ_JDK_Update
 	static final String[] COMPLIANCE_INPUTS = new String[] {
 		"-1.3", "-1.4", "-1.5", "-1.6", "-1.7", "-1.8", "-1.9", "-9",
 		"-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21"

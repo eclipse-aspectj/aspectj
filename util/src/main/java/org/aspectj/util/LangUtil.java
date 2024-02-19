@@ -191,6 +191,7 @@ public class LangUtil {
 		return 21 <= vmVersion;
 	}
 
+	// AspectJ_JDK_Update
 	public static boolean is22VMOrGreater() {
 		return 22 <= vmVersion;
 	}

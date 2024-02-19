@@ -43,6 +43,7 @@ public class AllTests19 {
 		suite.addTest(AllTestsAspectJ199.suite());
 		suite.addTest(AllTestsAspectJ1919.suite());
 		suite.addTest(AllTestsAspectJ1920.suite());
+		// AspectJ_JDK_Update
 		suite.addTest(AllTestsAspectJ1921.suite());
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$

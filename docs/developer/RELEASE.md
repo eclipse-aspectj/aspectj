@@ -73,6 +73,10 @@ manual versioning process without using Maven Release plugin. It might work usin
   - committing the snapshot POMs,
   - pushing the previous commits and the release tag to the upstream Git repository.
 
+If the AspectJ release also includes support for a new Java version, then before releasing AspectJ, search for the
+term `AspectJ_JDK_Update` across all files in the code base, also non-Java ones. Check, that you have not forgotten to
+add any necessary infrastructure or to increment version numbers as appropriate.  
+
 In order to show the details and give you more control over the process, you can do it step by step as follows:
 
 ```shell
