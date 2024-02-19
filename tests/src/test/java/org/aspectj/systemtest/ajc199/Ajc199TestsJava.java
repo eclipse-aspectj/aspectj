@@ -8,13 +8,16 @@
 package org.aspectj.systemtest.ajc199;
 
 import junit.framework.Test;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava18OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc199TestsJava extends XMLBasedAjcTestCaseForJava18OrLater {
+public class Ajc199TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+  public Ajc199TestsJava() {
+    super(18);
+  }
 
   public void testDummyJava18() {
     //runTest("dummy Java 18");

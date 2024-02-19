@@ -8,13 +8,17 @@
 package org.aspectj.systemtest.ajc1920;
 
 import junit.framework.Test;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava20OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc1920TestsJava extends XMLBasedAjcTestCaseForJava20OrLater {
+public class Ajc1920TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  public Ajc1920TestsJava() {
+    super(20);
+  }
 
   public void testDummyJava20() {
     //runTest("dummy Java 20");

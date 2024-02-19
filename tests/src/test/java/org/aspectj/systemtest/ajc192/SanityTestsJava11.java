@@ -7,11 +7,10 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc192;
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava11OrLater;
-
 import junit.framework.Test;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /*
  * Some very trivial tests that help verify things are OK.
@@ -20,8 +19,12 @@ import junit.framework.Test;
  *
  * @author Andy Clement
  */
-public class SanityTestsJava11 extends XMLBasedAjcTestCaseForJava11OrLater {
+public class SanityTestsJava11 extends JavaVersionSpecificXMLBasedAjcTestCase {
 	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(11).MAJOR;
+
+	public SanityTestsJava11() {
+		super(11);
+	}
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {

@@ -19,7 +19,7 @@ import junit.framework.Test;
  *
  * @author Andy Clement
  */
-public class SanityTestsJava10 extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class SanityTestsJava10 extends XMLBasedAjcTestCase {
 	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(10).MAJOR;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
@@ -74,7 +74,6 @@ public class SanityTestsJava10 extends org.aspectj.testing.XMLBasedAjcTestCase {
 		checkVersion("A", Constants.ClassFileVersion.of(5).MAJOR, 0);
 	}
 
-	// ///////////////////////////////////////
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(SanityTestsJava10.class);
 	}

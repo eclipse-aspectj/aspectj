@@ -1,11 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2023 Contributors
+ * Copyright (c) 2024 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
-package org.aspectj.systemtest.ajc1921;
+package org.aspectj.systemtest.ajc193;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
@@ -14,17 +14,17 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /*
  * Some very trivial tests that help verify things are OK.
- * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -21 option
+ * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -12 option
  * to check code generation and modification with that version specified.
  *
  * @author Alexander Kriegisch
  */
-public class SanityTestsJava21 extends JavaVersionSpecificXMLBasedAjcTestCase {
+public class SanityTestsJava12 extends JavaVersionSpecificXMLBasedAjcTestCase {
 
-	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(21).MAJOR;
+	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(12).MAJOR;
 
-	public SanityTestsJava21() {
-		super(21);
+	public SanityTestsJava12() {
+		super(12);
 	}
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
@@ -64,29 +64,30 @@ public class SanityTestsJava21 extends JavaVersionSpecificXMLBasedAjcTestCase {
 		runTest("simple - i");
 	}
 
-	public void testVersionCorrect1() {
+	public void testVersionCorrect1() throws ClassNotFoundException {
 		runTest("simple - j");
 		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
-	public void testVersionCorrect2() {
+	public void testVersionCorrect2() throws ClassNotFoundException {
 		runTest("simple - k");
 		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
-	public void testVersionCorrect4() {
+	public void testVersionCorrect4() throws ClassNotFoundException { // check it is 49.0 when -1.5 is specified
 		runTest("simple - m");
-		// Must be 49.0 when -1.5 is specified
 		checkVersion("A", Constants.ClassFileVersion.of(5).MAJOR, 0);
 	}
 
+
+	// ///////////////////////////////////////
 	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(SanityTestsJava21.class);
+		return XMLBasedAjcTestCase.loadSuite(SanityTestsJava12.class);
 	}
 
 	@Override
 	protected java.net.URL getSpecFile() {
-		return getClassResource("sanity-tests-21.xml");
+		return getClassResource("sanity-tests-12.xml");
 	}
 
 }

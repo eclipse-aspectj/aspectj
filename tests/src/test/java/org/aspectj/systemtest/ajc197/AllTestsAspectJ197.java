@@ -9,6 +9,7 @@ package org.aspectj.systemtest.ajc197;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.aspectj.tools.ant.taskdefs.AjcTask;
 import org.aspectj.util.LangUtil;
 
 /**
@@ -16,21 +17,25 @@ import org.aspectj.util.LangUtil;
  */
 public class AllTestsAspectJ197 {
 
+	private static final int JAVA_VERSION = 16;
+
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.7 tests");
+		//suite.addTest(Bugs197Tests.suite());
 		if (LangUtil.isVMGreaterOrEqual(15)) {
 			suite.addTest(SanityTestsJava15.suite());
 		}
-		if (LangUtil.isVMGreaterOrEqual(16)) {
+		if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION)) {
 			suite.addTest(SanityTestsJava16.suite());
 			suite.addTest(Ajc197TestsJava.suite());
 		}
+
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
-		/*
-		if (LangUtil.isVMGreaterOrEqual(16) && !LangUtil.isVMGreaterOrEqual(17)) {
-			suite.addTest(Java16PreviewFeaturesTests.suite());
+		if (AjcTask.JAVA_VERSION_MAX == JAVA_VERSION) {
+			if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION) && LangUtil.isVMLessOrEqual(JAVA_VERSION)) {
+				suite.addTest(Java16PreviewFeaturesTests.suite());
+			}
 		}
-		*/
 		return suite;
 	}
 }

@@ -10,15 +10,17 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
-
 import junit.framework.Test;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Andy Clement
  */
-public class Ajc190Tests extends XMLBasedAjcTestCaseForJava9OrLater {
+public class Ajc190Tests extends JavaVersionSpecificXMLBasedAjcTestCase {
+	public Ajc190Tests() {
+		super(9);
+	}
 
 	public void testParamAnnosNegative() {
 		runTest("param annos negative");

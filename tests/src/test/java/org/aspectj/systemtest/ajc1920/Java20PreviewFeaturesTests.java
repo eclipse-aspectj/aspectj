@@ -9,14 +9,18 @@ package org.aspectj.systemtest.ajc1920;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava20Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only {
+public class Java20PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
   private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(20);
+
+  public Java20PreviewFeaturesTests() {
+    super(20, 20);
+  }
 
   public void testSwitchPatternMatchingPreview4Java() {
     runTest("switch pattern matching preview 4 java");

@@ -9,8 +9,8 @@ package org.aspectj.systemtest.ajc1920;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava20OrLater;
 
 /*
  * Some very trivial tests that help verify things are OK.
@@ -19,9 +19,13 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava20OrLater;
  *
  * @author Alexander Kriegisch
  */
-public class SanityTestsJava20 extends XMLBasedAjcTestCaseForJava20OrLater {
+public class SanityTestsJava20 extends JavaVersionSpecificXMLBasedAjcTestCase {
 
 	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(20).MAJOR;
+
+	public SanityTestsJava20() {
+		super(20);
+	}
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {

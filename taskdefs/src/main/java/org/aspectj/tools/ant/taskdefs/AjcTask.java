@@ -251,9 +251,9 @@ public class AjcTask extends MatchingTask {
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
 	// AspectJ_JDK_Update: Check minimum supported ECJ version, currently 1.3
-	static final int JAVA_VERSION_MIN = 3;
+	public static final int JAVA_VERSION_MIN = 3;
 	// AspectJ_JDK_Update: Check maximum supported ECJ version
-	static final int JAVA_VERSION_MAX = 21;
+	public static final int JAVA_VERSION_MAX = 21;
 
 	static final String[] SOURCE_INPUTS;
 	static final String[] TARGET_INPUTS;

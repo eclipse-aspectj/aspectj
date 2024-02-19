@@ -20,7 +20,7 @@ import junit.framework.Test;
  * These are a copy of the earlier Sanity Tests created for 1.6 but these supply the -1.9 option
  * to check code generation and modification with that version specified.
  */
-public class SanityTests19 extends org.aspectj.testing.XMLBasedAjcTestCase {
+public class SanityTests19 extends XMLBasedAjcTestCase {
 	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(9).MAJOR;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)

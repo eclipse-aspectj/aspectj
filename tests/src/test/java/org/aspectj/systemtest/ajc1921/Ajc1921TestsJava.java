@@ -9,17 +9,23 @@ package org.aspectj.systemtest.ajc1921;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava21OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
+public class Ajc1921TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(21);
+
+  public Ajc1921TestsJava() {
+    super(21);
+  }
 
   public void testSwitchPatternMatchingPreview4Java() {
     runTest("switch pattern matching preview 4 java");
-    checkVersion("SwitchPatternPreview4OK", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
+    checkVersion("SwitchPatternPreview4OK", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testSwitchPatternMatchingPreview4Error() {
@@ -28,10 +34,10 @@ public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
 
   public void testSwitchPatternMatchingPreview3Aspect() {
     runTest("switch pattern matching preview 3 aspect");
-    checkVersion("SwitchPatternPreview3Aspect", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
-    checkVersion("Application", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
-    checkVersion("Shape", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
-    checkVersion("S", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
+    checkVersion("SwitchPatternPreview3Aspect", classFileVersion.MAJOR, classFileVersion.MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.MINOR);
+    checkVersion("Shape", classFileVersion.MAJOR, classFileVersion.MINOR);
+    checkVersion("S", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
@@ -54,8 +60,8 @@ public class Ajc1921TestsJava extends XMLBasedAjcTestCaseForJava21OrLater {
   public void testRecordPatternsPreview1Error() {
     // https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27)
     runTest("record patterns error");
-    checkVersion("RecordPatternsPreview1Error", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
-    checkVersion("Box", Constants.ClassFileVersion.of(21).MAJOR, Constants.ClassFileVersion.of(21).MINOR);
+    checkVersion("RecordPatternsPreview1Error", classFileVersion.MAJOR, classFileVersion.MINOR);
+    checkVersion("Box", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testRecordPatternsPreview1ExhaustivenessOK1() {

@@ -9,14 +9,18 @@ package org.aspectj.systemtest.ajc199;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava18Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java18PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava18Only {
+public class Java18PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
   private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(18);
+
+  public Java18PreviewFeaturesTests() {
+    super(18, 18);
+  }
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
     runTest("switch pattern matching error");

@@ -9,13 +9,17 @@ package org.aspectj.systemtest.ajc1921;
 
 import junit.framework.Test;
 import org.aspectj.systemtest.ajc10x.Ajc10xTests;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava21Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java21PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava21Only {
+public class Java21PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  public Java21PreviewFeaturesTests() {
+    super(21, 21);
+  }
 
   public void testStringPatterns() {
     runTest("string patterns");

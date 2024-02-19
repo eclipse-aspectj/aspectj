@@ -9,47 +9,53 @@ package org.aspectj.systemtest.ajc197;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava16OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc197TestsJava extends XMLBasedAjcTestCaseForJava16OrLater {
+public class Ajc197TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(16);
+
+  public Ajc197TestsJava() {
+    super(16);
+  }
 
   public void testHiddenClass() {
     runTest("hidden class");
-    checkVersion("HiddenClassDemo", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("HiddenClassDemo", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testTextBlock1() {
     runTest("textblock 1");
-    checkVersion("Code", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("Code", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testTextBlock2() {
     runTest("textblock 2");
-    checkVersion("Code2", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("Code2", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testRecords() {
     runTest("simple record");
-    checkVersion("Person", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("Person", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testRecords2() {
     runTest("using a record");
-    checkVersion("UsingPersonRecord", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("UsingPersonRecord", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testAdvisingRecords() {
     runTest("advising records");
-    checkVersion("TraceRecordComponents", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("TraceRecordComponents", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testInstanceofPatterns() {
     runTest("instanceof patterns");
-    checkVersion("Jep305", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
+    checkVersion("Jep305", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public static Test suite() {

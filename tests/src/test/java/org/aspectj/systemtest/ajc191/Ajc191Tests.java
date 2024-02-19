@@ -10,15 +10,17 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc191;
 
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava10OrLater;
-
 import junit.framework.Test;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Andy Clement
  */
-public class Ajc191Tests extends XMLBasedAjcTestCaseForJava10OrLater {
+public class Ajc191Tests extends JavaVersionSpecificXMLBasedAjcTestCase {
+	public Ajc191Tests() {
+		super(10);
+	}
 
 	public void testVar1() {
 		runTest("var 1");

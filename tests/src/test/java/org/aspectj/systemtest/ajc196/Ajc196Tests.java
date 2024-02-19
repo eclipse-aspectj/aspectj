@@ -7,16 +7,19 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc196;
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava14OrLater;
-
 import junit.framework.Test;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Andy Clement
  */
-public class Ajc196Tests extends XMLBasedAjcTestCaseForJava14OrLater {
+public class Ajc196Tests extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  public Ajc196Tests() {
+    super(14);
+  }
 
   public void testNPE_558995() {
     runTest("early resolution of supporting interfaces");

@@ -9,14 +9,18 @@ package org.aspectj.systemtest.ajc1919;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava19Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java19PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava19Only {
+public class Java19PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
   private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(19);
+
+  public Java19PreviewFeaturesTests() {
+    super(19, 19);
+  }
 
   public void testSwitchPatternMatchingPreview3Java() {
     runTest("switch pattern matching preview 3 java");

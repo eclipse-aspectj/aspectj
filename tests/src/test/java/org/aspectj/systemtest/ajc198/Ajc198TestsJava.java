@@ -9,28 +9,34 @@ package org.aspectj.systemtest.ajc198;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava17OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
+public class Ajc198TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(17);
+
+  public Ajc198TestsJava() {
+    super(17);
+  }
 
   public void testSealedClassWithLegalSubclasses() {
     runTest("sealed class with legal subclasses");
-    checkVersion("Employee", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
-    checkVersion("Manager", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
+    checkVersion("Employee", classFileVersion.MAJOR, classFileVersion.MINOR);
+    checkVersion("Manager", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testSealedClassWithIllegalSubclass() {
     runTest("sealed class with illegal subclass");
-    checkVersion("Person", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
+    checkVersion("Person", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public void testWeaveSealedClass() {
     runTest("weave sealed class");
-    checkVersion("PersonAspect", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
+    checkVersion("PersonAspect", classFileVersion.MAJOR, classFileVersion.MINOR);
   }
 
   public static Test suite() {

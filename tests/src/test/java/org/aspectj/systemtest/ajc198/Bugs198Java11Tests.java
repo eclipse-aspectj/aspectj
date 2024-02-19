@@ -8,15 +8,18 @@
 package org.aspectj.systemtest.ajc198;
 
 import junit.framework.Test;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava11OrLater;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Bugs198Java11Tests extends XMLBasedAjcTestCaseForJava11OrLater {
+public class Bugs198Java11Tests extends JavaVersionSpecificXMLBasedAjcTestCase {
+  public Bugs198Java11Tests() {
+    super(11);
+  }
 
-	public void testGitHub_68() {
+  public void testGitHub_68() {
 		runTest("correctly weave code using constant-dynamic");
 	}
 

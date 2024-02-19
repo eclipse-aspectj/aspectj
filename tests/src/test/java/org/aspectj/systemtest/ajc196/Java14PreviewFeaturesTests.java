@@ -7,17 +7,20 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc196;
 
-import org.aspectj.apache.bcel.Constants;
-import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava14Only;
-
 import junit.framework.Test;
+import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
+import org.aspectj.testing.XMLBasedAjcTestCase;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java14PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only {
+public class Java14PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
   private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(14);
+
+  public Java14PreviewFeaturesTests() {
+    super(14, 14);
+  }
 
   public void testRecords() {
     runTest("simple record");

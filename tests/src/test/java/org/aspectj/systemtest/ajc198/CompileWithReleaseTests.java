@@ -11,15 +11,18 @@ import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
 
 import java.util.Objects;
 
 /**
  * @author Alexander Kriegisch
  */
-public class CompileWithReleaseTests extends XMLBasedAjcTestCaseForJava9OrLater {
+public class CompileWithReleaseTests extends JavaVersionSpecificXMLBasedAjcTestCase {
+  public CompileWithReleaseTests() {
+    super(9);
+  }
 
   /**
    * In order to avoid a complicated test involving two different JDKs (9+ for compilation, 8 for runtime), we inspect

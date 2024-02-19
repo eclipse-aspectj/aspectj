@@ -7,15 +7,14 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc190;
 
+import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava9OrLater;
 import org.aspectj.util.LangUtil;
-
-import junit.framework.Test;
 
 /**
  * Building and weaving with modules in the picture.
@@ -25,7 +24,10 @@ import junit.framework.Test;
  * @author Andy Clement
  *
  */
-public class ModuleTests extends XMLBasedAjcTestCaseForJava9OrLater {
+public class ModuleTests extends JavaVersionSpecificXMLBasedAjcTestCase {
+	public ModuleTests() {
+		super(9);
+	}
 
 	public void testBuildAModule() {
 		runTest("build a module");

@@ -10,23 +10,22 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc192;
 
+import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.NestHost;
 import org.aspectj.apache.bcel.classfile.NestMembers;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-
-import junit.framework.Test;
 
 /**
  * @author Andy Clement
  */
 public class Ajc192Tests extends XMLBasedAjcTestCase {
 
-	public void testITDLambdas() throws Exception {
+	public void testITDLambdas() {
 		runTest("itd lambdas");
 	}
 
-	public void test11Flags() throws Exception {
+	public void test11Flags() {
 		runTest("11flags");
 	}
 
@@ -81,8 +80,6 @@ public class Ajc192Tests extends XMLBasedAjcTestCase {
 	public void testPTWW_privilegedSamePackage() {
 		runTest("ptw - privileged same package");
 	}
-
-	// ---
 
 	public static Test suite() {
 		return XMLBasedAjcTestCase.loadSuite(Ajc192Tests.class);

@@ -16,11 +16,12 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class AllTestsAspectJ195 {
+	private static final int JAVA_VERSION = 13;
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.5 tests");
 		suite.addTest(Ajc195Tests.suite());
-		if (LangUtil.isVMGreaterOrEqual(13)) {
+		if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION)) {
 			suite.addTest(SanityTestsJava13.suite());
 		}
 		return suite;

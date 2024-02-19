@@ -115,7 +115,15 @@ public class LangUtil {
 	}
 
 	public static boolean isVMGreaterOrEqual(double javaVersion) {
-		return javaVersion <= vmVersion;
+		return vmVersion >= javaVersion;
+	}
+
+	public static boolean isVMLessOrEqual(int javaVersion) {
+		return isVMLessOrEqual((double) javaVersion);
+	}
+
+	public static boolean isVMLessOrEqual(double javaVersion) {
+		return vmVersion <= javaVersion;
 	}
 
 	/**

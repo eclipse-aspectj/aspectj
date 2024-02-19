@@ -7,19 +7,21 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc193;
 
-import java.io.File;
-
+import junit.framework.Test;
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava10OrLater;
 import org.aspectj.weaver.WeaverStateInfo;
 
-import junit.framework.Test;
+import java.io.File;
 
 /**
  * @author Andy Clement
  */
-public class Ajc193Tests extends XMLBasedAjcTestCaseForJava10OrLater {
+public class Ajc193Tests extends JavaVersionSpecificXMLBasedAjcTestCase {
+	public Ajc193Tests() {
+		super(10);
+	}
 
 	public void testNestedAroundProceed() {
 		runTest("nested around proceed");

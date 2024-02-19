@@ -9,14 +9,18 @@ package org.aspectj.systemtest.ajc197;
 
 import junit.framework.Test;
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava16Only;
 
 /**
  * @author Alexander Kriegisch
  */
-public class Java16PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava16Only {
+public class Java16PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
   private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(16);
+
+  public Java16PreviewFeaturesTests() {
+    super(16, 16);
+  }
 
   public void testSealedClassWithLegalSubclasses() {
     runTest("sealed class with legal subclasses");

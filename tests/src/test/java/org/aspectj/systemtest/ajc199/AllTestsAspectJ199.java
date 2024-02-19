@@ -9,26 +9,29 @@ package org.aspectj.systemtest.ajc199;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.aspectj.tools.ant.taskdefs.AjcTask;
 import org.aspectj.util.LangUtil;
 
 /**
  * @author Alexander Kriegisch
  */
 public class AllTestsAspectJ199 {
+	private static final int JAVA_VERSION = 18;
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.9 tests");
-    suite.addTest(Bugs199Tests.suite());
-		if (LangUtil.isVMGreaterOrEqual(18)) {
+		suite.addTest(Bugs199Tests.suite());
+		if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION)) {
 			suite.addTest(SanityTestsJava18.suite());
 			suite.addTest(Ajc199TestsJava.suite());
 		}
+
 		// Do not run tests using a previous compiler's preview features anymore. They would all fail.
-		/*
-		if (LangUtil.isVMGreaterOrEqual(18) && !LangUtil.isVMGreaterOrEqual(19)) {
-			suite.addTest(Java18PreviewFeaturesTests.suite());
+		if (AjcTask.JAVA_VERSION_MAX == JAVA_VERSION) {
+			if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION) && LangUtil.isVMLessOrEqual(JAVA_VERSION)) {
+				suite.addTest(Java18PreviewFeaturesTests.suite());
+			}
 		}
-		*/
 		return suite;
 	}
 }

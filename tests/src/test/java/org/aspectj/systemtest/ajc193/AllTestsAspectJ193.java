@@ -12,13 +12,18 @@ package org.aspectj.systemtest.ajc193;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.aspectj.util.LangUtil;
 
 public class AllTestsAspectJ193 {
+	private static final int JAVA_VERSION = 12;
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("AspectJ 1.9.3 tests");
 		suite.addTest(Ajc193Tests.suite());
-		// suite.addTest(Java13Tests.suite());
+		// suite.addTest(Java12Tests.suite());
+		if (LangUtil.isVMGreaterOrEqual(JAVA_VERSION)) {
+			suite.addTest(SanityTestsJava12.suite());
+		}
 		return suite;
 	}
 }

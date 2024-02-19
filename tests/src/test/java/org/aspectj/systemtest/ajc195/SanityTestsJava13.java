@@ -8,8 +8,8 @@
 package org.aspectj.systemtest.ajc195;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
-import org.aspectj.testing.XMLBasedAjcTestCaseForJava13OrLater;
 
 import junit.framework.Test;
 
@@ -20,9 +20,13 @@ import junit.framework.Test;
  *
  * @author Andy Clement
  */
-public class SanityTestsJava13 extends XMLBasedAjcTestCaseForJava13OrLater {
+public class SanityTestsJava13 extends JavaVersionSpecificXMLBasedAjcTestCase {
 
 	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(13).MAJOR;
+
+	public SanityTestsJava13() {
+		super(13);
+	}
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {
