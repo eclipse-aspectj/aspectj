@@ -36,8 +36,8 @@ public class ModuleTest extends BcelTestCase {
 		ClassParser classParser = new ClassParser(moduleFilename);
 		JavaClass javaClass = classParser.parse();
 		assertNotNull(javaClass);
-		assertEquals(Constants.MAJOR_1_9,javaClass.getMajor());
-		assertEquals(Constants.MINOR_1_9,javaClass.getMinor());
+		assertEquals(Constants.ClassFileVersion.of(9).MAJOR, javaClass.getMajor());
+		assertEquals(Constants.ClassFileVersion.of(9).MINOR, javaClass.getMinor());
 		assertEquals(Constants.ACC_MODULE,javaClass.getModifiers());
 		assertEquals(0,javaClass.getSuperclassNameIndex());
 		assertEquals(0,javaClass.getInterfaceIndices().length);

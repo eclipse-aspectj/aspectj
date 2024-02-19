@@ -21,7 +21,7 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava20OrLater;
  */
 public class SanityTestsJava20 extends XMLBasedAjcTestCaseForJava20OrLater {
 
-	public static final int bytecode_version_for_JDK_level = Constants.MAJOR_20;
+	public static final int bytecode_version_for_JDK_level = Constants.ClassFileVersion.of(20).MAJOR;
 
 	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
 	public void testSimpleJava_A() {
@@ -73,7 +73,7 @@ public class SanityTestsJava20 extends XMLBasedAjcTestCaseForJava20OrLater {
 	public void testVersionCorrect4() {
 		runTest("simple - m");
 		// Must be 49.0 when -1.5 is specified
-		checkVersion("A", Constants.MAJOR_1_5, 0);
+		checkVersion("A", Constants.ClassFileVersion.of(5).MAJOR, 0);
 	}
 
 	public static Test suite() {

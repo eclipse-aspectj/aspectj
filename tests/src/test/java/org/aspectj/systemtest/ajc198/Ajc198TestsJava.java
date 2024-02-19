@@ -19,18 +19,18 @@ public class Ajc198TestsJava extends XMLBasedAjcTestCaseForJava17OrLater {
 
   public void testSealedClassWithLegalSubclasses() {
     runTest("sealed class with legal subclasses");
-    checkVersion("Employee", Constants.MAJOR_17, Constants.MINOR_17);
-    checkVersion("Manager", Constants.MAJOR_17, Constants.MINOR_17);
+    checkVersion("Employee", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
+    checkVersion("Manager", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
   }
 
   public void testSealedClassWithIllegalSubclass() {
     runTest("sealed class with illegal subclass");
-    checkVersion("Person", Constants.MAJOR_17, Constants.MINOR_17);
+    checkVersion("Person", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
   }
 
   public void testWeaveSealedClass() {
     runTest("weave sealed class");
-    checkVersion("PersonAspect", Constants.MAJOR_17, Constants.MINOR_17);
+    checkVersion("PersonAspect", Constants.ClassFileVersion.of(17).MAJOR, Constants.ClassFileVersion.of(17).MINOR);
   }
 
   public static Test suite() {

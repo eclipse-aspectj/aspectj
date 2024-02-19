@@ -16,21 +16,22 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava16Only;
  * @author Alexander Kriegisch
  */
 public class Java16PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava16Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(16);
 
   public void testSealedClassWithLegalSubclasses() {
     runTest("sealed class with legal subclasses");
-    checkVersion("Employee", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Manager", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Employee", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Manager", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSealedClassWithIllegalSubclass() {
     runTest("sealed class with illegal subclass");
-    checkVersion("Person", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Person", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testWeaveSealedClass() {
     runTest("weave sealed class");
-    checkVersion("PersonAspect", Constants.MAJOR_16, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("PersonAspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public static Test suite() {

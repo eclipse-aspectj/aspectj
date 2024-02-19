@@ -32,7 +32,7 @@ public class CompileWithReleaseTests extends XMLBasedAjcTestCaseForJava9OrLater 
 
     // Check compiled byte code version
     String className = "Buffers";
-    checkVersion(className, Constants.MAJOR_1_8, Constants.MINOR_1_8);
+    checkVersion(className, Constants.ClassFileVersion.of(8).MAJOR, Constants.ClassFileVersion.of(8).MINOR);
 
     // Disassemble method and check if Java 8 API is used as expected
     JavaClass javaClass;

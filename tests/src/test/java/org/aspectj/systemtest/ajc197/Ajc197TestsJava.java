@@ -19,37 +19,37 @@ public class Ajc197TestsJava extends XMLBasedAjcTestCaseForJava16OrLater {
 
   public void testHiddenClass() {
     runTest("hidden class");
-    checkVersion("HiddenClassDemo", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("HiddenClassDemo", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testTextBlock1() {
     runTest("textblock 1");
-    checkVersion("Code", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("Code", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testTextBlock2() {
     runTest("textblock 2");
-    checkVersion("Code2", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("Code2", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testRecords() {
     runTest("simple record");
-    checkVersion("Person", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("Person", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testRecords2() {
     runTest("using a record");
-    checkVersion("UsingPersonRecord", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("UsingPersonRecord", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testAdvisingRecords() {
     runTest("advising records");
-    checkVersion("TraceRecordComponents", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("TraceRecordComponents", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public void testInstanceofPatterns() {
     runTest("instanceof patterns");
-    checkVersion("Jep305", Constants.MAJOR_16, Constants.MINOR_16);
+    checkVersion("Jep305", Constants.ClassFileVersion.of(16).MAJOR, Constants.ClassFileVersion.of(16).MINOR);
   }
 
   public static Test suite() {

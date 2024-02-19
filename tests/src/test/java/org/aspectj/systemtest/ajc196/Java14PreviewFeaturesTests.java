@@ -17,10 +17,11 @@ import junit.framework.Test;
  * @author Alexander Kriegisch
  */
 public class Java14PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava14Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(14);
 
   public void testRecords() {
     runTest("simple record");
-    checkVersion("Person", Constants.MAJOR_14, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("Person", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testRecords2() {

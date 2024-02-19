@@ -16,18 +16,19 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava19Only;
  * @author Alexander Kriegisch
  */
 public class Java19PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava19Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(19);
 
   public void testSwitchPatternMatchingPreview3Java() {
     runTest("switch pattern matching preview 3 java");
-    checkVersion("SwitchPatternPreview3OK", Constants.MAJOR_19, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview3OK", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingPreview3Aspect() {
     runTest("switch pattern matching preview 3 aspect");
-    checkVersion("SwitchPatternPreview3Aspect", Constants.MAJOR_19, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_19, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_19, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_19, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview3Aspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Shape", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("S", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {

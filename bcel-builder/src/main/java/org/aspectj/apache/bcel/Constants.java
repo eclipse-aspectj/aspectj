@@ -2,6 +2,10 @@ package org.aspectj.apache.bcel;
 
 import org.aspectj.apache.bcel.generic.Type;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -63,58 +67,83 @@ import org.aspectj.apache.bcel.generic.Type;
  * @author Andy Clement
  */
 public interface Constants {
-	// Major and minor version of the code
-	short MAJOR_1_1 = 45;
-	short MINOR_1_1 = 3;
-	short MAJOR_1_2 = 46;
-	short MINOR_1_2 = 0;
-	short MAJOR_1_3 = 47;
-	short MINOR_1_3 = 0;
-	short MAJOR_1_4 = 48;
-	short MINOR_1_4 = 0;
-	short MAJOR_1_5 = 49;
-	short MINOR_1_5 = 0;
-	short MAJOR_1_6 = 50;
-	short MINOR_1_6 = 0;
-	short MAJOR_1_7 = 51;
-	short MINOR_1_7 = 0;
-	short MAJOR_1_8 = 52;
-	short MINOR_1_8 = 0;
-	short MAJOR_1_9 = 53;
-	short MINOR_1_9 = 0;
-	short MAJOR_10 = 54;
-	short MINOR_10 = 0;
-	short MAJOR_11 = 55;
-	short MINOR_11 = 0;
-	short MAJOR_12 = 56;
-	short MINOR_12 = 0;
-	short MAJOR_13 = 57;
-	short MINOR_13 = 0;
-	short MAJOR_14 = 58;
-	short MINOR_14 = 0;
-	short MAJOR_15 = 59;
-	short MINOR_15 = 0;
-	short MAJOR_16 = 60;
-	short MINOR_16 = 0;
-	short MAJOR_17 = 61;
-	short MINOR_17 = 0;
-	short MAJOR_18 = 62;
-	short MINOR_18 = 0;
-	short MAJOR_19 = 63;
-	short MINOR_19 = 0;
-	short MAJOR_20 = 64;
-	short MINOR_20 = 0;
-	short MAJOR_21 = 65;
-	short MINOR_21 = 0;
-	// AspectJ_JDK_Update
-//	short MAJOR_22 = 66;
-//	short MINOR_22 = 0;
+	// Selected major/minor class file versions, defined as constants because they are used in production code. Maybe,
+	// there is a slight performance advantage, therefore retain them. When tests need class file version infos, they
+	// should use ClassFileVersion.of(javaMajor) instead, avoiding new constants for every major Java release. In the
+	// past, we had too many of them.
+	int MAJOR_1_1 = 45;
+	int MINOR_1_1 = 3;
+	int MAJOR_1_5 = 49;
+	int MAJOR_1_6 = 50;
+	int MAJOR_1_8 = 52;
 
-	int PREVIEW_MINOR_VERSION = 65535;
+	/**
+	 * Carries information about major, minor and preview-minor version byte values found in Java class files for a
+	 * specific Java version. You can obtain instances via {@link #of(int)} and {@link #of(int, int)}, respectively.
+	 */
+	class ClassFileVersion {
+		private static final Map<Integer, ClassFileVersion> cache = new ConcurrentHashMap<>();
 
-	// Defaults
-	short MAJOR = MAJOR_1_1;
-	short MINOR = MINOR_1_1;
+		public final int MAJOR;
+		public final int MINOR;
+		public final int PREVIEW_MINOR = 65535;
+
+		private ClassFileVersion(int major, int minor) {
+			MAJOR = major;
+			MINOR = minor;
+		}
+
+		/**
+		 * Obtain a class file version info instance for a specific Java version
+		 *
+		 * @param javaMajor Java major version; must be >= 2; values 2 to 9 are interpreted as Java versions 1.2 to 1.9
+		 *
+		 * @return either a cached or a new instance; result is identical to calling {@code of(javaMajor, 0)}
+		 */
+		public static ClassFileVersion of(int javaMajor) {
+			return of(javaMajor, 0);
+		}
+
+		/**
+		 * Obtain a class file version info instance for a specific Java version
+		 *
+		 * @param javaMajor Java major version; must be >= 1; values 2 to 9 are interpreted as Java versions 1.2 to 1.9
+		 * @param javaMinor Java minor version; is only relevant for Java major 1 and must be in range [1..9]
+		 *
+		 * @return either a cached or a new instance
+		 */
+		public static ClassFileVersion of(int javaMajor, int javaMinor) {
+			if (javaMajor < 1)
+				throw new IllegalArgumentException("Java major version must be >= 1");
+			if (javaMajor == 1) {
+				if (javaMinor < 1 || javaMinor > 9)
+					throw new IllegalArgumentException("Java 1.x versions must be 1.1 to 1.9");
+				// 1.1 -> 1, ..., 1.5 -> 5, ..., 1.9 -> 9
+				javaMajor = javaMinor;
+			}
+			ClassFileVersion classFileVersion = cache.get(javaMajor);
+			if (classFileVersion == null) {
+				classFileVersion = new ClassFileVersion(javaMajor + 44, javaMajor == 1 ? 3 : 0);
+				cache.put(javaMajor, classFileVersion);
+			}
+			return classFileVersion;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof ClassFileVersion)) return false;
+			ClassFileVersion that = (ClassFileVersion) o;
+			// Include PREVIEW_MINOR, if it ever changes to be non-constant
+			return MAJOR == that.MAJOR && MINOR == that.MINOR /*&& PREVIEW_MINOR == that.PREVIEW_MINOR*/;
+		}
+
+		@Override
+		public int hashCode() {
+			// Include PREVIEW_MINOR, if it ever changes to be non-constant
+			return Objects.hash(MAJOR, MINOR/*, PREVIEW_MINOR*/);
+		}
+	}
 
 	/** Maximum value for an unsigned short */
 	int MAX_SHORT = 65535; // 2^16 - 1

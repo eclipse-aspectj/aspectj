@@ -16,6 +16,7 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava17Only;
  * @author Alexander Kriegisch
  */
 public class Java17PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava17Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(17);
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
     runTest("switch pattern matching error");
@@ -23,15 +24,15 @@ public class Java17PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava17Only
 
   public void testSwitchPatternMatchingJava() {
     runTest("switch pattern matching java");
-    checkVersion("SwitchPatternOK", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternOK", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingAspect() {
     runTest("switch pattern matching aspect");
-    checkVersion("SwitchPatternAspect", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_17, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternAspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Shape", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("S", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public static Test suite() {

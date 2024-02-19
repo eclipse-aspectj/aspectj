@@ -16,10 +16,11 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava20Only;
  * @author Alexander Kriegisch
  */
 public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(20);
 
   public void testSwitchPatternMatchingPreview4Java() {
     runTest("switch pattern matching preview 4 java");
-    checkVersion("SwitchPatternPreview4OK", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview4OK", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingPreview4Error() {
@@ -28,10 +29,10 @@ public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only
 
   public void testSwitchPatternMatchingPreview3Aspect() {
     runTest("switch pattern matching preview 3 aspect");
-    checkVersion("SwitchPatternPreview3Aspect", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview3Aspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Shape", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("S", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
@@ -54,8 +55,8 @@ public class Java20PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava20Only
   public void testRecordPatternsPreview1Error() {
     // https://github.com/eclipse-jdt/eclipse.jdt.core/issues/450 (fixed for preview 2 in Eclipse 2023-03, 4.27)
     runTest("record patterns error");
-    checkVersion("RecordPatternsPreview1Error", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Box", Constants.MAJOR_20, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("RecordPatternsPreview1Error", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Box", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testRecordPatternsPreview1ExhaustivenessOK1() {

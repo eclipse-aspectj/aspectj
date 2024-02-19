@@ -16,6 +16,7 @@ import org.aspectj.testing.XMLBasedAjcTestCaseForJava18Only;
  * @author Alexander Kriegisch
  */
 public class Java18PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava18Only {
+  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(18);
 
   public void testSwitchPatternMatchingCaseLabelDominatedByPrecedingError() {
     runTest("switch pattern matching error");
@@ -23,15 +24,15 @@ public class Java18PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava18Only
 
   public void testSwitchPatternMatchingJava() {
     runTest("switch pattern matching java");
-    checkVersion("SwitchPatternOK", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternOK", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingAspect() {
     runTest("switch pattern matching aspect");
-    checkVersion("SwitchPatternAspect", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Shape", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("S", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternAspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Shape", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("S", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingPreview2Error1() {
@@ -44,13 +45,13 @@ public class Java18PreviewFeaturesTests extends XMLBasedAjcTestCaseForJava18Only
 
   public void testSwitchPatternMatchingPreview2Java() {
     runTest("switch pattern matching preview 2 java");
-    checkVersion("SwitchPatternPreview2OK", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview2OK", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public void testSwitchPatternMatchingPreview2Aspect() {
     runTest("switch pattern matching preview 2 aspect");
-    checkVersion("SwitchPatternPreview2Aspect", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
-    checkVersion("Application", Constants.MAJOR_18, Constants.PREVIEW_MINOR_VERSION);
+    checkVersion("SwitchPatternPreview2Aspect", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
+    checkVersion("Application", classFileVersion.MAJOR, classFileVersion.PREVIEW_MINOR);
   }
 
   public static Test suite() {
