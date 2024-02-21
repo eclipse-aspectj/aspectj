@@ -1,0 +1,9 @@
+<aspectj>
+  <aspects>
+    <aspect name="A" scope="B"/>
+  </aspects>
+  <weaver>
+    <!-- Do not apply on any aspects -->
+    <exclude within="A*"/>
+  </weaver>
+</aspectj>
