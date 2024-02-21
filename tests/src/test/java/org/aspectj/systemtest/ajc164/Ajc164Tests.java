@@ -221,6 +221,56 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("aop config - 5");
 	}
 
+	/**
+	 * If multiple XML files are given together with {@code -xmlConfigured}, they will be logically merged into one.
+	 * I.e., given the following three XML config files:
+	 *
+	 * <pre>{@code
+	 * <aspectj>
+	 *   <aspects>
+	 *     <aspect name="A" scope="B"/>
+	 *   </aspects>
+	 *   <weaver>
+	 *     <exclude within="A*"/>
+	 *   </weaver>
+	 * </aspectj>
+	 * }</pre>
+	 *
+	 * <pre>{@code
+	 * <aspectj>
+	 *   <aspects>
+	 *     <aspect name="A2" scope="B2"/>
+	 *   </aspects>
+	 * </aspectj>
+	 * }</pre>
+	 *
+	 * <pre>{@code
+	 * <aspectj>
+	 *   <aspects>
+	 *     <aspect name="A3"/>
+	 *   </aspects>
+	 * </aspectj>
+	 * }</pre>
+	 *
+	 * The result will be as if only one XML config file with this content was specified:
+	 *
+	 * <pre>{@code
+	 * <aspectj>
+	 *   <aspects>
+	 *     <aspect name="A" scope="B"/>
+	 *     <aspect name="A2" scope="B2"/>
+	 *     <aspect name="A3"/>
+	 *   </aspects>
+	 *   <weaver>
+	 *     <exclude within="A*"/>
+	 *   </weaver>
+	 * </aspectj>
+	 * }</pre>
+	 */
+	public void testMultipleXMLFiles() {
+		runTest("aop config - multiple XML files");
+	}
+
 	public void testAjcThisNotRead() {
 		runTest("ajcthis not read");
 	}

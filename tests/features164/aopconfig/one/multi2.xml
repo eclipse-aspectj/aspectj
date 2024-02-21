@@ -1,0 +1,5 @@
+<aspectj>
+  <aspects>
+    <aspect name="A2" scope="B2"/>
+  </aspects>
+</aspectj>
