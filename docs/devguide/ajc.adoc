@@ -82,8 +82,47 @@ destination directory on the inpath and rebuild.)
 `-sourceroots <DirPaths>`::
   Find and build all .java or .aj source files under any directory
   listed in DirPaths. DirPaths, like classpath, is a single argument
-  containing a list of paths to directories, delimited by the platform-
-  specific classpath delimiter. Required by -incremental.
+  containing a list of paths to directories, delimited by the platform-specific
+  classpath delimiter. Required by `-incremental`.
+`-xmlConfig <files>`::
+  Configure the weaving process, if you wish to impose non-standard limitations, e.g.
+  a list of aspects to use (if not all), global and per-aspect scopes for the weaver
+  (target packages and classes to exclude or include). This option also needs an .xml
+  file on the command line, optionally multiple ones to be logically merged into one
+  weaver configuration. Example:
++
+[source, xml]
+....
+<aspectj>
+  <!-- From all aspects found, only use the ones listed here -->
+  <aspects>
+    <!-- Only weave class org.acme.app.B -->
+    <aspect name="a.b.FooAspect" scope="org.acme.app.B"/>
+    <!-- Only weave classes in package orc.acme and its sub-packages -->
+    <aspect name="c.d.BarAspect" scope="orc.acme..*"/>
+    <!-- Weave all classes, unless globally excluded -->
+    <aspect name="e.f.ZotAspect"/>
+  </aspects>
+  <weaver>
+    <!-- Globally exclude classes in package org.acme.internal and its sub-packages from weaving -->
+    <exclude within="org.acme.internal..*"/>
+    <!-- This has **no effect**, use per-aspect scopes instead -->
+    <include within="com.xyz..*"/>
+  </weaver>
+</aspectj>
+....
+Please note that `-xmlConfigured` only supports a subset of options available to
+load-time weaving configuration by _aop.xml_. Current limitations include:
+  * There is **no magical file name** like _aop.xml_ for the load-time weaver,
+    i.e. an XML configuration file for the compiler needs to be listed explicitly
+    on the command line.
+  * Scopes and excludes only affect method interception pointcuts, not ITDs.
+    The latter will always be applied and are unaffected by XML configuration.
+  * There is no global `<include within="..."/>` (see example above).
+  * Lists in aspect scope expressions are not supported, i.e. an expression like
+    `scope="A,B,C"` will be treated like `scope="A"`, using only the first element.
+  * If you want to apply a scope to an aspect extending an abstract base aspect,
+    you need to list and scope both aspects in the XML file.
 `-crossrefs`::
   Generate a build .ajsym file into the output directory. Used for
   viewing crosscutting references by tools like the AspectJ Browser.
