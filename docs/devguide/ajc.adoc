@@ -84,7 +84,7 @@ destination directory on the inpath and rebuild.)
   listed in DirPaths. DirPaths, like classpath, is a single argument
   containing a list of paths to directories, delimited by the platform-specific
   classpath delimiter. Required by `-incremental`.
-`-xmlConfig <files>`::
+`-xmlConfigured <files>`::
   Configure the weaving process, if you wish to impose non-standard limitations, e.g.
   a list of aspects to use (if not all), global and per-aspect scopes for the weaver
   (target packages and classes to exclude or include). This option also needs an .xml
