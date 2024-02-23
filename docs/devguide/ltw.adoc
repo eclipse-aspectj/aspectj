@@ -233,7 +233,7 @@ matched by any exclude statements. If there are no include statements
 then all non-excluded aspects are included.
 * The set of types to be woven are those types matched by at least one
 weaver `include` element and not matched by any weaver `exclude`
-element. If there are no weaver include statements then all non-excluded
+element. If there are no weaver include statements, then all non-excluded
 types are included.
 * The weaver options are derived by taking the union of the options
 specified in each of the weaver options attribute specifications. Where

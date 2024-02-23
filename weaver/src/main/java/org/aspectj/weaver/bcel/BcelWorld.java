@@ -1171,7 +1171,7 @@ public class BcelWorld extends World implements Repository {
 				if (!world.getMessageHandler().isIgnoring(IMessage.INFO)) {
 					world.getMessageHandler().handleMessage(
 							MessageUtil.info("Aspect '" + aspectName + "' is scoped to apply against types matching pattern '"
-									+ scopePattern.toString() + "'"));
+									+ scopePattern + "'"));
 				}
 			} catch (Exception e) {
 				world.getMessageHandler().handleMessage(
@@ -1267,12 +1267,22 @@ public class BcelWorld extends World implements Repository {
 			return scopes.get(name);
 		}
 
-		// Can't quite follow the same rules for exclusion as used for loadtime weaving:
-		// "The set of types to be woven are those types matched by at least one weaver include element and not matched by any
-		// weaver
-		// exclude element. If there are no weaver include statements then all non-excluded types are included."
-		// Since if the weaver is seeing it during this kind of build, the type is implicitly included. So all we should check
-		// for is exclusion
+		/**
+		 * Checks if a given type is to be excluded from weaving.
+		 * <p>
+		 * For LTW, the development guide (<i>docs/devguide/ltw.adoc</i>) says:
+		 * <p>
+		 * <i>"The set of types to be woven are those types matched by at least one weaver {@code include} element and not
+		 * matched by any weaver {@code exclude} element. If there are no weaver include statements, then all non-excluded
+		 * types are included."</i>
+		 * <p>
+		 * In CTW mode, we cannot quite follow the same rules for exclusion as used for LTW: If the weaver is seeing it
+		 * during this kind of build, the type is implicitly included. So all we should check for is exclusion.
+		 *
+		 * @param type resolved type to be checked
+		 *
+		 * @return Always false in LTW mode. In CTW mode true for excluded types, false otherwise.
+		 */
 		public boolean excludesType(ResolvedType type) {
 			if (mode == MODE_LTW) {
 				return false;
