@@ -484,8 +484,8 @@
 							Maven Resources copies them to aj-build/dist/docs/doc. I.e., they will be clean on the website, if copied
 							from that folder, and also in the installer.
 
-							TODO: In the future, maybe this execution or the whole Antrun plugin can go away, after a JDK bug
-							  request I just created (internal review ID 9076602) has been implemented and back-ported into all JDK
+							TODO: In the future, maybe this execution or the whole Antrun plugin can go away, after
+							  https://bugs.openjdk.org/browse/JDK-8326483 has been implemented and back-ported into all JDK
 							  versions we support for javadoc generation. But if that ever happens, it might take a while.
 						-->
 						<execution>
@@ -496,7 +496,7 @@
 							</goals>
 							<configuration>
 								<!-- Override in modules which need to filter javadocs -->
-								<skip>$true</skip>
+								<skip>true</skip>
 								<target>
 									<!-- See https://ant.apache.org/manual/Tasks/replaceregexp.html -->
 									<replaceregexp byline="true">
