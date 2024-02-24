@@ -84,24 +84,30 @@ destination directory on the inpath and rebuild.)
   listed in DirPaths. DirPaths, like classpath, is a single argument
   containing a list of paths to directories, delimited by the platform-specific
   classpath delimiter. Required by `-incremental`.
+
 `-xmlConfigured <files>`::
-  Configure the weaving process, if you wish to impose non-standard limitations, e.g.
-  a list of aspects to use (if not all), global and per-aspect scopes for the weaver
-  (target packages and classes to exclude or include). This option also needs an .xml
-  file on the command line, optionally multiple ones to be logically merged into one
-  weaver configuration. Example:
 +
+--
+Configure the compile-time weaving (CTW) process, if you wish to impose non-standard limitations, e.g. a list of aspects
+to use (if not all), global and per-aspect scopes for the weaver (target packages and classes to exclude or include).
+This option also needs an .xml file on the command line, optionally multiple ones to be logically merged into one weaver
+configuration. Example:
+
 [source, xml]
 ....
 <aspectj>
   <!-- From all aspects found, only use the ones listed here -->
   <aspects>
     <!-- Only weave class org.acme.app.B -->
-    <aspect name="a.b.FooAspect" scope="org.acme.app.B"/>
-    <!-- Only weave classes in package orc.acme and its sub-packages -->
-    <aspect name="c.d.BarAspect" scope="orc.acme..*"/>
+    <aspect name="a.b.OneAspect" scope="org.acme.app.B"/>
+    <!-- Only weave classes in package org.acme and its sub-packages -->
+    <aspect name="c.d.TwoAspect" scope="org.acme..*"/>
     <!-- Weave all classes, unless globally excluded -->
-    <aspect name="e.f.ZotAspect"/>
+    <aspect name="e.f.ThreeAspect"/>
+    <!-- Weave all classes below org.acme.service, but not in the audit sub-package -->
+    <aspect name="e.f.FourAspect" scope="org.acme.service..* AND !*..audit.*"/>
+    <!-- Weave all controllers and services -->
+    <aspect name="e.f.FiveAspect" scope="*..*Controller || *..*Service"/>
   </aspects>
   <weaver>
     <!-- Globally exclude classes in package org.acme.internal and its sub-packages from weaving -->
@@ -111,18 +117,25 @@ destination directory on the inpath and rebuild.)
   </weaver>
 </aspectj>
 ....
-Please note that `-xmlConfigured` only supports a subset of options available to
-load-time weaving configuration by _aop.xml_. Current limitations include:
-  * There is **no magical file name** like _aop.xml_ for the load-time weaver,
-    i.e. an XML configuration file for the compiler needs to be listed explicitly
-    on the command line.
-  * Scopes and excludes only affect method interception pointcuts, not ITDs.
-    The latter will always be applied and are unaffected by XML configuration.
-  * There is no global `<include within="..."/>` (see example above).
-  * Lists in aspect scope expressions are not supported, i.e. an expression like
-    `scope="A,B,C"` will be treated like `scope="A"`, using only the first element.
-  * If you want to apply a scope to an aspect extending an abstract base aspect,
-    you need to list and scope both aspects in the XML file.
+
+Please note, that `-xmlConfigured` works similarly to load-time weaving (LTW) configuration with _aop.xml_, but not 100%
+identically:
+
+  * There is **no magical file name** like _aop.xml_ for LTW, i.e. an XML configuration file for CTW needs to be
+    specified on the command line explicitly.
+  * In the `<weaver>` section, `<include within="..."/>` is ignored (see example above), because in CTW mode all
+    classes the compiler can see are implicitly included in weaving, unless explicitly excluded.
+
+Limitations which apply to both LTW and CTW modes include:
+
+  * Scopes and excludes only affect regular pointcuts (e.g. method interception), not ITDs. The latter will always be
+    applied and are unaffected by XML configuration.
+  * When using logical operators, you cannot write `&&` in XML. Instead, use `AND` as a replacement. The operators `||`
+    and `!` can be used normally. Complex expressions like `(A||B||C) AND !D` are also permitted.
+  * If you want to apply a scope to an aspect extending an abstract base aspect, you need to list and scope both aspects
+    in the XML file.
+--
+
 `-crossrefs`::
   Generate a build .ajsym file into the output directory. Used for
   viewing crosscutting references by tools like the AspectJ Browser.
