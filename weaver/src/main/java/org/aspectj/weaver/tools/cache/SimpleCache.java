@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.CRC32;
 
 import org.aspectj.weaver.Dump;
@@ -37,7 +38,7 @@ import org.aspectj.weaver.tools.TraceFactory;
 public class SimpleCache {
 
 	private static final String SAME_BYTES_STRING = "IDEM";
-	private static final byte[] SAME_BYTES = SAME_BYTES_STRING.getBytes();
+	static final byte[] SAME_BYTES = SAME_BYTES_STRING.getBytes();
 
 	private Map<String, byte[]> cacheMap;
 	private boolean enabled = false;
@@ -64,7 +65,7 @@ public class SimpleCache {
 		}
 	}
 
-	public byte[] getAndInitialize(String classname, byte[] bytes,
+	public Optional<byte[]> getAndInitialize(String classname, byte[] bytes,
 			ClassLoader loader, ProtectionDomain protectionDomain) {
 		if (!enabled) {
 			return null;
@@ -72,14 +73,12 @@ public class SimpleCache {
 		byte[] res = get(classname, bytes);
 
 		if (Arrays.equals(SAME_BYTES, res)) {
-			return null;
-		} else {
-			if (res != null) {
-				initializeClass(classname, res, loader, protectionDomain);
-			}
-			return res;
+			return Optional.empty();
+		} else if (res != null) {
+			initializeClass(classname, res, loader, protectionDomain);
+			return Optional.of(res);
 		}
-
+		return null;
 	}
 
 	private byte[] get(String classname, byte bytes[]) {
