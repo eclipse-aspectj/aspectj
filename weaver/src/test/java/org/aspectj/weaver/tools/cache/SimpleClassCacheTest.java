@@ -39,7 +39,7 @@ public class SimpleClassCacheTest extends TestCase {
 
 
 		// Test the returned woven bytes are the original one
-		byte result[] = cache.getAndInitialize(classA, FAKE_BYTES_V1, null, null);
+		byte result[] = cache.getAndInitialize(classA, FAKE_BYTES_V1, null, null).get();
 		for(int i = 0; i < result.length; i ++){
 			assertEquals("Cached version byte[" +i+"] should be equal to the original woven classe",result[i],FAKE_WOVEN_BYTES_V1[i]);
 		}
@@ -57,13 +57,13 @@ public class SimpleClassCacheTest extends TestCase {
 		cache.put(classA, FAKE_BYTES_V2, FAKE_WOVEN_BYTES_V2);
 
 		// Test the returned woven bytes are the original one for v1
-		byte result[] = cache.getAndInitialize(classA, FAKE_BYTES_V1, null, null);
+		byte result[] = cache.getAndInitialize(classA, FAKE_BYTES_V1, null, null).get();
 		for(int i = 0; i < result.length; i ++){
 			assertEquals("Cached version v1 byte[" +i+"] should be equal to the original woven classe",result[i],FAKE_WOVEN_BYTES_V1[i]);
 		}
 
 		// Test the returned woven bytes are the original one for v2
-		result = cache.getAndInitialize(classA, FAKE_BYTES_V2, null, null);
+		result = cache.getAndInitialize(classA, FAKE_BYTES_V2, null, null).get();
 		for(int i = 0; i < result.length; i ++){
 			assertEquals("Cached version v2 byte[" +i+"] should be equal to the original woven classe",result[i],FAKE_WOVEN_BYTES_V2[i]);
 		}
