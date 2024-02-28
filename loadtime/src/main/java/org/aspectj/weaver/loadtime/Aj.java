@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -104,9 +105,9 @@ public class Aj implements ClassPreProcessor {
 			synchronized (classLoader) {
 
 				if (SimpleCacheFactory.isEnabled()) {
-					byte[] cacheBytes= laCache.getAndInitialize(className, bytes, classLoader, protectionDomain);
-					if (cacheBytes!=null){
-							return cacheBytes;
+					Optional<byte[]> cacheBytes = laCache.getAndInitialize(className, bytes, classLoader, protectionDomain);
+					if (cacheBytes != null){
+						return cacheBytes.orElse(null);
 					}
 				}
 
