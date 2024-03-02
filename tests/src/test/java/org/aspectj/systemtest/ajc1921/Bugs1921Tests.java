@@ -19,6 +19,10 @@ public class Bugs1921Tests extends XMLBasedAjcTestCase {
     runTest("same class woven concurrently in parallel-capable classloader");
   }
 
+  public void testGitHub_285() {
+    runTest("shared cache negative test");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1921Tests.class);
   }
