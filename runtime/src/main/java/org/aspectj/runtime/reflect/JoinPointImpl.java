@@ -13,13 +13,14 @@
 
 package org.aspectj.runtime.reflect;
 
-import java.util.Stack;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.internal.AroundClosure;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class JoinPointImpl implements ProceedingJoinPoint {
 	static class StaticPartImpl implements JoinPoint.StaticPart {
@@ -76,18 +77,6 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	static class EnclosingStaticPartImpl extends StaticPartImpl implements EnclosingStaticPart {
 		public EnclosingStaticPartImpl(int count, String kind, Signature signature, SourceLocation sourceLocation) {
 			super(count, kind, signature, sourceLocation);
-		}
-	}
-
-	static class InheritableThreadLocalAroundClosureStack extends InheritableThreadLocal<Stack<AroundClosure>> {
-		@Override
-		protected Stack<AroundClosure> initialValue() {
-			return new Stack<>();
-		}
-
-		@Override
-		protected Stack<AroundClosure> childValue(Stack<AroundClosure> parentValue) {
-			return (Stack<AroundClosure>) parentValue.clone();
 		}
 	}
 
@@ -152,23 +141,26 @@ class JoinPointImpl implements ProceedingJoinPoint {
 	// will either be using arc or arcs but not both. arcs being non-null
 	// indicates it is in use (even if an empty stack)
 	private AroundClosure arc = null;
-	private InheritableThreadLocalAroundClosureStack arcs = null;
+	private List<AroundClosure> arcs = null;
+	private final ThreadLocal<Integer> arcIndex = ThreadLocal.withInitial(() -> arcs == null ? -1 : arcs.size() - 1);
 
 	public void set$AroundClosure(AroundClosure arc) {
 		this.arc = arc;
 	}
 
- 	public void stack$AroundClosure(AroundClosure arc) {
+	public void stack$AroundClosure(AroundClosure arc) {
 		// If input parameter arc is null this is the 'unlink' call from AroundClosure
 		if (arcs == null) {
-			arcs = new InheritableThreadLocalAroundClosureStack();
+			arcs = new ArrayList<>();
 		}
-		if (arc==null) {
-			this.arcs.get().pop();
-		} else {
-			this.arcs.get().push(arc);
+		if (arc == null) {
+			arcIndex.set(arcIndex.get() - 1);
 		}
- 	}
+		else {
+			this.arcs.add(arc);
+			arcIndex.set(arcs.size() - 1);
+		}
+	}
 
 	public Object proceed() throws Throwable {
 		// when called from a before advice, but be a no-op
@@ -179,19 +171,14 @@ class JoinPointImpl implements ProceedingJoinPoint {
 				return arc.run(arc.getState());
 			}
 		} else {
-			final AroundClosure ac = arcs.get().peek();
+			final AroundClosure ac = arcs.get(arcIndex.get());
 			return ac.run(ac.getState());
 		}
 	}
 
 	public Object proceed(Object[] adviceBindings) throws Throwable {
 		// when called from a before advice, but be a no-op
-		AroundClosure ac = null;
-		if (arcs == null) {
-			ac = arc;
-		} else {
-			ac = arcs.get().peek();
-		}
+		AroundClosure ac = arcs == null ? arc : arcs.get(arcIndex.get());
 
 		if (ac == null) {
 			return null;
