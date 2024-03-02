@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc171;
 
-import org.aspectj.systemtest.ajc1610.NewFeatures;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
