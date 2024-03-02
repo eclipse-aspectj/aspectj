@@ -72,8 +72,7 @@ public class SimpleCache {
 		byte[] res = get(classname, bytes);
 
 		if (Arrays.equals(SAME_BYTES, res)) {
-			// TODO: Should we return null (means "not transformed") in this case?
-			return bytes;
+			return null;
 		} else {
 			if (res != null) {
 				initializeClass(classname, res, loader, protectionDomain);
@@ -97,7 +96,7 @@ public class SimpleCache {
 
 		String key = generateKey(classname, origbytes);
 
-		if (Arrays.equals(origbytes, wovenbytes)) {
+		if (wovenbytes == null || Arrays.equals(origbytes, wovenbytes)) {
 			cacheMap.put(key, SAME_BYTES);
 			return;
 		}
