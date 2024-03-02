@@ -372,4 +372,25 @@
 		<ant file="ant.xml" target="same class woven concurrently in parallel-capable classloader" verbose="true"/>
 	</ajc-test>
 
+	<!--
+		https://github.com/eclipse-aspectj/aspectj/issues/285, AspectJ 1.9.21.2
+
+		See also org.aspectj.systemtest.ajc171.NewFeatures::testSharedCache. This is a quasi negative test missing back in
+		1.7.2 when the shared cache was introduced.
+	-->
+	<ajc-test dir="bugs1921/github_285" title="shared cache negative test">
+		<compile files="Unwoven.java" options="-1.5"/>
+		<run class="Unwoven" ltw="aop.xml" usefullltw="true"
+			vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared">
+			<stdout>
+				<line text="Hello world"/>
+			</stdout>
+			<!--
+				Nothing should be printed on stderr, especially no fatal NPE with message
+				'Cannot read the array length because "b" is null' and subsequent ajcore.*.txt
+			-->
+			<stderr/>
+		</run>
+	</ajc-test>
+
 </suite>
