@@ -393,4 +393,56 @@
 		</run>
 	</ajc-test>
 
+	<!--
+		https://github.com/eclipse-aspectj/aspectj/issues/288,
+		https://github.com/eclipse-aspectj/aspectj/issues/141, AspectJ 1.9.21.2
+	-->
+	<ajc-test dir="bugs1921/github_288" title="memory leak for @AspectJ nested, non-inlined around-advice - AssertionError">
+		<compile files="NestedAroundClosureMemoryLeakTest.java MemoryHog.java FirstAspect.aj SecondAspect.aj" options="-1.8 -XnoInline"/>
+		<run class="NestedAroundClosureMemoryLeakTest" vmargs="-ea --add-opens java.base/java.lang=ALL-UNNAMED">
+			<stdout>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="Finished executing tasks"/>
+				<line text="Finished executing GC"/>
+				<line text="Test passed - all inheritable thread-locals are null after GC"/>
+			</stdout>
+			<!-- No AssertionError on stderr-->
+			<stderr/>
+		</run>
+	</ajc-test>
+
+	<!--
+		https://github.com/eclipse-aspectj/aspectj/issues/288,
+		https://github.com/eclipse-aspectj/aspectj/issues/141, AspectJ 1.9.21.2
+	-->
+	<ajc-test dir="bugs1921/github_288" title="memory leak for @AspectJ nested, non-inlined around-advice - OutOfMemoryError">
+		<compile files="NestedAroundClosureMemoryLeakTest.java MemoryHog.java FirstAspect.aj SecondAspect.aj" options="-1.8 -XnoInline"/>
+		<run class="NestedAroundClosureMemoryLeakTest" vmargs="-ea --add-opens java.base/java.lang=ALL-UNNAMED -Xmx512M" options="oom">
+			<stdout>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="FirstAspect"/>
+				<line text="SecondAspect"/>
+				<line text="Executing task"/>
+				<line text="Finished executing tasks"/>
+				<line text="Finished executing GC"/>
+				<line text="Test passed - no OutOfMemoryError due to inheritable thread-locals memory leak"/>
+			</stdout>
+			<!-- No fatal OutOfMemoryError on stderr -->
+			<stderr/>
+		</run>
+	</ajc-test>
+
 </suite>

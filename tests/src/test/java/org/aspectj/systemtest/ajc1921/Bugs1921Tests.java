@@ -23,6 +23,14 @@ public class Bugs1921Tests extends XMLBasedAjcTestCase {
     runTest("shared cache negative test");
   }
 
+  public void testGitHub_288_AssertionError() {
+    runTest("memory leak for @AspectJ nested, non-inlined around-advice - AssertionError");
+  }
+
+  public void testGitHub_288_OutOfMemoryError() {
+    runTest("memory leak for @AspectJ nested, non-inlined around-advice - OutOfMemoryError");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(Bugs1921Tests.class);
   }
