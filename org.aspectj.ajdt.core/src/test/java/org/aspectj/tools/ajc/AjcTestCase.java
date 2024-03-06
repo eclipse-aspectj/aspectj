@@ -694,10 +694,10 @@ public abstract class AjcTestCase extends TestCase {
 		else if (
 			vmargs != null && (
 				vmargs.contains("--enable-preview") ||
-				vmargs.contains("--add-modules") ||
-				vmargs.contains("--limit-modules") ||
-				vmargs.contains("--add-reads") ||
-				vmargs.contains("--add-exports")
+					vmargs.contains("--add-modules") || vmargs.contains("--limit-modules") ||
+					vmargs.contains("--add-reads") || vmargs.contains("--add-exports") || vmargs.contains("--add-opens") ||
+					vmargs.contains("-ea") || vmargs.contains("-enableassertions") ||
+					vmargs.contains("-Xmx")
 			)
 		) {
 			// If --add-modules supplied, need to fork the test
@@ -708,7 +708,10 @@ public abstract class AjcTestCase extends TestCase {
 				if (cp.indexOf("aspectjrt")==-1) {
 					cp.append(pathSeparator).append(TestUtil.aspectjrtPath().getPath());
 				}
-				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +vmargs+ (cp.length()==0?"":" -classpath " + cp) + " " + className   ;
+				String command = LangUtil.getJavaExecutable().getAbsolutePath() + " " +
+					vmargs +
+					(cp.length() == 0 ? "" : " -classpath " + cp) + " " +
+					className + " " + String.join(" ", args);
 				if (Ajc.verbose)
 					System.out.println("\nCommand: '" + command + "'\n");
 				// Command is executed using ProcessBuilder to allow setting CWD for ajc sandbox compliance
