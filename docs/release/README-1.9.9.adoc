@@ -38,6 +38,7 @@ AspectJ 1.9.9 supports https://openjdk.java.net/projects/jdk/18/[Java 18] and it
 
 == Improvements
 
+[[async_proceed]]
 In annotation style aspects, asynchronous `proceed()` calls in `@Around` advice now works in threads created from within
 the advice. Previously, this was only working in native syntax aspects. There is still a limitation with regard to
 asynchronous proceed, if you do not create the thread in the advice but want to use e.g. an `ExecutorService` with its

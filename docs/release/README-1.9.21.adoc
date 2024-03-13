@@ -5,7 +5,47 @@
 // AspectJ_JDK_Update: Each a.b.c release needs a new release notes document. For a.b.c.d minors, the existing a.b.c
 // document can be updated. After copying this document, remove the comment from the previous one.
 
-The releases 1.9.21 and 1.9.21.1 are described together in this document.
+The releases 1.9.21, 1.9.21.1 and 1.9.21.2 are described together in this document.
+
+= AspectJ 1.9.21.2
+
+_© Copyright 2024 Contributors. All rights reserved._
+
+_Release info: 1.9.21.2 available 13-Mar-2024_
+
+Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.21.2 can be
+found here:
+
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.21.2[GitHub 1.9.21.2]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.21.2[Bugzilla 1.9.21.2]
+
+== New features
+
+AspectJ 1.9.21.2 is a maintenance release with no new language features, but an important improvement and a bugfix,
+see below.
+
+== Improvements
+
+Previously, when targeting the same join point from multiple around advices in annotation-style @AspectJ syntax, there
+were limitations in functionality in concurrent (multi-threaded) situations, if the around advice code was not inlined.
+This was improved in xref:README-1.9.9#async_proceed[AspectJ 1.9.9] (see also https://github.com/eclipse-aspectj/aspectj/issues/128[issue #128]),
+but the improvement only applied to child threads directly created during aspect execution and would fail for
+pre-existing, long-lived threads, e.g. thread pools used by executor services. Furthermore, the improvement could lead
+to memory leaks, not cleaning up thread-local references to posssibly expensive objects. In such situations, users had
+to switch to native-syntax aspects which never had that problem to begin with due to their different internal structure.
+
+Now, https://github.com/eclipse-aspectj/aspectj/issues/141[issue #141] has been resolved, closing the gap and, as well
+as possible given their different internal structure, bringing @AspectJ aspects up to par with native-syntax aspects in
+concurrent situations, while simultaneously also addressing the memory leak https://github.com/eclipse-aspectj/aspectj/issues/288[issue #288]. This is a substantial improvement, and annotation-style syntax users are strongly engouraged to upgrade. Thanks
+to user _pagrawalgit_ for raising the memory leak issue and triggering me to think about the concurrency issue more
+broadly and finally solve both in one shot.
+
+== Other changes and bugfixes
+
+The fix for https://github.com/eclipse-aspectj/aspectj/issues/277[issue #277] in AspectJ 1.9.21.1 introduced a
+regression bug in the optional weaving cache now fixed in https://github.com/eclipse-aspectj/aspectj/issues/285[issue #285].
+Thanks to user _Kimming Lau_ for raising and re-testing both issues.
 
 = AspectJ 1.9.21.1
 
