@@ -123,7 +123,7 @@ Before we release the staging repository though, we want to commit and tag the r
 ```shell
 # Commit the release POMs to Git (better do this from your IDE, verifying the
 # changes before staging them for Git commit)
-git commit -am "Set version to 1.9.8.M2"
+git commit -am "Release AspectJ 1.9.8.M2"
 
 # Tag release
 git tag V1_9_8_M2
