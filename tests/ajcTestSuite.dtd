@@ -60,9 +60,13 @@
 
    <!ELEMENT message (source*)>
    <!ATTLIST message kind (abort | fail | error | warning | info | Xlint | weave) #IMPLIED >
+   <!-- Java source code line; in weaving messages it denotes the weaving target, e.g. to where an advice is applied -->
    <!ATTLIST message line CDATA #IMPLIED >
+   <!-- Aspect source code line; only useful for weaving messages where it denotes the source of what is woven in (e.g. advice) -->
+   <!ATTLIST message aspectLine CDATA #IMPLIED >
    <!ATTLIST message text CDATA #IMPLIED >
    <!ATTLIST message file CDATA #IMPLIED >
+   <!ATTLIST message aspectFile CDATA #IMPLIED >
    <!ATTLIST message details CDATA #IMPLIED >
 
    <!ELEMENT source (#PCDATA)>

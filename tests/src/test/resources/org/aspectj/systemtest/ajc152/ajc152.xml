@@ -442,7 +442,8 @@
       <compile files="AnAspect.java" options="-1.4"/>
       <run class="BigHorribleClass" ltw="aop1.xml">
         <stderr>
-          <line text="weaveinfo Join point 'staticinitialization(void BigHorribleClass.&lt;clinit&gt;())'"/>
+          <line text="Join point 'staticinitialization(void BigHorribleClass.&lt;clinit&gt;())'"/>
+          <line text="see also:" />
           <line text="SerialVersionUID is "/>
         </stderr>
       </run>

@@ -39,14 +39,18 @@ public class WeaveMessage extends Message {
 	public static WeaveMessageKind WEAVEMESSAGE_REMOVES_ANNOTATION = new WeaveMessageKind(6,
 			"'%1' (%2) has had %3 %4 annotation removed by '%5' (%6)");
 
-	private String affectedtypename;
-	private String aspectname;
+	private String affectedTypeName;
+	private String aspectName;
 
 	// private ctor - use the static factory method
-	private WeaveMessage(String message, String affectedtypename, String aspectname) {
-		super(message, IMessage.WEAVEINFO, null, null);
-		this.affectedtypename = affectedtypename;
-		this.aspectname = aspectname;
+	private WeaveMessage(
+		String message,
+		String affectedTypeName, String aspectName,
+		ISourceLocation affectedTypeLocation, ISourceLocation aspectLocation
+	) {
+		super(message, null, IMessage.WEAVEINFO, affectedTypeLocation, null, new ISourceLocation[] { aspectLocation });
+		this.affectedTypeName = affectedTypeName;
+		this.aspectName = aspectName;
 	}
 
 	/**
@@ -63,7 +67,7 @@ public class WeaveMessage extends Message {
 			int n = Character.getNumericValue(str.charAt(pos + 1));
 			str.replace(pos, pos + 2, inserts[n - 1]);
 		}
-		return new WeaveMessage(str.toString(), null, null);
+		return new WeaveMessage(str.toString(), null, null, null, null);
 	}
 
 	/**
@@ -71,33 +75,38 @@ public class WeaveMessage extends Message {
 	 *
 	 * @param kind what kind of message (e.g. declare parents)
 	 * @param inserts inserts for the message (inserts are marked %n in the message)
-	 * @param affectedtypename the type which is being advised/declaredUpon
-	 * @param aspectname the aspect that defined the advice or declares
+	 * @param affectedTypeName the type which is being advised/declaredUpon
+	 * @param aspectName the aspect that defined the advice or declares
+   * @param affectedTypeLocation the source location of the advised/declaredUpon type
+   * @param aspectLocation the source location of the declaring/defining advice/declare
 	 * @return new weaving message
 	 */
-	public static WeaveMessage constructWeavingMessage(WeaveMessageKind kind, String[] inserts, String affectedtypename,
-			String aspectname) {
+	public static WeaveMessage constructWeavingMessage(
+		WeaveMessageKind kind, String[] inserts,
+		String affectedTypeName, String aspectName,
+		ISourceLocation affectedTypeLocation, ISourceLocation aspectLocation
+	) {
 		StringBuilder str = new StringBuilder(kind.getMessage());
 		int pos = -1;
 		while ((pos = new String(str).indexOf("%")) != -1) {
 			int n = Character.getNumericValue(str.charAt(pos + 1));
 			str.replace(pos, pos + 2, inserts[n - 1]);
 		}
-		return new WeaveMessage(str.toString(), affectedtypename, aspectname);
+		return new WeaveMessage(str.toString(), affectedTypeName, aspectName, affectedTypeLocation, aspectLocation);
 	}
 
 	/**
 	 * @return Returns the aspectname.
 	 */
-	public String getAspectname() {
-		return aspectname;
+	public String getAspectName() {
+		return aspectName;
 	}
 
 	/**
 	 * @return Returns the affectedtypename.
 	 */
-	public String getAffectedtypename() {
-		return affectedtypename;
+	public String getAffectedTypeName() {
+		return affectedTypeName;
 	}
 
 	public static class WeaveMessageKind {

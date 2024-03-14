@@ -95,7 +95,7 @@
                 options="-1.5"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dump.xml"/>
     </ajc-test>
-    
+
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
         <compile
                 files="ataspectj/EmptyAspect.aj"
@@ -163,7 +163,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-silent.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -182,7 +182,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verbose.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -207,7 +207,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verboseandshow.xml">
         	<stdout>
  				<line text="execution(Main.target())"/>
@@ -218,7 +218,8 @@
                 <line text="info using"/>
 				<line text="info register aspect ataspectj.ltwlog.Aspect1"/>
 				<line text="debug weaving 'ataspectj.ltwlog.Main'"/>
-				<line text="weaveinfo Join point 'method-execution(void ataspectj.ltwlog.Main.target())' in Type 'ataspectj.ltwlog.Main' (Main.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)"/>
+				<line text="Join point 'method-execution(void ataspectj.ltwlog.Main.target())' in Type 'ataspectj.ltwlog.Main' (Main.java:22) advised by before advice from 'ataspectj.ltwlog.Aspect1' (Aspect1.java)"/>
+				<line text="see also:"/>
 				<line text="debug weaving 'ataspectj.ltwlog.Aspect1'"/>
             </stderr>
         </run>
@@ -233,7 +234,7 @@
     		files="ataspectj/ltwlog/Aspect1.java"
     		options="-1.5 -XterminateAfterCompilation"
     	>
-        </compile>	
+        </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-messagehandler.xml">
         	<stdout>
 				<line text="MessageHolder.MessageHolder()"/>
@@ -257,11 +258,16 @@
         <!--<run class="ataspectj.DeclareParentsInterfaceTest" ltw="ataspectj/aop-decptest.xml"/>-->
         <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true">
         	<stderr>
-                <line text="weaveinfo Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
-                <line text="weaveinfo Join point 'method-execution(void ataspectj.DeclareParentsInterfaceTest$Target.target())' in Type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java:27) advised by before advice from 'ataspectj.DeclareParentsInterfaceTest$TestAspect' (DeclareParentsInterfaceTest.java)"/>
-                <line text="weaveinfo Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
-                <line text="weaveinfo Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>
-                <line text="weaveinfo Join point 'method-execution(void ataspectj.DeclareParentsImplementsTest$Implementation.intro())' in Type 'ataspectj.DeclareParentsImplementsTest$Implementation' (DeclareParentsImplementsTest.java:47) advised by before advice from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java)"/>
+                <line text="Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
+                <line text="see also:"/>
+                <line text="Join point 'method-execution(void ataspectj.DeclareParentsInterfaceTest$Target.target())' in Type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java:27) advised by before advice from 'ataspectj.DeclareParentsInterfaceTest$TestAspect' (DeclareParentsInterfaceTest.java)"/>
+                <line text="see also:"/>
+                <line text="Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
+                <line text="see also:"/>
+                <line text="Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>
+                <line text="see also:"/>
+                <line text="Join point 'method-execution(void ataspectj.DeclareParentsImplementsTest$Implementation.intro())' in Type 'ataspectj.DeclareParentsImplementsTest$Implementation' (DeclareParentsImplementsTest.java:47) advised by before advice from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java)"/>
+                <line text="see also:"/>
             </stderr>
         </ant>
     </ajc-test>

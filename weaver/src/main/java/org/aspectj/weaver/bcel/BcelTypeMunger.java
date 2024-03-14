@@ -193,21 +193,36 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 				NewParentTypeMunger parentTM = (NewParentTypeMunger) munger;
 				if (parentTM.isMixin()) {
 					weaver.getWorld()
-							.getMessageHandler()
-							.handleMessage(
-									WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_MIXIN, new String[] {
-											parentTM.getNewParent().getName(), fName, weaver.getLazyClassGen().getType().getName(),
-											tName }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
-				} else {
+						.getMessageHandler()
+						.handleMessage(
+							WeaveMessage.constructWeavingMessage(
+								WeaveMessage.WEAVEMESSAGE_MIXIN,
+								new String[] {
+									parentTM.getNewParent().getName(), fName,
+									weaver.getLazyClassGen().getType().getName(), tName
+								},
+								weaver.getLazyClassGen().getClassName(), getAspectType().getName(),
+								parentTM.getNewParent().getSourceLocation(), weaver.getLazyClassGen().getType().getSourceLocation()
+							)
+						);
+				}
+				else {
 					if (parentTM.getNewParent().isInterface()) {
 						weaver.getWorld()
-								.getMessageHandler()
-								.handleMessage(
-										WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
-												new String[] { weaver.getLazyClassGen().getType().getName(), tName,
-														parentTM.getNewParent().getName(), fName }, weaver.getLazyClassGen()
-														.getClassName(), getAspectType().getName()));
-					} else {
+							.getMessageHandler()
+							.handleMessage(
+								WeaveMessage.constructWeavingMessage(
+									WeaveMessage.WEAVEMESSAGE_DECLAREPARENTSIMPLEMENTS,
+									new String[] {
+										weaver.getLazyClassGen().getType().getName(), tName,
+										parentTM.getNewParent().getName(), fName
+									},
+									weaver.getLazyClassGen().getClassName(), getAspectType().getName(),
+									parentTM.getNewParent().getSourceLocation(), weaver.getLazyClassGen().getType().getSourceLocation()
+								)
+							);
+					}
+					else {
 						weaver.getWorld()
 								.getMessageHandler()
 								.handleMessage(
@@ -232,11 +247,18 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 					fromString = fName;
 				}
 				weaver.getWorld()
-						.getMessageHandler()
-						.handleMessage(
-								WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ITD, new String[] {
-										weaver.getLazyClassGen().getType().getName(), tName, kindString, getAspectType().getName(),
-										fromString }, weaver.getLazyClassGen().getClassName(), getAspectType().getName()));
+					.getMessageHandler()
+					.handleMessage(
+						WeaveMessage.constructWeavingMessage(
+							WeaveMessage.WEAVEMESSAGE_ITD,
+							new String[] {
+								weaver.getLazyClassGen().getType().getName(), tName,
+								kindString, getAspectType().getName(), fromString
+							},
+							weaver.getLazyClassGen().getClassName(), getAspectType().getName(),
+							weaver.getLazyClassGen().getType().getSourceLocation(), getAspectType().getSourceLocation()
+						)
+					);
 			}
 		}
 

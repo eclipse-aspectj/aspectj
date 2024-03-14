@@ -190,17 +190,31 @@ public class BcelWorld extends World implements Repository {
 		String advisingType = advice.getConcreteAspect().getName();
 		Message msg = null;
 		if (advice.getKind().equals(AdviceKind.Softener)) {
-			msg = WeaveMessage.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_SOFTENS, new String[] { advisedType,
-					beautifyLocation(shadow.getSourceLocation()), advisingType, beautifyLocation(munger.getSourceLocation()) },
-					advisedType, advisingType);
-		} else {
+			msg = WeaveMessage.constructWeavingMessage(
+				WeaveMessage.WEAVEMESSAGE_SOFTENS,
+				new String[] {
+					advisedType, beautifyLocation(shadow.getSourceLocation()),
+					advisingType, beautifyLocation(munger.getSourceLocation())
+				},
+				advisedType, advisingType,
+				shadow.getSourceLocation(), munger.getSourceLocation()
+			);
+		}
+		else {
 			boolean runtimeTest = advice.hasDynamicTests();
 			String joinPointDescription = shadow.toString();
-			msg = WeaveMessage
-					.constructWeavingMessage(WeaveMessage.WEAVEMESSAGE_ADVISES,
-							new String[] { joinPointDescription, advisedType, beautifyLocation(shadow.getSourceLocation()),
-									description, advisingType, beautifyLocation(munger.getSourceLocation()),
-									(runtimeTest ? " [with runtime test]" : "") }, advisedType, advisingType);
+			msg = WeaveMessage.constructWeavingMessage(
+				WeaveMessage.WEAVEMESSAGE_ADVISES,
+				new String[] {
+					joinPointDescription,
+					advisedType, beautifyLocation(shadow.getSourceLocation()),
+					description,
+					advisingType, beautifyLocation(munger.getSourceLocation()),
+					(runtimeTest ? " [with runtime test]" : "")
+				},
+				advisedType, advisingType,
+				shadow.getSourceLocation(), munger.getSourceLocation()
+			);
 			// Boolean.toString(runtimeTest)});
 		}
 		getMessageHandler().handleMessage(msg);
