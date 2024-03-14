@@ -32,7 +32,7 @@ public class DefaultWeavingContext implements IWeavingContext {
 	protected BcelWeakClassLoaderReference loaderRef;
 	private String shortName;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(DefaultWeavingContext.class);
 
 	/**
 	 * Construct a new WeavingContext to use the specified ClassLoader This is the constructor which should be used.

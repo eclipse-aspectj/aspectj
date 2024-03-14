@@ -33,7 +33,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  */
 public class BcelGenericSignatureToTypeXConverter {
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelGenericSignatureToTypeXConverter.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(BcelGenericSignatureToTypeXConverter.class);
 
 	public static ResolvedType classTypeSignature2TypeX(GenericSignature.ClassTypeSignature aClassTypeSignature,
 			GenericSignature.FormalTypeParameter[] typeParams, World world) throws GenericSignatureFormatException {

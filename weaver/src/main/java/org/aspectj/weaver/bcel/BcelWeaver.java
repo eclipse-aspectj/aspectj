@@ -105,7 +105,7 @@ public class BcelWeaver {
 	public static final String CLOSURE_CLASS_PREFIX = "$Ajc";
 	public static final String SYNTHETIC_CLASS_POSTFIX = "$ajc";
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
 
 	private transient final BcelWorld world;
 	private final CrosscuttingMembersSet xcutSet;

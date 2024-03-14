@@ -138,7 +138,7 @@ public class Lint {
 	public final Kind missingAspectForReweaving = new Kind("missingAspectForReweaving",
 			"aspect {0} cannot be found when reweaving {1}");
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 
 	public Lint(World world) {
 		if (trace.isTraceEnabled()) {

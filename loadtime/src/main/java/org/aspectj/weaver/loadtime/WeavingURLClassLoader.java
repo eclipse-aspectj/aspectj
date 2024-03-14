@@ -43,7 +43,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	private boolean initializingAdaptor;
 	private Map generatedClasses = new HashMap(); /* String -> byte[] */
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingURLClassLoader.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingURLClassLoader.class);
 
 	/*
 	 * This constructor is needed when using "-Djava.system.class.loader".
