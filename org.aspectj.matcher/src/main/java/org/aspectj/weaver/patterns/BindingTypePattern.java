@@ -29,7 +29,7 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 	private String bindingName;
 
 	public BindingTypePattern(UnresolvedType type, int index, boolean isVarArgs) {
-		super(type, false, isVarArgs);
+		super(type, false, isVarArgs, null);
 		this.formalIndex = index;
 	}
 
@@ -89,7 +89,7 @@ public class BindingTypePattern extends ExactTypePattern implements BindingPatte
 
 	public TypePattern remapAdviceFormals(IntMap bindings) {
 		if (!bindings.hasKey(formalIndex)) {
-			return new ExactTypePattern(type, false, isVarArgs);
+			return new ExactTypePattern(type, false, isVarArgs, null);
 		} else {
 			int newFormalIndex = bindings.get(formalIndex);
 			return new BindingTypePattern(type, newFormalIndex, isVarArgs);

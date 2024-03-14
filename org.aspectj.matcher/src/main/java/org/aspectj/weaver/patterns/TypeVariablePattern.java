@@ -45,7 +45,7 @@ public class TypeVariablePattern extends PatternNode {
 	 */
 	public TypeVariablePattern(String variableName) {
 		this.name = variableName;
-		this.upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false);
+		this.upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false, null);
 		this.lowerBound = null;
 		this.interfaceBounds = null;
 	}
@@ -67,7 +67,7 @@ public class TypeVariablePattern extends PatternNode {
 		this.name = variableName;
 		this.upperBound = upperLimit;
 		if (upperBound == null) {
-			upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false);
+			upperBound = new ExactTypePattern(UnresolvedType.OBJECT, false, false, null);
 		}
 		this.interfaceBounds = interfaceBounds;
 		this.lowerBound = lowerBound;
@@ -77,7 +77,21 @@ public class TypeVariablePattern extends PatternNode {
 		return visitor.visit(this, data);
 	}
 
-	public String getName() {
+	public Object traverse(PatternNodeVisitor visitor, Object data) {
+		Object ret = accept(visitor, data);
+		if (lowerBound != null)
+			lowerBound.traverse(visitor, ret);
+		if (upperBound != null)
+			upperBound.traverse(visitor, ret);
+		if (interfaceBounds != null) {
+			for (TypePattern pattern : interfaceBounds) {
+				pattern.traverse(visitor, ret);
+			}
+		}
+		return ret;
+	}
+
+  public String getName() {
 		return name;
 	}
 

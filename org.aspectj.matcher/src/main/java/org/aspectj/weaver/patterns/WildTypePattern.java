@@ -804,7 +804,7 @@ public class WildTypePattern extends TypePattern {
 			if (dim != 0) {
 				aType = UnresolvedType.makeArray(aType, dim);
 			}
-			ret = new ExactTypePattern(aType, includeSubtypes, isVarArgs);
+			ret = new ExactTypePattern(aType, includeSubtypes, isVarArgs, typeParameters);
 		}
 		ret.setAnnotationTypePattern(annotationPattern);
 		ret.copyLocationFrom(this);
@@ -841,7 +841,7 @@ public class WildTypePattern extends TypePattern {
 			}
 			if (canBeExact) {
 				// might have changed if we find out include subtypes is set on one of the bounds...
-				return new ExactTypePattern(type, includeSubtypes, isVarArgs);
+				return new ExactTypePattern(type, includeSubtypes, isVarArgs, typeParameters);
 			}
 		}
 
@@ -878,7 +878,7 @@ public class WildTypePattern extends TypePattern {
 			if (dim != 0) {
 				type = ResolvedType.makeArray(type, dim);
 			}
-			return new ExactTypePattern(type, includeSubtypes, isVarArgs);
+			return new ExactTypePattern(type, includeSubtypes, isVarArgs, typeParameters);
 		} else {
 			// AMC... just leave it as a wild type pattern then?
 			importedPrefixes = scope.getImportedPrefixes();
@@ -940,7 +940,7 @@ public class WildTypePattern extends TypePattern {
 			if (dim != 0) {
 				rType = ResolvedType.makeArray(rType, dim);
 			}
-			return new ExactTypePattern(rType, includeSubtypes, isVarArgs);
+			return new ExactTypePattern(rType, includeSubtypes, isVarArgs, typeParameters);
 		} else {
 			// we have to set bounds on the TypeVariable held by tvrType before resolving it
 			boolean canCreateExactTypePattern = true;
@@ -973,7 +973,7 @@ public class WildTypePattern extends TypePattern {
 				if (dim != 0) {
 					rType = ResolvedType.makeArray(rType, dim);
 				}
-				return new ExactTypePattern(rType, includeSubtypes, isVarArgs);
+				return new ExactTypePattern(rType, includeSubtypes, isVarArgs, typeParameters);
 			}
 			return this; // leave as wild type pattern then
 		}

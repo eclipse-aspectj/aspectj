@@ -79,14 +79,14 @@ public class ExactTypePattern extends TypePattern {
 		if (type.isArray() && this.type.isArray()) {
 			ResolvedType componentType = type.getComponentType().resolve(type.getWorld());
 			UnresolvedType newPatternType = this.type.getComponentType();
-			ExactTypePattern etp = new ExactTypePattern(newPatternType, includeSubtypes, false);
+			ExactTypePattern etp = new ExactTypePattern(newPatternType, includeSubtypes, false, typeParameters);
 			return etp.matchesSubtypes(componentType, type);
 		}
 		return match;
 	}
 
-	public ExactTypePattern(UnresolvedType type, boolean includeSubtypes, boolean isVarArgs) {
-		super(includeSubtypes, isVarArgs);
+	public ExactTypePattern(UnresolvedType type, boolean includeSubtypes, boolean isVarArgs, TypePatternList typeParams) {
+		super(includeSubtypes, isVarArgs, typeParams);
 		this.type = type;
 	}
 
@@ -283,8 +283,12 @@ public class ExactTypePattern extends TypePattern {
 		if (version > EXACT_VERSION) {
 			throw new BCException("ExactTypePattern was written by a more recent version of AspectJ");
 		}
-		TypePattern ret = new ExactTypePattern(s.isAtLeast169() ? s.readSignatureAsUnresolvedType() : UnresolvedType.read(s), s
-				.readBoolean(), s.readBoolean());
+		TypePattern ret = new ExactTypePattern(
+			s.isAtLeast169() ? s.readSignatureAsUnresolvedType() : UnresolvedType.read(s),
+			s.readBoolean(),
+			s.readBoolean(),
+			null // set null first, use 'setTypeParameters' below
+		);
 		ret.setAnnotationTypePattern(AnnotationTypePattern.read(s, context));
 		ret.setTypeParameters(TypePatternList.read(s, context));
 		ret.readLocation(context, s);
@@ -292,7 +296,7 @@ public class ExactTypePattern extends TypePattern {
 	}
 
 	public static TypePattern readTypePatternOldStyle(DataInputStream s, ISourceContext context) throws IOException {
-		TypePattern ret = new ExactTypePattern(UnresolvedType.read(s), s.readBoolean(), false);
+		TypePattern ret = new ExactTypePattern(UnresolvedType.read(s), s.readBoolean(), false, null);
 		ret.readLocation(context, s);
 		return ret;
 	}
@@ -342,7 +346,7 @@ public class ExactTypePattern extends TypePattern {
 		} else if (type.isParameterizedType()) {
 			newType = w.resolve(type).parameterize(typeVariableMap);
 		}
-		ExactTypePattern ret = new ExactTypePattern(newType, includeSubtypes, isVarArgs);
+		ExactTypePattern ret = new ExactTypePattern(newType, includeSubtypes, isVarArgs, typeParameters);
 		ret.annotationPattern = annotationPattern.parameterizeWith(typeVariableMap, w);
 		ret.copyLocationFrom(this);
 		return ret;

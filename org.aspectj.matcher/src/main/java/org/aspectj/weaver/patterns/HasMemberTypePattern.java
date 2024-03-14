@@ -198,8 +198,10 @@ public class HasMemberTypePattern extends TypePattern {
 		return visitor.visit(this, data);
 	}
 
+	@Override
 	public Object traverse(PatternNodeVisitor visitor, Object data) {
 		Object ret = accept(visitor, data);
+		super.traverse(visitor, ret);
 		if (this.signaturePattern != null)
 			this.signaturePattern.traverse(visitor, ret);
 		return ret;
