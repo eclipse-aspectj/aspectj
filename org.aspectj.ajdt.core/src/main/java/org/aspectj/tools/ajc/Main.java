@@ -240,25 +240,10 @@ public class Main {
 	public void runMain(String[] args, boolean useSystemExit) {
 		final boolean doExit = useSystemExit && !flagInArgs("-noExit", args);
 
-		// This needs to be checked, before any classes using JDT Core classes are used for the first time. Otherwise, users
-		// will see ugly UnsupportedClassVersionError stack traces, which they might or might not interpret correctly.
-		// Therefore, interrupt AJC usage right here, even if it means that not even a usage page can be printed. It is
-		// better to save users from subsequent problems later.
-		if (SourceVersion.latest().ordinal() < MINIMAL_JRE_VERSION) {
-			System.err.println(MINIMAL_JRE_VERSION_ERROR);
-			if (doExit)
-				System.exit(-1);
-			return;
-		}
-
-		// Urk - default no check for AJDT, enabled here for Ant, command-line
-		AjBuildManager.enableRuntimeVersionCheck(this);
-		final boolean verbose = flagInArgs("-verbose", args);
-		final boolean timers = flagInArgs("-timers", args);
+		IMessageHolder holder = clientHolder;
 		if (null == this.clientHolder) {
 			this.clientHolder = checkForCustomMessageHolder(args);
 		}
-		IMessageHolder holder = clientHolder;
 		if (null == holder) {
 			holder = ourHandler;
 			if (verbose) {
@@ -268,6 +253,23 @@ public class Main {
 				ourHandler.setInterceptor(MessagePrinter.TERSE);
 			}
 		}
+		// This needs to be checked, before any classes using JDT Core classes are used for the first time. Otherwise, users
+		// will see ugly UnsupportedClassVersionError stack traces, which they might or might not interpret correctly.
+		// Therefore, interrupt AJC usage right here, even if it means that not even a usage page can be printed. It is
+		// better to save users from subsequent problems later.
+		if (SourceVersion.latest().ordinal() < MINIMAL_JRE_VERSION) {
+			System.err.println(MINIMAL_JRE_VERSION_ERROR);
+			IMessage minimalJreVersionErrorMessage = new Message(MINIMAL_JRE_VERSION_ERROR, null, true);
+			holder.handleMessage(minimalJreVersionErrorMessage);
+			if (doExit)
+				System.exit(-1);
+			return;
+		}
+
+		// Urk - default no check for AJDT, enabled here for Ant, command-line
+		AjBuildManager.enableRuntimeVersionCheck(this);
+		final boolean verbose = flagInArgs("-verbose", args);
+		final boolean timers = flagInArgs("-timers", args);
 
 		// make sure we handle out of memory gracefully...
 		try {
