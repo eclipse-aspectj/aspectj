@@ -38,7 +38,7 @@
 		<lib.commons.collections.tag>collections-2.0</lib.commons.collections.tag>
 		<lib.commons.digester.version>1.3</lib.commons.digester.version>
 		<lib.commons.digester.tag>DIGESTER_1_3</lib.commons.digester.tag>
-		<lib.commons.logging.version>1.0.1</lib.commons.logging.version>
+		<lib.commons.logging.version>1.2</lib.commons.logging.version>
 		<lib.commons.logging.tag>LOGGING_1_0_1</lib.commons.logging.tag>
 	</properties>
 
