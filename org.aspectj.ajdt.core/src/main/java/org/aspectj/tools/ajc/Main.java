@@ -239,7 +239,8 @@ public class Main {
 	 */
 	public void runMain(String[] args, boolean useSystemExit) {
 		final boolean doExit = useSystemExit && !flagInArgs("-noExit", args);
-
+		final boolean verbose = flagInArgs("-verbose", args);
+		
 		IMessageHolder holder = clientHolder;
 		if (null == this.clientHolder) {
 			this.clientHolder = checkForCustomMessageHolder(args);
@@ -268,7 +269,6 @@ public class Main {
 
 		// Urk - default no check for AJDT, enabled here for Ant, command-line
 		AjBuildManager.enableRuntimeVersionCheck(this);
-		final boolean verbose = flagInArgs("-verbose", args);
 		final boolean timers = flagInArgs("-timers", args);
 
 		// make sure we handle out of memory gracefully...
