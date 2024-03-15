@@ -361,12 +361,12 @@
 
 	<ajc-test dir="java5/reflection" title="pointcut parsing with ajc compiled pointcut references">
 		<compile files="PointcutLibrary.aj,ReflectOnAjcCompiledPointcuts.java" options="-1.5"/>
-		<run class="ReflectOnAjcCompiledPointcuts" classpath="../lib/bcel/bcel.jar"/>
+		<run class="ReflectOnAjcCompiledPointcuts"/>
 	</ajc-test>
 
 	<ajc-test dir="java5/reflection" title="reflection on itds">
 		<compile files="InterTypeDeclarations.aj,ReflectOnCodeStyleITDs.java" options="-1.5 -Xlint:ignore -makeAjReflectable"/>
-		<run class="ReflectOnCodeStyleITDs" classpath="../lib/bcel/bcel.jar">
+		<run class="ReflectOnCodeStyleITDs">
 		  <stdout>
 		  	<line text="public C.new(int, int, int)"/>
 		  	<line text="C.new(int, int)"/>
@@ -400,7 +400,7 @@
 
 	<ajc-test dir="java5/reflection" title="reflection on @DeclareParents">
 		<compile files="AtAspectJDeclareParents.aj,ReflectOnAtAspectJDeclareParents.java" options="-1.5 -Xlint:ignore"/>
-		<run class="ReflectOnAtAspectJDeclareParents" classpath="../lib/bcel/bcel.jar">
+		<run class="ReflectOnAtAspectJDeclareParents">
 		  <stdout>
 		    <line text="declare parents : C implements I"/>
 		  	<line text="public int I.getX()"/>

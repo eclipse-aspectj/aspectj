@@ -104,8 +104,6 @@ public abstract class AjcTestCase extends TestCase {
 	public static final String DEFAULT_CLASSPATH_ENTRIES =
 		DEFAULT_FULL_LTW_CLASSPATH_ENTRIES
 			+ Ajc.outputFolders("bridge", "util", "loadtime", "weaver", "asm", "runtime", "org.aspectj.matcher", "bcel-builder")
-			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel.jar"
-			+ pathSeparator + ".." + separator + "lib" + separator + "bcel" + separator + "bcel-verifier.jar"
 			+ pathSeparator + CLASSPATH_JDT_CORE
 			+ pathSeparator + CLASSPATH_ASM
 			+ pathSeparator + CLASSPATH_ASM_COMMONS
