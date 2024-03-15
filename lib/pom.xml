@@ -126,16 +126,6 @@
                     </artifactItem>
 
                     <artifactItem>
-                      <!-- Binary is identical to committed version in branch 'jdtcore-new' -->
-                      <groupId>com.googlecode.jarjar</groupId>
-                      <artifactId>jarjar</artifactId>
-                      <version>1.3</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>jarjar</outputDirectory>
-                      <destFileName>jarjar-1.3.jar</destFileName>
-                    </artifactItem>
-                    <artifactItem>
                       <!-- Binary is identical to committed version -->
                       <groupId>junit</groupId>
                       <artifactId>junit</artifactId>
@@ -274,7 +264,6 @@
                       <includes>
                         <include>${lib.provisioned.marker}</include>
                         <include>ant/**</include>
-                        <include>jarjar/**</include>
                         <include>jdtcore-aj/**</include>
                         <include>junit/**</include>
                       </includes>
@@ -322,7 +311,6 @@
                     <file>${lib.provisioned.marker}</file>
                     <file>ant/bin/ant.bat</file>
                     <file>ant/lib/junit.jar</file>
-                    <file>jarjar/jarjar-1.3.jar</file>
                     <file>jdtcore-aj/jdtcore-for-aspectj.jar</file>
                     <file>junit/junit.jar</file>
                   </files>
