@@ -168,17 +168,6 @@
                       <destFileName>junit-src.zip</destFileName>
                     </artifactItem>
 
-                    <artifactItem>
-                      <!-- Binary is identical to committed version -->
-                      <groupId>regexp</groupId>
-                      <artifactId>regexp</artifactId>
-                      <version>${lib.regexp.version}</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>regexp</outputDirectory>
-                      <destFileName>jakarta-regexp-1.2.jar</destFileName>
-                    </artifactItem>
-
                   </artifactItems>
                 </configuration>
               </execution>
@@ -288,7 +277,6 @@
                         <include>jarjar/**</include>
                         <include>jdtcore-aj/**</include>
                         <include>junit/**</include>
-                        <include>regexp/**</include>
                       </includes>
                       <followSymlinks>false</followSymlinks>
                     </fileset>
@@ -337,7 +325,6 @@
                     <file>jarjar/jarjar-1.3.jar</file>
                     <file>jdtcore-aj/jdtcore-for-aspectj.jar</file>
                     <file>junit/junit.jar</file>
-                    <file>regexp/jakarta-regexp-1.2.jar</file>
                   </files>
                 </requireFilesExist>
               </rules>
