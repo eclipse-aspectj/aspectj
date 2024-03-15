@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import junit.framework.TestCase;
-import org.apache.commons.digester.Digester;
+import org.apache.commons.digester3.Digester;
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;

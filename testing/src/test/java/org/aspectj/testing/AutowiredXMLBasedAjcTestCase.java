@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.digester.Digester;
+import org.apache.commons.digester3.Digester;
 import org.aspectj.tools.ajc.Ajc;
 
 import junit.extensions.TestSetup;
