@@ -106,26 +106,6 @@
                   <artifactItems>
 
                     <artifactItem>
-                      <groupId>org.aspectj</groupId>
-                      <artifactId>org.eclipse.jdt.core</artifactId>
-                      <version>${jdt.core.version}</version>
-                      <type>jar</type>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>jdtcore-aj</outputDirectory>
-                      <destFileName>jdtcore-for-aspectj.jar</destFileName>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>org.aspectj</groupId>
-                      <artifactId>org.eclipse.jdt.core</artifactId>
-                      <version>${jdt.core.version}</version>
-                      <type>java-source</type>
-                      <classifier>sources</classifier>
-                      <overWrite>false</overWrite>
-                      <outputDirectory>jdtcore-aj</outputDirectory>
-                      <destFileName>jdtcore-for-aspectj-src.zip</destFileName>
-                    </artifactItem>
-
-                    <artifactItem>
                       <!-- Binary is identical to committed version -->
                       <groupId>junit</groupId>
                       <artifactId>junit</artifactId>
@@ -311,7 +291,6 @@
                     <file>${lib.provisioned.marker}</file>
                     <file>ant/bin/ant.bat</file>
                     <file>ant/lib/junit.jar</file>
-                    <file>jdtcore-aj/jdtcore-for-aspectj.jar</file>
                     <file>junit/junit.jar</file>
                   </files>
                 </requireFilesExist>

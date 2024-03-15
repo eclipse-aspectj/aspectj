@@ -34,7 +34,6 @@ bin/
 # Downloaded libraries used during tests + marker file
 /lib/provisioned.marker
 /lib/ant/
-/lib/jdtcore-aj/
 /lib/junit/
 
 # AspectJ core dumps
