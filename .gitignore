@@ -37,7 +37,6 @@ bin/
 /lib/jarjar/
 /lib/jdtcore-aj/
 /lib/junit/
-/lib/regexp/
 
 # AspectJ core dumps
 ajcore.*.txt
