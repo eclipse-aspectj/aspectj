@@ -244,12 +244,8 @@ public class Main {
 		// will see ugly UnsupportedClassVersionError stack traces, which they might or might not interpret correctly.
 		// Therefore, interrupt AJC usage right here, even if it means that not even a usage page can be printed. It is
 		// better to save users from subsequent problems later.
-		if (SourceVersion.latest().ordinal() < MINIMAL_JRE_VERSION) {
-			System.err.println(MINIMAL_JRE_VERSION_ERROR);
-			if (doExit)
-				System.exit(-1);
-			return;
-		}
+		if (SourceVersion.latest().ordinal() < MINIMAL_JRE_VERSION)
+			throw new AbortException(MINIMAL_JRE_VERSION_ERROR);
 
 		// Urk - default no check for AJDT, enabled here for Ant, command-line
 		AjBuildManager.enableRuntimeVersionCheck(this);
