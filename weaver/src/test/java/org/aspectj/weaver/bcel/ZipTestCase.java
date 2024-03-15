@@ -99,23 +99,27 @@ public class ZipTestCase extends TestCase {
 
 	public void testBig() throws IOException {
 		System.out.println("could take 4 seconds...");
-		zipTest("../lib/bcel/bcel.jar", null);
+		// Weave a big JAR file. This is unrelated to Ant, i.e. the JAR can be replaced by another one for this test.
+		zipTest("../lib/ant/lib/ant.jar", null);
 	}
 
 	public void testBigWithEasyNoTrace() throws IOException {
 		System.out.println("could take 4 seconds...");
-		zipTest("../lib/bcel/bcel.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace0easy.jar");
+		// Weave a big JAR file. This is unrelated to Ant, i.e. the JAR can be replaced by another one for this test.
+		zipTest("../lib/ant/lib/ant.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace0easy.jar");
 	}
 
 	// this is something we test every now and again.
 	public void xtestBigWithHardNoTrace() throws IOException {
 		System.out.println("could take 24 seconds...");
-		zipTest("../lib/bcel/bcel.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace0hard.jar");
+		// Weave a big JAR file. This is unrelated to Ant, i.e. the JAR can be replaced by another one for this test.
+		zipTest("../lib/ant/lib/ant.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace0hard.jar");
 	}
 
 	public void xtestBigWithAspects() throws IOException {
 		System.out.println("could take 40 seconds...");
-		zipTest("../lib/bcel/bcel.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace.jar");
+		// Weave a big JAR file. This is unrelated to Ant, i.e. the JAR can be replaced by another one for this test.
+		zipTest("../lib/ant/lib/ant.jar", WeaverTestCase.TESTDATA_PATH + "/megatrace.jar");
 	}
 
 }
