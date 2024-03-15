@@ -127,11 +127,9 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 		runTest("ann gen for deows");
 	}
 
-	// no reliable way to get around classpath issues for
-	// running this test as part of release script :(
-//	public void testRuntimePointcutsReferencingCompiledPointcuts() {
-//		runTest("runtime pointcut resolution referencing compiled pointcuts");
-//	}
+	public void testRuntimePointcutsReferencingCompiledPointcuts() {
+		runTest("runtime pointcut resolution referencing compiled pointcuts");
+	}
 
 	public void testDecP() {
 		runTest("ann gen for decp");
@@ -157,4 +155,3 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 		runTest("ann gen for itds");
 	}
 }
-
