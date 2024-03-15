@@ -111,9 +111,9 @@
       <version>${lib.ant.xerces.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-digester</groupId>
-      <artifactId>commons-digester</artifactId>
-      <version>${lib.commons.digester.version}</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-digester3</artifactId>
+      <version>${commons.digester.version}</version>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -123,7 +123,7 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>${lib.commons.logging.version}</version>
+      <version>${commons.logging.version}</version>
     </dependency>
   </dependencies>
 

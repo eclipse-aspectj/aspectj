@@ -31,7 +31,7 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>${lib.commons.logging.version}</version>
+      <version>${commons.logging.version}</version>
     </dependency>
   </dependencies>
 

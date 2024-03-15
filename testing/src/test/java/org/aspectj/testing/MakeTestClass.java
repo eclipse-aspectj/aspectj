@@ -12,7 +12,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.digester.Digester;
+import org.apache.commons.digester3.Digester;
 
 /**
  * @author colyer
