@@ -88,6 +88,8 @@ the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` in order to enab
 fact that the weaver uses internal APIs for which we have not found an adequate replacement yet when defining classes
 in different classloaders.
 
+**Update:** As of AspectJ 1.9.21.1, `--add-opens` is no longer necessary. Please upgrade, if it bothers you too much.
+
 === Compile with Java preview features
 
 For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with

@@ -60,6 +60,8 @@ order to enable aspect weaving. This is due to the fact that the weaver
 uses internal APIs for which we have not found an adequate replacement
 yet when defining classes in different classloaders.
 
+**Update:** As of AspectJ 1.9.21.1, `--add-opens` is no longer necessary. Please upgrade, if it bothers you too much.
+
 == Organisational and internal changes
 
 For AspectJ 1.9.7, we implemented a lot of internal changes concerning
