@@ -155,6 +155,7 @@
                         <exclude>developer/traces/**</exclude>
                         <exclude>install/**</exclude>
                         <exclude>sandbox/**</exclude>
+                        <exclude>target/**</exclude>
                         <exclude>teaching/**</exclude>
                         <exclude>test/**</exclude>
                       </excludes>
