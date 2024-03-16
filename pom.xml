@@ -513,6 +513,7 @@
 						<attributes>
 							<source-highlighter>coderay</source-highlighter>
 							<toc>left</toc>
+							<toclevels>5</toclevels>
 							<icons>font</icons>
 							<!--
 								Create separate CSS files, rather than embedding CSS into each HTML file
