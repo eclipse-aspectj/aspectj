@@ -148,6 +148,16 @@ public class CompilationAndWeavingContext {
 		return sb.toString();
 	}
 
+	/**
+	 * Returns a string description of what the compiler/weaver is currently doing
+	 * @param prependNLIfNotEmpty Prepend a newline character to the message? This can be nice when printing the context
+	 *        as part of an exception stack trace.
+	 */
+	public static String getCurrentContext(boolean prependNLIfNotEmpty) {
+		String context = getCurrentContext();
+		return context.isEmpty() ? context : (prependNLIfNotEmpty ? "\n" : "") + context;
+	}
+
 	public static ContextToken enteringPhase(int phaseId, Object data) {
 		Stack<ContextStackEntry> contextStack = getContextStack();
 		ContextTokenImpl nextToken = nextToken();

@@ -316,7 +316,15 @@ public abstract class World implements Dump.INode {
 		synchronized (buildingTypeLock) {
 			if (ty.isArray()) {
 				ResolvedType componentType = resolve(ty.getComponentType(), allowMissing);
+				if (componentType.isVoid()) {
+					if (isInJava5Mode() && getLint().adviceDidNotMatch.isEnabled()) {
+						getLint().arrayCannotBeVoid.signal(ty.toString(), null);
+					}
+					ret = new MissingResolvedTypeWithKnownSignature(signature, this);
+				}
+				else {
 				ret = new ArrayReferenceType(signature, "[" + componentType.getErasureSignature(), this, componentType);
+				}
 			} else {
 				ret = resolveToReferenceType(ty, allowMissing);
 				if (!allowMissing && ret.isMissing()) {

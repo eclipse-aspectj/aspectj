@@ -418,7 +418,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 			return TypeFactory.createTypeFromSignature(signature);
 		case '-':
 			return TypeFactory.createTypeFromSignature(signature);
-		case '?':
+		case '*':
 			return TypeFactory.createTypeFromSignature(signature);
 		case 'T':
 			return TypeFactory.createTypeFromSignature(signature);
@@ -676,7 +676,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 						if (paramNestLevel > 0) {
 							innerBuff.append(c);
 						}
-						if (c == ';' && paramNestLevel == 1) {
+						if ((c == ';' || c == '*') && paramNestLevel == 1) {
 							nameBuff.append(signatureToName(innerBuff.toString()));
 							if (signature.charAt(i + 1) != '>') {
 								nameBuff.append(',');
@@ -746,7 +746,7 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 				return "C";
 			}
 			if (name.equals("?")) {
-				return name;
+				return "*";
 			}
 		}
 		if (len == 0) {

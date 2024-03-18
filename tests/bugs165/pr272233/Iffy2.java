@@ -1,50 +1,60 @@
 import java.util.*;
+
 import org.aspectj.lang.annotation.*;
 
 @Aspect
 class Iffy2 {
 
+  // Match getCollectionArray(), getIntegerCollectionArray()
   @Before("execution(!void *(..))")
-  public void advice1() {}
+  public void nonVoid() { }
 
-  @Before("execution(!void[] *(..))")
-  public void advice2() {}
+  // Do not match anything, because void[] is an illegal type
+  @Before("execution(void[] *(..))")
+  public void voidArray() {
+    // This does not compile in Java
+    // void[] voids = new void[5];
+  }
 
-  @Before("execution(!void *(..))")
-  public void advice3() {}
+  // Match getCollectionArray() and myVoid(), getIntegerCollectionArray(), because void[] is an illegal type which
+  // cannot be resolved/matched. The negation of an unmatched type, however, matches any type, similar to how
+  // !my.UnknownType would also match all other types.
+  @Before("execution(!void[][] *(..))")
+  public void nonVoidArray() { }
 
+  // Match getCollectionArray(), getIntegerCollectionArray()
   @Before("execution(*..Collection[] *(..))")
-  public void advice4() {}
+  public void wildcardRawCollectionArray() { }
 
+  // Match getCollectionArray()
   @Before("execution(java.util.Collection<?>[] *(..))")
-  public void advice5() {}
+  public void exactGenericCollectionArray() { }
 
-  /**
-   * TODO: This pointcut is not parsed correctly. Obviously, the combination of
-   * '*' and '&lt;?&gt;' leads to an AJ core dump with this error message:
-   * <p>
-   * <code>
-   *   org.aspectj.weaver.BCException: malformed org.aspectj.weaver.PointcutDeclaration attribute (length:219)
-   *   org.aspectj.weaver.BCException: Bad type signature *
-   *     at org.aspectj.weaver.AjAttribute.read(AjAttribute.java:137)
-   *     at org.aspectj.weaver.bcel.Utility.readAjAttributes(Utility.java:102)
-   *     at org.aspectj.weaver.bcel.BcelMethod.unpackAjAttributes(BcelMethod.java:197)
-   *     at org.aspectj.weaver.bcel.BcelMethod.&lt;init&gt;(BcelMethod.java:91)
-   *     at org.aspectj.weaver.bcel.BcelObjectType.getDeclaredMethods(BcelObjectType.java:290)
-   *     at org.aspectj.weaver.ReferenceType.getDeclaredMethods(ReferenceType.java:870)
-   *     at org.aspectj.weaver.ResolvedType.getDeclaredAdvice(ResolvedType.java:1028)
-   *     at org.aspectj.weaver.ResolvedType.getDeclaredShadowMungers(ResolvedType.java:1068)
-   *     at org.aspectj.weaver.ResolvedType.collectShadowMungers(ResolvedType.java:868)
-   *     at org.aspectj.weaver.ResolvedType.collectCrosscuttingMembers(ResolvedType.java:794)
-   *     at org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect(CrosscuttingMembersSet.java:112)
-   *     at org.aspectj.weaver.CrosscuttingMembersSet.addOrReplaceAspect(CrosscuttingMembersSet.java:67)
-   *     at org.aspectj.weaver.bcel.BcelWeaver.prepareForWeave(BcelWeaver.java:512)
-   * </code>
-   */
-  //@Before("execution(*..Collection<?>[] *(..))")
-  public void advice6() {}
+  // Match getCollectionArray()
+  @Before("execution(*..Collection<?>[] *(..))")
+  public void wildcardGenericCollectionArray() { }
+
+  // Do not match anything
+  @Before("execution(*..Collection<String>[] *(..))")
+  public void wildcardGenericCollectionArrayOfString() { }
+
+  // Match getIntegerCollectionArray()
+  @Before("execution(*..Collection<Integer>[] *(..))")
+  public void wildcardGenericCollectionArrayOfInteger() { }
+
+  // Do not match anything. The fact that primitive type int is illegal as a generic type parameter, is not mentioned
+  // in any warning.
+  @Before("execution(*..Collection<int>[] *(..))")
+  public void wildcardGenericCollectionArrayOfPrimitiveInt() { }
+
+  public void myVoid() { }
 
   public Collection<?>[] getCollectionArray() {
-        return null;
+    return null;
   }
+
+  public Collection<Integer>[] getIntegerCollectionArray() {
+    return null;
+  }
+
 }
