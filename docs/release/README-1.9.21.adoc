@@ -2,9 +2,6 @@
 :doctype: book
 :leveloffset: +1
 
-// AspectJ_JDK_Update: Each a.b.c release needs a new release notes document. For a.b.c.d minors, the existing a.b.c
-// document can be updated. After copying this document, remove the comment from the previous one.
-
 The releases 1.9.21, 1.9.21.1 and 1.9.21.2 are described together in this document.
 
 = AspectJ 1.9.21.2
