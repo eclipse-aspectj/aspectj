@@ -13,6 +13,7 @@ import org.aspectj.systemtest.ajc1919.AllTestsAspectJ1919;
 import org.aspectj.systemtest.ajc192.AllTestsAspectJ192;
 import org.aspectj.systemtest.ajc1920.AllTestsAspectJ1920;
 import org.aspectj.systemtest.ajc1921.AllTestsAspectJ1921;
+import org.aspectj.systemtest.ajc1922.AllTestsAspectJ1922;
 import org.aspectj.systemtest.ajc193.AllTestsAspectJ193;
 import org.aspectj.systemtest.ajc195.AllTestsAspectJ195;
 import org.aspectj.systemtest.ajc196.AllTestsAspectJ196;
@@ -43,8 +44,9 @@ public class AllTests19 {
 		suite.addTest(AllTestsAspectJ199.suite());
 		suite.addTest(AllTestsAspectJ1919.suite());
 		suite.addTest(AllTestsAspectJ1920.suite());
-		// AspectJ_JDK_Update
 		suite.addTest(AllTestsAspectJ1921.suite());
+		// AspectJ_JDK_Update
+		suite.addTest(AllTestsAspectJ1922.suite());
 		suite.addTest(AllTests18.suite());
 		// $JUnit-END$
 		return suite;

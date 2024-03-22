@@ -1,0 +1,202 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+	JDK 22 (https://openjdk.org/projects/jdk/22/):
+		Language features:
+			JEP 456: Unnamed Variables & Patterns
+			JEP 459: String Templates (Second Preview)
+			JEP 463: Implicitly Declared Classes and Instance Main Methods (Second Preview)
+			JEP 447: Statements before super(...) (Preview)
+		API or JVM only:
+			JEP 423: Region Pinning for G1
+			JEP 454: Foreign Function & Memory API
+			JEP 458: Launch Multi-File Source-Code Programs
+			JEP 462: Structured Concurrency (Second Preview)
+			JEP 464: Scoped Values (Second Preview)
+			JEP 457: Class-File API (Preview)
+			JEP 461: Stream Gatherers (Preview)
+			JEP 460: Vector API (Seventh Incubator)
+-->
+<suite>
+
+	<!-- Java 22 final, 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="22" title="unnamed patterns">
+		<compile files="UnnamedPatternsPreview1.java" options="-22"/>
+		<run class="UnnamedPatternsPreview1">
+			<stdout ordered="yes">
+				<line text="2"/>
+				<line text="side effect"/>
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 22 final, 21 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
+	<ajc-test dir="features1921/java21" vm="22" title="unnamed patterns aspect">
+		<compile files="UnnamedPatternsPreview1Aspect.aj" options="-22"/>
+		<run class="UnnamedPatternsPreview1Aspect">
+			<stdout ordered="yes">
+				<line text="execution(void UnnamedPatternsPreview1Aspect.main(String[]))"/>
+				<line text="2"/>
+				<line text="side effect"/>
+				<line text="0"/>
+				<line text="1"/>
+				<line text="java.awt.Point[x=1,y=2]"/>
+				<line text="java.awt.Point[x=4,y=5]"/>
+				<line text="java.awt.Point[x=1,y=0]"/>
+				<line text="java.awt.Point[x=4,y=0]"/>
+				<line text="Bad number: 123xy"/>
+				<line text="Doing something within scoped context"/>
+				<line text="Closing scoped context"/>
+				<line text="{ONE=NODATA, TWO=NODATA, THREE=NODATA}"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 22 final, 21 preview -->
+	<ajc-test dir="new" vm="22" title="underscore can still be used in pointcut patterns on Java 21+ - 1">
+		<compile files="NotCharInPointcut.java" options="-22">
+			<message kind="warning" line="51" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+			<message kind="warning" line="52" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+			<message kind="warning" line="53" text="advice defined in A has not been applied [Xlint:adviceDidNotMatch]"/>
+		</compile>
+		<run class="NotCharInPointcut"/>
+	</ajc-test>
+
+	<!-- Java 22 final, 21 preview -->
+	<ajc-test dir="features1921/java21" vm="22" title="underscore can still be used in pointcut patterns on Java 21+ - 2">
+		<compile files="UnderscoreInPointcutAspect.aj" options="-22"/>
+		<run class="UnderscoreInPointcutAspect">
+			<stdout>
+				<line text="[starts with underscore] execution(int UnderTest._add(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest._add(int, int)) -> 12, 4"/>
+				<line text="16"/>
+				<line text="[starts with underscore] execution(int UnderTest._subtract(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest._subtract(int, int)) -> 12, 4"/>
+				<line text="8"/>
+				<line text="[ends with underscore] execution(int UnderTest.multiply_(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest.multiply_(int, int)) -> 12, 4"/>
+				<line text="48"/>
+				<line text="[ends with underscore] execution(int UnderTest.divide_(int, int)) -> 12, 4"/>
+				<line text="[contains underscore] execution(int UnderTest.divide_(int, int)) -> 12, 4"/>
+				<line text="3"/>
+				<line text="[contains underscore] execution(int UnderTest.power_of(int, int)) -> 3, 3"/>
+				<line text="27"/>
+				<line text="[no underscore] execution(int UnderTest.squareRoot(int)) -> 49"/>
+				<line text="7"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21, 22 preview -->
+	<ajc-test dir="features1921/java21" vm="22" title="string patterns">
+		<compile files="StringPatternsPreview1.java" options="--enable-preview -22"/>
+		<run class="StringPatternsPreview1" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="Bill Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21, 22 preview -->
+	<ajc-test dir="features1921/java21" vm="22" title="string patterns aspect">
+		<compile files="StringPatternsPreview1Aspect.aj" options="--enable-preview -22"/>
+		<run class="StringPatternsPreview1Aspect" vmargs="--enable-preview">
+			<stdout ordered="yes">
+				<line text="execution(void StringPatternsPreview1Aspect.main(String[]))"/>
+				<line text="Bill Duck"/>
+				<line text="10 + 20 = 30"/>
+				<line text="You have a special New Year's sale discount waiting for you!"/>
+				<line text="Access at 2011-11-11 11:11:11 from localhost/127.0.0.1"/>
+				<line text="The file _dummy.dat does not exist"/>
+				<line text="The time is 11:11:11 or roughly eleven after eleven"/>
+				<line text="apples, oranges, peaches"/>
+				<line text=""/>
+				<line text="&lt;html&gt;"/>
+				<line text="  &lt;head&gt;"/>
+				<line text="    &lt;title&gt;My Web Page&lt;/title&gt;"/>
+				<line text="  &lt;/head&gt;"/>
+				<line text="  &lt;body&gt;"/>
+				<line text="    &lt;p&gt;Hello, world&lt;/p&gt;"/>
+				<line text="  &lt;/body&gt;"/>
+				<line text="&lt;/html&gt;"/>
+				<line text=""/>
+				<line text="Description     Width    Height     Area"/>
+				<line text="Alfa            17.80    31.40      558.92"/>
+				<line text="Bravo            9.60    12.40      119.04"/>
+				<line text="Charlie          7.10    11.23       79.73"/>
+				<line text="                             Total  757.69"/>
+				<line text=""/>
+				<line text="My name is Joan"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21, 22 preview -->
+	<ajc-test dir="features1921/java21" vm="22" title="named class with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedClassWithSimpleMainMethodPreview1.java" options="-22 --enable-preview"/>
+		<run class="NamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21, 22 preview -->
+	<ajc-test dir="features1921/java21" vm="22" title="named aspect with simple main method">
+		<!-- Compiles without preview mode, but needs preview mode to run -->
+		<compile files="NamedAspectWithSimpleMainMethodPreview1.aj" options="-22 --enable-preview"/>
+		<run class="NamedAspectWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!-- Java 21, 22 preview -->
+	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106 is done -->
+	<ajc-test dir="features1921/java21" vm="22" title="unnamed class with simple main method">
+		<compile files="UnnamedClassWithSimpleMainMethodPreview1.java" options="-22 --enable-preview"/>
+		<run class="UnnamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
+			<stdout>
+				<line text="Hello world!"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

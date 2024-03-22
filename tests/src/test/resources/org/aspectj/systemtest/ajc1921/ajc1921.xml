@@ -261,6 +261,8 @@
 		<compile files="UnnamedPatternsPreview1.java" options="--enable-preview -21"/>
 		<run class="UnnamedPatternsPreview1" vmargs="--enable-preview">
 			<stdout ordered="yes">
+				<line text="2"/>
+				<line text="side effect"/>
 				<line text="0"/>
 				<line text="1"/>
 				<line text="java.awt.Point[x=1,y=2]"/>
@@ -278,10 +280,12 @@
 	<!-- Java 21 preview -->
 	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
 	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns aspect">
-		<compile files="UnnamedPatternsPreview1Aspect.java" options="--enable-preview -21"/>
+		<compile files="UnnamedPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
 		<run class="UnnamedPatternsPreview1Aspect" vmargs="--enable-preview">
 			<stdout ordered="yes">
 				<line text="execution(void UnnamedPatternsPreview1Aspect.main(String[]))"/>
+				<line text="2"/>
+				<line text="side effect"/>
 				<line text="0"/>
 				<line text="1"/>
 				<line text="java.awt.Point[x=1,y=2]"/>

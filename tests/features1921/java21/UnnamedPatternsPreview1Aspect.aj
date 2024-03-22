@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Examples taken from <a href="https://openjdk.org/jeps/443">JEP 443</a>
  */
-public class UnnamedPatternsPreview1Aspect {
+public aspect UnnamedPatternsPreview1Aspect {
   public static void main(String[] args) {}
 
   before() : execution(* main(String[])) {
