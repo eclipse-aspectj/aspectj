@@ -54,12 +54,18 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("ataspectj deow - 2");
 	}
 
+	public void testRunningBrokenCode_pr102733() {
+		// TODO: Revert, when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/2205 is fixed
+		runTest("running broken code");
+	}
+
 	public void testRunningBrokenCode_pr102733_2() {
 		runTest("running broken code - 2");
 	}
 
-	public void testRunningBrokenCode_pr102733() {
-		runTest("running broken code");
+	public void testRunningBrokenCode_pr102733_3() {
+		// TODO: Adjust as necessary, when https://github.com/eclipse-jdt/eclipse.jdt.core/issues/2205 is fixed
+		runTest("running broken code - 3");
 	}
 
 	public void testErrorOnNonabstractGenericAtAspectJAspect_pr168982() {
