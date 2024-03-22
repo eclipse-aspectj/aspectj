@@ -1,14 +1,15 @@
-import java.lang.reflect.Method;
-
 public class Invoker {
-	public static void main(String[] args) throws Throwable {
-		try {
-			C.main(null);
-		} catch (Throwable t) {
-			boolean failedCorrectly = t.toString().indexOf("Unresolved compilation")!=-1;
-			if (failedCorrectly) return;
-			throw t;
-		}
-		throw new RuntimeException("Call to main should have failed!");
-	}
+  public static void main(String[] args) throws Throwable {
+    try {
+      new C();
+    }
+    catch (Throwable t) {
+      boolean failedCorrectly =
+        t.toString().contains("Unresolved compilation problem") &&
+          t.toString().contains("The method main cannot be declared static");
+      if (failedCorrectly)
+        return;
+      throw new RuntimeException("Constructor call should have failed!", t);
+    }
+  }
 }
