@@ -27,7 +27,7 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-		<jdt.core.version>1.9.22-SNAPSHOT</jdt.core.version> <!-- AspectJ_JDK_Update -->
+		<jdt.core.version>1.9.22</jdt.core.version> <!-- AspectJ_JDK_Update -->
 		<asm.version>9.6</asm.version> <!-- AspectJ_JDK_Update -->
 		<commons.digester.version>3.2</commons.digester.version>
 		<commons.logging.version>1.3.0</commons.logging.version>
