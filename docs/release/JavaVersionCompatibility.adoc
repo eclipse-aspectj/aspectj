@@ -5,9 +5,11 @@ for AspectJ users it has become a little challenging to find out which minimum A
 process byte code or compile source code using features of a certain Java language version. Since Java 10, this cannot
 be easily concluded from the AspectJ version number anymore, and we are sorry for that. So here is a little overview:
 
+// AspectJ_JDK_Update: add new row to table
 [%autowidth, stripes=even, options="header"]
 |===
 |AspectJ version |Java version |Comments
+|1.9.22 |22 |
 |1.9.21 - 1.9.21.2 |21 |AspectJ compiler requires JDK 17+ during build time. During runtime, AspectJ still only requires Java 8+ for both compile-time and load-time weaving. Pure Java code can be compiled down to as old as 1.3 byte code level.
 |1.9.20 - 1.9.20.1 |20 |
 |1.9.19 |19 |
