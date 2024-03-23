@@ -5,7 +5,7 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.22</version>
+	<version>1.9.23-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
