@@ -16,7 +16,6 @@ public class StringPatternsPreview1 {
   public static void main(String[] args) {
     // Embedded expressions can be strings
     String firstName = "Bill", lastName = "Duck";
-    // TODO: Due to https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1719, this is currently rendered incorrectly
     System.out.println(STR."\{firstName} \{lastName}");
 
     // Embedded expressions can perform arithmetic

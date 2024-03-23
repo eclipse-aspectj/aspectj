@@ -20,7 +20,6 @@
 <suite>
 
 	<!-- Java 22 final, 21 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
 	<ajc-test dir="features1921/java21" vm="22" title="unnamed patterns">
 		<compile files="UnnamedPatternsPreview1.java" options="-22"/>
 		<run class="UnnamedPatternsPreview1">
@@ -42,7 +41,6 @@
 	</ajc-test>
 
 	<!-- Java 22 final, 21 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
 	<ajc-test dir="features1921/java21" vm="22" title="unnamed patterns aspect">
 		<compile files="UnnamedPatternsPreview1Aspect.aj" options="-22"/>
 		<run class="UnnamedPatternsPreview1Aspect">
@@ -189,7 +187,6 @@
 	</ajc-test>
 
 	<!-- Java 21, 22 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106 is done -->
 	<ajc-test dir="features1921/java21" vm="22" title="unnamed class with simple main method">
 		<compile files="UnnamedClassWithSimpleMainMethodPreview1.java" options="-22 --enable-preview"/>
 		<run class="UnnamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">
