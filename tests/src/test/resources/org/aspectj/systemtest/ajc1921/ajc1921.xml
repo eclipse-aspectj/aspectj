@@ -54,7 +54,6 @@
 	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features1920/java20" vm="21" title="switch pattern matching preview 4 error">
 		<compile files="SwitchPatternPreview4Error.java" options="-21">
-			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview4Error.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
@@ -89,7 +88,6 @@
 	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features198/java17" vm="21" title="switch pattern matching error">
 		<compile files="SwitchPatternError.java" options="-21">
-			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternError.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
@@ -105,7 +103,6 @@
 	<!-- Java 21 final, Java 17, 18, 19, 20 preview -->
 	<ajc-test dir="features1919/java19" vm="21" title="switch pattern matching preview 3 error 2">
 		<compile files="SwitchPatternPreview3Error2.java" options="-21">
-			<!-- TODO: Add correct compiler error message, as soon as JDT Core supports it -->
 			<message kind="error" file="SwitchPatternPreview3Error2.java" text="This case label is dominated by one of the preceding case labels"/>
 		</compile>
 	</ajc-test>
@@ -256,7 +253,6 @@
 	</ajc-test>
 
 	<!-- Java 21 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
 	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns">
 		<compile files="UnnamedPatternsPreview1.java" options="--enable-preview -21"/>
 		<run class="UnnamedPatternsPreview1" vmargs="--enable-preview">
@@ -278,7 +274,6 @@
 	</ajc-test>
 
 	<!-- Java 21 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/893 is done -->
 	<ajc-test dir="features1921/java21" vm="21" title="unnamed patterns aspect">
 		<compile files="UnnamedPatternsPreview1Aspect.aj" options="--enable-preview -21"/>
 		<run class="UnnamedPatternsPreview1Aspect" vmargs="--enable-preview">
@@ -358,7 +353,6 @@
 	</ajc-test>
 
 	<!-- Java 21 preview -->
-	<!-- TODO: Activate after https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106 is done -->
 	<ajc-test dir="features1921/java21" vm="21" title="unnamed class with simple main method">
 		<compile files="UnnamedClassWithSimpleMainMethodPreview1.java" options="--enable-preview -21"/>
 		<run class="UnnamedClassWithSimpleMainMethodPreview1" vmargs="--enable-preview">

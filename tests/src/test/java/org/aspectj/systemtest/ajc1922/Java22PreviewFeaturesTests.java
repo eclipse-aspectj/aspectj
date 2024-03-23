@@ -37,10 +37,6 @@ public class Java22PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTe
     runTest("named aspect with simple main method");
   }
 
-  /**
-   * Still not implemented with the Java 21 release Eclipse 2023-12 (4.30),
-   * see <a href="https://github.com/eclipse-jdt/eclipse.jdt.core/issues/1106">GitHub issue 1106</a>.
-   */
   public void testUnnamedClassWithSimpleMainMethod() {
     runTest("unnamed class with simple main method");
   }
