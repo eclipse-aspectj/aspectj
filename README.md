@@ -25,6 +25,9 @@ In the root of a cloned AspectJ simply run:
 ./mvnw clean install
 ```
 
+Please make sure that your project root directory name is either _aspectj_ (default for `git clone`) or _org.aspectj_ (case-insensitive), if you wish to run the build with tests.
+Some integration tests rely on this name when dynamically searching the up current path for the root folder.
+
 You can also use a reasonably recent (3.6.3+), locally installed Maven installation instead of the Maven wrapper script.
 
 This will build all the modules, run all the tests and install the key artifacts in your local repository.
