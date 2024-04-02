@@ -119,10 +119,7 @@ public class SimpleCache {
 		private static int DEF_STORING_TIMER = 60000; //ms
 		private int storingTimer;
 
-		private transient Trace trace;
-		private void initTrace(){
-			trace = TraceFactory.getTraceFactory().getTrace(StoreableCachingMap.class);
-		}
+		private static final Trace trace = TraceFactory.getTraceFactory().getTrace(StoreableCachingMap.class);
 
 //		private StoreableCachingMap(String folder) {
 //			this.folder = folder;
@@ -131,7 +128,6 @@ public class SimpleCache {
 
 		private StoreableCachingMap(String folder, int storingTimer){
 			this.folder = folder;
-			initTrace();
 			this.storingTimer = storingTimer;
 		}
 
@@ -148,11 +144,9 @@ public class SimpleCache {
 							new FileInputStream(file));
 					// Deserialize the object
 					StoreableCachingMap sm = (StoreableCachingMap) in.readObject();
-					sm.initTrace();
 					in.close();
 					return sm;
 				} catch (Exception e) {
-					Trace trace = TraceFactory.getTraceFactory().getTrace(StoreableCachingMap.class);
 					trace.error("Error reading Storable Cache", e);
 				}
 			}

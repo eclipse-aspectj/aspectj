@@ -53,7 +53,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  */
 public class ClassPathManager {
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(ClassPathManager.class);
 
 	private static int maxOpenArchives = -1;
 

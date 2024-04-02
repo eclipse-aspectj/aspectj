@@ -93,7 +93,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private List<ConcreteAspectCodeGen> concreteAspects = new ArrayList<>();
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(ClassLoaderWeavingAdaptor.class);
 
 	public ClassLoaderWeavingAdaptor() {
 		super();

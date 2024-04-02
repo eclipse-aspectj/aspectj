@@ -104,7 +104,7 @@ public class WeavingAdaptor implements IMessageContext {
 	private static final int WEAVE_JAVA_PACKAGE = 0x2;
 	private static final int WEAVE_JAVAX_PACKAGE = 0x4;
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingAdaptor.class);
 
 	protected WeavingAdaptor() {
 	}
