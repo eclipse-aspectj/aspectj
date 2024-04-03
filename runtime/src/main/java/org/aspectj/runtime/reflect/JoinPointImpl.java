@@ -154,7 +154,11 @@ class JoinPointImpl implements ProceedingJoinPoint {
 			arcs = new ArrayList<>();
 		}
 		if (arc == null) {
-			arcIndex.set(arcIndex.get() - 1);
+			int newIndex = arcIndex.get() - 1;
+			if (newIndex > -1)
+				arcIndex.set(newIndex);
+			else
+				arcIndex.remove();
 		}
 		else {
 			this.arcs.add(arc);
