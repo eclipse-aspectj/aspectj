@@ -1225,11 +1225,11 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	private void defineClass(ClassLoader loader, String name, byte[] bytes) {
+	protected void defineClass(ClassLoader loader, String name, byte[] bytes) {
 		defineClass(loader, name, bytes, null);
 	}
 
-	private void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
+	protected void defineClass(ClassLoader loader, String name, byte[] bytes, ProtectionDomain protectionDomain) {
 		if (trace.isTraceEnabled())
 			trace.enter("defineClass", this, new Object[] { loader, name, bytes });
 		debug("generating class '" + name + "'");
