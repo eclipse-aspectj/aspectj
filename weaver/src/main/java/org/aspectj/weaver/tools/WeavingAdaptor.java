@@ -939,6 +939,7 @@ public class WeavingAdaptor implements IMessageContext {
 						lacache.addGeneratedClassesNames(wovenClass.getClassName(), wovenClass.getBytes(), result.getClassName());
 					}
 
+					generatedClasses.put(className, result);
 					generatedClasses.put(wovenClass.getClassName(), wovenClass);
 					generatedClassHandler.acceptClass(className, null, resultBytes);
 				}

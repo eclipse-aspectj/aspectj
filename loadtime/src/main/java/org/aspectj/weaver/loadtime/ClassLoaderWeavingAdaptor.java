@@ -1008,8 +1008,16 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param className a slashed classname (e.g. com/foo/Bar)
 	 */
 	public void flushGeneratedClassesFor(String className) {
-		String dottedClassName = className.replace('/', '.');
-		generatedClasses.remove(dottedClassName);
+		try {
+			String dottedClassName = className.replace('/', '.');
+			String dottedClassNameDollar = dottedClassName + "$"; // to pick up inner classes
+			generatedClasses.entrySet().removeIf(entry -> {
+				String generatedClassName = entry.getKey();
+				return generatedClassName.equals(dottedClassName) || generatedClassName.startsWith(dottedClassNameDollar);
+			});
+		} catch (Throwable t) {
+			new RuntimeException("Unexpected problem tidying up generated classes for " + className, t).printStackTrace();
+		}
 	}
 
 	private static final Object lock = new Object();
