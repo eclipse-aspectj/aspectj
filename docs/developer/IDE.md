@@ -49,16 +49,32 @@ Use an update site corresponding to your Eclipse version (minimal version listed
 * For older versions, please refer to https://www.eclipse.org/ajdt/downloads (page was not updated in a long time,
   and I have no write access).
 
-#### Maven to Eclipse (m2e) connector
+#### Maven to Eclipse (M2E) connector
 
-The connector between AspectJ Maven Plugin and AJDT has not been maintained by the AspectJ team for some years, but
-there is a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with the following
-update sites:
+The M2E connector is capable of importing build settings from AspectJ Maven Plugin (see section "Build tools / Maven"
+below).
+
+As of April 2024, AspectJ developer Alexander Kriegisch published a [fork of the project](https://github.com/dev-aspectj/m2eclipse-ajdt)
+and corresponding Eclipse update sites here:
+  * Eclipse 2024-03 (4.31): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2024-03/
+  * Eclipse 2022-12 (4.26): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2022-12/
+
+The project is only maintained on a best-effort basis, and not each update published has a proper new release version.
+If your snapshot does not update properly (Eclipse failing to calculate solutions for installation and saying that the
+plugin is already installed), simply uninstall the "Maven Integration for AJDT (Optional)" feature from Eclipse,
+re-start the IDE and install again from the corresponding update site.
+
+History: The connector between AspectJ Maven Plugin and AJDT had not been maintained for some years, but until 2023
+there was a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with the
+following update sites, which currently (April 2024) seem to be unavailable:
   * Eclipse 2022-12 (4.26): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2022-12/
   * Eclipse 2020-12 (4.18): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2020-12/
   * Eclipse 2019-06 (4.12): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2019-06/
 
-Your AspectJ-related list of Eclipse update sites could look like this for Eclipse 2023-12:
+#### Update sites example
+
+Your AspectJ-related list of Eclipse update sites for AJDT and the M2E connector could look like this for
+Eclipse 2023-12:
 
 ![Eclipse IDE filtered list of update sites](images/EclipseSoftwareSitesAJDT.png)
 
