@@ -196,4 +196,18 @@
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/302 -->
+	<ajc-test dir="bugs1922/github_302" title="thread-local around closure index is removed after innermost proceed">
+		<compile files="NestedAroundClosureMemoryLeakTest.java Task.java FirstAspect.aj SecondAspect.aj" options="-1.8 -XnoInline"/>
+		<run class="NestedAroundClosureMemoryLeakTest" vmargs="--add-opens java.base/java.lang=ALL-UNNAMED">
+			<stdout>
+				<line text="Finished executing tasks"/>
+				<line text="Number of pool threads = 12"/>
+				<line text="Test passed - all thread-locals are null"/>
+			</stdout>
+			<!-- No RuntimeException on stderr-->
+			<stderr/>
+		</run>
+	</ajc-test>
+
 </suite>

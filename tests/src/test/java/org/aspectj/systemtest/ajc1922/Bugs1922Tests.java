@@ -15,8 +15,8 @@ import org.aspectj.testing.XMLBasedAjcTestCase;
  */
 public class Bugs1922Tests extends XMLBasedAjcTestCase {
 
-  public void testDummy() {
-    //runTest("dummy");
+  public void testGitHub_302() {
+    runTest("thread-local around closure index is removed after innermost proceed");
   }
 
   public static Test suite() {
