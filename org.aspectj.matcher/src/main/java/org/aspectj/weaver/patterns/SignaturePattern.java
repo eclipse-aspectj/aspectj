@@ -14,6 +14,7 @@ package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,11 +43,11 @@ import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.World;
 
 public class SignaturePattern extends PatternNode implements ISignaturePattern {
-	private MemberKind kind;
-	private ModifiersPattern modifiers;
+	private final MemberKind kind;
+	private final ModifiersPattern modifiers;
 	private TypePattern returnType;
 	private TypePattern declaringType;
-	private NamePattern name;
+	private final NamePattern name;
 	private TypePatternList parameterTypes;
 	private int bits = 0x0000;
 	private static final int PARAMETER_ANNOTATION_MATCHING = 0x0001;
@@ -103,29 +104,37 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 	private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed) {
 		checkForIncorrectTargetKind(patternNode, scope, targetsOtherThanTypeAllowed, false);
-
 	}
 
 	// bug 115252 - adding an xlint warning if the annnotation target type is
 	// wrong. This logic, or similar, may have to be applied elsewhere in the case
 	// of pointcuts which don't go through SignaturePattern.resolveBindings(..)
-	private void checkForIncorrectTargetKind(PatternNode patternNode, IScope scope, boolean targetsOtherThanTypeAllowed,
-			boolean parameterTargettingAnnotationsAllowed) {
+	private void checkForIncorrectTargetKind(
+		PatternNode patternNode,
+		IScope scope,
+		boolean targetsOtherThanTypeAllowed,
+		boolean parameterTargettingAnnotationsAllowed
+	)
+	{
+		final World world = scope.getWorld();
 		// return if we're not in java5 mode, if the unmatchedTargetKind Xlint
 		// warning has been turned off, or if the patternNode is *
-		if (!scope.getWorld().isInJava5Mode() || scope.getWorld().getLint().unmatchedTargetKind == null
-				|| (patternNode instanceof AnyTypePattern)) {
+		if (
+			!world.isInJava5Mode() ||
+				!world.getLint().unmatchedTargetKind.isEnabled() ||
+				patternNode instanceof AnyTypePattern
+		) {
 			return;
 		}
 		if (patternNode instanceof ExactAnnotationTypePattern) {
-			ResolvedType resolvedType = ((ExactAnnotationTypePattern) patternNode).getAnnotationType().resolve(scope.getWorld());
+			ResolvedType resolvedType = ((ExactAnnotationTypePattern) patternNode).getAnnotationType().resolve(world);
 			if (targetsOtherThanTypeAllowed) {
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
 				if (targetKinds == null) {
 					return;
 				}
 				reportUnmatchedTargetKindMessage(targetKinds, patternNode, scope, true);
-			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
+			} else if (!resolvedType.canAnnotationTargetType()) {
 				// everything is incorrect since we've already checked whether we have the TYPE target annotation
 				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
 				if (targetKinds == null) {
@@ -134,12 +143,11 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 				reportUnmatchedTargetKindMessage(targetKinds, patternNode, scope, false);
 			}
 		} else {
-			TypePatternVisitor visitor = new TypePatternVisitor(scope, targetsOtherThanTypeAllowed,
-					parameterTargettingAnnotationsAllowed);
+			TypePatternVisitor visitor = new TypePatternVisitor(scope, targetsOtherThanTypeAllowed, parameterTargettingAnnotationsAllowed);
 			patternNode.traverse(visitor, null);
 			if (visitor.containedIncorrectTargetKind()) {
 				Set<ExactAnnotationTypePattern> keys = visitor.getIncorrectTargetKinds().keySet();
-				for (PatternNode node : keys) {
+				for (ExactAnnotationTypePattern node : keys) {
 					AnnotationTargetKind[] targetKinds = visitor.getIncorrectTargetKinds().get(node);
 					reportUnmatchedTargetKindMessage(targetKinds, node, scope, false);
 				}
@@ -156,13 +164,16 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 				return;
 			}
 			if (i < (annotationTargetKinds.length - 1)) {
-				targetNames.append("ElementType." + targetKind.getName() + ",");
+				targetNames.append("ElementType.").append(targetKind.getName()).append(",");
 			} else {
-				targetNames.append("ElementType." + targetKind.getName() + "}");
+				targetNames.append("ElementType.").append(targetKind.getName()).append("}");
 			}
 		}
-		scope.getWorld().getLint().unmatchedTargetKind.signal(new String[] { node.toString(), targetNames.toString() },
-				getSourceLocation(), new ISourceLocation[0]);
+		scope.getWorld().getLint().unmatchedTargetKind.signal(
+			new String[] { node.toString(), targetNames.toString() },
+			getSourceLocation(),
+			new ISourceLocation[0]
+		);
 	}
 
 	/**
@@ -172,16 +183,11 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	 */
 	private class TypePatternVisitor extends AbstractPatternNodeVisitor {
 
-		private IScope scope;
-		private Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> incorrectTargetKinds = new HashMap<>();
-		private boolean targetsOtherThanTypeAllowed;
-		private boolean parameterTargettingAnnotationsAllowed;
+		private final IScope scope;
+		private final Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> incorrectTargetKinds = new HashMap<>();
+		private final boolean targetsOtherThanTypeAllowed;
+		private final boolean parameterTargettingAnnotationsAllowed;
 
-		/**
-		 * @param requiredTarget - the signature pattern Kind
-		 * @param scope
-		 * @param parameterTargettingAnnotationsAllowed
-		 */
 		public TypePatternVisitor(IScope scope, boolean targetsOtherThanTypeAllowed, boolean parameterTargettingAnnotationsAllowed) {
 			this.scope = scope;
 			this.targetsOtherThanTypeAllowed = targetsOtherThanTypeAllowed;
@@ -264,7 +270,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		}
 
 		public boolean containedIncorrectTargetKind() {
-			return (incorrectTargetKinds.size() != 0);
+			return (!incorrectTargetKinds.isEmpty());
 		}
 
 		public Map<ExactAnnotationTypePattern, AnnotationTargetKind[]> getIncorrectTargetKinds() {
@@ -450,12 +456,8 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 
 			// Quick rule: pattern doesn't specify ellipsis and there are a different number of parameters on the
 			// method join point as compared with the pattern
-			if (parameterTypes.ellipsisCount == 0 && !equalCount) {
-				if (patternParameterCount > 0 && parameterTypes.get(patternParameterCount - 1).isVarArgs()) {
-					return false;
-				}
-				return true;
-			}
+			if (parameterTypes.ellipsisCount == 0 && !equalCount)
+				return patternParameterCount <= 0 || !parameterTypes.get(patternParameterCount - 1).isVarArgs();
 		}
 
 		return false;
@@ -674,9 +676,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 			}
 		} else {
 			// the method ends with an array type, check that we don't *require* a varargs
-			if (lastPattern.isVarArgs()) {
-				return false;
-			}
+      return !lastPattern.isVarArgs();
 		}
 
 		return true;
@@ -723,7 +723,7 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 	}
 
 	private ResolvedMember findMethod(ResolvedType aspectType, ResolvedMember ajcMethod) {
-		ResolvedMember decMethods[] = aspectType.getDeclaredMethods();
+		ResolvedMember[] decMethods = aspectType.getDeclaredMethods();
 		for (ResolvedMember member : decMethods) {
 			if (member.equals(ajcMethod)) {
 				return member;
