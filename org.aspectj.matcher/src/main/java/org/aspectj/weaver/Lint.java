@@ -13,9 +13,9 @@
 package org.aspectj.weaver;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -138,70 +138,55 @@ public class Lint {
 	public final Kind missingAspectForReweaving = new Kind("missingAspectForReweaving",
 			"aspect {0} cannot be found when reweaving {1}");
 
-	private static Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
+	private static final Trace trace = TraceFactory.getTraceFactory().getTrace(Lint.class);
 
 	public Lint(World world) {
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.enter("<init>", this, world);
-		}
 		this.world = world;
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.exit("<init>");
-		}
 	}
 
 	public void setAll(String messageKind) {
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.enter("setAll", this, messageKind);
-		}
 		setAll(getMessageKind(messageKind));
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.exit("setAll");
-		}
 	}
 
 	private void setAll(IMessage.Kind messageKind) {
-		for (Kind kind : kinds.values()) {
+		for (Kind kind : kinds.values())
 			kind.setKind(messageKind);
-		}
 	}
 
 	public void setFromMap(Map<String,String> lintOptionsMap) {
 		for (String key: lintOptionsMap.keySet()) {
 			String value = lintOptionsMap.get(key);
 			Kind kind = kinds.get(key);
-			if (kind == null) {
+			if (kind == null)
 				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, key));
-			} else {
+			else
 				kind.setKind(getMessageKind(value));
-			}
 		}
 	}
 
 	public void setFromProperties(File file) {
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.enter("setFromProperties", this, file);
-		}
-		InputStream s = null;
-		try {
-			s = new FileInputStream(file);
+		try (InputStream s = Files.newInputStream(file.toPath())) {
 			setFromProperties(s);
-		} catch (IOException ioe) {
-			MessageUtil.error(world.getMessageHandler(),
-					WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR, file.getPath(), ioe.getMessage()));
-		} finally {
-			if (s != null) {
-				try {
-					s.close();
-				} catch (IOException e) {
-					// ignore
-				}
-			}
+		}
+		catch (IOException ioe) {
+			MessageUtil.error(
+				world.getMessageHandler(),
+				WeaverMessages.format(WeaverMessages.XLINT_LOAD_ERROR, file.getPath(), ioe.getMessage())
+			);
 		}
 
-		if (trace.isTraceEnabled()) {
+		if (trace.isTraceEnabled())
 			trace.exit("setFromProperties");
-		}
 	}
 
 	public void loadDefaultProperties() {
@@ -212,7 +197,8 @@ public class Lint {
 		}
 		try {
 			setFromProperties(s);
-		} catch (IOException ioe) {
+		}
+		catch (IOException ioe) {
 			MessageUtil.error(world.getMessageHandler(),
 					WeaverMessages.format(WeaverMessages.XLINTDEFAULT_LOAD_PROBLEM, ioe.getMessage()));
 		} finally {
@@ -234,11 +220,10 @@ public class Lint {
 	public void setFromProperties(Properties properties) {
 		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			Kind kind = kinds.get(entry.getKey());
-			if (kind == null) {
+			if (kind == null)
 				MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_KEY_ERROR, entry.getKey()));
-			} else {
+			else
 				kind.setKind(getMessageKind((String) entry.getValue()));
-			}
 		}
 	}
 
@@ -252,34 +237,31 @@ public class Lint {
 
 	// temporarily suppress the given lint messages
 	public void suppressKinds(Collection<Kind> lintKind) {
-		if (lintKind.isEmpty()) {
+		if (lintKind.isEmpty())
 			return;
-		}
-		for (Kind k : lintKind) {
+		for (Kind k : lintKind)
 			k.setSuppressed(true);
-		}
 	}
 
 	// remove any suppression of lint warnings in place
 	public void clearAllSuppressions() {
-		for (Kind k : kinds.values()) {
+		for (Kind k : kinds.values())
 			k.setSuppressed(false);
-		}
 	}
 
 	public void clearSuppressions(Collection<Lint.Kind> lintKinds) {
-		for (Kind k : lintKinds) {
+		for (Kind k : lintKinds)
 			k.setSuppressed(false);
-		}
 	}
 
 	private IMessage.Kind getMessageKind(String v) {
-		if (v.equals("ignore")) {
-			return null;
-		} else if (v.equals("warning")) {
-			return IMessage.WARNING;
-		} else if (v.equals("error")) {
-			return IMessage.ERROR;
+		switch (v) {
+			case "ignore":
+				return null;
+			case "warning":
+				return IMessage.WARNING;
+			case "error":
+				return IMessage.ERROR;
 		}
 
 		MessageUtil.error(world.getMessageHandler(), WeaverMessages.format(WeaverMessages.XLINT_VALUE_ERROR, v));
@@ -328,19 +310,17 @@ public class Lint {
 		}
 
 		public void signal(String info, ISourceLocation location) {
-			if (kind == null) {
+			if (kind == null)
 				return;
-			}
 
-			String text = MessageFormat.format(message, new Object[] { info });
+			String text = MessageFormat.format(message, info);
 			text += " [Xlint:" + name + "]";
 			world.getMessageHandler().handleMessage(new LintMessage(text, kind, location, null, getLintKind(name)));
 		}
 
 		public void signal(String[] infos, ISourceLocation location, ISourceLocation[] extraLocations) {
-			if (kind == null) {
+			if (kind == null)
 				return;
-			}
 
 			String text = MessageFormat.format(message, (Object[]) infos);
 			text += " [Xlint:" + name + "]";
