@@ -194,12 +194,6 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 			this.parameterTargettingAnnotationsAllowed = parameterTargettingAnnotationsAllowed;
 		}
 
-		@Override
-		public Object visit(WildAnnotationTypePattern node, Object data) {
-			node.getTypePattern().accept(this, data);
-			return node;
-		}
-
 		/**
 		 * Do the ExactAnnotationTypePatterns have the incorrect target?
 		 */
