@@ -200,35 +200,35 @@ public class SignaturePattern extends PatternNode implements ISignaturePattern {
 		@Override
 		public Object visit(ExactAnnotationTypePattern node, Object data) {
 			ResolvedType resolvedType = node.getAnnotationType().resolve(scope.getWorld());
+			AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
+			if (targetKinds == null)
+				return data;
+			boolean isMetaAnnotation = data instanceof AnnotationTypePattern || data instanceof AnyWithAnnotationTypePattern;
 			if (targetsOtherThanTypeAllowed) {
-				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null) {
-					return data;
-				}
 				List<AnnotationTargetKind> incorrectTargets = new ArrayList<>();
 				for (AnnotationTargetKind targetKind : targetKinds) {
-					if (targetKind.getName().equals(kind.getName())
-							|| (targetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch())) {
+					if (
+						isMetaAnnotation && targetKind.equals(AnnotationTargetKind.ANNOTATION_TYPE) ||
+							targetKind.getName().equals(kind.getName()) ||
+							targetKind.equals(AnnotationTargetKind.PARAMETER) && node.isForParameterAnnotationMatch()
+					) {
 						return data;
 					}
 					incorrectTargets.add(targetKind);
 				}
-				if (incorrectTargets.isEmpty()) {
+				if (incorrectTargets.isEmpty())
 					return data;
-				}
 				AnnotationTargetKind[] kinds = new AnnotationTargetKind[incorrectTargets.size()];
 				incorrectTargetKinds.put(node, incorrectTargets.toArray(kinds));
-			} else if (!targetsOtherThanTypeAllowed && !resolvedType.canAnnotationTargetType()) {
-				AnnotationTargetKind[] targetKinds = resolvedType.getAnnotationTargetKinds();
-				if (targetKinds == null) {
-					return data;
-				}
-				// exception here is if parameter annotations are allowed
-				if (parameterTargettingAnnotationsAllowed) {
-					for (AnnotationTargetKind annotationTargetKind : targetKinds) {
-						if (annotationTargetKind.getName().equals("PARAMETER") && node.isForParameterAnnotationMatch()) {
-							return data;
-						}
+			}
+			else if (!resolvedType.canAnnotationTargetType()) {
+				for (AnnotationTargetKind targetKind : targetKinds) {
+					if (
+						isMetaAnnotation && targetKind.equals(AnnotationTargetKind.ANNOTATION_TYPE) ||
+							parameterTargettingAnnotationsAllowed &&
+								targetKind.equals(AnnotationTargetKind.PARAMETER) && node.isForParameterAnnotationMatch()
+					) {
+						return data;
 					}
 				}
 				incorrectTargetKinds.put(node, targetKinds);
