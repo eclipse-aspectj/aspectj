@@ -42,3 +42,15 @@ ajcore.*.txt
 # When using a RAM disk to speed up development, see how-to in docs/developer/ram-disk/settings-ramdisk.xml
 /.mvn/maven.config
 /.mvn/settings-ramdisk.xml
+
+_maven-test-it/
+_x/
+_tmp/
+/PatternNode.*
+aj-build.zip
+/_ltw/
+/org.aspectj.matcher/src/main/java/org/aspectj/weaver/patterns/TraceVisitor.java
+/org.aspectj.matcher/src/main/java/org/aspectj/weaver/patterns/VoidArrayFinder.java
+/tests/features1919/github_216/IllegalVoidArrays.aj
+/.editorconfig-test.editorconfig
+/antora-log.json
