@@ -402,7 +402,7 @@ public class JavaClass extends Modifiers implements Cloneable, Node {
 	}
 
 	/**
-	 * @return sbsolute path to file where this class was read from
+	 * @return absolute path to file where this class was read from
 	 */
 	public String getSourceFileName() {
 		return sourcefileName;

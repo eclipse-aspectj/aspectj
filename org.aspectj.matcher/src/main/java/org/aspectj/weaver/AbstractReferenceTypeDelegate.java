@@ -75,17 +75,15 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 
 	public final void setSourcefilename(String sourceFileName) {
 		sourcefilename = sourceFileName;
-		if (sourceFileName != null && sourceFileName.equals(AbstractReferenceTypeDelegate.UNKNOWN_SOURCE_FILE)) {
+		if (AbstractReferenceTypeDelegate.UNKNOWN_SOURCE_FILE.equals(sourceFileName))
 			sourcefilename = "Type '" + getResolvedTypeX().getName() + "' (no debug info available)";
-		} else {
+		else {
 			String pname = getResolvedTypeX().getPackageName();
-			if (pname != null) {
+			if (pname != null)
 				sourcefilename = pname.replace('.', '/') + '/' + sourceFileName;
-			}
 		}
-		if (sourcefilename != null && sourceContext instanceof SourceContextImpl) {
+		if (sourcefilename != null && sourceContext instanceof SourceContextImpl)
 			((SourceContextImpl) sourceContext).setSourceFileName(sourcefilename);
-		}
 	}
 
 	public ISourceLocation getSourceLocation() {
