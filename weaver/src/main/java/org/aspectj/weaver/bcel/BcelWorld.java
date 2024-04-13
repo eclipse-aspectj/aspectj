@@ -273,7 +273,7 @@ public class BcelWorld extends World implements Repository {
 			}
 			// if it's a binary file then also want to give the file name
 			if (isl.getSourceFileName() != null) {
-				nice.append("(from " + isl.getSourceFileName() + ")");
+				nice.append("(from ").append(isl.getSourceFileName()).append(")");
 			}
 		}
 		return nice.toString();

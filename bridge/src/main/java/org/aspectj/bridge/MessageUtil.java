@@ -827,7 +827,7 @@ public class MessageUtil {
 		for (Iterator<ISourceLocation> iter = message.getExtraSourceLocations().iterator(); iter.hasNext();) {
 			ISourceLocation element = iter.next();
 			if (element != null) {
-				writer.print("\tsee also: " + element.toString());
+				writer.print("\tsee also: " + element);
 				if (iter.hasNext()) {
 					writer.println();
 				}
