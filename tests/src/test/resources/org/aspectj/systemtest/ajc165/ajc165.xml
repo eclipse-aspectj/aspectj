@@ -87,16 +87,16 @@
        <message kind="warning" text="advice defined in Iffy2 has not been applied [Xlint:adviceDidNotMatch]"     line="39"/>
        <message kind="warning" text="advice defined in Iffy2 has not been applied [Xlint:adviceDidNotMatch]"     line="48"/>
 
-       <message kind="weave" text="method-execution(void Iffy2.myVoid())' in Type 'Iffy2' (Iffy2.java:50) advised by before advice from 'Iffy2' (Iffy2.java:23)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice from 'Iffy2' (Iffy2.java:35)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice from 'Iffy2' (Iffy2.java:31)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice from 'Iffy2' (Iffy2.java:27)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice from 'Iffy2' (Iffy2.java:23)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice from 'Iffy2' (Iffy2.java:10)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice from 'Iffy2' (Iffy2.java:43)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice from 'Iffy2' (Iffy2.java:27)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice from 'Iffy2' (Iffy2.java:23)"/>
-       <message kind="weave" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice from 'Iffy2' (Iffy2.java:10)"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="23" text="method-execution(void Iffy2.myVoid())' in Type 'Iffy2' (Iffy2.java:50) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="35" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="31" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="27" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="23" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="10" text="method-execution(java.util.Collection[] Iffy2.getCollectionArray())' in Type 'Iffy2' (Iffy2.java:52) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="43" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="27" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="23" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice"/>
+       <message kind="weave" aspectFile="Iffy2.java" aspectLine="10" text="method-execution(java.util.Collection[] Iffy2.getIntegerCollectionArray())' in Type 'Iffy2' (Iffy2.java:56) advised by before advice"/>
 
      </compile>
    </ajc-test>
