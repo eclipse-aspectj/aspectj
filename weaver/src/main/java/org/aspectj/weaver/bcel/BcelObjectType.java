@@ -159,10 +159,19 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		// the only class in Java-1.4 with no superclasses
 		isObject = (javaClass.getSuperclassNameIndex() == 0);
 		ensureAspectJAttributesUnpacked();
-		// if (sourceContext instanceof SourceContextImpl) {
-		// ((SourceContextImpl)sourceContext).setSourceFileName(javaClass.
-		// getSourceFileName());
-		// }
+
+		// Experimental code leading to undesired ripple effects elsewhere, requiring more rework
+		/*
+		final String fileName = javaClass.getFileName();
+		final String sourceFileName = javaClass.getSourceFileName();
+		if (fileName == null || !fileName.endsWith(".class"))
+			setSourcefilename(sourceFileName);
+		else if (sourceFileName == null || sourceFileName.isEmpty() || sourceFileName.endsWith(".class"))
+			setSourcefilename(fileName);
+		else
+			setSourcefilename(fileName + " (from " + sourceFileName + ")");
+		*/
+
 		setSourcefilename(javaClass.getSourceFileName());
 	}
 
