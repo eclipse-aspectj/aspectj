@@ -58,6 +58,8 @@ As of April 2024, AspectJ developer Alexander Kriegisch published a [fork of the
 and corresponding Eclipse update sites here:
   * Eclipse 2024-03 (4.31): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2024-03/
   * Eclipse 2022-12 (4.26): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2022-12/
+  * Eclipse 2020-12 (4.18): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2020-12/
+  * Eclipse 2019-06 (4.12): https://aspectj.dev/maven/m2eclipse-ajdt/eclipse-2019-06/
 
 The project is only maintained on a best-effort basis, and not each update published has a proper new release version.
 If your snapshot does not update properly (Eclipse failing to calculate solutions for installation and saying that the
@@ -65,11 +67,8 @@ plugin is already installed), simply uninstall the "Maven Integration for AJDT (
 re-start the IDE and install again from the corresponding update site.
 
 History: The connector between AspectJ Maven Plugin and AJDT had not been maintained for some years, but until 2023
-there was a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with the
-following update sites, which currently (April 2024) seem to be unavailable:
-  * Eclipse 2022-12 (4.26): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2022-12/
-  * Eclipse 2020-12 (4.18): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2020-12/
-  * Eclipse 2019-06 (4.12): https://repo.t5.fi/public/eclipse/m2eclipse-ajdt/eclipse-2019-06/
+there was a fairly up-to-date [fork by Miika Vesti (joker1)](https://github.com/joker1/m2eclipse-ajdt) with update sites on host **repo.t5.fi**, which are
+no longer available. Hence, the **aspectj.dev** ones listed above.
 
 #### Update sites example
 
