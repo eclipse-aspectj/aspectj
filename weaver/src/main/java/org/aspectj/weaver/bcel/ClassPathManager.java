@@ -31,9 +31,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -61,20 +63,22 @@ public class ClassPathManager {
 
 	private static final int MAXOPEN_DEFAULT = 1000;
 
-	private List<Entry> entries;
+	private final List<Entry> entries;
+
+	private final Set<String> notFound = new HashSet<>(100);
 
 	// In order to control how many open files we have, we maintain a list.
 	// The max number is configured through the property:
 	// org.aspectj.weaver.openarchives
 	// and it defaults to 1000
-	private List<ZipFile> openArchives = new ArrayList<>();
+	private final List<ZipFile> openArchives = new ArrayList<>();
 
 	static {
 		String openzipsString = getSystemPropertyWithoutSecurityException("org.aspectj.weaver.openarchives",
 				Integer.toString(MAXOPEN_DEFAULT));
 		maxOpenArchives = Integer.parseInt(openzipsString);
 		if (maxOpenArchives < 20) {
-			maxOpenArchives = 1000;
+			maxOpenArchives = MAXOPEN_DEFAULT;
 		}
 	}
 
@@ -82,7 +86,7 @@ public class ClassPathManager {
 		if (trace.isTraceEnabled()) {
 			trace.enter("<init>", this, new Object[] { classpath==null?"null":classpath.toString(), handler });
 		}
-		entries = new ArrayList<>();
+		entries = new ArrayList<>(classpath == null ? 1 : classpath.size());
 		for (String classpathEntry: classpath) {
 			addPath(classpathEntry,handler);
 		}
@@ -92,6 +96,7 @@ public class ClassPathManager {
 	}
 
 	protected ClassPathManager() {
+	  entries = null;
 	}
 
 	public void addPath(String name, IMessageHandler handler) {
@@ -127,6 +132,9 @@ public class ClassPathManager {
 			trace.enter("find", this, type);
 		}
 		String name = type.getName();
+		if (notFound.contains(name)) {
+		  return null;
+		}
 		for (Iterator<Entry> i = entries.iterator(); i.hasNext();) {
 			Entry entry = i.next();
 			try {
@@ -151,6 +159,7 @@ public class ClassPathManager {
 		if (trace.isTraceEnabled()) {
 			trace.exit("find", null);
 		}
+		notFound.add(name);
 		return null;
 	}
 
@@ -181,9 +190,9 @@ public class ClassPathManager {
 
 	static class ByteBasedClassFile extends ClassFile {
 
-		private byte[] bytes;
+		private final byte[] bytes;
 		private ByteArrayInputStream bais;
-		private String path;
+		private final String path;
 
 		public ByteBasedClassFile(byte[] bytes, String path) {
 			this.bytes = bytes;
@@ -215,7 +224,7 @@ public class ClassPathManager {
 	}
 
 	static class FileClassFile extends ClassFile {
-		private File file;
+		private final File file;
 		private FileInputStream fis;
 
 		public FileClassFile(File file) {
@@ -247,7 +256,7 @@ public class ClassPathManager {
 	}
 
 	class DirEntry extends Entry {
-		private String dirPath;
+		private final String dirPath;
 
 		public DirEntry(File dir) {
 			this.dirPath = dir.getPath();
@@ -273,8 +282,8 @@ public class ClassPathManager {
 	}
 
 	static class ZipEntryClassFile extends ClassFile {
-		private ZipEntry entry;
-		private ZipFileEntry zipFile;
+		private final ZipEntry entry;
+		private final ZipFileEntry zipFile;
 		private InputStream is;
 
 		public ZipEntryClassFile(ZipFileEntry zipFile, ZipEntry entry) {
@@ -407,7 +416,7 @@ public class ClassPathManager {
 		class TypeIdentifier extends SimpleFileVisitor<Path> {
 
 			// What are we looking for?
-			private String name;
+			private final String name;
 
 			// If set, where did we find it?
 			public Path found;
@@ -586,7 +595,7 @@ public class ClassPathManager {
 	}
 
 	/* private */static boolean hasClassExtension(String name) {
-		return name.toLowerCase().endsWith((".class"));
+		return name.toLowerCase().endsWith(".class");
 	}
 
 	public void closeArchives() {
