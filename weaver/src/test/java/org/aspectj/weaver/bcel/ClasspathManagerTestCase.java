@@ -23,6 +23,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.ClassPathManager.ClassFile;
 
@@ -76,7 +77,33 @@ public class ClasspathManagerTestCase extends TestCase {
 	}
 
 	public void testInstructions() {
-		System.out.println("This test is really only for standalone usage as it need executing on multiple JDK levels");
+		System.out.println(
+			"This test is mostly for stand-alone usage (rename 'xtest*' to 'test*'), " +
+				"as it needs execution on multiple JDK levels"
+		);
+	}
+
+	/**
+	 * See <a href="https://github.com/eclipse-aspectj/aspectj/issues/306">GitHub issue 306</a>
+	 */
+	public void testUnfoundClassPerformance() {
+		final int ROUNDS = 10_000;
+		final int MAX_TIME = 500;
+
+		List<String> classPath = Arrays.asList(System.getProperty("java.class.path").split(File.pathSeparator));
+		//System.out.println(classPath);
+		ClassPathManager classPathManager = new ClassPathManager(classPath, null);
+		UnresolvedType unresolvedType = TypeFactory.createTypeFromSignature("Ljava/lang/String;");
+
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < ROUNDS; i++)
+			classPathManager.find(unresolvedType);
+		long duration = System.currentTimeMillis() - startTime;
+
+		assertTrue(
+			String.format("Duration for %d rounds should be < %d ms, but was %d ms", ROUNDS, MAX_TIME, duration),
+			duration < MAX_TIME
+		);
 	}
 
 	public void xtestSanity18accessing18RTJAR() throws IOException {
