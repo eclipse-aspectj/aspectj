@@ -78,8 +78,6 @@ public class FileUtil {
 	// }
 	// };
 
-	final static int[] INT_RA = new int[0];
-
 	/** accept all files */
 	public static final FileFilter ALL = new FileFilter() {
 		public boolean accept(File f) {
