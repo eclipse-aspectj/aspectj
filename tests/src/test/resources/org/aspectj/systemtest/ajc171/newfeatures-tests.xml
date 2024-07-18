@@ -2,40 +2,65 @@
 
 <!-- AspectJ v1.7.1 Features Tests -->
 <suite>
+
   <ajc-test dir="features171/pr386341" title="Test Shared Cache">
     <compile files="A.java" options="-1.5"/>
-    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
-    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared" > 
-    <stdout>
-	    <line text="It Worked-before"/>
-	   	<line text="It Worked-after"/>
-    </stdout>
+    <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
     </run>
-  </ajc-test>  
-  
-   <ajc-test dir="features171/pr386341" title="Test Per ClassLoader Cache">
+    <!-- Repeat run to actually re-use the cached files, reproducing GitHub issue 314 -->
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
+  <ajc-test dir="features171/pr386341" title="Test Per ClassLoader Cache">
     <compile files="A.java" options="-1.5"/>
-    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
-    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=perloader" > 
-    <stdout>
-	    <line text="It Worked-before"/>
-	   	<line text="It Worked-after"/>
-    </stdout>
+    <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=perloader">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
     </run>
-  </ajc-test>  
-  
+    <!-- Repeat run to actually re-use the cached files, reproducing GitHub issue 314 -->
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=perloader">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
   <ajc-test dir="features171/pr386341" title="Test Default Cache Per ClassLoader">
     <compile files="A.java" options="-1.5"/>
-    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
-    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./" > 
-    <stdout>
-	    <line text="It Worked-before"/>
-	   	<line text="It Worked-after"/>
-    </stdout>
+    <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
     </run>
-  </ajc-test> 
-  
-  
-  
- 
+    <!-- Repeat run to actually re-use the cached files, reproducing GitHub issue 314 -->
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./">
+      <stdout>
+        <line text="It Worked-before"/>
+        <line text="It Worked-around"/>
+        <line text="It Worked-after"/>
+      </stdout>
+    </run>
+  </ajc-test>
+
 </suite>

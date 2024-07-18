@@ -6,15 +6,23 @@
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * Contributors:
- *    Andy Clement - Repro test case
+ *    Andy Clement - repro test case
  *    Abraham Nevado
+ *    Alexander Kriegisch - repro for GitHub 314
  *******************************************************************************/
 
 aspect X {
   after(): execution(* *.*()) {
     System.out.println("It Worked-after");
   }
+
   before(): execution(* *.*()) {
-	 System.out.println("It Worked-before");
+    System.out.println("It Worked-before");
+  }
+
+  // Around advice reproduces GitHub 314 in connection with per-classloader cache
+  Object around(): execution(* *.*()) {
+    System.out.println("It Worked-around");
+    return proceed();
   }
 }
