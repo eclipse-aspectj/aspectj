@@ -43,12 +43,15 @@ Ensure you run this with a JDK - the more recent the better since some tests wil
 
 ## Documentation for AspectJ users
 
-* [Complete documentation quicklinks](docs/index.adoc)
+* [Eclipse project page](https://projects.eclipse.org/projects/tools.aspectj)
+* [AspectJ website](https://eclipse.dev/aspectj/)
+* [AspectJ documentation overview](https://eclipse.dev/aspectj/doc/latest/index.html)
 * [Setting up a development environment](docs/developer/IDE.md)
-* [Getting started with AspectJ](docs/progguide/gettingstarted.adoc)
-* [Programming Guide](docs/progguide/index.adoc)
+* [Getting started with AspectJ](https://eclipse.dev/aspectj/doc/latest/progguide/gettingstarted.html)
+* [Programming Guide](https://eclipse.dev/aspectj/doc/latest/progguide/index.html)
+* [AspectJ 5 Developer’s Notebook](https://eclipse.dev/aspectj/doc/latest/adk15notebook/index.html)
 * [READMEs for each version of AspectJ](docs/release)
-* [AspectJ Java version compatibility](docs/release/JavaVersionCompatibility.adoc)
+* [AspectJ Java version compatibility](https://eclipse.dev/aspectj/doc/latest/release/JavaVersionCompatibility.html)
 
 ## Documentation for AspectJ developers
 
