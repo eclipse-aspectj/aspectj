@@ -1894,8 +1894,8 @@ public abstract class World implements Dump.INode {
 		long typeCount;
 		long perJoinpointCount;
 		long perTypes;
-		Map<String, Long> joinpointsPerPointcut = new HashMap<>();
-		Map<String, Long> timePerPointcut = new HashMap<>();
+		final Map<String, Long> joinpointsPerPointcut;
+		final Map<String, Long> timePerPointcut;
 		Map<String, Long> fastMatchTimesPerPointcut = new HashMap<>();
 		Map<String, Long> fastMatchTypesPerPointcut = new HashMap<>();
 
