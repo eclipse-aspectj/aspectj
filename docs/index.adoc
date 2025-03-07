@@ -98,6 +98,7 @@ JDK to run
 // AspectJ_JDK_Update: add new release to table
 |Release notes |Release notes, describing new features, improvements, bugfixes per AspectJ version: +
  +
+xref:release/README-1.9.23.adoc[1.9.23],
 xref:release/README-1.9.22.adoc[1.9.22 / 1.9.22.1],
 xref:release/README-1.9.21.adoc[1.9.21 / 1.9.21.1 / 1.9.21.2], xref:release/README-1.9.20.adoc[1.9.20 / 1.9.20.1],
 xref:release/README-1.9.19.adoc[1.9.19], xref:release/README-1.9.9.adoc[1.9.9 / 1.9.9.1],
